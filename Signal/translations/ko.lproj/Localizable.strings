@@ -3203,7 +3203,7 @@
 "DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "결제를 취소했습니다. 다시 시도해 주세요.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the callback is in an unexpected format. */
-"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "결제 반응이 잘못되었습니다. 다시 시도해 주세요.";
+"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "결제 응답이 잘못되었습니다. 다시 시도해 주세요.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
 "DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "결제가 거부되었습니다. 다시 시도해 주세요.";
@@ -3734,7 +3734,7 @@
 "GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ 님이 그룹에 전화를 거는 중입니다.";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "통화 참가자 수 최대";
+"GROUP_CALL_IS_FULL" = "통화 최대 참가자 수 도달";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
 "GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%1$@ 님에게 전화를 거는 중…";
@@ -5111,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "멤버 라벨을 저장하지 못했어요";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "라벨이 있는 그룹 멤버";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "이 그룹에서는 내 사진 옆에 프로필 정보 대신 멤버 라벨이 표시됩니다.";
@@ -5126,7 +5126,7 @@
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "멤버 라벨";
 
 /* Text for section that shows other group member labels, when there are none */
-"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "라벨이 있는 다른 멤버가 없음";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "미리보기";
@@ -6245,19 +6245,19 @@
 "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "결제 잠금을 사용하려면 iOS 설정에서 비밀번호를 설정해야 합니다.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "자금 이체 시 비밀 번호 또는 터치 ID를 요구하도록 추가 보안 조치를 설정하세요.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "보안을 강화하려면 송금 시 암호 또는 Touch ID를 사용하도록 설정하세요.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "자금 이체 시 얼굴 ID를 요구하도록 추가 보안 조치를 설정하세요.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "보안을 강화하려면 송금 시 Face ID를 사용하도록 설정하세요.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "자금 이체 시 Optic ID를 요구하도록 추가 보안 조치를 설정하세요.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "보안을 강화하려면 송금 시 Optic ID를 사용하도록 설정하세요.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "자금 이체 시 비밀번호를 요구하도록 추가 보안 조치를 설정하세요.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "보안을 강화하려면 송금 시 암호를 사용하도록 설정하세요.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "자금 이체 시 터치 ID를 요구하도록 추가 보안 조치를 설정하세요.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "보안을 강화하려면 송금 시 Touch ID를 사용하도록 설정하세요.";
 
 /* First time payments suggest payments lock title */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "지금부터 결제 잠금을 켤까요?";
@@ -6881,13 +6881,13 @@
 "POLL_BUTTON_VIEW_VOTES" = "투표 결과 보기";
 
 /* Toast telling user to add a question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "질문을 추가하세요.";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION" = "질문을 입력해 주세요";
 
 /* Toast telling user to add options and question to poll. */
-"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "질문과 옵션을 2개 이상 추가하세요.";
+"POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS" = "질문 1개와 최소 2개의 옵션을 입력해 주세요";
 
 /* Toast telling user to add more options to poll. */
-"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "옵션을 2개 이상 추가하세요.";
+"POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS" = "최소 2개의 옵션을 입력해 주세요";
 
 /* Title of create poll pane */
 "POLL_CREATE_TITLE" = "새 투표";
@@ -7214,40 +7214,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "모두 · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "내 메시지에 %1$@ 이모지로 반응했어요";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "내 메시지에 %1$@ 이모지로 공감했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "내 앨범에 %1$@ 이모지로 반응했어요";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "내 앨범에 %1$@ 이모지로 공감했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "내 오디오에 %1$@ 이모지로 반응했어요";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "내 오디오에 %1$@ 이모지로 공감했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "내 연락처 공유에 %1$@ 이모지로 반응했어요";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "내 연락처 공유에 %1$@ 이모지로 공감했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "내 파일에 %1$@ 이모지로 반응했어요";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "내 파일에 %1$@ 이모지로 공감했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "내 GIF에 %1$@ 이모지로 반응했어요";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "내 GIF에 %1$@ 이모지로 공감했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "내 사진에 %1$@ 이모지로 반응했어요";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "내 사진에 %1$@ 이모지로 공감했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "내 스티커에 %1$@ 이모지로 반응했어요";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "내 스티커에 %1$@ 이모지로 공감했어요";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "\"%2$@\" 메시지에 %1$@ 이모지로 반응했어요";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "\"%2$@\" 메시지에 %1$@ 이모지로 공감했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "내 동영상에 %1$@ 이모지로 반응했어요";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "내 동영상에 %1$@ 이모지로 공감했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "한 번만 볼 수 있는 내 미디어에 %1$@ 이모지로 반응했어요";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "한 번만 볼 수 있는 내 미디어에 %1$@ 이모지로 공감했어요";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "내 음성 메시지에 %1$@ 이모지로 반응했어요";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "내 음성 메시지에 %1$@ 이모지로 공감했어요";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "읽음";
@@ -7691,7 +7691,7 @@
 "RING_ON_CONFIRMATION_TOAST_LABEL" = "통화 켜짐";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "무시하고 추가";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "무시하고 추가하기";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "무시하고 전화";
@@ -9200,7 +9200,7 @@
 "STORIES_NO_VIEWS_YET" = "아직 아무도 조회 안 함";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "내 스토리를 볼 수 있는 사용자의 반응 및 답장 허용";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "내 스토리를 볼 수 있는 사용자의 공감 및 답장 허용";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "답장 및 반응";
@@ -9302,10 +9302,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "내 스토리에 %1$@ 이모지로 반응했어요";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "스토리에 %1$@ 이모지로 반응했어요";
+"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "스토리에 %1$@ 이모지로 공감했어요";
 
 /* quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "스토리에 %1$@ 이모지로 반응했어요";
+"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "스토리에 %1$@ 이모지로 공감했어요";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "답장";

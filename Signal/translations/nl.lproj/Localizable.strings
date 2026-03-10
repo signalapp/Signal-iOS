@@ -233,7 +233,7 @@
 "APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "Database beschadigd";
 
 /* Action in an action sheet offering to attempt recovery of a corrupted database. */
-"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "Repararen";
+"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "Repareren";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Werk alsjeblieft bij naar de meest recente versie van Signal.";
@@ -728,7 +728,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "Er is een fout opgetreden. Neem contact op met ondersteuning.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Je backup-abonnement kon niet worden opgehaald";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Je back-upabonnement kon niet worden opgehaald";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to a network error. */
 "BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "Controleer je internetverbinding en probeer het opnieuw.";
@@ -2375,7 +2375,7 @@
 "CONVERSATION_SETTINGS_MEMBER_TAG" = "Ledenlabel";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Geef me altijd een melding";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Altijd een melding";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Geen meldingen als gedempt";
@@ -2576,7 +2576,7 @@
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Delen van je chatgeschiedenis kunnen beschadigd zijn. Dit heeft geen gevolgen voor de veiligheid van je account of berichten. Tik op ‘Doorgaan’ om je gegevens te herstellen.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Repararen";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Repareren";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Toch doorgaan";
@@ -5111,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "Kan ledenlabel niet opslaan";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Groepsleden met labels";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "In deze groep wordt je ledenlabel naast je profielfoto weergegeven in plaats van je ‘Over mij’.";
@@ -5126,7 +5126,7 @@
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Ledenlabels";
 
 /* Text for section that shows other group member labels, when there are none */
-"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "Geen andere leden hebben labels";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "Voorbeeld";

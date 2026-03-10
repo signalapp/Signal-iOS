@@ -3656,7 +3656,7 @@
 "GIF_PICKER_VIEW_TITLE" = "Buscar GIF";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Error. Toca para volver a intentarlo.";
+"GIF_VIEW_SEARCH_ERROR" = "Error. Toca para reintentar.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "No hay resultados";
@@ -5111,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "No se ha podido guardar la categoría de participante";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Participantes del grupo con categorías";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "En este grupo, se mostrará tu categoría de participante junto a tu foto en lugar de la información sobre ti.";
@@ -5126,7 +5126,7 @@
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Categorías de participantes";
 
 /* Text for section that shows other group member labels, when there are none */
-"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No hay más participantes con categorías";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "Vista previa";

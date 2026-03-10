@@ -422,7 +422,7 @@
 "ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal мае абмежаваны доступ да фота";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "Месца";
+"ATTACHMENT_KEYBOARD_LOCATION" = "Месцазнах.";
 
 /* Second block of text in chat attachment panel when there's no recent photos to show. */
 "ATTACHMENT_KEYBOARD_NO_MEDIA_BODY" = "Тут вы зможаце адпраўляць апошнія фота і відэа, калі яны стануць даступнымі";
@@ -500,7 +500,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Аўдыяпаведамленне";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Вонкавы дынамік";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Дынамік";
 
 /* Message when trying to show a voice message that has expired and is unavailable for download */
 "AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Галасавое паведамленне недаступнае";
@@ -5111,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "Не атрымалася захаваць метку ўдзельніка";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Удзельнікі групы з меткамі";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "У гэтай групе ваша метка ўдзельніка будзе паказана побач з вашым фота замест раздзела «Аб кантакце».";
@@ -5126,7 +5126,7 @@
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Меткі ўдзельнікаў";
 
 /* Text for section that shows other group member labels, when there are none */
-"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "Іншыя ўдзельнікі не маюць метак";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "Папярэдні прагляд";
@@ -9077,10 +9077,10 @@
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Завяршыць праверку";
 
 /* Text for a toast confirming that the speakerphone has been turned off for a call. */
-"SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "Вонкавы дынамік адключаны";
+"SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "Дынамік адключаны";
 
 /* Text for a toast confirming that the speakerphone has been turned on for a call. */
-"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Вонкавы дынамік уключаны";
+"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Дынамік уключаны";
 
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "Выбраныя";
