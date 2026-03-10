@@ -113,8 +113,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     }
 
     public static let textViewVSpacing: CGFloat = 2
-    public static let bodyMediaQuotedReplyVSpacing: CGFloat = 6
-    public static let quotedReplyTopMargin: CGFloat = 6
 
     public func configureForRendering(
         componentView componentViewParam: CVComponentView,

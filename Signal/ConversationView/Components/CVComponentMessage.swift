@@ -483,8 +483,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     public static let textViewVSpacing: CGFloat = 3
-    public static let bodyMediaQuotedReplyVSpacing: CGFloat = 6
-    public static let quotedReplyTopMargin: CGFloat = 6
 
     private var sendFailureBadgeSize: CGFloat { conversationStyle.hasWallpaper ? 40 : 24 }
 
@@ -1237,7 +1235,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             var applyBottomMargin = false
             if
                 previousSectionItems.isEmpty,
-                quotedReply != nil
+                quotedReply != nil || linkPreview != nil
             {
                 applyTopMargin = true
                 applyBottomMargin = bodyText == nil && standaloneFooter == nil && bodyMedia == nil

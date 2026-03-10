@@ -58,7 +58,7 @@ class CVComponentLinkPreview: CVComponentBase, CVComponent {
             axis: .vertical,
             alignment: .fill,
             spacing: 0,
-            layoutMargins: UIEdgeInsets(top: 8, leading: 8, bottom: 0, trailing: 8),
+            layoutMargins: UIEdgeInsets(hMargin: 8, vMargin: 0),
         )
     }
 
