@@ -134,7 +134,11 @@ public class PinnedMessageManager {
 
         var expiresAt: UInt64?
         if pinMessageProto.hasPinDurationSeconds {
-            expiresAt = pinReceivedAtTimestamp + UInt64(pinMessageProto.pinDurationSeconds * 1000)
+            let pinDurationMilliseconds = UInt64(pinMessageProto.pinDurationSeconds) * 1000
+            let result = pinDurationMilliseconds.addingReportingOverflow(pinReceivedAtTimestamp)
+            if !result.overflow {
+                expiresAt = result.partialValue
+            }
         } else if pinMessageProto.hasPinDurationForever {
             // expiresAt should stay nil
         } else {
