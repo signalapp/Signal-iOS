@@ -116,6 +116,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
             stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
             stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -32),
         ])
+        scrollView.keyboardDismissMode = .onDrag
 
         buildGroupMembershipSection()
 
