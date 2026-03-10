@@ -30,48 +30,6 @@ public enum OWSMediaUtils {
         return result
     }
 
-    private static func thumbnail(forImage image: UIImage, maxDimensionPoints: CGFloat) throws -> UIImage {
-        let scale = UIScreen.main.scale
-        let maxDimensionPixels = maxDimensionPoints * scale
-        return try thumbnail(forImage: image, maxDimensionPixels: maxDimensionPixels)
-    }
-
-    public static func thumbnail(forImageAtPath path: String, maxDimensionPixels: CGFloat) throws -> UIImage {
-        guard FileManager.default.fileExists(atPath: path) else {
-            throw OWSMediaError.failure(description: "Media file missing.")
-        }
-        guard (try? DataImageSource.forPath(path))?.ows_isValidImage ?? false else {
-            throw OWSMediaError.failure(description: "Invalid image.")
-        }
-        guard let originalImage = UIImage(contentsOfFile: path) else {
-            throw OWSMediaError.failure(description: "Could not load original image.")
-        }
-        return try thumbnail(forImage: originalImage, maxDimensionPixels: maxDimensionPixels)
-    }
-
-    public static func thumbnail(forImageAtPath path: String, maxDimensionPoints: CGFloat) throws -> UIImage {
-        guard FileManager.default.fileExists(atPath: path) else {
-            throw OWSMediaError.failure(description: "Media file missing.")
-        }
-        guard (try? DataImageSource.forPath(path))?.ows_isValidImage ?? false else {
-            throw OWSMediaError.failure(description: "Invalid image.")
-        }
-        guard let originalImage = UIImage(contentsOfFile: path) else {
-            throw OWSMediaError.failure(description: "Could not load original image.")
-        }
-        return try thumbnail(forImage: originalImage, maxDimensionPoints: maxDimensionPoints)
-    }
-
-    public static func thumbnail(forImageData imageData: Data, maxDimensionPoints: CGFloat) throws -> UIImage {
-        guard DataImageSource(imageData).ows_isValidImage else {
-            throw OWSMediaError.failure(description: "Invalid image.")
-        }
-        guard let originalImage = UIImage(data: imageData) else {
-            throw OWSMediaError.failure(description: "Could not load original image.")
-        }
-        return try thumbnail(forImage: originalImage, maxDimensionPoints: maxDimensionPoints)
-    }
-
     public static func thumbnail(forImageData imageData: Data, maxDimensionPixels: CGFloat) throws -> UIImage {
         guard DataImageSource(imageData).ows_isValidImage else {
             throw OWSMediaError.failure(description: "Invalid image.")
@@ -80,19 +38,6 @@ public enum OWSMediaUtils {
             throw OWSMediaError.failure(description: "Could not load original image.")
         }
         return try thumbnail(forImage: originalImage, maxDimensionPixels: maxDimensionPixels)
-    }
-
-    public static func thumbnail(forWebpAtPath path: String, maxDimensionPoints: CGFloat) throws -> UIImage {
-        guard FileManager.default.fileExists(atPath: path) else {
-            throw OWSMediaError.failure(description: "Media file missing.")
-        }
-        guard let imageSource = try? DataImageSource.forPath(path), imageSource.ows_isValidImage else {
-            throw OWSMediaError.failure(description: "Invalid image.")
-        }
-        guard let stillImage = imageSource.stillForWebpData() else {
-            throw OWSMediaError.failure(description: "Could not generate still.")
-        }
-        return try thumbnail(forImage: stillImage, maxDimensionPoints: maxDimensionPoints)
     }
 
     public static let videoStillFrameMimeType = MimeType.imageJpeg
