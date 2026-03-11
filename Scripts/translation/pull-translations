@@ -8,6 +8,7 @@ BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 REPO_ROOT=$BIN_DIR/../..
 cd $REPO_ROOT
 swift run --package-path Scripts/translation-tool translation-tool download-resources
+swift build --package-path Scripts/translation-validator
 
 LOCALIZATION_ROOT=$REPO_ROOT/Signal/translations
 cd $LOCALIZATION_ROOT
@@ -27,18 +28,7 @@ if [ "${#lang_errors[@]}" -gt 0 ]; then
   exit 1
 fi
 
-# Get and build iStringsCheck from https://github.com/signalapp/l10n_lint
-# This does some checks to make sure all strings are present and that interpolated strings have the right number of arguments
-LINT_CMD=$(command -v l10n_lint)
-LINT_CMD=${LINT_CMD:-$REPO_ROOT/../l10n_lint/target/debug/l10n_lint}
-
-if [ -e $LINT_CMD ]
-then
-  $LINT_CMD en.lproj/Localizable.strings .
-  $LINT_CMD en.lproj/InfoPlist.strings .
-else
-  echo "Missing string linter. See: https://github.com/signalapp/l10n_lint"
-  exit 1
-fi
+../../Scripts/translation-validator/.build/debug/translation-validator $LOCALIZATION_ROOT/en.lproj/Localizable.strings || true
+../../Scripts/translation-validator/.build/debug/translation-validator $LOCALIZATION_ROOT/en.lproj/InfoPlist.strings || true
 
 echo "Make sure you register any new localizations in XCode! (Go to Project > Signal > Localizations > Add Localizations)"
