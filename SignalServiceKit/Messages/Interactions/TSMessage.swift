@@ -327,7 +327,12 @@ public extension TSMessage {
     var canBeRemotelyDeletedByAdmin: Bool {
         guard isIncoming || isOutgoing else { return false }
 
+        var timestampOfMessage: UInt64 = self.timestamp
+
         if let incomingMessage = self as? TSIncomingMessage {
+            if let serverTimestamp = incomingMessage.serverTimestamp {
+                timestampOfMessage = serverTimestamp.uint64Value
+            }
             guard !incomingMessage.wasRemotelyDeleted else { return false }
         }
 
@@ -335,7 +340,7 @@ public extension TSMessage {
             guard !outgoingMessage.wasRemotelyDeleted else { return false }
         }
 
-        let (elapsedTime, isInFuture) = Date.ows_millisecondTimestamp().subtractingReportingOverflow(self.timestamp)
+        let (elapsedTime, isInFuture) = Date.ows_millisecondTimestamp().subtractingReportingOverflow(timestampOfMessage)
 
         let adminDeleteLimit = RemoteConfig.current.adminDeleteMaxAgeInSeconds * TimeInterval(MSEC_PER_SEC)
         guard isInFuture || (TimeInterval(elapsedTime) <= adminDeleteLimit) else { return false }
@@ -389,14 +394,13 @@ public extension TSMessage {
             return latestMessage
         }
 
-        if latestMessage.isOutgoing {
-            guard latestMessage.timestamp <= serverTimestamp else {
-                owsFailDebug("Can't delete a message from the future.")
-                throw .invalidDelete
-            }
+        let deleteThreshold = TimeInterval(allowedDeleteTimeframeSeconds)
 
-            let deleteThresholdMs = UInt64(allowedDeleteTimeframeSeconds) * MSEC_PER_SEC
-            guard serverTimestamp - latestMessage.timestamp < deleteThresholdMs else {
+        if latestMessage.isOutgoing {
+            let serverDate = Date(millisecondsSince1970: serverTimestamp)
+            let messageDate = Date(millisecondsSince1970: latestMessage.timestamp)
+
+            guard messageDate.addingTimeInterval(deleteThreshold) > serverDate else {
                 owsFailDebug("Ignoring outgoing message delete sent more than allowed threshold after the original message")
                 throw .invalidDelete
             }
@@ -411,12 +415,10 @@ public extension TSMessage {
                 throw .invalidDelete
             }
 
-            guard messageToDeleteServerTimestamp.uint64Value <= serverTimestamp else {
-                owsFailDebug("Can't delete a message from the future.")
-                throw .invalidDelete
-            }
+            let serverDate = Date(millisecondsSince1970: serverTimestamp)
+            let messageDate = Date(millisecondsSince1970: messageToDeleteServerTimestamp.uint64Value)
 
-            guard serverTimestamp - messageToDeleteServerTimestamp.uint64Value < (UInt64(allowedDeleteTimeframeSeconds) * MSEC_PER_SEC) else {
+            guard messageDate.addingTimeInterval(deleteThreshold) > serverDate else {
                 owsFailDebug("Ignoring incoming message delete sent more than allowed threshold after the original message")
                 throw .invalidDelete
             }
