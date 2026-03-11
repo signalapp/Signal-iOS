@@ -84,7 +84,7 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
         try process(data: data, finalize: false)
     }
 
-    private var buffer = Data(capacity: Constants.BufferSize)
+    private var buffer = Data(count: Constants.BufferSize)
     private var currentOffset: UInt = 0
     private var currentCapcity: Int = Constants.BufferSize
 
@@ -113,14 +113,9 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
                 //
                 // If this is encountered, move the current buffer into `returnData` and reset to an empty buffer
                 if stream.avail_out == 0 {
-                    if buffer.count >= Constants.MaxBufferSize {
-                        // reset to beginning of array
-                        currentOffset = 0
-                    } else {
-                        currentCapcity += Constants.BufferSize
-                        buffer.reserveCapacity(currentCapcity)
-                        // currentOffset can remain the same
-                    }
+                    currentCapcity += Constants.BufferSize
+                    buffer.count = currentCapcity
+                    // currentOffset can remain the same
                     stream.avail_out = UInt32(UInt(currentCapcity) - currentOffset)
                 }
 
