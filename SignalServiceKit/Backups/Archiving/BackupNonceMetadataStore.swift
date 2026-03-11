@@ -70,10 +70,11 @@ extension BackupNonce.MetadataHeader {
     /// If the provided bytes do not cover the complete header, throws a ``ParsingError/moreDataNeeded(_:)`` error
     /// with the minimum necessary bytes to try parsing again.
     public static func from(prefixBytes: Data?) throws(ParsingError) -> BackupNonce.MetadataHeader {
-        guard let rawData = prefixBytes?.nilIfEmpty else {
+        guard var rawData = prefixBytes?.nilIfEmpty else {
             owsFailDebug("Missing prefix data")
             throw .dataMissingOrEmpty
         }
+        let oldRawDataCount = rawData.count
 
         // Check the file signature
         let fileSignatureLength = BackupNonce.magicFileSignature.count
@@ -83,31 +84,25 @@ extension BackupNonce.MetadataHeader {
         guard rawData.prefix(fileSignatureLength) == BackupNonce.magicFileSignature else {
             throw .unrecognizedFileSignature
         }
+        rawData.removeFirst(fileSignatureLength)
 
         // Read the varint length of the header metadata.
-        let (headerLength, varintLength) = ChunkedInputStreamTransform.decodeVariableLengthInteger(
-            buffer: rawData,
-            start: fileSignatureLength,
-        )
-        guard
-            headerLength > 0,
-            varintLength >= 0,
-            let varintLength = UInt64(exactly: varintLength)
-        else {
+        let headerLength = try? rawData.removeFirstVarint()
+        guard let headerLength, headerLength > 0 else {
             throw .moreDataNeeded(BackupNonce.metadataHeaderByteLengthUpperBound)
         }
-        guard let minLength = UInt16(exactly: UInt64(fileSignatureLength) + headerLength + varintLength) else {
-            // We enforce via swift compiler that the header fits in 2^16 bytes, which is
-            // way overkill and should always be enough. This should never happen.
-            owsFailDebug("Header larger than 2^16 bytes!")
-            throw .headerTooLarge
-        }
-        if minLength > rawData.count {
+        guard rawData.count >= headerLength else {
+            let signatureAndVarintLength = UInt64(oldRawDataCount - rawData.count)
+            let (minLength, overflow) = signatureAndVarintLength.addingReportingOverflow(headerLength)
+            guard !overflow, let minLength = UInt16(exactly: minLength) else {
+                // We enforce via swift compiler that the header fits in 2^16 bytes, which is
+                // way overkill and should always be enough. This should never happen.
+                owsFailDebug("Header larger than 2^16 bytes!")
+                throw .headerTooLarge
+            }
             throw .moreDataNeeded(minLength)
         }
-        let rawHeader = rawData
-            .suffix(from: fileSignatureLength + Int(varintLength))
-            .prefix(Int(headerLength))
+        let rawHeader = rawData.prefix(Int(headerLength))
         return BackupNonce.MetadataHeader(data: rawHeader)
     }
 

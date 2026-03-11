@@ -28,7 +28,7 @@ struct ChunkedInputStream {
 
     /// Based on SwiftProtobuf.BinaryDecoder.decodeSingularUInt32Field
     mutating func decodeSingularUInt32Field() throws -> UInt32 {
-        guard let result = UInt32(exactly: try decodeVarint()) else {
+        guard let result = UInt32(exactly: try remainingData.removeFirstVarint()) else {
             throw ChunkedInputStreamError.malformed
         }
         return result
@@ -44,27 +44,5 @@ struct ChunkedInputStream {
             throw ChunkedInputStreamError.truncated
         }
         self.remainingData = self.remainingData.dropFirst(length)
-    }
-
-    /// Private: Parse the next raw varint from the input.
-    ///
-    /// Based on SwiftProtobuf.BinaryDecoder.decodeVarint()
-    private mutating func decodeVarint() throws -> UInt64 {
-        var value = 0 as UInt64
-        var shift = 0 as UInt64
-        while true {
-            if shift > 63 {
-                throw ChunkedInputStreamError.malformed
-            }
-            if self.remainingData.isEmpty {
-                throw ChunkedInputStreamError.truncated
-            }
-            let c = self.remainingData.removeFirst()
-            value |= UInt64(c & 0x7f) << shift
-            if c & 0x80 == 0 {
-                return value
-            }
-            shift += 7
-        }
     }
 }

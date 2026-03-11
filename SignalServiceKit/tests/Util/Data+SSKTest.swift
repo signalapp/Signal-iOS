@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Testing
 import XCTest
 
 @testable import SignalServiceKit
@@ -57,5 +58,35 @@ class DataSSKTests: XCTestCase {
         XCTAssertFalse(Data([1]).ows_constantTimeIsEqual(to: Data()))
         XCTAssertFalse(Data().ows_constantTimeIsEqual(to: Data([1])))
         XCTAssertTrue(Data().ows_constantTimeIsEqual(to: Data()))
+    }
+}
+
+struct DataSSKTest {
+    @Test(arguments: [
+        ([0], 0, []),
+        ([1], 1, []),
+        ([127], 127, []),
+        ([128, 1], 128, []),
+        ([0, 0], 0, [0]),
+        ([128, 1, 2], 128, [2]),
+        ([255, 255, 255, 255, 255, 255, 255, 255, 127], UInt64(Int64.max), []),
+    ] as [([UInt8], UInt64, [UInt8])])
+    func testDecodeVarint(testCase: (inputData: [UInt8], expectedValue: UInt64, remainingData: [UInt8])) throws {
+        var inputData = Data(testCase.inputData)
+        let actualValue = try inputData.removeFirstVarint()
+        #expect(actualValue == testCase.expectedValue)
+        #expect(inputData == Data(testCase.remainingData))
+    }
+
+    @Test(arguments: [
+        ([], .truncated),
+        ([128], .truncated),
+        ([128, 128, 128, 128, 128, 128, 128, 128, 128, 128], .malformed),
+    ] as [([UInt8], Data.VarintDecodingError)])
+    func testDecodeVarintError(testCase: (inputData: [UInt8], expectedError: Data.VarintDecodingError)) throws {
+        let inputData = Data(testCase.inputData)
+        var mutableData = inputData
+        #expect(throws: testCase.expectedError, performing: { try mutableData.removeFirstVarint() })
+        #expect(mutableData == inputData)
     }
 }

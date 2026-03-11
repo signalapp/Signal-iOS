@@ -59,6 +59,35 @@ extension Data {
             }
         } == 0
     }
+
+    public enum VarintDecodingError: Error {
+        case malformed
+        case truncated
+    }
+
+    /// Consume the next varint.
+    ///
+    /// Based on SwiftProtobuf.BinaryDecoder.decodeVarint()
+    public mutating func removeFirstVarint() throws(VarintDecodingError) -> UInt64 {
+        var temporarySelf = self
+        var value: UInt64 = 0
+        var shift: UInt64 = 0
+        while true {
+            if shift > 63 {
+                throw .malformed
+            }
+            if temporarySelf.isEmpty {
+                throw .truncated
+            }
+            let c = temporarySelf.removeFirst()
+            value |= UInt64(c & 0x7f) << shift
+            if c & 0x80 == 0 {
+                self = temporarySelf
+                return value
+            }
+            shift += 7
+        }
+    }
 }
 
 public extension Data {

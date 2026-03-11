@@ -45,47 +45,44 @@ public class NonceHeaderInputStreamTransform: StreamTransform, BufferedStreamTra
 
     /// Decode the next chunk of data, if enough data is present in the buffer.
     private func skipPastMetadataHeader() throws -> Data {
-        guard buffer.count > BackupNonce.magicFileSignature.count else {
+        var buffer = self.buffer
+        guard buffer.starts(with: BackupNonce.magicFileSignature) else {
             // We dont have enough data to decode the signature, return for now.
             needMoreData = true
             return Data()
         }
+        buffer.removeFirst(BackupNonce.magicFileSignature.count)
 
         // decode the next variable length int
-        let (dataSize, intLength) = ChunkedInputStreamTransform.decodeVariableLengthInteger(
-            buffer: buffer,
-            start: BackupNonce.magicFileSignature.count,
-        )
+        let dataSize = try? buffer.removeFirstVarint()
 
-        guard dataSize > 0 else {
-            needMoreData = true
+        guard let dataSize else {
             // Don't have enough data to decode an int, so return for now
             return Data()
         }
 
-        guard let intDataSize = Int(exactly: dataSize) else {
-            // The decoded integer is to large to fit into an Int
-            // The Data operations all require Int Ranges, so
-            owsFailDebug("Decoded data size too large")
+        guard dataSize > 0 else {
+            needMoreData = true
+            // The varint is zero, so return for now?
             return Data()
         }
 
         // Only advance if there is enough data present to both
         // decode the variable length integer and skip past the specified
         // number of bytes.
-        let endOfHeader = BackupNonce.magicFileSignature.count + intDataSize + intLength
-        guard buffer.count >= endOfHeader else {
+        guard buffer.count >= dataSize else {
             needMoreData = true
             return Data()
         }
+        buffer.removeFirst(Int(dataSize))
 
         // Return any data past the header, skipping the header portion.
-        let returnBuffer = buffer.dropFirst(endOfHeader)
+        let returnBuffer = buffer
 
-        headerLength = endOfHeader
+        headerLength = self.buffer.count - buffer.count
         hasFinishedReadingHeader = true
         needMoreData = false
-        buffer = Data()
+        self.buffer = Data()
 
         return returnBuffer
     }
