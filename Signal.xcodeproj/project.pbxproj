@@ -3968,7 +3968,6 @@
 		F9C5CE43289453B400548EEE /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB72289453B200548EEE /* OrderedDictionary.swift */; };
 		F9C5CE44289453B400548EEE /* Error+IsRetryable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB73289453B200548EEE /* Error+IsRetryable.swift */; };
 		F9C5CE49289453B400548EEE /* OWSError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB78289453B200548EEE /* OWSError.swift */; };
-		F9C5CE4A289453B400548EEE /* DecodableDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB79289453B200548EEE /* DecodableDefaults.swift */; };
 		F9C5CE4C289453B400548EEE /* Sequence+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */; };
 		F9C5CE4D289453B400548EEE /* Date+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB7C289453B200548EEE /* Date+SSK.swift */; };
 		F9C5CE50289453B400548EEE /* Weak.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB7F289453B200548EEE /* Weak.swift */; };
@@ -8276,7 +8275,6 @@
 		F9C5CB72289453B200548EEE /* OrderedDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedDictionary.swift; sourceTree = "<group>"; };
 		F9C5CB73289453B200548EEE /* Error+IsRetryable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error+IsRetryable.swift"; sourceTree = "<group>"; };
 		F9C5CB78289453B200548EEE /* OWSError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSError.swift; sourceTree = "<group>"; };
-		F9C5CB79289453B200548EEE /* DecodableDefaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecodableDefaults.swift; sourceTree = "<group>"; };
 		F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Sequence+OWS.swift"; sourceTree = "<group>"; };
 		F9C5CB7C289453B200548EEE /* Date+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB7F289453B200548EEE /* Weak.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Weak.swift; sourceTree = "<group>"; };
@@ -15427,7 +15425,6 @@
 				F9C5CB06289453B200548EEE /* DebouncedEvent.swift */,
 				F94C912128FDEAF50065DF75 /* Decimal+IsInteger.swift */,
 				F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */,
-				F9C5CB79289453B200548EEE /* DecodableDefaults.swift */,
 				66F98DDF2DB710EA009F1A86 /* DeviceBatteryLevelManager.swift */,
 				66FA2B1E28CBA4A5006845CD /* DeviceOwnerAuthenticationType.swift */,
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
@@ -19191,7 +19188,6 @@
 				7255A4D02B98E2A400E95368 /* DebugLogger.swift in Sources */,
 				F94C912228FDEAF50065DF75 /* Decimal+IsInteger.swift in Sources */,
 				F94C912028FDEA2E0065DF75 /* Decimal+Rounded.swift in Sources */,
-				F9C5CE4A289453B400548EEE /* DecodableDefaults.swift in Sources */,
 				50A5AA992A7449A100CF2ECC /* DecryptedIncomingEnvelope.swift in Sources */,
 				C14EC1AB2BAB57B900A4D064 /* DecryptingStreamTransform.swift in Sources */,
 				F9C5CD27289453B300548EEE /* DeepCopy.swift in Sources */,
