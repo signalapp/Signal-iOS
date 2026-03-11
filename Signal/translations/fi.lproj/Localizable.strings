@@ -2311,9 +2311,6 @@
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Valitse, kuka voi muokata ryhmän nimeä, kuvaa, kuvausta, katoavien viestien ajastusta sekä kiinnitettyjä viestejä.";
 
-/* Footer for the 'attributes access' section in conversation settings view with member labels added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "Valitse, kuka voi muokata ryhmän nimeä, kuvaa, kuvausta, katoavien viestien ajastusta, kiinnitettyjä viestejä, sekä jäsenrooleja.";
-
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Hanki profiiliisi merkkejä tukemalla Signalia. Lue lisää napauttamalla merkkiä.";
 
@@ -2353,6 +2350,12 @@
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Kaikki jäsenet";
 
+/* Label for 'edit member label access' action in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "Add Member Labels";
+
+/* Description for the 'edit member label access'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "Choose who can add member labels in this group.";
+
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Jäsenten lisääminen";
 
@@ -2367,6 +2370,12 @@
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ voi muokata ryhmää ja sen jäseniä.";
+
+/* Label for button that sets 'member labels access' to 'administrators-only'. */
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON" = "Only Admins";
+
+/* Label for button that sets 'member labels access' to 'members-only'. */
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Liittymispyynnöt ja kutsut";
@@ -2451,6 +2460,9 @@
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Poista ylläpitäjän oikeudet";
+
+/* Message for 'revoke group admin' confirmation alert. */
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "Tämä poistaa myös heidän jäsenroolinsa.";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Poistetaanko %1$@ ryhmän ylläpitäjistä?";
@@ -3677,7 +3689,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Ryhmän tietojen muokkaajiksi on määritelty: %1$@.";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Vain ylläpitäjät";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Only Admins";
 
 /* Description of the 'all users' access level. */
 "GROUP_ACCESS_LEVEL_ANY" = "Kaikki käyttäjät";
@@ -3690,6 +3702,15 @@
 
 /* Description of the 'unsatisfiable' access level. */
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Pois päältä";
+
+/* Message indicating that the access to setting member labels was changed by the local user. Embeds {{new access level}}. */
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can add member labels to “%1$@”.";
+
+/* Message indicating that the access to setting member labels was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can add member labels to “%2$@”.";
+
+/* Message indicating that the access to setting member labels was changed. Embeds {{new access level}}. */
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT" = "An admin changed who can add member labels to “%1$@”.";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Muutit ryhmän jäsenyyden muokkaajaksi: %1$@.";
@@ -3717,6 +3738,15 @@
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ on estetty";
+
+/* Context menu action to view a call participant's contact details. */
+"GROUP_CALL_CONTEXT_MENU_CONTACT_DETAILS" = "Contact Details";
+
+/* Context menu action to navigate to the chat with a call participant. */
+"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "Go to Chat";
+
+/* Context menu action to mute a call participant's audio. */
+"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "Mute Audio";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Jatka puhelua";
@@ -5092,6 +5122,9 @@
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
 "MEMBER_LABEL_ADD_CSVC" = "Lisää jäsenrooli";
 
+/* Toast indicating that only admins can set a member label. */
+"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "Vain ylläpitäjät voivat määrittää ryhmän jäsenroolit.";
+
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "Jäsenrooli: ";
 
@@ -5111,7 +5144,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "Jäsenroolia ei voitu tallentaa";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Ryhmän jäsenet, joilla on jäsenrooli";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "Tässä ryhmässä jäsenroolisi näytetään kuvasi vieressä Tietoja-sivun paikalla.";
@@ -5126,7 +5159,7 @@
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Jäsenroolit";
 
 /* Text for section that shows other group member labels, when there are none */
-"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "Muilla jäsenillä ei ole roolia";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "Esikatselu";
@@ -5145,6 +5178,9 @@
 
 /* Title for a view where users can edit and preview their member label. */
 "MEMBER_LABEL_VIEW_TITLE" = "Jäsentunniste";
+
+/* A one-time confirmation that you, as an admin, want to delete for everyone */
+"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "Group members on the latest versions of Signal will see that you deleted these messages.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Kopioi viestin teksti";
@@ -7483,11 +7519,11 @@
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
 "REGISTRATION_PROFILE_SETUP_TITLE" = "Määritä profiilisi";
 
-/* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal ei voinut lähettää tekstiviestikoodia operaattoriin liittyvien ongelmien vuoksi.";
+/* Error shown if an SMS/call service provider is unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "We are unable to send an SMS to your number. Please try again in several hours.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal ei voinut lähettää tekstiviestikoodia operaattoriin liittyvien ongelmien vuoksi. Yritä uudelleen muutaman tunnin kuluttua.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "We are unable to send an SMS to your number. Please try again in a few minutes.";
 
 /* Third step in directions for how to make a backup */
 "REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Ota varmuuskopiointi käyttöön ja odota, kunnes varmuuskopiointi on valmis";
@@ -7569,6 +7605,9 @@
 
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Jokin meni vikaan käyttäjänimesi QR-koodissa ja linkissä. Linkki ei ole enää kelvollinen. Luo uusi linkki, jonka voit jakaa muille.";
+
+/* Toast that appears when local user tried to delete a message that has disappeared */
+"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "Message disappeared before it could be deleted.";
 
 /* A message that displays when one person in a call remotely muted another participant. Embeds {{name}} {{name}} */
 "REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@ mykisti käyttäjän %2$@.";

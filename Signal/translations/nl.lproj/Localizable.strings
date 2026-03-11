@@ -233,7 +233,7 @@
 "APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "Database beschadigd";
 
 /* Action in an action sheet offering to attempt recovery of a corrupted database. */
-"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "Repararen";
+"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "Repareren";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Werk alsjeblieft bij naar de meest recente versie van Signal.";
@@ -728,7 +728,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "Er is een fout opgetreden. Neem contact op met ondersteuning.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Je backup-abonnement kon niet worden opgehaald";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "Je back-upabonnement kon niet worden opgehaald";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to a network error. */
 "BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "Controleer je internetverbinding en probeer het opnieuw.";
@@ -2311,9 +2311,6 @@
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Kies wie de groepsnaam, -afbeelding, -omschrijving, vastgezette berichten en de timer voor verdwijnende berichten kan bewerken.";
 
-/* Footer for the 'attributes access' section in conversation settings view with member labels added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "Kies wie de groepsnaam, -afbeelding, -omschrijving, vastgezette berichten en de timer voor verdwijnende berichten kan bewerken en wie ledenlabels kan toevoegen.";
-
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Door Signal te ondersteunen verdien je badges om op je profiel weer te geven. Tik op een badge om er meer over te leren.";
 
@@ -2353,6 +2350,12 @@
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle leden";
 
+/* Label for 'edit member label access' action in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "Add Member Labels";
+
+/* Description for the 'edit member label access'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "Choose who can add member labels in this group.";
+
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Leden toevoegen";
 
@@ -2368,6 +2371,12 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ zal de groepsinformatie en het groepslidmaatschap kunnen bewerken.";
 
+/* Label for button that sets 'member labels access' to 'administrators-only'. */
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON" = "Only Admins";
+
+/* Label for button that sets 'member labels access' to 'members-only'. */
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Verzoeken & uitnodigingen";
 
@@ -2375,7 +2384,7 @@
 "CONVERSATION_SETTINGS_MEMBER_TAG" = "Ledenlabel";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Geef me altijd een melding";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Altijd een melding";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Geen meldingen als gedempt";
@@ -2451,6 +2460,9 @@
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Beheerdersbevoegdheden intrekken";
+
+/* Message for 'revoke group admin' confirmation alert. */
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "Het ledenlabel wordt hiermee ook verwijderd.";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "De beheerdersbevoegdheden van %1$@ intrekken?";
@@ -2576,7 +2588,7 @@
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Delen van je chatgeschiedenis kunnen beschadigd zijn. Dit heeft geen gevolgen voor de veiligheid van je account of berichten. Tik op ‘Doorgaan’ om je gegevens te herstellen.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Repararen";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Repareren";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Toch doorgaan";
@@ -3677,7 +3689,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "De groepsinformatie kan vanaf nu door ‘%1$@’ worden bewerkt.";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Uitsluitend beheerders";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Only Admins";
 
 /* Description of the 'all users' access level. */
 "GROUP_ACCESS_LEVEL_ANY" = "Iedereen";
@@ -3690,6 +3702,15 @@
 
 /* Description of the 'unsatisfiable' access level. */
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Uitgeschakeld";
+
+/* Message indicating that the access to setting member labels was changed by the local user. Embeds {{new access level}}. */
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can add member labels to “%1$@”.";
+
+/* Message indicating that the access to setting member labels was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can add member labels to “%2$@”.";
+
+/* Message indicating that the access to setting member labels was changed. Embeds {{new access level}}. */
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT" = "An admin changed who can add member labels to “%1$@”.";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Je hebt de instelling voor wie het groepslidmaatschap kan bewerken op ‘%1$@’ ingesteld.";
@@ -3717,6 +3738,15 @@
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ is geblokkeerd";
+
+/* Context menu action to view a call participant's contact details. */
+"GROUP_CALL_CONTEXT_MENU_CONTACT_DETAILS" = "Contact Details";
+
+/* Context menu action to navigate to the chat with a call participant. */
+"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "Go to Chat";
+
+/* Context menu action to mute a call participant's audio. */
+"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "Mute Audio";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Oproep voortzetten";
@@ -5092,6 +5122,9 @@
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
 "MEMBER_LABEL_ADD_CSVC" = "Ledenlabel toevoegen";
 
+/* Toast indicating that only admins can set a member label. */
+"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "Alleen beheerders kunnen ledenlabels aanmaken in deze groep.";
+
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "Ledenlabel: ";
 
@@ -5111,7 +5144,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "Kan ledenlabel niet opslaan";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Groepsleden met labels";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "In deze groep wordt je ledenlabel naast je profielfoto weergegeven in plaats van je ‘Over mij’.";
@@ -5126,7 +5159,7 @@
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Ledenlabels";
 
 /* Text for section that shows other group member labels, when there are none */
-"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "Geen andere leden hebben labels";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "Voorbeeld";
@@ -5145,6 +5178,9 @@
 
 /* Title for a view where users can edit and preview their member label. */
 "MEMBER_LABEL_VIEW_TITLE" = "Ledenlabel";
+
+/* A one-time confirmation that you, as an admin, want to delete for everyone */
+"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "Group members on the latest versions of Signal will see that you deleted these messages.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Berichttekst kopiëren";
@@ -7483,11 +7519,11 @@
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
 "REGISTRATION_PROFILE_SETUP_TITLE" = "Stel je profiel in";
 
-/* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal kan geen sms-code verzenden vanwege problemen met de sms-provider.";
+/* Error shown if an SMS/call service provider is unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "We are unable to send an SMS to your number. Please try again in several hours.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal kon geen sms-code verzenden vanwege problemen met de sms-provider. Probeer het over enkele uren opnieuw.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "We are unable to send an SMS to your number. Please try again in a few minutes.";
 
 /* Third step in directions for how to make a backup */
 "REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Schakel back-ups in en wacht tot je back-up is voltooid";
@@ -7569,6 +7605,9 @@
 
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Er is iets misgegaan met je QR-code en gebruikersnaamlink, deze zijn niet langer geldig. Maak een nieuwe link om met anderen te delen.";
+
+/* Toast that appears when local user tried to delete a message that has disappeared */
+"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "Message disappeared before it could be deleted.";
 
 /* A message that displays when one person in a call remotely muted another participant. Embeds {{name}} {{name}} */
 "REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@ heeft %2$@ gedempt.";

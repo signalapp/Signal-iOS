@@ -2311,9 +2311,6 @@
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "منتخب کریں کہ کون گروپ کا نام، تصویر، وضاحت، غائب ہونے والے میسجز کا ٹائمر، اور پِن شدہ میسجز میں ترمیم کر سکتا ہے۔";
 
-/* Footer for the 'attributes access' section in conversation settings view with member labels added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "منتخب کریں کہ کون گروپ کا نام، تصویر، وضاحت، غائب ہونے والے میسج کا ٹائمر، پن شدہ میسجز اور ممبر لیبلز شامل کریں میں ترمیم کر سکتا ہے۔";
-
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Signal کی معاونت کرنے کے ذریعے اپنی پروفائل کے لیے بیجز حاصل کریں۔ مزید جاننے کے لیے بیج ہر ٹیپ کریں۔";
 
@@ -2353,6 +2350,12 @@
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "تمام ممبران";
 
+/* Label for 'edit member label access' action in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "Add Member Labels";
+
+/* Description for the 'edit member label access'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "Choose who can add member labels in this group.";
+
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "ممبران شامل کریں";
 
@@ -2367,6 +2370,12 @@
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ اس گروپ اور اس کے ممبروں میں ترمیم کرسکے گا۔";
+
+/* Label for button that sets 'member labels access' to 'administrators-only'. */
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON" = "Only Admins";
+
+/* Label for button that sets 'member labels access' to 'members-only'. */
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "درخواستیں اور دعوت نامے";
@@ -2451,6 +2460,9 @@
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "بطور ایڈمن ہٹائیں";
+
+/* Message for 'revoke group admin' confirmation alert. */
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "اس سے ان کا ممبر لیبل بھی ختم ہو جائے گا۔";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ کو بطور گروپ ایڈمن کو ہٹا دیں؟";
@@ -3677,7 +3689,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "گروپ کی معلومات “%1$@” کے ذریعے تبدیل کی جا سکتی ہیں۔";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "صرف ایڈمنز";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Only Admins";
 
 /* Description of the 'all users' access level. */
 "GROUP_ACCESS_LEVEL_ANY" = "کوئی بھی صارف";
@@ -3690,6 +3702,15 @@
 
 /* Description of the 'unsatisfiable' access level. */
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "غیر فعال ہونا";
+
+/* Message indicating that the access to setting member labels was changed by the local user. Embeds {{new access level}}. */
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can add member labels to “%1$@”.";
+
+/* Message indicating that the access to setting member labels was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can add member labels to “%2$@”.";
+
+/* Message indicating that the access to setting member labels was changed. Embeds {{new access level}}. */
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT" = "An admin changed who can add member labels to “%1$@”.";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "آپ نے جو لوگ گروپ کی ممبرشپ میں ترمیم کر سکتے ہیں کو “%1$@” میں تبدیل کیا۔";
@@ -3717,6 +3738,15 @@
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ بلاک ہے";
+
+/* Context menu action to view a call participant's contact details. */
+"GROUP_CALL_CONTEXT_MENU_CONTACT_DETAILS" = "Contact Details";
+
+/* Context menu action to navigate to the chat with a call participant. */
+"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "Go to Chat";
+
+/* Context menu action to mute a call participant's audio. */
+"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "Mute Audio";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "کال جاری رکھیں";
@@ -5092,6 +5122,9 @@
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
 "MEMBER_LABEL_ADD_CSVC" = "ممبر لیبل شامل کریں";
 
+/* Toast indicating that only admins can set a member label. */
+"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "اس گروپ میں صرف ایڈمنز ہی ممبر لیبلز سیٹ کر سکتے ہیں";
+
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "ممبر لیبل: ";
 
@@ -5111,7 +5144,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "ممبر لیبل کو محفوظ نہیں کیا جا سکا";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "لیبلز کے حامل گروپ ممبرز";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "اس گروپ میں، آپ کا ممبر لیبل آپ کی تصویر کے ساتھ آپ کے تعارف (About) کی جگہ ڈسپلے ہو گا۔";
@@ -5126,7 +5159,7 @@
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "ممبر لیبلز";
 
 /* Text for section that shows other group member labels, when there are none */
-"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "دوسرے ممبرز کے پاس لیبلز نہیں ہیں";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "پیش نظارہ";
@@ -5145,6 +5178,9 @@
 
 /* Title for a view where users can edit and preview their member label. */
 "MEMBER_LABEL_VIEW_TITLE" = "ممبر لیبل";
+
+/* A one-time confirmation that you, as an admin, want to delete for everyone */
+"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "Group members on the latest versions of Signal will see that you deleted these messages.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "ٹیکسٹ پیغام کاپی کریں";
@@ -7483,11 +7519,11 @@
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
 "REGISTRATION_PROFILE_SETUP_TITLE" = "اپنی پروفائل سیٹ اپ کریں";
 
-/* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal SMS کوڈ نہیں بھیج سکتا کیونکہ SMS فراہم کنندہ کے ساتھ مسائل ہیں۔";
+/* Error shown if an SMS/call service provider is unable to send a verification code to the provided number. */
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "We are unable to send an SMS to your number. Please try again in several hours.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal SMS کوڈ نہیں بھیج سکا کیونکہ SMS فراہم کنندہ کے ساتھ مسائل ہیں۔ کچھ گھنٹوں کے بعد دوبارہ کوشش کریں۔";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "We are unable to send an SMS to your number. Please try again in a few minutes.";
 
 /* Third step in directions for how to make a backup */
 "REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "بیک اپس کو فعال کریں اور انتظار کریں جب تک آپ کا بیک اپ مکمل نہ ہو جائے";
@@ -7569,6 +7605,9 @@
 
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "آپ کے یوزر نیم کے QR کوڈ اور لنک کے ساتھ کچھ غلط ہو گیا تھا، یہ اب مؤثر نہیں ہے۔ دوسروں کے ساتھ شیئر کرنے کے لیے ایک نیا لنک تخلیق کریں۔";
+
+/* Toast that appears when local user tried to delete a message that has disappeared */
+"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "Message disappeared before it could be deleted.";
 
 /* A message that displays when one person in a call remotely muted another participant. Embeds {{name}} {{name}} */
 "REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@ نے %2$@ کو خاموش کر دیا۔";
