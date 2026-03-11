@@ -1,0 +1,31 @@
+name: translation-validator
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - 'Scripts/translation-validator/**'
+
+# On PRs, "head_ref" is defined and is consistent across updates. On
+# pushes, it's not defined, so we use "run_id", which is unique across
+# every run; as a result, all actions on pushes will run to completion.
+#
+# Reference: https://docs.github.com/en/actions/using-jobs/using-concurrency
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md#xcode
+  DEVELOPER_DIR: /Applications/Xcode_26.3.app
+
+jobs:
+  build:
+    name: build
+    timeout-minutes: 5
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build translation-validator
+        run: swift build --package-path Scripts/translation-validator
