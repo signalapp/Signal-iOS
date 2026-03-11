@@ -69,9 +69,6 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
             )
         }
 
-        // Set the amount of space available to start processing
-        stream.avail_out = UInt32(Constants.BufferSize)
-
         guard status == Z_OK else {
             throw GzipError.initializeFailed
         }
@@ -85,7 +82,6 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
     }
 
     private var buffer = Data(count: Constants.BufferSize)
-    private var currentOffset: UInt = 0
     private var currentCapcity: Int = Constants.BufferSize
 
     private func process(data: Data, finalize: Bool) throws -> Data {
@@ -93,7 +89,7 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
         let flags: Int32 = finalize ? Z_FINISH : Z_NO_FLUSH
         var status: Int32 = Z_OK
 
-        let startOffset = currentOffset
+        var currentOffset = 0
 
         data.withUnsafeBytes { (ptr: UnsafeRawBufferPointer) in
 
@@ -107,18 +103,6 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
             // If avail_out is less than the size of the input, pre-emptively rewind to the beginning
 
             repeat {
-                // From zlib docs:
-                // "If inflate (or deflate) returns Z_OK and with zero avail_out, it must be called again
-                // after making room in the output buffer because there might be more output pending."
-                //
-                // If this is encountered, move the current buffer into `returnData` and reset to an empty buffer
-                if stream.avail_out == 0 {
-                    currentCapcity += Constants.BufferSize
-                    buffer.count = currentCapcity
-                    // currentOffset can remain the same
-                    stream.avail_out = UInt32(UInt(currentCapcity) - currentOffset)
-                }
-
                 buffer.withUnsafeMutableBytes { (outputPtr: UnsafeMutableRawBufferPointer) in
                     // Set stream.next_out to point at the output buffer and move the pointer
                     // forward the amount of data that's already been written to the output buffer.
@@ -126,7 +110,8 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
                     // inflate/deflate from returning without having processed the entire input.
                     // If this happens, and `avail_out` > 0, we should attempt to append to the output
                     // buffer on subsequent calls into inflate/deflate
-                    stream.next_out = outputPtr.bindMemory(to: Bytef.self).baseAddress!.advanced(by: Int(clamping: currentOffset))
+                    stream.next_out = outputPtr.bindMemory(to: Bytef.self).baseAddress!.advanced(by: currentOffset)
+                    stream.avail_out = UInt32(currentCapcity - currentOffset)
 
                     switch operation {
                     case .compress:
@@ -135,9 +120,17 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
                         status = inflate(&stream, flags)
                     }
 
-                    // stream.avail_out should never be greater than Constants.BufferSize, but clamp just to be sure.
-                    currentOffset = UInt(clamping: currentCapcity - Int(stream.avail_out))
+                    currentOffset = currentCapcity - Int(stream.avail_out)
                     stream.next_out = nil
+                }
+
+                // From zlib docs:
+                // "If inflate (or deflate) returns Z_OK and with zero avail_out, it must be called again
+                // after making room in the output buffer because there might be more output pending."
+                if stream.avail_out == 0 {
+                    currentCapcity += Constants.BufferSize
+                    buffer.count = currentCapcity
+                    // currentOffset can remain the same
                 }
 
                 // Continue to call deflate/inflate as long as the status remains Z_OK and one of the
@@ -177,15 +170,7 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
             throw GzipError.transformFailed
         }
 
-        let returnData: Data
-        if currentOffset >= startOffset {
-            // Happy path - send back a no-copy reference to the buffer
-            returnData = buffer.prefix(Int(currentOffset)).dropFirst(Int(startOffset))
-        } else {
-            // Looped around to the beginning of the buffer. Create data and append
-            returnData = buffer.dropFirst(Int(startOffset)) + buffer.prefix(Int(currentOffset))
-        }
-
+        let returnData = buffer.prefix(currentOffset)
         outputCount += returnData.count
         return returnData
     }

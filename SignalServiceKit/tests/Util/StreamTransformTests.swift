@@ -217,6 +217,29 @@ final class GzipStreamTransformTests: XCTestCase {
         XCTAssertEqual(expectedResult, roundTripData)
     }
 
+    func testRoundtrip5() throws {
+
+        let outputStream = try GzipStreamTransform(.compress)
+        let inputStream = try GzipStreamTransform(.decompress)
+
+        var expectedResult = Data()
+        var transformedValues = [Data]()
+        for _ in 1...32 {
+            let randomData = Randomness.generateRandomBytes(1 << 14)
+            expectedResult += randomData
+            transformedValues.append(try outputStream.transform(data: randomData))
+        }
+        transformedValues.append(try outputStream.finalize())
+
+        var actualResult = Data()
+        for transformedValue in transformedValues {
+            actualResult += try inputStream.transform(data: transformedValue)
+        }
+        actualResult += try inputStream.finalize()
+
+        XCTAssertEqual(actualResult, expectedResult)
+    }
+
     func testRoundtripBigData() throws {
 
         let outputStream = try GzipStreamTransform(.compress)
