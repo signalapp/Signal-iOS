@@ -109,8 +109,8 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         if let isMarkedUnread = try container.decodeIfPresent(Bool.self, forKey: .isMarkedUnread) {
             self.isMarkedUnread = isMarkedUnread
         }
-        if let mutedUntilTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .mutedUntilTimestamp) {
-            self.mutedUntilTimestamp = mutedUntilTimestamp
+        if let mutedUntilTimestamp = try container.decodeIfPresent(Int64.self, forKey: .mutedUntilTimestamp) {
+            self.mutedUntilTimestamp = UInt64(bitPattern: mutedUntilTimestamp)
         }
         if let audioPlaybackRate = try container.decodeIfPresent(Float.self, forKey: .audioPlaybackRate) {
             self.audioPlaybackRate = audioPlaybackRate
@@ -123,7 +123,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         try container.encode(self.threadUniqueId, forKey: .threadUniqueId)
         try container.encode(self.isArchived, forKey: .isArchived)
         try container.encode(self.isMarkedUnread, forKey: .isMarkedUnread)
-        try container.encode(self.mutedUntilTimestamp, forKey: .mutedUntilTimestamp)
+        try container.encode(Int64(bitPattern: self.mutedUntilTimestamp), forKey: .mutedUntilTimestamp)
         try container.encode(self.audioPlaybackRate, forKey: .audioPlaybackRate)
     }
 
