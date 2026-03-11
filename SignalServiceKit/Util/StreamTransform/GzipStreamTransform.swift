@@ -177,22 +177,13 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
             throw GzipError.transformFailed
         }
 
-        let returnData = buffer.withUnsafeMutableBytes { (bufferPtr: UnsafeMutableRawBufferPointer) in
-            if currentOffset >= startOffset {
-                // Happy path - send back a no-copy reference to the buffer
-                let shiftedPtr = bufferPtr.bindMemory(to: Bytef.self).baseAddress!.advanced(by: Int(clamping: startOffset))
-                return Data(bytesNoCopy: shiftedPtr, count: Int(currentOffset - startOffset), deallocator: .none)
-            } else {
-                // Looped around to the beginning of the buffer.
-                // crete data and append
-                let basePtr = bufferPtr.bindMemory(to: Bytef.self).baseAddress!
-                let shiftedPtr = basePtr.advanced(by: Int(clamping: startOffset))
-
-                let firstPart = Data(bytesNoCopy: shiftedPtr, count: buffer.count - Int(startOffset), deallocator: .none)
-                let secondPart = Data(bytesNoCopy: basePtr, count: Int(currentOffset), deallocator: .none)
-
-                return firstPart + secondPart
-            }
+        let returnData: Data
+        if currentOffset >= startOffset {
+            // Happy path - send back a no-copy reference to the buffer
+            returnData = buffer.prefix(Int(currentOffset)).dropFirst(Int(startOffset))
+        } else {
+            // Looped around to the beginning of the buffer. Create data and append
+            returnData = buffer.dropFirst(Int(startOffset)) + buffer.prefix(Int(currentOffset))
         }
 
         outputCount += returnData.count

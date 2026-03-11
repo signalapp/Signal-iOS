@@ -83,13 +83,8 @@ public class ChunkedInputStreamTransform: StreamTransform, BufferedStreamTransfo
             return Data()
         }
 
-        // Return a chunk of data from the buffer and advence the buffer.
-        let returnBuffer = buffer.withUnsafeMutableBytes { bufferPtr in
-            if let baseAddress = bufferPtr.baseAddress, bufferPtr.count > 0 {
-                return Data(bytesNoCopy: baseAddress + consumedBytes + intLength, count: intDataSize, deallocator: .none)
-            }
-            return Data()
-        }
+        // Return a chunk of data from the buffer and advance the buffer.
+        let returnBuffer = buffer.dropFirst(consumedBytes + intLength).prefix(intDataSize)
 
         consumedBytes = endOfBuffer
 

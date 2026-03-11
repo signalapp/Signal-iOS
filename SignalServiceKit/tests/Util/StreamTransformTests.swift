@@ -178,9 +178,9 @@ final class GzipStreamTransformTests: XCTestCase {
 
         var transformedData = try outputStream.transform(data: data1)
         let tmpData = try outputStream.finalize()
-        transformedData.append(tmpData.subdata(in: 0..<(tmpData.count - 2000)))
+        transformedData.append(tmpData.prefix(tmpData.count - 2000))
         transformedData.append(1)
-        transformedData.append(tmpData.subdata(in: (tmpData.count - 2000)..<tmpData.count))
+        transformedData.append(tmpData.dropFirst(tmpData.count - 2000))
 
         do {
             _ = try inputStream.transform(data: transformedData)
