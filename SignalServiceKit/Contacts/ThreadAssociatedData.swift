@@ -13,13 +13,10 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
 
     public let threadUniqueId: String
 
-    @DecodableDefault.False public private(set) var isArchived: Bool
-
-    @DecodableDefault.False public private(set) var isMarkedUnread: Bool
-
-    @DecodableDefault.Zero public private(set) var mutedUntilTimestamp: UInt64
-
-    @DecodableDefault.OneFloat public private(set) var audioPlaybackRate: Float
+    public private(set) var isArchived: Bool = false
+    public private(set) var isMarkedUnread: Bool = false
+    public private(set) var mutedUntilTimestamp: UInt64 = 0
+    public private(set) var audioPlaybackRate: Float = 1
 
     public var isMuted: Bool { mutedUntilTimestamp > Date.ows_millisecondTimestamp() }
 
@@ -91,6 +88,43 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     init(threadUniqueId: String) {
         self.threadUniqueId = threadUniqueId
         super.init()
+    }
+
+    public enum CodingKeys: String, CodingKey {
+        case id
+        case threadUniqueId
+        case isArchived
+        case isMarkedUnread
+        case mutedUntilTimestamp
+        case audioPlaybackRate
+    }
+
+    public required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decodeIfPresent(Int64.self, forKey: .id)
+        self.threadUniqueId = try container.decode(String.self, forKey: .threadUniqueId)
+        if let isArchived = try container.decodeIfPresent(Bool.self, forKey: .isArchived) {
+            self.isArchived = isArchived
+        }
+        if let isMarkedUnread = try container.decodeIfPresent(Bool.self, forKey: .isMarkedUnread) {
+            self.isMarkedUnread = isMarkedUnread
+        }
+        if let mutedUntilTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .mutedUntilTimestamp) {
+            self.mutedUntilTimestamp = mutedUntilTimestamp
+        }
+        if let audioPlaybackRate = try container.decodeIfPresent(Float.self, forKey: .audioPlaybackRate) {
+            self.audioPlaybackRate = audioPlaybackRate
+        }
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.id, forKey: .id)
+        try container.encode(self.threadUniqueId, forKey: .threadUniqueId)
+        try container.encode(self.isArchived, forKey: .isArchived)
+        try container.encode(self.isMarkedUnread, forKey: .isMarkedUnread)
+        try container.encode(self.mutedUntilTimestamp, forKey: .mutedUntilTimestamp)
+        try container.encode(self.audioPlaybackRate, forKey: .audioPlaybackRate)
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
