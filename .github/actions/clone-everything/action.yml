@@ -12,7 +12,7 @@ runs:
   steps:
     - id: checkout_repo
       name: Checkout Repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         # Check out submodules through GitHub instead of from scratch later.
         # THIS STEP WILL FAIL if the current Pods commit is only available in Private.
@@ -28,7 +28,7 @@ runs:
 
     # Checkout private pods repo iff we have an access token to read private repos
     - name: Checkout Private Pods
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       if: ${{ steps.checkout_repo.outcome == 'failure' }}
       with:
         repository: signalapp/Signal-Pods-Private
@@ -43,7 +43,7 @@ runs:
       run: echo "ref=$(git ls-tree --object-only HEAD SignalServiceKit/tests/MessageBackup/Signal-Message-Backup-Tests)" >> "$GITHUB_OUTPUT"
 
     - name: Checkout Signal-Message-Backup-Tests
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       if: ${{ steps.checkout_repo.outcome == 'failure' }}
       with:
         repository: signalapp/Signal-Message-Backup-Tests
