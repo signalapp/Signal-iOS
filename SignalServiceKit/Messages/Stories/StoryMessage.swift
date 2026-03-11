@@ -1057,7 +1057,7 @@ public struct StoryRecipientState: Codable {
     /// This property collapses the `.delivered`, `.read`, and `.viewed`  states
     /// into `.sent`. This matches the legacy behavior of
     /// ``TSOutgoingMessageRecipientState``.
-    @DecodableDefault.OutgoingMessageSending public private(set) var sendingState: OWSOutgoingMessageRecipientStatus
+    public private(set) var sendingState: OWSOutgoingMessageRecipientStatus = .sending
     public var sendingErrorCode: Int?
     public var viewedTimestamp: UInt64?
 
@@ -1085,6 +1085,25 @@ public struct StoryRecipientState: Codable {
         self.allowsReplies = allowsReplies
         self.contexts = contexts
         self.sendingState = sendingState
+    }
+
+    public enum CodingKeys: String, CodingKey {
+        case allowsReplies
+        case contexts
+        case sendingState
+        case sendingErrorCode
+        case viewedTimestamp
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.allowsReplies = try container.decode(Bool.self, forKey: .allowsReplies)
+        self.contexts = try container.decode([UUID].self, forKey: .contexts)
+        if let sendingState = try container.decodeIfPresent(OWSOutgoingMessageRecipientStatus.self, forKey: .sendingState) {
+            self.sendingState = sendingState
+        }
+        self.sendingErrorCode = try container.decodeIfPresent(Int.self, forKey: .sendingErrorCode)
+        self.viewedTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .viewedTimestamp)
     }
 }
 
