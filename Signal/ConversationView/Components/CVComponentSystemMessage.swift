@@ -73,13 +73,14 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
     private var innerVStackConfig: CVStackViewConfig {
         var topMargin: CGFloat = 4
-        var bottomMargin: CGFloat = 3
-        let hMargin: CGFloat = 12
+        var bottomMargin: CGFloat = 1
+        var hMargin: CGFloat = 10
 
         // Increase margins all around if there will be a button in this bubble.
         if action != nil, !itemViewState.shouldCollapseSystemMessageAction {
             topMargin = 8
             bottomMargin = 12
+            hMargin = 14
         }
         return CVStackViewConfig(
             axis: .vertical,
@@ -303,11 +304,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 let corners: BubbleConfiguration.Corners = {
                     if #available(iOS 26, *) {
                         if hasActionButton {
-                            .segmented(
-                                sharpCorners: [.topLeading, .topTrailing],
-                                sharpCornerRadius: 20,
-                                wideCornerRadius: 26,
-                            )
+                            .capsule(maxRadius: 22)
                         } else {
                             .capsule(maxRadius: 12)
                         }
