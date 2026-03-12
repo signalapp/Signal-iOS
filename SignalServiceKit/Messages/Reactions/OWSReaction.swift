@@ -134,16 +134,6 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(reactionId: uniqueId)
     }
 
-    @objc
-    public static func anyEnumerateObjc(
-        transaction: DBReadTransaction,
-        batched: Bool,
-        block: @escaping (OWSReaction, UnsafeMutablePointer<ObjCBool>) -> Void,
-    ) {
-        let batchingPreference: BatchingPreference = batched ? .batched() : .unbatched
-        anyEnumerate(transaction: transaction, batchingPreference: batchingPreference, block: block)
-    }
-
     // MARK: - Codable
 
     public init(from decoder: Decoder) throws {
