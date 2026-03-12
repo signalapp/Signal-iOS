@@ -722,6 +722,52 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     public init() {}
   }
 
+  public struct PreferredReactionItem: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    public var emoji: String = String()
+
+    /// If all below fields are present, uses an
+    /// installed sticker. Otherwise falls back to emoji.
+    public var stickerPackID: Data {
+      get {_stickerPackID ?? Data()}
+      set {_stickerPackID = newValue}
+    }
+    /// Returns true if `stickerPackID` has been explicitly set.
+    public var hasStickerPackID: Bool {self._stickerPackID != nil}
+    /// Clears the value of `stickerPackID`. Subsequent reads from it will return its default value.
+    public mutating func clearStickerPackID() {self._stickerPackID = nil}
+
+    public var stickerPackKey: Data {
+      get {_stickerPackKey ?? Data()}
+      set {_stickerPackKey = newValue}
+    }
+    /// Returns true if `stickerPackKey` has been explicitly set.
+    public var hasStickerPackKey: Bool {self._stickerPackKey != nil}
+    /// Clears the value of `stickerPackKey`. Subsequent reads from it will return its default value.
+    public mutating func clearStickerPackKey() {self._stickerPackKey = nil}
+
+    public var stickerID: UInt32 {
+      get {_stickerID ?? 0}
+      set {_stickerID = newValue}
+    }
+    /// Returns true if `stickerID` has been explicitly set.
+    public var hasStickerID: Bool {self._stickerID != nil}
+    /// Clears the value of `stickerID`. Subsequent reads from it will return its default value.
+    public mutating func clearStickerID() {self._stickerID = nil}
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+
+    fileprivate var _stickerPackID: Data? = nil
+    fileprivate var _stickerPackKey: Data? = nil
+    fileprivate var _stickerID: UInt32? = nil
+  }
+
   public struct AccountSettings: @unchecked Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -905,6 +951,12 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     public var seenAdminDeleteEducationDialog: Bool {
       get {_storage._seenAdminDeleteEducationDialog}
       set {_uniqueStorage()._seenAdminDeleteEducationDialog = newValue}
+    }
+
+    /// Replaces preferredReactionEmoji; older one kept for backwards compatibility
+    public var preferredReactionItems: [BackupProto_AccountData.PreferredReactionItem] {
+      get {_storage._preferredReactionItems}
+      set {_uniqueStorage()._preferredReactionItems = newValue}
     }
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -2794,6 +2846,14 @@ public struct BackupProto_DirectStoryReplyMessage: Sendable {
     set {reply = .emoji(newValue)}
   }
 
+  public var sticker: BackupProto_Sticker {
+    get {
+      if case .sticker(let v)? = reply {return v}
+      return BackupProto_Sticker()
+    }
+    set {reply = .sticker(newValue)}
+  }
+
   public var reactions: [BackupProto_Reaction] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -2802,6 +2862,7 @@ public struct BackupProto_DirectStoryReplyMessage: Sendable {
   public enum OneOf_Reply: Equatable, Sendable {
     case textReply(BackupProto_DirectStoryReplyMessage.TextReply)
     case emoji(String)
+    case sticker(BackupProto_Sticker)
 
   }
 
@@ -4144,9 +4205,21 @@ public struct BackupProto_Reaction: Sendable {
   /// incrementing numbers (e.g. 1, 2, 3), others as timestamps.
   public var sortOrder: UInt64 = 0
 
+  /// If present, Sticker.emoji must match Reaction.emoji
+  public var sticker: BackupProto_Sticker {
+    get {_sticker ?? BackupProto_Sticker()}
+    set {_sticker = newValue}
+  }
+  /// Returns true if `sticker` has been explicitly set.
+  public var hasSticker: Bool {self._sticker != nil}
+  /// Clears the value of `sticker`. Subsequent reads from it will return its default value.
+  public mutating func clearSticker() {self._sticker = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
+
+  fileprivate var _sticker: BackupProto_Sticker? = nil
 }
 
 public struct BackupProto_Poll: Sendable {
@@ -7135,9 +7208,58 @@ extension BackupProto_AccountData.AutoDownloadSettings.AutoDownloadOption: Swift
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}NEVER\0\u{1}WIFI\0\u{1}WIFI_AND_CELLULAR\0")
 }
 
+extension BackupProto_AccountData.PreferredReactionItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".PreferredReactionItem"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}emoji\0\u{1}stickerPackId\0\u{1}stickerPackKey\0\u{1}stickerId\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.emoji) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._stickerPackID) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self._stickerPackKey) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self._stickerID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.emoji.isEmpty {
+      try visitor.visitSingularStringField(value: self.emoji, fieldNumber: 1)
+    }
+    try { if let v = self._stickerPackID {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._stickerPackKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._stickerID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 4)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_AccountData.PreferredReactionItem, rhs: BackupProto_AccountData.PreferredReactionItem) -> Bool {
+    if lhs.emoji != rhs.emoji {return false}
+    if lhs._stickerPackID != rhs._stickerPackID {return false}
+    if lhs._stickerPackKey != rhs._stickerPackKey {return false}
+    if lhs._stickerID != rhs._stickerID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".AccountSettings"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0\u{2}\u{2}defaultSentMediaQuality\0\u{1}autoDownloadSettings\0\u{2}\u{2}screenLockTimeoutMinutes\0\u{1}pinReminders\0\u{1}appTheme\0\u{1}callsUseLessDataSetting\0\u{1}allowSealedSenderFromAnyone\0\u{1}allowAutomaticKeyVerification\0\u{1}seenAdminDeleteEducationDialog\0\u{c}\u{16}\u{1}\u{c}\u{19}\u{1}")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0\u{2}\u{2}defaultSentMediaQuality\0\u{1}autoDownloadSettings\0\u{2}\u{2}screenLockTimeoutMinutes\0\u{1}pinReminders\0\u{1}appTheme\0\u{1}callsUseLessDataSetting\0\u{1}allowSealedSenderFromAnyone\0\u{1}allowAutomaticKeyVerification\0\u{1}seenAdminDeleteEducationDialog\0\u{1}preferredReactionItems\0\u{c}\u{16}\u{1}\u{c}\u{19}\u{1}")
 
   fileprivate class _StorageClass {
     var _readReceipts: Bool = false
@@ -7170,6 +7292,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
     var _allowSealedSenderFromAnyone: Bool = false
     var _allowAutomaticKeyVerification: Bool = false
     var _seenAdminDeleteEducationDialog: Bool = false
+    var _preferredReactionItems: [BackupProto_AccountData.PreferredReactionItem] = []
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -7210,6 +7333,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       _allowSealedSenderFromAnyone = source._allowSealedSenderFromAnyone
       _allowAutomaticKeyVerification = source._allowAutomaticKeyVerification
       _seenAdminDeleteEducationDialog = source._seenAdminDeleteEducationDialog
+      _preferredReactionItems = source._preferredReactionItems
     }
   }
 
@@ -7258,6 +7382,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         case 30: try { try decoder.decodeSingularBoolField(value: &_storage._allowSealedSenderFromAnyone) }()
         case 31: try { try decoder.decodeSingularBoolField(value: &_storage._allowAutomaticKeyVerification) }()
         case 32: try { try decoder.decodeSingularBoolField(value: &_storage._seenAdminDeleteEducationDialog) }()
+        case 33: try { try decoder.decodeRepeatedMessageField(value: &_storage._preferredReactionItems) }()
         default: break
         }
       }
@@ -7360,6 +7485,9 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       if _storage._seenAdminDeleteEducationDialog != false {
         try visitor.visitSingularBoolField(value: _storage._seenAdminDeleteEducationDialog, fieldNumber: 32)
       }
+      if !_storage._preferredReactionItems.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._preferredReactionItems, fieldNumber: 33)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7399,6 +7527,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         if _storage._allowSealedSenderFromAnyone != rhs_storage._allowSealedSenderFromAnyone {return false}
         if _storage._allowAutomaticKeyVerification != rhs_storage._allowAutomaticKeyVerification {return false}
         if _storage._seenAdminDeleteEducationDialog != rhs_storage._seenAdminDeleteEducationDialog {return false}
+        if _storage._preferredReactionItems != rhs_storage._preferredReactionItems {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -9990,7 +10119,7 @@ extension BackupProto_ContactMessage: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension BackupProto_DirectStoryReplyMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DirectStoryReplyMessage"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}textReply\0\u{1}emoji\0\u{1}reactions\0\u{c}\u{4}\u{1}")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}textReply\0\u{1}emoji\0\u{1}reactions\0\u{2}\u{2}sticker\0\u{c}\u{4}\u{1}")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10020,6 +10149,19 @@ extension BackupProto_DirectStoryReplyMessage: SwiftProtobuf.Message, SwiftProto
         }
       }()
       case 3: try { try decoder.decodeRepeatedMessageField(value: &self.reactions) }()
+      case 5: try {
+        var v: BackupProto_Sticker?
+        var hadOneofValue = false
+        if let current = self.reply {
+          hadOneofValue = true
+          if case .sticker(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.reply = .sticker(v)
+        }
+      }()
       default: break
       }
     }
@@ -10039,11 +10181,14 @@ extension BackupProto_DirectStoryReplyMessage: SwiftProtobuf.Message, SwiftProto
       guard case .emoji(let v)? = self.reply else { preconditionFailure() }
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }()
-    case nil: break
+    default: break
     }
     if !self.reactions.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.reactions, fieldNumber: 3)
     }
+    try { if case .sticker(let v)? = self.reply {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -11475,7 +11620,7 @@ extension BackupProto_BodyRange.Style: SwiftProtobuf._ProtoNameProviding {
 
 extension BackupProto_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Reaction"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}emoji\0\u{1}authorId\0\u{1}sentTimestamp\0\u{1}sortOrder\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}emoji\0\u{1}authorId\0\u{1}sentTimestamp\0\u{1}sortOrder\0\u{1}sticker\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11487,12 +11632,17 @@ extension BackupProto_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self.authorID) }()
       case 3: try { try decoder.decodeSingularUInt64Field(value: &self.sentTimestamp) }()
       case 4: try { try decoder.decodeSingularUInt64Field(value: &self.sortOrder) }()
+      case 5: try { try decoder.decodeSingularMessageField(value: &self._sticker) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if !self.emoji.isEmpty {
       try visitor.visitSingularStringField(value: self.emoji, fieldNumber: 1)
     }
@@ -11505,6 +11655,9 @@ extension BackupProto_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     if self.sortOrder != 0 {
       try visitor.visitSingularUInt64Field(value: self.sortOrder, fieldNumber: 4)
     }
+    try { if let v = self._sticker {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -11513,6 +11666,7 @@ extension BackupProto_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     if lhs.authorID != rhs.authorID {return false}
     if lhs.sentTimestamp != rhs.sentTimestamp {return false}
     if lhs.sortOrder != rhs.sortOrder {return false}
+    if lhs._sticker != rhs._sticker {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

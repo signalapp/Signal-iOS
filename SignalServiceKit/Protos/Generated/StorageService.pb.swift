@@ -903,6 +903,12 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
     set {_uniqueStorage()._seenAdminDeleteEducationDialog = newValue}
   }
 
+  /// Replaces preferredReactionEmoji; older one kept for backwards compatibility
+  var preferredReactionItems: [StorageServiceProtos_AccountRecord.PreferredReactionItem] {
+    get {_storage._preferredReactionItems}
+    set {_uniqueStorage()._preferredReactionItems = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum PhoneNumberSharingMode: SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -1136,6 +1142,52 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
     }
 
     init() {}
+  }
+
+  struct PreferredReactionItem: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    var emoji: String = String()
+
+    /// If all below fields are present, uses an
+    /// installed sticker. Otherwise falls back to emoji.
+    var stickerPackID: Data {
+      get {_stickerPackID ?? Data()}
+      set {_stickerPackID = newValue}
+    }
+    /// Returns true if `stickerPackID` has been explicitly set.
+    var hasStickerPackID: Bool {self._stickerPackID != nil}
+    /// Clears the value of `stickerPackID`. Subsequent reads from it will return its default value.
+    mutating func clearStickerPackID() {self._stickerPackID = nil}
+
+    var stickerPackKey: Data {
+      get {_stickerPackKey ?? Data()}
+      set {_stickerPackKey = newValue}
+    }
+    /// Returns true if `stickerPackKey` has been explicitly set.
+    var hasStickerPackKey: Bool {self._stickerPackKey != nil}
+    /// Clears the value of `stickerPackKey`. Subsequent reads from it will return its default value.
+    mutating func clearStickerPackKey() {self._stickerPackKey = nil}
+
+    var stickerID: UInt32 {
+      get {_stickerID ?? 0}
+      set {_stickerID = newValue}
+    }
+    /// Returns true if `stickerID` has been explicitly set.
+    var hasStickerID: Bool {self._stickerID != nil}
+    /// Clears the value of `stickerID`. Subsequent reads from it will return its default value.
+    mutating func clearStickerID() {self._stickerID = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _stickerPackID: Data? = nil
+    fileprivate var _stickerPackKey: Data? = nil
+    fileprivate var _stickerID: UInt32? = nil
   }
 
   init() {}
@@ -1989,7 +2041,7 @@ extension StorageServiceProtos_GroupV2Record.StorySendMode: SwiftProtobuf._Proto
 
 extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AccountRecord"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}profileKey\0\u{1}givenName\0\u{1}familyName\0\u{1}avatarUrl\0\u{1}noteToSelfArchived\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}proxiedLinkPreviews\0\u{1}noteToSelfMarkedUnread\0\u{1}linkPreviews\0\u{1}phoneNumberSharingMode\0\u{1}notDiscoverableByPhoneNumber\0\u{1}pinnedConversations\0\u{1}preferContactAvatars\0\u{1}payments\0\u{1}universalExpireTimer\0\u{2}\u{2}e164\0\u{1}preferredReactionEmoji\0\u{1}donorSubscriberID\0\u{1}donorSubscriberCurrencyCode\0\u{1}displayBadgesOnProfile\0\u{1}donorSubscriptionManuallyCancelled\0\u{1}keepMutedChatsArchived\0\u{1}myStoryPrivacyHasBeenSet\0\u{1}viewedOnboardingStory\0\u{2}\u{2}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}readOnboardingStory\0\u{2}\u{2}username\0\u{1}completedUsernameOnboarding\0\u{1}usernameLink\0\u{2}\u{5}backupTier\0\u{1}backupSubscriberData\0\u{1}avatarColor\0\u{2}\u{4}automaticKeyVerificationDisabled\0\u{1}seenAdminDeleteEducationDialog\0\u{c}\u{12}\u{1}\u{c}\u{1c}\u{1}\u{c} \u{1}\u{c}$\u{1}\u{c}%\u{1}\u{c}&\u{1}\u{c}'\u{1}\u{c}+\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}profileKey\0\u{1}givenName\0\u{1}familyName\0\u{1}avatarUrl\0\u{1}noteToSelfArchived\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}proxiedLinkPreviews\0\u{1}noteToSelfMarkedUnread\0\u{1}linkPreviews\0\u{1}phoneNumberSharingMode\0\u{1}notDiscoverableByPhoneNumber\0\u{1}pinnedConversations\0\u{1}preferContactAvatars\0\u{1}payments\0\u{1}universalExpireTimer\0\u{2}\u{2}e164\0\u{1}preferredReactionEmoji\0\u{1}donorSubscriberID\0\u{1}donorSubscriberCurrencyCode\0\u{1}displayBadgesOnProfile\0\u{1}donorSubscriptionManuallyCancelled\0\u{1}keepMutedChatsArchived\0\u{1}myStoryPrivacyHasBeenSet\0\u{1}viewedOnboardingStory\0\u{2}\u{2}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}readOnboardingStory\0\u{2}\u{2}username\0\u{1}completedUsernameOnboarding\0\u{1}usernameLink\0\u{2}\u{5}backupTier\0\u{1}backupSubscriberData\0\u{1}avatarColor\0\u{2}\u{4}automaticKeyVerificationDisabled\0\u{1}seenAdminDeleteEducationDialog\0\u{1}preferredReactionItems\0\u{c}\u{12}\u{1}\u{c}\u{1c}\u{1}\u{c} \u{1}\u{c}$\u{1}\u{c}%\u{1}\u{c}&\u{1}\u{c}'\u{1}\u{c}+\u{1}")
 
   fileprivate class _StorageClass {
     var _profileKey: Data = Data()
@@ -2029,6 +2081,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _avatarColor: StorageServiceProtos_AvatarColor? = nil
     var _automaticKeyVerificationDisabled: Bool = false
     var _seenAdminDeleteEducationDialog: Bool = false
+    var _preferredReactionItems: [StorageServiceProtos_AccountRecord.PreferredReactionItem] = []
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -2076,6 +2129,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _avatarColor = source._avatarColor
       _automaticKeyVerificationDisabled = source._automaticKeyVerificationDisabled
       _seenAdminDeleteEducationDialog = source._seenAdminDeleteEducationDialog
+      _preferredReactionItems = source._preferredReactionItems
     }
   }
 
@@ -2131,6 +2185,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 42: try { try decoder.decodeSingularEnumField(value: &_storage._avatarColor) }()
         case 46: try { try decoder.decodeSingularBoolField(value: &_storage._automaticKeyVerificationDisabled) }()
         case 47: try { try decoder.decodeSingularBoolField(value: &_storage._seenAdminDeleteEducationDialog) }()
+        case 48: try { try decoder.decodeRepeatedMessageField(value: &_storage._preferredReactionItems) }()
         default: break
         }
       }
@@ -2254,6 +2309,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._seenAdminDeleteEducationDialog != false {
         try visitor.visitSingularBoolField(value: _storage._seenAdminDeleteEducationDialog, fieldNumber: 47)
       }
+      if !_storage._preferredReactionItems.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._preferredReactionItems, fieldNumber: 48)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2300,6 +2358,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._avatarColor != rhs_storage._avatarColor {return false}
         if _storage._automaticKeyVerificationDisabled != rhs_storage._automaticKeyVerificationDisabled {return false}
         if _storage._seenAdminDeleteEducationDialog != rhs_storage._seenAdminDeleteEducationDialog {return false}
+        if _storage._preferredReactionItems != rhs_storage._preferredReactionItems {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -2563,6 +2622,55 @@ extension StorageServiceProtos_AccountRecord.IAPSubscriberData: SwiftProtobuf.Me
   static func ==(lhs: StorageServiceProtos_AccountRecord.IAPSubscriberData, rhs: StorageServiceProtos_AccountRecord.IAPSubscriberData) -> Bool {
     if lhs.subscriberID != rhs.subscriberID {return false}
     if lhs.iapSubscriptionID != rhs.iapSubscriptionID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension StorageServiceProtos_AccountRecord.PreferredReactionItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = StorageServiceProtos_AccountRecord.protoMessageName + ".PreferredReactionItem"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}emoji\0\u{1}stickerPackId\0\u{1}stickerPackKey\0\u{1}stickerId\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.emoji) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._stickerPackID) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self._stickerPackKey) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self._stickerID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.emoji.isEmpty {
+      try visitor.visitSingularStringField(value: self.emoji, fieldNumber: 1)
+    }
+    try { if let v = self._stickerPackID {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._stickerPackKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._stickerID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 4)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_AccountRecord.PreferredReactionItem, rhs: StorageServiceProtos_AccountRecord.PreferredReactionItem) -> Bool {
+    if lhs.emoji != rhs.emoji {return false}
+    if lhs._stickerPackID != rhs._stickerPackID {return false}
+    if lhs._stickerPackKey != rhs._stickerPackKey {return false}
+    if lhs._stickerID != rhs._stickerID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

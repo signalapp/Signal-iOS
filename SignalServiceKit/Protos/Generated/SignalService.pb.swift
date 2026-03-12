@@ -1836,6 +1836,16 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     /// Clears the value of `targetAuthorAciBinary`. Subsequent reads from it will return its default value.
     mutating func clearTargetAuthorAciBinary() {self._targetAuthorAciBinary = nil}
 
+    /// If present, Sticker.emoji must match Reaction.emoji
+    var sticker: SignalServiceProtos_DataMessage.Sticker {
+      get {_sticker ?? SignalServiceProtos_DataMessage.Sticker()}
+      set {_sticker = newValue}
+    }
+    /// Returns true if `sticker` has been explicitly set.
+    var hasSticker: Bool {self._sticker != nil}
+    /// Clears the value of `sticker`. Subsequent reads from it will return its default value.
+    mutating func clearSticker() {self._sticker = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
@@ -1845,6 +1855,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _targetAuthorAci: String? = nil
     fileprivate var _timestamp: UInt64? = nil
     fileprivate var _targetAuthorAciBinary: Data? = nil
+    fileprivate var _sticker: SignalServiceProtos_DataMessage.Sticker? = nil
   }
 
   struct Delete: Sendable {
@@ -6526,7 +6537,7 @@ extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftP
 
 extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Reaction"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}emoji\0\u{1}remove\0\u{2}\u{2}targetAuthorAci\0\u{1}timestamp\0\u{1}targetAuthorAciBinary\0\u{c}\u{3}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}emoji\0\u{1}remove\0\u{2}\u{2}targetAuthorAci\0\u{1}timestamp\0\u{1}targetAuthorAciBinary\0\u{1}sticker\0\u{c}\u{3}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6539,6 +6550,7 @@ extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, Swift
       case 4: try { try decoder.decodeSingularStringField(value: &self._targetAuthorAci) }()
       case 5: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
       case 6: try { try decoder.decodeSingularBytesField(value: &self._targetAuthorAciBinary) }()
+      case 7: try { try decoder.decodeSingularMessageField(value: &self._sticker) }()
       default: break
       }
     }
@@ -6564,6 +6576,9 @@ extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, Swift
     try { if let v = self._targetAuthorAciBinary {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
     } }()
+    try { if let v = self._sticker {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -6573,6 +6588,7 @@ extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, Swift
     if lhs._targetAuthorAci != rhs._targetAuthorAci {return false}
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs._targetAuthorAciBinary != rhs._targetAuthorAciBinary {return false}
+    if lhs._sticker != rhs._sticker {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

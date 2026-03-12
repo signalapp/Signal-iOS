@@ -6046,6 +6046,9 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
     public let timestamp: UInt64
 
     @objc
+    public let sticker: SSKProtoDataMessageSticker?
+
+    @objc
     public var remove: Bool {
         return proto.remove
     }
@@ -6088,10 +6091,12 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
 
     private init(proto: SignalServiceProtos_DataMessage.Reaction,
                  emoji: String,
-                 timestamp: UInt64) {
+                 timestamp: UInt64,
+                 sticker: SSKProtoDataMessageSticker?) {
         self.proto = proto
         self.emoji = emoji
         self.timestamp = timestamp
+        self.sticker = sticker
     }
 
     @objc
@@ -6116,9 +6121,15 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
         }
         let timestamp = proto.timestamp
 
+        var sticker: SSKProtoDataMessageSticker?
+        if proto.hasSticker {
+            sticker = try SSKProtoDataMessageSticker(proto.sticker)
+        }
+
         self.init(proto: proto,
                   emoji: emoji,
-                  timestamp: timestamp)
+                  timestamp: timestamp,
+                  sticker: sticker)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -6175,6 +6186,9 @@ extension SSKProtoDataMessageReaction {
         }
         if let _value = targetAuthorAciBinary {
             builder.setTargetAuthorAciBinary(_value)
+        }
+        if let _value = sticker {
+            builder.setSticker(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -6240,6 +6254,17 @@ public class SSKProtoDataMessageReactionBuilder: NSObject {
 
     public func setTargetAuthorAciBinary(_ valueParam: Data) {
         proto.targetAuthorAciBinary = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setSticker(_ valueParam: SSKProtoDataMessageSticker?) {
+        guard let valueParam = valueParam else { return }
+        proto.sticker = valueParam.proto
+    }
+
+    public func setSticker(_ valueParam: SSKProtoDataMessageSticker) {
+        proto.sticker = valueParam.proto
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

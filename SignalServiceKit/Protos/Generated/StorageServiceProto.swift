@@ -3235,6 +3235,187 @@ extension StorageServiceProtoAccountRecordIAPSubscriberDataBuilder {
 
 #endif
 
+// MARK: - StorageServiceProtoAccountRecordPreferredReactionItem
+
+public struct StorageServiceProtoAccountRecordPreferredReactionItem: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: StorageServiceProtos_AccountRecord.PreferredReactionItem
+
+    public let emoji: String
+
+    public var stickerPackID: Data? {
+        guard hasStickerPackID else {
+            return nil
+        }
+        return proto.stickerPackID
+    }
+    public var hasStickerPackID: Bool {
+        return proto.hasStickerPackID
+    }
+
+    public var stickerPackKey: Data? {
+        guard hasStickerPackKey else {
+            return nil
+        }
+        return proto.stickerPackKey
+    }
+    public var hasStickerPackKey: Bool {
+        return proto.hasStickerPackKey
+    }
+
+    public var stickerID: UInt32? {
+        guard hasStickerID else {
+            return nil
+        }
+        return proto.stickerID
+    }
+    public var hasStickerID: Bool {
+        return proto.hasStickerID
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_AccountRecord.PreferredReactionItem,
+                 emoji: String) {
+        self.proto = proto
+        self.emoji = emoji
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_AccountRecord.PreferredReactionItem(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate init(_ proto: StorageServiceProtos_AccountRecord.PreferredReactionItem) {
+        let emoji = proto.emoji
+
+        self.init(proto: proto,
+                  emoji: emoji)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension StorageServiceProtoAccountRecordPreferredReactionItem {
+    public static func builder(emoji: String) -> StorageServiceProtoAccountRecordPreferredReactionItemBuilder {
+        return StorageServiceProtoAccountRecordPreferredReactionItemBuilder(emoji: emoji)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoAccountRecordPreferredReactionItemBuilder {
+        var builder = StorageServiceProtoAccountRecordPreferredReactionItemBuilder(emoji: emoji)
+        if let _value = stickerPackID {
+            builder.setStickerPackID(_value)
+        }
+        if let _value = stickerPackKey {
+            builder.setStickerPackKey(_value)
+        }
+        if let _value = stickerID {
+            builder.setStickerID(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct StorageServiceProtoAccountRecordPreferredReactionItemBuilder {
+
+    private var proto = StorageServiceProtos_AccountRecord.PreferredReactionItem()
+
+    fileprivate init() {}
+
+    fileprivate init(emoji: String) {
+
+        setEmoji(emoji)
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setEmoji(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.emoji = valueParam
+    }
+
+    public mutating func setEmoji(_ valueParam: String) {
+        proto.emoji = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setStickerPackID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.stickerPackID = valueParam
+    }
+
+    public mutating func setStickerPackID(_ valueParam: Data) {
+        proto.stickerPackID = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setStickerPackKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.stickerPackKey = valueParam
+    }
+
+    public mutating func setStickerPackKey(_ valueParam: Data) {
+        proto.stickerPackKey = valueParam
+    }
+
+    public mutating func setStickerID(_ valueParam: UInt32) {
+        proto.stickerID = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func buildInfallibly() -> StorageServiceProtoAccountRecordPreferredReactionItem {
+        return StorageServiceProtoAccountRecordPreferredReactionItem(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try StorageServiceProtoAccountRecordPreferredReactionItem(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension StorageServiceProtoAccountRecordPreferredReactionItem {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoAccountRecordPreferredReactionItemBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoAccountRecordPreferredReactionItem? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - StorageServiceProtoAccountRecordPhoneNumberSharingMode
 
 public enum StorageServiceProtoAccountRecordPhoneNumberSharingMode: SwiftProtobuf.Enum {
@@ -3298,6 +3479,8 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     public let usernameLink: StorageServiceProtoAccountRecordUsernameLink?
 
     public let backupSubscriberData: StorageServiceProtoAccountRecordIAPSubscriberData?
+
+    public let preferredReactionItems: [StorageServiceProtoAccountRecordPreferredReactionItem]
 
     public var profileKey: Data? {
         guard hasProfileKey else {
@@ -3489,12 +3672,14 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
                  pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation],
                  payments: StorageServiceProtoAccountRecordPayments?,
                  usernameLink: StorageServiceProtoAccountRecordUsernameLink?,
-                 backupSubscriberData: StorageServiceProtoAccountRecordIAPSubscriberData?) {
+                 backupSubscriberData: StorageServiceProtoAccountRecordIAPSubscriberData?,
+                 preferredReactionItems: [StorageServiceProtoAccountRecordPreferredReactionItem]) {
         self.proto = proto
         self.pinnedConversations = pinnedConversations
         self.payments = payments
         self.usernameLink = usernameLink
         self.backupSubscriberData = backupSubscriberData
+        self.preferredReactionItems = preferredReactionItems
     }
 
     public func serializedData() throws -> Data {
@@ -3525,11 +3710,15 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
             backupSubscriberData = StorageServiceProtoAccountRecordIAPSubscriberData(proto.backupSubscriberData)
         }
 
+        var preferredReactionItems: [StorageServiceProtoAccountRecordPreferredReactionItem] = []
+        preferredReactionItems = proto.preferredReactionItems.map { StorageServiceProtoAccountRecordPreferredReactionItem($0) }
+
         self.init(proto: proto,
                   pinnedConversations: pinnedConversations,
                   payments: payments,
                   usernameLink: usernameLink,
-                  backupSubscriberData: backupSubscriberData)
+                  backupSubscriberData: backupSubscriberData,
+                  preferredReactionItems: preferredReactionItems)
     }
 
     public init(from decoder: Swift.Decoder) throws {
@@ -3618,6 +3807,7 @@ extension StorageServiceProtoAccountRecord {
         }
         builder.setAutomaticKeyVerificationDisabled(automaticKeyVerificationDisabled)
         builder.setSeenAdminDeleteEducationDialog(seenAdminDeleteEducationDialog)
+        builder.setPreferredReactionItems(preferredReactionItems)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -3851,6 +4041,14 @@ public struct StorageServiceProtoAccountRecordBuilder {
 
     public mutating func setSeenAdminDeleteEducationDialog(_ valueParam: Bool) {
         proto.seenAdminDeleteEducationDialog = valueParam
+    }
+
+    public mutating func addPreferredReactionItems(_ valueParam: StorageServiceProtoAccountRecordPreferredReactionItem) {
+        proto.preferredReactionItems.append(valueParam.proto)
+    }
+
+    public mutating func setPreferredReactionItems(_ wrappedItems: [StorageServiceProtoAccountRecordPreferredReactionItem]) {
+        proto.preferredReactionItems = wrappedItems.map { $0.proto }
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
