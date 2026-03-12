@@ -59,6 +59,7 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
 
         let conversationStyle = self.conversationStyle
+        let tintColor = conversationStyle.bubbleTextColor(isIncoming: isIncoming)
 
         let albumView = componentView.albumView
         albumView.configure(
@@ -269,14 +270,17 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     }
 
                     let downloadSizeView = ManualLayoutViewWithLayer.pillView(name: "downloadSizeView")
-                    downloadSizeView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
-                    downloadSizeView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 1)
+                    downloadSizeView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 4)
+                    downloadSizeView.clipsToBounds = true
+
+                    let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
+                    downloadSizeView.addSubviewToFillSuperviewEdges(blurView)
 
                     let downloadSizeLabelConfig = CVLabelConfig(
                         text: .text(downloadSizeText.joined(separator: " • ")),
-                        displayConfig: .forUnstyledText(font: .dynamicTypeCaption1, textColor: .ows_white),
+                        displayConfig: .forUnstyledText(font: .dynamicTypeCaption1, textColor: tintColor),
                         font: .dynamicTypeCaption1,
-                        textColor: .ows_white,
+                        textColor: tintColor,
                     )
                     let downloadSizeLabel = CVLabel()
                     downloadSizeLabelConfig.applyForRendering(label: downloadSizeLabel)
@@ -289,15 +293,15 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     let downloadSizeViewSize = downloadSizeLabelSize + downloadSizeView.layoutMargins.asSize
                     stackView.addSubview(downloadSizeView)
                     stackView.addLayoutBlock { view in
-                        let hInset: CGFloat = 16
+                        let inset: CGFloat = 6
                         let x = (
                             CurrentAppContext().isRTL
-                                ? view.width - (downloadSizeViewSize.width - hInset)
-                                : hInset,
+                                ? view.width - (downloadSizeViewSize.width - inset)
+                                : inset,
                         )
                         downloadSizeView.frame = CGRect(
                             x: x,
-                            y: 9,
+                            y: inset,
                             width: downloadSizeViewSize.width,
                             height: downloadSizeViewSize.height,
                         )
