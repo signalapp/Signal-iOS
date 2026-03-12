@@ -459,6 +459,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             memorySampler: memorySampler,
         )
         let remoteConfig = remoteConfigManager.currentConfig()
+        let currentUploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
         let backupVersion = Constants.supportedBackupVersion
         let purposeString: String = switch backupPurpose {
         case .deviceTransfer: "LinkNSync"
@@ -493,6 +494,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 localIdentifiers: localIdentifiers,
                 startDate: startDate,
                 remoteConfig: remoteConfig,
+                currentUploadEra: currentUploadEra,
                 bencher: bencher,
                 attachmentByteCounter: attachmentByteCounter,
                 includedContentFilter: includedContentFilter,
@@ -546,6 +548,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 localIdentifiers: localIdentifiers,
                 startDate: startDate,
                 remoteConfig: remoteConfig,
+                currentUploadEra: currentUploadEra,
                 bencher: bencher,
                 attachmentByteCounter: attachmentByteCounter,
                 includedContentFilter: includedContentFilter,
@@ -624,6 +627,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 localIdentifiers: localIdentifiers,
                 startDate: startDate,
                 remoteConfig: remoteConfig,
+                currentUploadEra: currentUploadEra,
                 bencher: bencher,
                 attachmentByteCounter: attachmentByteCounter,
                 includedContentFilter: includedContentFilter,
@@ -661,6 +665,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 localIdentifiers: localIdentifiers,
                 startDate: startDate,
                 remoteConfig: remoteConfig,
+                currentUploadEra: currentUploadEra,
                 bencher: bencher,
                 attachmentByteCounter: attachmentByteCounter,
                 includedContentFilter: includedContentFilter,
