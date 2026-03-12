@@ -68,14 +68,17 @@ extension DeviceTransferService {
                 owsFailDebug("did not receive file \(file.identifier)")
                 return false
             }
-            guard
-                OWSFileSystem.fileOrFolderExists(
-                    atPath: URL(
-                        fileURLWithPath: file.identifier,
-                        relativeTo: DeviceTransferService.pendingTransferFilesDirectory,
-                    ).path,
+            let filePath: String
+            do {
+                filePath = try DeviceTransferService.sanitizedPath(
+                    for: file.identifier,
+                    within: DeviceTransferService.pendingTransferFilesDirectory,
                 )
-            else {
+            } catch {
+                owsFailDebug("Invalid file identifier in manifest")
+                return false
+            }
+            guard OWSFileSystem.fileOrFolderExists(atPath: filePath) else {
                 owsFailDebug("Missing file \(file.identifier)")
                 return false
             }
@@ -162,10 +165,16 @@ extension DeviceTransferService {
         }
 
         for file in manifest.files + [database.database, database.wal] {
-            let pendingFilePath = URL(
-                fileURLWithPath: file.identifier,
-                relativeTo: DeviceTransferService.pendingTransferFilesDirectory,
-            ).path
+            let pendingFilePath: String
+            do {
+                pendingFilePath = try DeviceTransferService.sanitizedPath(
+                    for: file.identifier,
+                    within: DeviceTransferService.pendingTransferFilesDirectory,
+                )
+            } catch {
+                owsFailDebug("Invalid file identifier in manifest")
+                return false
+            }
 
             // We could be receiving a database in any of the directory modes,
             // so we force the restore path to be the "primary" database since
@@ -177,10 +186,15 @@ extension DeviceTransferService {
             } else if DeviceTransferService.databaseWALIdentifier == file.identifier {
                 newFilePath = GRDBDatabaseStorageAdapter.databaseWalUrl(directoryMode: .primary).path
             } else {
-                newFilePath = URL(
-                    fileURLWithPath: file.relativePath,
-                    relativeTo: DeviceTransferService.appSharedDataDirectory,
-                ).path
+                do {
+                    newFilePath = try DeviceTransferService.sanitizedPath(
+                        for: file.relativePath,
+                        within: DeviceTransferService.appSharedDataDirectory,
+                    )
+                } catch {
+                    owsFailDebug("Invalid file relative path in manifest")
+                    return false
+                }
             }
 
             // If we're hot swapping the database, we move the database
@@ -444,6 +458,17 @@ extension DeviceTransferService {
         }
     }
 
+    /// Validates that a relative path, when resolved against a base directory,
+    /// stays within that directory. Prevents path traversal attacks via "../".
+    private static func sanitizedPath(for relativePath: String, within baseDirectory: URL) throws -> String {
+        let resolvedUrl = URL(fileURLWithPath: relativePath, relativeTo: baseDirectory).standardized
+        let resolvedBase = baseDirectory.standardized.path
+        guard resolvedUrl.path.hasPrefix(resolvedBase + "/") else {
+            throw OWSAssertionError("Received transfer file path that escapes its base directory")
+        }
+        return resolvedUrl.path
+    }
+
     private func moveManifestFiles(manifest: DeviceTransferProtoManifest?) throws {
         guard let manifest else {
             throw OWSAssertionError("No manifest available")
@@ -452,11 +477,11 @@ extension DeviceTransferService {
         let destDir = DeviceTransferService.appSharedDataDirectory
 
         try manifest.files.forEach { file in
-            let sourceUrl = URL(fileURLWithPath: file.identifier, relativeTo: sourceDir)
-            let destUrl = URL(fileURLWithPath: file.relativePath, relativeTo: destDir)
+            let sourcePath = try DeviceTransferService.sanitizedPath(for: file.identifier, within: sourceDir)
+            let destPath = try DeviceTransferService.sanitizedPath(for: file.relativePath, within: destDir)
 
             do {
-                try move(pendingFilePath: sourceUrl.path, to: destUrl.path)
+                try move(pendingFilePath: sourcePath, to: destPath)
             } catch CocoaError.fileWriteFileExists {
                 Logger.info("Skipping restoration of file that was already restored: \(file.identifier)")
             } catch CocoaError.fileNoSuchFile, CocoaError.fileReadNoSuchFile, POSIXError.ENOENT {
