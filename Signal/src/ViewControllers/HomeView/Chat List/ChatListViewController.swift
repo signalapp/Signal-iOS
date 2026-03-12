@@ -1490,9 +1490,11 @@ extension ChatListViewController {
         }
 
         navigationController.setViewControllers(viewControllers, animated: false)
-        presentFormSheet(navigationController, animated: true) {
-            completion?()
-            internalCompletion?()
+        DispatchQueue.main.async { [weak self] in
+            self?.presentFormSheet(navigationController, animated: true) {
+                completion?()
+                internalCompletion?()
+            }
         }
     }
 }
