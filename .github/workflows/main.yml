@@ -65,7 +65,7 @@ jobs:
         run: Scripts/build-and-test.sh
 
       - name: Upload build logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: Logs
@@ -76,7 +76,7 @@ jobs:
           touch -d 2026-01-01T00:00:00 ~/Library/Signal-iOS-Schema/schema.json
 
       - name: Upload database schema
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Database Schema
           path: ~/Library/Signal-iOS-Schema
