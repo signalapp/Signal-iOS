@@ -138,6 +138,24 @@ public extension TSMessage {
     func removeAllReactions(transaction: DBWriteTransaction) {
         guard !CurrentAppContext().isRunningTests else { return }
         reactionFinder.deleteAllReactions(transaction: transaction)
+
+        if let messageRowId = self.sqliteRowId {
+            let attachmentStore = DependenciesBridge.shared.attachmentStore
+            attachmentStore.fetchReferencedAttachmentsOwnedByMessage(
+                messageRowId: messageRowId,
+                tx: transaction
+            ).filter({
+                switch $0.reference.owner {
+                case .message(.reactionSticker):
+                    return true
+                default:
+                    return false
+                }
+            })
+            .forEach {
+                attachmentStore.removeReference(reference: $0.reference, tx: transaction)
+            }
+        }
     }
 
     @objc
@@ -219,6 +237,19 @@ public extension TSMessage {
     func removeReaction(for reactor: Aci, tx: DBWriteTransaction) -> OWSReaction? {
         guard let reaction = reaction(for: reactor, tx: tx) else {
             return nil
+        }
+
+        if let reactionRowId = reaction.id, let messageRowId = self.sqliteRowId {
+            let attachmentStore = DependenciesBridge.shared.attachmentStore
+            let refs = attachmentStore.fetchReferences(
+                owner: .messageReactionSticker(messageRowId: messageRowId, reactionRowId: reactionRowId),
+                tx: tx,
+            )
+            for ref in refs {
+                attachmentStore.removeReference(reference: ref, tx: tx)
+            }
+        } else {
+            owsFailDebug("Missing row id for just-fetched reaction")
         }
 
         reaction.anyRemove(transaction: tx)

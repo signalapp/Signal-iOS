@@ -34,12 +34,6 @@ public protocol ReactionStore {
         messageId: MessageId,
         tx: DBReadTransaction,
     ) -> [String]
-
-    /// Delete all reaction records associated with this message
-    func deleteAllReactions(
-        messageId: MessageId,
-        tx: DBWriteTransaction,
-    )
 }
 
 public class ReactionStoreImpl: ReactionStore {
@@ -65,10 +59,5 @@ public class ReactionStoreImpl: ReactionStore {
     public func allUniqueIds(messageId: MessageId, tx: DBReadTransaction) -> [String] {
         ReactionFinder(uniqueMessageId: messageId)
             .allUniqueIds(transaction: tx)
-    }
-
-    public func deleteAllReactions(messageId: MessageId, tx: DBWriteTransaction) {
-        ReactionFinder(uniqueMessageId: messageId)
-            .deleteAllReactions(transaction: tx)
     }
 }
