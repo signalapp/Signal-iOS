@@ -951,8 +951,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     toAttachmentId: record.attachmentId,
                     tx: tx,
                     block: { reference, stop in
+                        // Doesn't matter which attachment reference we pull
+                        // the sticker info off of, we just need to map
+                        // back to an installed sticker. take the first we see.
                         switch reference.owner {
                         case .message(.sticker(let metadata)):
+                            stop = true
+                            stickerMetadata = metadata
+                        case .message(.reactionSticker(let metadata)):
                             stop = true
                             stickerMetadata = metadata
                         default:
@@ -1222,7 +1228,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 break
             case .message(.oversizeText):
                 return false
-            case .message(.sticker):
+            case .message(.sticker), .message(.reactionSticker):
                 break
             case .message(.quotedReply), .message(.linkPreview), .storyMessage(.textStoryLinkPreview), .message(.contactAvatar):
                 return false
@@ -1257,7 +1263,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
             let threadRowId: Int64
             switch owner {
-            case .message(.oversizeText), .message(.sticker):
+            case .message(.oversizeText), .message(.sticker), .message(.reactionSticker):
                 return false
             case .message(.bodyAttachment(let metadata)):
                 threadRowId = metadata.threadRowId
@@ -1268,7 +1274,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .message(.contactAvatar(let metadata)):
                 threadRowId = metadata.threadRowId
             case .storyMessage, .thread:
-                // Ignore non-message cases for purposes of pending message request.
                 return false
             }
 
@@ -1328,6 +1333,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return false
             case .message(.sticker):
                 return !autoDownloadableMediaTypes.contains(.photo)
+            case .message(.reactionSticker):
+                // Always download sticker reactions; if we wanted to
+                // apply the auto-download setting we'd need a way to
+                // indicate that in UI and not silently fall back to
+                // the sticker's emoji.
+                return false
             case .message(.quotedReply):
                 return false
             case .message(.linkPreview):
