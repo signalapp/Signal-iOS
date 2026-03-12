@@ -39,6 +39,19 @@ public class PreparedOutgoingMessage {
         return PreparedOutgoingMessage(messageType: messageType)
     }
 
+    /// Use this _only_ to "prepare" outgoing reaction messages with no attachments (just emoji).
+    /// Instantly prepares because...these messages don't need any preparing.
+    static func preprepared(
+        outgoingReactionMessage: OutgoingReactionMessage,
+    ) -> PreparedOutgoingMessage {
+        owsAssertDebug(outgoingReactionMessage.createdReaction?.sticker == nil)
+        let messageType = MessageType.reactionMessage(MessageType.ReactionMessage(
+            message: outgoingReactionMessage,
+            hasSticker: false
+        ))
+        return PreparedOutgoingMessage(messageType: messageType)
+    }
+
     /// Use this _only_ to "prepare" outgoing contact sync that, by definition, already uploaded their attachment.
     /// Instantly prepares because...these messages don't need any preparing.
     public static func preprepared(
@@ -103,6 +116,13 @@ public class PreparedOutgoingMessage {
             if let storyMessage = message as? OutgoingStoryMessage {
                 return .init(messageType: .story(.init(message: storyMessage)))
             }
+            if let reactionMessage = message as? OutgoingReactionMessage {
+                return .init(messageType: .reactionMessage(.init(
+                    message: reactionMessage,
+                    hasSticker: reactionMessage.createdReaction?.sticker
+                        != nil,
+                )))
+            }
             return .init(messageType: .transient(message))
         case .none:
             return nil
@@ -123,6 +143,11 @@ public class PreparedOutgoingMessage {
         /// The StoryMessage is persisted to the StoryMessages table and is the owner for any attachments;
         /// the OutgoingStoryMessage is _not_ persisted to the Interactions table.
         case story(Story)
+
+        /// An OutgoingReactionMessage: a TSMessage subclass we use for sending a reaction.
+        /// The message being reacted to is a persisted TSMessage and is the owner for any reaction sticker attachments;
+        /// the OutgoingReactionMessage is _not_ persisted to the Interactions table.
+        case reactionMessage(ReactionMessage)
 
         /// Catch-all for messages not persisted to the Interactions table. The
         /// MessageSender will not upload any attachments contained within these
@@ -146,6 +171,16 @@ public class PreparedOutgoingMessage {
             public var storyMessageRowId: Int64 {
                 message.storyMessageRowId
             }
+        }
+
+        public struct ReactionMessage {
+            let message: OutgoingReactionMessage
+            // If true, there _might_ be a sticker attachment,
+            // which should be fetched by way of the target
+            // message (which owns any sticker reaction attachments).
+            // If false, definitively has no sticker attachment and
+            // the check can be skipped.
+            let hasSticker: Bool
         }
     }
 
@@ -191,16 +226,46 @@ public class PreparedOutgoingMessage {
                     )?.attachmentRowId,
                 ].compacted()
             }
+        case .reactionMessage(let reactionMessage):
+            guard
+                let createdReaction = reactionMessage.message.createdReaction,
+                // Legacy reactions can use e164, not aci, but they wouldn't
+                // have stickers.
+                let reactorAci = createdReaction.reactorAci,
+                let targetMessage = DependenciesBridge.shared.interactionStore
+                    .fetchInteraction(
+                        uniqueId: reactionMessage.message.messageUniqueId,
+                        tx: tx
+                    )
+                    as? TSMessage,
+                let targetMessageRowId = targetMessage.sqliteRowId,
+                let reaction = DependenciesBridge.shared.reactionStore
+                    .reaction(
+                        for: reactorAci,
+                        messageId: targetMessage.uniqueId,
+                        tx: tx
+                    ),
+                let reactionRowId = reaction.id
+            else {
+                return []
+            }
+            return attachmentStore.fetchReferences(
+                owner: .messageReactionSticker(
+                    messageRowId: targetMessageRowId,
+                    reactionRowId: reactionRowId
+                ),
+                tx: tx
+            ).map(\.attachmentRowId)
         case .transient:
             return []
         }
     }
 
-    public func hasRenderableContent(tx: DBReadTransaction) -> Bool {
+    public func isRenderableContentSendPriority(tx: DBReadTransaction) -> Bool {
         switch messageType {
         case .persisted(let message):
             return message.message.insertedMessageHasRenderableContent(rowId: message.rowId, tx: tx)
-        case .editMessage, .story:
+        case .editMessage, .story, .reactionMessage:
             // Always have renderable content; send at normal priority.
             return true
         case .transient:
@@ -225,12 +290,12 @@ public class PreparedOutgoingMessage {
         case .story:
             // We don't donate story message intents.
             return nil
-        case .transient(let message):
-            if message is OutgoingReactionMessage {
-                return message
-            } else {
-                return nil
-            }
+        case .reactionMessage(let message):
+            return message.message
+        case .transient:
+            // We don't donate transient message intents, except
+            // reactions, which are handled above.
+            return nil
         }
     }
 
@@ -284,6 +349,8 @@ public class PreparedOutgoingMessage {
             return try .init(editMessage: edit, isHighPriority: isHighPriority, transaction: tx)
         case .story(let story):
             return .init(storyMessage: story, isHighPriority: isHighPriority)
+        case .reactionMessage(let message):
+            return .init(transientMessage: message.message, isHighPriority: isHighPriority)
         case .transient(let message):
             return .init(transientMessage: message, isHighPriority: isHighPriority)
         }
@@ -310,6 +377,8 @@ public class PreparedOutgoingMessage {
                 return message.editedMessage.body
             case .story:
                 return nil
+            case .reactionMessage(let message):
+                return message.message.body
             case .transient(let message):
                 return message.body
             }
@@ -330,6 +399,8 @@ public class PreparedOutgoingMessage {
             return message.messageForSending
         case .story(let storyMessage):
             return storyMessage.message
+        case .reactionMessage(let message):
+            return message.message
         case .transient(let message):
             return message
         }
@@ -346,16 +417,19 @@ public class PreparedOutgoingMessage {
             return message.editedMessage
         case .story(let storyMessage):
             return storyMessage.message
+        case .reactionMessage(let message):
+            return message.message
         case .transient(let message):
             // Do send states even matter for transient messages?
             // Yes.
+            // Thanks.
             return message
         }
     }
 
     public var isPinChange: Bool {
         switch messageType {
-        case .persisted, .editMessage, .story:
+        case .persisted, .editMessage, .story, .reactionMessage:
             return false
         case .transient(let message):
             return message is OutgoingPinMessage || message is OutgoingUnpinMessage
@@ -376,7 +450,7 @@ extension Array where Element == PreparedOutgoingMessage {
         var storyMessages = [PreparedOutgoingMessage]()
         for preparedMessage in self {
             switch preparedMessage.messageType {
-            case .persisted, .editMessage, .transient:
+            case .persisted, .editMessage, .transient, .reactionMessage:
                 return preparedMessage.attachmentIdsForUpload(tx: tx)
             case .story:
                 storyMessages.append(preparedMessage)

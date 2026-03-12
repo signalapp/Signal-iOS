@@ -80,6 +80,22 @@ public class UnpreparedOutgoingMessage {
         )))
     }
 
+    static func forOutgoingReactionMessage(
+        _ message: OutgoingReactionMessage,
+        targetMessage: TSMessage,
+        targetMessageRowId: Int64,
+        reactionRowId: Int64?, /* nil if un-reacting */
+        stickerDataSource: MessageStickerDataSource?,
+    ) -> UnpreparedOutgoingMessage {
+        return .init(messageType: .reactionMessage(.init(
+            message: message,
+            targetMessage: targetMessage,
+            targetMessageRowId: targetMessageRowId,
+            reactionRowId: reactionRowId,
+            stickerDataSource: stickerDataSource,
+        )))
+    }
+
     // MARK: - Preparation
 
     /// "Prepares" the outgoing message, inserting it into the database if needed and
@@ -100,6 +116,8 @@ public class UnpreparedOutgoingMessage {
             )
         case .story(let story):
             return story.message.timestamp
+        case .reactionMessage(let reactionMessage):
+            return reactionMessage.message.timestamp
         case .transient(let message):
             return message.timestamp
         }
@@ -119,6 +137,11 @@ public class UnpreparedOutgoingMessage {
         /// The StoryMessage is persisted to the StoryMessages table and is the owner for any attachments;
         /// the OutgoingStoryMessage is _not_ persisted to the Interactions table.
         case story(Story)
+
+        /// An OutgoingReactionMessage: a TSMessage subclass we use for sending a reaction.
+        /// The message being reacted to is a persisted TSMessage and is the owner for any reaction sticker attachments;
+        /// the OutgoingReactionMessage is _not_ persisted to the Interactions table.
+        case reactionMessage(ReactionMessage)
 
         /// Catch-all for messages not persisted to the Interactions table. The
         /// MessageSender will not upload any attachments contained within these
@@ -148,6 +171,17 @@ public class UnpreparedOutgoingMessage {
             let message: OutgoingStoryMessage
             let storyMessageRowId: Int64
         }
+
+        struct ReactionMessage {
+            let message: OutgoingReactionMessage
+            // The message being reacted to.
+            let targetMessage: TSMessage
+            let targetMessageRowId: Int64
+            // The OWSReaction's row id, if this is a reaction
+            // (nil if the message removes a reaction).
+            let reactionRowId: Int64?
+            let stickerDataSource: MessageStickerDataSource?
+        }
     }
 
     private let messageType: MessageType
@@ -167,6 +201,9 @@ public class UnpreparedOutgoingMessage {
             preparedMessageType = try prepareEditMessage(message, tx: tx)
         case .story(let story):
             preparedMessageType = prepareStoryMessage(story)
+        case .reactionMessage(let reactionMessage):
+            preparedMessageType = try prepareReactionMessage(
+                reactionMessage, tx: tx)
         case .transient(let message):
             preparedMessageType = prepareTransientMessage(message)
         }
@@ -402,6 +439,56 @@ public class UnpreparedOutgoingMessage {
     ) -> PreparedOutgoingMessage.MessageType {
         return .story(PreparedOutgoingMessage.MessageType.Story(
             message: story.message,
+        ))
+    }
+
+    private func prepareReactionMessage(
+        _ reactionMessage: MessageType.ReactionMessage,
+        tx: DBWriteTransaction,
+    ) throws -> PreparedOutgoingMessage.MessageType {
+        guard
+            let thread = reactionMessage.message.thread(tx: tx),
+            let threadRowId = thread.sqliteRowId
+        else {
+            throw OWSAssertionError("Outgoing message missing thread.")
+        }
+
+        let attachmentManager = DependenciesBridge.shared.attachmentManager
+        let messageStickerManager = DependenciesBridge.shared.messageStickerManager
+        let validatedMessageSticker = try reactionMessage.stickerDataSource.map {
+            return try messageStickerManager.validateMessageSticker(dataSource: $0)
+        }
+
+        if let validatedMessageSticker {
+            guard let reactionRowId = reactionMessage.reactionRowId else {
+                throw OWSAssertionError("Cannot apply a sticker without an OWSReaction")
+            }
+            let attachmentID = try attachmentManager.createAttachmentStream(
+                from: OwnedAttachmentDataSource(
+                    dataSource: validatedMessageSticker.attachmentDataSource,
+                    owner: .messageReactionSticker(.init(
+                        messageRowId: reactionMessage.targetMessageRowId,
+                        receivedAtTimestamp: reactionMessage.targetMessage.receivedAtTimestamp,
+                        threadRowId: threadRowId,
+                        isPastEditRevision: reactionMessage.targetMessage.isPastEditRevision(),
+                        stickerPackId: validatedMessageSticker.sticker.packId,
+                        stickerId: validatedMessageSticker.sticker.stickerId,
+                        reactionRowId: reactionRowId,
+                    )),
+                ),
+                tx: tx,
+            )
+            Logger.info("Created sticker attachment \(attachmentID) for outgoing reaction message \(reactionMessage.message.timestamp)")
+
+            StickerManager.stickerWasSent(
+                validatedMessageSticker.sticker.info,
+                transaction: tx,
+            )
+        }
+
+        return .reactionMessage(PreparedOutgoingMessage.MessageType.ReactionMessage(
+            message: reactionMessage.message,
+            hasSticker: validatedMessageSticker != nil
         ))
     }
 

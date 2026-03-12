@@ -313,7 +313,7 @@ public class MessageSenderJobQueue {
         let sendPriority: JobPriority
         if job.record.isHighPriority {
             sendPriority = .high
-        } else if message.hasRenderableContent(tx: transaction) {
+        } else if message.isRenderableContentSendPriority(tx: transaction) {
             sendPriority = .renderableContent
         } else {
             sendPriority = .low
