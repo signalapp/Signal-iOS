@@ -810,7 +810,8 @@ extension CVComponentSystemMessage {
     ) -> String {
         if let errorMessage = interaction as? TSErrorMessage {
             return errorMessage.previewText(transaction: transaction)
-        } else if let verificationMessage = interaction as? OWSVerificationStateChangeMessage {
+        }
+        if let verificationMessage = interaction as? OWSVerificationStateChangeMessage {
             let format = switch (verificationMessage.isLocalChange, verificationMessage.isVerified()) {
             case (true, true):
                 OWSLocalizedString(
@@ -836,16 +837,18 @@ extension CVComponentSystemMessage {
 
             let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: verificationMessage.recipientAddress, tx: transaction).resolvedValue()
             return String(format: format, displayName)
-        } else if let infoMessage = interaction as? TSInfoMessage {
-            return infoMessage.conversationSystemMessageComponentText(with: transaction)
-        } else if let call = interaction as? TSCall {
-            return call.previewText(transaction: transaction)
-        } else if let groupCall = interaction as? OWSGroupCallMessage {
-            return groupCall.systemText(tx: transaction)
-        } else {
-            owsFailDebug("Not a system message.")
-            return ""
         }
+        if let infoMessage = interaction as? TSInfoMessage {
+            return infoMessage.conversationSystemMessageComponentText(with: transaction)
+        }
+        if let call = interaction as? TSCall {
+            return call.previewText(transaction: transaction)
+        }
+        if let groupCall = interaction as? OWSGroupCallMessage {
+            return groupCall.systemText(tx: transaction)
+        }
+        owsFailDebug("Not a system message.")
+        return ""
     }
 
     private static func titleColorOverride(forInteraction interaction: TSInteraction) -> UIColor? {
@@ -882,7 +885,8 @@ extension CVComponentSystemMessage {
                  .groupCreationFailed:
                 return nil
             }
-        } else if let infoMessage = interaction as? TSInfoMessage {
+        }
+        if let infoMessage = interaction as? TSInfoMessage {
             switch infoMessage.messageType {
             case .userNotRegistered,
                  .typeLocalUserEndedSession,
@@ -915,9 +919,8 @@ extension CVComponentSystemMessage {
                 }
                 if message.isVerified() {
                     return Theme.iconImage(.safetyNumber16)
-                } else {
-                    return nil
                 }
+                return nil
             case .userJoinedSignal:
                 return Theme.iconImage(.heart16)
             case .syncedThread:
@@ -953,19 +956,20 @@ extension CVComponentSystemMessage {
             case .typePinnedMessage:
                 return Theme.iconImage(.pin)
             }
-        } else if let call = interaction as? TSCall {
+        }
+        if let call = interaction as? TSCall {
             switch call.offerType {
             case .audio:
                 return Theme.iconImage(.phone16)
             case .video:
                 return Theme.iconImage(.video16)
             }
-        } else if interaction is OWSGroupCallMessage {
-            return Theme.iconImage(.video16)
-        } else {
-            owsFailDebug("Unknown interaction type: \(type(of: interaction))")
-            return nil
         }
+        if interaction is OWSGroupCallMessage {
+            return Theme.iconImage(.video16)
+        }
+        owsFailDebug("Unknown interaction type: \(type(of: interaction))")
+        return nil
     }
 
     private static func iconName(displayableGroupUpdateItem: DisplayableGroupUpdateItem) -> String {
@@ -1164,20 +1168,22 @@ extension CVComponentSystemMessage {
     ) -> Action? {
         if let errorMessage = interaction as? TSErrorMessage {
             return action(forErrorMessage: errorMessage)
-        } else if let infoMessage = interaction as? TSInfoMessage {
+        }
+        if let infoMessage = interaction as? TSInfoMessage {
             return action(forInfoMessage: infoMessage, transaction: transaction)
-        } else if let call = interaction as? TSCall {
+        }
+        if let call = interaction as? TSCall {
             return action(forCall: call, threadViewModel: threadViewModel)
-        } else if let groupCall = interaction as? OWSGroupCallMessage {
+        }
+        if let groupCall = interaction as? OWSGroupCallMessage {
             return action(
                 forGroupCall: groupCall,
                 threadViewModel: threadViewModel,
                 currentGroupThreadCallGroupId: currentGroupThreadCallGroupId,
             )
-        } else {
-            owsFailDebug("Invalid interaction.")
-            return nil
         }
+        owsFailDebug("Invalid interaction.")
+        return nil
     }
 
     private static func action(forErrorMessage message: TSErrorMessage) -> Action? {
@@ -1197,13 +1203,12 @@ extension CVComponentSystemMessage {
                     accessibilityIdentifier: "verify_safety_number",
                     action: .didTapPreviouslyVerifiedIdentityChange(address: address),
                 )
-            } else {
-                return Action(
-                    title: CommonStrings.learnMore,
-                    accessibilityIdentifier: "learn_more",
-                    action: .didTapUnverifiedIdentityChange(address: address),
-                )
             }
+            return Action(
+                title: CommonStrings.learnMore,
+                accessibilityIdentifier: "learn_more",
+                action: .didTapUnverifiedIdentityChange(address: address),
+            )
         case .wrongTrustedIdentityKey:
             return nil
         case .invalidKeyException,
@@ -1557,10 +1562,9 @@ extension CVComponentSystemMessage {
     ) -> CVComponentState.SystemMessage.Expiration? {
         if let infoMessage = interaction as? TSInfoMessage {
             return expiration(forInfoMessage: infoMessage, transaction: transaction)
-        } else {
-            // Expiration state not supported.
-            return nil
         }
+        // Expiration state not supported.
+        return nil
     }
 
     private static func expiration(
