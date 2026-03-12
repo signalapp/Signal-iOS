@@ -165,8 +165,8 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
-        /// If any of the failed or pending downloads were enqueued by a Backup
-        /// restore, immediately attempt to download those attachments.
+        // If any of the failed or pending downloads were enqueued by a Backup
+        // restore, immediately attempt to download those attachments.
         Task {
             let attachmentDownloadManager = DependenciesBridge.shared.attachmentDownloadManager
             let attachmentStore = DependenciesBridge.shared.attachmentStore

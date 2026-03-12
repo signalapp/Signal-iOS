@@ -3,12 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
-public class CVComponentBodyMedia: CVComponentBase, CVComponent {
+class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
-    public var componentKey: CVComponentKey { .bodyMedia }
+    var componentKey: CVComponentKey { .bodyMedia }
 
     private let bodyMedia: CVComponentState.BodyMedia
     private var items: [CVMediaAlbumItem] {
@@ -43,18 +43,11 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         super.init(itemModel: itemModel)
     }
 
-    public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
+    func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
         CVComponentViewBodyMedia()
     }
 
-    private var bodyTextColor: UIColor {
-        guard let message = interaction as? TSMessage else {
-            return .black
-        }
-        return conversationStyle.bubbleTextColor(message: message)
-    }
-
-    public func configureForRendering(
+    func configureForRendering(
         componentView componentViewParam: CVComponentView,
         cellMeasurement: CVCellMeasurement,
         componentDelegate: CVComponentDelegate,
@@ -69,10 +62,10 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         let albumView = componentView.albumView
         albumView.configure(
-            mediaCache: self.mediaCache,
-            items: self.items,
-            interaction: self.interaction,
-            isBorderless: self.isBorderless,
+            mediaCache: mediaCache,
+            items: items,
+            interaction: interaction,
+            isBorderless: isBorderless,
             cellMeasurement: cellMeasurement,
             conversationStyle: conversationStyle,
         )
@@ -87,7 +80,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             subviews: [albumView],
         )
 
-        if let footerOverlay = self.footerOverlay {
+        if let footerOverlay {
             let footerView: CVComponentView
             if let footerOverlayView = componentView.footerOverlayView {
                 footerView = footerOverlayView
@@ -314,7 +307,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
     }
 
-    public func bubbleViewPartner(componentView: CVComponentView) -> OWSBubbleViewPartner? {
+    func bubbleViewPartner(componentView: CVComponentView) -> OWSBubbleViewPartner? {
         guard let componentView = componentView as? CVComponentViewBodyMedia else {
             owsFailDebug("Unexpected componentView.")
             return nil
@@ -344,7 +337,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     private static let measurementKey_stackView = "CVComponentBodyMedia.measurementKey_stackView"
     private static let measurementKey_footerSize = "CVComponentBodyMedia.measurementKey_footerSize"
 
-    public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
+    func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
         owsAssertDebug(items.count > 0)
 
@@ -381,7 +374,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
     // MARK: - Events
 
-    override public func cellWillBecomeVisible(
+    override func cellWillBecomeVisible(
         componentDelegate: CVComponentDelegate,
     ) {
         AssertIsOnMainThread()
@@ -394,7 +387,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
     }
 
-    override public func handleTap(
+    override func handleTap(
         sender: UIGestureRecognizer,
         componentDelegate: CVComponentDelegate,
         componentView: CVComponentView,
@@ -463,7 +456,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
     }
 
-    public func albumItemView(
+    func albumItemView(
         forAttachment attachment: ReferencedAttachment,
         componentView: CVComponentView,
     ) -> UIView? {
@@ -505,7 +498,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
-    public class CVComponentViewBodyMedia: NSObject, CVComponentView {
+    class CVComponentViewBodyMedia: NSObject, CVComponentView {
 
         fileprivate let stackView = CVComponentViewBodyMediaRootView(name: "stackView")
 
@@ -518,9 +511,9 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         fileprivate var innerShadowView: OWSBubbleShapeView?
 
-        public var isDedicatedCellView = false
+        var isDedicatedCellView = false
 
-        public var rootView: UIView {
+        var rootView: UIView {
             stackView
         }
 
@@ -533,7 +526,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         // MARK: -
 
-        public func setIsCellVisible(_ isCellVisible: Bool) {
+        func setIsCellVisible(_ isCellVisible: Bool) {
             if isCellVisible {
                 albumView.loadMedia()
             } else {
@@ -541,7 +534,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             }
         }
 
-        public func reset() {
+        func reset() {
             albumView.reset()
             stackView.reset()
             footerOverlayView?.reset()
@@ -580,7 +573,7 @@ extension CVComponentBodyMedia.CVComponentViewBodyMediaRootView: BodyMediaPresen
 // MARK: -
 
 extension CVComponentBodyMedia: CVAccessibilityComponent {
-    public var accessibilityDescription: String {
+    var accessibilityDescription: String {
         // TODO: We could describe how many media
         // and their type (video, image, animated image).
         OWSLocalizedString(
