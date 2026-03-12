@@ -81,6 +81,18 @@ public struct AttachmentStore {
                 fetchMessageAttachmentReferences(ownerType: .sticker, messageRowId: messageRowId, tx: tx)
             case .messageContactAvatar(let messageRowId):
                 fetchMessageAttachmentReferences(ownerType: .contactAvatar, messageRowId: messageRowId, tx: tx)
+            case .messageReactionSticker(let messageRowId, let reactionRowId):
+                fetchMessageAttachmentReferences(ownerType: .reactionSticker, messageRowId: messageRowId, tx: tx)
+                    // The number of reactions on a message is
+                    // constrained enough to filter in memory
+                    .filter {
+                        switch $0.owner {
+                        case .message(.reactionSticker(let metadata)):
+                            return metadata.reactionRowId == reactionRowId
+                        default:
+                            return false
+                        }
+                    }
             case .storyMessageMedia(let storyMessageRowId):
                 fetchStoryAttachmentReferences(ownerType: .media, storyMessageRowId: storyMessageRowId, tx: tx)
             case .storyMessageLinkPreview(let storyMessageRowId):
@@ -489,6 +501,8 @@ public struct AttachmentStore {
             .compactMap { record in
                 switch try? AttachmentReference(record: record).owner {
                 case .message(.sticker(let stickerMetadata)):
+                    return stickerMetadata
+                case .message(.reactionSticker(let stickerMetadata)):
                     return stickerMetadata
                 default:
                     return nil

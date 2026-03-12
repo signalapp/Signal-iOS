@@ -27,6 +27,7 @@ extension AttachmentReference {
         case quotedReplyAttachment(MessageAttachmentBuilder)
         case messageSticker(MessageStickerBuilder)
         case messageContactAvatar(MessageAttachmentBuilder)
+        case messageReactionSticker(MessageReactionStickerBuilder)
         case storyMessageMedia(StoryMediaBuilder)
         case storyMessageLinkPreview(storyMessageRowId: Int64)
         case threadWallpaperImage(threadRowId: Int64)
@@ -127,6 +128,17 @@ extension AttachmentReference {
                     contentType: contentType,
                     isPastEditRevision: metadata.isPastEditRevision,
                 )))
+            case .messageReactionSticker(let metadata):
+                return .message(.reactionSticker(.init(
+                    messageRowId: metadata.messageRowId,
+                    receivedAtTimestamp: metadata.receivedAtTimestamp,
+                    threadRowId: metadata.threadRowId,
+                    contentType: contentType,
+                    isPastEditRevision: metadata.isPastEditRevision,
+                    stickerPackId: metadata.stickerPackId,
+                    stickerId: metadata.stickerId,
+                    reactionRowId: metadata.reactionRowId,
+                )))
             case .storyMessageMedia(let metadata):
                 return .storyMessage(.media(.init(
                     storyMessageRowId: metadata.storyMessageRowId,
@@ -219,6 +231,34 @@ extension AttachmentReference {
             }
         }
 
+        public struct MessageReactionStickerBuilder: Equatable {
+            public let messageRowId: Int64
+            public let receivedAtTimestamp: UInt64
+            public let threadRowId: Int64
+            public let isPastEditRevision: Bool
+            public let stickerPackId: Data
+            public let stickerId: UInt32
+            public let reactionRowId: Int64
+
+            public init(
+                messageRowId: Int64,
+                receivedAtTimestamp: UInt64,
+                threadRowId: Int64,
+                isPastEditRevision: Bool,
+                stickerPackId: Data,
+                stickerId: UInt32,
+                reactionRowId: Int64,
+            ) {
+                self.messageRowId = messageRowId
+                self.receivedAtTimestamp = receivedAtTimestamp
+                self.threadRowId = threadRowId
+                self.isPastEditRevision = isPastEditRevision
+                self.stickerPackId = stickerPackId
+                self.stickerId = stickerId
+                self.reactionRowId = reactionRowId
+            }
+        }
+
         public struct StoryMediaBuilder: Equatable {
             public let storyMessageRowId: Int64
             public let caption: StyleOnlyMessageBody?
@@ -278,6 +318,8 @@ extension AttachmentReference.OwnerBuilder {
             return .messageSticker(messageRowId: stickerOwnerBuilder.messageRowId)
         case .messageContactAvatar(let builder):
             return .messageContactAvatar(messageRowId: builder.messageRowId)
+        case .messageReactionSticker(let builder):
+            return .messageReactionSticker(messageRowId: builder.messageRowId, reactionRowId: builder.reactionRowId)
         case .storyMessageMedia(let mediaOwnerBuilder):
             return .storyMessageMedia(storyMessageRowId: mediaOwnerBuilder.storyMessageRowId)
         case .storyMessageLinkPreview(let storyMessageRowId):

@@ -29,6 +29,7 @@ extension AttachmentReference {
             case quotedReplyAttachment(messageRowId: Int64)
             case messageSticker(messageRowId: Int64)
             case messageContactAvatar(messageRowId: Int64)
+            case messageReactionSticker(messageRowId: Int64, reactionRowId: Int64)
             case storyMessageMedia(storyMessageRowId: Int64)
             case storyMessageLinkPreview(storyMessageRowId: Int64)
             case threadWallpaperImage(threadRowId: Int64)
@@ -45,6 +46,7 @@ extension AttachmentReference {
             case .message(.quotedReply(let metadata)): .quotedReplyAttachment(messageRowId: metadata.messageRowId)
             case .message(.sticker(let metadata)): .messageSticker(messageRowId: metadata.messageRowId)
             case .message(.contactAvatar(let metadata)): .messageContactAvatar(messageRowId: metadata.messageRowId)
+            case .message(.reactionSticker(let metadata)): .messageReactionSticker(messageRowId: metadata.messageRowId, reactionRowId: metadata.reactionRowId)
             case .storyMessage(.media(let metadata)): .storyMessageMedia(storyMessageRowId: metadata.storyMessageRowId)
             case .storyMessage(.textStoryLinkPreview(let metadata)): .storyMessageLinkPreview(storyMessageRowId: metadata.storyMessageRowId)
             case .thread(.threadWallpaperImage(let metadata)): .threadWallpaperImage(threadRowId: metadata.threadRowId)
@@ -66,6 +68,9 @@ extension AttachmentReference {
             case sticker(StickerMetadata)
             /// Always assumed to have an image content type.
             case contactAvatar(Metadata)
+            /// The sticker attachment on a reaction on a message.
+            /// The parent message is the owner of all its reactions' stickers.
+            case reactionSticker(ReactionStickerMetadata)
 
             // MARK: -
 
@@ -77,6 +82,7 @@ extension AttachmentReference {
                 case .quotedReply: .quotedReplyAttachment
                 case .sticker: .sticker
                 case .contactAvatar: .contactAvatar
+                case .reactionSticker: .reactionSticker
                 }
             }
 
@@ -221,6 +227,32 @@ extension AttachmentReference {
                 }
             }
 
+            public class ReactionStickerMetadata: StickerMetadata {
+                public let reactionRowId: Int64
+
+                init(
+                    messageRowId: Int64,
+                    receivedAtTimestamp: UInt64,
+                    threadRowId: Int64,
+                    contentType: ContentType?,
+                    isPastEditRevision: Bool,
+                    stickerPackId: Data,
+                    stickerId: UInt32,
+                    reactionRowId: Int64,
+                ) {
+                    self.reactionRowId = reactionRowId
+                    super.init(
+                        messageRowId: messageRowId,
+                        receivedAtTimestamp: receivedAtTimestamp,
+                        threadRowId: threadRowId,
+                        contentType: contentType,
+                        isPastEditRevision: isPastEditRevision,
+                        stickerPackId: stickerPackId,
+                        stickerId: stickerId,
+                    )
+                }
+            }
+
             public var messageRowId: Int64 {
                 switch self {
                 case .bodyAttachment(let metadata): metadata.messageRowId
@@ -229,6 +261,7 @@ extension AttachmentReference {
                 case .quotedReply(let metadata): metadata.messageRowId
                 case .sticker(let metadata): metadata.messageRowId
                 case .contactAvatar(let metadata): metadata.messageRowId
+                case .reactionSticker(let metadata): metadata.messageRowId
                 }
             }
 
@@ -240,6 +273,10 @@ extension AttachmentReference {
                 case .quotedReply: nil
                 case .sticker: nil
                 case .contactAvatar: nil
+                // Note: while reactions do have their own id and are
+                // "in" their owning message, that is not the namespace
+                // this var refers to (which applies only to body attachments)
+                case .reactionSticker: nil
                 }
             }
 
@@ -251,6 +288,7 @@ extension AttachmentReference {
                 case .quotedReply(let metadata): metadata.receivedAtTimestamp
                 case .sticker(let metadata): metadata.receivedAtTimestamp
                 case .contactAvatar(let metadata): metadata.receivedAtTimestamp
+                case .reactionSticker(let metadata): metadata.receivedAtTimestamp
                 }
             }
         }
@@ -418,6 +456,24 @@ extension AttachmentReference.Owner {
                 contentType: try record.contentType.map { try .init(rawValue: $0) },
                 isPastEditRevision: record.ownerIsPastEditRevision,
             )))
+        case .reactionSticker:
+            guard
+                let stickerId = record.stickerId,
+                let stickerPackId = record.stickerPackId,
+                let reactionRowId = record.reactionRowId
+            else {
+                throw OWSAssertionError("Sticker and reaction metadata required for reaction sticker attachment")
+            }
+            return .message(.reactionSticker(.init(
+                messageRowId: record.ownerRowId,
+                receivedAtTimestamp: record.receivedAtTimestamp,
+                threadRowId: record.threadRowId,
+                contentType: try record.contentType.map { try .init(rawValue: $0) },
+                isPastEditRevision: record.ownerIsPastEditRevision,
+                stickerPackId: stickerPackId,
+                stickerId: stickerId,
+                reactionRowId: reactionRowId,
+            )))
         }
     }
 
@@ -523,6 +579,17 @@ extension AttachmentReference.Owner {
                         threadRowId: metadata.threadRowId,
                         contentType: contentType,
                         isPastEditRevision: metadata.isPastEditRevision,
+                    ))
+                case .reactionSticker(let metadata):
+                    return .reactionSticker(.init(
+                        messageRowId: metadata.messageRowId,
+                        receivedAtTimestamp: metadata.receivedAtTimestamp,
+                        threadRowId: metadata.threadRowId,
+                        contentType: contentType,
+                        isPastEditRevision: metadata.isPastEditRevision,
+                        stickerPackId: metadata.stickerPackId,
+                        stickerId: metadata.stickerId,
+                        reactionRowId: metadata.reactionRowId,
                     ))
                 }
             }())

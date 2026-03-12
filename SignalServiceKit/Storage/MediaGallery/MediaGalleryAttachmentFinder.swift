@@ -378,8 +378,7 @@ public struct MediaGalleryAttachmentFinder {
             switch attachmentId.ownerId {
             case .messageBodyAttachment(let messageRowId):
                 ownerId = messageRowId
-            case .messageOversizeText, .messageLinkPreview, .quotedReplyAttachment, .messageSticker, .messageContactAvatar:
-                // These message owner types are already filtered out.
+            case .messageOversizeText, .messageLinkPreview, .quotedReplyAttachment, .messageSticker, .messageContactAvatar, .messageReactionSticker:
                 continue
             case .storyMessageMedia, .storyMessageLinkPreview, .threadWallpaperImage, .globalThreadWallpaperImage:
                 owsFailDebug("Invalid owner type for media gallery")

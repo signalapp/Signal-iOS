@@ -277,7 +277,8 @@ public class BackupAttachmentUploadScheduler {
                 .contactAvatar,
                 .linkPreview,
                 .quotedReply,
-                .sticker:
+                .sticker,
+                .reactionSticker:
                 break
             }
 

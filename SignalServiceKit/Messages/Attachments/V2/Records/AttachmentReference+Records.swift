@@ -15,6 +15,7 @@ extension AttachmentReference {
             case quotedReplyAttachment = 3
             case sticker = 4
             case contactAvatar = 5
+            case reactionSticker = 6
         }
 
         let ownerTypeRaw: UInt32
@@ -36,6 +37,7 @@ extension AttachmentReference {
         let stickerId: UInt32?
         let isViewOnce: Bool
         var ownerIsPastEditRevision: Bool
+        let reactionRowId: Int64?
 
         // MARK: - Coding Keys
 
@@ -58,6 +60,7 @@ extension AttachmentReference {
             case stickerId
             case isViewOnce
             case ownerIsPastEditRevision
+            case reactionRowId
         }
 
         // MARK: - Columns
@@ -68,6 +71,7 @@ extension AttachmentReference {
             static let orderInMessage = Column(CodingKeys.orderInMessage)
             static let attachmentRowId = Column(CodingKeys.attachmentRowId)
             static let idInMessage = Column(CodingKeys.idInMessage)
+            static let reactionRowId = Column(CodingKeys.reactionRowId)
         }
 
         // MARK: - PersistableRecord
@@ -122,6 +126,7 @@ extension AttachmentReference {
                 self.stickerId = nil
                 self.isViewOnce = metadata.isViewOnce
                 self.ownerIsPastEditRevision = metadata.isPastEditRevision
+                self.reactionRowId = nil
             case .oversizeText(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
@@ -136,6 +141,7 @@ extension AttachmentReference {
                 // Oversize text cannot be view once
                 self.isViewOnce = false
                 self.ownerIsPastEditRevision = metadata.isPastEditRevision
+                self.reactionRowId = nil
             case .linkPreview(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
@@ -150,6 +156,7 @@ extension AttachmentReference {
                 // Link previews cannot be view once
                 self.isViewOnce = false
                 self.ownerIsPastEditRevision = metadata.isPastEditRevision
+                self.reactionRowId = nil
             case .quotedReply(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
@@ -164,6 +171,7 @@ extension AttachmentReference {
                 // Quoted reply thumbnails cannot be view once
                 self.isViewOnce = false
                 self.ownerIsPastEditRevision = metadata.isPastEditRevision
+                self.reactionRowId = nil
             case .sticker(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
@@ -178,6 +186,7 @@ extension AttachmentReference {
                 // Stickers cannot be view once
                 self.isViewOnce = false
                 self.ownerIsPastEditRevision = metadata.isPastEditRevision
+                self.reactionRowId = nil
             case .contactAvatar(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
@@ -192,6 +201,22 @@ extension AttachmentReference {
                 // Contact avatars cannot be view once
                 self.isViewOnce = false
                 self.ownerIsPastEditRevision = metadata.isPastEditRevision
+                self.reactionRowId = nil
+            case .reactionSticker(let metadata):
+                self.ownerRowId = metadata.messageRowId
+                self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
+                self.contentType = metadata.contentType.map { UInt32($0.rawValue) }
+                self.renderingFlag = UInt32(AttachmentReference.RenderingFlag.default.rawValue)
+                self.idInMessage = nil
+                self.orderInMessage = nil
+                self.threadRowId = metadata.threadRowId
+                self.caption = nil
+                self.stickerPackId = metadata.stickerPackId
+                self.stickerId = metadata.stickerId
+                // Reactions cannot be view once
+                self.isViewOnce = false
+                self.ownerIsPastEditRevision = metadata.isPastEditRevision
+                self.reactionRowId = metadata.reactionRowId
             }
         }
     }

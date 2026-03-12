@@ -47,6 +47,8 @@ public struct OwnedAttachmentBackupPointerProto {
             return messageAttachmentBuilder.receivedAtTimestamp
         case .messageSticker(let messageStickerBuilder):
             return messageStickerBuilder.receivedAtTimestamp
+        case .messageReactionSticker(let reactionStickerBuilder):
+            return reactionStickerBuilder.receivedAtTimestamp
         case .messageContactAvatar(let messageAttachmentBuilder):
             return messageAttachmentBuilder.receivedAtTimestamp
         case .threadWallpaperImage, .globalThreadWallpaperImage:
