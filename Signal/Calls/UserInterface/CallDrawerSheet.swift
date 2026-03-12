@@ -749,12 +749,17 @@ extension CallDrawerSheet: UITableViewDelegate {
                 ringRtcGroupCall = callLinkCall.ringRtcCall
             }
 
-            return GroupCallContextMenuInteractionBuilder.build(
+            let actions = GroupCallContextMenuActionsBuilder.build(
                 demuxId: demuxId,
                 contactAci: contactAci,
-                contactName: viewModel.name,
                 isAudioMuted: viewModel.isAudioMuted,
                 ringRtcGroupCall: ringRtcGroupCall,
+            )
+
+            return UIContextMenuConfiguration(
+                actionProvider: { _ in
+                    return UIMenu(title: viewModel.name, children: actions)
+                },
             )
         }
     }

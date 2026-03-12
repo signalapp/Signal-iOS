@@ -2726,7 +2726,7 @@
 		D93964B62E038C7B00094117 /* BackupAttachmentUploadTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93964B52E038C7B00094117 /* BackupAttachmentUploadTracker.swift */; };
 		D93BDD942E43064500779BD8 /* BackupKeepKeySafeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93BDD932E43063B00779BD8 /* BackupKeepKeySafeSheet.swift */; };
 		D93CE1242A5C84F600D916B7 /* OutgoingRequestSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93CE1232A5C84F600D916B7 /* OutgoingRequestSyncMessage.swift */; };
-		D93E307E2F5A96DE00CCF7C0 /* GroupCallContextMenuInteractionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93E307D2F5A96D200CCF7C0 /* GroupCallContextMenuInteractionBuilder.swift */; };
+		D93E307E2F5A96DE00CCF7C0 /* GroupCallContextMenuActionsBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93E307D2F5A96D200CCF7C0 /* GroupCallContextMenuActionsBuilder.swift */; };
 		D93EDC042AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */; };
 		D93F4D5A2D800DD20042926C /* AvatarDefaultColorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93F4D552D7FAC3C0042926C /* AvatarDefaultColorManager.swift */; };
 		D93F4D5D2D801D750042926C /* AvatarDefaultColorManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93F4D5C2D801D700042926C /* AvatarDefaultColorManagerTest.swift */; };
@@ -6997,7 +6997,7 @@
 		D93964B52E038C7B00094117 /* BackupAttachmentUploadTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadTracker.swift; sourceTree = "<group>"; };
 		D93BDD932E43063B00779BD8 /* BackupKeepKeySafeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeepKeySafeSheet.swift; sourceTree = "<group>"; };
 		D93CE1232A5C84F600D916B7 /* OutgoingRequestSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingRequestSyncMessage.swift; sourceTree = "<group>"; };
-		D93E307D2F5A96D200CCF7C0 /* GroupCallContextMenuInteractionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallContextMenuInteractionBuilder.swift; sourceTree = "<group>"; };
+		D93E307D2F5A96D200CCF7C0 /* GroupCallContextMenuActionsBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallContextMenuActionsBuilder.swift; sourceTree = "<group>"; };
 		D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationSettingsViewController+MySupport.swift"; sourceTree = "<group>"; };
 		D93F4D552D7FAC3C0042926C /* AvatarDefaultColorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarDefaultColorManager.swift; sourceTree = "<group>"; };
 		D93F4D5C2D801D700042926C /* AvatarDefaultColorManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarDefaultColorManagerTest.swift; sourceTree = "<group>"; };
@@ -14033,7 +14033,7 @@
 				D9E43BAB2CC194140001536E /* CreateCallLinkViewController.swift */,
 				B9A53B982D0250FC0000578B /* EditCallLinkNameViewController.swift */,
 				D9E43BAD2CC194140001536E /* FlipCameraTooltip.swift */,
-				D93E307D2F5A96D200CCF7C0 /* GroupCallContextMenuInteractionBuilder.swift */,
+				D93E307D2F5A96D200CCF7C0 /* GroupCallContextMenuActionsBuilder.swift */,
 				D9E43BAE2CC194140001536E /* GroupCallErrorView.swift */,
 				D9E43BAF2CC194140001536E /* GroupCallNotificationView.swift */,
 				D9E43BB02CC194140001536E /* GroupCallSwipeToastView.swift */,
@@ -18424,7 +18424,7 @@
 				34EA0A002423C7F80059B75F /* GroupAttributesViewController.swift in Sources */,
 				D9E43C252CC194140001536E /* GroupCall.swift in Sources */,
 				D9E43C262CC194140001536E /* GroupCallAccessoryMessageDelegate.swift in Sources */,
-				D93E307E2F5A96DE00CCF7C0 /* GroupCallContextMenuInteractionBuilder.swift in Sources */,
+				D93E307E2F5A96DE00CCF7C0 /* GroupCallContextMenuActionsBuilder.swift in Sources */,
 				D9E43BFD2CC194140001536E /* GroupCallErrorView.swift in Sources */,
 				D9E43BFE2CC194140001536E /* GroupCallNotificationView.swift in Sources */,
 				D9E43C272CC194140001536E /* GroupCallRecordRingingCleanupManager.swift in Sources */,

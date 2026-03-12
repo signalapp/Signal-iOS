@@ -20,7 +20,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
             self.raisedHandView = nil
         case .remoteInGroup(let callMemberVisualContext):
             switch callMemberVisualContext {
-            case .videoGrid, .speaker:
+            case .videoGrid, .speaker, .contextMenuPreview:
                 self.raisedHandView = RaisedHandView(useCompactSize: false)
             case .videoOverflow:
                 self.raisedHandView = RaisedHandView(useCompactSize: true)

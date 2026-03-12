@@ -13,6 +13,7 @@ enum CallMemberVisualContext: Equatable {
     case videoGrid
     case videoOverflow
     case speaker
+    case contextMenuPreview
 }
 
 protocol CallMemberComposableView: UIView {

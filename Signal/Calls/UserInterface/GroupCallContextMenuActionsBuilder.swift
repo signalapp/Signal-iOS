@@ -9,26 +9,25 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-enum GroupCallContextMenuInteractionBuilder {
+enum GroupCallContextMenuActionsBuilder {
     static func build(
         demuxId: SignalRingRTC.DemuxId,
         contactAci: Aci,
-        contactName: String,
         isAudioMuted: Bool,
         ringRtcGroupCall: SignalRingRTC.GroupCall,
-    ) -> UIContextMenuConfiguration? {
-        guard BuildFlags.RemoteMute.send else {
-            return nil
-        }
-
+    ) -> [UIAction] {
         var contextMenuActions: [UIAction] = []
 
-        if !isAudioMuted {
+        if
+            BuildFlags.RemoteMute.send,
+            !isAudioMuted
+        {
             contextMenuActions.append(UIAction(
                 title: OWSLocalizedString(
                     "GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO",
                     comment: "Context menu action to mute a call participant's audio.",
                 ),
+                image: .micSlash,
                 handler: { [weak ringRtcGroupCall] _ in
                     guard let ringRtcGroupCall else { return }
 
@@ -44,6 +43,7 @@ enum GroupCallContextMenuInteractionBuilder {
                 "GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT",
                 comment: "Context menu action to navigate to the chat with a call participant.",
             ),
+            image: .arrowSquareUprightLight,
             handler: { _ in
                 MainActor.assumeIsolated {
                     AppEnvironment.shared.windowManagerRef.minimizeCallIfNeeded()
@@ -60,6 +60,7 @@ enum GroupCallContextMenuInteractionBuilder {
                 "GROUP_CALL_CONTEXT_MENU_CONTACT_DETAILS",
                 comment: "Context menu action to view a call participant's contact details.",
             ),
+            image: .personCircle,
             handler: { _ in
                 guard let frontmostVC = CurrentAppContext().frontmostViewController() else {
                     return
@@ -76,13 +77,6 @@ enum GroupCallContextMenuInteractionBuilder {
             },
         ))
 
-        return UIContextMenuConfiguration(
-            actionProvider: { _ in
-                return UIMenu(
-                    title: contactName,
-                    children: contextMenuActions,
-                )
-            },
-        )
+        return contextMenuActions
     }
 }
