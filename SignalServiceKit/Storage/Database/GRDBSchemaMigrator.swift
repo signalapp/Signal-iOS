@@ -322,6 +322,7 @@ public class GRDBSchemaMigrator {
         case addRecipientStatesToAdminDelete
         case modifyCallLinkRootKeyConstraint
         case addDevice
+        case stickerReactions
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -445,7 +446,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 141
+    public static let grdbSchemaVersionLatest: UInt = 142
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5044,6 +5045,25 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.addDevice) { tx in
             try addDevice(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.stickerReactions) { tx in
+            try tx.database.alter(table: "model_OWSReaction") { (table: TableAlteration) -> Void in
+                // All three columns non-null for sticker reactions, null for emoji reactions.
+                table.add(column: "stickerPackId", .blob)
+                table.add(column: "stickerPackKey", .blob)
+                table.add(column: "stickerId", .integer)
+            }
+
+            // Note: no index because lookup always starts with
+            // message row id  then to reaction; the number of
+            // reactions per message is low enough for O(n) lookup.
+            try tx.database.alter(table: "MessageAttachmentReference") { table in
+                table.add(column: "reactionRowId", .integer)
+            }
+
+            // TODO: apply schema change to schema.sqlite
             return .success(())
         }
 
