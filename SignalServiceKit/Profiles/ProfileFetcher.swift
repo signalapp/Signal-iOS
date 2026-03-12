@@ -94,8 +94,31 @@ public actor ProfileFetcherImpl: ProfileFetcher {
 
     private nonisolated let inProgressFetches = AtomicValue<[ServiceId: [FetchState]]>([:], lock: .init())
 
+    /// Tracks the state of an in-progress profile fetch, including any tasks waiting for it to complete.
+    /// This class is thread-safe: all access to `waiterContinuations` is synchronized via an internal lock.
     private class FetchState {
-        var waiterContinuations = [CancellableContinuation<Void>]()
+        private let lock = UnfairLock()
+        private var _waiterContinuations = [CancellableContinuation<Void>]()
+
+        /// Appends a waiter continuation in a thread-safe manner.
+        func appendWaiter(_ continuation: CancellableContinuation<Void>) {
+            lock.withLock {
+                _waiterContinuations.append(continuation)
+            }
+        }
+
+        /// Drains all waiter continuations and resumes them.
+        /// This atomically removes all waiters before resuming to avoid data races.
+        func drainAndResumeWaiters() {
+            let waiters = lock.withLock {
+                let copy = _waiterContinuations
+                _waiterContinuations.removeAll()
+                return copy
+            }
+            for waiter in waiters {
+                waiter.resume(with: .success(()))
+            }
+        }
     }
 
     private var rateLimitExpirationDate: MonotonicDate?
@@ -155,9 +178,8 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         self.inProgressFetches.update {
             $0[serviceId, default: []].removeAll(where: { $0 === fetchState })
         }
-        for waiter in fetchState.waiterContinuations {
-            waiter.resume(with: .success(()))
-        }
+        // Resume all waiters in a thread-safe manner
+        fetchState.drainAndResumeWaiters()
     }
 
     public nonisolated func fetchProfileSyncImpl(
@@ -356,7 +378,7 @@ public actor ProfileFetcherImpl: ProfileFetcher {
                 // we want to wait for whichever takes the longest.
                 return $0[serviceId, default: []].map { fetchState in
                     let result = CancellableContinuation<Void>()
-                    fetchState.waiterContinuations.append(result)
+                    fetchState.appendWaiter(result)
                     return result
                 }
             }
