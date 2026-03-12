@@ -139,28 +139,15 @@ public enum ThemeIcon: UInt {
 
     case errorCircle
 
-    case check16
     case compose16
     case error16
-    case group16
-    case heart16
-    case info16
-    case leave16
-    case megaphone16
-    case memberAdded16
-    case memberDeclined16
-    case memberRemove16
     case photo16
     case phone16
     case phoneFill16
     case video16
     case videoFill16
-    case profile16
-    case safetyNumber16
     case timerDisabled16
     case timer16
-    case refresh16
-    case merge16
     case link16
 
     case transfer
@@ -478,28 +465,10 @@ public extension Theme {
         case .errorCircle:
             return "error-circle"
         // Compact 16 dp icons
-        case .check16:
-            return "check-compact"
         case .compose16:
             return "edit-compact"
         case .error16:
             return "error-circle-compact"
-        case .group16:
-            return "group-compact"
-        case .heart16:
-            return "heart-compact"
-        case .info16:
-            return "info-compact"
-        case .leave16:
-            return "leave-compact"
-        case .megaphone16:
-            return "megaphone-compact"
-        case .memberAdded16:
-            return "person-plus-compact"
-        case .memberDeclined16:
-            return "person-x-compact"
-        case .memberRemove16:
-            return "person-minus-compact"
         case .photo16:
             return "photo-compact"
         case .phone16:
@@ -510,18 +479,10 @@ public extension Theme {
             return "video-compact"
         case .videoFill16:
             return "video-fill-compact"
-        case .profile16:
-            return "person-compact"
-        case .safetyNumber16:
-            return "safety-number-compact"
         case .timerDisabled16:
             return "timer-slash-compact"
         case .timer16:
             return "timer-compact"
-        case .refresh16:
-            return "refresh-compact"
-        case .merge16:
-            return "merge-compact"
         case .link16:
             return "link-compact"
         case .transfer:
