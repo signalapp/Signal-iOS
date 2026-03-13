@@ -119,6 +119,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private let db: any DB
     private let deviceSleepManager: (any DeviceSleepManager)?
     private let kvStore: KeyValueStore
+    private let logger: PrefixedLogger
     private let messagePipelineSupervisor: MessagePipelineSupervisor
     private let networkManager: NetworkManager
     private let tsAccountManager: TSAccountManager
@@ -143,6 +144,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         self.db = db
         self.deviceSleepManager = deviceSleepManager
         self.kvStore = KeyValueStore(collection: "LinkAndSyncManagerImpl")
+        self.logger = PrefixedLogger(prefix: "[LNS]")
         self.messagePipelineSupervisor = messagePipelineSupervisor
         self.networkManager = networkManager
         self.tsAccountManager = tsAccountManager
@@ -166,7 +168,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
         } catch {
             // TODO: Throw an error to indicate this failed because we're not registered.
-            Logger.warn("Couldn't wait for linking because we're no longer registered")
+            logger.warn("Couldn't wait for linking because we're no longer registered")
             return
         }
         owsPrecondition(registeredState.isPrimary, "Can't wait for linking unless we're a primary")
@@ -182,11 +184,11 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         do {
             try checkCancelledOrAppBackgrounded()
         } catch {
-            Logger.info("Cancelled!")
+            logger.info("Cancelled!")
             throw .cancelled(linkedDeviceId: nil)
         }
 
-        Logger.info("Beginning link'n'sync")
+        logger.info("Beginning link'n'sync")
 
         let waitForLinkResponse = try await waitForDeviceToLink(
             tokenId: tokenId,
@@ -282,10 +284,10 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         switch restoreState {
         case .finalized:
             // Assume this was from a link'n'sync that was subsequently interrupted
-            Logger.info("Skipping link'n'sync; already restored from backup")
+            logger.info("Skipping link'n'sync; already restored from backup")
             return
         case .unfinalized:
-            Logger.info("Finalizing unfinished link'n'sync")
+            logger.info("Finalizing unfinished link'n'sync")
             let blockObject = DeviceSleepBlockObject(blockReason: Constants.sleepBlockingDescription)
             deviceSleepManager?.addBlock(blockObject: blockObject)
             defer { deviceSleepManager?.removeBlock(blockObject: blockObject) }
@@ -301,7 +303,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             } catch let error as CancellationError {
                 throw error
             } catch {
-                owsFailDebug("Unable to finalize link'n'sync backup restore: \(error)")
+                owsFailDebug("Unable to finalize link'n'sync backup restore: \(error)", logger: logger)
                 throw SecondaryLinkNSyncError.errorRestoringBackup
             }
         case .none:
@@ -350,6 +352,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             localIdentifiers: localIdentifiers,
             ephemeralBackupKey: ephemeralBackupKey,
             progress: progress.child(for: .importingBackup),
+            logger: logger,
         )
     }
 
@@ -375,7 +378,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private func _waitForDeviceToLink(
         tokenId: DeviceProvisioningTokenId,
     ) async throws(PrimaryLinkNSyncError) -> Requests.WaitForDeviceToLinkResponse {
-        Logger.info("Waiting for device to link")
+        logger.info("Waiting for device to link")
         var numNetworkErrors = 0
         whileLoop: while true {
             do {
@@ -384,7 +387,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 )
                 switch Requests.WaitForDeviceToLinkResponseCodes(rawValue: response.responseStatusCode) {
                 case .success:
-                    Logger.info("Device linked!")
+                    logger.info("Device linked!")
                     guard
                         let data = response.responseBodyData,
                         let response = try? JSONDecoder().decode(
@@ -408,7 +411,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                     // retry
                     continue whileLoop
                 case nil:
-                    owsFailDebug("Unexpected response")
+                    owsFailDebug("Unexpected response", logger: logger)
                     throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
                 }
             } catch let error as PrimaryLinkNSyncError {
@@ -439,13 +442,14 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 localIdentifiers: localIdentifiers,
                 backupPurpose: .linkNsync(ephemeralKey: ephemeralBackupKey.backupKey, aci: localIdentifiers.aci),
                 progress: progress,
+                logger: logger,
             )
             return metadata
         } catch let error {
             if error is CancellationError {
                 throw .cancelled(linkedDeviceId: waitForDeviceToLinkResponse.id)
             }
-            owsFailDebug("Unable to generate link'n'sync backup: \(error)")
+            owsFailDebug("Unable to generate link'n'sync backup: \(error)", logger: logger)
             throw .errorGeneratingBackup
         }
     }
@@ -502,7 +506,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         } catch let error as PrimaryLinkNSyncError {
             throw error
         } catch {
-            owsFailDebug("Invalid error!")
+            owsFailDebug("Invalid error!", logger: logger)
             throw .errorMarkingBackupUploaded(PrimaryLinkNSyncErrorRetryHandler(
                 waitForDeviceToLinkResponse: waitForDeviceToLinkResponse,
                 linkNSyncManager: self,
@@ -611,7 +615,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                     if let error = rawResponse.error {
                         return .error(error)
                     }
-                    owsFailDebug("Unexpected server response!")
+                    owsFailDebug("Unexpected server response!", logger: logger)
                     return .error(.continueWithoutUpload)
                 case .timeout:
                     let elapsedTime = (MonotonicDate() - startDate).seconds
@@ -648,6 +652,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         localIdentifiers: LocalIdentifiers,
         ephemeralBackupKey: MessageRootBackupKey,
         progress: OWSProgressSink,
+        logger: PrefixedLogger,
     ) async throws {
         do {
             try await backupArchiveManager.importEncryptedBackup(
@@ -656,9 +661,10 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 isPrimaryDevice: false,
                 source: .linkNsync(ephemeralKey: ephemeralBackupKey.backupKey, aci: localIdentifiers.aci),
                 progress: progress,
+                logger: logger,
             )
         } catch {
-            Logger.warn("Unable to restore link'n'sync backup: \(error)")
+            logger.warn("Unable to restore link'n'sync backup: \(error)")
             switch error {
             case BackupImportError.unsupportedVersion:
                 throw error

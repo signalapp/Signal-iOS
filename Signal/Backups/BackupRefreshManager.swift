@@ -47,7 +47,7 @@ final class BackupRefreshManager {
         }
     }
 
-    func refreshBackup(localIdentifiers: LocalIdentifiers) async throws {
+    func refreshBackup(localIdentifiers: LocalIdentifiers, logger: PrefixedLogger) async throws {
         let backupPlan = db.read(block: backupSettingsStore.backupPlan(tx:))
         switch backupPlan {
         case .disabled:
@@ -61,15 +61,17 @@ final class BackupRefreshManager {
             for: messageBackupKey,
             localAci: localIdentifiers.aci,
             auth: .implicit(),
+            logger: logger,
         )
-        try await api.refreshBackup(auth: messageBackupAuth)
+        try await api.refreshBackup(auth: messageBackupAuth, logger: logger)
 
         let mediaBackupAuth = try await backupRequestManager.fetchBackupServiceAuth(
             for: mediaBackupKey,
             localAci: localIdentifiers.aci,
             auth: .implicit(),
+            logger: logger,
         )
-        try await api.refreshBackup(auth: mediaBackupAuth)
+        try await api.refreshBackup(auth: mediaBackupAuth, logger: logger)
     }
 
     // MARK: -
@@ -81,8 +83,8 @@ final class BackupRefreshManager {
             self.networkManager = networkManager
         }
 
-        func refreshBackup(auth: BackupServiceAuth) async throws {
-            _ = try await networkManager.asyncRequest(.refreshBackup(auth: auth))
+        func refreshBackup(auth: BackupServiceAuth, logger: PrefixedLogger) async throws {
+            _ = try await networkManager.asyncRequest(.refreshBackup(auth: auth, logger: logger))
         }
     }
 }
@@ -90,11 +92,12 @@ final class BackupRefreshManager {
 // MARK: -
 
 private extension TSRequest {
-    static func refreshBackup(auth: BackupServiceAuth) -> TSRequest {
+    static func refreshBackup(auth: BackupServiceAuth, logger: PrefixedLogger) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives")!,
             method: "POST",
             parameters: [:],
+            logger: logger,
         )
         request.auth = .backup(auth)
         return request

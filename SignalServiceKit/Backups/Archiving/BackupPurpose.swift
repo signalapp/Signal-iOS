@@ -127,6 +127,7 @@ extension BackupImportSource {
         db: any DB,
         libsignalNet: LibSignalClient.Net,
         nonceStore: BackupNonceMetadataStore,
+        logger: PrefixedLogger,
     ) async throws -> MessageBackupKey {
         switch self {
         case let .remote(key, noneSource):
@@ -149,6 +150,7 @@ extension BackupImportSource {
                                 db: db,
                                 libsignalNet: libsignalNet,
                                 nonceStore: nonceStore,
+                                logger: logger,
                             )
                         } catch .cancellationError {
                             throw CancellationError()
@@ -184,6 +186,7 @@ extension BackupImportSource {
         db: any DB,
         libsignalNet: LibSignalClient.Net,
         nonceStore: BackupNonceMetadataStore,
+        logger: PrefixedLogger,
     ) async throws(SVRBError) -> BackupForwardSecrecyToken {
         let svrBAuth: LibSignalClient.Auth
         do {
@@ -193,6 +196,7 @@ extension BackupImportSource {
                 // Force fetch new credentials on retries to make sure
                 // it wasn't stale credentials that caused the problem.
                 forceRefresh: isRetry,
+                logger: logger,
             )
         } catch is CancellationError {
             throw .cancellationError
@@ -245,6 +249,7 @@ extension BackupImportSource {
                     db: db,
                     libsignalNet: libsignalNet,
                     nonceStore: nonceStore,
+                    logger: logger,
                 )
             case .connectionFailed, .connectionTimeoutError, .ioError, .webSocketError:
                 // Network-level failures mostly end up in these buckets;
@@ -362,6 +367,7 @@ extension BackupExportPurpose {
                 // Force fetch new credentials on retries to make sure
                 // it wasn't stale credentials that caused the problem.
                 forceRefresh: isRetry,
+                logger: logger,
             )
         } catch let error {
             if error is CancellationError {

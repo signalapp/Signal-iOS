@@ -174,6 +174,7 @@ extension RegistrationCoordinatorImpl {
                 e164: e164,
                 reglockToken: reglockToken,
                 pniChangeNumberParameters: pniChangeNumberParameters,
+                logger: .empty(), // TODO [Registration+Backups Logging]
             )
             return await makeRequest(
                 { try await networkManager.asyncRequest(request) },

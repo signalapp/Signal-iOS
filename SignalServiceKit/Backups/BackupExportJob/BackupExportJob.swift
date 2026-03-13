@@ -218,6 +218,7 @@ class BackupExportJobImpl: BackupExportJob {
                         chatAuth: .implicit(),
                     ),
                     progress: progress?.child(for: .backupFileExport),
+                    logger: logger,
                 )
 
                 logger.info("Uploading backup...")
@@ -232,6 +233,7 @@ class BackupExportJobImpl: BackupExportJob {
                             metadata: uploadMetadata,
                             auth: .implicit(),
                             progress: progress?.child(for: .backupFileUpload),
+                            logger: logger,
                         )
                     },
                 )

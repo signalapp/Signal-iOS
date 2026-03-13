@@ -328,7 +328,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         }
 
         if !hasCompletedListingMedia {
-            try await makeListMediaRequest(backupKey: backupKey, localAci: localAci)
+            try await makeListMediaRequest(backupKey: backupKey, localAci: localAci, logger: logger)
         }
 
         let hasCompletedEnumeratingAttchments: Bool = db.read { tx in
@@ -595,11 +595,13 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
     private func makeListMediaRequest(
         backupKey: MediaRootBackupKey,
         localAci: Aci,
+        logger: PrefixedLogger,
     ) async throws {
         let backupAuth: BackupServiceAuth = try await backupRequestManager.fetchBackupServiceAuth(
             for: backupKey,
             localAci: localAci,
             auth: .implicit(),
+            logger: logger,
         )
 
         var nextCursor: String? = db.read { tx in
@@ -613,6 +615,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                 cursor: nextCursor,
                 limit: nil, /* let the server determine the page size */
                 auth: backupAuth,
+                logger: logger,
             )
 
             await persistListedMediaPage(page)

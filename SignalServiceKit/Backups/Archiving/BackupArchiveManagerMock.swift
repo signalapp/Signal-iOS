@@ -12,6 +12,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
     public func backupCdnInfo(
         backupKey: MessageRootBackupKey,
         backupAuth: BackupServiceAuth,
+        logger: PrefixedLogger,
     ) async throws -> BackupCdnInfo {
         return BackupCdnInfo(
             fileInfo: AttachmentDownloads.CdnInfo(contentLength: 0, lastModified: Date()),
@@ -23,6 +24,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         backupKey: MessageRootBackupKey,
         backupAuth: BackupServiceAuth,
         progress: OWSProgressSink?,
+        logger: PrefixedLogger,
     ) async throws -> URL {
         return URL(string: "file://")!
     }
@@ -32,6 +34,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         metadata: Upload.EncryptedBackupUploadMetadata,
         auth: ChatServiceAuth,
         progress: OWSProgressSink?,
+        logger: PrefixedLogger,
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {
         return Upload.Result(
             cdnKey: "cdnKey",
@@ -46,6 +49,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         localIdentifiers: LocalIdentifiers,
         backupPurpose: BackupExportPurpose,
         progress: OWSProgressSink?,
+        logger: PrefixedLogger,
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
         let source = await progress?.addSource(withLabel: "", unitCount: 1)
         source?.incrementCompletedUnitCount(by: 1)
@@ -75,6 +79,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         isPrimaryDevice: Bool,
         source: BackupImportSource,
         progress: OWSProgressSink?,
+        logger: PrefixedLogger,
     ) async throws {
         let source = await progress?.addSource(withLabel: "", unitCount: 1)
         source?.incrementCompletedUnitCount(by: 1)

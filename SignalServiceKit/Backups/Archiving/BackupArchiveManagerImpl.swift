@@ -159,8 +159,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         backupKey: MessageRootBackupKey,
         backupAuth: BackupServiceAuth,
         progress: OWSProgressSink?,
+        logger: PrefixedLogger,
     ) async throws -> URL {
-        let metadata = try await backupRequestManager.fetchBackupRequestMetadata(auth: backupAuth)
+        let metadata = try await backupRequestManager.fetchBackupRequestMetadata(auth: backupAuth, logger: logger)
         let tmpFileUrl = try await attachmentDownloadManager.downloadBackup(
             metadata: metadata,
             progress: progress,
@@ -175,8 +176,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     public func backupCdnInfo(
         backupKey: MessageRootBackupKey,
         backupAuth: BackupServiceAuth,
+        logger: PrefixedLogger,
     ) async throws -> BackupCdnInfo {
-        let metadata = try await backupRequestManager.fetchBackupRequestMetadata(auth: backupAuth)
+        let metadata = try await backupRequestManager.fetchBackupRequestMetadata(auth: backupAuth, logger: logger)
         return try await attachmentDownloadManager.backupCdnInfo(metadata: metadata)
     }
 
@@ -185,6 +187,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         metadata: Upload.EncryptedBackupUploadMetadata,
         auth: ChatServiceAuth,
         progress: OWSProgressSink?,
+        logger: PrefixedLogger,
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {
         guard db.read(block: { tsAccountManager.registrationState(tx: $0).isPrimaryDevice }) == true else {
             throw OWSAssertionError("Backing up not on a registered primary!")
@@ -194,12 +197,14 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             for: backupKey,
             localAci: backupKey.aci,
             auth: auth,
+            logger: logger,
         )
         let form: Upload.Form
         do {
             form = try await backupRequestManager.fetchBackupUploadForm(
                 backupByteLength: metadata.encryptedDataLength,
                 auth: backupAuth,
+                logger: logger,
             )
         } catch let error {
             switch error as? BackupArchive.Response.BackupUploadFormError {
@@ -227,7 +232,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 backupFileSizeBytes = UInt64(metadata.encryptedDataLength)
                 backupMediaSizeBytes = 0
             case .disabled, .disabling:
-                owsFailDebug("Shouldn't generate backup when backups is disabled")
+                owsFailDebug("Shouldn't generate backup when backups is disabled", logger: logger)
                 backupFileSizeBytes = 0
                 backupMediaSizeBytes = 0
             }
@@ -262,6 +267,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         localIdentifiers: LocalIdentifiers,
         backupPurpose: BackupExportPurpose,
         progress progressSink: OWSProgressSink?,
+        logger: PrefixedLogger,
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
         let attachmentByteCounter = BackupArchiveAttachmentByteCounter()
         let startDate = dateProvider()
@@ -279,12 +285,12 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             // can't be recovered using the material in SVRB.
             if db.read(block: { needsRestoreFromSVRBBeforeRemoteExport(tx: $0) }) {
                 do {
-                    try await fetchRemoteSVRBForwardSecrecyToken(key: key, auth: chatAuth)
+                    try await fetchRemoteSVRBForwardSecrecyToken(key: key, auth: chatAuth, logger: logger)
                 } catch SVRBError.unrecoverable {
                     // Not found, so consider a success and fallthrough
-                    Logger.info("SVRB not found, skipping restore.")
+                    logger.info("SVRB not found, skipping restore.")
                 } catch {
-                    Logger.warn("Encountered error restoring SVRB: \(error)")
+                    logger.warn("Encountered error restoring SVRB: \(error)")
                     throw error
                 }
 
@@ -754,6 +760,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         isPrimaryDevice: Bool,
         source: BackupImportSource,
         progress progressSink: OWSProgressSink?,
+        logger: PrefixedLogger,
     ) async throws {
 
         let backupEncryptionKey = try await source.deriveBackupEncryptionKeyWithSVRBIfNeeded(
@@ -761,6 +768,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             db: db,
             libsignalNet: libsignalNet,
             nonceStore: backupNonceMetadataStore,
+            logger: logger,
         )
 
         try await _importBackup(
@@ -1520,11 +1528,13 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private func fetchRemoteSVRBForwardSecrecyToken(
         key: MessageRootBackupKey,
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) async throws {
         let backupServiceAuth = try await backupRequestManager.fetchBackupServiceAuthForRegistration(
             key: key,
             localAci: key.aci,
             chatServiceAuth: auth,
+            logger: logger,
         )
 
         let metadataHeader: BackupNonce.MetadataHeader
@@ -1532,6 +1542,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             metadataHeader = try await backupCdnInfo(
                 backupKey: key,
                 backupAuth: backupServiceAuth,
+                logger: logger,
             ).metadataHeader
         } catch let error as OWSHTTPError where error.responseStatusCode == 404 {
             // If no backup is found, treat this as unrecoverable
@@ -1545,6 +1556,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             db: db,
             libsignalNet: libsignalNet,
             nonceStore: backupNonceMetadataStore,
+            logger: logger,
         )
     }
 }

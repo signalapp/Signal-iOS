@@ -596,6 +596,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     backupKey: backupKey,
                     backupAuth: backupServiceAuth,
                     progress: downloadProgress,
+                    logger: .empty(), // TODO [Registration+Backups Logging]
                 )
             }
 
@@ -640,6 +641,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 let metadataHeader = try await self.deps.backupArchiveManager.backupCdnInfo(
                     backupKey: backupKey,
                     backupAuth: backupServiceAuth,
+                    logger: .empty(), // TODO [Registration+Backups Logging]
                 ).metadataHeader
                 self.inMemoryState.backupMetadataHeader = metadataHeader
                 nonceSource = .svrB(header: metadataHeader, auth: identity.chatServiceAuth)
@@ -651,6 +653,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 isPrimaryDevice: true,
                 source: .remote(key: backupKey, nonceSource: nonceSource),
                 progress: importProgress,
+                logger: .empty(), // TODO [Registration+Backups Logging]
             )
         }
     }
@@ -1480,6 +1483,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             let cdnInfo = try await self.deps.backupArchiveManager.backupCdnInfo(
                 backupKey: backupKey,
                 backupAuth: backupServiceAuth,
+                logger: .empty(), // TODO [Registration+Backups Logging]
             )
             self.inMemoryState.backupMetadataHeader = cdnInfo.metadataHeader
             return .confirmRestoreFromBackup(
@@ -1533,6 +1537,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 key: backupKey,
                 localAci: accountIdentity.aci,
                 chatServiceAuth: accountIdentity.chatServiceAuth,
+                logger: .empty(), // TODO [Registration+Backups Logging]
             )
         }
 
@@ -1542,6 +1547,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             try await self.deps.backupIdService.updateMessageBackupIdForRegistration(
                 key: backupKey,
                 auth: accountIdentity.chatServiceAuth,
+                logger: .empty(), // TODO [Registration+Backups Logging]
             )
             return try await fetchBackupServiceAuth()
         }

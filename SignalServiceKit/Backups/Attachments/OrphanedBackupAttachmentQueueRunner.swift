@@ -201,6 +201,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
                     for: mediaRootBackupKey,
                     localAci: localAci,
                     auth: .implicit(),
+                    logger: .empty(), // TODO: [Logging]
                 )
             } catch let error {
                 try? await loader.stop(reason: error)
@@ -214,6 +215,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
                         mediaId: mediaId,
                     )],
                     auth: backupAuth,
+                    logger: .empty(), // TODO: [Logging]
                 )
             } catch let error {
                 if error.isNetworkFailureOrTimeout {

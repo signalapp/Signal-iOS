@@ -181,6 +181,7 @@ final class BackupDisablingManager {
                     try await backupKeyService.deleteBackupKey(
                         localIdentifiers: localIdentifiers,
                         auth: .implicit(),
+                        logger: logger,
                     )
                 }
 

@@ -18,6 +18,7 @@ public protocol BackupKeyService {
     func registerBackupKey(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) async throws
 
     /// De-initialize Backups by deleting a previously-registered BackupKey.
@@ -32,13 +33,7 @@ public protocol BackupKeyService {
     func deleteBackupKey(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
-    ) async throws
-
-    /// See ``deleteBackupKey(localIdentifiers:auth:)``. Similar, but with
-    /// Backup auth prepared ahead of time.
-    func deleteBackupKey(
-        localIdentifiers: LocalIdentifiers,
-        backupAuth: BackupServiceAuth,
+        logger: PrefixedLogger,
     ) async throws
 }
 
@@ -85,11 +80,13 @@ final class BackupKeyServiceImpl: BackupKeyService {
     func registerBackupKey(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) async throws {
         try await _registerBackupKey(
             localIdentifiers: localIdentifiers,
             auth: auth,
             retryOnFail: true,
+            logger: logger,
         )
     }
 
@@ -97,6 +94,7 @@ final class BackupKeyServiceImpl: BackupKeyService {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
         retryOnFail: Bool,
+        logger: PrefixedLogger,
     ) async throws {
         let (messageBackupKey, mediaBackupKey) = try await db.awaitableWrite { tx in
             try rootBackupKeys(localIdentifiers: localIdentifiers, tx: tx)
@@ -107,6 +105,7 @@ final class BackupKeyServiceImpl: BackupKeyService {
                 for: messageBackupKey,
                 localAci: localIdentifiers.aci,
                 auth: auth,
+                logger: logger,
             )
 
             _ = try await networkManager.asyncRequest(
@@ -117,6 +116,7 @@ final class BackupKeyServiceImpl: BackupKeyService {
                 for: mediaBackupKey,
                 localAci: localIdentifiers.aci,
                 auth: auth,
+                logger: logger,
             )
 
             _ = try await networkManager.asyncRequest(
@@ -136,6 +136,7 @@ final class BackupKeyServiceImpl: BackupKeyService {
                 localIdentifiers: localIdentifiers,
                 auth: auth,
                 retryOnFail: false,
+                logger: logger,
             )
         }
     }
@@ -145,6 +146,7 @@ final class BackupKeyServiceImpl: BackupKeyService {
     func deleteBackupKey(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) async throws {
         let (
             messageBackupKey,
@@ -159,6 +161,7 @@ final class BackupKeyServiceImpl: BackupKeyService {
                 for: key,
                 localAci: localIdentifiers.aci,
                 auth: auth,
+                logger: logger,
             )
 
             try await deleteBackupKey(
@@ -235,18 +238,18 @@ private extension TSRequest {
 #if TESTABLE_BUILD
 
 class MockBackupKeyService: BackupKeyService {
-    func registerBackupKey(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws {
+    func registerBackupKey(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth, logger: PrefixedLogger) async throws {
         // Do nothing
     }
 
     var deleteBackupKeyMock: (() async throws -> Void)?
-    func deleteBackupKey(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws {
+    func deleteBackupKey(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth, logger: PrefixedLogger) async throws {
         if let deleteBackupKeyMock {
             return try await deleteBackupKeyMock()
         }
     }
 
-    func deleteBackupKey(localIdentifiers: LocalIdentifiers, backupAuth: BackupServiceAuth) async throws {
+    func deleteBackupKey(localIdentifiers: LocalIdentifiers, backupAuth: BackupServiceAuth, logger: PrefixedLogger) async throws {
         // Do nothing
     }
 }

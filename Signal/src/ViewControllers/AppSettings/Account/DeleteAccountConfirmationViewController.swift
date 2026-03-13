@@ -380,6 +380,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         try await backupKeyService.deleteBackupKey(
             localIdentifiers: localIdentifiers,
             auth: .implicit(),
+            logger: logger,
         )
     }
 

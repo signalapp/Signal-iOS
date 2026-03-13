@@ -298,6 +298,7 @@ public enum RegistrationRequestFactory {
         e164: E164,
         reglockToken: String?,
         pniChangeNumberParameters: PniDistribution.Parameters,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         let urlPathComponents = URLPathComponents(
             ["v2", "accounts", "number"],

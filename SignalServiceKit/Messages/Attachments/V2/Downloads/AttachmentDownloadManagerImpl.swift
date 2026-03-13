@@ -795,7 +795,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     let mediaName = attachment.mediaName,
                     let backupKey = db.read(block: { accountKeyStore.getMediaRootBackupKey(tx: $0) }),
                     let encryptionMetadata = buildCdnEncryptionMetadata(mediaName: mediaName, backupKey: backupKey, type: .outerLayerFullsizeOrThumbnail),
-                    let cdnCredential = await fetchBackupCdnReadCredential(for: cdnNumber, backupKey: backupKey)
+                    let cdnCredential = await fetchBackupCdnReadCredential(
+                        for: cdnNumber,
+                        backupKey: backupKey,
+                        logger: PrefixedLogger(prefix: "[Backups]"),
+                    )
                 else {
                     return .unretryableError(OWSAssertionError("Attempting to download an attachment without cdn info"))
                 }
@@ -833,7 +837,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         backupKey: backupKey,
                         type: .transitTierThumbnail,
                     ),
-                    let cdnReadCredential = await fetchBackupCdnReadCredential(for: cdnNumber, backupKey: backupKey)
+                    let cdnReadCredential = await fetchBackupCdnReadCredential(
+                        for: cdnNumber,
+                        backupKey: backupKey,
+                        logger: PrefixedLogger(prefix: "[Backups]"),
+                    )
                 else {
                     return .unretryableError(OWSAssertionError("Attempting to download an attachment without cdn info"))
                 }
@@ -1016,6 +1024,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private func fetchBackupCdnReadCredential(
             for cdn: UInt32,
             backupKey: MediaRootBackupKey,
+            logger: PrefixedLogger,
         ) async -> MediaTierReadCredential? {
             guard
                 let localAci = db.read(block: { tx in
@@ -1031,6 +1040,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     for: backupKey,
                     localAci: localAci,
                     auth: .implicit(),
+                    logger: logger,
                 )
             else {
                 owsFailDebug("Failed to fetch backup credential")
@@ -1041,6 +1051,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 let metadata = try? await backupRequestManager.fetchMediaTierCdnRequestMetadata(
                     cdn: Int32(cdn),
                     auth: auth,
+                    logger: logger,
                 )
             else {
                 owsFailDebug("Failed to fetch backup credential")

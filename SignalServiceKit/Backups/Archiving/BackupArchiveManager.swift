@@ -28,6 +28,7 @@ public protocol BackupArchiveManager {
     func backupCdnInfo(
         backupKey: MessageRootBackupKey,
         backupAuth: BackupServiceAuth,
+        logger: PrefixedLogger,
     ) async throws -> BackupCdnInfo
 
     /// Download the encrypted backup for the current user to a local file.
@@ -35,6 +36,7 @@ public protocol BackupArchiveManager {
         backupKey: MessageRootBackupKey,
         backupAuth: BackupServiceAuth,
         progress: OWSProgressSink?,
+        logger: PrefixedLogger,
     ) async throws -> URL
 
     /// Upload the local encrypted backup identified by the given metadata for
@@ -44,6 +46,7 @@ public protocol BackupArchiveManager {
         metadata: Upload.EncryptedBackupUploadMetadata,
         auth: ChatServiceAuth,
         progress: OWSProgressSink?,
+        logger: PrefixedLogger,
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata>
 
     // MARK: - Export
@@ -54,6 +57,7 @@ public protocol BackupArchiveManager {
         localIdentifiers: LocalIdentifiers,
         backupPurpose: BackupExportPurpose,
         progress: OWSProgressSink?,
+        logger: PrefixedLogger,
     ) async throws -> Upload.EncryptedBackupUploadMetadata
 
 #if TESTABLE_BUILD
@@ -78,6 +82,7 @@ public protocol BackupArchiveManager {
         isPrimaryDevice: Bool,
         source: BackupImportSource,
         progress: OWSProgressSink?,
+        logger: PrefixedLogger,
     ) async throws
 
 #if TESTABLE_BUILD

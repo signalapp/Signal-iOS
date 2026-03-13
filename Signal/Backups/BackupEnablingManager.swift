@@ -113,6 +113,7 @@ final class BackupEnablingManager {
             _ = try await self.backupKeyService.registerBackupKey(
                 localIdentifiers: localIdentifiers,
                 auth: .implicit(),
+                logger: logger,
             )
         } catch where error.isNetworkFailureOrTimeout {
             throw .networkError

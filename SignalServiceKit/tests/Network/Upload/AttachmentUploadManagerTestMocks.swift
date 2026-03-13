@@ -94,6 +94,7 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
         key: BackupKeyMaterial,
         localAci: Aci,
         chatServiceAuth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) async throws -> BackupServiceAuth {
         fatalError("Unimplemented for tests")
     }
@@ -103,6 +104,7 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
         localAci: Aci,
         auth: ChatServiceAuth,
         forceRefreshUnlessCachedPaidCredential: Bool,
+        logger: PrefixedLogger,
     ) async throws -> BackupServiceAuth {
         fatalError("Unimplemented for tests")
     }
@@ -112,26 +114,27 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
     func fetchBackupUploadForm(
         backupByteLength: UInt32,
         auth: BackupServiceAuth,
+        logger: PrefixedLogger,
     ) async throws -> Upload.Form {
         fatalError("Unimplemented for tests")
     }
 
-    func fetchBackupMediaAttachmentUploadForm(auth: BackupServiceAuth, logger: PrefixedLogger? = nil) async throws -> Upload.Form {
+    func fetchBackupMediaAttachmentUploadForm(auth: BackupServiceAuth, logger: PrefixedLogger) async throws -> Upload.Form {
         fatalError("Unimplemented for tests")
     }
 
-    func fetchMediaTierCdnRequestMetadata(cdn: Int32, auth: BackupServiceAuth) async throws -> MediaTierReadCredential {
+    func fetchMediaTierCdnRequestMetadata(cdn: Int32, auth: BackupServiceAuth, logger: PrefixedLogger) async throws -> MediaTierReadCredential {
         fatalError("Unimplemented for tests")
     }
 
-    func fetchBackupRequestMetadata(auth: BackupServiceAuth) async throws -> BackupReadCredential {
+    func fetchBackupRequestMetadata(auth: BackupServiceAuth, logger: PrefixedLogger) async throws -> BackupReadCredential {
         fatalError("Unimplemented for tests")
     }
 
     func copyToMediaTier(
         item: BackupArchive.Request.MediaItem,
         auth: BackupServiceAuth,
-        logger: PrefixedLogger? = nil,
+        logger: PrefixedLogger,
     ) async throws -> UInt32 {
         return 3
     }
@@ -139,6 +142,7 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
     func copyToMediaTier(
         items: [BackupArchive.Request.MediaItem],
         auth: BackupServiceAuth,
+        logger: PrefixedLogger,
     ) async throws -> [BackupArchive.Response.BatchedBackupMediaResult] {
         return []
     }
@@ -147,6 +151,7 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
         cursor: String?,
         limit: UInt32?,
         auth: BackupServiceAuth,
+        logger: PrefixedLogger,
     ) async throws -> BackupArchive.Response.ListMediaResult {
         fatalError("Unimplemented for tests")
     }
@@ -154,16 +159,18 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
     func deleteMediaObjects(
         objects: [BackupArchive.Request.DeleteMediaTarget],
         auth: BackupServiceAuth,
+        logger: PrefixedLogger,
     ) async throws {
     }
 
-    func redeemReceipt(receiptCredentialPresentation: Data) async throws {
+    func redeemReceipt(receiptCredentialPresentation: Data, logger: PrefixedLogger) async throws {
     }
 
     func fetchSVRBAuthCredential(
         key: SignalServiceKit.MessageRootBackupKey,
         chatServiceAuth auth: SignalServiceKit.ChatServiceAuth,
         forceRefresh: Bool,
+        logger: PrefixedLogger,
     ) async throws -> LibSignalClient.Auth {
         return LibSignalClient.Auth(username: "", password: "")
     }

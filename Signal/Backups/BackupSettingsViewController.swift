@@ -1168,7 +1168,7 @@ class BackupSettingsViewController:
 
         // Check if we've hit the limit for registering new backupIDs and warn the user
         if
-            let limits = try? await backupIdService.fetchBackupIDLimits(auth: .implicit()),
+            let limits = try? await backupIdService.fetchBackupIDLimits(auth: .implicit(), logger: PrefixedLogger(prefix: "[Settings]")),
             !limits.hasPermitsRemaining
         {
             let bodyText = String(

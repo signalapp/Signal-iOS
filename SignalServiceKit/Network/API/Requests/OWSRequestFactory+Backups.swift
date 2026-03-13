@@ -12,10 +12,16 @@ extension OWSRequestFactory {
         from fromRedemptionSeconds: UInt64,
         to toRedemptionSeconds: UInt64,
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         owsAssertDebug(fromRedemptionSeconds > 0)
         owsAssertDebug(toRedemptionSeconds > 0)
-        var request = TSRequest(url: URL(string: "v1/archives/auth?redemptionStartSeconds=\(fromRedemptionSeconds)&redemptionEndSeconds=\(toRedemptionSeconds)")!, method: "GET", parameters: nil)
+        var request = TSRequest(
+            url: URL(string: "v1/archives/auth?redemptionStartSeconds=\(fromRedemptionSeconds)&redemptionEndSeconds=\(toRedemptionSeconds)")!,
+            method: "GET",
+            parameters: nil,
+            logger: logger,
+        )
         request.auth = .identified(auth)
         return request
     }
@@ -24,6 +30,7 @@ extension OWSRequestFactory {
     public static func backupUploadFormRequest(
         backupByteLength: UInt32,
         auth: BackupServiceAuth,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         var urlComps = URLComponents(string: "v1/archives/upload/form")!
         urlComps.queryItems = [URLQueryItem(name: "uploadLength", value: "\(backupByteLength)")]
@@ -31,6 +38,7 @@ extension OWSRequestFactory {
             url: urlComps.url!,
             method: "GET",
             parameters: nil,
+            logger: logger,
         )
         request.auth = .backup(auth)
         return request
@@ -38,7 +46,7 @@ extension OWSRequestFactory {
 
     public static func backupMediaUploadFormRequest(
         auth: BackupServiceAuth,
-        logger: PrefixedLogger? = nil,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives/media/upload/form")!,
@@ -50,31 +58,44 @@ extension OWSRequestFactory {
         return request
     }
 
-    public static func backupInfoRequest(auth: BackupServiceAuth) -> TSRequest {
+    public static func backupInfoRequest(
+        auth: BackupServiceAuth,
+        logger: PrefixedLogger,
+    ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives")!,
             method: "GET",
             parameters: nil,
+            logger: logger,
         )
         request.auth = .backup(auth)
         return request
     }
 
-    public static func backupRefreshInfoRequest(auth: BackupServiceAuth) -> TSRequest {
+    public static func backupRefreshInfoRequest(
+        auth: BackupServiceAuth,
+        logger: PrefixedLogger,
+    ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives")!,
             method: "PUT",
             parameters: nil,
+            logger: logger,
         )
         request.auth = .backup(auth)
         return request
     }
 
-    public static func fetchBackupCDNCredentials(auth: BackupServiceAuth, cdn: Int32) -> TSRequest {
+    public static func fetchBackupCDNCredentials(
+        auth: BackupServiceAuth,
+        cdn: Int32,
+        logger: PrefixedLogger,
+    ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives/auth/read?cdn=\(cdn)")!,
             method: "GET",
             parameters: nil,
+            logger: logger,
         )
         request.auth = .backup(auth)
         return request
@@ -83,7 +104,7 @@ extension OWSRequestFactory {
     public static func copyToMediaTier(
         auth: BackupServiceAuth,
         item: BackupArchive.Request.MediaItem,
-        logger: PrefixedLogger? = nil,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives/media")!,
@@ -98,12 +119,14 @@ extension OWSRequestFactory {
     public static func archiveMedia(
         auth: BackupServiceAuth,
         items: [BackupArchive.Request.MediaItem],
+        logger: PrefixedLogger,
     ) -> TSRequest {
         let parameters: [String: Any] = ["items": items.map(\.asParameters)]
         var request = TSRequest(
             url: URL(string: "v1/archives/media/batch")!,
             method: "PUT",
             parameters: parameters,
+            logger: logger,
         )
         request.auth = .backup(auth)
         return request
@@ -113,6 +136,7 @@ extension OWSRequestFactory {
         auth: BackupServiceAuth,
         cursor: String?,
         limit: UInt32?,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         var urlComponents = URLComponents(string: "v1/archives/media")!
         var queryItems = [URLQueryItem]()
@@ -129,6 +153,7 @@ extension OWSRequestFactory {
             url: urlComponents.url!,
             method: "GET",
             parameters: [:],
+            logger: logger,
         )
         request.auth = .backup(auth)
         return request
@@ -137,11 +162,13 @@ extension OWSRequestFactory {
     public static func deleteMedia(
         auth: BackupServiceAuth,
         objects: [BackupArchive.Request.DeleteMediaTarget],
+        logger: PrefixedLogger,
     ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives/media/delete")!,
             method: "POST",
             parameters: ["mediaToDelete": NSArray(array: objects.map(\.asParameters))],
+            logger: logger,
         )
         request.auth = .backup(auth)
         return request
@@ -149,21 +176,25 @@ extension OWSRequestFactory {
 
     public static func redeemReceipt(
         receiptCredentialPresentation: Data,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         return TSRequest(
             url: URL(string: "v1/archives/redeem-receipt")!,
             method: "POST",
             parameters: ["receiptCredentialPresentation": receiptCredentialPresentation.base64EncodedString()],
+            logger: logger,
         )
     }
 
     public static func fetchSVRBAuthCredential(
         auth: BackupServiceAuth,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives/auth/svrb")!,
             method: "GET",
             parameters: [:],
+            logger: logger,
         )
         request.auth = .backup(auth)
         return request

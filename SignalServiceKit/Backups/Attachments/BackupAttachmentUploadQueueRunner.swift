@@ -145,7 +145,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         }
 
         guard let backupKey else {
-            Logger.info("Skipping \(logString) attachment backups while media backup key is missing")
+            logger.info("Skipping \(logString) attachment backups while media backup key is missing")
             return
         }
 
@@ -167,6 +167,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 localAci: localAci,
                 auth: .implicit(),
                 forceRefreshUnlessCachedPaidCredential: true,
+                logger: logger,
             )
         } catch let error as BackupAuthCredentialFetchError {
             switch error {
@@ -376,7 +377,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             }
 
             guard let backupKey else {
-                owsFailDebug("Missing media backup key.  Unable to upload attachments.")
+                owsFailDebug("Missing media backup key.  Unable to upload attachments.", logger: logger)
                 return .cancelled
             }
 
@@ -450,6 +451,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     // can change _after_ this queue has already started running, so we
                     // do need to handle that case).
                     forceRefreshUnlessCachedPaidCredential: false,
+                    logger: logger,
                 )
             } catch let error {
                 try? await loader.stop(reason: error)
@@ -538,6 +540,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                         localAci: localAci,
                         auth: .implicit(),
                         forceRefreshUnlessCachedPaidCredential: true,
+                        logger: logger,
                     )
                     switch credential?.backupLevel {
                     case .free, nil:
@@ -724,10 +727,10 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         func didDrainQueue() async {
             switch mode {
             case .fullsize:
-                Logger.info("Did drain fullsize upload queue")
+                logger.info("Did drain fullsize upload queue")
                 await progress.didEmptyFullsizeUploadQueue()
             case .thumbnail:
-                Logger.info("Did drain thumbnail upload queue")
+                logger.info("Did drain thumbnail upload queue")
             }
             await statusManager.didEmptyQueue(for: mode)
         }
