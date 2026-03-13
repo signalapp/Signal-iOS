@@ -92,16 +92,20 @@ public class SignalApp {
         desiredMode: RegistrationMode,
         appReadiness: AppReadinessSetter,
     ) {
+        let logger: PrefixedLogger
         switch desiredMode {
         case .registering:
-            Logger.info("Attempting initial registration on app launch")
+            logger = PrefixedLogger(prefix: "[Reg]")
+            logger.info("Attempting initial registration on app launch")
         case .reRegistering:
-            Logger.info("Attempting reregistration on app launch")
+            logger = PrefixedLogger(prefix: "[ReReg]")
+            logger.info("Attempting reregistration on app launch")
         case .changingNumber:
-            Logger.info("Attempting change number registration on app launch")
+            logger = PrefixedLogger(prefix: "[ChgNum]")
+            logger.info("Attempting change number registration on app launch")
         }
         let coordinator = SSKEnvironment.shared.databaseStorageRef.write { tx in
-            return loader.coordinator(forDesiredMode: desiredMode, transaction: tx)
+            return loader.coordinator(forDesiredMode: desiredMode, transaction: tx, logger: logger)
         }
         let navController = RegistrationNavigationController.withCoordinator(coordinator, appReadiness: appReadiness)
 

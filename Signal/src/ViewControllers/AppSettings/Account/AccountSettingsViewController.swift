@@ -303,7 +303,8 @@ class AccountSettingsViewController: OWSTableViewController2 {
     }
 
     private func changePhoneNumber(_ params: RegistrationMode.ChangeNumberParams) {
-        Logger.info("Attempting to start change number from settings")
+        let logger = PrefixedLogger(prefix: "[ChangeNum]")
+        logger.info("Attempting to start change number from settings")
         let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
         let desiredMode = RegistrationMode.changingNumber(params)
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
@@ -311,6 +312,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             return loader.coordinator(
                 forDesiredMode: desiredMode,
                 transaction: $0,
+                logger: logger,
             )
         }
         let navController = RegistrationNavigationController.withCoordinator(coordinator, appReadiness: appReadiness)
@@ -394,7 +396,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 Task {
                     do {
                         try await ModalActivityIndicatorViewController.presentAndPropagateResult(from: self) {
-                            try await SSKEnvironment.shared.ows2FAManagerRef.enableRegistrationLockV2()
+                            try await SSKEnvironment.shared.ows2FAManagerRef.enableRegistrationLockV2(logger: PrefixedLogger(prefix: "[Settings]"))
                         }
                     } catch where error.isNetworkFailureOrTimeout {
                         owsFailDebug("Network error enabling reglock.")

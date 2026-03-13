@@ -172,7 +172,7 @@ public enum OWSRequestFactory {
 
     // MARK: - Registration
 
-    public static func enableRegistrationLockV2Request(token: String) -> TSRequest {
+    public static func enableRegistrationLockV2Request(token: String, logger: PrefixedLogger) -> TSRequest {
         owsAssertDebug(nil != token.nilIfEmpty)
 
         let url = URL(string: textSecureRegistrationLockV2API)!
@@ -182,6 +182,7 @@ public enum OWSRequestFactory {
             parameters: [
                 "registrationLock": token,
             ],
+            logger: logger,
         )
     }
 

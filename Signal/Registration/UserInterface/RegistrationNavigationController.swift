@@ -10,6 +10,7 @@ public class RegistrationNavigationController: OWSNavigationController {
 
     private let appReadiness: AppReadinessSetter
     private let coordinator: RegistrationCoordinator
+    private var logger: PrefixedLogger { coordinator.logger }
 
     public static func withCoordinator(
         _ coordinator: RegistrationCoordinator,
@@ -37,7 +38,7 @@ public class RegistrationNavigationController: OWSNavigationController {
         super.viewWillAppear(animated)
 
         if viewControllers.isEmpty, !isLoading {
-            Logger.info("Performing initial load")
+            logger.info("Performing initial load")
             pushNextController(Guarantee.wrapAsync { await self.coordinator.nextStep() })
         }
 
@@ -57,12 +58,12 @@ public class RegistrationNavigationController: OWSNavigationController {
         loadingMode: RegistrationLoadingViewController.RegistrationLoadingMode? = .generic,
     ) {
         guard !isLoading else {
-            owsFailDebug("Parallel loads not allowed")
+            owsFailDebug("Parallel loads not allowed", logger: logger)
             return
         }
 
         if let loadingMode, step.isSealed.negated {
-            Logger.info("Pushing loading controller")
+            logger.info("Pushing loading controller")
             isLoading = true
 
             switch loadingMode {
@@ -82,7 +83,7 @@ public class RegistrationNavigationController: OWSNavigationController {
                 }
             }
         } else {
-            Logger.info("Skipping loading controller for \(String(describing: try? step.result?.get().logSafeString))")
+            logger.info("Skipping loading controller for \(String(describing: try? step.result?.get().logSafeString))")
             _pushNextController(step)
         }
     }
@@ -93,15 +94,15 @@ public class RegistrationNavigationController: OWSNavigationController {
             let step = await step.awaitable()
 
             if let progressModal = self.presentedViewController as? BackupRestoreProgressModal {
-                Logger.info("Dismissing progress view")
+                logger.info("Dismissing progress view")
                 await progressModal.completeAndDismiss()
             }
 
-            Logger.info("Pushing registration step: \(step.logSafeString)")
+            logger.info("Pushing registration step: \(step.logSafeString)")
 
             self.isLoading = false
             guard let controller = self.controller(for: step) else {
-                Logger.info("No controller for \(step.logSafeString)")
+                logger.info("No controller for \(step.logSafeString)")
                 return
             }
             var controllerToPush: UIViewController?
@@ -109,10 +110,10 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // If we already have this controller available, update it and pop to it.
                 if type(of: viewController) == controller.viewType {
                     if let newController = controller.updateViewController(viewController) {
-                        Logger.info("Pushing new version of existing controller for \(step.logSafeString)")
+                        logger.info("Pushing new version of existing controller for \(step.logSafeString)")
                         controllerToPush = newController
                     } else {
-                        Logger.info("Popping to existing controller for \(step.logSafeString)")
+                        logger.info("Popping to existing controller for \(step.logSafeString)")
                         let animatePop = !(self.topViewController is RegistrationLoadingViewController)
                         self.popToViewController(viewController, animated: animatePop)
                         return
@@ -128,14 +129,14 @@ public class RegistrationNavigationController: OWSNavigationController {
                 !self.viewControllers.contains(where: { $0 is RegistrationSplashViewController })
             {
                 // Cancellable controllers need to have a splash view behind
-                Logger.info("Pushing splash view and controller for \(step.logSafeString)")
+                logger.info("Pushing splash view and controller for \(step.logSafeString)")
                 let splashController = self.registrationSplashController()
                 let newViewControllers = [splashController.makeViewController(self), vc]
                 self.setViewControllers(self.viewControllers + newViewControllers, animated: true)
                 return
             }
 
-            Logger.info("Pushing controller for \(step.logSafeString)")
+            logger.info("Pushing controller for \(step.logSafeString)")
             self.pushViewController(vc, animated: true)
         }
     }
@@ -450,7 +451,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             present(UIAlertController.registrationAppUpdateBanner(), animated: true)
             return nil
         case .done:
-            Logger.info("Finished with registration!")
+            logger.info("Finished with registration!")
             SignalApp.shared.showConversationSplitView(appReadiness: appReadiness)
             return nil
         }
@@ -512,7 +513,7 @@ extension RegistrationNavigationController: RegistrationSplashPresenter {
     }
 
     public func switchToDeviceLinkingMode() {
-        Logger.info("Pushing device linking")
+        logger.info("Pushing device linking")
         let controller = RegistrationConfirmModeSwitchViewController(presenter: self)
         pushViewController(controller, animated: true)
     }
@@ -550,7 +551,7 @@ extension RegistrationNavigationController: RegistrationPhoneNumberPresenter {
             owsFailBeta("Unable to exit registration")
             return
         }
-        Logger.info("Early exiting registration")
+        logger.info("Early exiting registration")
         SignalApp.shared.showConversationSplitView(appReadiness: appReadiness)
     }
 }
@@ -666,10 +667,10 @@ extension RegistrationNavigationController: RegistrationReglockTimeoutPresenter 
     func acknowledgeReglockTimeout() {
         switch coordinator.acknowledgeReglockTimeout() {
         case .cannotExit:
-            Logger.warn("Tried to exit registration from reglock timeout when unable.")
+            logger.warn("Tried to exit registration from reglock timeout when unable.")
             return
         case .exitRegistration:
-            Logger.info("Exiting registration after reglock timeout")
+            logger.info("Exiting registration after reglock timeout")
             SignalApp.shared.showConversationSplitView(appReadiness: appReadiness)
         case .restartRegistration(let nextStepGuarantee):
             pushNextController(nextStepGuarantee)

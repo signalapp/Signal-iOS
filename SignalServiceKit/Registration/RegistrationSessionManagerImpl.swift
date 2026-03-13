@@ -26,14 +26,14 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     // TODO: make this and other methods resilient to transient network failures by adding
     // basic retrying logic.
-    public func restoreSession() async -> RegistrationSession? {
+    public func restoreSession(logger: PrefixedLogger) async -> RegistrationSession? {
         // Just get the most recent one, don't validate against any e164.
-        return await restoreSession(forE164: nil)
+        return await restoreSession(forE164: nil, logger: logger)
     }
 
-    public func beginOrRestoreSession(e164: E164, apnsToken: String?) async -> Registration.BeginSessionResponse {
+    public func beginOrRestoreSession(e164: E164, apnsToken: String?, logger: PrefixedLogger) async -> Registration.BeginSessionResponse {
         // Verify the session is still valid.
-        let restoredSession = await restoreSession(forE164: e164)
+        let restoredSession = await restoreSession(forE164: e164, logger: logger)
         guard let restoredSession, restoredSession.e164 == e164 else {
             // We only keep one session at a time, wipe any if we change the e164.
             await db.awaitableWrite { self.clearPersistedSession($0) }
@@ -45,6 +45,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
                 apnsToken: apnsToken,
                 mcc: mcc,
                 mnc: mnc,
+                logger: logger,
             )
             return await persistSessionFromResponse(response)
         }
@@ -54,18 +55,19 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
     public func fulfillChallenge(
         for session: RegistrationSession,
         fulfillment: Registration.ChallengeFulfillment,
+        logger: PrefixedLogger,
     ) async -> Registration.UpdateSessionResponse {
-        let response = await makeFulfillChallengeRequest(session, fulfillment)
+        let response = await makeFulfillChallengeRequest(session, fulfillment, logger: logger)
         return await persistSessionFromResponse(response)
     }
 
-    public func requestVerificationCode(for session: RegistrationSession, transport: Registration.CodeTransport) async -> Registration.UpdateSessionResponse {
-        let response = await makeRequestVerificationCodeRequest(session, transport)
+    public func requestVerificationCode(for session: RegistrationSession, transport: Registration.CodeTransport, logger: PrefixedLogger) async -> Registration.UpdateSessionResponse {
+        let response = await makeRequestVerificationCodeRequest(session, transport, logger: logger)
         return await persistSessionFromResponse(response)
     }
 
-    public func submitVerificationCode(for session: RegistrationSession, code: String) async -> Registration.UpdateSessionResponse {
-        let response = await makeSubmitVerificationCodeRequest(session, code: code)
+    public func submitVerificationCode(for session: RegistrationSession, code: String, logger: PrefixedLogger) async -> Registration.UpdateSessionResponse {
+        let response = await makeSubmitVerificationCodeRequest(session, code: code, logger: logger)
         return await persistSessionFromResponse(response)
     }
 
@@ -157,7 +159,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     // TODO: make this and other methods resilient to transient network failures by adding
     // basic retrying logic.
-    private func restoreSession(forE164 e164: E164?) async -> RegistrationSession? {
+    private func restoreSession(forE164 e164: E164?, logger: PrefixedLogger) async -> RegistrationSession? {
         guard let existingSession = db.read(block: { self.getPersistedSession($0) }) else {
             return nil
         }
@@ -167,7 +169,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             return nil
         }
         // Verify the session is still valid.
-        let fetchSessionResponse = await makeFetchSessionRequest(existingSession)
+        let fetchSessionResponse = await makeFetchSessionRequest(existingSession, logger: logger)
         _ = await self.persistSessionFromResponse(fetchSessionResponse)
         switch fetchSessionResponse {
         case .success(let session):
@@ -184,12 +186,14 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         apnsToken: String?,
         mcc: String?,
         mnc: String?,
+        logger: PrefixedLogger,
     ) async -> Registration.BeginSessionResponse {
         let request = RegistrationRequestFactory.beginSessionRequest(
             e164: e164,
             pushToken: apnsToken,
             mcc: mcc,
             mnc: mnc,
+            logger: logger,
         )
         return await makeRequest(
             request,
@@ -227,6 +231,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
     private func makeFulfillChallengeRequest(
         _ session: RegistrationSession,
         _ fulfillment: Registration.ChallengeFulfillment,
+        logger: PrefixedLogger,
     ) async -> Registration.UpdateSessionResponse {
         let captchaToken: String?
         let pushChallengeToken: String?
@@ -242,6 +247,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             sessionId: session.id,
             captchaToken: captchaToken,
             pushChallengeToken: pushChallengeToken,
+            logger: logger,
         )
         return await makeUpdateRequest(
             request,
@@ -284,6 +290,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
     private func makeRequestVerificationCodeRequest(
         _ session: RegistrationSession,
         _ transport: Registration.CodeTransport,
+        logger: PrefixedLogger,
     ) async -> Registration.UpdateSessionResponse {
         let wireTransport: RegistrationRequestFactory.VerificationCodeTransport
         switch transport {
@@ -312,6 +319,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             languageCode: languageCode,
             countryCode: countryCode,
             transport: wireTransport,
+            logger: logger,
         )
         return await makeUpdateRequest(
             request,
@@ -363,10 +371,12 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
     private func makeSubmitVerificationCodeRequest(
         _ session: RegistrationSession,
         code: String,
+        logger: PrefixedLogger,
     ) async -> Registration.UpdateSessionResponse {
         let request = RegistrationRequestFactory.submitVerificationCodeRequest(
             sessionId: session.id,
             code: code,
+            logger: logger,
         )
         return await makeUpdateRequest(
             request,
@@ -448,8 +458,9 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     private func makeFetchSessionRequest(
         _ session: RegistrationSession,
+        logger: PrefixedLogger,
     ) async -> FetchSessionResponse {
-        let request = RegistrationRequestFactory.fetchSessionRequest(sessionId: session.id)
+        let request = RegistrationRequestFactory.fetchSessionRequest(sessionId: session.id, logger: logger)
         do {
             let response = try await signalService.urlSessionForMainSignalService().performRequest(request)
             return handleFetchSessionResponse(

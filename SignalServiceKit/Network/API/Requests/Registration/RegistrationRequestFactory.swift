@@ -15,6 +15,7 @@ public enum RegistrationRequestFactory {
         pushToken: String?,
         mcc: String?,
         mnc: String?,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         let urlPathComponents = URLPathComponents(
             ["v1", "verification", "session"],
@@ -38,7 +39,7 @@ public enum RegistrationRequestFactory {
             parameters["mnc"] = mnc
         }
 
-        var result = TSRequest(url: url, method: "POST", parameters: parameters)
+        var result = TSRequest(url: url, method: "POST", parameters: parameters, logger: logger)
         result.auth = .registration(nil)
         return result
     }
@@ -46,6 +47,7 @@ public enum RegistrationRequestFactory {
     /// See `RegistrationServiceResponses.FetchSessionResponseCodes` for possible responses.
     public static func fetchSessionRequest(
         sessionId: String,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         owsAssertDebug(sessionId.isEmpty.negated)
 
@@ -56,7 +58,7 @@ public enum RegistrationRequestFactory {
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
         let url = urlComponents.url!
 
-        var result = TSRequest(url: url, method: "GET", parameters: nil)
+        var result = TSRequest(url: url, method: "GET", parameters: nil, logger: logger)
         result.auth = .registration(nil)
         redactSessionIdFromLogs(sessionId, in: &result)
         return result
@@ -69,6 +71,7 @@ public enum RegistrationRequestFactory {
         sessionId: String,
         captchaToken: String?,
         pushChallengeToken: String?,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         owsAssertDebug(sessionId.isEmpty.negated)
         owsAssertDebug(!captchaToken.isEmptyOrNil || !pushChallengeToken.isEmptyOrNil)
@@ -88,7 +91,7 @@ public enum RegistrationRequestFactory {
             parameters["pushChallenge"] = pushChallengeToken
         }
 
-        var result = TSRequest(url: url, method: "PATCH", parameters: parameters)
+        var result = TSRequest(url: url, method: "PATCH", parameters: parameters, logger: logger)
         result.auth = .registration(nil)
         redactSessionIdFromLogs(sessionId, in: &result)
         return result
@@ -109,6 +112,7 @@ public enum RegistrationRequestFactory {
         languageCode: String?,
         countryCode: String?,
         transport: VerificationCodeTransport,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         owsAssertDebug(sessionId.isEmpty.negated)
 
@@ -137,7 +141,7 @@ public enum RegistrationRequestFactory {
 
         let languageHeader: String = HttpHeaders.formatAcceptLanguageHeader(languageCodes)
 
-        var result = TSRequest(url: url, method: "POST", parameters: parameters)
+        var result = TSRequest(url: url, method: "POST", parameters: parameters, logger: logger)
         result.auth = .registration(nil)
         result.headers[HttpHeaders.acceptLanguageHeaderKey] = languageHeader
         redactSessionIdFromLogs(sessionId, in: &result)
@@ -148,6 +152,7 @@ public enum RegistrationRequestFactory {
     public static func submitVerificationCodeRequest(
         sessionId: String,
         code: String,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         owsAssertDebug(sessionId.isEmpty.negated)
         owsAssertDebug(code.isEmpty.negated)
@@ -163,7 +168,7 @@ public enum RegistrationRequestFactory {
             "code": code,
         ]
 
-        var result = TSRequest(url: url, method: "PUT", parameters: parameters)
+        var result = TSRequest(url: url, method: "PUT", parameters: parameters, logger: logger)
         result.auth = .registration(nil)
         redactSessionIdFromLogs(sessionId, in: &result)
         return result
@@ -174,6 +179,7 @@ public enum RegistrationRequestFactory {
     public static func svr2AuthCredentialCheckRequest(
         e164: E164,
         credentials: [SVR2AuthCredential],
+        logger: PrefixedLogger,
     ) -> TSRequest {
         owsAssertDebug(!credentials.isEmpty)
 
@@ -191,7 +197,7 @@ public enum RegistrationRequestFactory {
             },
         ]
 
-        var result = TSRequest(url: url, method: "POST", parameters: parameters)
+        var result = TSRequest(url: url, method: "POST", parameters: parameters, logger: logger)
         result.auth = .registration(nil)
         return result
     }
@@ -240,6 +246,7 @@ public enum RegistrationRequestFactory {
         skipDeviceTransfer: Bool,
         apnRegistrationId: ApnRegistrationId?,
         prekeyBundles: RegistrationPreKeyUploadBundles,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         owsAssertDebug((apnRegistrationId != nil) != accountAttributes.isManualMessageFetchEnabled)
 
@@ -278,7 +285,7 @@ public enum RegistrationRequestFactory {
             parameters["apnToken"] = apnRegistrationIdDict
         }
 
-        var result = TSRequest(url: url, method: "POST", parameters: parameters)
+        var result = TSRequest(url: url, method: "POST", parameters: parameters, logger: logger)
         // As odd as this is, it is to spec.
         result.auth = .registration((username: e164.stringValue, password: authPassword))
         result.headers["X-Signal-Agent"] = "OWI"
@@ -323,16 +330,17 @@ public enum RegistrationRequestFactory {
         parameters.merge(
             pniChangeNumberParameters.requestParameters(),
             uniquingKeysWith: { _, _ in
-                owsFail("Unexpectedly encountered duplicate keys!")
+                owsFail("Unexpectedly encountered duplicate keys!", logger: logger)
             },
         )
 
-        return TSRequest(url: url, method: "PUT", parameters: parameters)
+        return TSRequest(url: url, method: "PUT", parameters: parameters, logger: logger)
     }
 
     public static func updatePrimaryDeviceAccountAttributesRequest(
         _ accountAttributes: AccountAttributes,
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         let urlPathComponents = URLPathComponents(
             ["v1", "accounts", "attributes"],
@@ -346,7 +354,7 @@ public enum RegistrationRequestFactory {
         let data = try! JSONEncoder().encode(accountAttributes)
         let parameters = try! JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) as! [String: Any]
 
-        var result = TSRequest(url: url, method: "PUT", parameters: parameters)
+        var result = TSRequest(url: url, method: "PUT", parameters: parameters, logger: logger)
         result.headers["X-Signal-Agent"] = "OWI"
         result.auth = .identified(auth)
         return result

@@ -44,6 +44,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
         let expectedRequest = RegistrationRequestFactory.submitVerificationCodeRequest(
             sessionId: oldSession.id,
             code: code,
+            logger: .empty(),
         )
 
         // A standard response
@@ -69,6 +70,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.requestVerificationCode(
                 for: oldSession,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!,
+                logger: .empty(),
             )
 
             XCTAssertEqual(result, .success(RegistrationSession(
@@ -105,6 +107,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.requestVerificationCode(
                 for: oldSession,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!,
+                logger: .empty(),
             )
 
             XCTAssertEqual(result, .success(RegistrationSession(
@@ -144,6 +147,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.requestVerificationCode(
                 for: oldSession,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!,
+                logger: .empty(),
             )
 
             XCTAssertEqual(result, .success(RegistrationSession(
@@ -170,6 +174,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             pushToken: apnsToken,
             mcc: nil,
             mnc: nil,
+            logger: .empty(),
         )
 
         // Without any setup, we should try and begin a new session.
@@ -185,6 +190,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.beginOrRestoreSession(
                 e164: e164,
                 apnsToken: apnsToken,
+                logger: .empty(),
             )
             XCTAssertEqual(result, .success(responseSession))
         }
@@ -201,7 +207,10 @@ public class RegistrationSessionManagerTest: XCTestCase {
 
         // Now we should get back the same session if we try again, with a request
         // only to check its validity.
-        var fetchSessionRequest = RegistrationRequestFactory.fetchSessionRequest(sessionId: responseSession.id)
+        var fetchSessionRequest = RegistrationRequestFactory.fetchSessionRequest(
+            sessionId: responseSession.id,
+            logger: .empty(),
+        )
 
         // Make a new instance, which shuffles the id
         responseBody = stubWireSession()
@@ -215,6 +224,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.beginOrRestoreSession(
                 e164: e164,
                 apnsToken: apnsToken,
+                logger: .empty(),
             )
             XCTAssertEqual(result, .success(responseSession))
         }
@@ -231,7 +241,10 @@ public class RegistrationSessionManagerTest: XCTestCase {
 
         // If we have the service respond that the session is invalid, we should get a fresh
         // session.
-        fetchSessionRequest = RegistrationRequestFactory.fetchSessionRequest(sessionId: responseSession.id)
+        fetchSessionRequest = RegistrationRequestFactory.fetchSessionRequest(
+            sessionId: responseSession.id,
+            logger: .empty(),
+        )
 
         // Make a new instance, which shuffles the id
         responseBody = stubWireSession()
@@ -249,6 +262,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.beginOrRestoreSession(
                 e164: e164,
                 apnsToken: apnsToken,
+                logger: .empty(),
             )
             XCTAssertEqual(result, .success(responseSession))
         }
@@ -288,6 +302,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.beginOrRestoreSession(
                 e164: e164,
                 apnsToken: apnsToken,
+                logger: .empty(),
             )
             XCTAssertEqual(result, .success(responseSession))
         }
@@ -315,6 +330,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.beginOrRestoreSession(
                 e164: newE164,
                 apnsToken: apnsToken,
+                logger: .empty(),
             )
             XCTAssertEqual(result, .success(responseSession))
         }
@@ -338,6 +354,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             sessionId: oldSession.id,
             captchaToken: captchaToken, // Put both, doesn't matter cuz we just match the url.
             pushChallengeToken: pushChallengeToken,
+            logger: .empty(),
         )
 
         // will have a new id, which is fine cuz it lets us differentiate.
@@ -367,6 +384,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
                     Registration.ChallengeFulfillment.captcha(captchaToken),
                     .pushChallenge(pushChallengeToken),
                 ].randomElement()!,
+                logger: .empty(),
             )
             XCTAssertEqual(result, expectedResponse)
         }
@@ -379,6 +397,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             sessionId: oldSession.id,
             captchaToken: captchaToken,
             pushChallengeToken: nil,
+            logger: .empty(),
         )
 
         mockURLSession.addResponse(
@@ -390,6 +409,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.fulfillChallenge(
                 for: oldSession,
                 fulfillment: .captcha(captchaToken),
+                logger: .empty(),
             )
             XCTAssertEqual(result, Registration.UpdateSessionResponse.genericError)
         }
@@ -402,6 +422,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             languageCode: nil,
             countryCode: nil,
             transport: .sms,
+            logger: .empty(),
         )
 
         // will have a new id, which is fine cuz it lets us differentiate.
@@ -428,6 +449,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.requestVerificationCode(
                 for: oldSession,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!,
+                logger: .empty(),
             )
             XCTAssertEqual(result, expectedResponse)
         }
@@ -440,6 +462,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             languageCode: nil,
             countryCode: nil,
             transport: .sms,
+            logger: .empty(),
         )
 
         var errorResponseJSON = """
@@ -459,6 +482,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.requestVerificationCode(
                 for: oldSession,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!,
+                logger: .empty(),
             )
             XCTAssertEqual(result, .serverFailure(Registration.ServerFailureResponse(
                 session: oldSession,
@@ -484,6 +508,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.requestVerificationCode(
                 for: oldSession,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!,
+                logger: .empty(),
             )
             XCTAssertEqual(result, .serverFailure(Registration.ServerFailureResponse(
                 session: oldSession,
@@ -499,6 +524,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
         let expectedRequest = RegistrationRequestFactory.submitVerificationCodeRequest(
             sessionId: oldSession.id,
             code: code,
+            logger: .empty(),
         )
 
         // will have a new ids, which is fine cuz it lets us differentiate.
@@ -533,6 +559,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
             let result = await registrationSessionManager.submitVerificationCode(
                 for: oldSession,
                 code: code,
+                logger: .empty(),
             )
             XCTAssertEqual(result, expectedResponse)
         }
