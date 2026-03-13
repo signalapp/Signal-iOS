@@ -45,7 +45,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: resumeLocation, type: .success)
         }
 
-        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
 
         switch cdn {
         case .cdn2:
@@ -86,7 +86,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
 
         if case let .uploadTask(request) = helper.capturedUploadRequests.last {
             #expect(request.httpMethod == attempt.resumeUploadHttpMethod)
@@ -126,7 +126,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
 
         if case let .uploadTask(request) = helper.capturedUploadRequests[0] {
             #expect(request.httpMethod == attempt2.uploadHttpMethod)
@@ -184,7 +184,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
 
         if case let .uploadTask(request) = helper.capturedUploadRequests[0] {
             #expect(request.httpMethod == attempt2.uploadHttpMethod)
@@ -264,7 +264,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
 
         if case let .uploadTask(request) = helper.capturedUploadRequests.last {
             #expect(request.url!.absoluteString == attempt.fetchedUploadLocation)
@@ -298,7 +298,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
 
         if case let .uploadTask(request) = helper.capturedUploadRequests.last {
             #expect(request.url!.absoluteString == attempt2.fetchedUploadLocation)
@@ -341,7 +341,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
 
         if case let .uploadTask(request) = helper.capturedUploadRequests.last {
             #expect(request.url!.absoluteString == attempt2.fetchedUploadLocation)
@@ -385,7 +385,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success, completedCount: 20)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
 
         #expect(helper.mockSleepTimer.requestedDelays.count == 3)
 
@@ -430,7 +430,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success, completedCount: 20)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
 
         // Since these are network timeouts, and the remote endpoint is showing progress being made
         // there shouldn't be any backoff timers fired.
@@ -462,7 +462,7 @@ class AttachmentUploadManagerTests {
         )
 
         do {
-            try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+            try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
             Issue.record("Should fail to upload!")
         } catch {
             // Success
@@ -482,7 +482,7 @@ class AttachmentUploadManagerTests {
             ).attachment,
         )
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
 
         #expect(helper.capturedRequests.isEmpty)
     }
@@ -508,7 +508,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
 
         switch cdn {
         case .cdn2:
@@ -578,7 +578,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
 
         switch cdn {
         case .cdn2:
@@ -644,7 +644,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
+        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID, progress: nil)
 
         switch cdn {
         case .cdn2:

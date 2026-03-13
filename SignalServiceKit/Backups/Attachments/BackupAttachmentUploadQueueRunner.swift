@@ -514,6 +514,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                         localAci: localAci,
                         backupKey: backupKey,
                         auth: backupAuth,
+                        progress: nil,
                     )
                 }
             } catch let error {

@@ -103,6 +103,7 @@ private class IncomingContactSyncJobRunner: JobRunner {
         case .transient(let downloadMetadata):
             fileUrl = try await DependenciesBridge.shared.attachmentDownloadManager.downloadTransientAttachment(
                 metadata: downloadMetadata,
+                progress: nil,
             )
         }
 

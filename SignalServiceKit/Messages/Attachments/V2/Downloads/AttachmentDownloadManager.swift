@@ -200,12 +200,6 @@ public protocol AttachmentDownloadManager {
 
 extension AttachmentDownloadManager {
 
-    public func downloadTransientAttachment(
-        metadata: AttachmentDownloads.DownloadMetadata,
-    ) async throws -> URL {
-        return try await downloadTransientAttachment(metadata: metadata, progress: nil)
-    }
-
     public func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         tx: DBWriteTransaction,
@@ -220,16 +214,4 @@ extension AttachmentDownloadManager {
         enqueueDownloadOfAttachmentsForStoryMessage(message, priority: .default, tx: tx)
     }
 
-    public func downloadAttachment(
-        id: Attachment.IDType,
-        priority: AttachmentDownloadPriority,
-        source: QueuedAttachmentDownloadRecord.SourceType,
-    ) async throws {
-        try await downloadAttachment(
-            id: id,
-            priority: priority,
-            source: source,
-            progress: nil,
-        )
-    }
 }
