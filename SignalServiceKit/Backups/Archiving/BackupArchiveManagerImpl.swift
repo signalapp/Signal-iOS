@@ -189,6 +189,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         progress: OWSProgressSink?,
         logger: PrefixedLogger,
     ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {
+        try Task.checkCancellation()
         guard db.read(block: { tsAccountManager.registrationState(tx: $0).isPrimaryDevice }) == true else {
             throw OWSAssertionError("Backing up not on a registered primary!")
         }

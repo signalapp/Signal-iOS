@@ -100,6 +100,11 @@ class InternalListMediaViewController: OWSTableViewController2 {
                 },
             )
         }))
+        lastResultSection.add(.actionItem(withText: "Mark integrity check to run on next attepmt", actionBlock: {
+            DependenciesBridge.shared.db.write { tx in
+                DependenciesBridge.shared.backupListMediaStore.setManualNeedsListMedia(true, tx: tx)
+            }
+        }))
         contents.add(lastResultSection)
 
         self.contents = contents
