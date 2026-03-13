@@ -805,9 +805,6 @@
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Backup Details";
 
-/* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "This is a beta feature and will be improved over time.";
-
 /* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "You must be registered in order to create a new Recovery Key.";
 

@@ -66,28 +66,6 @@ struct BackupOnboardingIntroView: View {
 
     var body: some View {
         ScrollableContentPinnedFooterView {
-            HStack(spacing: 12) {
-                Image(Theme.iconName(.info))
-
-                Text(
-                    OWSLocalizedString(
-                        "BACKUP_SETTINGS_BETA_NOTICE_HEADER",
-                        comment: "Notice that backups is a beta feature",
-                    ),
-                )
-                .font(.footnote)
-                .multilineTextAlignment(.leading)
-
-                Spacer(minLength: 0)
-            }
-            .foregroundColor(Color.Signal.label)
-            .padding(.vertical, 16)
-            .padding(.leading, 16)
-            .padding(.trailing, 11)
-            .background(Color.Signal.quaternaryFill)
-            .cornerRadius(12)
-            .padding(.horizontal, 20)
-
             VStack {
                 Spacer().frame(height: 20)
 
@@ -103,18 +81,6 @@ struct BackupOnboardingIntroView: View {
                     .font(Font(UIFont.dynamicTypeFont(ofStandardSize: 26)))
                     .fontWeight(.semibold)
                     .foregroundStyle(Color.Signal.label)
-
-                    Text(CommonStrings.betaLabel)
-                        .font(.caption)
-                        .bold()
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(
-                            Capsule().fill(
-                                Color.Signal.secondaryFill,
-                            ),
-                        )
-                        .foregroundStyle(Color.Signal.label)
                 }
                 .padding(.horizontal, 32)
                 .multilineTextAlignment(.center)
