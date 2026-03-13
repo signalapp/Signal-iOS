@@ -480,7 +480,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 db.read(block: { tx in
                     backupAttachmentUploadScheduler.isEligibleToUpload(
                         attachment,
-                        fullsize: record.record.isFullsize,
+                        mode: record.record.isFullsize ? .fullsize : .thumbnail,
                         currentUploadEra: currentUploadEra,
                         tx: tx,
                     )

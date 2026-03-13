@@ -1001,7 +1001,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         } else {
             backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                 existingAttachment,
-                mode: .fullsizeAndThumbnailAsNeeded,
+                mode: .all,
                 tx: tx,
             )
         }

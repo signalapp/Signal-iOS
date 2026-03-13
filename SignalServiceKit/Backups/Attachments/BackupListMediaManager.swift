@@ -870,7 +870,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         // just won't be run.
         backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
             attachment,
-            mode: isThumbnail ? .thumbnailOnly : .fullsizeOnly,
+            mode: isThumbnail ? .thumbnail : .fullsize,
             tx: tx,
         )
 
@@ -1500,7 +1500,7 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
         // Its not uploaded; do we think its eligible?
         let isEligible = backupAttachmentUploadScheduler.isEligibleToUpload(
             attachment,
-            fullsize: isFullsize,
+            mode: isFullsize ? .fullsize : .thumbnail,
             currentUploadEra: uploadEraAtStartOfListMedia,
             tx: tx,
         )

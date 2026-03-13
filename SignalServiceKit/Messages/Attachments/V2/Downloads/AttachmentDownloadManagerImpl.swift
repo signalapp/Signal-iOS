@@ -2113,7 +2113,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // the digest before copying.
                     backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                         attachmentWeJustDownloaded,
-                        mode: .fullsizeAndThumbnailAsNeeded,
+                        mode: .all,
                         tx: tx,
                     )
                     tx.addSyncCompletion {
@@ -2226,7 +2226,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                         backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                             attachment,
-                            mode: .fullsizeAndThumbnailAsNeeded,
+                            mode: .all,
                             tx: tx,
                         )
                         tx.addSyncCompletion {
@@ -2415,7 +2415,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                         backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                             newAttachment,
-                            mode: .fullsizeAndThumbnailAsNeeded,
+                            mode: .all,
                             tx: tx,
                         )
                         tx.addSyncCompletion {
@@ -2498,7 +2498,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // Schedule upload, if needed.
                     backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                         thumbnailAttachment.attachment,
-                        mode: .fullsizeAndThumbnailAsNeeded,
+                        mode: .all,
                         tx: tx,
                     )
                     tx.addSyncCompletion {
