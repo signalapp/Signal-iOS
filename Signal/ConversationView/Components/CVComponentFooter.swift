@@ -41,6 +41,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         let tapForMoreState: TapForMoreState
         let displayEditedLabel: Bool
         let isPinnedMessage: Bool
+        let adminDeleteRecipientAddressStates: AdminDeleteManager.RecipientAddressStates?
 
         struct Expiration: Equatable {
             let expirationTimestamp: UInt64
@@ -256,16 +257,21 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         forInteraction interaction: TSInteraction,
         shouldUseLongFormat: Bool,
         hasBodyAttachments: Bool,
+        adminDeleteRecipientStates: AdminDeleteManager.RecipientAddressStates?,
     ) -> String {
-
         let status = Self.outgoingMessageStatus(interaction: interaction, hasBodyAttachments: hasBodyAttachments)
         let isPendingOutgoingMessage = status == .pending
         let isFailedOutgoingMessage = status == .failed
+        let isFailedIncomingMessage = AdminDeleteManager.isFailedAdminDelete(recipientAddressStates: adminDeleteRecipientStates)
+
         let wasSentToAnyRecipient: Bool = {
-            guard let outgoingMessage = interaction as? TSOutgoingMessage else {
-                return false
+            if let outgoingMessage = interaction as? TSOutgoingMessage {
+                return outgoingMessage.wasSentToAnyRecipient
             }
-            return outgoingMessage.wasSentToAnyRecipient
+            if let message = interaction as? TSMessage, message.wasRemotelyDeleted {
+                return AdminDeleteManager.wasSentToAnyRecipient(recipientAddressStates: adminDeleteRecipientStates)
+            }
+            return false
         }()
 
         if isPendingOutgoingMessage {
@@ -273,7 +279,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 "MESSAGE_STATUS_PENDING",
                 comment: "Label indicating that a message send was paused.",
             )
-        } else if isFailedOutgoingMessage {
+        } else if isFailedOutgoingMessage || isFailedIncomingMessage {
             if wasSentToAnyRecipient {
                 return OWSLocalizedString(
                     "MESSAGE_STATUS_PARTIALLY_SENT",
@@ -312,6 +318,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 forInteraction: interaction,
                 shouldUseLongFormat: false,
                 hasBodyAttachments: hasBodyAttachments,
+                adminDeleteRecipientStates: nil,
             )
 
             return State(
@@ -321,6 +328,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 tapForMoreState: tapForMoreState,
                 displayEditedLabel: false,
                 isPinnedMessage: false,
+                adminDeleteRecipientAddressStates: nil,
                 expiration: nil,
             )
         }
@@ -398,6 +406,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             tapForMoreState: tapForMoreState,
             displayEditedLabel: false,
             isPinnedMessage: false,
+            adminDeleteRecipientAddressStates: nil,
             expiration: expiration,
         )
     }
@@ -431,6 +440,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         interaction: TSInteraction,
         tapForMoreState: TapForMoreState,
         isPinnedMessage: Bool,
+        adminDeleteRecipientStates: AdminDeleteManager.RecipientAddressStates?,
         transaction: DBReadTransaction,
     ) -> State {
 
@@ -439,6 +449,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             forInteraction: interaction,
             shouldUseLongFormat: false,
             hasBodyAttachments: hasBodyAttachments,
+            adminDeleteRecipientStates: adminDeleteRecipientStates,
         )
 
         var statusIndicator: StatusIndicator?
@@ -486,6 +497,21 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                     statusIndicator = nil
                 }
             }
+        } else if
+            let incomingMessage = interaction as? TSIncomingMessage,
+            incomingMessage.wasRemotelyDeleted,
+            let adminDeleteRecipientStates
+        {
+            let messageStatus = TSMessage.messageStateForRecipientStates(Array(adminDeleteRecipientStates.values))
+            switch messageStatus {
+            case .sending:
+                statusIndicator = StatusIndicator(
+                    imageName: "message_status_sending",
+                    isAnimated: true,
+                )
+            case .pending, .sent, .sent_OBSOLETE, .delivered_OBSOLETE, .failed:
+                statusIndicator = nil
+            }
         }
 
         var expiration: State.Expiration?
@@ -515,6 +541,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             tapForMoreState: tapForMoreState,
             displayEditedLabel: displayEditedLabel,
             isPinnedMessage: isPinnedMessage,
+            adminDeleteRecipientAddressStates: adminDeleteRecipientStates,
             expiration: expiration,
         )
     }

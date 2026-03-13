@@ -92,6 +92,7 @@
 		04E66D402DFC825B0059DBAC /* RecoveryKeyReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D3E2DFC81BC0059DBAC /* RecoveryKeyReminderMegaphone.swift */; };
 		04E66D422DFF3A4B0059DBAC /* BackupRecoveryKeyReminderCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D412DFF3A3E0059DBAC /* BackupRecoveryKeyReminderCoordinator.swift */; };
 		04E66D452E00AB6A0059DBAC /* BackupSettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */; };
+		04FA98DF2F587C9B0037B8F3 /* TSMessage+RecipientState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FA98DE2F587C950037B8F3 /* TSMessage+RecipientState.swift */; };
 		04FA990A2F5F5EE80037B8F3 /* chat_item_admin_deleted_02.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = 04FA99012F5F5EE80037B8F3 /* chat_item_admin_deleted_02.txtproto */; };
 		04FA990B2F5F5EE80037B8F3 /* chat_item_admin_deleted_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = 04FA98FE2F5F5EE80037B8F3 /* chat_item_admin_deleted_01.binproto */; };
 		04FA990C2F5F5EE80037B8F3 /* chat_item_group_change_chat_update_80.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = 04FA99072F5F5EE80037B8F3 /* chat_item_group_change_chat_update_80.txtproto */; };
@@ -4236,6 +4237,7 @@
 		04E66D3E2DFC81BC0059DBAC /* RecoveryKeyReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryKeyReminderMegaphone.swift; sourceTree = "<group>"; };
 		04E66D412DFF3A3E0059DBAC /* BackupRecoveryKeyReminderCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRecoveryKeyReminderCoordinator.swift; sourceTree = "<group>"; };
 		04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSettingsStoreTests.swift; sourceTree = "<group>"; };
+		04FA98DE2F587C950037B8F3 /* TSMessage+RecipientState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSMessage+RecipientState.swift"; sourceTree = "<group>"; };
 		04FA98FC2F5F5EE80037B8F3 /* chat_item_admin_deleted_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_admin_deleted_00.binproto; sourceTree = "<group>"; };
 		04FA98FD2F5F5EE80037B8F3 /* chat_item_admin_deleted_00.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_admin_deleted_00.txtproto; sourceTree = "<group>"; };
 		04FA98FE2F5F5EE80037B8F3 /* chat_item_admin_deleted_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_admin_deleted_01.binproto; sourceTree = "<group>"; };
@@ -14848,6 +14850,7 @@
 				F9C5C904289453B100548EEE /* TSInteraction.swift */,
 				F9C5C90C289453B100548EEE /* TSMention.swift */,
 				F9C5C8DC289453B100548EEE /* TSMessage+Builder.swift */,
+				04FA98DE2F587C950037B8F3 /* TSMessage+RecipientState.swift */,
 				F9C5C8E0289453B100548EEE /* TSMessage+SDS.swift */,
 				F9C5C8EC289453B100548EEE /* TSMessage.h */,
 				F9C5C903289453B100548EEE /* TSMessage.m */,
@@ -19991,6 +19994,7 @@
 				F9C5CC2A289453B300548EEE /* TSInvalidIdentityKeySendingErrorMessage.m in Sources */,
 				F9C5CC00289453B300548EEE /* TSMention.swift in Sources */,
 				F9C5CBD0289453B300548EEE /* TSMessage+Builder.swift in Sources */,
+				04FA98DF2F587C9B0037B8F3 /* TSMessage+RecipientState.swift in Sources */,
 				F9C5CBD4289453B300548EEE /* TSMessage+SDS.swift in Sources */,
 				F9C5CBF7289453B300548EEE /* TSMessage.m in Sources */,
 				F9C5CBF4289453B300548EEE /* TSMessage.swift in Sources */,

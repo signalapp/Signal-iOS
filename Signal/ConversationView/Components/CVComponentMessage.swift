@@ -1466,6 +1466,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 forInteraction: interaction,
                 shouldUseLongFormat: true,
                 hasBodyAttachments: componentState.messageHasBodyAttachments,
+                adminDeleteRecipientStates: nil, // TODO: get correct adminDeleteRecipientStates
             )
         }
         contents.append(timestampText)
@@ -1953,15 +1954,27 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             switch outgoingMessage.messageState {
             case .failed:
                 // Tap to retry.
-                componentDelegate.didTapFailedOutgoingMessage(outgoingMessage)
+                componentDelegate.didTapFailedMessage(outgoingMessage)
                 return true
             case .pending:
                 componentDelegate.didTapPendingOutgoingMessage(outgoingMessage)
+                return true
             case .sending:
                 // Sending messages should still allow taps to be processed
                 break
             default:
                 break
+            }
+        }
+
+        if let message = interaction as? TSIncomingMessage, message.wasRemotelyDeleted {
+            let db = DependenciesBridge.shared.db
+            let recipientAddressStates = db.read { tx in
+                AdminDeleteManager.recipientAddressStates(message: message, tx: tx)
+            }
+            if AdminDeleteManager.isFailedAdminDelete(recipientAddressStates: recipientAddressStates) {
+                componentDelegate.didTapFailedMessage(message)
+                return true
             }
         }
 

@@ -106,11 +106,15 @@ public final class OutgoingAdminDeleteMessage: TransientOutgoingMessage {
         if let outgoingDeletedMessage = deletedMessage as? TSOutgoingMessage {
             outgoingDeletedMessage.updateWithRecipientAddressStates(self.recipientAddressStates, tx: transaction)
         }
+
+        if let deletedMessage {
+            AdminDeleteManager.updateRecipientStatesAdminDelete(recipientAddressStates: self.recipientAddressStates, interactionId: deletedMessage.sqliteRowId!, tx: transaction)
+
+            DependenciesBridge.shared.db.touch(interaction: deletedMessage, shouldReindex: false, tx: transaction)
+        }
     }
 
     override public var relatedUniqueIds: Set<String> {
         return super.relatedUniqueIds.union([self.originalMessageUniqueId].compacted())
     }
-
-    // TODO: revert local state if send to everyone fails
 }

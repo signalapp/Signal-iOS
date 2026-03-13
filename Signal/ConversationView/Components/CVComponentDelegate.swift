@@ -224,7 +224,7 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
 
     func didTapPendingOutgoingMessage(_ message: TSOutgoingMessage)
 
-    func didTapFailedOutgoingMessage(_ message: TSOutgoingMessage)
+    func didTapFailedMessage(_ message: TSMessage)
 
     func didTapGroupMigrationLearnMore()
 

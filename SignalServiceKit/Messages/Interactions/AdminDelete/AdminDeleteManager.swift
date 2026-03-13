@@ -13,6 +13,8 @@ public enum RemoteDeleteAuthor: Equatable {
 }
 
 public class AdminDeleteManager {
+    public typealias RecipientAddressStates = [SignalServiceAddress: TSOutgoingMessageRecipientState]
+
     public struct DeleteType: OptionSet {
         public init(rawValue: Int) {
             self.rawValue = rawValue
@@ -194,6 +196,61 @@ public class AdminDeleteManager {
         kvStore.writeValue(true, forKey: Self.kvStoreAdminDeleteEducationReadKey, tx: tx)
         if updateStorageService {
             storageServiceManager.recordPendingLocalAccountUpdates()
+        }
+    }
+
+    // MARK: - Recipient states
+
+    public static func updateRecipientStatesAdminDelete(recipientAddressStates: RecipientAddressStates?, interactionId: Int64, tx: DBWriteTransaction) {
+
+        failIfThrows {
+            var adminDeleteRecord = try AdminDeleteRecord
+                .filter(AdminDeleteRecord.Columns.interactionId == interactionId)
+                .fetchOne(tx.database)
+            adminDeleteRecord?.recipientAddressStates = recipientAddressStates
+            try adminDeleteRecord?.update(tx.database)
+        }
+    }
+
+    public static func isFailedAdminDelete(recipientAddressStates: RecipientAddressStates?) -> Bool {
+        guard let recipientAddressStates else {
+            return false
+        }
+        return recipientAddressStates.values.contains {
+            $0.status == .failed
+        }
+    }
+
+    public static func wasSentToAnyRecipient(recipientAddressStates: RecipientAddressStates?) -> Bool {
+        guard let recipientAddressStates else {
+            return false
+        }
+
+        return recipientAddressStates.values.contains {
+            switch $0.status {
+            case .sent, .delivered, .read, .viewed:
+                return true
+            case .skipped, .sending, .pending, .failed:
+                return false
+            }
+        }
+    }
+
+    public static func failedRecipientsWithErrorCode(_ errorCode: Int, recipientAddressStates: RecipientAddressStates?) -> [SignalServiceAddress] {
+        guard let recipientAddressStates else {
+            return []
+        }
+
+        return recipientAddressStates.filter { _, state in
+            state.status == .failed && state.errorCode == errorCode
+        }.map { $0.key }
+    }
+
+    public static func recipientAddressStates(message: TSMessage, tx: DBReadTransaction) -> RecipientAddressStates? {
+        failIfThrows {
+            try AdminDeleteRecord
+                .filter(AdminDeleteRecord.Columns.interactionId == message.sqliteRowId!)
+                .fetchOne(tx.database)?.recipientAddressStates
         }
     }
 }

@@ -319,6 +319,7 @@ public class GRDBSchemaMigrator {
         case addRecipientStatus
         case createKeyTransparencyTable
         case addAdminDeleteTable
+        case addRecipientStatesToAdminDelete
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5020,6 +5021,13 @@ public class GRDBSchemaMigrator {
                         onDelete: .cascade,
                         onUpdate: .cascade,
                     )
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addRecipientStatesToAdminDelete) { tx in
+            try tx.database.alter(table: "AdminDelete") { table in
+                table.add(column: "recipientAddressStates", .blob)
             }
             return .success(())
         }

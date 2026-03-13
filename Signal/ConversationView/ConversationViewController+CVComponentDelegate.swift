@@ -985,7 +985,7 @@ extension ConversationViewController: CVComponentDelegate {
 
     }
 
-    public func didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {
+    public func didTapFailedMessage(_ message: TSMessage) {
         AssertIsOnMainThread()
 
         let promptBuilder = ResendMessagePromptBuilder(
