@@ -59,7 +59,7 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
 
         let conversationStyle = self.conversationStyle
-        let tintColor = conversationStyle.bubbleTextColor(isIncoming: isIncoming)
+        let tintColor = Theme.primaryTextColor
 
         let albumView = componentView.albumView
         albumView.configure(
