@@ -109,7 +109,10 @@ class OutgoingSentMessageTranscript: OutgoingSyncMessage {
             let dataBuilder = SSKProtoDataMessage.builder()
             dataBuilder.setTimestamp(message.timestamp)
             dataBuilder.setExpireTimer(message.expiresInSeconds)
-            dataBuilder.setExpireTimerVersion(message.expireTimerVersion?.uint32Value ?? 0)
+            if let expireTimerVersion = message.expireTimerVersion {
+                owsAssertDebug(expireTimerVersion.uint32Value >= 1)
+                dataBuilder.setExpireTimerVersion(expireTimerVersion.uint32Value)
+            }
             dataBuilder.setIsViewOnce(true)
             dataBuilder.setRequiredProtocolVersion(UInt32(SSKProtoDataMessageProtocolVersion.viewOnceVideo.rawValue))
 

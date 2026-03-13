@@ -14,16 +14,18 @@ final class DisappearingMessagesConfigurationMessage: TransientOutgoingMessage {
 
     init(
         configuration: DisappearingMessagesConfigurationRecord,
-        thread: TSThread,
+        contactThread: TSContactThread,
         tx: DBReadTransaction,
     ) {
+        owsAssertDebug(configuration.timerVersion >= 1)
+
         self.configuration = DisappearingMessagesConfiguration(
             isEnabled: configuration.isEnabled,
             durationSeconds: configuration.durationSeconds,
             timerVersion: configuration.timerVersion,
         )
         super.init(
-            outgoingMessageWith: TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread),
+            outgoingMessageWith: TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: contactThread),
             additionalRecipients: [],
             explicitRecipients: [],
             skippedRecipients: [],

@@ -451,6 +451,7 @@ extension TSOutgoingMessage {
 
         builder.setExpireTimer(self.expiresInSeconds)
         if let expireTimerVersion {
+            owsAssertDebug(expireTimerVersion.uint32Value >= 1)
             builder.setExpireTimerVersion(expireTimerVersion.uint32Value)
         }
 

@@ -132,18 +132,34 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
     ) -> SetTokenResult {
         var configuration = fetchOrBuildDefault(for: scope, tx: tx)
         let oldConfiguration = configuration
-        if token.version > 0, case let .thread(thread) = scope, thread is TSContactThread {
-            // We got a dm timer; check against the version we have locally and reject if lower.
-            if token.version < oldConfiguration.timerVersion {
-                Logger.info("Dropping DM timer update with outdated version")
+
+        switch scope {
+        case .thread(let thread) where thread is TSContactThread:
+            if token.version == 0 {
+                Logger.error("Dropping DM timer update for contact thread with version 0!")
                 return (oldConfiguration, oldConfiguration)
             }
+
+            if token.version < oldConfiguration.timerVersion {
+                Logger.info("Dropping DM timer update for contact thread with outdated version. \(token.version) < \(oldConfiguration.timerVersion)")
+                return (oldConfiguration, oldConfiguration)
+            }
+        case .universal, .thread:
+            break
         }
+
         if token.version != 0 {
             configuration.timerVersion = token.version
         }
         configuration.isEnabled = token.isEnabled
         configuration.durationSeconds = token.durationSeconds
+
+        let scopeDescription = switch scope {
+        case .thread(let thread): "\(type(of: thread))"
+        case .universal: "universal"
+        }
+        Logger.info("Setting \(scopeDescription) DM timer.")
+
         if configuration.id == nil {
             failIfThrows {
                 try configuration.insert(tx.database)
@@ -153,6 +169,7 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
                 try configuration.update(tx.database)
             }
         }
+
         return (oldConfiguration, configuration)
     }
 
