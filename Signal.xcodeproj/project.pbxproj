@@ -1537,6 +1537,7 @@
 		76F4B581293ACCD200A7CF2F /* UIKit+Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F4B580293ACCD200A7CF2F /* UIKit+Animations.swift */; };
 		76F958632A09A5AE00B43E63 /* DebugUIDiskUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F958622A09A5AE00B43E63 /* DebugUIDiskUsage.swift */; };
 		76FCCDBC27AB8FBE00BAA7F0 /* MediaControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */; };
+		79F764502F656A1F001399AF /* StoryReaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F7644F2F656A1C001399AF /* StoryReaction.swift */; };
 		83B9573927C9A1FA00A678FD /* CaptchaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B9573827C9A1FA00A678FD /* CaptchaView.swift */; };
 		8803FF6628EF89B50023574A /* StorySharingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */; };
 		8806EF19248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */; };
@@ -5727,6 +5728,7 @@
 		76F4B580293ACCD200A7CF2F /* UIKit+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+Animations.swift"; sourceTree = "<group>"; };
 		76F958622A09A5AE00B43E63 /* DebugUIDiskUsage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIDiskUsage.swift; sourceTree = "<group>"; };
 		76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaControls.swift; sourceTree = "<group>"; };
+		79F7644F2F656A1C001399AF /* StoryReaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryReaction.swift; sourceTree = "<group>"; };
 		7F965533D71CA51BE6704CC4 /* Pods_SignalNSE.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalNSE.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FF88FB580BC19B240EEB86A /* Pods_Signal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Signal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		83B9573827C9A1FA00A678FD /* CaptchaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptchaView.swift; sourceTree = "<group>"; };
@@ -14935,6 +14937,7 @@
 		F9C5C948289453B100548EEE /* Reactions */ = {
 			isa = PBXGroup;
 			children = (
+				79F7644F2F656A1C001399AF /* StoryReaction.swift */,
 				50A5AA9C2A7475A900CF2ECC /* OutgoingReactionMessage.swift */,
 				F9C5C94A289453B100548EEE /* OWSReaction.swift */,
 				F9C5C94C289453B100548EEE /* ReactionFinder.swift */,
@@ -19043,6 +19046,7 @@
 				667BB2082C580C1400E79B57 /* BackupAttachmentDownloadStore.swift in Sources */,
 				D9C4C0852E0A75F200B74696 /* BackupAttachmentUploadEraStore.swift in Sources */,
 				668345502DCA9BEE00566AB3 /* BackupAttachmentUploadProgress.swift in Sources */,
+				79F764502F656A1F001399AF /* StoryReaction.swift in Sources */,
 				663AAF222E01EDDD00B9C4B8 /* BackupAttachmentUploadQueueRunner.swift in Sources */,
 				D98ACAA72E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift in Sources */,
 				66734F012CA1ED3F00558494 /* BackupAttachmentUploadScheduler.swift in Sources */,

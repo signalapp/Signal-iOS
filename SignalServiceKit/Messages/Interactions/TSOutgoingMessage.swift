@@ -391,6 +391,15 @@ extension TSOutgoingMessage {
                 let reactionBuilder = SSKProtoDataMessageReaction.builder(emoji: storyReactionEmoji, timestamp: storyTimestamp.uint64Value)
                 reactionBuilder.setTargetAuthorAciBinary(storyAuthorAci.serviceIdBinary)
 
+                if let messageSticker {
+                    do {
+                        let stickerProto = try self.buildStickerProto(sticker: messageSticker, tx: tx)
+                        reactionBuilder.setSticker(stickerProto)
+                    } catch {
+                        owsFailDebug("Could not build sticker protobuf for story reaction: \(error)")
+                    }
+                }
+
                 do {
                     builder.setReaction(try reactionBuilder.build())
                     requiredProtocolVersion = max(requiredProtocolVersion, SSKProtoDataMessageProtocolVersion.reactions.rawValue)
@@ -476,8 +485,8 @@ extension TSOutgoingMessage {
             }
         }
 
-        // Sticker
-        if let messageSticker {
+        // Sticker message (not a sticker story reaction, which is handled separately above)
+        if let messageSticker, storyReactionEmoji == nil {
             do {
                 let stickerProto = try self.buildStickerProto(sticker: messageSticker, tx: tx)
                 builder.setSticker(stickerProto)

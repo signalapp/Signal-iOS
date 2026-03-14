@@ -21,10 +21,10 @@ public class QuotedReplyModel {
 
     public let isOriginalMessageAuthorLocalUser: Bool
 
-    /// IFF the original's content was a story message, the emoji used
-    /// _on the reply body_ to that story message.
+    /// IFF the original's content was a story message, the reaction used
+    /// _on the reply_ to that story message.
     /// Ignored for other original content types.
-    public let storyReactionEmoji: String?
+    public let storyReaction: StoryReaction?
 
     /// The content on the _original_ message being replied to.
     public enum OriginalContent {
@@ -37,8 +37,8 @@ public class QuotedReplyModel {
         /// The original message was a gift badge
         case giftBadge
         /// The original message is itself a reply to a story
-        /// with an emoji.
-        case storyReactionEmoji(String)
+        /// with an emoji or sticker.
+        case storyReaction(StoryReaction)
 
         // MARK: - Attachment types
 
@@ -107,8 +107,8 @@ public class QuotedReplyModel {
                 return nil
             case .giftBadge:
                 return nil
-            case .storyReactionEmoji:
-                return nil
+            case .storyReaction(let reaction):
+                return reaction.sticker?.attachment.mimeType
             case .attachmentStub(_, let stub):
                 return stub.mimeType
             case .attachment(_, let attachment, _):
@@ -130,8 +130,8 @@ public class QuotedReplyModel {
                 return nil
             case .giftBadge:
                 return nil
-            case .storyReactionEmoji:
-                return nil
+            case .storyReaction(let reaction):
+                return reaction.sticker?.attachment.asStream()?.contentType
             case .attachmentStub:
                 return nil
             case .attachment(_, let attachment, _):
@@ -163,8 +163,11 @@ public class QuotedReplyModel {
             return messageBody
         case .giftBadge:
             return nil
-        case .storyReactionEmoji(let string):
-            return MessageBody(text: string, ranges: .empty)
+        case .storyReaction(let reaction):
+            if reaction.sticker != nil {
+                return nil
+            }
+            return MessageBody(text: reaction.emoji, ranges: .empty)
         case .attachmentStub(let messageBody, _):
             return messageBody
         case .attachment(let messageBody, _, _):
@@ -192,8 +195,8 @@ public class QuotedReplyModel {
             return nil
         case .giftBadge:
             return nil
-        case .storyReactionEmoji:
-            return nil
+        case .storyReaction(let reaction):
+            return reaction.sticker?.reference.sourceFilename
         case .attachmentStub(_, let stub):
             return stub.sourceFilename
         case .attachment(_, let attachment, _):
@@ -261,8 +264,8 @@ public class QuotedReplyModel {
         case .giftBadge:
             // This pretends to be a thumbnail
             return true
-        case .storyReactionEmoji:
-            return false
+        case .storyReaction:
+            return true
         case .attachmentStub:
             return false
         case .attachment(_, _, let thumbnailImage):
@@ -280,7 +283,7 @@ public class QuotedReplyModel {
 
     public static func build(
         replyingTo storyMessage: StoryMessage,
-        reactionEmoji: String? = nil,
+        reaction: StoryReaction? = nil,
         transaction: DBReadTransaction,
     ) -> QuotedReplyModel {
         let isOriginalAuthorLocalUser = DependenciesBridge.shared.tsAccountManager
@@ -297,7 +300,7 @@ public class QuotedReplyModel {
                 originalMessageAuthorAddress: storyMessage.authorAddress,
                 originalMessageMemberLabel: nil,
                 isOriginalMessageAuthorLocalUser: isOriginalAuthorLocalUser,
-                storyReactionEmoji: reactionEmoji,
+                storyReaction: reaction,
                 originalContent: originalContent,
                 sourceOfOriginal: .story,
             )
@@ -353,6 +356,26 @@ public class QuotedReplyModel {
         storyAuthorAci: Aci,
         transaction: DBReadTransaction,
     ) -> QuotedReplyModel {
+        let storyReaction: StoryReaction?
+        if let emoji = message.storyReactionEmoji {
+            let stickerAttachment: ReferencedAttachment?
+            if let messageRowId = message.sqliteRowId {
+                stickerAttachment = DependenciesBridge.shared.attachmentStore
+                    .fetchAnyReferencedAttachment(
+                        for: .messageSticker(messageRowId: messageRowId),
+                        tx: transaction
+                    )
+            } else {
+                stickerAttachment = nil
+            }
+            storyReaction = StoryReaction(
+                emoji: emoji,
+                sticker: stickerAttachment
+            )
+        } else {
+            storyReaction = nil
+        }
+
         guard
             let storyTimestamp,
             let storyMessage = StoryFinder.story(
@@ -364,19 +387,20 @@ public class QuotedReplyModel {
             let isOriginalMessageAuthorLocalUser = DependenciesBridge.shared.tsAccountManager
                 .localIdentifiers(tx: transaction)?
                 .aci == storyAuthorAci
+
             return QuotedReplyModel(
                 originalMessageTimestamp: storyTimestamp,
                 originalMessageAuthorAddress: SignalServiceAddress(storyAuthorAci),
                 originalMessageMemberLabel: nil,
                 isOriginalMessageAuthorLocalUser: isOriginalMessageAuthorLocalUser,
-                storyReactionEmoji: message.storyReactionEmoji,
+                storyReaction: storyReaction,
                 originalContent: .expiredStory,
                 sourceOfOriginal: .story,
             )
         }
         return QuotedReplyModel.build(
             replyingTo: storyMessage,
-            reactionEmoji: message.storyReactionEmoji,
+            reaction: storyReaction,
             transaction: transaction,
         )
     }
@@ -402,7 +426,7 @@ public class QuotedReplyModel {
                 originalMessageAuthorAddress: quotedMessage.authorAddress,
                 originalMessageMemberLabel: memberLabel,
                 isOriginalMessageAuthorLocalUser: isOriginalAuthorLocalUser,
-                storyReactionEmoji: nil,
+                storyReaction: nil,
                 originalContent: originalContent,
                 sourceOfOriginal: quotedMessage.bodySource,
             )
@@ -503,7 +527,7 @@ public class QuotedReplyModel {
         originalMessageAuthorAddress: SignalServiceAddress,
         originalMessageMemberLabel: String?,
         isOriginalMessageAuthorLocalUser: Bool,
-        storyReactionEmoji: String?,
+        storyReaction: StoryReaction?,
         originalContent: OriginalContent,
         sourceOfOriginal: TSQuotedMessageContentSource,
     ) {
@@ -511,7 +535,7 @@ public class QuotedReplyModel {
         self.originalMessageAuthorAddress = originalMessageAuthorAddress
         self.originalMessageMemberLabel = originalMessageMemberLabel
         self.isOriginalMessageAuthorLocalUser = isOriginalMessageAuthorLocalUser
-        self.storyReactionEmoji = storyReactionEmoji
+        self.storyReaction = storyReaction
         self.originalContent = originalContent
         self.sourceOfOriginal = sourceOfOriginal
     }
@@ -524,7 +548,7 @@ extension QuotedReplyModel: Equatable {
         return lhs.originalMessageTimestamp == rhs.originalMessageTimestamp
             && lhs.originalMessageAuthorAddress == rhs.originalMessageAuthorAddress
             && lhs.isOriginalMessageAuthorLocalUser == rhs.isOriginalMessageAuthorLocalUser
-            && lhs.storyReactionEmoji == rhs.storyReactionEmoji
+            && lhs.storyReaction == rhs.storyReaction
             && lhs.originalContent == rhs.originalContent
             && lhs.sourceOfOriginal == rhs.sourceOfOriginal
     }
@@ -537,8 +561,8 @@ extension QuotedReplyModel.OriginalContent: Equatable {
             return lhsBody == rhsBody
         case (.giftBadge, .giftBadge):
             return true
-        case let (.storyReactionEmoji(lhsString), .storyReactionEmoji(rhsString)):
-            return lhsString == rhsString
+        case let (.storyReaction(lhsReaction), .storyReaction(rhsReaction)):
+            return lhsReaction == rhsReaction
         case let (.attachmentStub(lhsBody, lhsStub), .attachmentStub(rhsBody, rhsStub)):
             return lhsBody == rhsBody && lhsStub == rhsStub
         case let (.attachment(lhsBody, lhsAttachment, lhsImage), .attachment(rhsBody, rhsAttachment, rhsImage)):
@@ -559,7 +583,7 @@ extension QuotedReplyModel.OriginalContent: Equatable {
         case
             (.text, _),
             (.giftBadge, _),
-            (.storyReactionEmoji, _),
+            (.storyReaction, _),
             (.attachmentStub, _),
             (.attachment, _),
             (.mediaStory, _),

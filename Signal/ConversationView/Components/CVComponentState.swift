@@ -1207,7 +1207,7 @@ private extension CVComponentState.Builder {
             return try buildContact(message: message, contact: contact)
         }
 
-        if let messageSticker = message.messageSticker {
+        if let messageSticker = message.messageSticker, !message.isStoryReply {
             return try buildSticker(message: message, messageSticker: messageSticker)
         }
 

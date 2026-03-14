@@ -109,6 +109,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, readonly, nullable) OWSContact *contactShare;
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
+/// Used for both sticker messages, and story reaction messages that use a sticker reaction.
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
 @property (nonatomic, readonly, nullable) OWSGiftBadge *giftBadge;
 

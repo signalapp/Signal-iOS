@@ -981,7 +981,9 @@ extension TSMessageBuilder {
         // Story replies currently only support a subset of message features, so may not
         // be renderable in some circumstances where a normal message would be.
         if isStoryReply {
-            return hasNonemptyBody || (storyReactionEmoji?.isSingleEmoji ?? false)
+            return hasNonemptyBody
+                || (storyReactionEmoji?.isSingleEmoji ?? false)
+                || hasSticker
         }
 
         // We DO NOT consider a message with just a linkPreview

@@ -255,7 +255,7 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
             )
         }
 
-        let body: String?
+        var body: String?
         let bodyRanges: MessageBodyRanges?
         var isGiftBadge: Bool
         var isPoll: Bool
@@ -326,6 +326,15 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
             !isGiftBadge
         {
             throw OWSAssertionError("Quoted message has no content!")
+        }
+
+        if
+            originalMessage.storyReactionEmoji?.nilIfEmpty != nil,
+            thumbnailAttachmentInfo != nil
+        {
+            // For story reactions with a sticker, don't put the
+            // fallback emoji into the body.
+            body = nil
         }
 
         return ValidatedQuotedReply(
@@ -457,7 +466,7 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
             return createDraftReply(content: .giftBadge)
         }
 
-        if originalMessage.messageSticker != nil {
+        if originalMessage.messageSticker != nil && originalMessage.storyReactionEmoji?.nilIfEmpty == nil {
             guard
                 let originalMessageRowId = originalMessage.sqliteRowId,
                 let attachment = attachmentStore.fetchAnyReferencedAttachment(
@@ -494,6 +503,17 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
             guard let thumbnailImage else {
                 owsFailDebug("couldn't resize sticker")
                 return nil
+            }
+
+            if let storyReactionEmoji = originalMessage.storyReactionEmoji?.nilIfEmpty {
+                return createDraftReply(content: .storyReaction(
+                    StoryReaction(
+                        emoji: storyReactionEmoji,
+                        sticker: attachment,
+                        stickerInfo: originalMessage.messageSticker?.info
+                    ),
+                    stickerThumbnail: resizedThumbnailImage
+                ))
             }
 
             return createDraftReply(content: .attachment(
@@ -570,7 +590,10 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
         }
 
         if let storyReactionEmoji = originalMessage.storyReactionEmoji?.nilIfEmpty {
-            return createDraftReply(content: .storyReactionEmoji(storyReactionEmoji))
+            return createDraftReply(content: .storyReaction(
+                StoryReaction(emoji: storyReactionEmoji, sticker: nil, stickerInfo: nil),
+                stickerThumbnail: nil
+            ))
         }
 
         if originalMessage.isPoll {

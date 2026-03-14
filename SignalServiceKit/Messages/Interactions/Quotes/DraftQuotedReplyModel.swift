@@ -33,8 +33,8 @@ public class DraftQuotedReplyModel {
         case viewOnce
         /// The original message was a contact share
         case contactShare(OWSContact)
-        /// The original message is a story reaction emoji
-        case storyReactionEmoji(String)
+        /// The original message is a story reaction emoji/sticker
+        case storyReaction(StoryReaction, stickerThumbnail: UIImage?)
         /// The original message was a poll.
         case poll(String)
 
@@ -215,7 +215,7 @@ public class DraftQuotedReplyModel {
             return body
         case .giftBadge:
             return nil
-        case .storyReactionEmoji(let emoji):
+        case .storyReaction(let reaction, _):
             let formatString: String
             if isOriginalMessageAuthorLocalUser {
                 formatString = OWSLocalizedString(
@@ -230,7 +230,7 @@ public class DraftQuotedReplyModel {
             }
             let text = String(
                 format: formatString,
-                emoji,
+                reaction.emoji,
             )
             return MessageBody(text: text, ranges: .empty)
         case .poll(let pollQuestion):
@@ -261,8 +261,8 @@ extension DraftQuotedReplyModel.Content: Equatable {
             return lhsBody == rhsBody
         case let (.contactShare(lhsContact), .contactShare(rhsContact)):
             return lhsContact == rhsContact
-        case let (.storyReactionEmoji(lhsEmoji), .storyReactionEmoji(rhsEmoji)):
-            return lhsEmoji == rhsEmoji
+        case let (.storyReaction(lhsReaction, lhsImage), .storyReaction(rhsReaction, rhsImage)):
+            return lhsReaction == rhsReaction && lhsImage == rhsImage
         case let (.edit(lhsMessage, lhsQuotedReply, lhsContent), .edit(rhsMessage, rhsQuotedReply, rhsContent)):
             return lhsMessage == rhsMessage
                 && lhsQuotedReply == rhsQuotedReply
@@ -285,7 +285,7 @@ extension DraftQuotedReplyModel.Content: Equatable {
             (.attachmentStub, _),
             (.attachment, _),
             (.edit, _),
-            (.storyReactionEmoji, _),
+            (.storyReaction, _),
             (.poll, _),
             (_, .giftBadge),
             (_, .payment),
@@ -295,7 +295,7 @@ extension DraftQuotedReplyModel.Content: Equatable {
             (_, .attachmentStub),
             (_, .attachment),
             (_, .edit),
-            (_, .storyReactionEmoji),
+            (_, .storyReaction),
             (_, .poll):
             return false
         }
