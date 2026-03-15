@@ -9,21 +9,53 @@ public import LibSignalClient
 @objc(OWSReactionManager)
 public class ReactionManager: NSObject {
     public static let localUserReacted = Notification.Name("localUserReacted")
-    public static let defaultEmojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢"]
+    public static let defaultCustomReactionSet = ["❤️", "👍", "👎", "😂", "😮", "😢"].map {
+        CustomReactionItem(emoji: $0, sticker: nil)
+    }
 
-    private static let emojiSetKVS = KeyValueStore(collection: "EmojiSetKVS")
-    private static let emojiSetKey = "EmojiSetKey"
+    private static let customReactionKVStore = KeyValueStore(collection: "EmojiSetKVS")
+    private static let customReactionSetKey = "ReactionItemsKey"
+    /// Legacy preferred custom reactions that are just emoji strings; read-only for backwards compatibility
+    private static let customEmojiSetKey = "EmojiSetKey"
 
-    /// Returns custom emoji set by the user, or `nil` if the user has never customized their emoji
+    /// Returns custom emoji/stickers set by the user, or `nil` if the user has never customized their reactions
     /// (including on linked devices).
     ///
     /// This is important because we shouldn't ever send the default set of reactions over storage service.
-    public class func customEmojiSet(transaction: DBReadTransaction) -> [String]? {
-        return emojiSetKVS.getStringArray(emojiSetKey, transaction: transaction)
+    public class func customReactionSet(tx: DBReadTransaction) -> [CustomReactionItem]? {
+        if
+            let items: [CustomReactionItem] = try? customReactionKVStore.getCodableValue(
+                forKey: customReactionSetKey,
+                transaction: tx
+            )
+        {
+            return items
+        } else if
+            let legacyEmoji = customReactionKVStore.getStringArray(
+                customEmojiSetKey,
+                transaction: tx
+            )
+        {
+            return legacyEmoji.map {
+                CustomReactionItem(emoji: $0, sticker: nil)
+            }
+        }
+        return nil
     }
 
-    public class func setCustomEmojiSet(_ emojis: [String]?, transaction: DBWriteTransaction) {
-        emojiSetKVS.setStringArray(emojis, key: emojiSetKey, transaction: transaction)
+    public class func setCustomReactionSet(
+        _ items: [CustomReactionItem]?,
+        tx: DBWriteTransaction
+    ) {
+        guard let items else {
+            customReactionKVStore.removeValue(forKey: customReactionSetKey, transaction: tx)
+            return
+        }
+        try? customReactionKVStore.setCodable(
+            items,
+            key: customReactionSetKey,
+            transaction: tx
+        )
     }
 
     @discardableResult
