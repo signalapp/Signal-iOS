@@ -217,9 +217,13 @@ struct ConversationHeaderBuilder {
         avatarWrapper.addSubview(avatarView)
         avatarView.autoPinEdgesToSuperviewEdges()
 
-        subviews.append(avatarWrapper)
-        subviews.append(UIView.spacer(withHeight: 8))
-        subviews.append(buildThreadNameLabel())
+        // Create a vertical stack (VStack equivalent) to ensure avatar and name are stacked vertically
+        let verticalStack = UIStackView(arrangedSubviews: [avatarWrapper, UIView.spacer(withHeight: 8), buildThreadNameLabel()])
+        verticalStack.axis = .vertical
+        verticalStack.alignment = .center
+        verticalStack.spacing = 0
+
+        subviews.append(verticalStack)
     }
 
     mutating func addButtons() {
@@ -823,3 +827,4 @@ public class OWSLabel: UILabel {
         longPressBlock()
     }
 }
+
