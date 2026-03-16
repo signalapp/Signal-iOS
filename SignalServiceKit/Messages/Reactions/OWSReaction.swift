@@ -24,6 +24,9 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         case sentAtTimestamp
         case uniqueMessageId
         case read
+        case stickerPackId
+        case stickerPackKey
+        case stickerId
     }
 
     public var id: Int64?
@@ -51,6 +54,20 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
     public let sortOrder: UInt64
     public private(set) var read: Bool
 
+    private let stickerPackId: Data?
+    private let stickerPackKey: Data?
+    private let stickerId: UInt32?
+    public var sticker: StickerInfo? {
+        guard let stickerPackId, let stickerPackKey, let stickerId else {
+            return nil
+        }
+        return StickerInfo(
+            packId: stickerPackId,
+            packKey: stickerPackKey,
+            stickerId: stickerId
+        )
+    }
+
     public var reactor: SignalServiceAddress {
         SignalServiceAddress.legacyAddress(serviceId: reactorAci, phoneNumber: reactorPhoneNumber)
     }
@@ -61,6 +78,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
     public convenience init(
         uniqueMessageId: String,
         emoji: String,
+        sticker: StickerInfo?,
         reactor: Aci,
         sentAtTimestamp: UInt64,
         receivedAtTimestamp: UInt64,
@@ -68,6 +86,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         self.init(
             uniqueMessageId: uniqueMessageId,
             emoji: emoji,
+            sticker: sticker,
             reactorAci: reactor,
             reactorPhoneNumber: nil,
             sentAtTimestamp: sentAtTimestamp,
@@ -78,6 +97,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
     private init(
         uniqueMessageId: String,
         emoji: String,
+        sticker: StickerInfo?,
         reactorAci: Aci?,
         reactorPhoneNumber: String?,
         sentAtTimestamp: UInt64,
@@ -91,11 +111,15 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         self.sentAtTimestamp = sentAtTimestamp
         self.sortOrder = sortOrder
         self.read = false
+        self.stickerPackId = sticker?.packId
+        self.stickerPackKey = sticker?.packKey
+        self.stickerId = sticker?.stickerId
     }
 
     public static func fromRestoredBackup(
         uniqueMessageId: String,
         emoji: String,
+        sticker: StickerInfo?,
         reactorAci: Aci,
         sentAtTimestamp: UInt64,
         sortOrder: UInt64,
@@ -103,6 +127,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         return Self(
             uniqueMessageId: uniqueMessageId,
             emoji: emoji,
+            sticker: sticker,
             reactorAci: reactorAci,
             reactorPhoneNumber: nil,
             sentAtTimestamp: sentAtTimestamp,
@@ -113,6 +138,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
     public static func fromRestoredBackup(
         uniqueMessageId: String,
         emoji: String,
+        sticker: StickerInfo,
         reactorE164: E164,
         sentAtTimestamp: UInt64,
         sortOrder: UInt64,
@@ -120,6 +146,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         return .init(
             uniqueMessageId: uniqueMessageId,
             emoji: emoji,
+            sticker: sticker,
             reactorAci: nil,
             reactorPhoneNumber: reactorE164.stringValue,
             sentAtTimestamp: sentAtTimestamp,
@@ -155,6 +182,10 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         sentAtTimestamp = try container.decode(UInt64.self, forKey: .sentAtTimestamp)
         sortOrder = try container.decode(UInt64.self, forKey: .sortOrder)
         read = try container.decode(Bool.self, forKey: .read)
+
+        stickerPackId = try container.decodeIfPresent(Data.self, forKey: .stickerPackId)
+        stickerPackKey = try container.decodeIfPresent(Data.self, forKey: .stickerPackKey)
+        stickerId = try container.decodeIfPresent(UInt32.self, forKey: .stickerId)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -177,6 +208,10 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         try container.encode(sentAtTimestamp, forKey: .sentAtTimestamp)
         try container.encode(sortOrder, forKey: .sortOrder)
         try container.encode(read, forKey: .read)
+
+        try stickerPackId.map { try container.encode($0, forKey: .stickerPackId) }
+        try stickerPackKey.map { try container.encode($0, forKey: .stickerPackKey) }
+        try stickerId.map { try container.encode($0, forKey: .stickerId) }
     }
 
     // MARK: - NSSecureCoding
@@ -200,6 +235,16 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         coder.encode(NSNumber(value: sentAtTimestamp), forKey: CodingKeys.sentAtTimestamp.rawValue)
         coder.encode(NSNumber(value: sortOrder), forKey: CodingKeys.sortOrder.rawValue)
         coder.encode(NSNumber(value: read), forKey: CodingKeys.read.rawValue)
+
+        if let stickerPackId {
+            coder.encode(stickerPackId, forKey: CodingKeys.stickerPackId.rawValue)
+        }
+        if let stickerPackKey {
+            coder.encode(stickerPackKey, forKey: CodingKeys.stickerPackKey.rawValue)
+        }
+        if let stickerId {
+            coder.encode(NSNumber(value: stickerId), forKey: CodingKeys.stickerId.rawValue)
+        }
     }
 
     public required init?(coder: NSCoder) {
@@ -247,5 +292,18 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
             return nil
         }
         self.read = read
+
+        self.stickerPackId = coder.decodeObject(
+            of: NSData.self,
+            forKey: CodingKeys.stickerPackId.rawValue
+        ) as? Data
+        self.stickerPackKey = coder.decodeObject(
+            of: NSData.self,
+            forKey: CodingKeys.stickerPackKey.rawValue
+        ) as? Data
+        self.stickerId = coder.decodeObject(
+            of: NSNumber.self,
+            forKey: CodingKeys.stickerId.rawValue
+        )?.uint32Value
     }
 }
