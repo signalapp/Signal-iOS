@@ -27,7 +27,6 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
     // MARK: Properties
 
     weak var iconDelegate: AppIconSettingsTableViewControllerDelegate?
-    private var swiftUIView: AppIconSettingsView?
 
     // MARK: View lifecycle
 
