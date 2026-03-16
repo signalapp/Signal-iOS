@@ -1358,8 +1358,21 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: transaction)
         builder.setUniversalExpireTimer(dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0)
 
-        if let customEmojiSet = ReactionManager.customEmojiSet(transaction: transaction) {
-            builder.setPreferredReactionEmoji(customEmojiSet)
+        if let customReactionSet = ReactionManager.customReactionSet(tx: transaction) {
+            // Set raw emoji for backwards compatibility.
+            let rawEmoji = customReactionSet.map(\.emoji)
+            builder.setPreferredReactionEmoji(rawEmoji)
+            builder.setPreferredReactionItems(customReactionSet.map { item in
+                var protoItem = StorageServiceProtoAccountRecordPreferredReactionItem.builder(
+                    emoji: item.emoji
+                )
+                if let sticker = item.sticker {
+                    protoItem.setStickerPackID(sticker.packId)
+                    protoItem.setStickerPackKey(sticker.packKey)
+                    protoItem.setStickerID(sticker.stickerId)
+                }
+                return protoItem.buildInfallibly()
+            })
         }
 
         if
@@ -1660,12 +1673,53 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let remoteExpireToken: DisappearingMessageToken = .token(forProtoExpireTimerSeconds: record.universalExpireTimer)
         dmConfigurationStore.setUniversalTimer(token: remoteExpireToken, tx: transaction)
 
-        if !record.preferredReactionEmoji.isEmpty {
-            // Treat new preferred emoji as a full source of truth (if not empty). Note
-            // that we aren't doing any validation up front, which may be important if
-            // another platform supports an emoji we don't (say, because a new version
-            // of Unicode has come out). We deal with this when the custom set is read.
-            ReactionManager.setCustomEmojiSet(record.preferredReactionEmoji, transaction: transaction)
+        let customReactionItems = record.preferredReactionItems.compactMap { protoItem -> CustomReactionItem? in
+            guard let emoji = protoItem.emoji.nilIfEmpty else { return nil }
+            var sticker: StickerInfo?
+            if
+                let stickerPackID = protoItem.stickerPackID,
+                let stickerPackKey = protoItem.stickerPackKey,
+                let stickerID = protoItem.stickerID
+            {
+                sticker = StickerInfo(
+                    packId: stickerPackID,
+                    packKey: stickerPackKey,
+                    stickerId: stickerID
+                )
+            }
+            return CustomReactionItem(
+                emoji: emoji,
+                sticker: sticker
+            )
+        }
+
+        if
+            !record.preferredReactionEmoji.isEmpty,
+            !customReactionItems.isEmpty,
+            record.preferredReactionEmoji != customReactionItems.map(\.emoji)
+        {
+            // We have both legacy (emoji only) and new custom reaction items,
+            // and they aren't the same. If a new client had updated them,
+            // they'd be the same. Therefore an old client must've updated
+            // custom reactions, and we should take the legacy field, which will
+            // eventually overwrite the new field next time we write.
+            ReactionManager.setCustomReactionSet(
+                record.preferredReactionEmoji.map { CustomReactionItem(emoji: $0, sticker: nil) },
+                tx: transaction
+            )
+        } else if
+            !record.preferredReactionEmoji.isEmpty,
+            customReactionItems.isEmpty
+        {
+            // We only have legacy. Use those.
+            ReactionManager.setCustomReactionSet(
+                record.preferredReactionEmoji.map { CustomReactionItem(emoji: $0, sticker: nil) },
+                tx: transaction
+            )
+        } else {
+            // We either only have new custom reaction items, or we have both
+            // and they're the same underlying emoji; use the new type.
+            ReactionManager.setCustomReactionSet(customReactionItems, tx: transaction)
         }
 
         if
