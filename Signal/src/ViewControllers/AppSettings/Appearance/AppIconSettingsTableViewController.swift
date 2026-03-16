@@ -137,7 +137,6 @@ struct AppIconSettingsView: View {
     @State private var isAnimating = false
     @State private var iconSize = CGFloat(60)
 
-示
     private let customIcons: [[AppIcon]] = [
         [.default, .white, .color, .night],
         [.nightVariant, .chat, .bubbles, .yellow],
