@@ -444,6 +444,8 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
                     messageBuilder.setMessageBody(textReply.body)
                 case .emoji(let emoji):
                     messageBuilder.storyReactionEmoji = emoji
+                case .sticker(let sticker):
+                    messageBuilder.storyReactionEmoji = sticker.emoji
                 }
                 // Peers can't reply to their own stories; if a 1:1 story reply is incoming
                 // that means the author of the story being replied to was the local user.

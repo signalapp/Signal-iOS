@@ -625,6 +625,8 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
                     outgoingMessageBuilder.setMessageBody(textReply.body)
                 case .emoji(let emoji):
                     outgoingMessageBuilder.storyReactionEmoji = emoji
+                case .sticker(let sticker):
+                    outgoingMessageBuilder.storyReactionEmoji = sticker.emoji
                 }
                 // We can't reply to our own stories; if a 1:1 story reply is outgoing
                 // that means the author of the story being replied to was the peer.

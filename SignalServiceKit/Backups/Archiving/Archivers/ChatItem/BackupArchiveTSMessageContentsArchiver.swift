@@ -103,8 +103,16 @@ extension BackupArchive {
                     let body: Text.RestoredMessageBody
                 }
 
+                struct Sticker {
+                    let emoji: String
+                    let sticker: MessageSticker
+
+                    fileprivate let attachment: BackupProto_FilePointer
+                }
+
                 case textReply(TextReply)
                 case emoji(String)
+                case sticker(Sticker)
             }
 
             let replyType: ReplyType
@@ -261,7 +269,10 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 contactAvatarReferencedAttachment: messageOwnedReferencedAttachments.contactAvatar,
                 context: context.recipientContext,
             )
-        } else if let messageSticker = message.messageSticker {
+        } else if
+            let messageSticker = message.messageSticker,
+            (!message.isStoryReply || message.isGroupStoryReply)
+        {
             return archiveStickerMessageContents(
                 message,
                 messageSticker: messageSticker,
@@ -283,6 +294,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             return archiveDirectStoryReplyMessage(
                 message,
                 oversizeTextReferencedAttachment: messageOwnedReferencedAttachments.oversizeText,
+                stickerReferencedAttachment: messageOwnedReferencedAttachments.sticker,
                 interactionUniqueId: message.uniqueInteractionId,
                 context: context,
             )
@@ -945,6 +957,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     private func archiveDirectStoryReplyMessage(
         _ message: TSMessage,
         oversizeTextReferencedAttachment: ReferencedAttachment?,
+        stickerReferencedAttachment: ReferencedAttachment?,
         interactionUniqueId: BackupArchive.InteractionUniqueId,
         context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveInteractionResult<ChatItemType> {
@@ -995,7 +1008,23 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                     interactionUniqueId,
                 )])
             }
-            proto.reply = .emoji(emoji)
+            if let stickerReferencedAttachment, let sticker = message.messageSticker {
+                var stickerProto = BackupProto_Sticker()
+
+                stickerProto.packID = sticker.packId
+                stickerProto.packKey = sticker.packKey
+                stickerProto.stickerID = sticker.stickerId
+                sticker.emoji.map { stickerProto.emoji = $0 }
+
+                stickerProto.data = attachmentsArchiver.archiveStickerAttachment(
+                    referencedAttachment: stickerReferencedAttachment,
+                    context: context,
+                )
+
+                proto.sticker = stickerProto
+            } else {
+                proto.reply = .emoji(emoji)
+            }
         } else if let body = message.body {
             guard !body.isEmpty else {
                 return .messageFailure([.archiveFrameError(
@@ -1299,6 +1328,17 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                         context: context,
                     ))
                 }
+            case .sticker(let stickerReply):
+                downstreamObjectResults.append(attachmentsArchiver.restoreStickerAttachment(
+                    stickerReply.attachment,
+                    stickerPackId: stickerReply.sticker.packId,
+                    stickerId: stickerReply.sticker.stickerId,
+                    chatItemId: chatItemId,
+                    messageRowId: messageRowId,
+                    message: message,
+                    thread: thread,
+                    context: context,
+                ))
             case .emoji:
                 break
             }
@@ -2109,6 +2149,20 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             }
         case .emoji(let string):
             replyType = .emoji(string)
+        case .sticker(let stickerProto):
+            let messageSticker = MessageSticker(
+                info: .init(
+                    packId: stickerProto.packID,
+                    packKey: stickerProto.packKey,
+                    stickerId: stickerProto.stickerID,
+                ),
+                emoji: stickerProto.emoji,
+            )
+            replyType = .sticker(.init(
+                emoji: stickerProto.emoji,
+                sticker: messageSticker,
+                attachment: stickerProto.data
+            ))
         case .none:
             return .unrecognizedEnum(BackupArchive.UnrecognizedEnumError(
                 enumType: BackupProto_DirectStoryReplyMessage.OneOf_Reply.self,
