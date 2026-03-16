@@ -446,7 +446,12 @@ public class GRDBSchemaMigrator {
     public static let grdbSchemaVersionLatest: UInt = 141
 
     private class DatabaseMigratorWrapper {
-        var migrator = DatabaseMigrator()
+        // Run with immediate (or disabled) foreign key checks so that pre-existing
+        // dangling rows don't cause unrelated migrations to fail. (When using
+        // .deferred, all existing foreign keys must be re-checked, and those may
+        // have pre-existing issues uncovered by an unrelated migration.)
+        // TODO: Clean up broken foreign key references; stop disabling these checks.
+        var migrator = DatabaseMigrator().disablingDeferredForeignKeyChecks()
 
         /**
          * Registers a database migration to be run asynchronously.
@@ -461,6 +466,7 @@ public class GRDBSchemaMigrator {
          */
         func registerMigration(
             _ identifier: MigrationId,
+            foreignKeyChecks: DatabaseMigrator.ForeignKeyChecks = .immediate,
             migrate: @escaping (DBWriteTransaction) throws -> Result<Void, Error>,
         ) {
             // Hold onto a reference to the migrator, so we can use its `appliedIdentifiers` method
@@ -470,10 +476,7 @@ public class GRDBSchemaMigrator {
             // on a weak reference to self because self is not guaranteed to be retained when
             // the migration actually runs; this class is used primary for migration setup.
             let migrator = self.migrator
-            // Run with immediate foreign key checks so that pre-existing dangling rows
-            // don't cause unrelated migrations to fail. We also don't perform schema
-            // alterations that would necessitate disabling foreign key checks.
-            self.migrator.registerMigration(identifier.rawValue, foreignKeyChecks: .immediate) { (database: Database) in
+            self.migrator.registerMigration(identifier.rawValue, foreignKeyChecks: foreignKeyChecks) { (database: Database) in
                 let startTime = CACurrentMediaTime()
 
                 // Create a transaction with this database connection.
