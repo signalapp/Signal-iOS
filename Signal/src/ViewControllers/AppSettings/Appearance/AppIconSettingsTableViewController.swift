@@ -69,14 +69,16 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
             guard let self else { return UITableViewCell() }
             
             let cell = OWSTableItem.newCell()
-            self.addChild(hostingController)
-            cell.contentView.addSubview(hostingController.view)
-            hostingController.didMove(toParent: self)
-            
+
             let hostView = hostingController.view!
             hostView.translatesAutoresizingMaskIntoConstraints = false
-            cell.contentView.addSubview(hostView)
-            
+
+            if hostingController.parent == nil {
+                self.addChild(hostingController)
+            cell.contentView.addSubview(hostingController.view)
+            hostingController.didMove(toParent: self)
+            }
+
             hostView.autoPinEdgesToSuperviewMargins(
                 with: .init(hMargin: -Self.cellHInnerMargin, vMargin: 24)
             )
@@ -142,7 +144,7 @@ struct AppIconSettingsView: View {
             .onAppear {
                 updateIconSize()
             }
-            .onChange(pf: geo.size) { _ in
+            .onChange(of: geo.size) { _ in
                 updateIconSize()
             }
         }
@@ -166,6 +168,8 @@ struct AppIconSettingsView: View {
                                 didTapIcon(icon)
                             }
                         )
+                        .accessibilityLabel(Text(icon.accessibilityLabel))
+                        .accessibilityAddTraits(currentIcon == icon ? .isSelected : [])
                     }
                     
                     Spacer()
