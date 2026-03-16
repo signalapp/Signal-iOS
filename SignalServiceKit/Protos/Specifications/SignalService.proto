@@ -317,6 +317,8 @@ message DataMessage {
     // @required
     optional uint64 timestamp = 5;
     optional bytes targetAuthorAciBinary = 6; // 16-byte UUID
+    // If present, Sticker.emoji must match Reaction.emoji
+    optional Sticker sticker = 7;
   }
 
   message Delete {

@@ -107,6 +107,16 @@ message AccountData {
     WIFI_AND_MOBILE_DATA = 3;
   }
 
+  message PreferredReactionItem {
+    // @required
+    string emoji = 1;
+    // If all below fields are present, uses an
+    // installed sticker. Otherwise falls back to emoji.
+    optional bytes stickerPackId = 2;
+    optional bytes stickerPackKey = 3;
+    optional uint32 stickerId = 4;
+  }
+
   message AccountSettings {
     bool readReceipts = 1;
     bool sealedSenderIndicators = 2;
@@ -141,6 +151,8 @@ message AccountData {
     bool allowSealedSenderFromAnyone = 30;
     bool allowAutomaticKeyVerification = 31;
     bool seenAdminDeleteEducationDialog = 32;
+    // Replaces preferredReactionEmoji; older one kept for backwards compatibility
+    repeated PreferredReactionItem preferredReactionItems = 33;
   }
 
   message SubscriberData {
@@ -597,6 +609,7 @@ message DirectStoryReplyMessage {
   oneof reply {
     TextReply textReply = 1;
     string emoji = 2;
+    Sticker sticker = 5;
   }
 
   repeated Reaction reactions = 3;
@@ -894,6 +907,8 @@ message Reaction {
   // A higher sort order means that a reaction is more recent. Some clients may export this as
   // incrementing numbers (e.g. 1, 2, 3), others as timestamps.
   uint64 sortOrder = 4;
+  // If present, Sticker.emoji must match Reaction.emoji
+  optional Sticker sticker = 5;
 }
 
 message Poll {

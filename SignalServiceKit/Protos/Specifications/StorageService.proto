@@ -228,6 +228,16 @@ message AccountRecord {
     }
   }
 
+  message PreferredReactionItem {
+    // @required
+    string emoji = 1;
+    // If all below fields are present, uses an
+    // installed sticker. Otherwise falls back to emoji.
+    optional bytes stickerPackId = 2;
+    optional bytes stickerPackKey = 3;
+    optional uint32 stickerId = 4;
+  }
+
   bytes profileKey = 1;
   string givenName = 2;
   string familyName = 3;
@@ -274,6 +284,8 @@ message AccountRecord {
   // 44 and 45 related to notification profiles
   bool automaticKeyVerificationDisabled = 46;
   bool seenAdminDeleteEducationDialog = 47;
+  // Replaces preferredReactionEmoji; older one kept for backwards compatibility
+  repeated PreferredReactionItem preferredReactionItems = 48;
 }
 
 message StoryDistributionListRecord {
