@@ -79,9 +79,12 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
             hostingController.didMove(toParent: self)
             }
 
-            hostView.autoPinEdgesToSuperviewMargins(
+            if hostView.superview == nil {
+                cell.contentView.addSubview(hostView)
+                hostView.autoPinEdgesToSuperviewMargins(
                 with: .init(hMargin: -Self.cellHInnerMargin, vMargin: 24)
-            )
+               )
+            }
             
             return cell
         }))
@@ -137,8 +140,7 @@ struct AppIconSettingsView: View {
     let onLearnMoreTapped: () -> Void
     
     var body: some View {
-        GeometryReader { geo in
-            VStack{
+        VStack{
                 iconGrid
             }
             .onAppear {
@@ -147,7 +149,13 @@ struct AppIconSettingsView: View {
             .onChange(of: geo.size) { _ in
                 updateIconSize()
             }
-        }
+            .background(
+                GeometryReader { geo in
+                   Color.clear.onAppear{ updateIconSize() }.onChange(of: geo.size) {
+                        _ in updateIconSize()
+                   } 
+                }
+            )
     }
     
     private var iconGrid: some View {
