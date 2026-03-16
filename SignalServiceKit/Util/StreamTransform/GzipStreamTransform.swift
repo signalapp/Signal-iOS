@@ -24,7 +24,6 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
 
     private enum Constants {
         static let BufferSize: Int = 65_536
-        static let MaxBufferSize: Int = BufferSize * 4
 
         // Use the maximum memory window (32K) for compressing the data
         static let MaxWindowBits = MAX_WBITS
