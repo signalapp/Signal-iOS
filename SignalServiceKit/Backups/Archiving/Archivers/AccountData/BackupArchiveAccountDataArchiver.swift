@@ -297,7 +297,20 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         accountSettings.hasSeenGroupStoryEducationSheet_p = hasSeenGroupStoryEducationSheet
         accountSettings.hasCompletedUsernameOnboarding_p = hasCompletedUsernameOnboarding
         accountSettings.phoneNumberSharingMode = phoneNumberSharingMode
-        accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: context.tx) ?? []
+        if let customReactionSet = reactionManager.customReactionSet(tx: context.tx) {
+            // Set the legacy field for backwards compatibility.
+            accountSettings.preferredReactionEmoji = customReactionSet.map(\.emoji)
+            accountSettings.preferredReactionItems = customReactionSet.map { item in
+                var protoItem = BackupProto_AccountData.PreferredReactionItem()
+                protoItem.emoji = item.emoji
+                if let sticker = item.sticker {
+                    protoItem.stickerPackID = sticker.packId
+                    protoItem.stickerPackKey = sticker.packKey
+                    protoItem.stickerID = sticker.stickerId
+                }
+                return protoItem
+            }
+        }
         accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: context.tx)
         accountSettings.pinReminders = hasPinReminders
         switch backupSettingsStore.backupPlan(tx: context.tx) {
@@ -517,8 +530,49 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                 ),
                 tx: context.tx,
             )
-            if settings.preferredReactionEmoji.count > 0 {
-                reactionManager.setCustomEmojiSet(emojis: settings.preferredReactionEmoji, tx: context.tx)
+            let customReactionSet: [CustomReactionItem] = settings.preferredReactionItems.compactMap {
+                guard let emoji = $0.emoji.nilIfEmpty else { return nil }
+                var sticker: StickerInfo?
+                if
+                    let stickerPackId = $0.stickerPackID.nilIfEmpty,
+                    let stickerPackKey = $0.stickerPackKey.nilIfEmpty
+                {
+                    sticker = StickerInfo(
+                        packId: stickerPackId,
+                        packKey: stickerPackKey,
+                        stickerId: $0.stickerID
+                    )
+                }
+                return CustomReactionItem(emoji: emoji, sticker: sticker)
+            }
+
+            if
+                !settings.preferredReactionEmoji.isEmpty,
+                !customReactionSet.isEmpty,
+                settings.preferredReactionEmoji != customReactionSet.map(\.emoji)
+            {
+                // We have both legacy (emoji only) and new custom reaction items,
+                // and they aren't the same. If a new client had updated them,
+                // they'd be the same. Therefore an old client must've updated
+                // custom reactions, and we should take the legacy field, which will
+                // eventually overwrite the new field next time we write.
+                reactionManager.setCustomReactionSet(
+                    items: settings.preferredReactionEmoji.map { CustomReactionItem(emoji: $0, sticker: nil) },
+                    tx: context.tx
+                )
+            } else if
+                !settings.preferredReactionEmoji.isEmpty,
+                customReactionSet.isEmpty
+            {
+                // We only have legacy. Use those.
+                reactionManager.setCustomReactionSet(
+                    items: settings.preferredReactionEmoji.map { CustomReactionItem(emoji: $0, sticker: nil) },
+                    tx: context.tx
+                )
+            } else if !customReactionSet.isEmpty {
+                // We either only have new custom reaction items, or we have both
+                // and they're the same underlying emoji; use the new type.
+                reactionManager.setCustomReactionSet(items: customReactionSet, tx: context.tx)
             }
             donationSubscriptionManager.setDisplayBadgesOnProfile(value: settings.displayBadgesOnProfile, tx: context.tx)
             sskPreferences.setShouldKeepMutedChatsArchived(value: settings.keepMutedChatsArchived, tx: context.tx)

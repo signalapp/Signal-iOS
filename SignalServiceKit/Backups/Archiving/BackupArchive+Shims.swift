@@ -391,17 +391,17 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
 // MARK: - ReactionManager
 
 public protocol _MessageBackup_ReactionManagerShim {
-    func customEmojiSet(tx: DBReadTransaction) -> [String]?
-    func setCustomEmojiSet(emojis: [String]?, tx: DBWriteTransaction)
+    func customReactionSet(tx: DBReadTransaction) -> [CustomReactionItem]?
+    func setCustomReactionSet(items: [CustomReactionItem]?, tx: DBWriteTransaction)
 }
 
 public class _MessageBackup_ReactionManagerWrapper: _MessageBackup_ReactionManagerShim {
-    public func customEmojiSet(tx: DBReadTransaction) -> [String]? {
-        ReactionManager.customEmojiSet(transaction: tx)
+    public func customReactionSet(tx: DBReadTransaction) -> [CustomReactionItem]? {
+        ReactionManager.customReactionSet(tx: tx)
     }
 
-    public func setCustomEmojiSet(emojis: [String]?, tx: DBWriteTransaction) {
-        ReactionManager.setCustomEmojiSet(emojis, transaction: tx)
+    public func setCustomReactionSet(items: [CustomReactionItem]?, tx: DBWriteTransaction) {
+        ReactionManager.setCustomReactionSet(items, tx: tx)
     }
 }
 
