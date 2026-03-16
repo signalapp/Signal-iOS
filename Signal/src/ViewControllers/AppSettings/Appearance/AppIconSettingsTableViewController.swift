@@ -5,14 +5,18 @@
 
 import SignalServiceKit
 import SignalUI
+import SwiftUI
 
 protocol AppIconSettingsTableViewControllerDelegate: AnyObject {
     func didChangeIcon()
 }
 
-final class AppIconSettingsTableViewController: OWSTableViewController2 {
+// MARK: - SwiftUI View
 
-    // MARK: Static properties
+struct AppIconSettingsView: View {
+    @State private var currentIcon = UIApplication.shared.currentAppIcon
+    @State private var showLearnMore = false
+    var onIconChanged: (() -> Void)?
 
     private static let customIcons: [[AppIcon]] = [
         [.default, .white, .color, .night],
@@ -20,13 +24,155 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
         [.news, .notes, .weather, .waves],
     ]
 
-    /// This URL itself is not used. The action is overridden in the text view delegate function.
-    private static let learnMoreURL = URL(string: "https://support.signal.org/")!
+    var body: some View {
+        Form {
+            Section {
+                IconSelectionGridView(currentIcon: $currentIcon, onIconChanged: onIconChanged)
+            } footer: {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(OWSLocalizedString(
+                        "SETTINGS_APP_ICON_FOOTER",
+                        comment: "The footer for the app icon selection settings page."
+                    ))
+                    Button(action: { showLearnMore = true }) {
+                        Text(CommonStrings.learnMore)
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
+        }
+        .navigationTitle(OWSLocalizedString(
+            "SETTINGS_APP_ICON_TITLE",
+            comment: "The title for the app icon selection settings page."
+        ))
+        .sheet(isPresented: $showLearnMore) {
+            AppIconLearnMoreWrapper()
+        }
+    }
+}
+
+// MARK: - Icon Grid View
+
+struct IconSelectionGridView: View {
+    @Binding var currentIcon: AppIcon?
+    var onIconChanged: (() -> Void)?
+
+    private static let customIcons: [[AppIcon]] = [
+        [.default, .white, .color, .night],
+        [.nightVariant, .chat, .bubbles, .yellow],
+        [.news, .notes, .weather, .waves],
+    ]
+
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+
+    var body: some View {
+        VStack(spacing: 32) {
+            ForEach(Array(Self.customIcons.enumerated()), id: \.offset) { _, row in
+                HStack(spacing: 0) {
+                    Spacer()
+                    ForEach(row, id: \.self) { icon in
+                        IconButtonView(
+                            icon: icon,
+                            iconSize: calculateIconSize(),
+                            isSelected: currentIcon == icon,
+                            action: {
+                                selectIcon(icon)
+                            }
+                        )
+                    }
+                    Spacer()
+                }
+                .frame(height: calculateIconSize())
+            }
+        }
+        .padding(.vertical, 24)
+    }
+
+    private func calculateIconSize() -> CGFloat {
+        let isiOS26 = if #available(iOS 26.0, *) { true } else { false }
+        let isNarrow = UIDevice.current.isNarrowerThanIPhone6
+        let isPlus = UIDevice.current.isPlusSizePhone
+
+        return switch (isNarrow, isPlus, isiOS26) {
+        case (true, _, false): 56
+        case (true, _, true): 61.5
+        case (_, true, false): 64
+        case (_, true, true): 68
+        case (_, _, false): 60
+        case (_, _, true): 64
+        }
+    }
+
+    private func selectIcon(_ icon: AppIcon) {
+        guard currentIcon != icon else { return }
+
+        UIApplication.shared.setAlternateIconName(icon.alternateIconName) { error in
+            if let error {
+                owsFailDebug("Failed to update app icon: \(error)")
+            }
+        }
+
+        withAnimation(.spring(response: 0.15, dampingFraction: 1, blendDuration: 0)) {
+            currentIcon = icon
+        }
+        onIconChanged?()
+    }
+}
+
+// MARK: - Icon Button
+
+struct IconButtonView: View {
+    let icon: AppIcon
+    let iconSize: CGFloat
+    let isSelected: Bool
+    let action: () -> Void
+
+    @Environment(\.colorScheme) var colorScheme
+
+    var body: some View {
+        Button(action: action) {
+            Image(uiImage: UIImage(resource: icon.previewImageResource))
+                .resizable()
+                .scaledToFit()
+                .frame(width: iconSize, height: iconSize)
+                .scaleEffect(isSelected ? 0.8 : 1.0)
+        }
+        .frame(width: iconSize, height: iconSize)
+        .background(
+            RoundedRectangle(cornerRadius: iconSize * 0.24 * (4 / 3), style: .continuous)
+                .stroke(
+                    borderColor,
+                    lineWidth: isSelected ? 3 : 0
+                )
+        )
+        .animation(.easeInOut(duration: 0.15), value: isSelected)
+    }
+
+    private var borderColor: Color {
+        colorScheme == .dark ? Color(UIColor.ows_gray05) : Color(UIColor.ows_black)
+    }
+}
+
+// MARK: - Learn More Wrapper
+
+struct AppIconLearnMoreWrapper: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> UINavigationController {
+        let learnMoreViewController = AppIconLearnMoreTableViewController()
+        return OWSNavigationController(rootViewController: learnMoreViewController)
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {}
+}
+
+// MARK: - UIKit Bridge
+
+final class AppIconSettingsTableViewController: OWSTableViewController2 {
 
     // MARK: Properties
 
     weak var iconDelegate: AppIconSettingsTableViewControllerDelegate?
-    private var stackView: UIStackView?
 
     // MARK: View lifecycle
 
@@ -52,7 +198,7 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.add(.init(customCellBlock: { [weak self] in
             guard let self else { return UITableViewCell() }
-            return self.buildIconSelectionCell()
+            return self.buildSwiftUICell()
         }))
         section.footerAttributedTitle = NSAttributedString.composed(of: [
             OWSLocalizedString(
@@ -60,7 +206,7 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
                 comment: "The footer for the app icon selection settings page.",
             ),
             "\n",
-            CommonStrings.learnMore.styled(with: .link(Self.learnMoreURL)),
+            CommonStrings.learnMore.styled(with: .link(URL(string: "https://support.signal.org/")!)),
         ])
         .styled(with: defaultFooterTextStyle)
         section.footerTextViewDelegate = self
@@ -70,128 +216,29 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    private func buildIconSelectionCell() -> UITableViewCell {
-        let isiOS26 = if #available(iOS 26.0, *) { true } else { false }
-        let iconSize: CGFloat = switch (
-            UIDevice.current.isNarrowerThanIPhone6,
-            UIDevice.current.isPlusSizePhone,
-            isiOS26,
-        ) {
-        case (true, _, false): 56
-        case (true, _, true): 61.5
-        case (_, true, false): 64
-        case (_, true, true): 68
-        case (_, _, false): 60
-        case (_, _, true): 64
-        }
-
-        let rows = Self.customIcons.map { row in
-            let icons = row.map { icon in
-                IconButton(icon: icon, iconSize: iconSize) { [weak self] in
-                    self?.didTapIcon(icon)
-                }
+    private func buildSwiftUICell() -> UITableViewCell {
+        let hostingView = IconSelectionGridView(
+            currentIcon: .constant(UIApplication.shared.currentAppIcon),
+            onIconChanged: { [weak self] in
+                self?.iconDelegate?.didChangeIcon()
             }
-            let stackView = UIStackView(arrangedSubviews: [SpacerView(preferredWidth: 0)] + icons + [SpacerView(preferredWidth: 0)])
-            stackView.axis = .horizontal
-            stackView.distribution = .equalSpacing
-            stackView.alignment = .center
-            return stackView
-        }
+        )
 
-        let stackView = UIStackView(arrangedSubviews: rows)
-        stackView.axis = .vertical
-        stackView.spacing = 32
-        stackView.distribution = .fillEqually
-        stackView.alignment = .fill
-
-        self.stackView = stackView
-        let cell = OWSTableItem.newCell()
-        cell.contentView.addSubview(stackView)
-        // Subtract off the cell inner margins in favor of
-        // the stack views' spacer views with equal spacing.
-        stackView.autoPinEdgesToSuperviewMargins(with: .init(hMargin: -Self.cellHInnerMargin, vMargin: 24))
+        let hostingController = UIHostingController(rootView: hostingView)
+        let cell = UITableViewCell()
+        cell.contentView.addSubview(hostingController.view)
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor),
+            hostingController.view.leftAnchor.constraint(equalTo: cell.contentView.leftAnchor),
+            hostingController.view.rightAnchor.constraint(equalTo: cell.contentView.rightAnchor),
+        ])
+        cell.selectionStyle = .none
+        hostingController.view.backgroundColor = UIColor.clear
+        hostingController.view.isOpaque = false
+        
         return cell
-    }
-
-    private func didTapLearnMore() {
-        let learnMoreViewController = AppIconLearnMoreTableViewController()
-        let navigationController = OWSNavigationController(rootViewController: learnMoreViewController)
-        presentFormSheet(navigationController, animated: true)
-    }
-
-    private func didTapIcon(_ icon: AppIcon) {
-        guard UIApplication.shared.currentAppIcon != icon else { return }
-
-        UIApplication.shared.setAlternateIconName(icon.alternateIconName) { error in
-            if let error {
-                owsFailDebug("Failed to update app icon: \(error)")
-            }
-        }
-        updateIconSelection()
-        iconDelegate?.didChangeIcon()
-    }
-
-    private func updateIconSelection() {
-        let animator = UIViewPropertyAnimator(duration: 0.15, springDamping: 1, springResponse: 0.15)
-        animator.addAnimations {
-            self.stackView?.arrangedSubviews
-                .compactMap { $0 as? UIStackView }
-                .flatMap(\.arrangedSubviews)
-                .forEach { view in
-                    guard let iconButton = view as? IconButton else { return }
-                    iconButton.updateSelectedState()
-                }
-        }
-        animator.startAnimation()
-    }
-
-    private class IconButton: UIView {
-        private let icon: AppIcon?
-        private let iconSize: CGFloat
-        private let button: UIView
-        private let selectedOutlineView: UIView
-
-        init(icon: AppIcon, iconSize: CGFloat, action: @escaping () -> Void) {
-            self.icon = icon
-            self.iconSize = iconSize
-            self.button = Self.makeButton(for: icon, iconSize: iconSize, action: action)
-            self.selectedOutlineView = UIView.container()
-            super.init(frame: .zero)
-
-            self.addSubview(selectedOutlineView)
-            selectedOutlineView.autoPinEdgesToSuperviewEdges()
-            selectedOutlineView.layer.cornerRadius = iconSize * 0.24 * (4 / 3)
-            selectedOutlineView.layer.cornerCurve = .continuous
-            let borderColor: UIColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_black
-            selectedOutlineView.layer.borderColor = borderColor.cgColor
-
-            selectedOutlineView.addSubview(button)
-            button.autoPinEdgesToSuperviewEdges()
-
-            updateSelectedState()
-        }
-
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-
-        func updateSelectedState() {
-            if UIApplication.shared.currentAppIcon == icon {
-                button.transform = .scale(0.8)
-                selectedOutlineView.layer.borderWidth = 3
-            } else {
-                button.transform = .identity
-                selectedOutlineView.layer.borderWidth = 0
-            }
-        }
-
-        private static func makeButton(for icon: AppIcon, iconSize: CGFloat, action: @escaping () -> Void) -> UIView {
-            let image = UIImage(resource: icon.previewImageResource)
-            let button = OWSButton(block: action)
-            button.setImage(image, for: .normal)
-            button.autoSetDimensions(to: .square(iconSize))
-            return button
-        }
     }
 }
 
@@ -199,8 +246,10 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
 
 extension AppIconSettingsTableViewController: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldInteractWith url: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        if url == Self.learnMoreURL {
-            didTapLearnMore()
+        if url.absoluteString == "https://support.signal.org/" {
+            let learnMoreViewController = AppIconLearnMoreTableViewController()
+            let navigationController = OWSNavigationController(rootViewController: learnMoreViewController)
+            presentFormSheet(navigationController, animated: true)
         }
         return false
     }
