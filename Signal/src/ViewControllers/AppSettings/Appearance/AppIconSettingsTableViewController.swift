@@ -68,7 +68,6 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
         
         section.add(.init(customCellBlock: { [weak self] in
             guard let self else { return UITableViewCell() }
-            guard let hostView = hostingController.view else { return UITableViewCell() }
             
             let cell = OWSTableItem.newCell()
             self.addChild(hostingController)
@@ -139,6 +138,9 @@ struct AppIconSettingsView: View {
                 iconGrid
             }
             .onAppear {
+                updateIconSize()
+            }
+            .onChange(pf: geo.size) { _ in
                 updateIconSize()
             }
         }
