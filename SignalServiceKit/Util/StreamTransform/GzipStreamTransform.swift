@@ -126,7 +126,7 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
                 // "If inflate (or deflate) returns Z_OK and with zero avail_out, it must be called again
                 // after making room in the output buffer because there might be more output pending."
                 if stream.avail_out == 0 {
-                    buffer.count += Constants.BufferSize
+                    buffer.count *= 2
                     // currentOffset can remain the same
                 }
 
