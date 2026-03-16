@@ -184,13 +184,12 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
 
         switch operation {
         case .compress:
-            // Pad the gzip similar to how attachments are padded.
-            // gzip will ignore this trailing data during decompression.
+            // Pad the gzip similar to how attachments are padded. Gzip will ignore
+            // this trailing data during decompression.
             let unpaddedSize = UInt64(outputCount)
             let paddedSize = Cryptography.paddedSize(unpaddedSize: unpaddedSize)!
-            if paddedSize > unpaddedSize {
-                finalData.append(Data(repeating: 0, count: Int(paddedSize - unpaddedSize)))
-            }
+            // TODO: This may produce a 50MiB buffer for a 1GiB attachment (padding is up to 5%).
+            finalData.count += Int(paddedSize - unpaddedSize)
         case .decompress:
             break
         }
