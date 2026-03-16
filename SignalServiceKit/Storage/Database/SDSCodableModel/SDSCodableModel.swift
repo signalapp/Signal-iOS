@@ -216,7 +216,7 @@ public extension SDSCodableModel {
     static func anyEnumerate(
         transaction: DBReadTransaction,
         batchingPreference: BatchingPreference = .unbatched,
-        block: (Self, UnsafeMutablePointer<ObjCBool>) -> Void,
+        block: (Self, inout Bool) -> Void,
     ) {
         SDSCodableModelDatabaseInterfaceImpl().enumerateModels(
             modelType: Self.self,
@@ -232,7 +232,7 @@ public extension SDSCodableModel {
         transaction: DBReadTransaction,
         sql: String,
         arguments: StatementArguments,
-        block: (Self, UnsafeMutablePointer<ObjCBool>) -> Void,
+        block: (Self, inout Bool) -> Void,
     ) {
         SDSCodableModelDatabaseInterfaceImpl().enumerateModels(
             modelType: Self.self,

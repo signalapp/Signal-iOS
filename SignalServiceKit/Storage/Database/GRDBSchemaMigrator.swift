@@ -5081,7 +5081,7 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.dataMigration_groupIdMapping) { transaction in
-            TSThread.anyEnumerate(transaction: transaction) { (thread: TSThread, _: UnsafeMutablePointer<ObjCBool>) in
+            TSThread.anyEnumerate(transaction: transaction) { thread, _ in
                 guard let groupThread = thread as? TSGroupThread else {
                     return
                 }
@@ -5118,7 +5118,7 @@ public class GRDBSchemaMigrator {
                     groupThread.update(with: newGroupModel, transaction: transaction)
                 } catch {
                     thrownError = error
-                    stop.pointee = true
+                    stop = true
                 }
             }
             return thrownError.map { .failure($0) } ?? .success(())
@@ -5211,7 +5211,7 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.dataMigration_moveToThreadAssociatedData) { transaction in
             var thrownError: Error?
-            TSThread.anyEnumerate(transaction: transaction) { (thread, stop: UnsafeMutablePointer<ObjCBool>) in
+            TSThread.anyEnumerate(transaction: transaction) { thread, stop in
                 do {
                     try ThreadAssociatedData(
                         threadUniqueId: thread.uniqueId,
@@ -5223,7 +5223,7 @@ public class GRDBSchemaMigrator {
                     ).insert(transaction.database)
                 } catch {
                     thrownError = error
-                    stop.pointee = true
+                    stop = true
                 }
             }
             return thrownError.map { .failure($0) } ?? .success(())

@@ -74,7 +74,7 @@ protocol SDSCodableModelDatabaseInterface {
         modelType: Model.Type,
         transaction: DBReadTransaction,
         batchingPreference: BatchingPreference,
-        block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void,
+        block: @escaping (Model, inout Bool) -> Void,
     )
 
     /// Traverse all records, in no particular order.
@@ -84,7 +84,7 @@ protocol SDSCodableModelDatabaseInterface {
         sql: String,
         arguments: StatementArguments,
         batchingPreference: BatchingPreference,
-        block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void,
+        block: @escaping (Model, inout Bool) -> Void,
     )
 }
 

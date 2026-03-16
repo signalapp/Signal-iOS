@@ -92,7 +92,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
                         groupSecretParams: groupSecretParams,
                         lastRefreshDate: nil,
                     )
-                    stop.pointee = true
+                    stop = true
                     return
                 }
 
