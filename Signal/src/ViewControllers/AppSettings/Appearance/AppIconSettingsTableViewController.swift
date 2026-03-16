@@ -73,7 +73,10 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
             cell.contentView.addSubview(hostingController.view)
             hostingController.didMove(toParent: self)
             
+            let hostView = hostingController.view!
             hostView.translatesAutoresizingMaskIntoConstraints = false
+            cell.contentView.addSubview(hostView)
+            
             hostView.autoPinEdgesToSuperviewMargins(
                 with: .init(hMargin: -Self.cellHInnerMargin, vMargin: 24)
             )
