@@ -40,7 +40,7 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
         for phoneNumber in contact.phoneNumbers {
             switch archiveContactPhoneNumber(phoneNumber).bubbleUp(resultType, partialErrors: &partialErrors) {
             case .continue(let phoneNumberProto):
-                phoneNumberProtos.append(phoneNumberProto)
+                phoneNumberProto.map { phoneNumberProtos.append($0) }
             case .bubbleUpError(let errorResult):
                 return errorResult
             }
@@ -127,9 +127,12 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
     private func archiveContactPhoneNumber(
         _ contactPhoneNumber: OWSContactPhoneNumber,
-    ) -> BackupArchive.ArchiveInteractionResult<BackupProto_ContactAttachment.Phone> {
+    ) -> BackupArchive.ArchiveInteractionResult<BackupProto_ContactAttachment.Phone?> {
         var phoneProto = BackupProto_ContactAttachment.Phone()
-        phoneProto.value = contactPhoneNumber.phoneNumber
+        guard let phoneNumber = contactPhoneNumber.phoneNumber.nilIfEmpty else {
+            return .success(nil)
+        }
+        phoneProto.value = phoneNumber
         if let label = contactPhoneNumber.label {
             phoneProto.label = label
         }
