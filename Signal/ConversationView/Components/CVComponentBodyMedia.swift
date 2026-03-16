@@ -60,6 +60,7 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         let conversationStyle = self.conversationStyle
         let tintColor = Theme.primaryTextColor
+        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
 
         let albumView = componentView.albumView
         albumView.configure(
@@ -157,24 +158,26 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         if bodyMedia.mediaAlbumHasPendingAttachment {
             let iconView = CVImageView()
-            iconView.setTemplateImageName(Theme.iconName(.arrowDown), tintColor: UIColor.ows_white)
+            iconView.setTemplateImageName(Theme.iconName(.arrowDown), tintColor: tintColor)
             if albumView.itemViews.count > 1 {
                 let downloadStackConfig = ManualStackView.Config(
                     axis: .horizontal,
                     alignment: .center,
-                    spacing: 8,
-                    layoutMargins: UIEdgeInsets(hMargin: 16, vMargin: 10),
+                    spacing: 6,
+                    layoutMargins: UIEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 14),
                 )
                 let downloadStack = ManualStackView(name: "downloadStack")
                 downloadStack.apply(config: downloadStackConfig)
                 var subviewInfos = [ManualStackSubviewInfo]()
 
                 let pillView = ManualLayoutViewWithLayer.pillView(name: "pillView")
-                pillView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
+                pillView.clipsToBounds = true
+                let blurView = UIVisualEffectView(effect: blurEffect)
+                pillView.addSubviewToFillSuperviewEdges(blurView)
                 downloadStack.addSubviewToFillSuperviewEdges(pillView)
 
                 downloadStack.addArrangedSubview(iconView)
-                subviewInfos.append(CGSize.square(20).asManualSubviewInfo(hasFixedSize: true))
+                subviewInfos.append(CGSize.square(24).asManualSubviewInfo(hasFixedSize: true))
 
                 let downloadLabel = CVLabel()
                 let downloadFormat = (
@@ -193,9 +196,9 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 downloadStack.addArrangedSubview(downloadLabel)
                 let downloadLabelConfig = CVLabelConfig(
                     text: .text(String.localizedStringWithFormat(downloadFormat, items.count)),
-                    displayConfig: .forUnstyledText(font: .dynamicTypeSubheadline, textColor: .ows_white),
+                    displayConfig: .forUnstyledText(font: .dynamicTypeSubheadline, textColor: tintColor),
                     font: .dynamicTypeSubheadline,
-                    textColor: UIColor.ows_white,
+                    textColor: tintColor,
                 )
                 downloadLabelConfig.applyForRendering(label: downloadLabel)
                 let downloadLabelSize = CVText.measureLabel(
@@ -215,8 +218,10 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 )
             } else {
                 let circleSize: CGFloat = 44
-                let circleView = OWSLayerView.circleView(size: circleSize)
-                circleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
+                let circleView = ManualLayoutViewWithLayer.circleView(name: "circleView")
+                circleView.clipsToBounds = true
+                let blurView = UIVisualEffectView(effect: blurEffect)
+                circleView.addSubviewToFillSuperviewEdges(blurView)
                 stackView.addSubviewToCenterOnSuperview(circleView, size: .square(circleSize))
                 stackView.addSubviewToCenterOnSuperview(iconView, size: .square(24))
             }
@@ -273,7 +278,7 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     downloadSizeView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 4)
                     downloadSizeView.clipsToBounds = true
 
-                    let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
+                    let blurView = UIVisualEffectView(effect: blurEffect)
                     downloadSizeView.addSubviewToFillSuperviewEdges(blurView)
 
                     let downloadSizeLabelConfig = CVLabelConfig(
@@ -318,8 +323,6 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
         return componentView.innerShadowView
     }
-
-    private static var senderNameFont: UIFont { UIFont.dynamicTypeCaption1.semibold() }
 
     private var stackConfig: CVStackViewConfig {
         CVStackViewConfig(
