@@ -200,7 +200,8 @@ struct AppIconSettingsView: View {
         
         currentIcon = icon
         
-        UIApplication.shared.setAlternateIconName(icon.alternateIconName) { error in
+        UIApplication.shared.setAlternateIconName(icon.alternateIconName) { [weak self] error in
+            guard let self else { return }
             DispatchQueue.main.async{
                 if let error = error {
                     owsFailDebug("Failed to set alternate icon: \(error)")
