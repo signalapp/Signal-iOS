@@ -21,6 +21,7 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
 
     open func buildDraftQuotedReply(
         originalMessage: TSMessage,
+        loadNormalizedImage: (CGImageSource, CGFloat) -> CGImage?,
         tx: DBReadTransaction,
     ) -> DraftQuotedReplyModel? {
         return nil
@@ -30,6 +31,7 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
         quotedReplyMessage: TSMessage,
         quotedReply: TSQuotedMessage,
         originalMessage: TSMessage?,
+        loadNormalizedImage: (CGImageSource, CGFloat) -> CGImage?,
         tx: DBReadTransaction,
     ) -> DraftQuotedReplyModel {
         fatalError("Unimplemented!")

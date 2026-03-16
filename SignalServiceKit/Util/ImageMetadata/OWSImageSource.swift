@@ -15,9 +15,6 @@ public protocol OWSImageSource {
     func readData(byteOffset: Int, byteLength: Int) throws -> Data
 
     func cgImageSource() throws -> CGImageSource?
-
-    /// Potentially expensive, should be avoided if possible.
-    func readIntoMemory() throws -> Data
 }
 
 public struct DataImageSource: OWSImageSource {
@@ -46,10 +43,6 @@ public struct DataImageSource: OWSImageSource {
 
     public func cgImageSource() throws -> CGImageSource? {
         return CGImageSourceCreateWithData(self.rawValue as CFData, nil)
-    }
-
-    public func readIntoMemory() throws -> Data {
-        return self.rawValue
     }
 }
 
@@ -144,22 +137,6 @@ extension OWSImageSource {
             imageSource,
             imageFormat: imageFormat,
         )
-    }
-
-    // MARK: - WEBP
-
-    public func stillForWebpData() -> UIImage? {
-        guard ows_guessImageFormat() == .webp else {
-            owsFailDebug("Invalid webp image.")
-            return nil
-        }
-        guard byteLength <= OWSMediaUtils.kMaxFileSizeAnimatedImage else {
-            return nil
-        }
-        guard let data = try? self.readIntoMemory() else {
-            return nil
-        }
-        return UIImage.sd_image(with: data)
     }
 }
 

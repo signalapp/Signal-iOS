@@ -81,6 +81,7 @@ extension ConversationViewController: MessageActionsDelegate {
                         quotedReplyMessage: message,
                         quotedReply: quotedMessage,
                         originalMessage: originalMessage,
+                        loadNormalizedImage: NormalizedImage.loadImage(imageSource:maxPixelSize:),
                         tx: transaction,
                     )
                 }
@@ -195,6 +196,7 @@ extension ConversationViewController: MessageActionsDelegate {
                 }
                 return DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(
                     originalMessage: message,
+                    loadNormalizedImage: NormalizedImage.loadImage(imageSource:maxPixelSize:),
                     tx: transaction,
                 )
             }

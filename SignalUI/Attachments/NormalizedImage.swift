@@ -37,7 +37,13 @@ public struct NormalizedImage {
         guard let imageSource else {
             throw .couldNotParseImage
         }
+        guard let result = loadImage(imageSource: imageSource, maxPixelSize: maxPixelSize) else {
+            throw .couldNotResizeImage
+        }
+        return result
+    }
 
+    public static func loadImage(imageSource: CGImageSource, maxPixelSize: CGFloat) -> CGImage? {
         // NOTE: For unknown reasons, resizing images with UIGraphicsBeginImageContext()
         // crashes reliably in the share extension after screen lock's auth UI has been presented.
         // Resizing using a CGContext seems to work fine.
@@ -48,10 +54,8 @@ public struct NormalizedImage {
             kCGImageSourceCreateThumbnailWithTransform: true,
             kCGImageSourceThumbnailMaxPixelSize: maxPixelSize,
         ] as [CFString: Any] as CFDictionary
-        guard let result = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
-            throw .couldNotResizeImage
-        }
-        return result
+
+        return CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions)
     }
 
     private enum ContainerType {
