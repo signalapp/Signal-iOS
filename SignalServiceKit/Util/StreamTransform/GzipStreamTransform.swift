@@ -82,7 +82,6 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
     }
 
     private var buffer = Data(count: Constants.BufferSize)
-    private var currentCapcity: Int = Constants.BufferSize
 
     private func process(data: Data, finalize: Bool) throws -> Data {
 
@@ -111,7 +110,7 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
                     // If this happens, and `avail_out` > 0, we should attempt to append to the output
                     // buffer on subsequent calls into inflate/deflate
                     stream.next_out = outputPtr.bindMemory(to: Bytef.self).baseAddress!.advanced(by: currentOffset)
-                    stream.avail_out = UInt32(currentCapcity - currentOffset)
+                    stream.avail_out = UInt32(outputPtr.count - currentOffset)
 
                     switch operation {
                     case .compress:
@@ -120,7 +119,7 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
                         status = inflate(&stream, flags)
                     }
 
-                    currentOffset = currentCapcity - Int(stream.avail_out)
+                    currentOffset = outputPtr.count - Int(stream.avail_out)
                     stream.next_out = nil
                 }
 
@@ -128,8 +127,7 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
                 // "If inflate (or deflate) returns Z_OK and with zero avail_out, it must be called again
                 // after making room in the output buffer because there might be more output pending."
                 if stream.avail_out == 0 {
-                    currentCapcity += Constants.BufferSize
-                    buffer.count = currentCapcity
+                    buffer.count += Constants.BufferSize
                     // currentOffset can remain the same
                 }
 
