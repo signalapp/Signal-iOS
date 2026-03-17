@@ -20,7 +20,11 @@
 /// iOS - since we use a modern proto-compiler, we must specify
 /// the legacy proto format.
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 import SwiftProtobuf
 
 // If the compiler emits an error on this type, it is because this file
