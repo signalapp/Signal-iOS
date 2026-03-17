@@ -93,6 +93,7 @@ extension ConversationViewController {
                 // TODO: Set position and animated.
                 scrollToInteraction(
                     indexPath: indexPath,
+                    interactionUniqueId: interactionId,
                     onScreenPercentage: onScreenPercentage,
                     alignment: alignment,
                     animated: scrollAction.isAnimated,
@@ -139,6 +140,7 @@ extension ConversationViewController {
             } else if let indexPath = indexPath(forInteractionUniqueId: focusMessageId) {
                 scrollToInteraction(
                     indexPath: indexPath,
+                    interactionUniqueId: focusMessageId,
                     alignment: .top,
                     animated: animated,
                 )
@@ -151,6 +153,7 @@ extension ConversationViewController {
         if let indexPath = indexPathOfUnreadMessagesIndicator {
             scrollToInteraction(
                 indexPath: indexPath,
+                interactionUniqueId: nil,
                 alignment: .top,
                 animated: animated,
             )
@@ -191,6 +194,7 @@ extension ConversationViewController {
 
         scrollToInteraction(
             indexPath: indexPath,
+            interactionUniqueId: lastVisibleInteraction.uniqueId,
             onScreenPercentage: CGFloat(lastVisibleInteraction.onScreenPercentage),
             alignment: .bottom,
             animated: animated,
@@ -209,6 +213,7 @@ extension ConversationViewController {
         }
         scrollToInteraction(
             indexPath: indexPath,
+            interactionUniqueId: uniqueId,
             onScreenPercentage: onScreenPercentage,
             alignment: alignment,
             animated: animated,
@@ -217,6 +222,7 @@ extension ConversationViewController {
 
     func scrollToInteraction(
         indexPath: IndexPath,
+        interactionUniqueId: String?,
         onScreenPercentage: CGFloat = 1,
         alignment: ScrollAlignment,
         animated: Bool = true,
@@ -228,6 +234,8 @@ extension ConversationViewController {
         guard let attributes = layout.layoutAttributesForItem(at: indexPath) else {
             return owsFailDebug("failed to get attributes for indexPath \(indexPath)")
         }
+
+        viewState.focusedMessageId = interactionUniqueId
 
         let topInset = collectionView.adjustedContentInset.top
         let bottomInset = collectionView.adjustedContentInset.bottom
@@ -245,6 +253,7 @@ extension ConversationViewController {
         // If the collection view contents aren't scrollable, do nothing.
         guard safeContentHeight > collectionViewHeightUnobscuredByBottomBar else {
             performMessageHighlightAnimationIfNeeded()
+            focusVoiceoverElementAfterScroll()
             return
         }
 
@@ -252,6 +261,7 @@ extension ConversationViewController {
         // is only valid for when the view is not on screen, do nothing.
         guard !alignment.scrollsOnlyIfNotEntirelyOnScreen || !rowIsEntirelyOnScreen else {
             performMessageHighlightAnimationIfNeeded()
+            focusVoiceoverElementAfterScroll()
             return
         }
 
@@ -261,6 +271,7 @@ extension ConversationViewController {
             let contentOffset = CGPoint(x: 0, y: bottomDestinationY)
             collectionView.setContentOffset(contentOffset, animated: animated)
             updateLastKnownDistanceFromBottom()
+            focusVoiceoverElementAfterScroll()
             return
         }
 
@@ -356,6 +367,7 @@ extension ConversationViewController {
             viewState.highlightedMessageId = interactionId
             scrollToInteraction(
                 indexPath: indexPath,
+                interactionUniqueId: interactionId,
                 onScreenPercentage: onScreenPercentage,
                 alignment: alignment,
                 animated: isAnimated,
@@ -442,6 +454,7 @@ extension ConversationViewController {
                 // Only scroll as far as the unread indicator if we're scrolled above the unread indicator.
                 scrollToInteraction(
                     indexPath: indexPathOfUnreadMessagesIndicator,
+                    interactionUniqueId: nil,
                     onScreenPercentage: 1,
                     alignment: .top,
                     animated: true,
@@ -713,6 +726,21 @@ extension ConversationViewController {
                 notification: .screenChanged,
                 argument: componentView.rootView,
             )
+        }
+    }
+
+    public func focusVoiceoverElementAfterScroll() {
+        if
+            let scrolledMessageId = viewState.focusedMessageId,
+            let scrolledMessageIndexPath = indexPath(forInteractionUniqueId: scrolledMessageId),
+            let cell = self.collectionView.cellForItem(at: scrolledMessageIndexPath) as? CVCell,
+            let componentView = cell.componentView
+        {
+            UIAccessibility.post(
+                notification: .screenChanged,
+                argument: componentView.rootView,
+            )
+            viewState.focusedMessageId = nil
         }
     }
 

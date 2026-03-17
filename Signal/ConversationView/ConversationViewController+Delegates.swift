@@ -404,6 +404,8 @@ extension ConversationViewController {
         autoLoadMoreIfNecessary()
 
         performMessageHighlightAnimationIfNeeded()
+
+        focusVoiceoverElementAfterScroll()
     }
 
     func resetForSizeOrOrientationChange() {
