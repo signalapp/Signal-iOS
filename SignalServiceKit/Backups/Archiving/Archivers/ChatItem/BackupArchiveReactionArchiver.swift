@@ -9,9 +9,14 @@ import LibSignalClient
 class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
     private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
 
+    private let attachmentsArchiver: BackupArchiveMessageAttachmentArchiver
     private let reactionStore: BackupArchiveReactionStore
 
-    init(reactionStore: BackupArchiveReactionStore) {
+    init(
+        attachmentsArchiver: BackupArchiveMessageAttachmentArchiver,
+        reactionStore: BackupArchiveReactionStore,
+    ) {
+        self.attachmentsArchiver = attachmentsArchiver
         self.reactionStore = reactionStore
     }
 
@@ -19,6 +24,7 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
 
     func archiveReactions(
         _ message: TSMessage,
+        reactionStickerAttachments: BackupArchive.ReactionStickerAttachments,
         context: BackupArchive.RecipientArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<[BackupProto_Reaction]> {
         let reactions: [OWSReaction]
@@ -66,6 +72,21 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
             reactionProto.sentTimestamp = sentAtTimestamp
             reactionProto.sortOrder = reaction.sortOrder
 
+            if
+                let sticker = reaction.sticker,
+                let stickerReferencedAttachment =
+                    reactionStickerAttachments.sticker(for: reaction)
+            {
+                var stickerProto = BackupProto_Sticker()
+                stickerProto.emoji = reaction.emoji
+                stickerProto.packID = sticker.packId
+                stickerProto.packKey = sticker.packKey
+                stickerProto.stickerID = sticker.stickerId
+                stickerProto.data = stickerReferencedAttachment.asBackupFilePointer(
+                    context: context
+                )
+                reactionProto.sticker = stickerProto
+            }
             reactionProtos.append(reactionProto)
         }
 
@@ -82,23 +103,36 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
         _ reactions: [BackupProto_Reaction],
         chatItemId: BackupArchive.ChatItemId,
         message: TSMessage,
-        context: BackupArchive.RecipientRestoringContext,
+        messageRowId: Int64,
+        thread: BackupArchive.ChatThread,
+        context: BackupArchive.ChatItemRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<Void> {
         var reactionErrors = [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]()
         for reaction in reactions {
-            let reactorAddress = context[reaction.authorRecipientId]
+            let reactorAddress = context.recipientContext[reaction.authorRecipientId]
 
-            let insertResult: Result<Void, Error>
+            var sticker: StickerInfo?
+            if reaction.hasSticker, !reaction.sticker.packID.isEmpty {
+                sticker = StickerInfo(
+                    packId: reaction.sticker.packID,
+                    packKey: reaction.sticker.packKey,
+                    stickerId: reaction.sticker.stickerID
+                )
+            }
+
+            // OWSReaction row id
+            let insertResult: Result<Int64?, Error>
             switch reactorAddress {
             case .localAddress:
                 insertResult = Result {
                     try reactionStore.createReaction(
                         uniqueMessageId: message.uniqueId,
                         emoji: reaction.emoji,
+                        sticker: sticker,
                         reactorAci: context.localIdentifiers.aci,
                         sentAtTimestamp: reaction.sentTimestamp,
                         sortOrder: reaction.sortOrder,
-                        context: context,
+                        context: context.recipientContext,
                     )
                 }
             case .contact(let address):
@@ -107,10 +141,11 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
                         try reactionStore.createReaction(
                             uniqueMessageId: message.uniqueId,
                             emoji: reaction.emoji,
+                            sticker: sticker,
                             reactorAci: aci,
                             sentAtTimestamp: reaction.sentTimestamp,
                             sortOrder: reaction.sortOrder,
-                            context: context,
+                            context: context.recipientContext,
                         )
                     }
                 } else if let e164 = address.e164 {
@@ -121,7 +156,7 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
                             reactorE164: e164,
                             sentAtTimestamp: reaction.sentTimestamp,
                             sortOrder: reaction.sortOrder,
-                            context: context,
+                            context: context.recipientContext,
                         )
                     }
                 } else {
@@ -147,8 +182,38 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
             }
 
             switch insertResult {
-            case .success:
-                break
+            case .success(let reactionRowId):
+                if let reactionRowId {
+                    if let sticker {
+                        let attachmentResult = attachmentsArchiver.restoreReactionStickerAttachment(
+                            reaction.sticker.data,
+                            stickerPackId: sticker.packId,
+                            stickerId: sticker.stickerId,
+                            reactionRowId: reactionRowId,
+                            chatItemId: chatItemId,
+                            messageRowId: messageRowId,
+                            message: message,
+                            thread: thread,
+                            context: context
+                        )
+                        innerSwitch: switch attachmentResult.bubbleUp(
+                            Void.self,
+                            partialErrors: &reactionErrors
+                        ) {
+                        case .continue:
+                            break innerSwitch
+                        case .bubbleUpError(let error):
+                            return error
+                        }
+                    }
+                } else {
+                    reactionErrors.append(
+                        .restoreFrameError(
+                            .databaseModelMissingRowId(modelClass: OWSReaction.self),
+                            chatItemId
+                        ),
+                    )
+                }
             case .failure(let insertError):
                 reactionErrors.append(
                     .restoreFrameError(.databaseInsertionFailed(insertError), chatItemId),

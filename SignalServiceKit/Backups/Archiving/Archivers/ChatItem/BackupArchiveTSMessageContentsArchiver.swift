@@ -138,6 +138,22 @@ extension BackupArchive {
         case poll(Poll)
         case adminDeleteTombstone(RecipientId)
     }
+
+    struct ReactionStickerAttachments {
+        // Maps from OWSReaction.id (row id) to sticker attachment, if any.
+        private let reactionStickers: [Int64: ReferencedAttachment]
+
+        fileprivate init(_ reactionStickers: [Int64 : ReferencedAttachment]) {
+            self.reactionStickers = reactionStickers
+        }
+
+        func sticker(for reaction: OWSReaction) -> ReferencedAttachment? {
+            guard let id = reaction.id else {
+                return nil
+            }
+            return reactionStickers[id]
+        }
+    }
 }
 
 class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
@@ -193,6 +209,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         let linkPreview: ReferencedAttachment?
         let contactAvatar: ReferencedAttachment?
         let sticker: ReferencedAttachment?
+        let reactionStickers: BackupArchive.ReactionStickerAttachments
     }
 
     func archiveMessageContents(
@@ -209,27 +226,56 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             let referencedAttachments = attachmentStore.fetchReferencedAttachmentsOwnedByMessage(
                 messageRowId: messageRowId,
                 tx: context.tx,
-            ).filter {
+            )
+            var body: [ReferencedAttachment] = []
+            var oversizeText: ReferencedAttachment?
+            var quotedReply: ReferencedAttachment?
+            var linkPreview: ReferencedAttachment?
+            var contactAvatar: ReferencedAttachment?
+            var sticker: ReferencedAttachment?
+            // OWSReaction row id -> sticker (if any for that reaction)
+            var reactionStickers: [Int64: ReferencedAttachment] = [:]
+            for referencedAttachment in referencedAttachments {
                 // There was a bug that resulted in invalid quoted-reply attachments being created
                 // with the voiceMessage rendering flag. Filter them out.
                 if
-                    case .quotedReplyAttachment = $0.reference.owner.id,
-                    $0.reference.renderingFlag == .voiceMessage
+                    case .quotedReplyAttachment = referencedAttachment.reference.owner.id,
+                    referencedAttachment.reference.renderingFlag == .voiceMessage
                 {
-                    return false
+                    continue
                 }
-                return true
+
+                switch referencedAttachment.reference.owner {
+                case .message(let messageSource):
+                    switch messageSource {
+                    case .bodyAttachment:
+                        body.append(referencedAttachment)
+                    case .oversizeText:
+                        oversizeText = referencedAttachment
+                    case .quotedReply:
+                        quotedReply = referencedAttachment
+                    case .linkPreview:
+                        linkPreview = referencedAttachment
+                    case .contactAvatar:
+                        contactAvatar = referencedAttachment
+                    case .sticker:
+                        sticker = referencedAttachment
+                    case .reactionSticker(let metadata):
+                        reactionStickers[metadata.reactionRowId] = referencedAttachment
+                    }
+                case .storyMessage, .thread:
+                    continue
+                }
             }
 
-            let grouped = Dictionary(grouping: referencedAttachments, by: \.reference.owner.id)
-
             return MessageOwnedReferencedAttachments(
-                body: grouped[.messageBodyAttachment(messageRowId: messageRowId)] ?? [],
-                oversizeText: grouped[.messageOversizeText(messageRowId: messageRowId)]?.first,
-                quotedReply: grouped[.quotedReplyAttachment(messageRowId: messageRowId)]?.first,
-                linkPreview: grouped[.messageLinkPreview(messageRowId: messageRowId)]?.first,
-                contactAvatar: grouped[.messageContactAvatar(messageRowId: messageRowId)]?.first,
-                sticker: grouped[.messageSticker(messageRowId: messageRowId)]?.first,
+                body: body,
+                oversizeText: oversizeText,
+                quotedReply: quotedReply,
+                linkPreview: linkPreview,
+                contactAvatar: contactAvatar,
+                sticker: sticker,
+                reactionStickers: BackupArchive.ReactionStickerAttachments(reactionStickers),
             )
         }()
 
@@ -267,6 +313,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 message,
                 contactShare: contactShare,
                 contactAvatarReferencedAttachment: messageOwnedReferencedAttachments.contactAvatar,
+                reactionStickerAttachments: messageOwnedReferencedAttachments.reactionStickers,
                 context: context.recipientContext,
             )
         } else if
@@ -277,6 +324,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 message,
                 messageSticker: messageSticker,
                 stickerReferencedAttachment: messageOwnedReferencedAttachments.sticker,
+                reactionStickerAttachments: messageOwnedReferencedAttachments.reactionStickers,
                 context: context.recipientContext,
             )
         } else if let giftBadge = message.giftBadge {
@@ -288,6 +336,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             return archiveViewOnceMessage(
                 message,
                 bodyReferencedAttachments: messageOwnedReferencedAttachments.body,
+                reactionStickerAttachments: messageOwnedReferencedAttachments.reactionStickers,
                 context: context,
             )
         } else if message.isStoryReply, !message.isGroupStoryReply {
@@ -295,6 +344,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 message,
                 oversizeTextReferencedAttachment: messageOwnedReferencedAttachments.oversizeText,
                 stickerReferencedAttachment: messageOwnedReferencedAttachments.sticker,
+                reactionStickerAttachments: messageOwnedReferencedAttachments.reactionStickers,
                 interactionUniqueId: message.uniqueInteractionId,
                 context: context,
             )
@@ -303,6 +353,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 message,
                 messageRowId: messageRowId,
                 interactionUniqueId: message.uniqueInteractionId,
+                reactionStickerAttachments: messageOwnedReferencedAttachments.reactionStickers,
                 context: context,
             )
         } else {
@@ -512,6 +563,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         let reactions: [BackupProto_Reaction]
         let reactionsResult = reactionArchiver.archiveReactions(
             message,
+            reactionStickerAttachments: messageOwnedReferencedAttachments.reactionStickers,
             context: context,
         )
         switch reactionsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
@@ -781,6 +833,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         _ message: TSMessage,
         contactShare: OWSContact,
         contactAvatarReferencedAttachment: ReferencedAttachment?,
+        reactionStickerAttachments: BackupArchive.ReactionStickerAttachments,
         context: BackupArchive.RecipientArchivingContext,
     ) -> ArchiveInteractionResult<ChatItemType> {
         var partialErrors = [ArchiveFrameError]()
@@ -803,6 +856,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         let reactions: [BackupProto_Reaction]
         let reactionsResult = reactionArchiver.archiveReactions(
             message,
+            reactionStickerAttachments: reactionStickerAttachments,
             context: context,
         )
         switch reactionsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
@@ -824,6 +878,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         _ message: TSMessage,
         messageSticker: MessageSticker,
         stickerReferencedAttachment: ReferencedAttachment?,
+        reactionStickerAttachments: BackupArchive.ReactionStickerAttachments,
         context: BackupArchive.RecipientArchivingContext,
     ) -> ArchiveInteractionResult<ChatItemType> {
         guard let stickerReferencedAttachment else {
@@ -854,6 +909,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         let reactions: [BackupProto_Reaction]
         let reactionsResult = reactionArchiver.archiveReactions(
             message,
+            reactionStickerAttachments: reactionStickerAttachments,
             context: context,
         )
         switch reactionsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
@@ -901,6 +957,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     private func archiveViewOnceMessage(
         _ message: TSMessage,
         bodyReferencedAttachments: [ReferencedAttachment],
+        reactionStickerAttachments: BackupArchive.ReactionStickerAttachments,
         context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveInteractionResult<ChatItemType> {
         var partialErrors = [ArchiveFrameError]()
@@ -932,6 +989,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         let reactions: [BackupProto_Reaction]
         let reactionsResult = reactionArchiver.archiveReactions(
             message,
+            reactionStickerAttachments: reactionStickerAttachments,
             context: context.recipientContext,
         )
         switch reactionsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
@@ -958,6 +1016,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         _ message: TSMessage,
         oversizeTextReferencedAttachment: ReferencedAttachment?,
         stickerReferencedAttachment: ReferencedAttachment?,
+        reactionStickerAttachments: BackupArchive.ReactionStickerAttachments,
         interactionUniqueId: BackupArchive.InteractionUniqueId,
         context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveInteractionResult<ChatItemType> {
@@ -1071,6 +1130,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         let reactions: [BackupProto_Reaction]
         let reactionsResult = reactionArchiver.archiveReactions(
             message,
+            reactionStickerAttachments: reactionStickerAttachments,
             context: context.recipientContext,
         )
         switch reactionsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
@@ -1212,7 +1272,9 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 text.reactions,
                 chatItemId: chatItemId,
                 message: message,
-                context: context.recipientContext,
+                messageRowId: messageRowId,
+                thread: thread,
+                context: context,
             ))
             if let oversizeText = text.body?.oversizeText {
                 downstreamObjectResults.append(oversizeTextArchiver.restoreOversizeText(
@@ -1259,7 +1321,9 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 contactShare.reactions,
                 chatItemId: chatItemId,
                 message: message,
-                context: context.recipientContext,
+                messageRowId: messageRowId,
+                thread: thread,
+                context: context,
             ))
             if let avatarAttachment = contactShare.avatarAttachment {
                 downstreamObjectResults.append(attachmentsArchiver.restoreContactAvatarAttachment(
@@ -1276,7 +1340,9 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 stickerMessage.reactions,
                 chatItemId: chatItemId,
                 message: message,
-                context: context.recipientContext,
+                messageRowId: messageRowId,
+                thread: thread,
+                context: context,
             ))
             downstreamObjectResults.append(attachmentsArchiver.restoreStickerAttachment(
                 stickerMessage.attachment,
@@ -1293,7 +1359,9 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 viewOnceMessage.reactions,
                 chatItemId: chatItemId,
                 message: message,
-                context: context.recipientContext,
+                messageRowId: messageRowId,
+                thread: thread,
+                context: context,
             ))
             switch viewOnceMessage.state {
             case .unviewed(let attachment):
@@ -1313,7 +1381,9 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 storyReply.reactions,
                 chatItemId: chatItemId,
                 message: message,
-                context: context.recipientContext,
+                messageRowId: messageRowId,
+                thread: thread,
+                context: context,
             ))
 
             switch storyReply.replyType {
@@ -1347,7 +1417,9 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 poll.reactions,
                 chatItemId: chatItemId,
                 message: message,
-                context: context.recipientContext,
+                messageRowId: messageRowId,
+                thread: thread,
+                context: context,
             ))
 
             downstreamObjectResults.append(

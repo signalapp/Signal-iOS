@@ -31,19 +31,22 @@ public class BackupArchiveReactionStore {
     func createReaction(
         uniqueMessageId: String,
         emoji: String,
+        sticker: StickerInfo?,
         reactorAci: Aci,
         sentAtTimestamp: UInt64,
         sortOrder: UInt64,
         context: BackupArchive.RecipientRestoringContext,
-    ) throws {
+    ) throws -> Int64? {
         let reaction = OWSReaction.fromRestoredBackup(
             uniqueMessageId: uniqueMessageId,
             emoji: emoji,
+            sticker: sticker,
             reactorAci: reactorAci,
             sentAtTimestamp: sentAtTimestamp,
             sortOrder: sortOrder,
         )
         try reaction.insert(context.tx.database)
+        return reaction.id
     }
 
     /// In the olden days before the introduction of Acis, reactions were sent by e164s.
@@ -54,14 +57,17 @@ public class BackupArchiveReactionStore {
         sentAtTimestamp: UInt64,
         sortOrder: UInt64,
         context: BackupArchive.RecipientRestoringContext,
-    ) throws {
+    ) throws -> Int64? {
         let reaction = OWSReaction.fromRestoredBackup(
             uniqueMessageId: uniqueMessageId,
             emoji: emoji,
+            // Legacy reactions can't have stickers.
+            sticker: nil,
             reactorE164: reactorE164,
             sentAtTimestamp: sentAtTimestamp,
             sortOrder: sortOrder,
         )
         try reaction.insert(context.tx.database)
+        return reaction.id
     }
 }

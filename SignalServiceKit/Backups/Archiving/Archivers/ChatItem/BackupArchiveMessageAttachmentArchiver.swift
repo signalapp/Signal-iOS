@@ -311,6 +311,41 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
         )
     }
 
+    func restoreReactionStickerAttachment(
+        _ attachment: BackupProto_FilePointer,
+        stickerPackId: Data,
+        stickerId: UInt32,
+        reactionRowId: Int64,
+        chatItemId: BackupArchive.ChatItemId,
+        messageRowId: Int64,
+        message: TSMessage,
+        thread: BackupArchive.ChatThread,
+        context: BackupArchive.ChatItemRestoringContext,
+    ) -> BackupArchive.RestoreInteractionResult<Void> {
+        let ownedAttachment = OwnedAttachmentBackupPointerProto(
+            proto: attachment,
+            // Sticker reactions have no flags
+            renderingFlag: .default,
+            // ClientUUID is only for body and quoted reply attachments.
+            clientUUID: nil,
+            owner: .messageReactionSticker(.init(
+                messageRowId: messageRowId,
+                receivedAtTimestamp: message.receivedAtTimestamp,
+                threadRowId: thread.threadRowId,
+                isPastEditRevision: message.isPastEditRevision(),
+                stickerPackId: stickerPackId,
+                stickerId: stickerId,
+                reactionRowId: reactionRowId,
+            )),
+        )
+
+        return restoreAttachments(
+            [ownedAttachment],
+            chatItemId: chatItemId,
+            context: context,
+        )
+    }
+
     private func restoreAttachments(
         _ attachments: [OwnedAttachmentBackupPointerProto],
         chatItemId: BackupArchive.ChatItemId,

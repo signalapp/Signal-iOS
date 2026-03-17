@@ -1413,6 +1413,7 @@ extension AppSetup.GlobalsContinuation {
             orphanedAttachmentStore: orphanedAttachmentStore,
         )
         let backupReactionArchiver = BackupArchiveReactionArchiver(
+            attachmentsArchiver: backupAttachmentsArchiver,
             reactionStore: BackupArchiveReactionStore(),
         )
         let pollArchiver = BackupArchivePollArchiver(

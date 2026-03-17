@@ -32,6 +32,7 @@ class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
         _ message: TSMessage,
         messageRowId: Int64,
         interactionUniqueId: BackupArchive.InteractionUniqueId,
+        reactionStickerAttachments: BackupArchive.ReactionStickerAttachments,
         context: BackupArchive.ChatArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<BackupArchive.InteractionArchiveDetails.ChatItemType> {
         let pollResult = pollManager.buildPollForBackup(message: message, messageRowId: messageRowId, tx: context.tx)
@@ -71,6 +72,7 @@ class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
         var reactions: [BackupProto_Reaction] = []
         let reactionsResult = reactionArchiver.archiveReactions(
             message,
+            reactionStickerAttachments: reactionStickerAttachments,
             context: context.recipientContext,
         )
 

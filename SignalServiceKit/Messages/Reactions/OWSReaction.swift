@@ -138,7 +138,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
     public static func fromRestoredBackup(
         uniqueMessageId: String,
         emoji: String,
-        sticker: StickerInfo,
+        sticker: StickerInfo?,
         reactorE164: E164,
         sentAtTimestamp: UInt64,
         sortOrder: UInt64,
