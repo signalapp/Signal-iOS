@@ -3,23 +3,23 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
+public import SignalServiceKit
 
-protocol StickerPickerViewDelegate: StickerPickerDelegate {
+public protocol StickerPickerViewDelegate: StickerPickerDelegate {
 
     func presentManageStickersView(for: StickerPickerView)
 }
 
-class StickerPickerView: UIView {
+public class StickerPickerView: UIView {
 
     weak var delegate: StickerPickerViewDelegate?
     private let storyStickerConfigation: StoryStickerConfiguration
 
-    var stickerPackCollectionViewPages: [UICollectionView] {
+    public var stickerPackCollectionViewPages: [UICollectionView] {
         stickerPageView.stickerPackCollectionViews
     }
 
-    init(
+    public init(
         delegate: StickerPickerViewDelegate,
         storyStickerConfiguration: StoryStickerConfiguration = .hide,
     ) {
@@ -56,17 +56,17 @@ class StickerPickerView: UIView {
         updateStickerPageViewContentInsets()
     }
 
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: Presentation
 
-    func willBePresented() {
+    public func willBePresented() {
         stickerPageView.willBePresented()
     }
 
-    func wasPresented() {
+    public func wasPresented() {
         stickerPageView.wasPresented()
     }
 
@@ -78,12 +78,12 @@ class StickerPickerView: UIView {
         storyStickerConfiguration: storyStickerConfigation,
     )
 
-    override func layoutMarginsDidChange() {
+    override public func layoutMarginsDidChange() {
         super.layoutMarginsDidChange()
         updateStickerPageViewContentInsets()
     }
 
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
 
         // Necessary to update bottom inset after footer has its final position and size.
@@ -126,7 +126,7 @@ extension StickerPickerView: StickerPickerPageViewDelegate {
         toolbar.packsCollectionView.updateSelections(scrollToSelectedItem: scrollToSelectedItem)
     }
 
-    func didSelectSticker(_ stickerInfo: StickerInfo) {
+    public func didSelectSticker(_ stickerInfo: StickerInfo) {
         delegate?.didSelectSticker(stickerInfo)
     }
 }

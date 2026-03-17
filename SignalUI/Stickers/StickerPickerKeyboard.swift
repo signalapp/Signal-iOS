@@ -65,7 +65,7 @@ public class StickerKeyboard: CustomKeyboard {
 
 extension StickerKeyboard: StickerPickerViewDelegate {
 
-    func presentManageStickersView(for stickerPickerView: StickerPickerView) {
+    public func presentManageStickersView(for stickerPickerView: StickerPickerView) {
         delegate?.stickerKeyboardDidRequestPresentManageStickersView(self)
     }
 
