@@ -28,21 +28,45 @@ public class ReactionManager: NSObject {
 
     @discardableResult
     public class func localUserReacted(
-        to messageUniqueId: String,
+        to targetMessage: TSMessage,
         emoji: String,
+        sticker: MessageStickerDataSource?,
         isRemoving: Bool,
         isHighPriority: Bool = false,
         tx: DBWriteTransaction,
     ) -> Promise<Void> {
+        guard let targetMessageRowId = targetMessage.sqliteRowId else {
+            return Promise(error: OWSAssertionError("Can't react to uninserted message"))
+        }
         let outgoingMessage: OutgoingReactionMessage
         do {
-            outgoingMessage = try _localUserReacted(to: messageUniqueId, emoji: emoji, isRemoving: isRemoving, tx: tx)
+            outgoingMessage = try _localUserReacted(
+                to: targetMessage.uniqueId,
+                emoji: emoji,
+                isRemoving: isRemoving,
+                sticker: sticker?.info,
+                tx: tx
+            )
         } catch {
             owsFailDebug("Error: \(error)")
             return Promise(error: error)
         }
+
         NotificationCenter.default.post(name: ReactionManager.localUserReacted, object: nil)
-        let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: outgoingMessage)
+        let unpreparedMessage = UnpreparedOutgoingMessage.forOutgoingReactionMessage(
+            outgoingMessage,
+            targetMessage: targetMessage,
+            targetMessageRowId: targetMessageRowId,
+            reactionRowId: outgoingMessage.createdReaction?.id,
+            stickerDataSource: sticker
+        )
+        let preparedMessage: PreparedOutgoingMessage
+        do {
+            preparedMessage = try unpreparedMessage.prepare(tx: tx)
+        } catch {
+            owsFailDebug("Error preparing reaction: \(error)")
+            return Promise(error: error)
+        }
         return SSKEnvironment.shared.messageSenderJobQueueRef.add(
             .promise,
             message: preparedMessage,
@@ -56,6 +80,7 @@ public class ReactionManager: NSObject {
         to messageUniqueId: String,
         emoji: String,
         isRemoving: Bool,
+        sticker: StickerInfo?,
         tx: DBWriteTransaction,
     ) throws -> OutgoingReactionMessage {
         assert(emoji.isSingleEmoji)
@@ -76,7 +101,7 @@ public class ReactionManager: NSObject {
 
         let previousReaction = message.reaction(for: localAci, tx: tx)
 
-        let createdReaction: OWSReaction?
+        var createdReaction: OWSReaction?
         if isRemoving {
             message.removeReaction(for: localAci, tx: tx)
             createdReaction = nil
@@ -84,6 +109,7 @@ public class ReactionManager: NSObject {
             createdReaction = message.recordReaction(
                 for: localAci,
                 emoji: emoji,
+                sticker: sticker,
                 sentAtTimestamp: timestamp,
                 receivedAtTimestamp: timestamp,
                 tx: tx,
@@ -91,6 +117,9 @@ public class ReactionManager: NSObject {
 
             // Always immediately mark outgoing reactions as read.
             createdReaction?.markAsRead(transaction: tx)
+
+            // Refetch to ensure up to date
+            createdReaction = message.reaction(for: localAci, tx: tx)
         }
 
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
@@ -184,24 +213,83 @@ public class ReactionManager: NSObject {
             if reaction.hasRemove, reaction.remove {
                 message.removeReaction(for: reactor, tx: transaction)
             } else {
-                let reaction = message.recordReaction(
+                let sticker: StickerInfo?
+                let stickerPointer: SSKProtoAttachmentPointer?
+                if
+                    let stickerProto = reaction.sticker,
+                    stickerProto.packID.isEmpty.negated,
+                    stickerProto.packKey.isEmpty.negated,
+                    stickerProto.data.cdnKey?.nilIfEmpty != nil
+                {
+                    sticker = StickerInfo(
+                        packId: stickerProto.packID,
+                        packKey: stickerProto.packKey,
+                        stickerId: stickerProto.stickerID
+                    )
+                    stickerPointer = stickerProto.data
+                } else {
+                    sticker = nil
+                    stickerPointer = nil
+                }
+
+                let recordedReactions = message.recordReaction(
                     for: reactor,
                     emoji: emoji,
+                    sticker: sticker,
                     sentAtTimestamp: timestamp,
                     receivedAtTimestamp: NSDate.ows_millisecondTimeStamp(),
                     tx: transaction,
                 )
+                // Refetch to get the sqlite id
+                let recordedReaction = message.reaction(for: reactor, tx: transaction)
+
+                if
+                    let recordedReaction,
+                    let sticker,
+                    let stickerPointer,
+                    let reactionRowId = recordedReaction.id,
+                    let messageRowId = message.sqliteRowId,
+                    let threadRowId = thread.sqliteRowId
+                {
+                    let attachmentManager = DependenciesBridge.shared.attachmentManager
+                    let attachmentId = try? attachmentManager.createAttachmentPointer(
+                        from: OwnedAttachmentPointerProto(
+                            proto: stickerPointer,
+                            owner: .messageReactionSticker(.init(
+                                messageRowId: messageRowId,
+                                receivedAtTimestamp: message.receivedAtTimestamp,
+                                threadRowId: threadRowId,
+                                isPastEditRevision: message.isPastEditRevision(),
+                                stickerPackId: sticker.packId,
+                                stickerId: sticker.stickerId,
+                                reactionRowId: reactionRowId,
+                            )),
+                        ),
+                        tx: transaction,
+                    )
+
+                    if let attachmentId {
+                        DependenciesBridge.shared.attachmentDownloadManager
+                            .enqueueDownloadOfAttachment(
+                                id: attachmentId,
+                                priority: .default,
+                                source: .transitTier,
+                                tx: transaction
+                            )
+                    }
+                }
 
                 // If this is a reaction to a message we sent, notify the user.
                 let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci
                 if
-                    let reaction,
-                    reaction.oldValue?.sentAtTimestamp != reaction.newValue.sentAtTimestamp,
+                    let recordedReaction,
+                    recordedReactions?.oldValue?.sentAtTimestamp
+                        != recordedReaction.sentAtTimestamp,
                     let message = message as? TSOutgoingMessage,
                     reactor != localAci
                 {
                     SSKEnvironment.shared.notificationPresenterRef.notifyUser(
-                        forReaction: reaction.newValue,
+                        forReaction: recordedReaction,
                         onOutgoingMessage: message,
                         thread: thread,
                         transaction: transaction,
@@ -245,9 +333,25 @@ public class ReactionManager: NSObject {
             let message: TSMessage
 
             let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci
+            let reactionStickerInfo: MessageSticker? = {
+                guard
+                    let stickerProto = reaction.sticker,
+                    !stickerProto.packID.isEmpty,
+                    !stickerProto.packKey.isEmpty
+                else { return nil }
+                return MessageSticker(
+                    info: StickerInfo(
+                        packId: stickerProto.packID,
+                        packKey: stickerProto.packKey,
+                        stickerId: stickerProto.stickerID
+                    ),
+                    emoji: nil
+                )
+            }()
             if reactor == localAci {
                 let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
                 populateStoryContext(on: builder)
+                builder.messageSticker = reactionStickerInfo
                 message = builder.build(transaction: transaction)
             } else {
                 let builder: TSIncomingMessageBuilder = .withDefaultValues(
@@ -256,10 +360,40 @@ public class ReactionManager: NSObject {
                     serverTimestamp: serverTimestamp,
                 )
                 populateStoryContext(on: builder)
+                builder.messageSticker = reactionStickerInfo
                 message = builder.build()
             }
 
             message.anyInsert(transaction: transaction)
+
+            if
+                let stickerProto = reaction.sticker,
+                let messageRowId = message.sqliteRowId,
+                let threadRowId = thread.sqliteRowId
+            {
+                let attachmentManager = DependenciesBridge.shared.attachmentManager
+                _ = try? attachmentManager.createAttachmentPointer(
+                    from: OwnedAttachmentPointerProto(
+                        proto: stickerProto.data,
+                        owner: .messageSticker(.init(
+                            messageRowId: messageRowId,
+                            receivedAtTimestamp: message.receivedAtTimestamp,
+                            threadRowId: threadRowId,
+                            isPastEditRevision: message.isPastEditRevision(),
+                            stickerPackId: stickerProto.packID,
+                            stickerId: stickerProto.stickerID
+                        ))
+                    ),
+                    tx: transaction
+                )
+
+                DependenciesBridge.shared.attachmentDownloadManager
+                    .enqueueDownloadOfAttachmentsForMessage(
+                        message,
+                        priority: .default,
+                        tx: transaction
+                    )
+            }
 
             if let incomingMessage = message as? TSIncomingMessage {
                 SSKEnvironment.shared.notificationPresenterRef.notifyUser(forIncomingMessage: incomingMessage, thread: thread, transaction: transaction)
