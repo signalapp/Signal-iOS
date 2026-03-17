@@ -16,11 +16,16 @@ enum AttachmentSaving {
     static func saveToPhotoLibrary(
         referencedAttachmentStreams: [ReferencedAttachmentStream],
     ) {
+        let db = DependenciesBridge.shared.db
+
         let assetCreationRequests = referencedAttachmentStreams.reduce(
             into: [PHAssetCreationRequestType](),
         ) { result, referencedAttachmentStream in
             let reference = referencedAttachmentStream.reference
             let attachmentStream = referencedAttachmentStream.attachmentStream
+            let desiredCreationDate = db.read { _ in
+                _desiredAssetCreationDate(for: reference)
+            }
 
             switch attachmentStream.contentType {
             case .invalid, .audio, .file:
@@ -41,9 +46,9 @@ enum AttachmentSaving {
             case .invalid, .audio, .file:
                 owsFail("Impossible: checked above!")
             case .image, .animatedImage:
-                result.append(.imageTempFile(tmpFileUrl: decryptedFileUrl))
+                result.append(.imageTempFile(tmpFileUrl: decryptedFileUrl, creationDate: desiredCreationDate))
             case .video:
-                result.append(.videoTempFile(tmpFileUrl: decryptedFileUrl))
+                result.append(.videoTempFile(tmpFileUrl: decryptedFileUrl, creationDate: desiredCreationDate))
             }
         }
 
@@ -126,10 +131,12 @@ enum AttachmentSaving {
                         switch assetCreationRequest {
                         case .image(let image):
                             PHAssetCreationRequest.creationRequestForAsset(from: image)
-                        case .imageTempFile(let fileUrl):
-                            PHAssetCreationRequest.creationRequestForAssetFromImage(atFileURL: fileUrl)
-                        case .videoTempFile(let fileUrl):
-                            PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: fileUrl)
+                        case .imageTempFile(let fileUrl, let creationDate):
+                            let request = PHAssetCreationRequest.creationRequestForAssetFromImage(atFileURL: fileUrl)
+                            request?.creationDate = creationDate
+                        case .videoTempFile(let fileUrl, let creationDate):
+                            let request = PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: fileUrl)
+                            request?.creationDate = creationDate
                         }
                     }
                 }
@@ -165,19 +172,32 @@ enum AttachmentSaving {
 
     private enum PHAssetCreationRequestType {
         case image(UIImage)
-        case imageTempFile(tmpFileUrl: URL)
-        case videoTempFile(tmpFileUrl: URL)
+        case imageTempFile(tmpFileUrl: URL, creationDate: Date?)
+        case videoTempFile(tmpFileUrl: URL, creationDate: Date?)
 
         var tmpFileUrl: URL? {
             return switch self {
             case .image: nil
-            case .imageTempFile(let tmpFileUrl): tmpFileUrl
-            case .videoTempFile(let tmpFileUrl): tmpFileUrl
+            case .imageTempFile(let tmpFileUrl, _): tmpFileUrl
+            case .videoTempFile(let tmpFileUrl, _): tmpFileUrl
             }
         }
     }
 
     // MARK: -
+
+    private static func _desiredAssetCreationDate(
+        for reference: AttachmentReference,
+    ) -> Date? {
+        switch reference.owner {
+        case .message(let messageSource):
+            return Date(millisecondsSince1970: messageSource.receivedAtTimestamp)
+        case .storyMessage, .thread:
+            // For non-message owners (stories, wallpapers, etc.) we don't currently have a reliable
+            // "received/transferred" timestamp on the reference itself.
+            return nil
+        }
+    }
 
     private struct PreferenceStore {
         private enum Keys: String {
