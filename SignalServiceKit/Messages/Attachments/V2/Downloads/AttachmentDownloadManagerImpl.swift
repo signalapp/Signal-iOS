@@ -846,8 +846,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     return .unretryableError(OWSAssertionError("Attempting to download an attachment without cdn info"))
                 }
 
+                let thumbnailMimeType = MimeTypeUtil.thumbnailMimetype(
+                    fullsizeMimeType: attachment.mimeType,
+                    quality: .backupThumbnail,
+                )
                 downloadMetadata = .init(
-                    mimeType: attachment.mimeType,
+                    mimeType: thumbnailMimeType,
                     cdnNumber: cdnNumber,
                     encryptionKey: attachment.encryptionKey,
                     source: .mediaTierThumbnail(
