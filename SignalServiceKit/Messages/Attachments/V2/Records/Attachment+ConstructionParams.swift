@@ -173,6 +173,28 @@ extension Attachment {
             )
         }
 
+        public static func forRevertedStickerReactionAttachment(
+            mimeType: String,
+        ) -> ConstructionParams {
+            return .init(
+                blurHash: nil,
+                mimeType: mimeType,
+                // We don't have any cdn info from which to download, so what
+                // encryption key we use is irrelevant. Just generate a new one.
+                encryptionKey: AttachmentKey.generate().combinedKey,
+                streamInfo: nil,
+                latestTransitTierInfo: nil,
+                originalTransitTierInfo: nil,
+                sha256ContentHash: nil,
+                mediaName: nil,
+                mediaTierInfo: nil,
+                thumbnailMediaTierInfo: nil,
+                localRelativeFilePathThumbnail: nil,
+                originalAttachmentIdForQuotedReply: nil,
+                lastFullscreenViewTimestamp: nil,
+            )
+        }
+
         public static func forQuotedReplyThumbnailPointer(
             originalAttachment: Attachment,
             thumbnailBlurHash: String?,

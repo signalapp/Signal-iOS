@@ -182,6 +182,7 @@ public extension TSMessage {
     func recordReaction(
         for reactor: Aci,
         emoji: String,
+        sticker: StickerInfo?,
         sentAtTimestamp: UInt64,
         receivedAtTimestamp: UInt64,
         tx: DBWriteTransaction,
@@ -189,6 +190,7 @@ public extension TSMessage {
         return self.recordReaction(
             for: reactor,
             emoji: emoji,
+            sticker: sticker,
             sentAtTimestamp: sentAtTimestamp,
             sortOrder: receivedAtTimestamp,
             tx: tx,
@@ -199,6 +201,7 @@ public extension TSMessage {
     func recordReaction(
         for reactor: Aci,
         emoji: String,
+        sticker: StickerInfo?,
         sentAtTimestamp: UInt64,
         sortOrder: UInt64,
         tx: DBWriteTransaction,
@@ -216,6 +219,7 @@ public extension TSMessage {
         let newReaction = OWSReaction(
             uniqueMessageId: uniqueId,
             emoji: emoji,
+            sticker: sticker,
             reactor: reactor,
             sentAtTimestamp: sentAtTimestamp,
             receivedAtTimestamp: receivedAtTimestamp,

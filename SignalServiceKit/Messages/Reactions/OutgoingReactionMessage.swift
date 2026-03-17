@@ -144,6 +144,38 @@ final class OutgoingReactionMessage: TransientOutgoingMessage {
         }
         reactionBuilder.setTargetAuthorAciBinary(messageAuthor.serviceIdBinary)
 
+        if let sticker = createdReaction?.sticker {
+            if
+                let reactionRowId = createdReaction?.id,
+                let messageRowId = message.sqliteRowId,
+                let referencedAttachment = DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
+                    for: .messageReactionSticker(messageRowId: messageRowId, reactionRowId: reactionRowId),
+                    tx: tx,
+                ),
+                let transitPointer = referencedAttachment.attachment.asTransitTierPointer(),
+                case let .digestSHA256Ciphertext(digest) = transitPointer.info.integrityCheck
+            {
+                let attachmentProto = DependenciesBridge.shared.attachmentManager.buildProtoForSending(
+                    from: referencedAttachment.reference,
+                    pointer: transitPointer,
+                    digestSHA256Ciphertext: digest,
+                )
+                let stickerBuilder = SSKProtoDataMessageSticker.builder(
+                    packID: sticker.packId,
+                    packKey: sticker.packKey,
+                    stickerID: sticker.stickerId,
+                    data: attachmentProto,
+                )
+                stickerBuilder.setEmoji(emoji)
+                do {
+                    let stickerProto = try stickerBuilder.build()
+                    reactionBuilder.setSticker(stickerProto)
+                } catch {
+                    owsFailDebug("Couldn't build protobuf: \(error)")
+                }
+            }
+        }
+
         do {
             return try reactionBuilder.build()
         } catch {
@@ -191,10 +223,65 @@ final class OutgoingReactionMessage: TransientOutgoingMessage {
             message.recordReaction(
                 for: localAci,
                 emoji: previousReaction.emoji,
+                sticker: previousReaction.sticker,
                 sentAtTimestamp: previousReaction.sentAtTimestamp,
                 sortOrder: previousReaction.sortOrder,
                 tx: tx,
             )
+            if
+                let reappliedReactionRowId = message.reaction(for: localAci, tx: tx)?.id,
+                let messageRowId = message.sqliteRowId,
+                let previousReactionSticker = previousReaction.sticker,
+                let threadRowId = message.thread(tx: tx)?.sqliteRowId
+            {
+                // Reapply the previous sticker attachment.
+                // This is tricky because when we applied the reaction that
+                // now failed to send, we threw away the previous sticker
+                // attachment and its cdn info.
+                // However, we can only send sticker reactions for installed
+                // sticker packs, so we should be able to recreate the attachment
+                // from the installed sticker pack. If the user uninstalled the
+                // sticker pack between then and now, this will fail and we just
+                // fall back to emoji.
+                let installedSticker = StickerManager.fetchInstalledSticker(
+                    packId: previousReactionSticker.packId,
+                    stickerId: previousReactionSticker.stickerId,
+                    transaction: tx
+                )
+                if let installedSticker {
+                    let contentType = StickerManager.stickerType(forContentType: installedSticker.contentType)
+                    let attachment = try? DependenciesBridge.shared.attachmentStore.insert(
+                        Attachment.ConstructionParams.forRevertedStickerReactionAttachment(
+                            mimeType: contentType.mimeType
+                        ),
+                        reference: AttachmentReference.ConstructionParams(
+                            owner: .message(.reactionSticker(.init(
+                                messageRowId: messageRowId,
+                                receivedAtTimestamp: message.receivedAtTimestamp,
+                                threadRowId: threadRowId,
+                                contentType: nil,
+                                isPastEditRevision: message.isPastEditRevision(),
+                                stickerPackId: previousReactionSticker.packId,
+                                stickerId: previousReactionSticker.stickerId,
+                                reactionRowId: reappliedReactionRowId
+                            ))),
+                            sourceFilename: contentType.fileExtension,
+                            sourceUnencryptedByteCount: nil,
+                            sourceMediaSizePixels: nil
+                        ),
+                        tx: tx
+                    )
+                    if let attachment {
+                        // Kick off a local clone download from the installed sticker.
+                        DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachment(
+                            id: attachment.id,
+                            priority: .localClone,
+                            source: .transitTier,
+                            tx: tx
+                        )
+                    }
+                }
+            }
         } else {
             message.removeReaction(for: localAci, tx: tx)
         }
