@@ -6,6 +6,7 @@
 import Lottie
 import SignalServiceKit
 import SignalUI
+import UIKit
 
 // A view for presenting attachment upload/download/failure/pending state.
 class CVAttachmentProgressView: ManualLayoutView {
@@ -25,26 +26,35 @@ class CVAttachmentProgressView: ManualLayoutView {
     }
 
     struct ColorConfiguration {
-        let foregroundColor: UIColor
-        let backgroundColor: UIColor
+        enum BackgroundStyle {
+            case solidColor(UIColor)
+            case blur(UIBlurEffect)
+        }
 
-        private init(foregroundColor: UIColor, backgroundColor: UIColor) {
+        let foregroundColor: UIColor
+        let backgroundStyle: BackgroundStyle
+
+        private init(foregroundColor: UIColor, backgroundStyle: BackgroundStyle) {
             self.foregroundColor = foregroundColor
-            self.backgroundColor = backgroundColor
+            self.backgroundStyle = backgroundStyle
         }
 
         init(conversationStyle: ConversationStyle, isIncoming: Bool) {
             foregroundColor = conversationStyle.bubbleTextColor(isIncoming: isIncoming)
-            backgroundColor = switch (conversationStyle.hasWallpaper, isIncoming) {
+            let backgroundColor = switch (conversationStyle.hasWallpaper, isIncoming) {
             case (true, true): UIColor.Signal.MaterialBase.button
             case (_, true): UIColor.Signal.LightBase.button
             case (_, false): UIColor.Signal.ColorBase.button
             }
+            backgroundStyle = .solidColor(backgroundColor)
         }
 
         /// Creates a configuration with fixed colors to be displayed on top of media thumbnail.
         static func forMediaOverlay() -> ColorConfiguration {
-            ColorConfiguration(foregroundColor: .white, backgroundColor: .ows_blackAlpha50)
+            ColorConfiguration(
+                foregroundColor: .Signal.label,
+                backgroundStyle: .blur(.init(style: .systemThinMaterial)),
+            )
         }
     }
 
@@ -72,8 +82,16 @@ class CVAttachmentProgressView: ManualLayoutView {
         super.init(name: "CVAttachmentProgressView")
 
         stateView.tintColor = colorConfiguration.foregroundColor
+
         let circleView = ManualLayoutView.circleView(name: "circleView")
-        circleView.backgroundColor = colorConfiguration.backgroundColor
+        switch colorConfiguration.backgroundStyle {
+        case .solidColor(let backgroundColor):
+            circleView.backgroundColor = backgroundColor
+        case .blur(let blurEffect):
+            circleView.clipsToBounds = true
+            let blurView = UIVisualEffectView(effect: blurEffect)
+            circleView.addSubviewToFillSuperviewEdges(blurView)
+        }
         circleView.addSubviewToCenterOnSuperview(stateView, size: .square(diameter))
         addSubviewToFillSuperviewEdges(circleView)
 
