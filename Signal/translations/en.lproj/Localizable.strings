@@ -7186,8 +7186,8 @@
 /* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To transfer this account to a new device, tap “Continue” and scan the QR code with the Signal camera. Make sure you only scan QR codes that come directly from Signal.";
 
-/* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %@.";
+/* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %@. %@";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";

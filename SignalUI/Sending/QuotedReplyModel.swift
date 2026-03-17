@@ -209,6 +209,51 @@ public class QuotedReplyModel {
         }
     }
 
+    public var originalMessageAccessibilityLabel: String? {
+        let mediaString = OWSLocalizedString(
+            "ACCESSIBILITY_LABEL_MEDIA",
+            comment: "Accessibility label for media.",
+        )
+
+        switch originalContent {
+        case .text(let messageBody):
+            return messageBody?.text
+        case .giftBadge:
+            return nil
+        case .storyReactionEmoji(let string):
+            return string
+        case .attachmentStub(let messageBody, _):
+            var captionString = ""
+            let caption = messageBody?.text.nilIfEmpty
+            if let caption {
+                captionString.append(caption + ",")
+            }
+            return captionString + mediaString
+        case .attachment(let messageBody, _, _):
+            var captionString = ""
+            let caption = messageBody?.text.nilIfEmpty
+            if let caption {
+                captionString.append(caption + ",")
+            }
+            return captionString + mediaString
+        case .mediaStory(let body, _, _):
+            return body?.text
+        case .textStory:
+            return nil
+        case .expiredStory:
+            return OWSLocalizedString(
+                "STORY_NO_LONGER_AVAILABLE",
+                comment: "Text indicating a story that was replied to is no longer available.",
+            )
+        case .poll(let pollQuestion):
+            let formatQuestion = OWSLocalizedString(
+                "POLL_ACCESSIBILITY_LABEL",
+                comment: "Accessibility label for poll message. Embeds {{ poll question }}.",
+            )
+            return String(format: formatQuestion, pollQuestion)
+        }
+    }
+
     public var hasQuotedThumbnail: Bool {
         switch originalContent {
         case .text:
