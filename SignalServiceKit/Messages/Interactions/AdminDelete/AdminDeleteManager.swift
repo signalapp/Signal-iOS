@@ -53,14 +53,6 @@ public class AdminDeleteManager {
         tx: DBWriteTransaction,
     ) throws(TSMessage.RemoteDeleteError) {
         guard
-            let groupModel = groupThread.groupModel as? TSGroupModelV2,
-            groupModel.membership.isFullMemberAndAdministrator(deleteAuthor)
-        else {
-            logger.error("Failed to process admin delete for non-admin")
-            throw .invalidDelete
-        }
-
-        guard
             let deleteAuthorId = recipientDatabaseTable.fetchRecipient(
                 serviceId: deleteAuthor,
                 transaction: tx,
@@ -90,6 +82,14 @@ public class AdminDeleteManager {
     ) throws(TSMessage.RemoteDeleteError) {
         guard SDS.fitsInInt64(sentAtTimestamp) else {
             owsFailDebug("Unable to delete a message with invalid sentAtTimestamp: \(sentAtTimestamp)")
+            throw .invalidDelete
+        }
+
+        guard
+            let groupModel = groupThread.groupModel as? TSGroupModelV2,
+            groupModel.membership.isFullMemberAndAdministrator(deleteAuthorAci)
+        else {
+            logger.error("Failed to process admin delete for non-admin")
             throw .invalidDelete
         }
 
