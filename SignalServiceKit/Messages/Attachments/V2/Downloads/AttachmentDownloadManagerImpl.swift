@@ -1311,25 +1311,28 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .message(.bodyAttachment), .storyMessage(.media):
                 if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
                     return !autoDownloadableMediaTypes.contains(.photo)
-                } else if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
+                }
+                if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
                     return !autoDownloadableMediaTypes.contains(.video)
-                } else if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
+                }
+                if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
                     if renderingFlag == .voiceMessage {
                         return false
-                    } else {
-                        return !autoDownloadableMediaTypes.contains(.audio)
                     }
-                } else {
-                    return !autoDownloadableMediaTypes.contains(.document)
+                    return !autoDownloadableMediaTypes.contains(.audio)
                 }
+                return !autoDownloadableMediaTypes.contains(.document)
             case .message(.oversizeText):
                 return false
             case .message(.sticker):
                 return !autoDownloadableMediaTypes.contains(.photo)
-            case
-                .message(.quotedReply),
-                .message(.linkPreview), .storyMessage(.textStoryLinkPreview),
-                .message(.contactAvatar):
+            case .message(.quotedReply):
+                return false
+            case .message(.linkPreview):
+                return false
+            case .message(.contactAvatar):
+                return false
+            case .storyMessage(.textStoryLinkPreview):
                 return false
             case .thread(.threadWallpaperImage), .thread(.globalThreadWallpaperImage):
                 return false
