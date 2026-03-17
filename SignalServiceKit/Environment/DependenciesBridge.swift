@@ -73,7 +73,6 @@ public class DependenciesBridge {
     public let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     public let backupAttachmentUploadQueueStatusManager: BackupAttachmentUploadQueueStatusManager
     public let backupAttachmentUploadStore: BackupAttachmentUploadStore
-    public let backupExportJob: BackupExportJob
     public let backupExportJobRunner: BackupExportJobRunner
     public let backupFailureStateManager: BackupFailureStateManager
     public let backupIdService: BackupIdService
@@ -215,7 +214,6 @@ public class DependenciesBridge {
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
         backupAttachmentUploadQueueStatusManager: BackupAttachmentUploadQueueStatusManager,
         backupAttachmentUploadStore: BackupAttachmentUploadStore,
-        backupExportJob: BackupExportJob,
         backupExportJobRunner: BackupExportJobRunner,
         backupFailureStateManager: BackupFailureStateManager,
         backupIdService: BackupIdService,
@@ -356,7 +354,6 @@ public class DependenciesBridge {
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.backupAttachmentUploadQueueStatusManager = backupAttachmentUploadQueueStatusManager
         self.backupAttachmentUploadStore = backupAttachmentUploadStore
-        self.backupExportJob = backupExportJob
         self.backupExportJobRunner = backupExportJobRunner
         self.backupFailureStateManager = backupFailureStateManager
         self.backupIdService = backupIdService

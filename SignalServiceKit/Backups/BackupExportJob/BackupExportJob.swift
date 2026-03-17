@@ -24,10 +24,7 @@ public enum BackupExportJobStage: String, OWSSequentialProgressStep {
 }
 
 public enum BackupExportJobMode: CustomStringConvertible {
-    case manual(
-        OWSSequentialProgressRootSink<BackupExportJobStage>,
-        resumptionPoint: BackupExportJobStore.ResumptionPoint?,
-    )
+    case manual
     case bgProcessingTask
 
     public var description: String {
@@ -47,18 +44,11 @@ public enum BackupExportJobError: Error {
 /// Responsible for performing direct and ancillary steps to "perform a Backup".
 ///
 /// - Important
-/// Callers should be careful about the possibility of running overlapping
-/// Backup export jobs, and may prefer to call ``BackupExportJobRunner`` rather
-/// than this type directly.
-public protocol BackupExportJob {
-    func run(
-        mode: BackupExportJobMode,
-    ) async throws
-}
+/// Only one `BackupExportJob` should run at once; that exclusivity is managed
+/// by `BackupExportJobRunner`. Callers should always prefer calling
+/// `BackupExportJobRunner` instead of `BackupExportJob`.
+class BackupExportJob {
 
-// MARK: -
-
-class BackupExportJobImpl: BackupExportJob {
     private let accountKeyStore: AccountKeyStore
     private let backupArchiveManager: BackupArchiveManager
     private let backupAttachmentCoordinator: BackupAttachmentCoordinator
@@ -102,18 +92,30 @@ class BackupExportJobImpl: BackupExportJob {
         self.tsAccountManager = tsAccountManager
     }
 
+    // MARK: -
+
     func run(
         mode: BackupExportJobMode,
+        resumptionPoint: BackupExportJobStore.ResumptionPoint?,
+        progress: OWSSequentialProgressRootSink<BackupExportJobStage>,
     ) async throws {
         switch mode {
         case .manual:
-            try await _run(mode: mode)
+            try await _run(
+                mode: mode,
+                resumptionPoint: resumptionPoint,
+                progress: progress,
+            )
         case .bgProcessingTask:
             await backupAttachmentDownloadQueueStatusManager.setIsMainAppAndActiveOverride(true)
             await backupAttachmentUploadQueueStatusManager.setIsMainAppAndActiveOverride(true)
             let result = await Result(
                 catching: { () async throws -> Void in
-                    try await _run(mode: mode)
+                    try await _run(
+                        mode: mode,
+                        resumptionPoint: resumptionPoint,
+                        progress: progress,
+                    )
                 },
             )
             await backupAttachmentDownloadQueueStatusManager.setIsMainAppAndActiveOverride(false)
@@ -124,18 +126,9 @@ class BackupExportJobImpl: BackupExportJob {
 
     private func _run(
         mode: BackupExportJobMode,
+        resumptionPoint: BackupExportJobStore.ResumptionPoint?,
+        progress: OWSSequentialProgressRootSink<BackupExportJobStage>,
     ) async throws {
-        let progress: OWSSequentialProgressRootSink<BackupExportJobStage>?
-        let resumptionPoint: BackupExportJobStore.ResumptionPoint?
-        switch mode {
-        case .manual(let _progress, let _resumptionPoint):
-            progress = _progress
-            resumptionPoint = _resumptionPoint
-        case .bgProcessingTask:
-            progress = nil
-            resumptionPoint = nil
-        }
-
         let aep: AccountEntropyPool
         let backupKey: MessageRootBackupKey
         let backupPlan: BackupPlan
@@ -217,7 +210,7 @@ class BackupExportJobImpl: BackupExportJob {
                         key: backupKey,
                         chatAuth: .implicit(),
                     ),
-                    progress: progress?.child(for: .backupFileExport),
+                    progress: progress.child(for: .backupFileExport),
                     logger: logger,
                 )
 
@@ -232,7 +225,7 @@ class BackupExportJobImpl: BackupExportJob {
                             backupKey: backupKey,
                             metadata: uploadMetadata,
                             auth: .implicit(),
-                            progress: progress?.child(for: .backupFileUpload),
+                            progress: progress.child(for: .backupFileUpload),
                             logger: logger,
                         )
                     },
@@ -240,8 +233,8 @@ class BackupExportJobImpl: BackupExportJob {
             case .postBackupFile:
                 // Need to complete the progress children, or
                 // OWSSequentialProgress reports them as the "current step".
-                await performWithDummyProgress(progress?.child(for: .backupFileExport), work: {})
-                await performWithDummyProgress(progress?.child(for: .backupFileUpload), work: {})
+                await performWithDummyProgress(progress.child(for: .backupFileExport), work: {})
+                await performWithDummyProgress(progress.child(for: .backupFileUpload), work: {})
             }
 
             await db.awaitableWrite { tx in
@@ -250,7 +243,7 @@ class BackupExportJobImpl: BackupExportJob {
 
             // Callers interested in detailed upload progress should use
             // BackupAttachmentUploadProgress or BackupAttachmentUploadTracker.
-            try await performWithDummyProgress(progress?.child(for: .attachmentUpload)) {
+            try await performWithDummyProgress(progress.child(for: .attachmentUpload)) {
                 logger.info("Listing media...")
                 try await Retry.performWithBackoff(
                     maxAttempts: 3,
@@ -274,7 +267,7 @@ class BackupExportJobImpl: BackupExportJob {
                 try await backupAttachmentCoordinator.backUpAllAttachments(waitOnThumbnails: waitOnThumbnails)
             }
 
-            try await performWithDummyProgress(progress?.child(for: .attachmentProcessing)) {
+            try await performWithDummyProgress(progress.child(for: .attachmentProcessing)) {
                 switch mode {
                 case .manual:
                     break
@@ -330,16 +323,14 @@ class BackupExportJobImpl: BackupExportJob {
     /// Run the given block, which does not itself track progress, and complete
     /// the given "dummy" progress when the block is complete.
     private func performWithDummyProgress(
-        _ progress: OWSProgressSink?,
+        _ progress: OWSProgressSink,
         work: () async throws -> Void,
     ) async rethrows {
         try await work()
 
-        if let progress {
-            await progress
-                .addSource(withLabel: "", unitCount: 1)
-                .complete()
-        }
+        await progress
+            .addSource(withLabel: "", unitCount: 1)
+            .complete()
     }
 }
 

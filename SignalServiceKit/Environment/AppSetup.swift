@@ -1631,22 +1631,21 @@ extension AppSetup.GlobalsContinuation {
             storageServiceManager: storageServiceManager,
         )
 
-        let backupExportJob = BackupExportJobImpl(
-            accountKeyStore: accountKeyStore,
-            backupArchiveManager: backupArchiveManager,
-            backupAttachmentCoordinator: backupAttachmentCoordinator,
-            backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
-            backupAttachmentUploadProgress: backupAttachmentUploadProgress,
-            backupAttachmentUploadQueueStatusManager: backupAttachmentUploadQueueStatusManager,
-            backupExportJobStore: backupExportJobStore,
-            backupSettingsStore: backupSettingsStore,
-            db: db,
-            messageProcessor: messageProcessor,
-            reachabilityManager: reachabilityManager,
-            tsAccountManager: tsAccountManager,
-        )
         let backupExportJobRunner = BackupExportJobRunnerImpl(
-            backupExportJob: backupExportJob,
+            backupExportJob: BackupExportJob(
+                accountKeyStore: accountKeyStore,
+                backupArchiveManager: backupArchiveManager,
+                backupAttachmentCoordinator: backupAttachmentCoordinator,
+                backupAttachmentDownloadQueueStatusManager: backupAttachmentDownloadQueueStatusManager,
+                backupAttachmentUploadProgress: backupAttachmentUploadProgress,
+                backupAttachmentUploadQueueStatusManager: backupAttachmentUploadQueueStatusManager,
+                backupExportJobStore: backupExportJobStore,
+                backupSettingsStore: backupSettingsStore,
+                db: db,
+                messageProcessor: messageProcessor,
+                reachabilityManager: reachabilityManager,
+                tsAccountManager: tsAccountManager,
+            ),
             backupExportJobStore: backupExportJobStore,
             db: db,
         )
@@ -1685,7 +1684,6 @@ extension AppSetup.GlobalsContinuation {
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupAttachmentUploadQueueStatusManager: backupAttachmentUploadQueueStatusManager,
             backupAttachmentUploadStore: backupAttachmentUploadStore,
-            backupExportJob: backupExportJob,
             backupExportJobRunner: backupExportJobRunner,
             backupFailureStateManager: backupFailureStateManager,
             backupIdService: backupIdService,

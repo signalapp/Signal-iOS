@@ -35,6 +35,7 @@ private func uncaughtExceptionHandler(_ exception: NSException) {
 
 @main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
+
     // MARK: - Constants
 
     private enum Constants {
@@ -295,7 +296,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             backupSettingsStore: BackupSettingsStore(),
             dateProvider: { Date() },
             db: databaseStorage,
-            exportJob: { DependenciesBridge.shared.backupExportJob },
+            exportJobRunner: { DependenciesBridge.shared.backupExportJobRunner },
             tsAccountManager: { DependenciesBridge.shared.tsAccountManager },
         )
         backupRunner.registerBGProcessingTask(appReadiness: appReadiness)

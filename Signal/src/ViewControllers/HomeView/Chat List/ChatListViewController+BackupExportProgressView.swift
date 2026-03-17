@@ -432,7 +432,7 @@ class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
                 ),
                 handler: { [self] _ in
                     // Cancel the BackupExportJob, and pause uploads.
-                    backupExportJobRunner.cancelIfRunning()
+                    _ = backupExportJobRunner.cancelIfRunning()
                     db.write {
                         backupSettingsStore.setIsBackupUploadQueueSuspended(true, tx: $0)
                     }

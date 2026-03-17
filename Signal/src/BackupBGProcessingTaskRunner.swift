@@ -14,7 +14,7 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
     private let db: DB
-    private let exportJob: () -> BackupExportJob
+    private let exportJobRunner: () -> BackupExportJobRunner
     private let kvStore: KeyValueStore
     private let tsAccountManager: () -> TSAccountManager
 
@@ -23,14 +23,14 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: SDSDatabaseStorage,
-        exportJob: @escaping () -> BackupExportJob,
+        exportJobRunner: @escaping () -> BackupExportJobRunner,
         tsAccountManager: @escaping () -> TSAccountManager,
     ) {
         self.backgroundMessageFetcherFactory = backgroundMessageFetcherFactory
         self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
         self.db = db
-        self.exportJob = exportJob
+        self.exportJobRunner = exportJobRunner
         self.kvStore = KeyValueStore(collection: "BackupBGProcessingTaskRunner")
         self.tsAccountManager = tsAccountManager
     }
@@ -46,7 +46,21 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
         try await runWithChatConnection(
             backgroundMessageFetcherFactory: backgroundMessageFetcherFactory(),
             operation: {
-                try await exportJob().run(mode: .bgProcessingTask)
+                let exportJobRunner = exportJobRunner()
+
+                if let existingRun = exportJobRunner.cancelIfRunning() {
+                    try? await existingRun.value
+                }
+
+                try await withTaskCancellationHandler(
+                    operation: { () async throws -> Void in
+                        let newRun = exportJobRunner.startIfNecessary(mode: .bgProcessingTask)
+                        try await newRun.value
+                    },
+                    onCancel: { () -> Void in
+                        _ = exportJobRunner.cancelIfRunning()
+                    },
+                )
 
                 await db.awaitableWrite { tx in
                     kvStore.setDate(dateProvider(), key: StoreKeys.lastCompletionDate, transaction: tx)

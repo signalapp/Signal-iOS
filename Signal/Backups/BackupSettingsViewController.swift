@@ -854,13 +854,15 @@ class BackupSettingsViewController:
     // MARK: -
 
     fileprivate func performManualBackup() {
-        // We observe updates from BackupExportJob, including when it
-        // finishes, so all we need to do here is kick it off.
-        backupExportJobRunner.startIfNecessary()
+        // We observe BackupExportJobRunner updates, so we can ignore the
+        // returned task.
+        _ = backupExportJobRunner.startIfNecessary(mode: .manual)
     }
 
     fileprivate func cancelManualBackup() {
-        backupExportJobRunner.cancelIfRunning()
+        // We observe BackupExportJobRunner updates, so we can ignore the
+        // returned task.
+        _ = backupExportJobRunner.cancelIfRunning()
         suspendUploads()
     }
 
