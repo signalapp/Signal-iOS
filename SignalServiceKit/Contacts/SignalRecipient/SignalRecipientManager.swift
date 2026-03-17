@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import LibSignalClient
 
 public protocol SignalRecipientManager {
     func fetchRecipientIfPhoneNumberVisible(

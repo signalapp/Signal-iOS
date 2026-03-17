@@ -4,6 +4,7 @@
 //
 
 import Combine
+import LibSignalClient
 import LocalAuthentication
 import SignalServiceKit
 import SignalUI

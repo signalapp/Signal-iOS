@@ -5,6 +5,7 @@
 
 import Foundation
 public import GRDB
+public import LibSignalClient
 
 public struct OWSDevice: Codable, FetchableRecord, PersistableRecord {
     public static let primaryDeviceId: UInt32 = 1

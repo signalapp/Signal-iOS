@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
+public import LibSignalClient
 
 public protocol OWSDeviceService {
     /// Refresh the list of our linked devices.
