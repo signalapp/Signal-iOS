@@ -2630,7 +2630,7 @@ extension StorageServiceProtos_StoryDistributionListRecord: SwiftProtobuf.Messag
 
 extension StorageServiceProtos_CallLinkRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".CallLinkRecord"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}rootKey\0\u{1}adminPasskey\0\u{1}deletedAtTimestampMs\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}rootKey\0\u{1}adminPasskey\0\u{1}deletedAtTimestampMs\0\u{c}\u{4}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

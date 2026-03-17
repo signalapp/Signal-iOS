@@ -11,16 +11,18 @@ public struct CallLinkState {
     public let restrictions: SignalRingRTC.CallLinkState.Restrictions
     public let revoked: Bool
     public let expiration: Date
+    public let rootKey: CallLinkRootKey
 
     public enum Constants {
         public static let defaultRequiresAdminApproval = true
     }
 
-    init(name: String?, restrictions: SignalRingRTC.CallLinkState.Restrictions, revoked: Bool, expiration: Date) {
+    init(name: String?, restrictions: SignalRingRTC.CallLinkState.Restrictions, revoked: Bool, expiration: Date, rootKey: CallLinkRootKey) {
         self.name = name
         self.restrictions = restrictions
         self.revoked = revoked
         self.expiration = expiration
+        self.rootKey = rootKey
     }
 
     public init(_ rawValue: SignalRingRTC.CallLinkState) {
@@ -28,6 +30,7 @@ public struct CallLinkState {
         self.restrictions = rawValue.restrictions
         self.revoked = rawValue.revoked
         self.expiration = rawValue.expiration
+        self.rootKey = rawValue.rootKey
     }
 
     public var requiresAdminApproval: Bool {

@@ -8487,7 +8487,7 @@ extension SignalServiceProtos_SyncMessage.CallEvent.Event: SwiftProtobuf._ProtoN
 
 extension SignalServiceProtos_SyncMessage.CallLinkUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".CallLinkUpdate"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}rootKey\0\u{1}adminPasskey\0\u{1}type\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}rootKey\0\u{1}adminPasskey\0\u{1}type\0\u{c}\u{4}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

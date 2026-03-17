@@ -320,6 +320,7 @@ public class GRDBSchemaMigrator {
         case createKeyTransparencyTable
         case addAdminDeleteTable
         case addRecipientStatesToAdminDelete
+        case modifyCallLinkRootKeyConstraint
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5035,6 +5036,11 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.modifyCallLinkRootKeyConstraint, foreignKeyChecks: .deferred) { tx in
+            try modifyCallLinkRootKeyConstraint(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -6518,8 +6524,12 @@ public class GRDBSchemaMigrator {
         return try String.fetchOne(tx.database, sql: "SELECT uniqueId FROM model_SignalRecipient WHERE id = ?", arguments: [recipientId])
     }
 
-    static func addCallLinkTable(tx: DBWriteTransaction) throws {
-        try tx.database.create(table: "CallLink") { table in
+    static func createCallLinkTable(
+        tableName: String,
+        rootKeyConstraint: StaticString,
+        tx: DBWriteTransaction,
+    ) throws {
+        try tx.database.create(table: tableName) { table in
             table.column("id", .integer).primaryKey()
             table.column("roomId", .blob).notNull().unique()
             table.column("rootKey", .blob).notNull()
@@ -6533,11 +6543,13 @@ public class GRDBSchemaMigrator {
             table.column("revoked", .boolean)
             table.column("expiration", .integer)
             table.check(sql: #"LENGTH("roomId") IS 32"#)
-            table.check(sql: #"LENGTH("rootKey") IS 16"#)
+            table.check(sql: "LENGTH(\"rootKey\") \(rootKeyConstraint)")
             table.check(sql: #"LENGTH("adminPasskey") > 0 OR "adminPasskey" IS NULL"#)
             table.check(sql: #"NOT("isUpcoming" IS TRUE AND "expiration" IS NULL)"#)
         }
+    }
 
+    static func createCallLinkIndexes(tx: DBWriteTransaction) throws {
         try tx.database.create(
             index: "CallLink_Upcoming",
             on: "CallLink",
@@ -6558,6 +6570,16 @@ public class GRDBSchemaMigrator {
             columns: ["adminDeletedAtTimestampMs"],
             condition: Column("adminDeletedAtTimestampMs") != nil,
         )
+    }
+
+    static func addCallLinkTable(tx: DBWriteTransaction) throws {
+        try createCallLinkTable(
+            tableName: "CallLink",
+            rootKeyConstraint: "IS 16",
+            tx: tx,
+        )
+
+        try createCallLinkIndexes(tx: tx)
 
         let indexesToDrop = [
             "index_call_record_on_callId_and_threadId",
@@ -6702,6 +6724,50 @@ public class GRDBSchemaMigrator {
             on: "DeletedCallRecord",
             columns: ["deletedAtTimestamp"],
         )
+    }
+
+    static func modifyCallLinkRootKeyConstraint(tx: DBWriteTransaction) throws {
+        try createCallLinkTable(
+            tableName: "CallLink_new",
+            rootKeyConstraint: ">= 16",
+            tx: tx,
+        )
+
+        try tx.database.execute(
+            sql: """
+            INSERT INTO "CallLink_new" (
+                "id",
+                "roomId",
+                "rootKey",
+                "adminPasskey",
+                "adminDeletedAtTimestampMs",
+                "activeCallId",
+                "isUpcoming",
+                "pendingActionCounter",
+                "name",
+                "restrictions",
+                "revoked",
+                "expiration"
+            ) SELECT
+                "id",
+                "roomId",
+                "rootKey",
+                "adminPasskey",
+                "adminDeletedAtTimestampMs",
+                "activeCallId",
+                "isUpcoming",
+                "pendingActionCounter",
+                "name",
+                "restrictions",
+                "revoked",
+                "expiration"
+            FROM "CallLink"
+            """,
+        )
+
+        try tx.database.drop(table: "CallLink")
+        try tx.database.rename(table: "CallLink_new", to: "CallLink")
+        try createCallLinkIndexes(tx: tx)
     }
 
     private static func fetchAndClearBlockedGroupIds(tx: DBWriteTransaction) throws -> [Data] {

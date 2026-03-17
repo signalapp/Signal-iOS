@@ -75,13 +75,13 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
             presentationDelay: 0.25,
             asyncBlock: { modal in
                 do {
-                    let callLink = CallLink.generate()
+                    let rootKey = CallLinkRootKey.generate()
                     let callService = AppEnvironment.shared.callService!
-                    let createResult = try await callService.callLinkManager.createCallLink(rootKey: callLink.rootKey)
-                    let coercedToV0Link = try CallLink(rootKey: CallLinkRootKey(Data(callLink.rootKey.bytes.prefix(16))))
+                    let createResult = try await callService.callLinkManager.createCallLink(rootKey: rootKey)
+                    let callLink = CallLink(rootKey: createResult.callLinkState.rootKey)
                     modal.dismissIfNotCanceled {
                         viewController.present(CreateCallLinkViewController(
-                            callLink: coercedToV0Link,
+                            callLink: callLink,
                             adminPasskey: createResult.adminPasskey,
                             callLinkState: createResult.callLinkState,
                         ), animated: true)

@@ -204,6 +204,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
                 restrictions: restrictions.asRingRtcValue,
                 revoked: revoked,
                 expiration: Date(timeIntervalSince1970: TimeInterval(expiration)),
+                rootKey: rootKey,
             )
         }
         return nil
