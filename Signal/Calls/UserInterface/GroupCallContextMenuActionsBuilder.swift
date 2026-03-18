@@ -57,8 +57,8 @@ enum GroupCallContextMenuActionsBuilder {
 
         contextMenuActions.append(UIAction(
             title: OWSLocalizedString(
-                "GROUP_CALL_CONTEXT_MENU_CONTACT_DETAILS",
-                comment: "Context menu action to view a call participant's contact details.",
+                "GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS",
+                comment: "Context menu action to view a call participant's profile details.",
             ),
             image: .personCircle,
             handler: { _ in
