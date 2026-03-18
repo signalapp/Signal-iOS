@@ -145,6 +145,7 @@ class MediaControlPanelView: UIView {
         })
         button.configuration?.image = Theme.iconImage(.buttonForward)
         button.configuration?.contentInsets = .init(margin: Self.buttonContentInset)
+        button.accessibilityLabel = OWSLocalizedString("ACCESSIBILITY_FORWARD_BUTTON_LABEL", comment: "Label for forward button in media control panel")
         return button
     }()
 
