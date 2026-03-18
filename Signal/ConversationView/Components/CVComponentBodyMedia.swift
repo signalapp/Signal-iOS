@@ -581,11 +581,61 @@ extension CVComponentBodyMedia.CVComponentViewBodyMediaRootView: BodyMediaPresen
 
 extension CVComponentBodyMedia: CVAccessibilityComponent {
     var accessibilityDescription: String {
-        // TODO: We could describe how many media
-        // and their type (video, image, animated image).
-        OWSLocalizedString(
+        let genericMediaString = OWSLocalizedString(
             "ACCESSIBILITY_LABEL_MEDIA",
             comment: "Accessibility label for media.",
         )
+
+        if bodyMedia.items.count > 1 {
+            return String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "ACCESSIBILITY_LABEL_MULTIPLE_ATTACHMENTS_%d",
+                    tableName: "PluralAware",
+                    comment: "Accessibility label for multiple attachment items. Embeds {{ number of attachments }}.",
+                ),
+                bodyMedia.items.count,
+            )
+        }
+
+        guard let mediaItem = bodyMedia.items.first else {
+            return genericMediaString
+        }
+
+        switch mediaItem.attachment {
+        case .stream(let referencedAttachmentStream):
+            switch referencedAttachmentStream.attachmentStream.contentType {
+            case .invalid:
+                return genericMediaString
+            case .file:
+                return CommonStrings.attachmentTypeFile
+            case .image:
+                return CommonStrings.attachmentTypePhoto
+            case .video:
+                if referencedAttachmentStream.reference.renderingFlag == .shouldLoop {
+                    return CommonStrings.attachmentTypeAnimated
+                }
+                return CommonStrings.attachmentTypeVideo
+            case .animatedImage:
+                return CommonStrings.attachmentTypeAnimated
+            case .audio:
+                return CommonStrings.attachmentTypeAudio
+            }
+        case .pointer(let referencedAttachmentPointer, _):
+            let mimeType = referencedAttachmentPointer.attachmentPointer.attachment.mimeType
+            if MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) {
+                return CommonStrings.attachmentTypeAnimated
+            }
+
+            if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
+                return CommonStrings.attachmentTypePhoto
+            }
+
+            if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
+                return CommonStrings.attachmentTypeVideo
+            }
+            return genericMediaString
+        case .backupThumbnail, .undownloadable:
+            return genericMediaString
+        }
     }
 }

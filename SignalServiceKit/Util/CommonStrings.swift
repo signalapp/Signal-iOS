@@ -271,6 +271,20 @@ public enum CommonStrings {
         )
     }
 
+    public static var attachmentTypeFile: String {
+        OWSLocalizedString(
+            "ATTACHMENT_TYPE_FILE",
+            comment: "Short text label for a file attachment, used for thread preview and on the lock screen",
+        )
+    }
+
+    public static var attachmentTypeAudio: String {
+        OWSLocalizedString(
+            "ATTACHMENT_TYPE_AUDIO",
+            comment: "Short text label for a audio attachment, used for thread preview and on the lock screen",
+        )
+    }
+
     public static var searchBarPlaceholder: String {
         OWSLocalizedString("INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER", comment: "Search")
     }
