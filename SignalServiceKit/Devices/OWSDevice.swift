@@ -5,7 +5,11 @@
 
 import Foundation
 public import GRDB
+#if DEBUG
 public import LibSignalClient
+#else
+import LibSignalClient
+#endif
 
 public struct OWSDevice: Codable, FetchableRecord, PersistableRecord {
     public static let primaryDeviceId: UInt32 = 1
