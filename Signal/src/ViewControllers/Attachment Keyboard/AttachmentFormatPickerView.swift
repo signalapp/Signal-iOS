@@ -316,6 +316,9 @@ class AttachmentFormatPickerView: UIView {
             textLabel.autoPinEdges(toSuperviewEdgesExcludingEdge: .top)
 
             configure()
+
+            isAccessibilityElement = true
+            accessibilityTraits.insert(.button)
         }
 
         @available(*, unavailable, message: "Unimplemented")
@@ -354,6 +357,7 @@ class AttachmentFormatPickerView: UIView {
             textLabel.text = text
             button.configuration?.image = UIImage(imageLiteralResourceName: imageName)
             accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "format-\(attachmentType.rawValue)")
+            accessibilityLabel = text
         }
     }
 }
