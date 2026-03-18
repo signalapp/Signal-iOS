@@ -106,7 +106,7 @@ public enum AttachmentDownloads {
         }
     }
 
-    public enum Error: Swift.Error, Equatable {
+    public enum Error: Swift.Error {
         case expiredCredentials
         case blockedByActiveCall
         case blockedByPendingMessageRequest

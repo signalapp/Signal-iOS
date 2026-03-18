@@ -1097,7 +1097,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.threadStore = threadStore
         }
 
-        enum Downloadability: Equatable {
+        enum Downloadability {
             case downloadable
             case blockedByActiveCall
             case blockedByPendingMessageRequest

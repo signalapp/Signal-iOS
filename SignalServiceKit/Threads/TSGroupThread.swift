@@ -296,7 +296,7 @@ open class TSGroupThread: TSThread {
 
     // MARK: -
 
-    override public func updateWithInsertedInteraction(
+    override func updateWithInsertedInteraction(
         _ interaction: TSInteraction,
         tx: DBWriteTransaction,
     ) {
