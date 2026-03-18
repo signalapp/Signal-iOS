@@ -21,10 +21,6 @@ public struct IncomingAttachmentLimits {
         return remoteConfig.attachmentMaxEncryptedReceiveBytes
     }
 
-    public var maxEncryptedVideoBytes: UInt64 {
-        return remoteConfig.videoAttachmentMaxEncryptedReceiveBytes
-    }
-
     public var maxEncryptedImageBytes: UInt64 {
         // TODO: Compute this based on the outgoing limit.
         return 100 * 1024 * 1024

@@ -781,11 +781,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 }) ?? .useHeadRequest
                 let attachmentLimits = IncomingAttachmentLimits.currentLimits()
                 switch Attachment.ContentTypeRaw(mimeType: attachment.mimeType) {
-                case .video:
-                    maxDownloadSizeBytes = attachmentLimits.maxEncryptedVideoBytes
                 case .image, .animatedImage:
                     maxDownloadSizeBytes = attachmentLimits.maxEncryptedImageBytes
-                case .audio, .file, .invalid:
+                case .audio, .video, .file, .invalid:
                     maxDownloadSizeBytes = attachmentLimits.maxEncryptedBytes
                 }
             case .mediaTierFullsize:

@@ -244,14 +244,6 @@ public class RemoteConfig {
         ))
     }
 
-    public var videoAttachmentMaxEncryptedReceiveBytes: UInt64 {
-        let maxEncryptedBytes = self.videoAttachmentMaxEncryptedBytes
-        return min(Self.attachmentHardLimit, getUInt64Value(
-            forFlag: .videoAttachmentMaxEncryptedReceiveBytes,
-            defaultValue: maxEncryptedBytes + maxEncryptedBytes / 4,
-        ))
-    }
-
     public var backupAttachmentMaxEncryptedBytes: UInt64 {
         return min(Self.attachmentHardLimit, getUInt64Value(
             forFlag: .backupAttachmentMaxEncryptedBytes,
@@ -662,7 +654,6 @@ private enum ValueFlag: String, FlagType {
     case sepaEnabledRegions = "global.donations.sepaEnabledRegions"
     case standardMediaQualityLevel = "ios.standardMediaQualityLevel"
     case videoAttachmentMaxEncryptedBytes = "ios.videoAttachments.maxBytes"
-    case videoAttachmentMaxEncryptedReceiveBytes = "ios.videoAttachments.maxReceiveBytes"
     case backupListMediaDefaultRefreshIntervalMs = "ios.backupListMediaDefaultRefreshIntervalMs"
     case backupListMediaOutOfQuotaRefreshIntervalMs = "ios.backupListMediaOutOfQuotaRefreshIntervalMs"
     case pinnedMessageLimit = "global.pinned_message_limit"
@@ -706,7 +697,6 @@ private enum ValueFlag: String, FlagType {
         case .sepaEnabledRegions: true
         case .standardMediaQualityLevel: true
         case .videoAttachmentMaxEncryptedBytes: true
-        case .videoAttachmentMaxEncryptedReceiveBytes: true
         case .backupListMediaDefaultRefreshIntervalMs: true
         case .backupListMediaOutOfQuotaRefreshIntervalMs: true
         case .pinnedMessageLimit: true
