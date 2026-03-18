@@ -7,6 +7,9 @@
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Signal વિશે";
 
+/* Label for forward button in media control panel */
+"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Forward";
+
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "જોડાણ";
 
@@ -804,9 +807,6 @@
 
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "બેકઅપની વિગતો";
-
-/* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "આ એક બીટા ફીચર છે અને સમય જતાં તેમાં સુધારો કરવામાં આવશે.";
 
 /* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "નવી રિકવરી કી બનાવવા માટે તમે રજિસ્ટર કરેલું હોવું આવશ્યક છે.";
@@ -2351,10 +2351,10 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "બધા સભ્યો";
 
 /* Label for 'edit member label access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "Add Member Labels";
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "સભ્યના લેબલ ઉમેરો";
 
 /* Description for the 'edit member label access'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "Choose who can add member labels in this group.";
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "આ ગ્રૂપમાં સભ્યના લેબલ કોણ ઉમેરી શકે તે પસંદ કરો.";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "સભ્યો ઉમેરો";
@@ -2372,10 +2372,10 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ આ ગ્રુપ અને તેના સભ્યોને સંપાદિત કરી શકશે.";
 
 /* Label for button that sets 'member labels access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON" = "Only Admins";
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON" = "ફક્ત એડમિન";
 
 /* Label for button that sets 'member labels access' to 'members-only'. */
-"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON" = "બધા સભ્યો";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "વિનંતીઓ અને આમંત્રણો";
@@ -3689,7 +3689,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "ગ્રૂપ માહિતી “%1$@“ બદલી શકે છે.";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Only Admins";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "ફક્ત એડમિન";
 
 /* Description of the 'all users' access level. */
 "GROUP_ACCESS_LEVEL_ANY" = "કોઈપણ વપરાશકર્તા";
@@ -3704,13 +3704,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "અક્ષમ";
 
 /* Message indicating that the access to setting member labels was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can add member labels to “%1$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT" = "તમે \"સભ્યના લેબલ કોણ ઉમેરી શકે\"ને \"%1$@\" માં બદલ્યું.";
 
 /* Message indicating that the access to setting member labels was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can add member labels to “%2$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@એ \"સભ્યના લેબલ કોણ ઉમેરી શકે\"ને \"%2$@\" માં બદલ્યું.";
 
 /* Message indicating that the access to setting member labels was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT" = "An admin changed who can add member labels to “%1$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT" = "એડમિને \"સભ્યના લેબલ કોણ ઉમેરી શકે\"ને \"%1$@\" માં બદલ્યું.";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "તમે ગ્રૂપ સદસ્યતામાં કોણ ફેરફાર કરી શકે છે તેને \"%1$@\" પર બદલ્યું છે.";
@@ -3739,14 +3739,14 @@
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ને બ્લૉક કરેલ છે";
 
-/* Context menu action to view a call participant's contact details. */
-"GROUP_CALL_CONTEXT_MENU_CONTACT_DETAILS" = "Contact Details";
-
 /* Context menu action to navigate to the chat with a call participant. */
-"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "Go to Chat";
+"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "ચેટ પર જાઓ";
 
 /* Context menu action to mute a call participant's audio. */
-"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "Mute Audio";
+"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "ઓડિયો મ્યૂટ કરો";
+
+/* Context menu action to view a call participant's profile details. */
+"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Profile Details";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "કૉલ ચાલુ રાખો";
@@ -5180,7 +5180,7 @@
 "MEMBER_LABEL_VIEW_TITLE" = "સભ્યનું લેબલ";
 
 /* A one-time confirmation that you, as an admin, want to delete for everyone */
-"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "Group members on the latest versions of Signal will see that you deleted these messages.";
+"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "Signalના લેટેસ્ટ વર્ઝન પરના ગ્રૂપના સભ્યો જોશે કે તમે આ મેસેજ ડિલીટ કર્યા છે.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "મેસેજ ટેક્સ્ટની નકલ કરો";
@@ -7189,8 +7189,8 @@
 /* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "આ એકાઉન્ટને નવા ડિવાઇસમાં ટ્રાન્સફર કરવા માટે, \"ચાલુ રાખો\" પર ટેપ કરો અને Signal કેમેરાથી ફરીથી QR કોડ સ્કેન કરો. ખાતરી કરો કે તમે ફક્ત એવા QR કોડ સ્કેન કરો છો જે સીધા Signalમાંથી જ આવતા હોય.";
 
-/* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "%1$@ને જવાબ આપી રહ્યા છો.";
+/* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@. %2$@";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
@@ -7520,10 +7520,10 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "તમારી પ્રોફાઇલ સેટ કરો";
 
 /* Error shown if an SMS/call service provider is unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "We are unable to send an SMS to your number. Please try again in several hours.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "અમે તમારા નંબર પર SMS મોકલી શકતા નથી. કૃપા કરીને થોડા કલાક પછી ફરી પ્રયાસ કરો.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "We are unable to send an SMS to your number. Please try again in a few minutes.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "અમે તમારા નંબર પર SMS મોકલી શકતા નથી. કૃપા કરીને થોડીવાર પછી ફરીથી પ્રયાસ કરો.";
 
 /* Third step in directions for how to make a backup */
 "REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "બેકઅપ સક્ષમ કરો અને તમારું બેકઅપ પૂર્ણ થાય ત્યાં સુધી રાહ જુઓ";
@@ -7607,7 +7607,7 @@
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "તમારા યુઝરનેમ QR કોડ અને લિંક સાથે કંઈક ખોટું થયું છે, તે હવે માન્ય નથી. અન્ય લોકો સાથે શેર કરવા માટે નવી લિંક બનાવો.";
 
 /* Toast that appears when local user tried to delete a message that has disappeared */
-"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "Message disappeared before it could be deleted.";
+"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "મેસેજને ડિલીટ કરી શકાય તે પહેલાં જ તે ગાયબ થઈ ગયા.";
 
 /* A message that displays when one person in a call remotely muted another participant. Embeds {{name}} {{name}} */
 "REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@એ %2$@ને મ્યૂટ કર્યા.";

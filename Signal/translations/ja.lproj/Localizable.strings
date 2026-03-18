@@ -7,6 +7,9 @@
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Signalについて";
 
+/* Label for forward button in media control panel */
+"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Forward";
+
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "添付ファイル";
 
@@ -804,9 +807,6 @@
 
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "バックアップの詳細";
-
-/* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "これはベータ版の機能であり、今後改善される予定です。";
 
 /* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "新しい回復キーを作成するには、登録する必要があります。";
@@ -2351,10 +2351,10 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "すべてのメンバー";
 
 /* Label for 'edit member label access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "Add Member Labels";
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "メンバーラベルを追加";
 
 /* Description for the 'edit member label access'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "Choose who can add member labels in this group.";
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "このグループ内でメンバーラベルを追加できる人を選択してください。";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "メンバーを追加";
@@ -2372,10 +2372,10 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ がこのグループの設定やメンバーを編集できるようになります";
 
 /* Label for button that sets 'member labels access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON" = "Only Admins";
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON" = "管理者のみ";
 
 /* Label for button that sets 'member labels access' to 'members-only'. */
-"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON" = "すべてのメンバー";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "申請と招待";
@@ -3689,7 +3689,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "「%1$@」はグループ情報を変更できます。";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Only Admins";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "管理者のみ";
 
 /* Description of the 'all users' access level. */
 "GROUP_ACCESS_LEVEL_ANY" = "全てのユーザ";
@@ -3704,13 +3704,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "無効";
 
 /* Message indicating that the access to setting member labels was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can add member labels to “%1$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT" = "メンバーラベルを追加できる人を「%1$@」に変更しました。";
 
 /* Message indicating that the access to setting member labels was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can add member labels to “%2$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@が、メンバーラベルを追加できる人を「%2$@」に変更しました。";
 
 /* Message indicating that the access to setting member labels was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT" = "An admin changed who can add member labels to “%1$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT" = "管理者が、メンバーラベルを追加できる人を「%1$@」に変更しました。";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "グループメンバーを編集できるユーザーを「%1$@」に変更しました。";
@@ -3739,14 +3739,14 @@
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ はブロックされました";
 
-/* Context menu action to view a call participant's contact details. */
-"GROUP_CALL_CONTEXT_MENU_CONTACT_DETAILS" = "Contact Details";
-
 /* Context menu action to navigate to the chat with a call participant. */
-"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "Go to Chat";
+"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "チャット";
 
 /* Context menu action to mute a call participant's audio. */
-"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "Mute Audio";
+"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "音声をミュート";
+
+/* Context menu action to view a call participant's profile details. */
+"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Profile Details";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "通話を続ける";
@@ -5180,7 +5180,7 @@
 "MEMBER_LABEL_VIEW_TITLE" = "メンバーラベル";
 
 /* A one-time confirmation that you, as an admin, want to delete for everyone */
-"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "Group members on the latest versions of Signal will see that you deleted these messages.";
+"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "Signalの最新版を使用しているグループメンバーは、あなたがこれらのメッセージを消去したことを確認できます。";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "メッセージテキストをコピー";
@@ -7189,8 +7189,8 @@
 /* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "新しい端末へこのアカウントを移行するには、「続ける」をタップしてから、SignalカメラでQRコードをスキャンしてください。その際は必ず、Signalに直接表示されたQRコードのみをスキャンしてください。";
 
-/* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "%1$@への返信";
+/* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@. %2$@";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
@@ -7520,10 +7520,10 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "プロフィールの設定";
 
 /* Error shown if an SMS/call service provider is unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "We are unable to send an SMS to your number. Please try again in several hours.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "お使いの電話番号にSMSを送信できませんでした。数時間後にもう一度お試しください。";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "We are unable to send an SMS to your number. Please try again in a few minutes.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "お使いの電話番号にSMSを送信できませんでした。数分後にもう一度お試しください。";
 
 /* Third step in directions for how to make a backup */
 "REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "バックアップを有効にして、バックアップが完了するまでお待ちください";
@@ -7607,7 +7607,7 @@
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "ユーザーネームのQRコードとリンクに問題が発生したため、無効になりました。新しいリンクを作成して他のユーザーと共有してください。";
 
 /* Toast that appears when local user tried to delete a message that has disappeared */
-"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "Message disappeared before it could be deleted.";
+"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "メッセージは、すでに消えています。";
 
 /* A message that displays when one person in a call remotely muted another participant. Embeds {{name}} {{name}} */
 "REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@が%2$@をミュートしました。";
