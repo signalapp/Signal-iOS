@@ -1037,7 +1037,7 @@ class StoryItemMediaView: UIView {
                 downloadState: downloadState,
             ),
             diameter: 56,
-            colorConfiguration: .forMediaOverlay(),
+            colorConfiguration: .forMediaOverlay(forceDarkMode: true),
             mediaCache: Self.mediaCache,
         )
 
@@ -1118,6 +1118,7 @@ class StoryItem: NSObject {
 }
 
 extension StoryItem {
+
     // MARK: - Downloading
 
     @discardableResult

@@ -50,9 +50,17 @@ class CVAttachmentProgressView: ManualLayoutView {
         }
 
         /// Creates a configuration with fixed colors to be displayed on top of media thumbnail.
-        static func forMediaOverlay() -> ColorConfiguration {
-            ColorConfiguration(
-                foregroundColor: .Signal.label,
+        static func forMediaOverlay(forceDarkMode: Bool = false) -> ColorConfiguration {
+            // If `overrideUserInterfaceStyle` is set on a parent view,
+            // Lottie view would capture dynamic color's value before
+            // UIKit has a chance to to apply proper traits to the view.
+            // That results in invalid color used for the lottie progress view.
+            var foregroundColor = UIColor.Signal.label
+            if forceDarkMode {
+                foregroundColor = foregroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
+            }
+            return ColorConfiguration(
+                foregroundColor: foregroundColor,
                 backgroundStyle: .blur(.init(style: .systemThinMaterial)),
             )
         }
