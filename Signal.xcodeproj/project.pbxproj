@@ -401,7 +401,7 @@
 		348815CA255346A500D4F4C4 /* CVRenderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815C7255346A500D4F4C4 /* CVRenderItem.swift */; };
 		348815CC2554216A00D4F4C4 /* CVAudioPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815CB2554216900D4F4C4 /* CVAudioPlayback.swift */; };
 		348815CE25545B1000D4F4C4 /* CVComponentGenericAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815CD25545B0F00D4F4C4 /* CVComponentGenericAttachment.swift */; };
-		348815D025545C0A00D4F4C4 /* CVAttachments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815CF25545C0A00D4F4C4 /* CVAttachments.swift */; };
+		348815D025545C0A00D4F4C4 /* AudioAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815CF25545C0A00D4F4C4 /* AudioAttachment.swift */; };
 		34882C522694A9260013E289 /* ChatListViewController+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34882C512694A9260013E289 /* ChatListViewController+Notifications.swift */; };
 		3488F9362191CC4000E524CC /* CVMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488F9352191CC4000E524CC /* CVMediaView.swift */; };
 		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
@@ -4498,7 +4498,7 @@
 		348815C7255346A500D4F4C4 /* CVRenderItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVRenderItem.swift; sourceTree = "<group>"; };
 		348815CB2554216900D4F4C4 /* CVAudioPlayback.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVAudioPlayback.swift; sourceTree = "<group>"; };
 		348815CD25545B0F00D4F4C4 /* CVComponentGenericAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentGenericAttachment.swift; sourceTree = "<group>"; };
-		348815CF25545C0A00D4F4C4 /* CVAttachments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVAttachments.swift; sourceTree = "<group>"; };
+		348815CF25545C0A00D4F4C4 /* AudioAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioAttachment.swift; sourceTree = "<group>"; };
 		34882C512694A9260013E289 /* ChatListViewController+Notifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+Notifications.swift"; sourceTree = "<group>"; };
 		3488F9352191CC4000E524CC /* CVMediaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMediaView.swift; sourceTree = "<group>"; };
 		348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactShareViewHelper.swift; sourceTree = "<group>"; };
@@ -8804,6 +8804,7 @@
 				50E7E1D02BACC21900A94861 /* Loading */,
 				50E7E1D12BACC3DB00A94861 /* Reactions */,
 				503AECCB29B2B80800642F66 /* VoiceMessage */,
+				348815CF25545C0A00D4F4C4 /* AudioAttachment.swift */,
 				88594E592335B08000390B19 /* AudioMessagePresenter.swift */,
 				45A1684C2A1C308800C2432D /* AudioPresentation.swift */,
 				3491899A269CD68D008A18AF /* BlockingAnnouncementOnlyView.swift */,
@@ -8845,7 +8846,6 @@
 				34A4D88C267A363A00A794E7 /* ConversationViewController.swift */,
 				3498AC9E25190E8B00B1F315 /* ConversationViewLayout.swift */,
 				50EF8DCB2A189B3000A00935 /* ConversationViewModel.swift */,
-				348815CF25545C0A00D4F4C4 /* CVAttachments.swift */,
 				348815CB2554216900D4F4C4 /* CVAudioPlayback.swift */,
 				3420CF6C26327B1A00E7DCB0 /* CVBackgroundContainer.swift */,
 				347C3822252CE69400F3D941 /* CVCell.swift */,
@@ -14652,6 +14652,7 @@
 			isa = PBXGroup;
 			children = (
 				F94261FF289B1B5400460798 /* Account */,
+				D92EFDED2F69B9D00031D257 /* AttachmentBackfill */,
 				50ED28002F0EDAFB00E57C54 /* Attachments */,
 				F945FE4B298481D800C835C7 /* Calls */,
 				D985D86229B91C2B0087C90C /* ChangePhoneNumber */,
@@ -18054,6 +18055,7 @@
 				D954A5AE2D7BA9B200F61C36 /* AttachmentSharing.swift in Sources */,
 				66DA8DFA2C91125200799E70 /* AttachmentValidationBackfillRunner.swift in Sources */,
 				45B3680B2A1D75DF0067D05A /* AudioAllMediaPresenter.swift in Sources */,
+				348815D025545C0A00D4F4C4 /* AudioAttachment.swift in Sources */,
 				45D9784429F0B51F00BBB3C0 /* AudioCell.swift in Sources */,
 				668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */,
 				88594E5A2335B08000390B19 /* AudioMessagePresenter.swift in Sources */,
@@ -18266,7 +18268,6 @@
 				D9E43C242CC194140001536E /* CurrentCall.swift in Sources */,
 				34FCCA04264AEDFE00A63EDE /* CustomColorViewController.swift in Sources */,
 				3415217525B0CB31009F177F /* CVAttachmentProgressView.swift in Sources */,
-				348815D025545C0A00D4F4C4 /* CVAttachments.swift in Sources */,
 				348815CC2554216A00D4F4C4 /* CVAudioPlayback.swift in Sources */,
 				348815BA2552063F00D4F4C4 /* CVAvatarBuilder.swift in Sources */,
 				3420CF6D26327B1A00E7DCB0 /* CVBackgroundContainer.swift in Sources */,
@@ -20092,6 +20093,7 @@
 				F915A77229CB6F6F00EB6F68 /* AccountDataReportTest.swift in Sources */,
 				F908C67B29F08E4E00C3EFC4 /* AppExpiryTest.swift in Sources */,
 				66B1E2702CB48C53005F43AC /* Array+SSKTest.swift in Sources */,
+				D92EFDEF2F69B9D80031D257 /* AttachmentBackfillManagerTest.swift in Sources */,
 				669573082C1B9ECD0092B755 /* AttachmentDownloadQueueDBTests.swift in Sources */,
 				66BE13CC2C1D02700081A1ED /* AttachmentDownloadStoreTests.swift in Sources */,
 				664013302C00155E00F10FC4 /* AttachmentStoreTests.swift in Sources */,
