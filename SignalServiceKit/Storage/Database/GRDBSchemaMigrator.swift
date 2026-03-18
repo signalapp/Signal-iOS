@@ -321,6 +321,7 @@ public class GRDBSchemaMigrator {
         case addAdminDeleteTable
         case addRecipientStatesToAdminDelete
         case modifyCallLinkRootKeyConstraint
+        case addDevice
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5041,6 +5042,11 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.addDevice) { tx in
+            try addDevice(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -7599,6 +7605,22 @@ public class GRDBSchemaMigrator {
             table.column("aci", .blob).primaryKey().notNull()
             table.column("libsignalBlob", .blob).notNull()
         }
+    }
+
+    static func addDevice(tx: DBWriteTransaction) throws {
+        try tx.database.create(table: "Device") { table in
+            table.column("deviceId", .integer).primaryKey().notNull()
+            table.column("createdAt", .double).notNull()
+            table.column("lastSeenAt", .double).notNull()
+            table.column("name", .text)
+        }
+        try tx.database.execute(sql: """
+        DELETE FROM "OWSDevice" WHERE NOT ("deviceId" >= 1 AND "deviceId" <= 127)
+        """)
+        try tx.database.execute(sql: """
+        INSERT OR IGNORE INTO "Device" ("deviceId", "createdAt", "lastSeenAt", "name") SELECT "deviceId", unixepoch("createdAt", 'subsec'), unixepoch("lastSeenAt", 'subsec'), "name" FROM "OWSDevice"
+        """)
+        try tx.database.drop(table: "OWSDevice")
     }
 }
 

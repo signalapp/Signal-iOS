@@ -23,11 +23,7 @@ public protocol OWSDeviceService {
 
 extension OWSDeviceService {
     public func unlinkDevice(_ device: OWSDevice) async throws {
-        guard let deviceId = DeviceId(validating: device.deviceId) else {
-            // If it's not valid, the device can't exist on the server.
-            return
-        }
-        try await unlinkDevice(deviceId: deviceId)
+        try await unlinkDevice(deviceId: device.deviceId)
     }
 }
 
@@ -108,8 +104,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
             identityKeyPair: identityKeyPair,
         )
 
-        // TODO: This can't fail. Remove it once OWSDevice's deviceId is updated.
-        let deviceIds = devices.compactMap { DeviceId(validating: $0.deviceId) }
+        let deviceIds = devices.map(\.deviceId)
 
         let didAddOrRemove = await db.awaitableWrite { tx in
             let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)!
@@ -231,13 +226,8 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
         await db.awaitableWrite { tx in
             deviceStore.setName(newName, for: device, tx: tx)
 
-            guard let deviceId = UInt32(exactly: device.deviceId) else {
-                owsFailDebug("Failed to coerce device ID into UInt32!")
-                return
-            }
-
             deviceNameChangeSyncMessageSender.enqueueDeviceNameChangeSyncMessage(
-                forDeviceId: deviceId,
+                forDeviceId: device.deviceId.uint32Value,
                 tx: tx,
             )
         }

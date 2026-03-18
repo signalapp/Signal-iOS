@@ -7,7 +7,7 @@ import Foundation
 public import LibSignalClient
 
 extension DeviceId {
-    public static let primary: DeviceId = DeviceId(validating: OWSDevice.primaryDeviceId)!
+    public static let primary: DeviceId = DeviceId(validating: 1)!
 
     public var isPrimary: Bool { self == .primary }
 }

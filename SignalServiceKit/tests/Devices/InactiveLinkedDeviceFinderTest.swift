@@ -85,8 +85,8 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         mockTSAccountManager.registrationStateMock = { .registered }
         setMockDevices([
             .primary(),
-            .fixture(name: "eye pad", lastSeenAt: inactiveLastSeenAt),
-            .fixture(name: "lap top", lastSeenAt: activeLastSeenAt),
+            .fixture(name: "eye pad", deviceId: 2, lastSeenAt: inactiveLastSeenAt),
+            .fixture(name: "lap top", deviceId: 3, lastSeenAt: activeLastSeenAt),
         ])
         XCTAssertEqual(
             findLeastActive()?.displayName,
@@ -97,8 +97,8 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         mockTSAccountManager.registrationStateMock = { .registered }
         setMockDevices([
             .primary(),
-            .fixture(name: "🏖️", lastSeenAt: inactiveLastSeenAt.addingTimeInterval(-.second)),
-            .fixture(name: "🦩", lastSeenAt: inactiveLastSeenAt),
+            .fixture(name: "🏖️", deviceId: 4, lastSeenAt: inactiveLastSeenAt.addingTimeInterval(-.second)),
+            .fixture(name: "🦩", deviceId: 5, lastSeenAt: inactiveLastSeenAt),
         ])
         XCTAssertEqual(
             findLeastActive()?.displayName,
@@ -114,7 +114,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         mockTSAccountManager.registrationStateMock = { .provisioned }
         setMockDevices([
             .primary(),
-            .fixture(name: "eye pad", lastSeenAt: inactiveLastSeenAt),
+            .fixture(name: "eye pad", deviceId: 6, lastSeenAt: inactiveLastSeenAt),
         ])
         XCTAssertNil(findLeastActive())
     }
@@ -123,7 +123,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         mockTSAccountManager.registrationStateMock = { .registered }
         setMockDevices([
             .primary(),
-            .fixture(name: "a sedentary device", lastSeenAt: inactiveLastSeenAt),
+            .fixture(name: "a sedentary device", deviceId: 7, lastSeenAt: inactiveLastSeenAt),
         ])
 
         mockDB.write { inactiveLinkedDeviceFinder.permanentlyDisableFinders(tx: $0) }
@@ -158,10 +158,11 @@ private extension OWSDevice {
 
     static func fixture(
         name: String,
+        deviceId: Int8,
         lastSeenAt: Date,
     ) -> OWSDevice {
         return OWSDevice(
-            deviceId: DeviceId(validating: 24)!,
+            deviceId: DeviceId(validating: deviceId)!,
             createdAt: .distantPast,
             lastSeenAt: lastSeenAt,
             name: name,

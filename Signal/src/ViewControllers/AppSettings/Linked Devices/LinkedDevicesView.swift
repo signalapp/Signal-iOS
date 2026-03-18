@@ -119,17 +119,13 @@ class LinkedDevicesViewModel: ObservableObject {
     private func updateDeviceList() {
         var displayableDevices = db.read { transaction -> [DisplayableDevice] in
             return deviceStore.fetchAll(tx: transaction)
-                .filter { $0.isLinkedDevice }
+                .filter { !$0.deviceId.isPrimary }
                 .map { DisplayableDevice(device: $0) }
         }
 
         if let deviceIdToIgnore {
             displayableDevices.removeAll { device in
-                let shouldRemove = device.id == Int(deviceIdToIgnore.rawValue)
-                if shouldRemove {
-                    Logger.debug("Ignoring device \(device.id)")
-                }
-                return shouldRemove
+                return device.id == deviceIdToIgnore
             }
         }
 
@@ -212,7 +208,7 @@ class LinkedDevicesViewModel: ObservableObject {
     struct DisplayableDevice: Hashable, Identifiable {
         let device: OWSDevice
 
-        var id: Int { device.deviceId }
+        var id: DeviceId { device.deviceId }
         var displayName: String { device.displayName }
         var createdAt: Date { device.createdAt }
 

@@ -5,61 +5,30 @@
 
 import Foundation
 public import GRDB
-#if DEBUG
 public import LibSignalClient
-#else
-import LibSignalClient
-#endif
 
-public struct OWSDevice: Codable, FetchableRecord, PersistableRecord {
-    public static let primaryDeviceId: UInt32 = 1
+public struct OWSDevice: Codable, FetchableRecord, MutablePersistableRecord {
+    public static let databaseTableName: String = "Device"
+    public static let databaseDateEncodingStrategy: DatabaseDateEncodingStrategy = .timeIntervalSince1970
 
-    public static let databaseTableName: String = "OWSDevice"
-
-    public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
-        case sqliteRowId = "id"
+    public enum CodingKeys: String, CodingKey, ColumnExpression {
         case deviceId
         case name
         case createdAt
         case lastSeenAt
     }
 
-    public var sqliteRowId: Int64?
-    public let deviceId: Int
+    public let deviceId: DeviceId
     public let createdAt: Date
     public let lastSeenAt: Date
     public var name: String?
 
-    init(
-        deviceId: DeviceId,
-        createdAt: Date,
-        lastSeenAt: Date,
-        name: String?,
-    ) {
-        self.deviceId = Int(deviceId.rawValue)
-        self.createdAt = createdAt
-        self.lastSeenAt = lastSeenAt
-        self.name = name
-    }
-
-    public mutating func didInsert(with rowID: Int64, for column: String?) {
-        sqliteRowId = rowID
-    }
-
     // MARK: -
-
-    public var isPrimaryDevice: Bool {
-        deviceId == Self.primaryDeviceId
-    }
-
-    public var isLinkedDevice: Bool {
-        !isPrimaryDevice
-    }
 
     public var displayName: String {
         if let name {
             return name
-        } else if isPrimaryDevice {
+        } else if self.deviceId.isPrimary {
             return OWSLocalizedString(
                 "DEVICE_NAME_THIS_DEVICE",
                 comment: "A label for this device in the device list.",

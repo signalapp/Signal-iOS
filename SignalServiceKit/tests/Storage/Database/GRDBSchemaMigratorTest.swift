@@ -5,6 +5,7 @@
 
 import GRDB
 import LibSignalClient
+import Testing
 import XCTest
 
 @testable import SignalServiceKit
@@ -1448,6 +1449,57 @@ class GRDBSchemaMigratorTest: XCTestCase {
             try db.execute(sql: """
             INSERT INTO CallLink VALUES (3, X'030102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f', X'000102030405060708090a0b0c0d0e0f00010203040506', NULL, 0, 0, 0, 0, 'D', 0, FALSE, NULL);
             """)
+        }
+    }
+}
+
+struct GRDBSchemaMigratorTest2 {
+    @Test
+    func testAddDevice() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "OWSDevice" (
+                id INTEGER PRIMARY KEY,
+                deviceId INTEGER NOT NULL,
+                createdAt DOUBLE NOT NULL,
+                lastSeenAt DOUBLE NOT NULL,
+                name TEXT
+            );
+
+            INSERT INTO "OWSDevice" VALUES (7, 1, '2026-03-01 12:00:00.500', '2026-03-01 11:00:00.500', '');
+            INSERT INTO "OWSDevice" VALUES (2, 3, '2026-03-03 12:00:00.500', '2026-03-03 11:00:00.500', '');
+            INSERT INTO "OWSDevice" VALUES (3, 2, '2026-03-02 12:00:00.500', '2026-03-02 11:00:00.500', '');
+            INSERT INTO "OWSDevice" VALUES (8, 6, '2026-03-06 12:00:00.500', '2026-03-06 11:00:00.500', '');
+            INSERT INTO "OWSDevice" VALUES (9, 6, '2026-03-06 12:30:00.500', '2026-03-06 11:30:00.500', '');
+            INSERT INTO "OWSDevice" VALUES (4, 0, '2026-03-09 13:00:00.500', '2026-03-09 11:00:00.500', '');
+            INSERT INTO "OWSDevice" VALUES (5, 128, '2026-03-09 13:00:00.500', '2026-03-09 11:00:00.500', '');
+            """)
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.addDevice(tx: tx)
+            }
+
+            let devices = try Row.fetchAll(db, sql: "SELECT * FROM Device ORDER BY deviceId")
+            try #require(devices.count == 4)
+
+            #expect(devices[0]["deviceId"] as Int64 == 1)
+            #expect(devices[0]["createdAt"] as Double == 1772366400.5)
+            #expect(devices[0]["lastSeenAt"] as Double == 1772362800.5)
+
+            #expect(devices[1]["deviceId"] as Int64 == 2)
+            #expect(devices[1]["createdAt"] as Double == 1772452800.5)
+            #expect(devices[1]["lastSeenAt"] as Double == 1772449200.5)
+
+            #expect(devices[2]["deviceId"] as Int64 == 3)
+            #expect(devices[2]["createdAt"] as Double == 1772539200.5)
+            #expect(devices[2]["lastSeenAt"] as Double == 1772535600.5)
+
+            #expect(devices[3]["deviceId"] as Int64 == 6)
+            #expect(devices[3]["createdAt"] as Double == 1772798400.5)
+            #expect(devices[3]["lastSeenAt"] as Double == 1772794800.5)
         }
     }
 }
