@@ -65,38 +65,15 @@ class GroupCallVideoGrid: UICollectionView, UICollectionViewDelegate, UICollecti
             return nil
         }
 
-        let contactDisplayName: DisplayName = db.read { tx in
-            return contactManager.displayName(
-                for: SignalServiceAddress(remoteDevice.aci),
-                tx: tx,
-            )
-        }
-        let actions = GroupCallContextMenuActionsBuilder.build(
-            demuxId: remoteDevice.demuxId,
-            contactAci: remoteDevice.aci,
-            isAudioMuted: remoteDevice.audioMuted == true,
-            ringRtcGroupCall: ringRtcCall,
-        )
-
-        return UIContextMenuConfiguration(
-            previewProvider: { [weak self] in
-                guard let self else { return nil }
-
-                // The cell itself is unreliable as a preview. Reuse, add/remove
-                // actions, etc. make it so a given cell might wrap video views
-                // for different members as the call goes on, especially if the
-                // call has events like joins/leaves/mutes/unmutes.
-                //
-                // Instead, use a dedicated "call member" preview.
-                return GroupCallVideoGridContextMenuPreviewController(
-                    demuxId: remoteDevice.demuxId,
-                    call: call,
-                    groupCall: groupCall,
-                    videoGrid: self,
-                )
-            },
-            actionProvider: { _ in
-                UIMenu(title: contactDisplayName.resolvedValue(), children: actions)
+        return GroupCallVideoContextMenuConfiguration.build(
+            call: call,
+            groupCall: groupCall,
+            ringRtcCall: ringRtcCall,
+            remoteDevice: remoteDevice,
+            interactionProvider: { [weak self] in
+                return self?.interactions
+                    .compactMap({ $0 as? UIContextMenuInteraction })
+                    .first
             },
         )
     }
@@ -212,93 +189,6 @@ private class GroupCallVideoGridCell: UICollectionViewCell {
 
     func setMemberViewErrorPresenter(_ errorPresenter: CallMemberErrorPresenter?) {
         memberView.errorPresenter = errorPresenter
-    }
-}
-
-// MARK: -
-
-/// Wraps a `CallMemberView` for the purposes of a context-menu preview.
-private class GroupCallVideoGridContextMenuPreviewController: UIViewController, GroupCallObserver {
-    private let demuxId: DemuxId
-
-    private weak var call: SignalCall?
-    private weak var groupCall: GroupCall?
-    private weak var videoGrid: GroupCallVideoGrid?
-
-    private lazy var callMemberView = CallMemberView(type: .remoteInGroup(.contextMenuPreview))
-
-    init(
-        demuxId: DemuxId,
-        call: SignalCall,
-        groupCall: GroupCall,
-        videoGrid: GroupCallVideoGrid,
-    ) {
-        self.demuxId = demuxId
-        self.call = call
-        self.groupCall = groupCall
-        self.videoGrid = videoGrid
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) { owsFail("") }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        callMemberView.applyChangesToCallMemberViewAndVideoView { _view in
-            view.addSubview(_view)
-            _view.autoPinEdgesToSuperviewEdges()
-        }
-
-        reconfigureCallMemberView()
-        groupCall?.addObserver(self)
-    }
-
-    // MARK: - GroupCallObserver
-
-    func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
-        reconfigureCallMemberView()
-    }
-
-    func groupCallPeekChanged(_ call: GroupCall) {
-        reconfigureCallMemberView()
-    }
-
-    func groupCallEnded(_ call: GroupCall, reason: CallEndReason) {
-        reconfigureCallMemberView()
-    }
-
-    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {
-        reconfigureCallMemberView()
-    }
-
-    private func reconfigureCallMemberView() {
-        guard
-            let call,
-            let groupCall,
-            let remoteDevice = groupCall.ringRtcCall.remoteDeviceStates[demuxId]
-        else {
-            return
-        }
-
-        callMemberView.configure(call: call, remoteGroupMemberDeviceState: remoteDevice)
-
-        if
-            let contextMenuInteraction = videoGrid?.interactions
-                .compactMap({ $0 as? UIContextMenuInteraction })
-                .first
-        {
-            let actions = GroupCallContextMenuActionsBuilder.build(
-                demuxId: remoteDevice.demuxId,
-                contactAci: remoteDevice.aci,
-                isAudioMuted: remoteDevice.audioMuted == true,
-                ringRtcGroupCall: groupCall.ringRtcCall,
-            )
-
-            contextMenuInteraction.updateVisibleMenu { menu in
-                return menu.replacingChildren(actions)
-            }
-        }
     }
 }
 

@@ -2737,6 +2737,7 @@
 		D94441312D55956B005B2A54 /* UUIDv7.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94441302D559567005B2A54 /* UUIDv7.swift */; };
 		D94441332D559C6F005B2A54 /* UUIDv7Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94441322D559C6B005B2A54 /* UUIDv7Test.swift */; };
 		D945319E2CE53CEB004DAB30 /* SubscriptionRedemptionNecessityChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */; };
+		D94852272F6A224000B130B2 /* GroupCallVideoContextMenuConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94852262F6A223500B130B2 /* GroupCallVideoContextMenuConfiguration.swift */; };
 		D9495A6D2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */; };
 		D9495A702C76965600843BC1 /* TSOutgoingMessageRecipientStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */; };
 		D949C4052DF3A597007E095C /* BackupConfirmKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D949C4042DF3A588007E095C /* BackupConfirmKeyViewController.swift */; };
@@ -7010,6 +7011,7 @@
 		D94441302D559567005B2A54 /* UUIDv7.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDv7.swift; sourceTree = "<group>"; };
 		D94441322D559C6B005B2A54 /* UUIDv7Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDv7Test.swift; sourceTree = "<group>"; };
 		D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionRedemptionNecessityChecker.swift; sourceTree = "<group>"; };
+		D94852262F6A223500B130B2 /* GroupCallVideoContextMenuConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoContextMenuConfiguration.swift; sourceTree = "<group>"; };
 		D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientState.swift; sourceTree = "<group>"; };
 		D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientStateTest.swift; sourceTree = "<group>"; };
 		D949C4042DF3A588007E095C /* BackupConfirmKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupConfirmKeyViewController.swift; sourceTree = "<group>"; };
@@ -14039,6 +14041,7 @@
 				D9E43BAE2CC194140001536E /* GroupCallErrorView.swift */,
 				D9E43BAF2CC194140001536E /* GroupCallNotificationView.swift */,
 				D9E43BB02CC194140001536E /* GroupCallSwipeToastView.swift */,
+				D94852262F6A223500B130B2 /* GroupCallVideoContextMenuConfiguration.swift */,
 				D9E43BB22CC194140001536E /* GroupCallVideoGrid.swift */,
 				D9E43BB32CC194140001536E /* GroupCallVideoGridLayout.swift */,
 				D9E43BB42CC194140001536E /* GroupCallVideoOverflow.swift */,
@@ -18433,6 +18436,7 @@
 				D9E43C272CC194140001536E /* GroupCallRecordRingingCleanupManager.swift in Sources */,
 				D9E43C282CC194140001536E /* GroupCallRemoteVideoManager.swift in Sources */,
 				D9E43BFF2CC194140001536E /* GroupCallSwipeToastView.swift in Sources */,
+				D94852272F6A224000B130B2 /* GroupCallVideoContextMenuConfiguration.swift in Sources */,
 				D9E43C012CC194140001536E /* GroupCallVideoGrid.swift in Sources */,
 				D9E43C022CC194140001536E /* GroupCallVideoGridLayout.swift in Sources */,
 				D9E43C032CC194140001536E /* GroupCallVideoOverflow.swift in Sources */,

@@ -11,7 +11,7 @@ protocol GroupCallVideoOverflowDelegate: AnyObject {
     func updateVideoOverflowTrailingConstraint()
 }
 
-class GroupCallVideoOverflow: UICollectionView {
+class GroupCallVideoOverflow: UICollectionView, UICollectionViewDataSource, UICollectionViewDelegate, GroupCallObserver {
     weak var memberViewErrorPresenter: CallMemberErrorPresenter?
     weak var overflowDelegate: GroupCallVideoOverflowDelegate?
 
@@ -141,9 +141,9 @@ class GroupCallVideoOverflow: UICollectionView {
             super.reloadData()
         }
     }
-}
 
-extension GroupCallVideoOverflow: UICollectionViewDelegate {
+    // MARK: - UICollectionViewDelegate
+
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? GroupCallVideoOverflowCell else { return }
         cell.cleanupVideoViews()
@@ -167,9 +167,35 @@ extension GroupCallVideoOverflow: UICollectionViewDelegate {
             cell.transform = .identity
         }
     }
-}
 
-extension GroupCallVideoOverflow: UICollectionViewDataSource {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
+        point: CGPoint,
+    ) -> UIContextMenuConfiguration? {
+        guard
+            indexPaths.count == 1,
+            let indexPath = indexPaths.first,
+            let remoteDevice = overflowedRemoteDeviceStates[safe: indexPath.row]
+        else {
+            return nil
+        }
+
+        return GroupCallVideoContextMenuConfiguration.build(
+            call: call,
+            groupCall: groupCall,
+            ringRtcCall: ringRtcCall,
+            remoteDevice: remoteDevice,
+            interactionProvider: { [weak self] in
+                return self?.interactions
+                    .compactMap({ $0 as? UIContextMenuInteraction })
+                    .first
+            },
+        )
+    }
+
+    // MARK: - UICollectionViewDataSource
+
     var hasOverflowMembers: Bool { overflowRemoteDeviceCount != 0 }
 
     private var overflowRemoteDeviceCount: Int {
@@ -208,9 +234,9 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
         cell.configure(call: call, device: remoteDevice)
         return cell
     }
-}
 
-extension GroupCallVideoOverflow: GroupCallObserver {
+    // MARK: - GroupCallObserver
+
     func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
 
