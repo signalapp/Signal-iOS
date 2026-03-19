@@ -593,7 +593,7 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "복구 키를 확인하세요";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_BULLET_1" = "엔드투엔드 암호화";
+"BACKUP_ONBOARDING_INTRO_BULLET_1" = "종단간 암호화";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_BULLET_2" = "필수가 아닌 선택 사항";
@@ -605,7 +605,7 @@
 "BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "설정에서 백업을 활성화할 수 있습니다.";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Signal의 안전한 엔드투엔드 암호화 저장소 서비스를 사용하여 메시지와 미디어를 백업하세요. 새 휴대폰을 구매하거나 Signal을 다시 설치하는 경우에도 메시지를 손실할 염려가 없습니다.";
+"BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Signal의 안전한 종단간 암호화 저장소 서비스를 사용하여 메시지와 미디어를 백업하세요. 새 휴대폰을 구매하거나 Signal을 다시 설치하는 경우에도 메시지를 손실할 염려가 없습니다.";
 
 /* Title for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Signal 안전 백업";
@@ -1322,7 +1322,7 @@
 "CALL_LINK_DELETE_FAILED" = "통화 링크를 삭제할 수 없습니다.";
 
 /* Text shown in a confirmation popup asking the user if they want to delete a call link. */
-"CALL_LINK_DELETE_MESSAGE" = "이 링크는 더 이상 사용할 수 없게 됩니다.";
+"CALL_LINK_DELETE_MESSAGE" = "더 이상 이 링크는 누구도 사용할 수 없습니다.";
 
 /* Title shown in a confirmation popup asking the user if they want to delete a call link. */
 "CALL_LINK_DELETE_TITLE" = "링크를 삭제할까요?";
@@ -1934,7 +1934,7 @@
 "CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT" = "월 %1$@로 구독";
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
-"CHOOSE_BACKUP_PLAN_SUBTITLE" = "백업은 엔드투엔드로 암호화됩니다. Signal은 비영리 단체로, 백업을 유료로 이용하시면 Signal 운영에 큰 도움이 됩니다.";
+"CHOOSE_BACKUP_PLAN_SUBTITLE" = "백업은 종단간 암호화됩니다. Signal은 비영리 단체로, 백업을 유료로 이용하시면 Signal 운영에 큰 도움이 됩니다.";
 
 /* Title for a label allowing users to view Signal's Terms & Conditions. */
 "CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "이용약관 및 개인정보 처리방침";
@@ -2156,7 +2156,7 @@
 "CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "애플리케이션 피드백";
 
 /* The localized representation of the 'other' support filter. */
-"CONTACT_SUPPORT_FILTER_OTHER" = "다른 색상";
+"CONTACT_SUPPORT_FILTER_OTHER" = "기타 문의";
 
 /* A brief localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "기타";
@@ -2171,13 +2171,13 @@
 "CONTACT_SUPPORT_FILTER_PROMPT" = "무엇을 도와드릴까요?";
 
 /* The localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION" = "질문이 있습니다.";
+"CONTACT_SUPPORT_FILTER_QUESTION" = "질문이 있어요.";
 
 /* A brief localized representation of the 'question' support filter. */
 "CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "질문";
 
 /* The localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "작동하지 않음";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "제대로 작동하지 않아요.";
 
 /* A brief localized representation of the 'something not working' support filter. */
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "작동하지 않음";
@@ -2390,7 +2390,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "알림을 끈 경우 받지 않습니다";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "알림을 끈 대화에서 멘션될 경우 알림을 받아보시겠어요?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "알림을 비활성화한 대화에서 멘션될 경우 알림을 받아보시겠어요?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "멘션";
@@ -2840,7 +2840,7 @@
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "최신 Signal 버전으로 업데이트한 후 다시 시도해 주세요.";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "두 기기를 서로 가까이 두고 Signal을 계속 열어 두세요. 모든 과정은 엔드투엔드 암호화로 안전하게 보호됩니다.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "두 기기를 서로 가까이 두고 Signal을 계속 열어 두세요. 모든 과정은 종단간 암호화로 안전하게 보호됩니다.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "데이터 수신 중";
@@ -2867,7 +2867,7 @@
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING" = "이전 중";
 
 /* Description in the progress view displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING_DESCRIPTION" = "두 기기를 서로 가까이 두고 Signal을 계속 열어 두세요. 모든 과정은 엔드투엔드 암호화로 안전하게 보호됩니다.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING_DESCRIPTION" = "두 기기를 서로 가까이 두고 Signal을 계속 열어 두세요. 모든 과정은 종단간 암호화로 안전하게 보호됩니다.";
 
 /* Status message on old device when cancelling transfer. */
 "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CANCELLING" = "새 iPhone에 대한 연결을 취소하는 중…";
@@ -3371,7 +3371,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "안녕하세요.\n\n최근 iPhone에서 나누는 대화를 안전하게 보호하기 위해 Signal을 사용하고 있습니다. 저희가 나누는 대화와 통화를 안전하게 보호할 수 있도록 Signal을 설치해 주실 수 있을까요?\n\nSignal은 iPhone과 Android, 데스크톱에서 이용할 수 있습니다. %1$@에서 다운로드하실 수 있어요.\n\nSignal은 기존의 메시지 앱과 동일한 방식으로 작동합니다. 사진과 동영상을 보내고, 통화하고, 그룹 대화를 나눌 수도 있죠. 무엇보다 중요한 점은 Signal을 만든 사람조차 우리가 나누는 대화를 볼 수 없다는 거예요.\n\n%2$@에서 Signal에 관해 자세히 알아보세요.";
+"EMAIL_INVITE_BODY" = "안녕하세요.\n\n요즘 iPhone에서 나누는 대화를 안전하게 보호하기 위해 Signal을 사용하고 있습니다. 저희가 나누는 대화와 통화를 안전하게 보호할 수 있도록 Signal을 설치해 주실 수 있을까요?\n\nSignal은 iPhone과 Android, 데스크톱에서 이용할 수 있습니다. %1$@에서 다운로드하실 수 있어요.\n\nSignal은 기존의 메시지 앱과 동일한 방식으로 작동합니다. 사진과 동영상을 보내고, 통화하고, 그룹 대화를 나눌 수도 있죠. 무엇보다 중요한 점은 Signal을 만든 사람조차 우리가 나누는 대화를 볼 수 없다는 거예요.\n\n%2$@에서 Signal에 관해 자세히 알아보세요.";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal로 옮깁시다";
@@ -4970,7 +4970,7 @@
 "LINKED_DEVICES_HEADER_DESCRIPTION" = "데스크톱 또는 iPad에서 Signal을 이용하세요.";
 
 /* Footer text below the list of currently-linked devices */
-"LINKED_DEVICES_LIST_FOOTER" = "메시지와 대화 정보는 모든 장치에서 엔드투엔드 암호화로 보호됩니다";
+"LINKED_DEVICES_LIST_FOOTER" = "메시지와 대화 정보는 모든 장치에서 종단간 암호화로 보호됩니다";
 
 /* Title above the list of currently-linked devices */
 "LINKED_DEVICES_LIST_TITLE" = "연결된 기기";
@@ -4997,7 +4997,7 @@
 "LINKING_SYNCING_FINALIZING" = "메시지 이전 완료 중...";
 
 /* Footer text when loading messages during linking process. */
-"LINKING_SYNCING_FOOTER" = "동기화 프로세스를 비롯하여 메시지와 대화 정보는 엔드투엔드 암호화로 보호됩니다.";
+"LINKING_SYNCING_FOOTER" = "동기화 프로세스를 비롯하여 메시지와 대화 정보는 종단간 암호화로 보호됩니다.";
 
 /* Title shown when loading messages during linking process */
 "LINKING_SYNCING_MESSAGES_TITLE" = "메시지를 동기화하는 중";
@@ -5753,7 +5753,7 @@
 "NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "별칭을 삭제할까요?";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "별칭과 메모는 Signal에 엔드투엔드 암호화되어 저장되며, 나에게만 표시됩니다.";
+"NICKNAME_EDITOR_DESCRIPTION" = "별칭과 메모는 Signal에 종단간 암호화되어 저장되며, 나에게만 표시됩니다.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
 "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "성";
@@ -5846,7 +5846,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "맞춤 알림음 추가하기";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "이름, 내용 또는 조치";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "이름, 내용 및 조치";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "이름만";
@@ -6179,7 +6179,7 @@
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION" = "계정 이전";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "메시지와 대화 정보는 모든 장치에서 엔드투엔드 암호화로 보호됩니다";
+"OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER" = "메시지와 대화 정보는 모든 장치에서 종단간 암호화로 보호됩니다";
 
 /* Title text describing the outgoing transfer. */
 "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE" = "계정 이전";
@@ -7088,7 +7088,7 @@
 "PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "모르는 사람과 개인 정보를 공유하지 마세요";
 
 /* Header for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "Signal의 <bold>프로필 이름</bold>은 해당 계정 보유자가 선택합니다.";
+"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "Signal의 <bold>프로필 이름</bold>은 해당 계정의 보유자가 선택합니다.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "사용자의 이름";
@@ -7775,7 +7775,7 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "이제 키 암호화를 자동으로 인증할 수 있어요";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal이 더 이상 이 채팅에 자동으로 암호화를 인증할 수 없습니다. 이 문제는 %1$@ 님이 전화번호를 변경하여 발생했을 수 있습니다. 이전 화면의 숫자를 대조하거나, 해당 사용자의 기기로 코드를 스캔하여 엔드투엔드 암호화를 수동으로 인증해 주세요.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal이 더 이상 이 채팅에 자동으로 암호화를 인증할 수 없습니다. 이 문제는 %1$@ 님이 전화번호를 변경하여 발생했을 수 있습니다. 이전 화면의 숫자를 대조하거나, 해당 사용자의 기기로 코드를 스캔하여 종단간 암호화를 수동으로 인증해 주세요.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "이 채팅에 더 이상 자동 인증을 사용할 수 없습니다";
@@ -7787,13 +7787,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_HEADER" = "자동 키 인증";
 
 /* Body for a sheet explaining that encryption auto-verification is not available. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_BODY" = "Signal은 상대방과 전화번호를 통해 연결한 채팅에서만 자동으로 암호화를 인증할 수 있습니다. 사용자 이름이나 공통으로 속한 그룹을 통해 채팅을 시작한 경우, 이전 화면의 숫자를 대조하거나 해당 사용자의 기기로 코드를 스캔하여 엔드투엔드 암호화를 인증해 주세요.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_BODY" = "Signal은 상대방과 전화번호를 통해 연결한 채팅에서만 자동으로 암호화를 인증할 수 있습니다. 사용자 이름이나 공통으로 속한 그룹을 통해 채팅을 시작한 경우, 이전 화면의 숫자를 대조하거나 해당 사용자의 기기로 코드를 스캔하여 종단간 암호화를 인증해 주세요.";
 
 /* Title for a sheet explaining that encryption auto-verification is not available. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_TITLE" = "이 채팅에 자동 인증을 사용할 수 없습니다";
 
 /* Body for a sheet explaining that encryption auto-verification succeeded. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "전화번호를 통해 연결된 연락처의 경우, Signal은 키 투명성이라는 프로세스를 사용하여 연결이 안전한지 자동으로 확인할 수 있습니다. 보안을 강화하려면 이전 화면의 숫자를 대조하거나, 해당 사용자의 기기로 코드를 스캔하여 엔드투엔드 암호화를 수동으로 확인하세요.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "전화번호를 통해 연결된 연락처의 경우, Signal은 키 투명성이라는 프로세스를 사용하여 연결이 안전한지 자동으로 확인할 수 있습니다. 보안을 강화하려면 이전 화면의 숫자를 대조하거나, 해당 사용자의 기기로 코드를 스캔하여 종단간 암호화를 수동으로 확인하세요.";
 
 /* Title for a sheet explaining that encryption auto-verification succeeded. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_TITLE" = "이 채팅에 대한 암호화가 자동 인증되었습니다";
@@ -7814,7 +7814,7 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "가짜 비즈니스 또는 기관";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal은 절대 사용자의 등록 코드나 PIN을 요청하지 않습니다. 사칭 계정에 유의하세요. 프로필 이름은 해당 계정 보유자가 선택하며, 프로필 이름이 확인되지 않았습니다.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal은 절대 사용자의 등록 코드나 PIN을 요청하지 않습니다. 사칭 계정에 유의하세요. 프로필 이름은 해당 계정의 보유자가 선택하며, 프로필 이름은 검증되지 않았습니다.";
 
 /* Message title describing the fake names safety tip. */
 "SAFETY_TIPS_FAKE_NAMES_TITLE" = "가짜 이름과 계정";
@@ -8063,7 +8063,7 @@
 "SEPA_DONATION_NAME_PLACEHOLDER" = "계좌 소유자 이름";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal은 엔드투엔드 암호화를 사용하므로 때때로 대화 세션을 새로 고쳐야 할 수 있습니다. 이 작업은 대화 보안에 영향을 미치지 않으나, 이로 인해 해당 연락처가 보낸 메시지를 놓쳤을 수 있습니다. 메시지를 다시 보내달라고 요청하세요.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal은 종단간 암호화를 사용하므로 때때로 대화 세션을 새로 고쳐야 할 수 있습니다. 이 작업은 대화 보안에 영향을 미치지 않으나, 이로 인해 해당 연락처가 보낸 메시지를 놓쳤을 수 있습니다. 메시지를 다시 보내달라고 요청하세요.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "대화 세션을 새로 고침";
@@ -8159,7 +8159,7 @@
 "SETTINGS_APPEARANCE_THEME_TITLE" = "테마";
 
 /* The title for the appearance settings. */
-"SETTINGS_APPEARANCE_TITLE" = "모양";
+"SETTINGS_APPEARANCE_TITLE" = "테마";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@(기본)";
@@ -8168,7 +8168,7 @@
 "SETTINGS_BACKUPS" = "백업";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "차단한 사용자 추가";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "사용자 차단하기";
 
 /* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal에 연락처가 없습니다.";
@@ -8177,7 +8177,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "검색 결과 없음";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "차단함";
+"SETTINGS_BLOCK_LIST_TITLE" = "차단 목록";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "통화 시 항상 서버 경유";
@@ -8315,7 +8315,7 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "알림을 끈 상태로 보관한 대화는 새 메시지가 도착해도 보관 상태로 유지됩니다.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "알림을 끈 대화 보관 유지";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "알림을 비활성화한 대화 보관 상태로 유지";
 
 /* Footer for settings section describing Key Transparency. */
 "SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER" = "이 기능을 활성화하면 Signal이 1:1 대화의 암호화를 자동으로 인증하려고 시도합니다.";
@@ -8360,7 +8360,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "설정";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "알림을 끈 대화 포함";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "알림을 비활성화한 대화 포함";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "앱 아이콘 배지";
@@ -8882,7 +8882,7 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "전화번호로 나를 찾을 수 있는 사람";
 
 /* Description label for Phone Number Privacy */
-"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "내 전화번호를 볼 수 있고, Signal에서 내 전화번호로 나한테 연락할 수 있는 사람을 선택하세요.";
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Signal에서 내 전화번호를 볼 수 있고, 내 전화번호로 나한테 연락할 수 있는 사람을 선택하세요.";
 
 /* The title for phone number privacy settings. */
 "SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "전화번호";
@@ -8903,7 +8903,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN 리마인더";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN을 사용하면 Signal에 저장된 정보를 암호화하여 사용자만 액세스할 수 있습니다. PIN은 복구할 수 없습니다. Signal을 다시 설치하면 프로필, 설정 및 연락처가 복원됩니다.";
+"SETTINGS_PINS_FOOTER" = "PIN을 사용하면 저장된 정보를 암호화하여 사용자만 Signal에 액세스할 수 있습니다. PIN은 복구할 수 없습니다. Signal을 다시 설치하면 프로필, 설정 및 연락처가 복원됩니다.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "PIN 변경";
@@ -8975,7 +8975,7 @@
 "SETTINGS_SCREEN_SECURITY" = "앱 전환기에서 화면 숨기기";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "iOS 전화 앱의 '최근' 목록에 통화를 표시합니다.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "iOS 전화 앱의 '통화' 목록에 통화를 표시합니다.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "소리";
@@ -9485,7 +9485,7 @@
 "SUPPORT_EMAIL_SUBJECT" = "Signal iOS 지원 요청";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "기분이 어떠세요? (선택)";
+"SUPPORT_EMOJI_PROMPT" = "기분을 선택해 주세요. (선택)";
 
 /* Label in support request informing user about Signal FAQ */
 "SUPPORT_FAQ_PROMPT" = "자주 묻는 질문 목록을 읽어보세요";
@@ -9983,7 +9983,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "안전 번호 검토";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "%1$@ 님과의 엔드투엔드 암호화를 검증하려면 상기 번호를 상대방 기기의 번호와 비교하세요. 상대방의 기기로 코드를 스캔할 수도 있습니다.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "%1$@ 님과의 종단간 암호화를 검증하려면 상기 번호를 상대방 기기의 번호와 비교하세요. 상대방의 기기로 코드를 스캔할 수도 있습니다.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "이 동영상을 재생할 수 없습니다.";
