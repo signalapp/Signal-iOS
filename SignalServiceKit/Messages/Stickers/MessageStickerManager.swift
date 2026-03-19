@@ -48,16 +48,13 @@ public protocol MessageStickerManager {
 
 class MessageStickerManagerImpl: MessageStickerManager {
 
-    private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
     private let attachmentValidator: AttachmentContentValidator
 
     init(
-        attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
     ) {
-        self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.attachmentValidator = attachmentValidator
     }
@@ -131,7 +128,7 @@ class MessageStickerManagerImpl: MessageStickerManager {
 
         guard
             let parentMessageRowId = parentMessage.sqliteRowId,
-            let attachment = attachmentStore.fetchAnyReferencedAttachment(
+            let referencedAttachment = attachmentStore.fetchAnyReferencedAttachment(
                 for: .messageSticker(messageRowId: parentMessageRowId),
                 tx: tx,
             )
@@ -139,18 +136,9 @@ class MessageStickerManagerImpl: MessageStickerManager {
             throw OWSAssertionError("Could not find sticker attachment")
         }
 
-        guard
-            let attachmentPointer = attachment.attachment.asTransitTierPointer(),
-            case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = attachmentPointer.info.integrityCheck
-        else {
-            throw OWSAssertionError("Generating proto for non-uploaded attachment!")
+        guard let attachmentProto = referencedAttachment.asProtoForSending() else {
+            throw OWSAssertionError("Failed to make proto for sending from attachment!")
         }
-
-        let attachmentProto = attachmentManager.buildProtoForSending(
-            from: attachment.reference,
-            pointer: attachmentPointer,
-            digestSHA256Ciphertext: digestSHA256Ciphertext,
-        )
 
         let protoBuilder = SSKProtoDataMessageSticker.builder(
             packID: messageSticker.packId,

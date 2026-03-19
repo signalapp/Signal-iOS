@@ -349,13 +349,13 @@ public struct AttachmentStore {
             return nil
         }
 
-        let reference = self.fetchAnyReference(
-            owner: .quotedReplyAttachment(messageRowId: messageRowId),
+        let referencedAttachment = self.fetchAnyReferencedAttachment(
+            for: .quotedReplyAttachment(messageRowId: messageRowId),
             tx: tx,
         )
 
-        if let reference {
-            return .thumbnail(reference)
+        if let referencedAttachment {
+            return .thumbnail(referencedAttachment)
         } else if
             info.originalAttachmentMimeType != nil
             || info.originalAttachmentSourceFilename != nil

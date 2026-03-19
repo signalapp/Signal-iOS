@@ -169,23 +169,17 @@ public class OutgoingStoryMessage: TransientOutgoingMessage {
         case .media:
             guard
                 let storyMessageRowId = storyMessage.id,
-                let attachment = DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
+                let referencedAttachment = DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
                     for: .storyMessageMedia(storyMessageRowId: storyMessageRowId),
                     tx: transaction,
                 ),
-                let pointer = attachment.attachment.asTransitTierPointer(),
-                case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = pointer.info.integrityCheck
+                let attachmentProto = referencedAttachment.asProtoForSending()
             else {
-                owsFailDebug("Missing attachment for outgoing story message")
+                owsFailDebug("Missing attachment, or failed to make attachment proto, for outgoing story message")
                 return nil
             }
-            let attachmentProto = DependenciesBridge.shared.attachmentManager.buildProtoForSending(
-                from: attachment.reference,
-                pointer: pointer,
-                digestSHA256Ciphertext: digestSHA256Ciphertext,
-            )
             builder.setFileAttachment(attachmentProto)
-            if let storyMediaCaption = attachment.reference.storyMediaCaption {
+            if let storyMediaCaption = referencedAttachment.reference.storyMediaCaption {
                 builder.setBodyRanges(storyMediaCaption.toProtoBodyRanges())
             }
         case .text(let attachment):

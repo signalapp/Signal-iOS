@@ -56,20 +56,17 @@ public protocol LinkPreviewManager {
 // MARK: -
 
 class LinkPreviewManagerImpl: LinkPreviewManager {
-    private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
     private let attachmentValidator: AttachmentContentValidator
     private let db: any DB
     private let linkPreviewSettingStore: LinkPreviewSettingStore
 
     init(
-        attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
         db: any DB,
         linkPreviewSettingStore: LinkPreviewSettingStore,
     ) {
-        self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.attachmentValidator = attachmentValidator
         self.db = db
@@ -173,15 +170,16 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
         parentMessage: TSMessage,
         tx: DBReadTransaction,
     ) throws -> SSKProtoPreview {
-        let attachmentRef = parentMessage.sqliteRowId.map { rowId in
-            return attachmentStore.fetchAnyReference(
-                owner: .messageLinkPreview(messageRowId: rowId),
+        let linkPreviewReferencedAttachment = parentMessage.sqliteRowId.flatMap { id in
+            return attachmentStore.fetchAnyReferencedAttachment(
+                for: .messageLinkPreview(messageRowId: id),
                 tx: tx,
             )
-        } ?? nil
+        }
+
         return try buildProtoForSending(
-            linkPreview,
-            previewAttachmentRef: attachmentRef,
+            linkPreview: linkPreview,
+            linkPreviewReferencedAttachment: linkPreviewReferencedAttachment,
             tx: tx,
         )
     }
@@ -191,15 +189,16 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
         parentStoryMessage: StoryMessage,
         tx: DBReadTransaction,
     ) throws -> SSKProtoPreview {
-        let attachmentRef = parentStoryMessage.id.map { rowId in
-            return attachmentStore.fetchAnyReference(
-                owner: .storyMessageLinkPreview(storyMessageRowId: rowId),
+        let linkPreviewReferencedAttachment = parentStoryMessage.id.flatMap { id in
+            return attachmentStore.fetchAnyReferencedAttachment(
+                for: .storyMessageLinkPreview(storyMessageRowId: id),
                 tx: tx,
             )
-        } ?? nil
+        }
+
         return try buildProtoForSending(
-            linkPreview,
-            previewAttachmentRef: attachmentRef,
+            linkPreview: linkPreview,
+            linkPreviewReferencedAttachment: linkPreviewReferencedAttachment,
             tx: tx,
         )
     }
@@ -251,8 +250,8 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
     // MARK: - Private, generating outgoing proto
 
     private func buildProtoForSending(
-        _ linkPreview: OWSLinkPreview,
-        previewAttachmentRef: AttachmentReference?,
+        linkPreview: OWSLinkPreview,
+        linkPreviewReferencedAttachment: ReferencedAttachment?,
         tx: DBReadTransaction,
     ) throws -> SSKProtoPreview {
         guard let urlString = linkPreview.urlString else {
@@ -271,16 +270,9 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
         }
 
         if
-            let previewAttachmentRef,
-            let attachment = attachmentStore.fetch(id: previewAttachmentRef.attachmentRowId, tx: tx),
-            let pointer = attachment.asTransitTierPointer(),
-            case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = pointer.info.integrityCheck
+            let linkPreviewReferencedAttachment,
+            let attachmentProto = linkPreviewReferencedAttachment.asProtoForSending()
         {
-            let attachmentProto = attachmentManager.buildProtoForSending(
-                from: previewAttachmentRef,
-                pointer: pointer,
-                digestSHA256Ciphertext: digestSHA256Ciphertext,
-            )
             builder.setImage(attachmentProto)
         }
 

@@ -758,7 +758,6 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let quotedReplyManager = QuotedReplyManagerImpl(
-            attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
             db: db,
@@ -803,7 +802,6 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let linkPreviewManager = LinkPreviewManagerImpl(
-            attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
             db: db,
@@ -1265,13 +1263,11 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let messageStickerManager = MessageStickerManagerImpl(
-            attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
         )
 
         let contactShareManager = ContactShareManagerImpl(
-            attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
         )

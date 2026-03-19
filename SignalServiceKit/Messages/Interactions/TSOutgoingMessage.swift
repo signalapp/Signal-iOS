@@ -446,12 +446,8 @@ extension TSOutgoingMessage {
         // they should be inserted by now.
         if self.shouldBeSaved {
             if grdbId != nil {
-                do {
-                    let attachments = try self.buildProtosForBodyAttachments(tx: tx)
-                    builder.setAttachments(attachments)
-                } catch {
-                    owsFailDebug("Could not build body attachments")
-                }
+                let attachments = buildProtosForBodyAttachments(tx: tx)
+                builder.setAttachments(attachments)
             } else {
                 owsFailDebug("Saved message uninserted at proto build time!")
             }
@@ -653,8 +649,8 @@ extension TSOutgoingMessage {
 
     // MARK: - Attachments
 
-    private func buildProtosForBodyAttachments(tx: DBReadTransaction) throws -> [SSKProtoAttachmentPointer] {
-        let attachments = sqliteRowId.map { sqliteRowId in
+    private func buildProtosForBodyAttachments(tx: DBReadTransaction) -> [SSKProtoAttachmentPointer] {
+        let referencedAttachments = sqliteRowId.map { sqliteRowId in
             return DependenciesBridge.shared.attachmentStore.fetchReferencedAttachments(
                 owners: [
                     .messageOversizeText(messageRowId: sqliteRowId),
@@ -663,19 +659,14 @@ extension TSOutgoingMessage {
                 tx: tx,
             )
         } ?? []
-        return attachments.compactMap { attachment in
-            guard
-                let pointer = attachment.attachment.asTransitTierPointer(),
-                case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = pointer.info.integrityCheck
-            else {
-                owsFailDebug("Generating proto for non-uploaded attachment!")
+
+        return referencedAttachments.compactMap { referencedAttachment in
+            guard let attachmentProto = referencedAttachment.asProtoForSending() else {
+                owsFailDebug("Failed to generate proto for body attachment!")
                 return nil
             }
-            return DependenciesBridge.shared.attachmentManager.buildProtoForSending(
-                from: attachment.reference,
-                pointer: pointer,
-                digestSHA256Ciphertext: digestSHA256Ciphertext,
-            )
+
+            return attachmentProto
         }
     }
 

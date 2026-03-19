@@ -145,29 +145,24 @@ public class OutgoingStorySentMessageTranscript: OutgoingSyncMessage {
     }
 
     private func storyMessageProto(for storyMessage: StoryMessage, transaction: DBReadTransaction) -> SSKProtoStoryMessage? {
+        let attachmentStore = DependenciesBridge.shared.attachmentStore
         let builder = SSKProtoStoryMessage.builder()
 
         switch storyMessage.attachment {
         case .media:
             guard
                 let storyMessageRowId = storyMessage.id,
-                let attachment = DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
+                let referencedAttachment = attachmentStore.fetchAnyReferencedAttachment(
                     for: .storyMessageMedia(storyMessageRowId: storyMessageRowId),
                     tx: transaction,
                 ),
-                let pointer = attachment.attachment.asTransitTierPointer(),
-                case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = pointer.info.integrityCheck
+                let attachmentProto = referencedAttachment.asProtoForSending()
             else {
-                owsFailDebug("Missing attachment for outgoing story message")
+                owsFailDebug("Missing or failed to build proto for attachment for outgoing story message")
                 return nil
             }
-            let attachmentProto = DependenciesBridge.shared.attachmentManager.buildProtoForSending(
-                from: attachment.reference,
-                pointer: pointer,
-                digestSHA256Ciphertext: digestSHA256Ciphertext,
-            )
             builder.setFileAttachment(attachmentProto)
-            if let storyMediaCaption = attachment.reference.storyMediaCaption {
+            if let storyMediaCaption = referencedAttachment.reference.storyMediaCaption {
                 builder.setBodyRanges(storyMediaCaption.toProtoBodyRanges())
             }
         case .text(let attachment):

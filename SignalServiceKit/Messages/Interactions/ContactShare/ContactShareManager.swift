@@ -39,16 +39,13 @@ public protocol ContactShareManager {
 
 class ContactShareManagerImpl: ContactShareManager {
 
-    private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
     private let attachmentValidator: AttachmentContentValidator
 
     init(
-        attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
     ) {
-        self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.attachmentValidator = attachmentValidator
     }
@@ -199,18 +196,12 @@ class ContactShareManagerImpl: ContactShareManager {
 
         if
             let parentMessageRowId = parentMessage.sqliteRowId,
-            let avatarAttachment = attachmentStore.fetchAnyReferencedAttachment(
+            let avatarReferencedAttachment = attachmentStore.fetchAnyReferencedAttachment(
                 for: .messageContactAvatar(messageRowId: parentMessageRowId),
                 tx: tx,
             ),
-            let avatarPointer = avatarAttachment.attachment.asTransitTierPointer(),
-            case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = avatarPointer.info.integrityCheck
+            let attachmentProto = avatarReferencedAttachment.asProtoForSending()
         {
-            let attachmentProto = attachmentManager.buildProtoForSending(
-                from: avatarAttachment.reference,
-                pointer: avatarPointer,
-                digestSHA256Ciphertext: digestSHA256Ciphertext,
-            )
             let avatarBuilder = SSKProtoDataMessageContactAvatar.builder()
             avatarBuilder.setAvatar(attachmentProto)
             contactBuilder.setAvatar(avatarBuilder.buildInfallibly())

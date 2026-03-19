@@ -441,23 +441,19 @@ public class QuotedReplyModel {
 
         switch quotedMessageAttachmentReference {
         case nil:
-            break
+            return buildQuotedReplyModel(originalContent: .text(originalMessageBody))
         case .stub(let stub):
             return buildQuotedReplyModel(originalContent: .attachmentStub(originalMessageBody, stub))
-        case .thumbnail(let attachmentRef):
-            // Fetch the full attachment.
-            let thumbnailAttachment = DependenciesBridge.shared.attachmentStore.fetch(
-                id: attachmentRef.attachmentRowId,
-                tx: transaction,
-            )
+        case .thumbnail(let thumbnailReferencedAttachment):
             let image: UIImage? = {
                 if
-                    let thumbnailAttachment,
-                    let image = thumbnailAttachment.asStream()?.thumbnailImageSync(quality: .small)
+                    let image = thumbnailReferencedAttachment.attachment
+                        .asStream()?
+                        .thumbnailImageSync(quality: .small)
                 {
                     return image
                 } else if
-                    let blurHash = thumbnailAttachment?.blurHash,
+                    let blurHash = thumbnailReferencedAttachment.attachment.blurHash,
                     let image = BlurHash.image(for: blurHash)
                 {
                     return image
@@ -492,18 +488,14 @@ public class QuotedReplyModel {
                     ),
                     thumbnailImage: image,
                 ))
-            } else if let thumbnailAttachment {
+            } else {
                 return buildQuotedReplyModel(originalContent: .attachment(
                     originalMessageBody,
-                    attachment: .init(reference: attachmentRef, attachment: thumbnailAttachment),
+                    attachment: thumbnailReferencedAttachment,
                     thumbnailImage: image,
                 ))
-            } else {
-                break
             }
         }
-
-        return buildQuotedReplyModel(originalContent: .text(originalMessageBody))
     }
 
     private init(

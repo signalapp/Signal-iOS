@@ -1286,7 +1286,6 @@
 		66D7B90E2B9798950005C98B /* QuotedMessageAttachmentReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B90D2B9798950005C98B /* QuotedMessageAttachmentReference.swift */; };
 		66D7B91D2B97C5330005C98B /* Attachment+ContentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B91C2B97C5330005C98B /* Attachment+ContentType.swift */; };
 		66D7B92B2B97E5990005C98B /* AttachmentTransitPointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B92A2B97E5990005C98B /* AttachmentTransitPointer.swift */; };
-		66D7B92D2B98DAAD0005C98B /* AttachmentManager+Proto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B92C2B98DAAD0005C98B /* AttachmentManager+Proto.swift */; };
 		66D7B9322B9943DB0005C98B /* AttachmentDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9312B9943DB0005C98B /* AttachmentDownloadManager.swift */; };
 		66D7B9342B9945E60005C98B /* AttachmentDownloadManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9332B9945E60005C98B /* AttachmentDownloadManagerImpl.swift */; };
 		66D7B9402B9A67B00005C98B /* AttachmentDownloadPriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */; };
@@ -5556,7 +5555,6 @@
 		66D7B90D2B9798950005C98B /* QuotedMessageAttachmentReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedMessageAttachmentReference.swift; sourceTree = "<group>"; };
 		66D7B91C2B97C5330005C98B /* Attachment+ContentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Attachment+ContentType.swift"; sourceTree = "<group>"; };
 		66D7B92A2B97E5990005C98B /* AttachmentTransitPointer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentTransitPointer.swift; sourceTree = "<group>"; };
-		66D7B92C2B98DAAD0005C98B /* AttachmentManager+Proto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentManager+Proto.swift"; sourceTree = "<group>"; };
 		66D7B9312B9943DB0005C98B /* AttachmentDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadManager.swift; sourceTree = "<group>"; };
 		66D7B9332B9945E60005C98B /* AttachmentDownloadManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadManagerImpl.swift; sourceTree = "<group>"; };
 		66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadPriority.swift; sourceTree = "<group>"; };
@@ -10916,7 +10914,6 @@
 		66E1AD8F2B91336800C56B7B /* AttachmentManager */ = {
 			isa = PBXGroup;
 			children = (
-				66D7B92C2B98DAAD0005C98B /* AttachmentManager+Proto.swift */,
 				66D7B8FE2B9287F00005C98B /* AttachmentManager.swift */,
 				66D7B9002B92889E0005C98B /* AttachmentManagerImpl.swift */,
 				66D7B9022B928AE10005C98B /* AttachmentManagerMock.swift */,
@@ -18928,7 +18925,6 @@
 				664E8D942BD86AFB00C4968A /* AttachmentDownloadState.swift in Sources */,
 				66278A4C2C1CDDD9006123E9 /* AttachmentDownloadStoreImpl.swift in Sources */,
 				5094D5052EE3A6780041F402 /* AttachmentLimits.swift in Sources */,
-				66D7B92D2B98DAAD0005C98B /* AttachmentManager+Proto.swift in Sources */,
 				66D7B8FF2B9287F00005C98B /* AttachmentManager.swift in Sources */,
 				66D7B9012B92889E0005C98B /* AttachmentManagerImpl.swift in Sources */,
 				66D7B9032B928AE10005C98B /* AttachmentManagerMock.swift in Sources */,

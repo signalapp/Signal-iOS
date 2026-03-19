@@ -54,20 +54,17 @@ public protocol QuotedReplyManager {
 
 class QuotedReplyManagerImpl: QuotedReplyManager {
 
-    private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
     private let attachmentValidator: AttachmentContentValidator
     private let db: any DB
     private let tsAccountManager: TSAccountManager
 
     init(
-        attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
         db: any DB,
         tsAccountManager: TSAccountManager,
     ) {
-        self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.attachmentValidator = attachmentValidator
         self.db = db
@@ -627,26 +624,26 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
                     )
                 {
                     switch quotedMessageAttachmentReference {
-                    case .thumbnail(let attachmentRef):
-                        if let attachment = attachmentStore.fetch(id: attachmentRef.attachmentRowId, tx: tx) {
-                            return .attachment(
-                                messageBody,
-                                attachmentRef: attachmentRef,
-                                attachment: attachment,
-                                thumbnailImage: attachment.asStream()?.thumbnailImageSync(quality: .small),
-                            )
-                        } else if let messageBody {
-                            return .text(messageBody)
-                        } else {
-                            return lastResortQuotedReplyDraftContent()
-                        }
+                    case .thumbnail(let referencedAttachment):
+                        return .attachment(
+                            messageBody,
+                            attachmentRef: referencedAttachment.reference,
+                            attachment: referencedAttachment.attachment,
+                            thumbnailImage: referencedAttachment.attachment.asStream()?.thumbnailImageSync(quality: .small),
+                        )
                     case .stub(let stub):
                         return .attachmentStub(messageBody, stub)
                     }
                 } else if let messageBody {
                     return .text(messageBody)
                 } else {
-                    return lastResortQuotedReplyDraftContent()
+                    return .text(MessageBody(
+                        text: OWSLocalizedString(
+                            "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
+                            comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender.",
+                        ),
+                        ranges: .empty,
+                    ))
                 }
             }()
 
@@ -855,16 +852,6 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
         }
     }
 
-    private func lastResortQuotedReplyDraftContent() -> DraftQuotedReplyModel.Content {
-        return .text(MessageBody(
-            text: OWSLocalizedString(
-                "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
-                comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender.",
-            ),
-            ranges: .empty,
-        ))
-    }
-
     // MARK: - Outgoing proto
 
     func buildProtoForSending(
@@ -942,42 +929,31 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
         else {
             return nil
         }
-        let builder = SSKProtoDataMessageQuoteQuotedAttachment.builder()
+
         let mimeType: String?
         let sourceFilename: String?
+        let attachmentProto: SSKProtoAttachmentPointer?
         switch quotedMessageAttachmentReference {
-        case .thumbnail(let attachmentRef):
-            sourceFilename = attachmentRef.sourceFilename
-
-            if
-                let attachment = attachmentStore.fetch(
-                    id: attachmentRef.attachmentRowId,
-                    tx: tx,
-                )
-            {
-                mimeType = attachment.mimeType
-                if
-                    let pointer = attachment.asTransitTierPointer(),
-                    case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = pointer.info.integrityCheck
-                {
-                    let attachmentProto = attachmentManager.buildProtoForSending(
-                        from: attachmentRef,
-                        pointer: pointer,
-                        digestSHA256Ciphertext: digestSHA256Ciphertext,
-                    )
-                    builder.setThumbnail(attachmentProto)
-                }
-            } else {
-                mimeType = nil
-            }
+        case .thumbnail(let referencedAttachment):
+            mimeType = referencedAttachment.attachment.mimeType
+            sourceFilename = referencedAttachment.reference.sourceFilename
+            attachmentProto = referencedAttachment.asProtoForSending()
         case .stub(let stub):
             mimeType = stub.mimeType
             sourceFilename = stub.sourceFilename
+            attachmentProto = nil
         }
 
-        mimeType.map(builder.setContentType(_:))
-        sourceFilename.map(builder.setFileName(_:))
-
+        let builder = SSKProtoDataMessageQuoteQuotedAttachment.builder()
+        if let mimeType {
+            builder.setContentType(mimeType)
+        }
+        if let sourceFilename {
+            builder.setFileName(sourceFilename)
+        }
+        if let attachmentProto {
+            builder.setThumbnail(attachmentProto)
+        }
         return builder.buildInfallibly()
     }
 }

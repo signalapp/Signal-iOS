@@ -97,6 +97,8 @@ public class ReferencedAttachmentBackupThumbnail: ReferencedAttachment {
     }
 }
 
+// MARK: -
+
 extension ReferencedAttachment {
 
     public func previewText(
@@ -181,5 +183,83 @@ extension ReferencedAttachment {
         } else {
             return "📎"
         }
+    }
+
+    // MARK: -
+
+    /// Builds a `SSKProtoAttachmentPointer` representing this reference to an
+    /// attachment, suitable for sending with a message.
+    func asProtoForSending() -> SSKProtoAttachmentPointer? {
+        guard let pointer = AttachmentTransitPointer(attachment: attachment) else {
+            return nil
+        }
+
+        let digestSHA256Ciphertext: Data
+        switch pointer.info.integrityCheck {
+        case .digestSHA256Ciphertext(let data):
+            digestSHA256Ciphertext = data
+        case .sha256ContentHash:
+            return nil
+        }
+
+        let builder = SSKProtoAttachmentPointer.builder()
+        builder.setCdnNumber(pointer.cdnNumber)
+        builder.setCdnKey(pointer.cdnKey)
+        builder.setContentType(pointer.attachment.mimeType)
+
+        reference.sourceFilename.map(builder.setFileName(_:))
+
+        var flags: SSKProtoAttachmentPointerFlags?
+        switch reference.owner {
+        case .message(.bodyAttachment(let metadata)):
+            if let caption = metadata.caption {
+                builder.setCaption(caption)
+            }
+            if let idInOwner = metadata.idInOwner {
+                builder.setClientUuid(idInOwner.data)
+            }
+            flags = metadata.renderingFlag.toProto()
+        case .message(.quotedReply(let metadata)):
+            flags = metadata.renderingFlag.toProto()
+        case .storyMessage(.media(let metadata)):
+            (metadata.caption?.text).map(builder.setCaption(_:))
+            flags = metadata.shouldLoop ? .gif : nil
+        default:
+            break
+        }
+
+        if let flags {
+            builder.setFlags(UInt32(flags.rawValue))
+        } else {
+            builder.setFlags(0)
+        }
+
+        func setMediaSizePixels(_ pixelSize: CGSize) {
+            builder.setWidth(UInt32(pixelSize.width.rounded()))
+            builder.setHeight(UInt32(pixelSize.height.rounded()))
+        }
+
+        if let stream = pointer.attachment.asStream() {
+            // If we have it downloaded and have the validated values, use them.
+            builder.setSize(stream.unencryptedByteCount)
+
+            switch stream.contentType {
+            case .file, .invalid, .audio:
+                break
+            case .image(let pixelSize), .animatedImage(let pixelSize), .video(_, let pixelSize, _):
+                setMediaSizePixels(_: pixelSize)
+            }
+        } else {
+            // Otherwise fall back to values from the sender.
+            reference.sourceUnencryptedByteCount.map(builder.setSize(_:))
+            reference.sourceMediaSizePixels.map(setMediaSizePixels(_:))
+        }
+        builder.setKey(pointer.info.encryptionKey)
+        builder.setDigest(digestSHA256Ciphertext)
+        builder.setUploadTimestamp(pointer.uploadTimestamp)
+
+        pointer.attachment.blurHash.map(builder.setBlurHash(_:))
+
+        return builder.buildInfallibly()
     }
 }
