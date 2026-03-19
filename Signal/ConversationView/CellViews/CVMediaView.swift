@@ -21,6 +21,9 @@ class CVMediaView: ManualLayoutViewWithLayer {
     private let isBroken: Bool
     private var reusableMediaView: ReusableMediaView?
 
+    // Circular Play / Pause / Download progress etc
+    private static let centerButtonSize: CGFloat = 44
+
     // MARK: - Public
 
     init(
@@ -283,29 +286,8 @@ class CVMediaView: ManualLayoutViewWithLayer {
     }
 
     private func addVideoPlayButton() {
-        let playVideoButtonWidth: CGFloat = 44
-        let playVideoIconWidth: CGFloat = 20
-
-        let playVideoButton = UIView.transparentContainer()
-        addSubviewToCenterOnSuperview(playVideoButton, size: CGSize(square: playVideoButtonWidth))
-
-        let playVideoCircleView = OWSLayerView.circleView()
-        playVideoCircleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
-        playVideoCircleView.isUserInteractionEnabled = false
-        playVideoButton.addSubview(playVideoCircleView)
-        layoutSubviewToFillSuperviewEdges(playVideoCircleView)
-
-        let playVideoIconView = CVImageView()
-        if isBroken {
-            playVideoIconView.setTemplateImageName("play-slash-fill", tintColor: UIColor.ows_white)
-        } else {
-            playVideoIconView.setTemplateImageName("play-fill-32", tintColor: UIColor.ows_white)
-        }
-        playVideoIconView.isUserInteractionEnabled = false
-        addSubviewToCenterOnSuperview(
-            playVideoIconView,
-            size: CGSize(square: playVideoIconWidth),
-        )
+        let playIconImage = isBroken ? UIImage(named: "play-slash-fill")! : UIImage(named: "play-fill")!
+        addIconOverCircularBlurBackground(playIconImage)
     }
 
     private var hasBlurHash: Bool {
@@ -319,16 +301,22 @@ class CVMediaView: ManualLayoutViewWithLayer {
             backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
         }
 
-        let backgroundSize: CGFloat = 44
-        let background = UIView()
-        background.backgroundColor = .black.withAlphaComponent(0.40)
-        background.layer.cornerRadius = backgroundSize / 2
-        addSubviewToCenterOnSuperview(background, size: .init(square: 44))
+        addIconOverCircularBlurBackground(UIImage(named: "photo-slash")!)
+    }
 
-        let icon = UIImage(named: "photo-slash-36")!
-        let iconView = CVImageView(image: icon)
-        iconView.tintColor = .white
-        iconView.contentMode = .scaleAspectFit
-        addSubviewToCenterOnSuperview(iconView, size: .init(square: 24))
+    private func addIconOverCircularBlurBackground(_ image: UIImage) {
+        let circleView = ManualLayoutView.circleView(name: "circleView")
+        circleView.clipsToBounds = true
+        circleView.isUserInteractionEnabled = false
+        addSubviewToCenterOnSuperview(circleView, size: CGSize(square: Self.centerButtonSize))
+
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
+        circleView.addSubviewToFillSuperviewEdges(blurView)
+
+        let iconView = CVImageView(image: image)
+        iconView.tintColor = .Signal.label
+        iconView.isUserInteractionEnabled = false
+        circleView.addSubviewToCenterOnSuperview(iconView, size: image.size)
+
     }
 }
