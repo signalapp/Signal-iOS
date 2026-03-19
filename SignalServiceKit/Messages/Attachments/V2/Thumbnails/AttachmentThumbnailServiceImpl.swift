@@ -67,7 +67,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
     }
 
     public func backupThumbnailData(image: UIImage) throws -> Data {
-        let initialMaxFileSize = UInt32(CGFloat(AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes) * 0.8)
+        let initialMaxFileSize = UInt32(CGFloat(AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes) * 0.9)
         return try backupThumbnailData(
             image: image,
             targetMaxFileSize: initialMaxFileSize,
@@ -81,14 +81,15 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
         targetMaxPixelSize: CGFloat,
     ) throws -> Data {
         let targetSize: CGSize
-        if image.pixelSize.largerAxis > targetMaxPixelSize {
-            let scaleRatio = targetMaxPixelSize / image.pixelSize.largerAxis
+        let imagePixelSize = image.pixelSize
+        if imagePixelSize.largerAxis > targetMaxPixelSize {
+            let scaleRatio = targetMaxPixelSize / imagePixelSize.largerAxis
             targetSize = CGSize(
-                width: image.size.width * scaleRatio,
-                height: image.size.height * scaleRatio,
+                width: imagePixelSize.width * scaleRatio,
+                height: imagePixelSize.height * scaleRatio,
             )
         } else {
-            targetSize = image.size
+            targetSize = imagePixelSize
         }
 
         guard
@@ -96,7 +97,6 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
                 with: image,
                 format: .webP,
                 options: [
-                    .encodeWebPMethod: 6,
                     .encodeMaxFileSize: targetMaxFileSize,
                     .encodeMaxPixelSize: targetSize,
                 ],
@@ -105,8 +105,8 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
             throw OWSAssertionError("Unable to generate webp")
         }
         if data.count > AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes {
-            let nextTargetMaxPixelSize = targetMaxPixelSize * 0.5
-            let nextTargetMaxFileSize = UInt32(Double(targetMaxFileSize) * 0.25)
+            let nextTargetMaxPixelSize = targetMaxPixelSize * 0.75
+            let nextTargetMaxFileSize = UInt32(Double(targetMaxFileSize) * 0.75)
             if
                 nextTargetMaxFileSize < AttachmentThumbnailQuality.backupThumbnailMinSizeBytes,
                 nextTargetMaxPixelSize < AttachmentThumbnailQuality.backupThumbnailMinPixelSize

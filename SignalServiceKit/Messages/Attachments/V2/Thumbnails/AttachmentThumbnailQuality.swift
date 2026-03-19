@@ -53,10 +53,10 @@ extension AttachmentThumbnailQuality {
     }
 
     public static let backupThumbnailDimensionPixels: CGFloat = 256
-    public static let backupThumbnailMinPixelSize: CGFloat = 32
+    public static let backupThumbnailMinPixelSize: CGFloat = 64
 
     public static let backupThumbnailMaxSizeBytes: UInt32 = 8192
-    public static let backupThumbnailMinSizeBytes: UInt32 = 64
+    public static let backupThumbnailMinSizeBytes: UInt32 = 2048
 
     private static func thumbnailDimensionPointsBackupThumbnail() -> CGFloat {
         let screenScale = UIScreen.main.scale
