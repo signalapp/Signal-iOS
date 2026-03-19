@@ -149,6 +149,11 @@ private class GetStartedCardCellContentView: UIView, UIContentView {
 
     private static let cornerRadius: CGFloat = if #available(iOS 26, *) { 26 } else { 12 }
 
+    private static let closeAccessibilityLabel = OWSLocalizedString(
+        "GET_STARTED_CARD_CLOSE_A11YLABEL",
+        comment: "Accessibility label for the close button in each Get Started card.",
+    )
+
     init(configuration: GetStartedCardCellContentConfiguration) {
         self.configuration = configuration
 
@@ -212,6 +217,13 @@ private class GetStartedCardCellContentView: UIView, UIContentView {
                 label.font = .dynamicTypeFootnote.semibold()
             }
         }
+
+        isAccessibilityElement = true
+        accessibilityTraits.insert(.button)
+        accessibilityCustomActions = [UIAccessibilityCustomAction(name: Self.closeAccessibilityLabel, actionHandler: { [weak self] _ in
+            self?.closeButtonTapped()
+            return true
+        })]
     }
 
     required init?(coder: NSCoder) {
@@ -278,10 +290,13 @@ private class GetStartedCardCellContentView: UIView, UIContentView {
         } else {
             updateBackgroundColor(using: config.card)
         }
+
+        accessibilityLabel = config.card.title
     }
 
     private func closeButtonTapped() {
         closeAction?()
+        UIAccessibility.post(notification: .screenChanged, argument: nil)
     }
 }
 
@@ -298,6 +313,7 @@ class GetStartedBannerViewController: OWSViewController {
             "GET_STARTED_BANNER_TITLE",
             comment: "Title for the 'Get Started' banner",
         )
+        label.accessibilityTraits.insert(.header)
         return label
     }()
 
