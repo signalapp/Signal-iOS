@@ -1143,6 +1143,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
             return
         }
 
+        var state = combinedDownloadState
         switch mediaTierDownloadState {
         case .done:
             // Don't bother enqueueing if already done.
@@ -1151,6 +1152,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
             // Its ineligible now due to backupPlan state, but we should
             // still enqueue it (as ineligible) so it can become ready later
             // if backupPlan state changes.
+            state = .ineligible
             fallthrough
         case .ready:
             // Dequeue any existing download first; this will reset the retry counter
@@ -1169,7 +1171,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                 // We got here because we discovered we can download
                 // from media tier, that's the whole point.
                 canDownloadFromMediaTier: true,
-                state: combinedDownloadState,
+                state: state,
                 currentTimestamp: currentTimestamp,
                 tx: tx,
             )
