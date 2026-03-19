@@ -110,7 +110,7 @@ public class BackupAttachmentDownloadStore {
         failIfThrows {
             try record.insert(db)
             if let file, let function, let line {
-                Logger.info("Enqueued \(referencedAttachment.attachment.id) thumbnail? \(thumbnail) from \(file) \(line): \(function)")
+                Logger.info("Enqueued [id:\(referencedAttachment.attachment.id)] [thumbnail:\(thumbnail)] [state:\(state)] from \(file) \(line): \(function)")
             }
         }
     }
@@ -233,7 +233,7 @@ public class BackupAttachmentDownloadStore {
         failIfThrows {
             let numRemoved = try query.deleteAll(tx.database)
             if numRemoved > 0, let file, let function, let line {
-                Logger.info("Deleted \(attachmentId) thumbnail? \(thumbnail) from \(file) \(line): \(function)")
+                Logger.info("Deleted [id:\(attachmentId)] [thumbnail:\(thumbnail)] from \(file) \(line): \(function)")
             }
         }
     }
