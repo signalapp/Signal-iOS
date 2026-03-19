@@ -475,7 +475,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         )
     }
 
-    private func buildAdminDeleteAttributedString(displayName: String, groupColor: UIColor) -> NSAttributedString {
+    private func buildAdminDeleteAttributedString(displayName: String, adminNameColor: UIColor) -> NSAttributedString {
         let format = OWSLocalizedString(
             "DELETED_BY_ADMIN",
             comment: "Text indicating the message was remotely deleted by an admin. Embeds {{admin display name}}",
@@ -486,7 +486,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             attributedFormatArgs: [
                 .string(
                     displayName,
-                    attributes: [.font: textMessageFont.bold(), .foregroundColor: groupColor],
+                    attributes: [.font: textMessageFont.bold(), .foregroundColor: adminNameColor],
                 ),
             ],
         )
@@ -523,22 +523,32 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             ) + " ",
         )
 
+        var textColor = UIColor.Signal.secondaryLabel
+        if conversationStyle.hasWallpaper {
+            textColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
+        }
+
         var linkItems: [CVTextLabel.Item] = []
         switch bodyText {
         case .remotelyDeleted(let deleteAuthor):
             switch deleteAuthor {
             case .admin(let aci, let displayName):
-                let groupColor = GroupNameColors.forThread(thread).color(for: aci)
+                let adminNameColor: UIColor
+                if conversationStyle.hasWallpaper, isOutgoing {
+                    adminNameColor = .white
+                } else {
+                    adminNameColor = GroupNameColors.forThread(thread).color(for: aci)
+                }
                 let attributedString = buildAdminDeleteAttributedString(
                     displayName: displayName,
-                    groupColor: groupColor,
+                    adminNameColor: adminNameColor,
                 )
                 text.append(attributedString)
 
                 if
                     let tapItemRange = rangeOfFirstSubstring(
                         in: text,
-                        withColor: groupColor,
+                        withColor: adminNameColor,
                     )
                 {
                     linkItems.append(.deleteAuthor(deleteAuthorItem: CVTextLabel.DeleteAuthorItem(
@@ -572,11 +582,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             revealedSpoilerIds: revealedSpoilerIds,
             searchRanges: .matchedRanges([]),
         )
-
-        var textColor = UIColor.Signal.secondaryLabel
-        if conversationStyle.hasWallpaper {
-            textColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
-        }
 
         return CVTextViewConfig(
             text: .attributedText(text),
