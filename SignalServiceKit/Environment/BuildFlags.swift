@@ -94,6 +94,11 @@ public enum BuildFlags {
         public static let receive = true
         public static let send = build <= .internal
     }
+
+    public enum GroupTerminate {
+        public static let receive = build <= .dev
+        public static let send = build <= .dev
+    }
 }
 
 // MARK: -

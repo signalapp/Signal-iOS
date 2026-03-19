@@ -130,6 +130,7 @@ private extension TSGroupModelV2 {
             wasJustMigrated: false,
             didJustAddSelfViaGroupLink: false,
             addedByAddress: nil,
+            isTerminated: false,
         )
     }
 }

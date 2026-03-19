@@ -25,6 +25,7 @@ public final class TSGroupModelV2: TSGroupModel {
         self.revision = coder.decodeObject(of: NSNumber.self, forKey: "revision")?.uint32Value ?? 0
         self.secretParamsData = coder.decodeObject(of: NSData.self, forKey: "secretParamsData") as Data? ?? Data()
         self.wasJustMigrated = coder.decodeObject(of: NSNumber.self, forKey: "wasJustMigrated")?.boolValue ?? false
+        self.isTerminated = coder.decodeObject(of: NSNumber.self, forKey: "isTerminated")?.boolValue ?? false
         super.init(coder: coder)
     }
 
@@ -49,6 +50,7 @@ public final class TSGroupModelV2: TSGroupModel {
         coder.encode(NSNumber(value: self.revision), forKey: "revision")
         coder.encode(self.secretParamsData, forKey: "secretParamsData")
         coder.encode(NSNumber(value: self.wasJustMigrated), forKey: "wasJustMigrated")
+        coder.encode(NSNumber(value: self.isTerminated), forKey: "isTerminated")
     }
 
     override public var hash: Int {
@@ -67,6 +69,7 @@ public final class TSGroupModelV2: TSGroupModel {
         hasher.combine(revision)
         hasher.combine(secretParamsData)
         hasher.combine(wasJustMigrated)
+        hasher.combine(isTerminated)
         return hasher.finalize()
     }
 
@@ -86,6 +89,7 @@ public final class TSGroupModelV2: TSGroupModel {
         guard self.revision == object.revision else { return false }
         guard self.secretParamsData == object.secretParamsData else { return false }
         guard self.wasJustMigrated == object.wasJustMigrated else { return false }
+        guard self.isTerminated == object.isTerminated else { return false }
         return true
     }
 
@@ -104,6 +108,7 @@ public final class TSGroupModelV2: TSGroupModel {
         result.revision = self.revision
         result.secretParamsData = self.secretParamsData
         result.wasJustMigrated = self.wasJustMigrated
+        result.isTerminated = self.isTerminated
         return result
     }
 
@@ -115,6 +120,7 @@ public final class TSGroupModelV2: TSGroupModel {
     public var inviteLinkPassword: Data?
     public var isAnnouncementsOnly: Bool
     public var descriptionText: String?
+    public private(set) var isTerminated: Bool
 
     /// Whether this group model is a placeholder for a group we've requested to
     /// join, but don't yet have access to on the service. Other fields on this
@@ -142,6 +148,7 @@ public final class TSGroupModelV2: TSGroupModel {
         wasJustMigrated: Bool,
         didJustAddSelfViaGroupLink: Bool,
         addedByAddress: SignalServiceAddress?,
+        isTerminated: Bool,
     ) {
         self.descriptionText = descriptionText
         self.membership = groupMembership
@@ -154,6 +161,7 @@ public final class TSGroupModelV2: TSGroupModel {
         self.isJoinRequestPlaceholder = isJoinRequestPlaceholder
         self.wasJustMigrated = wasJustMigrated
         self.didJustAddSelfViaGroupLink = didJustAddSelfViaGroupLink
+        self.isTerminated = isTerminated
 
         let avatarData: Data?
         switch avatarDataState {
@@ -283,6 +291,7 @@ public final class TSGroupModelV2: TSGroupModel {
         result += "wasJustMigrated: \(wasJustMigrated),\n"
         result += "didJustAddSelfViaGroupLink: \(didJustAddSelfViaGroupLink),\n"
         result += "descriptionText: \(String(describing: descriptionText)),\n"
+        result += "isTerminated: \(isTerminated),\n"
         result += "]"
         return result
     }

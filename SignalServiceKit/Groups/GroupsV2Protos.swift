@@ -472,6 +472,11 @@ public class GroupsV2Protos {
 
         validateInviteLinkState(inviteLinkPassword: inviteLinkPassword, groupAccess: groupAccess)
 
+        var isTerminated = false
+        if RemoteConfig.current.groupTerminateReceiveEnabled {
+            isTerminated = groupProto.terminated
+        }
+
         let revision = groupProto.revision
         let groupSecretParams = groupV2Params.groupSecretParams
         return GroupV2Snapshot(
@@ -487,6 +492,7 @@ public class GroupsV2Protos {
             disappearingMessageToken: disappearingMessageToken,
             isAnnouncementsOnly: isAnnouncementsOnly,
             profileKeys: profileKeys,
+            isTerminated: isTerminated,
         )
     }
 

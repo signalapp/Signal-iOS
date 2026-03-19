@@ -170,6 +170,7 @@ class GroupModelsTest: SSKBaseTest {
                 wasJustMigrated: false,
                 didJustAddSelfViaGroupLink: false,
                 addedByAddress: nil,
+                isTerminated: false,
             )
 
             return try! NSKeyedArchiver.archivedData(
@@ -226,6 +227,7 @@ class GroupModelsTest: SSKBaseTest {
             XCTAssertFalse(groupModel.wasJustMigrated)
             XCTAssertFalse(groupModel.didJustAddSelfViaGroupLink)
             XCTAssertNil(groupModel.addedByAddress)
+            XCTAssertEqual(groupModel.isTerminated, false)
         }
     }
 }

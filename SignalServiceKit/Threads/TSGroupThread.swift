@@ -396,6 +396,7 @@ open class TSGroupThread: TSThread {
                 wasJustMigrated: false,
                 didJustAddSelfViaGroupLink: false,
                 addedByAddress: nil,
+                isTerminated: false,
             ),
         )
         groupThread.id = nil

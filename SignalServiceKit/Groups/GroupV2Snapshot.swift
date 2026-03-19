@@ -24,4 +24,5 @@ public struct GroupV2Snapshot {
     let disappearingMessageToken: DisappearingMessageToken
     let isAnnouncementsOnly: Bool
     let profileKeys: [Aci: Data]
+    let isTerminated: Bool
 }

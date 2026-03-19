@@ -127,6 +127,7 @@ message Group {
   bytes inviteLinkPassword = 10;
   bool announcementsOnly = 12;
   repeated BannedMember bannedMembers = 13;
+  bool terminated = 14;
 }
 
 message GroupAttributeBlob {
@@ -288,6 +289,9 @@ message GroupChange {
       bool announcementsOnly = 1;
     }
 
+    message TerminateGroupAction {
+    }
+
     bytes sourceUserId = 1; // Encrypted ServiceId for who made the change
     // clients should not provide this value; the server will provide it in the response buffer to ensure the signature is binding to a particular group
     // if clients set it during a request the server will respond with 400.
@@ -317,6 +321,7 @@ message GroupChange {
     repeated DeleteBannedMemberAction deleteBannedMembers = 23;  // change epoch = 4
     repeated PromoteMemberPendingPniAciProfileKeyAction promotePniPendingMembers = 24;  // change epoch = 5
     repeated ModifyMemberLabelAction modifyMemberLabel = 26; // change epoch = 6;
+    TerminateGroupAction terminate_group = 28; // change epoch = 7
   }
 
   bytes actions = 1; // The serialized actions

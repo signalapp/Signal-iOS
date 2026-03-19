@@ -1266,6 +1266,9 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
     public var announcementsOnly: Bool {
         return proto.announcementsOnly
     }
+    public var terminated: Bool {
+        return proto.terminated
+    }
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1373,6 +1376,7 @@ extension GroupsProtoGroup {
         }
         builder.setAnnouncementsOnly(announcementsOnly)
         builder.setBannedMembers(bannedMembers)
+        builder.setTerminated(terminated)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1494,6 +1498,10 @@ public struct GroupsProtoGroupBuilder {
 
     public mutating func setBannedMembers(_ wrappedItems: [GroupsProtoBannedMember]) {
         proto.bannedMembers = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func setTerminated(_ valueParam: Bool) {
+        proto.terminated = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -5278,6 +5286,102 @@ extension GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder {
 
 #endif
 
+// MARK: - GroupsProtoGroupChangeActionsTerminateGroupAction
+
+public struct GroupsProtoGroupChangeActionsTerminateGroupAction: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: GroupsProtos_GroupChange.Actions.TerminateGroupAction
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: GroupsProtos_GroupChange.Actions.TerminateGroupAction) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try GroupsProtos_GroupChange.Actions.TerminateGroupAction(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.TerminateGroupAction) {
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension GroupsProtoGroupChangeActionsTerminateGroupAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsTerminateGroupActionBuilder {
+        return GroupsProtoGroupChangeActionsTerminateGroupActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsTerminateGroupActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsTerminateGroupActionBuilder()
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsTerminateGroupActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.TerminateGroupAction()
+
+    fileprivate init() {}
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsTerminateGroupAction {
+        return GroupsProtoGroupChangeActionsTerminateGroupAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsTerminateGroupAction(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension GroupsProtoGroupChangeActionsTerminateGroupAction {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupChangeActionsTerminateGroupActionBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsTerminateGroupAction? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - GroupsProtoGroupChangeActions
 
 public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertible {
@@ -5331,6 +5435,8 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
     public let promotePniPendingMembers: [GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction]
 
     public let modifyMemberLabel: [GroupsProtoGroupChangeActionsModifyMemberLabelAction]
+
+    public let terminateGroup: GroupsProtoGroupChangeActionsTerminateGroupAction?
 
     public var sourceUserID: Data? {
         guard hasSourceUserID else {
@@ -5387,7 +5493,8 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
                  addBannedMembers: [GroupsProtoGroupChangeActionsAddBannedMemberAction],
                  deleteBannedMembers: [GroupsProtoGroupChangeActionsDeleteBannedMemberAction],
                  promotePniPendingMembers: [GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction],
-                 modifyMemberLabel: [GroupsProtoGroupChangeActionsModifyMemberLabelAction]) {
+                 modifyMemberLabel: [GroupsProtoGroupChangeActionsModifyMemberLabelAction],
+                 terminateGroup: GroupsProtoGroupChangeActionsTerminateGroupAction?) {
         self.proto = proto
         self.addMembers = addMembers
         self.deleteMembers = deleteMembers
@@ -5413,6 +5520,7 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
         self.deleteBannedMembers = deleteBannedMembers
         self.promotePniPendingMembers = promotePniPendingMembers
         self.modifyMemberLabel = modifyMemberLabel
+        self.terminateGroup = terminateGroup
     }
 
     public func serializedData() throws -> Data {
@@ -5517,6 +5625,11 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
         var modifyMemberLabel: [GroupsProtoGroupChangeActionsModifyMemberLabelAction] = []
         modifyMemberLabel = proto.modifyMemberLabel.map { GroupsProtoGroupChangeActionsModifyMemberLabelAction($0) }
 
+        var terminateGroup: GroupsProtoGroupChangeActionsTerminateGroupAction?
+        if proto.hasTerminateGroup {
+            terminateGroup = GroupsProtoGroupChangeActionsTerminateGroupAction(proto.terminateGroup)
+        }
+
         self.init(proto: proto,
                   addMembers: addMembers,
                   deleteMembers: deleteMembers,
@@ -5541,7 +5654,8 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
                   addBannedMembers: addBannedMembers,
                   deleteBannedMembers: deleteBannedMembers,
                   promotePniPendingMembers: promotePniPendingMembers,
-                  modifyMemberLabel: modifyMemberLabel)
+                  modifyMemberLabel: modifyMemberLabel,
+                  terminateGroup: terminateGroup)
     }
 
     public init(from decoder: Swift.Decoder) throws {
@@ -5618,6 +5732,9 @@ extension GroupsProtoGroupChangeActions {
         builder.setDeleteBannedMembers(deleteBannedMembers)
         builder.setPromotePniPendingMembers(promotePniPendingMembers)
         builder.setModifyMemberLabel(modifyMemberLabel)
+        if let _value = terminateGroup {
+            builder.setTerminateGroup(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -5865,6 +5982,16 @@ public struct GroupsProtoGroupChangeActionsBuilder {
 
     public mutating func setModifyMemberLabel(_ wrappedItems: [GroupsProtoGroupChangeActionsModifyMemberLabelAction]) {
         proto.modifyMemberLabel = wrappedItems.map { $0.proto }
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setTerminateGroup(_ valueParam: GroupsProtoGroupChangeActionsTerminateGroupAction?) {
+        guard let valueParam = valueParam else { return }
+        proto.terminateGroup = valueParam.proto
+    }
+
+    public mutating func setTerminateGroup(_ valueParam: GroupsProtoGroupChangeActionsTerminateGroupAction) {
+        proto.terminateGroup = valueParam.proto
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

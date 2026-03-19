@@ -294,6 +294,13 @@ public class RemoteConfig {
         return !isEnabled(.serviceExtensionFailureKillSwitch)
     }
 
+    public var groupTerminateReceiveEnabled: Bool {
+        guard BuildFlags.GroupTerminate.receive else {
+            return false
+        }
+        return !isEnabled(.groupTerminateReceiveKillSwitch, defaultValue: false)
+    }
+
     public var backgroundRefreshInterval: TimeInterval {
         return TimeInterval(getUIntValue(
             forFlag: .backgroundRefreshInterval,
@@ -591,6 +598,7 @@ private enum IsEnabledFlag: String, FlagType {
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case ringrtcVp9Enabled = "ios.ringrtcVp9Enabled.2"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
+    case groupTerminateReceiveKillSwitch = "ios.groupTerminateReceiveKillSwitch"
 
 #if TESTABLE_BUILD
     case hotSwappable = "test.hotSwappable.enabled"
@@ -617,6 +625,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .ringrtcNwPathMonitorTrialKillSwitch: true // cached during launch, so not hot-swapped in practice
         case .ringrtcVp9Enabled: true
         case .serviceExtensionFailureKillSwitch: true
+        case .groupTerminateReceiveKillSwitch: true
 
 #if TESTABLE_BUILD
         case .hotSwappable: true

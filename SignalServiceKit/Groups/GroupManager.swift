@@ -32,7 +32,8 @@ public class GroupManager: NSObject {
     // Epoch 4: Banned Members
     // Epoch 5: Promote pending PNI members
     // Epoch 6: Member Labels
-    public static let changeProtoEpoch: UInt32 = 6
+    // Epoch 7: Group Terminate
+    public static let changeProtoEpoch: UInt32 = 7
 
     public static let maxEmbeddedChangeProtoLength: UInt = UInt(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
 

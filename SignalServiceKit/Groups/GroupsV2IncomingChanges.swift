@@ -100,6 +100,7 @@ public class GroupsV2IncomingChanges {
         var newAttributesAccess = oldGroupAccess.attributes
         var newAddFromInviteLinkAccess = oldGroupAccess.addFromInviteLink
         var newMemberLabelsAccess = oldGroupAccess.memberLabels
+        var newGroupTerminated = oldGroupModel.isTerminated
 
         if !oldGroupMembership.isMemberOfAnyKind(changeAuthor) {
             // Change author may have just added themself via a group invite link.
@@ -646,6 +647,15 @@ public class GroupsV2IncomingChanges {
             newIsAnnouncementsOnly = action.announcementsOnly
         }
 
+        if RemoteConfig.current.groupTerminateReceiveEnabled {
+            if changeActionsProto.terminateGroup != nil {
+                if !isChangeAuthorAdmin {
+                    owsFailDebug("Cannot terminate group")
+                }
+                newGroupTerminated = true
+            }
+        }
+
         let newGroupMembership = groupMembershipBuilder.build()
         let newGroupAccess = GroupAccess(members: newMembersAccess, attributes: newAttributesAccess, addFromInviteLink: newAddFromInviteLinkAccess, memberLabels: newMemberLabelsAccess)
 
@@ -661,6 +671,7 @@ public class GroupsV2IncomingChanges {
         builder.avatarUrlPath = newAvatarUrlPath
         builder.inviteLinkPassword = newInviteLinkPassword
         builder.isAnnouncementsOnly = newIsAnnouncementsOnly
+        builder.isTerminated = newGroupTerminated
 
         builder.didJustAddSelfViaGroupLink = didJustAddSelfViaGroupLink
 

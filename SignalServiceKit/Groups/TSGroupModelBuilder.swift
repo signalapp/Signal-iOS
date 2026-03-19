@@ -29,6 +29,7 @@ public struct TSGroupModelBuilder {
     public var addedByAddress: SignalServiceAddress?
     public var wasJustMigrated: Bool = false
     public var didJustAddSelfViaGroupLink: Bool = false
+    public var isTerminated: Bool = false
 
     private init(groupVersion: GroupVersion) {
         self.groupVersion = groupVersion
@@ -48,6 +49,7 @@ public struct TSGroupModelBuilder {
             self.inviteLinkPassword = v2.inviteLinkPassword
             self.isAnnouncementsOnly = v2.isAnnouncementsOnly
             self.descriptionText = v2.descriptionText
+            self.isTerminated = v2.isTerminated
 
             // Do not copy transient properties:
             //
@@ -82,6 +84,7 @@ public struct TSGroupModelBuilder {
         self.isJoinRequestPlaceholder = false
         self.wasJustMigrated = false
         self.didJustAddSelfViaGroupLink = false
+        self.isTerminated = groupV2Snapshot.isTerminated
     }
 
     static func builderForSnapshot(groupV2Snapshot: GroupV2Snapshot, transaction: DBWriteTransaction) throws -> TSGroupModelBuilder {
@@ -138,6 +141,7 @@ public struct TSGroupModelBuilder {
                 wasJustMigrated: wasJustMigrated,
                 didJustAddSelfViaGroupLink: didJustAddSelfViaGroupLink,
                 addedByAddress: addedByAddress,
+                isTerminated: isTerminated,
             )
         }
     }
