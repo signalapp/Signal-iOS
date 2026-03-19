@@ -25,6 +25,7 @@ public class RegistrationRequestFactoryTest: XCTestCase {
                 languageCode: languageCode,
                 countryCode: countryCode,
                 transport: .sms,
+                logger: .empty(),
             )
             XCTAssertEqual(request.url.relativeString, "v1/verification/session/123/code")
             XCTAssertEqual(request.parameters["transport"] as? String, "sms")

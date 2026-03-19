@@ -137,7 +137,7 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
         }
 
         let allInactiveLinkedDevices = deviceStore.fetchAll(tx: tx)
-            .filter { !$0.isPrimaryDevice }
+            .filter { !$0.deviceId.isPrimary }
             .filter { device in
                 // Only keep devices whose inactivity date has passed.
                 let inactivityDate = device.lastSeenAt.addingTimeInterval(intervalForDeviceInactivity)

@@ -48,7 +48,7 @@ struct BackupRefreshManagerTest {
         mockNetworkManager.asyncRequestHandlers.append(refreshSuccessResponse)
         mockNetworkManager.asyncRequestHandlers.append(refreshSuccessResponse)
 
-        try await mockBackupRefreshManager.refreshBackup(localIdentifiers: LocalIdentifiers.forUnitTests)
+        try await mockBackupRefreshManager.refreshBackup(localIdentifiers: LocalIdentifiers.forUnitTests, logger: .empty())
 
         #expect(mockNetworkManager.asyncRequestHandlers.isEmpty)
     }
@@ -61,6 +61,6 @@ struct BackupRefreshManagerTest {
             accountKeyStore.setAccountEntropyPool(AccountEntropyPool(), tx: tx)
         }
 
-        try await mockBackupRefreshManager.refreshBackup(localIdentifiers: LocalIdentifiers.forUnitTests)
+        try await mockBackupRefreshManager.refreshBackup(localIdentifiers: LocalIdentifiers.forUnitTests, logger: .empty())
     }
 }

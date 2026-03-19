@@ -92,7 +92,8 @@ public class RegistrationUtils {
     }
 
     private class func showReRegistration(e164: E164, aci: Aci, appReadiness: AppReadinessSetter) {
-        Logger.info("Attempting to start re-registration")
+        let logger = PrefixedLogger(prefix: "[ReReg]")
+        logger.info("Attempting to start re-registration")
         let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
         let desiredMode = RegistrationMode.reRegistering(.init(e164: e164, aci: aci))
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
@@ -100,6 +101,7 @@ public class RegistrationUtils {
             return loader.coordinator(
                 forDesiredMode: desiredMode,
                 transaction: $0,
+                logger: logger,
             )
         }
         let navController = RegistrationNavigationController.withCoordinator(coordinator, appReadiness: appReadiness)

@@ -248,7 +248,7 @@ public class OWS2FAManager {
 
     // MARK: -
 
-    public func enableRegistrationLockV2() async throws {
+    public func enableRegistrationLockV2(logger: PrefixedLogger) async throws {
         let token = db.read { tx in
             let masterKey = accountKeyStore.getMasterKey(tx: tx)
             return masterKey?.data(
@@ -259,7 +259,7 @@ public class OWS2FAManager {
             throw OWSAssertionError("Cannot enable registration lock without an existing PIN")
         }
 
-        let request = OWSRequestFactory.enableRegistrationLockV2Request(token: token)
+        let request = OWSRequestFactory.enableRegistrationLockV2Request(token: token, logger: logger)
         _ = try await networkManager.asyncRequest(request)
 
         await db.awaitableWrite { transaction in

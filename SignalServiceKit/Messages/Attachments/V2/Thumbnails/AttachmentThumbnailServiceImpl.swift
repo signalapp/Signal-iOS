@@ -47,24 +47,16 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
             return cached
         }
 
-        let thumbnailImage: UIImage?
-        if attachmentStream.mimeType == MimeType.imageWebp.rawValue {
-            let imageSource = (try? attachmentStream.decryptedRawData()).map(DataImageSource.init(_:))
-            thumbnailImage = imageSource?
-                .stillForWebpData()?
-                .resized(maxDimensionPoints: quality.thumbnailDimensionPoints())
-        } else {
-            thumbnailImage = try? UIImage
-                .fromEncryptedFile(
-                    at: AttachmentStream.absoluteAttachmentFileURL(
-                        relativeFilePath: attachmentStream.localRelativeFilePath,
-                    ),
-                    attachmentKey: AttachmentKey(combinedKey: attachmentStream.attachment.encryptionKey),
-                    plaintextLength: attachmentStream.unencryptedByteCount,
-                    mimeType: attachmentStream.mimeType,
-                )
-                .resized(maxDimensionPoints: quality.thumbnailDimensionPoints())
-        }
+        let thumbnailImage = try? UIImage
+            .fromEncryptedFile(
+                at: AttachmentStream.absoluteAttachmentFileURL(
+                    relativeFilePath: attachmentStream.localRelativeFilePath,
+                ),
+                attachmentKey: AttachmentKey(combinedKey: attachmentStream.attachment.encryptionKey),
+                plaintextLength: attachmentStream.unencryptedByteCount,
+                mimeType: attachmentStream.mimeType,
+            )
+            .resized(maxDimensionPoints: quality.thumbnailDimensionPoints())
 
         guard let thumbnailImage else {
             owsFailDebug("Unable to generate thumbnail")

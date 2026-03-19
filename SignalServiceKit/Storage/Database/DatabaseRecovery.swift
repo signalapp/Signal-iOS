@@ -711,7 +711,7 @@ public enum DatabaseRecovery {
             }
 
             databaseStorage.write { tx in
-                TSInteraction.anyEnumerate(transaction: tx) { interaction, _ in
+                TSInteraction.anyEnumerate(transaction: tx) { interaction in
                     guard let message = interaction as? TSMessage else {
                         return
                     }

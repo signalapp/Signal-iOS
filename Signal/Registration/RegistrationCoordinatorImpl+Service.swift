@@ -20,16 +20,19 @@ extension RegistrationCoordinatorImpl {
             e164: E164,
             candidateCredentials: [SVR2AuthCredential],
             signalService: OWSSignalServiceProtocol,
+            logger: PrefixedLogger,
         ) async -> SVR2AuthCheckResponse {
             let request = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
                 e164: e164,
                 credentials: candidateCredentials,
+                logger: logger,
             )
             return await makeRequest(
                 { try await signalService.urlSessionForMainSignalService().performRequest(request) },
-                handler: self.handleSVR2AuthCheckResponse(statusCode:retryAfterHeader:bodyData:),
+                handler: self.handleSVR2AuthCheckResponse(statusCode:retryAfterHeader:bodyData:logger:),
                 fallbackError: .genericError,
                 networkFailureError: .networkError,
+                logger: logger,
             )
         }
 
@@ -37,6 +40,7 @@ extension RegistrationCoordinatorImpl {
             statusCode: Int,
             retryAfterHeader: TimeInterval?,
             bodyData: Data?,
+            logger: PrefixedLogger,
         ) -> SVR2AuthCheckResponse {
             let statusCode = RegistrationServiceResponses.SVR2AuthCheckResponseCodes(rawValue: statusCode)
             switch statusCode {
@@ -68,6 +72,7 @@ extension RegistrationCoordinatorImpl {
             apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
             prekeyBundles: RegistrationPreKeyUploadBundles,
             signalService: OWSSignalServiceProtocol,
+            logger: PrefixedLogger,
         ) async -> AccountResponse {
             let request = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: method,
@@ -77,6 +82,7 @@ extension RegistrationCoordinatorImpl {
                 skipDeviceTransfer: skipDeviceTransfer,
                 apnRegistrationId: apnRegistrationId,
                 prekeyBundles: prekeyBundles,
+                logger: logger,
             )
             return await makeRequest(
                 { try await signalService.urlSessionForMainSignalService().performRequest(request) },
@@ -86,10 +92,12 @@ extension RegistrationCoordinatorImpl {
                         statusCode: $0,
                         retryAfterHeader: $1,
                         bodyData: $2,
+                        logger: $3,
                     )
                 },
                 fallbackError: .genericError,
                 networkFailureError: .networkError,
+                logger: logger,
             )
         }
 
@@ -98,6 +106,7 @@ extension RegistrationCoordinatorImpl {
             statusCode: Int,
             retryAfterHeader: TimeInterval?,
             bodyData: Data?,
+            logger: PrefixedLogger,
         ) -> AccountResponse {
             let statusCode = RegistrationServiceResponses.AccountCreationResponseCodes(rawValue: statusCode)
             switch statusCode {
@@ -168,20 +177,23 @@ extension RegistrationCoordinatorImpl {
             authPassword: String,
             pniChangeNumberParameters: PniDistribution.Parameters,
             networkManager: any NetworkManagerProtocol,
+            logger: PrefixedLogger,
         ) async -> AccountResponse {
             let request = RegistrationRequestFactory.changeNumberRequest(
                 verificationMethod: method,
                 e164: e164,
                 reglockToken: reglockToken,
                 pniChangeNumberParameters: pniChangeNumberParameters,
+                logger: logger,
             )
             return await makeRequest(
                 { try await networkManager.asyncRequest(request) },
                 handler: {
-                    return self.handleChangeNumberResponse(authPassword: authPassword, statusCode: $0, retryAfterHeader: $1, bodyData: $2)
+                    return self.handleChangeNumberResponse(authPassword: authPassword, statusCode: $0, retryAfterHeader: $1, bodyData: $2, logger: $3)
                 },
                 fallbackError: .genericError,
                 networkFailureError: .networkError,
+                logger: logger,
             )
         }
 
@@ -190,6 +202,7 @@ extension RegistrationCoordinatorImpl {
             statusCode: Int,
             retryAfterHeader: TimeInterval?,
             bodyData: Data?,
+            logger: PrefixedLogger,
         ) -> AccountResponse {
             let statusCode = RegistrationServiceResponses.ChangeNumberResponseCodes(rawValue: statusCode)
             switch statusCode {
@@ -254,12 +267,13 @@ extension RegistrationCoordinatorImpl {
             reglockToken: String,
             auth: ChatServiceAuth,
             networkManager: any NetworkManagerProtocol,
+            logger: PrefixedLogger,
         ) async throws {
             try await Retry.performWithBackoff(
                 maxAttempts: RegistrationCoordinatorImpl.Constants.networkErrorRetries + 1,
                 isRetryable: { $0.isNetworkFailureOrTimeout },
             ) {
-                var request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken)
+                var request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken, logger: logger)
                 request.auth = .identified(auth)
                 _ = try await networkManager.asyncRequest(request)
             }
@@ -269,6 +283,7 @@ extension RegistrationCoordinatorImpl {
             _ attributes: AccountAttributes,
             auth: ChatServiceAuth,
             networkManager: any NetworkManagerProtocol,
+            logger: PrefixedLogger,
         ) async throws {
             try await Retry.performWithBackoff(
                 maxAttempts: RegistrationCoordinatorImpl.Constants.networkErrorRetries + 1,
@@ -277,6 +292,7 @@ extension RegistrationCoordinatorImpl {
                 let request = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
                     attributes,
                     auth: auth,
+                    logger: logger,
                 )
                 let response = try await networkManager.asyncRequest(request)
                 guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
@@ -324,9 +340,10 @@ extension RegistrationCoordinatorImpl {
 
         private static func makeRequest<ResponseType>(
             _ makeRequest: () async throws -> HTTPResponse,
-            handler: (_ statusCode: Int, _ retryAfterHeader: TimeInterval?, _ bodyData: Data?) -> ResponseType,
+            handler: (_ statusCode: Int, _ retryAfterHeader: TimeInterval?, _ bodyData: Data?, _ logger: PrefixedLogger) -> ResponseType,
             fallbackError: ResponseType,
             networkFailureError: ResponseType,
+            logger: PrefixedLogger,
         ) async -> ResponseType {
             do {
                 let response = try await makeRequest()
@@ -334,6 +351,7 @@ extension RegistrationCoordinatorImpl {
                     response.responseStatusCode,
                     response.headers.retryAfterTimeInterval,
                     response.responseBodyData,
+                    logger,
                 )
             } catch where error.isNetworkFailureOrTimeout {
                 return networkFailureError
@@ -342,6 +360,7 @@ extension RegistrationCoordinatorImpl {
                     error.responseStatusCode,
                     error.responseHeaders?.retryAfterTimeInterval,
                     error.httpResponseData,
+                    logger,
                 )
             } catch {
                 return fallbackError

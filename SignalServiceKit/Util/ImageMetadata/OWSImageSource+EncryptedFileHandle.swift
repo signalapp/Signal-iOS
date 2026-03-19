@@ -35,13 +35,6 @@ struct EncryptedFileHandleImageSource: OWSImageSource {
         return try fileHandle.read(upToCount: byteLength)
     }
 
-    func readIntoMemory() throws -> Data {
-        if fileHandle.offset() != 0 {
-            try fileHandle.seek(toOffset: 0)
-        }
-        return try fileHandle.read(upToCount: Int(fileHandle.plaintextLength))
-    }
-
     // Class-bound wrapper around FileHandle
     class FileHandleWrapper {
         let fileHandle: FileHandle

@@ -102,6 +102,7 @@ public class CVViewState: NSObject {
     public var scrollUpdateTimer: Timer?
     public var isWaitingForDeceleration = false
     public var highlightedMessageId: String?
+    public var focusedMessageId: String?
 
     public var actionOnOpen: ConversationViewAction = .none
 

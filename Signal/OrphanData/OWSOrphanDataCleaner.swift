@@ -145,7 +145,7 @@ enum OWSOrphanDataCleaner {
 
             OWSReaction.anyEnumerate(transaction: transaction, batchingPreference: .batched()) { reaction, stop in
                 if Task.isCancelled {
-                    stop.pointee = true
+                    stop = true
                     return
                 }
                 if !allInteractionIds.contains(reaction.uniqueMessageId) {
@@ -156,7 +156,7 @@ enum OWSOrphanDataCleaner {
 
             TSMention.anyEnumerate(transaction: transaction, batchingPreference: .batched()) { mention, stop in
                 if Task.isCancelled {
-                    stop.pointee = true
+                    stop = true
                     return
                 }
                 if !allInteractionIds.contains(mention.uniqueMessageId) {

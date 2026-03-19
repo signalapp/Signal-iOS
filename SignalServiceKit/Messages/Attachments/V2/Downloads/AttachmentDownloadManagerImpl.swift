@@ -781,11 +781,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 }) ?? .useHeadRequest
                 let attachmentLimits = IncomingAttachmentLimits.currentLimits()
                 switch Attachment.ContentTypeRaw(mimeType: attachment.mimeType) {
-                case .video:
-                    maxDownloadSizeBytes = attachmentLimits.maxEncryptedVideoBytes
                 case .image, .animatedImage:
                     maxDownloadSizeBytes = attachmentLimits.maxEncryptedImageBytes
-                case .audio, .file, .invalid:
+                case .audio, .video, .file, .invalid:
                     maxDownloadSizeBytes = attachmentLimits.maxEncryptedBytes
                 }
             case .mediaTierFullsize:
@@ -795,7 +793,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     let mediaName = attachment.mediaName,
                     let backupKey = db.read(block: { accountKeyStore.getMediaRootBackupKey(tx: $0) }),
                     let encryptionMetadata = buildCdnEncryptionMetadata(mediaName: mediaName, backupKey: backupKey, type: .outerLayerFullsizeOrThumbnail),
-                    let cdnCredential = await fetchBackupCdnReadCredential(for: cdnNumber, backupKey: backupKey)
+                    let cdnCredential = await fetchBackupCdnReadCredential(
+                        for: cdnNumber,
+                        backupKey: backupKey,
+                        logger: PrefixedLogger(prefix: "[Backups]"),
+                    )
                 else {
                     return .unretryableError(OWSAssertionError("Attempting to download an attachment without cdn info"))
                 }
@@ -833,13 +835,21 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         backupKey: backupKey,
                         type: .transitTierThumbnail,
                     ),
-                    let cdnReadCredential = await fetchBackupCdnReadCredential(for: cdnNumber, backupKey: backupKey)
+                    let cdnReadCredential = await fetchBackupCdnReadCredential(
+                        for: cdnNumber,
+                        backupKey: backupKey,
+                        logger: PrefixedLogger(prefix: "[Backups]"),
+                    )
                 else {
                     return .unretryableError(OWSAssertionError("Attempting to download an attachment without cdn info"))
                 }
 
+                let thumbnailMimeType = MimeTypeUtil.thumbnailMimetype(
+                    fullsizeMimeType: attachment.mimeType,
+                    quality: .backupThumbnail,
+                )
                 downloadMetadata = .init(
-                    mimeType: attachment.mimeType,
+                    mimeType: thumbnailMimeType,
                     cdnNumber: cdnNumber,
                     encryptionKey: attachment.encryptionKey,
                     source: .mediaTierThumbnail(
@@ -1016,6 +1026,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private func fetchBackupCdnReadCredential(
             for cdn: UInt32,
             backupKey: MediaRootBackupKey,
+            logger: PrefixedLogger,
         ) async -> MediaTierReadCredential? {
             guard
                 let localAci = db.read(block: { tx in
@@ -1031,6 +1042,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     for: backupKey,
                     localAci: localAci,
                     auth: .implicit(),
+                    logger: logger,
                 )
             else {
                 owsFailDebug("Failed to fetch backup credential")
@@ -1041,6 +1053,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 let metadata = try? await backupRequestManager.fetchMediaTierCdnRequestMetadata(
                     cdn: Int32(cdn),
                     auth: auth,
+                    logger: logger,
                 )
             else {
                 owsFailDebug("Failed to fetch backup credential")
@@ -1084,7 +1097,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.threadStore = threadStore
         }
 
-        enum Downloadability: Equatable {
+        enum Downloadability {
             case downloadable
             case blockedByActiveCall
             case blockedByPendingMessageRequest
@@ -1300,25 +1313,28 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .message(.bodyAttachment), .storyMessage(.media):
                 if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
                     return !autoDownloadableMediaTypes.contains(.photo)
-                } else if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
+                }
+                if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
                     return !autoDownloadableMediaTypes.contains(.video)
-                } else if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
+                }
+                if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
                     if renderingFlag == .voiceMessage {
                         return false
-                    } else {
-                        return !autoDownloadableMediaTypes.contains(.audio)
                     }
-                } else {
-                    return !autoDownloadableMediaTypes.contains(.document)
+                    return !autoDownloadableMediaTypes.contains(.audio)
                 }
+                return !autoDownloadableMediaTypes.contains(.document)
             case .message(.oversizeText):
                 return false
             case .message(.sticker):
                 return !autoDownloadableMediaTypes.contains(.photo)
-            case
-                .message(.quotedReply),
-                .message(.linkPreview), .storyMessage(.textStoryLinkPreview),
-                .message(.contactAvatar):
+            case .message(.quotedReply):
+                return false
+            case .message(.linkPreview):
+                return false
+            case .message(.contactAvatar):
+                return false
+            case .storyMessage(.textStoryLinkPreview):
                 return false
             case .thread(.threadWallpaperImage), .thread(.globalThreadWallpaperImage):
                 return false
@@ -2113,7 +2129,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // the digest before copying.
                     backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                         attachmentWeJustDownloaded,
-                        mode: .fullsizeAndThumbnailAsNeeded,
+                        mode: .all,
                         tx: tx,
                     )
                     tx.addSyncCompletion {
@@ -2226,7 +2242,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                         backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                             attachment,
-                            mode: .fullsizeAndThumbnailAsNeeded,
+                            mode: .all,
                             tx: tx,
                         )
                         tx.addSyncCompletion {
@@ -2415,7 +2431,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                         backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                             newAttachment,
-                            mode: .fullsizeAndThumbnailAsNeeded,
+                            mode: .all,
                             tx: tx,
                         )
                         tx.addSyncCompletion {
@@ -2498,7 +2514,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // Schedule upload, if needed.
                     backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                         thumbnailAttachment.attachment,
-                        mode: .fullsizeAndThumbnailAsNeeded,
+                        mode: .all,
                         tx: tx,
                     )
                     tx.addSyncCompletion {

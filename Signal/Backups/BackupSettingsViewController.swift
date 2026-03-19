@@ -854,13 +854,15 @@ class BackupSettingsViewController:
     // MARK: -
 
     fileprivate func performManualBackup() {
-        // We observe updates from BackupExportJob, including when it
-        // finishes, so all we need to do here is kick it off.
-        backupExportJobRunner.startIfNecessary()
+        // We observe BackupExportJobRunner updates, so we can ignore the
+        // returned task.
+        _ = backupExportJobRunner.startIfNecessary(mode: .manual)
     }
 
     fileprivate func cancelManualBackup() {
-        backupExportJobRunner.cancelIfRunning()
+        // We observe BackupExportJobRunner updates, so we can ignore the
+        // returned task.
+        _ = backupExportJobRunner.cancelIfRunning()
         suspendUploads()
     }
 
@@ -1168,7 +1170,7 @@ class BackupSettingsViewController:
 
         // Check if we've hit the limit for registering new backupIDs and warn the user
         if
-            let limits = try? await backupIdService.fetchBackupIDLimits(auth: .implicit()),
+            let limits = try? await backupIdService.fetchBackupIDLimits(auth: .implicit(), logger: PrefixedLogger(prefix: "[Settings]")),
             !limits.hasPermitsRemaining
         {
             let bodyText = String(

@@ -959,16 +959,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(for: self)
     }
 
-    @objc
-    public static func anyEnumerateObjc(
-        transaction: DBReadTransaction,
-        batched: Bool,
-        block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void,
-    ) {
-        let batchingPreference: BatchingPreference = batched ? .batched() : .unbatched
-        anyEnumerate(transaction: transaction, batchingPreference: batchingPreference, block: block)
-    }
-
     // MARK: - Codable
 
     public init(from decoder: Decoder) throws {

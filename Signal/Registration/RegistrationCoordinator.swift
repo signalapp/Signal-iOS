@@ -165,6 +165,8 @@ public protocol RegistrationCoordinator {
 
     /// Cancel from the backup entry screen and clear out any key that has been entered.
     func cancelRecoveryKeyEntry() -> Guarantee<RegistrationStep>
+
+    var logger: PrefixedLogger { get }
 }
 
 public enum AcknowledgeReglockResult {

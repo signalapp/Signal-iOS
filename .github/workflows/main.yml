@@ -65,7 +65,7 @@ jobs:
         run: Scripts/build-and-test.sh
 
       - name: Upload build logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: Logs
@@ -76,7 +76,7 @@ jobs:
           touch -d 2026-01-01T00:00:00 ~/Library/Signal-iOS-Schema/schema.json
 
       - name: Upload database schema
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Database Schema
           path: ~/Library/Signal-iOS-Schema
@@ -98,27 +98,6 @@ jobs:
 
       - name: Check for any changes
         run: git diff --exit-code
-
-  translation-validator:
-    name: Check if strings are valid
-
-    timeout-minutes: 5
-
-    runs-on: macos-26
-
-    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'release/') }}
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Build translation-validator
-        run: swift build --package-path Scripts/translation-validator
-
-      - name: Validate InfoPlist.strings
-        run: Scripts/translation-validator/.build/debug/translation-validator Signal/translations/en.lproj/InfoPlist.strings
-
-      - name: Validate Localizable.strings
-        run: Scripts/translation-validator/.build/debug/translation-validator Signal/translations/en.lproj/Localizable.strings
 
   precommit:
     name: Precommit

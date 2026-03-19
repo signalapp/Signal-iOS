@@ -512,7 +512,10 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
         let dataSource = DataSourcePath(fileUrl: result.syncFileUrl, ownership: .owned)
 
-        let uploadResult = try await DependenciesBridge.shared.attachmentUploadManager.uploadTransientAttachment(dataSource: dataSource)
+        let uploadResult = try await DependenciesBridge.shared.attachmentUploadManager.uploadTransientAttachment(
+            dataSource: dataSource,
+            progress: nil,
+        )
         let message = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return OWSSyncContactsMessage(uploadedAttachment: uploadResult, localThread: thread, tx: tx)
         }

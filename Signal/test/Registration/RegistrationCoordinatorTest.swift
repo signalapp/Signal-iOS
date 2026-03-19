@@ -223,6 +223,7 @@ public class RegistrationCoordinatorTest {
             return registrationCoordinatorLoader.coordinator(
                 forDesiredMode: testCase.mode,
                 transaction: $0,
+                logger: .empty(),
             ) as! RegistrationCoordinatorImpl
         }
     }
@@ -394,7 +395,10 @@ public class RegistrationCoordinatorTest {
 
         if wasReglockEnabled {
             // If we had reglock before registration, it should be re-enabled.
-            let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(token: finalMasterKey.reglockToken)
+            let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(
+                token: finalMasterKey.reglockToken,
+                logger: .empty(),
+            )
             networkManagerMock.asyncRequestHandlers.append({ request, _ in
                 if request.url == expectedReglockRequest.url {
                     #expect(finalMasterKey.reglockToken == request.parameters["registrationLock"] as! String)
@@ -446,6 +450,7 @@ public class RegistrationCoordinatorTest {
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit(), // doesn't matter for url matching
+            logger: .empty(),
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
@@ -575,6 +580,7 @@ public class RegistrationCoordinatorTest {
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit(), // // doesn't matter for url matching
+            logger: .empty(),
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
@@ -962,6 +968,7 @@ public class RegistrationCoordinatorTest {
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit(), // // doesn't matter for url matching
+            logger: .empty(),
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
@@ -1182,6 +1189,7 @@ public class RegistrationCoordinatorTest {
         let expectedSVR2CheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
             e164: Stubs.e164,
             credentials: svr2CredentialCandidates,
+            logger: .empty(),
         )
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedSVR2CheckRequest.url.absoluteString,
@@ -1270,7 +1278,10 @@ public class RegistrationCoordinatorTest {
         })
 
         // If we had reglock before registration, it should be re-enabled.
-        let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(token: finalMasterKey.reglockToken)
+        let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(
+            token: finalMasterKey.reglockToken,
+            logger: .empty(),
+        )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedReglockRequest.url {
                 #expect(finalMasterKey.reglockToken == request.parameters["registrationLock"] as! String)
@@ -1324,6 +1335,7 @@ public class RegistrationCoordinatorTest {
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit(), // doesn't matter for url matching
+            logger: .empty(),
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
@@ -1393,6 +1405,7 @@ public class RegistrationCoordinatorTest {
         let expectedSVR2CheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
             e164: Stubs.e164,
             credentials: svr2CredentialCandidates,
+            logger: .empty(),
         )
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedSVR2CheckRequest.url.absoluteString,
@@ -1647,6 +1660,7 @@ public class RegistrationCoordinatorTest {
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(finalMasterKey),
             auth: .implicit(), // doesn't matter for url matching
+            logger: .empty(),
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
@@ -1779,6 +1793,7 @@ public class RegistrationCoordinatorTest {
         var expectedSVRCheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
             e164: originalE164,
             credentials: credentialCandidates,
+            logger: .empty(),
         )
         mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
@@ -1810,6 +1825,7 @@ public class RegistrationCoordinatorTest {
         expectedSVRCheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
             e164: changedE164,
             credentials: credentialCandidates,
+            logger: .empty(),
         )
         mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
@@ -1941,6 +1957,7 @@ public class RegistrationCoordinatorTest {
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(newMasterKey),
             auth: .implicit(), // doesn't matter for url matching
+            logger: .empty(),
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
@@ -2950,6 +2967,7 @@ public class RegistrationCoordinatorTest {
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(newMasterKey),
             auth: .implicit(), // doesn't matter for url matching
+            logger: .empty(),
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
@@ -3090,6 +3108,7 @@ public class RegistrationCoordinatorTest {
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
             Stubs.accountAttributes(newMasterKey),
             auth: .implicit(), // doesn't matter for url matching
+            logger: .empty(),
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
             if request.url == expectedAttributesRequest.url {
@@ -3192,6 +3211,7 @@ public class RegistrationCoordinatorTest {
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles(),
+            logger: .empty(),
         )
     }
 
@@ -3206,6 +3226,7 @@ public class RegistrationCoordinatorTest {
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles(),
+            logger: .empty(),
         )
     }
 
@@ -3375,6 +3396,7 @@ public class RegistrationCoordinatorTest {
         let expectedSVR2CheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
             e164: Stubs.e164,
             credentials: svr2CredentialCandidates,
+            logger: .empty(),
         )
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedSVR2CheckRequest.url.absoluteString,

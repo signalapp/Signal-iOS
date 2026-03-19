@@ -319,6 +319,9 @@ public class GRDBSchemaMigrator {
         case addRecipientStatus
         case createKeyTransparencyTable
         case addAdminDeleteTable
+        case addRecipientStatesToAdminDelete
+        case modifyCallLinkRootKeyConstraint
+        case addDevice
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -445,7 +448,12 @@ public class GRDBSchemaMigrator {
     public static let grdbSchemaVersionLatest: UInt = 141
 
     private class DatabaseMigratorWrapper {
-        var migrator = DatabaseMigrator()
+        // Run with immediate (or disabled) foreign key checks so that pre-existing
+        // dangling rows don't cause unrelated migrations to fail. (When using
+        // .deferred, all existing foreign keys must be re-checked, and those may
+        // have pre-existing issues uncovered by an unrelated migration.)
+        // TODO: Clean up broken foreign key references; stop disabling these checks.
+        var migrator = DatabaseMigrator().disablingDeferredForeignKeyChecks()
 
         /**
          * Registers a database migration to be run asynchronously.
@@ -460,6 +468,7 @@ public class GRDBSchemaMigrator {
          */
         func registerMigration(
             _ identifier: MigrationId,
+            foreignKeyChecks: DatabaseMigrator.ForeignKeyChecks = .immediate,
             migrate: @escaping (DBWriteTransaction) throws -> Result<Void, Error>,
         ) {
             // Hold onto a reference to the migrator, so we can use its `appliedIdentifiers` method
@@ -469,10 +478,7 @@ public class GRDBSchemaMigrator {
             // on a weak reference to self because self is not guaranteed to be retained when
             // the migration actually runs; this class is used primary for migration setup.
             let migrator = self.migrator
-            // Run with immediate foreign key checks so that pre-existing dangling rows
-            // don't cause unrelated migrations to fail. We also don't perform schema
-            // alterations that would necessitate disabling foreign key checks.
-            self.migrator.registerMigration(identifier.rawValue, foreignKeyChecks: .immediate) { (database: Database) in
+            self.migrator.registerMigration(identifier.rawValue, foreignKeyChecks: foreignKeyChecks) { (database: Database) in
                 let startTime = CACurrentMediaTime()
 
                 // Create a transaction with this database connection.
@@ -5024,6 +5030,23 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.addRecipientStatesToAdminDelete) { tx in
+            try tx.database.alter(table: "AdminDelete") { table in
+                table.add(column: "recipientAddressStates", .blob)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.modifyCallLinkRootKeyConstraint, foreignKeyChecks: .deferred) { tx in
+            try modifyCallLinkRootKeyConstraint(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addDevice) { tx in
+            try addDevice(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -5073,7 +5096,7 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.dataMigration_groupIdMapping) { transaction in
-            TSThread.anyEnumerate(transaction: transaction) { (thread: TSThread, _: UnsafeMutablePointer<ObjCBool>) in
+            TSThread.anyEnumerate(transaction: transaction) { thread, _ in
                 guard let groupThread = thread as? TSGroupThread else {
                     return
                 }
@@ -5110,7 +5133,7 @@ public class GRDBSchemaMigrator {
                     groupThread.update(with: newGroupModel, transaction: transaction)
                 } catch {
                     thrownError = error
-                    stop.pointee = true
+                    stop = true
                 }
             }
             return thrownError.map { .failure($0) } ?? .success(())
@@ -5203,7 +5226,7 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.dataMigration_moveToThreadAssociatedData) { transaction in
             var thrownError: Error?
-            TSThread.anyEnumerate(transaction: transaction) { (thread, stop: UnsafeMutablePointer<ObjCBool>) in
+            TSThread.anyEnumerate(transaction: transaction) { thread, stop in
                 do {
                     try ThreadAssociatedData(
                         threadUniqueId: thread.uniqueId,
@@ -5215,7 +5238,7 @@ public class GRDBSchemaMigrator {
                     ).insert(transaction.database)
                 } catch {
                     thrownError = error
-                    stop.pointee = true
+                    stop = true
                 }
             }
             return thrownError.map { .failure($0) } ?? .success(())
@@ -6507,8 +6530,12 @@ public class GRDBSchemaMigrator {
         return try String.fetchOne(tx.database, sql: "SELECT uniqueId FROM model_SignalRecipient WHERE id = ?", arguments: [recipientId])
     }
 
-    static func addCallLinkTable(tx: DBWriteTransaction) throws {
-        try tx.database.create(table: "CallLink") { table in
+    static func createCallLinkTable(
+        tableName: String,
+        rootKeyConstraint: StaticString,
+        tx: DBWriteTransaction,
+    ) throws {
+        try tx.database.create(table: tableName) { table in
             table.column("id", .integer).primaryKey()
             table.column("roomId", .blob).notNull().unique()
             table.column("rootKey", .blob).notNull()
@@ -6522,11 +6549,13 @@ public class GRDBSchemaMigrator {
             table.column("revoked", .boolean)
             table.column("expiration", .integer)
             table.check(sql: #"LENGTH("roomId") IS 32"#)
-            table.check(sql: #"LENGTH("rootKey") IS 16"#)
+            table.check(sql: "LENGTH(\"rootKey\") \(rootKeyConstraint)")
             table.check(sql: #"LENGTH("adminPasskey") > 0 OR "adminPasskey" IS NULL"#)
             table.check(sql: #"NOT("isUpcoming" IS TRUE AND "expiration" IS NULL)"#)
         }
+    }
 
+    static func createCallLinkIndexes(tx: DBWriteTransaction) throws {
         try tx.database.create(
             index: "CallLink_Upcoming",
             on: "CallLink",
@@ -6547,6 +6576,16 @@ public class GRDBSchemaMigrator {
             columns: ["adminDeletedAtTimestampMs"],
             condition: Column("adminDeletedAtTimestampMs") != nil,
         )
+    }
+
+    static func addCallLinkTable(tx: DBWriteTransaction) throws {
+        try createCallLinkTable(
+            tableName: "CallLink",
+            rootKeyConstraint: "IS 16",
+            tx: tx,
+        )
+
+        try createCallLinkIndexes(tx: tx)
 
         let indexesToDrop = [
             "index_call_record_on_callId_and_threadId",
@@ -6691,6 +6730,50 @@ public class GRDBSchemaMigrator {
             on: "DeletedCallRecord",
             columns: ["deletedAtTimestamp"],
         )
+    }
+
+    static func modifyCallLinkRootKeyConstraint(tx: DBWriteTransaction) throws {
+        try createCallLinkTable(
+            tableName: "CallLink_new",
+            rootKeyConstraint: ">= 16",
+            tx: tx,
+        )
+
+        try tx.database.execute(
+            sql: """
+            INSERT INTO "CallLink_new" (
+                "id",
+                "roomId",
+                "rootKey",
+                "adminPasskey",
+                "adminDeletedAtTimestampMs",
+                "activeCallId",
+                "isUpcoming",
+                "pendingActionCounter",
+                "name",
+                "restrictions",
+                "revoked",
+                "expiration"
+            ) SELECT
+                "id",
+                "roomId",
+                "rootKey",
+                "adminPasskey",
+                "adminDeletedAtTimestampMs",
+                "activeCallId",
+                "isUpcoming",
+                "pendingActionCounter",
+                "name",
+                "restrictions",
+                "revoked",
+                "expiration"
+            FROM "CallLink"
+            """,
+        )
+
+        try tx.database.drop(table: "CallLink")
+        try tx.database.rename(table: "CallLink_new", to: "CallLink")
+        try createCallLinkIndexes(tx: tx)
     }
 
     private static func fetchAndClearBlockedGroupIds(tx: DBWriteTransaction) throws -> [Data] {
@@ -7522,6 +7605,22 @@ public class GRDBSchemaMigrator {
             table.column("aci", .blob).primaryKey().notNull()
             table.column("libsignalBlob", .blob).notNull()
         }
+    }
+
+    static func addDevice(tx: DBWriteTransaction) throws {
+        try tx.database.create(table: "Device") { table in
+            table.column("deviceId", .integer).primaryKey().notNull()
+            table.column("createdAt", .double).notNull()
+            table.column("lastSeenAt", .double).notNull()
+            table.column("name", .text)
+        }
+        try tx.database.execute(sql: """
+        DELETE FROM "OWSDevice" WHERE NOT ("deviceId" >= 1 AND "deviceId" <= 127)
+        """)
+        try tx.database.execute(sql: """
+        INSERT OR IGNORE INTO "Device" ("deviceId", "createdAt", "lastSeenAt", "name") SELECT "deviceId", unixepoch("createdAt", 'subsec'), unixepoch("lastSeenAt", 'subsec'), "name" FROM "OWSDevice"
+        """)
+        try tx.database.drop(table: "OWSDevice")
     }
 }
 

@@ -121,7 +121,11 @@ public class NotificationActionHandler {
         let optionalDraftModel: DraftQuotedReplyModel? = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             if
                 let incomingMessage = notificationMessage.interaction as? TSIncomingMessage,
-                let draftQuotedReplyModel = DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(originalMessage: incomingMessage, tx: transaction)
+                let draftQuotedReplyModel = DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(
+                    originalMessage: incomingMessage,
+                    loadNormalizedImage: NormalizedImage.loadImage(imageSource:maxPixelSize:),
+                    tx: transaction,
+                )
             {
                 return draftQuotedReplyModel
             }

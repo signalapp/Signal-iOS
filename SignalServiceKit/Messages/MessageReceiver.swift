@@ -1717,14 +1717,19 @@ public final class MessageReceiver {
         thread: TSThread,
         tx: DBWriteTransaction,
     ) {
-        guard let contactThread = thread as? TSContactThread else {
-            return
-        }
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
-            owsFailDebug("Not registered.")
+        guard
+            let contactThread = thread as? TSContactThread,
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
+        else {
             return
         }
+
+        guard dataMessage.hasExpireTimerVersion else {
+            Logger.warn("Attempting to update disappearing message configuration, but missing expireTimerVersion! \(envelope.timestamp)")
+            return
+        }
+
         GroupManager.remoteUpdateDisappearingMessages(
             contactThread: contactThread,
             disappearingMessageToken: .token(
@@ -2290,7 +2295,6 @@ public final class MessageReceiver {
 // MARK: -
 
 extension SSKProtoEnvelope {
-    @objc
     var formattedAddress: String {
         let serviceId = ServiceId.parseFrom(
             serviceIdBinary: self.sourceServiceIDBinary,
@@ -2301,7 +2305,6 @@ extension SSKProtoEnvelope {
 }
 
 extension SSKProtoContent {
-    @objc
     var contentDescription: String {
         var parts = [String]()
         if let dataMessage = self.dataMessage {
@@ -2345,7 +2348,6 @@ extension SSKProtoContent {
 }
 
 extension SSKProtoCallMessage {
-    @objc
     var contentDescription: String {
         let messageType: String
         let callId: UInt64
@@ -2396,7 +2398,6 @@ extension SSKProtoCallMessageOpaqueUrgency {
 }
 
 extension SSKProtoDataMessage {
-    @objc
     var contentDescription: String {
         var parts = [String]()
         if !attachments.isEmpty {
@@ -2458,7 +2459,6 @@ extension SSKProtoDataMessage {
 }
 
 extension SSKProtoSyncMessage {
-    @objc
     var contentDescription: String {
         var parts = [String]()
         if sent != nil {

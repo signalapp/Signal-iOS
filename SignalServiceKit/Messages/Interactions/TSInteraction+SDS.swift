@@ -4993,50 +4993,22 @@ public extension TSInteraction {
     // Records are not visited in any particular order.
     class func anyEnumerate(
         transaction: DBReadTransaction,
-        block: (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) {
-        anyEnumerate(transaction: transaction, batched: false, block: block)
-    }
-
-    // Traverses all records.
-    // Records are not visited in any particular order.
-    class func anyEnumerate(
-        transaction: DBReadTransaction,
-        batched: Bool = false,
-        block: (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) {
-        let batchSize = batched ? Batching.kDefaultBatchSize : 0
-        anyEnumerate(transaction: transaction, batchSize: batchSize, block: block)
-    }
-
-    // Traverses all records.
-    // Records are not visited in any particular order.
-    //
-    // If batchSize > 0, the enumeration is performed in autoreleased batches.
-    class func anyEnumerate(
-        transaction: DBReadTransaction,
-        batchSize: UInt,
-        block: (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (TSInteraction) -> Void,
     ) {
         let cursor = TSInteraction.grdbFetchCursor(transaction: transaction)
-        Batching.loop(batchSize: batchSize,
-                        loopBlock: { stop in
-                            do {
-                                guard let value = try cursor.next() else {
-                                    stop.pointee = true
-                                    return
-                                }
-                                block(value, stop)
-                            } catch let error {
-                                owsFailDebug("Couldn't fetch model: \(error)")
-                            }
-                            })
+        do {
+            while let value = try cursor.next() {
+                block(value)
+            }
+        } catch let error {
+            owsFailDebug("Couldn't fetch model: \(error)")
+        }
     }
 
     // Does not order the results.
     class func anyFetchAll(transaction: DBReadTransaction) -> [TSInteraction] {
         var result = [TSInteraction]()
-        anyEnumerate(transaction: transaction) { (model, _) in
+        anyEnumerate(transaction: transaction) { model in
             result.append(model)
         }
         return result

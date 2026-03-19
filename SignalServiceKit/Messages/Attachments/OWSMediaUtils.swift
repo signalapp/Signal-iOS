@@ -30,16 +30,6 @@ public enum OWSMediaUtils {
         return result
     }
 
-    public static func thumbnail(forImageData imageData: Data, maxDimensionPixels: CGFloat) throws -> UIImage {
-        guard DataImageSource(imageData).ows_isValidImage else {
-            throw OWSMediaError.failure(description: "Invalid image.")
-        }
-        guard let originalImage = UIImage(data: imageData) else {
-            throw OWSMediaError.failure(description: "Could not load original image.")
-        }
-        return try thumbnail(forImage: originalImage, maxDimensionPixels: maxDimensionPixels)
-    }
-
     public static let videoStillFrameMimeType = MimeType.imageJpeg
 
     public static func generateThumbnail(forVideo asset: AVAsset, maxSizePixels: CGSize) throws -> UIImage {

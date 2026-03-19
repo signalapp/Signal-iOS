@@ -4,8 +4,9 @@
 //
 
 import AVFoundation
+import LibSignalClient
 import SignalRingRTC
-public import SignalServiceKit
+import SignalServiceKit
 import SignalUI
 import WebRTC
 
@@ -70,7 +71,7 @@ extension IndividualCallObserver {
  *
  * This class' state should only be accessed on the main queue.
  */
-public class IndividualCall: CustomDebugStringConvertible {
+class IndividualCall: CustomDebugStringConvertible {
     private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
 
     // Mark -
@@ -213,13 +214,13 @@ public class IndividualCall: CustomDebugStringConvertible {
 
     var error: CallError?
 
-    public let offerMediaType: TSRecentCallOfferType
+    let offerMediaType: TSRecentCallOfferType
 
     // We start out muted if the record permission isn't granted. This should generally
     // only happen for incoming calls, because we proactively ask about it before you
     // can make an outgoing call.
     @MainActor
-    public var isMuted = AVAudioSession.sharedInstance().recordPermission != .granted {
+    var isMuted = AVAudioSession.sharedInstance().recordPermission != .granted {
         didSet {
             Logger.debug("muted changed: \(oldValue) -> \(self.isMuted)")
 
@@ -230,7 +231,7 @@ public class IndividualCall: CustomDebugStringConvertible {
     }
 
     @MainActor
-    public var isOnHold = false {
+    var isOnHold = false {
         didSet {
             Logger.debug("isOnHold changed: \(oldValue) -> \(self.isOnHold)")
 
@@ -325,7 +326,7 @@ public class IndividualCall: CustomDebugStringConvertible {
         Logger.debug("")
     }
 
-    public var debugDescription: String {
+    var debugDescription: String {
         return "IndividualCall: {\(remoteAddress), signalingId: \(callId as Optional)))}"
     }
 
@@ -349,7 +350,7 @@ public class IndividualCall: CustomDebugStringConvertible {
 
     // MARK: - Fetching and updating db objects
 
-    public func createOrUpdateCallInteractionAsync(
+    func createOrUpdateCallInteractionAsync(
         callType: RPRecentCallType,
     ) {
         // Set the call type immediately; additional CallKit callbacks might come in

@@ -165,8 +165,8 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
-        /// If any of the failed or pending downloads were enqueued by a Backup
-        /// restore, immediately attempt to download those attachments.
+        // If any of the failed or pending downloads were enqueued by a Backup
+        // restore, immediately attempt to download those attachments.
         Task {
             let attachmentDownloadManager = DependenciesBridge.shared.attachmentDownloadManager
             let attachmentStore = DependenciesBridge.shared.attachmentStore
@@ -985,7 +985,7 @@ extension ConversationViewController: CVComponentDelegate {
 
     }
 
-    public func didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {
+    public func didTapFailedMessage(_ message: TSMessage) {
         AssertIsOnMainThread()
 
         let promptBuilder = ResendMessagePromptBuilder(

@@ -3,29 +3,31 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
-public class CVMediaAlbumView: ManualStackViewWithLayer {
+class CVMediaAlbumView: ManualStackViewWithLayer {
+
     private var items = [CVMediaAlbumItem]()
-    private var isBorderless = false
 
-    public var itemViews = [CVMediaView]()
+    var itemViews = [CVMediaView]()
 
-    public var moreItemsView: CVMediaView?
+    var moreItemsView: CVMediaView?
 
-    private static let kSpacingPts: CGFloat = 2
-    private static let kMaxItems = 5
+    private enum Constants {
+        static let itemSpacing: CGFloat = 2
+        static let maxItemCount: Int = 5
+    }
 
     // Not all of these sub-stacks maybe used.
     private let subStack1 = ManualStackView(name: "CVMediaAlbumView.subStack1")
     private let subStack2 = ManualStackView(name: "CVMediaAlbumView.subStack2")
 
-    public init() {
+    init() {
         super.init(name: "media album view")
     }
 
-    public func configure(
+    func configure(
         mediaCache: CVMediaCache,
         items: [CVMediaAlbumItem],
         interaction: TSInteraction,
@@ -42,12 +44,14 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             owsFailDebug("Missing imageArrangement.")
             return
         }
-        let imageArrangement = imageArrangementWrapper.imageArrangement
 
         self.items = items
 
+        backgroundColor = isBorderless ? .clear : .Signal.background
+
+        let imageArrangement = imageArrangementWrapper.imageArrangement
         let viewSizePoints = imageArrangement.worstCaseMediaRenderSizePoints(conversationStyle: conversationStyle)
-        self.itemViews = CVMediaAlbumView.itemsToDisplay(forItems: items).map { item in
+        itemViews = CVMediaAlbumView.itemsToDisplay(forItems: items).map { item in
             let thumbnailQuality = Self.thumbnailQuality(
                 mediaSizePoints: item.mediaSize,
                 viewSizePoints: viewSizePoints,
@@ -65,16 +69,13 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             )
         }
 
-        self.isBorderless = isBorderless
-        self.backgroundColor = isBorderless ? .clear : Theme.backgroundColor
-
         createContents(
             imageArrangement: imageArrangement,
             cellMeasurement: cellMeasurement,
         )
     }
 
-    override public func reset() {
+    override func reset() {
         super.reset()
 
         subStack1.reset()
@@ -93,8 +94,6 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
     ) {
 
         let outerStackView = self
-        let subStack1 = self.subStack1
-        let subStack2 = self.subStack2
 
         subStack1.reset()
         subStack2.reset()
@@ -115,7 +114,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
 
             let itemViews2 = Array(itemViews.suffix(from: imageGroup1.imageCount))
 
-            if items.count > CVMediaAlbumView.kMaxItems {
+            if items.count > Constants.maxItemCount {
                 guard let lastView = itemViews2.last else {
                     owsFailDebug("Missing lastView")
                     return
@@ -128,7 +127,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 lastView.addSubview(tintView)
                 subStack2.layoutSubviewToFillSuperviewEdges(tintView)
 
-                let moreCount = max(1, items.count - CVMediaAlbumView.kMaxItems)
+                let moreCount = max(1, items.count - Constants.maxItemCount)
                 let moreCountText = OWSFormat.formatInt(moreCount)
                 let moreText = String(
                     format: OWSLocalizedString(
@@ -205,34 +204,28 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         }
     }
 
-    public func loadMedia() {
+    func loadMedia() {
         for itemView in itemViews {
             itemView.loadMedia()
         }
     }
 
-    public func unloadMedia() {
+    func unloadMedia() {
         for itemView in itemViews {
             itemView.unloadMedia()
         }
     }
 
     private class func itemsToDisplay(forItems items: [CVMediaAlbumItem]) -> [CVMediaAlbumItem] {
-        // TODO: Unless design changes, we want to display
-        //       items which are still downloading and invalid
-        //       items.
-        let validItems = items
-        guard validItems.count < kMaxItems else {
-            return Array(validItems[0..<kMaxItems])
-        }
-        return validItems
+        // We want to display items which are still downloading and invalid items.
+        return Array(items.prefix(Constants.maxItemCount))
     }
 
     private static var hStackConfig: CVStackViewConfig {
         CVStackViewConfig(
             axis: .horizontal,
             alignment: .fill,
-            spacing: Self.kSpacingPts,
+            spacing: Constants.itemSpacing,
             layoutMargins: .zero,
         )
     }
@@ -241,7 +234,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         CVStackViewConfig(
             axis: .vertical,
             alignment: .fill,
-            spacing: Self.kSpacingPts,
+            spacing: Constants.itemSpacing,
             layoutMargins: .zero,
         )
     }
@@ -252,7 +245,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
     private static let measurementKey_substack1 = "CVMediaAlbumView.measurementKey_substack1"
     private static let measurementKey_substack2 = "CVMediaAlbumView.measurementKey_substack2"
 
-    public class func measure(
+    class func measure(
         maxWidth: CGFloat,
         minWidth: CGFloat,
         items: [CVMediaAlbumItem],
@@ -511,14 +504,14 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         case 2:
             // X X
             // side-by-side.
-            let imageSize = CGSize(square: floor((maxWidth - kSpacingPts) / 2))
+            let imageSize = CGSize(square: floor((maxWidth - Constants.itemSpacing) / 2))
             return .oneHorizontalRow(row: ImageGroup(imageCount: 2, imageSize: imageSize))
         case 3:
             //   x
             // X x
             // Big on left, 2 small on right.
-            let smallImageSize: CGFloat = floor((maxWidth - kSpacingPts * 2) / 3)
-            let bigImageSize: CGFloat = smallImageSize * 2 + kSpacingPts
+            let smallImageSize: CGFloat = floor((maxWidth - Constants.itemSpacing * 2) / 3)
+            let bigImageSize: CGFloat = smallImageSize * 2 + Constants.itemSpacing
             return .twoVerticalColumns(
                 column1: ImageGroup(imageCount: 1, imageSize: .square(bigImageSize)),
                 column2: ImageGroup(imageCount: 2, imageSize: .square(smallImageSize)),
@@ -527,7 +520,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             // XX
             // XX
             // Square
-            let imageSize = CGSize(square: floor((maxWidth - CVMediaAlbumView.kSpacingPts) / 2))
+            let imageSize = CGSize(square: floor((maxWidth - CVMediaAlbumView.Constants.itemSpacing) / 2))
             return .twoHorizontalRows(
                 row1: ImageGroup(imageCount: 2, imageSize: imageSize),
                 row2: ImageGroup(imageCount: 2, imageSize: imageSize),
@@ -536,8 +529,8 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             // X X
             // xxx
             // 2 big on top, 3 small on bottom.
-            let bigImageSize: CGFloat = floor((maxWidth - kSpacingPts) / 2)
-            let smallImageSize: CGFloat = floor((maxWidth - kSpacingPts * 2) / 3)
+            let bigImageSize: CGFloat = floor((maxWidth - Constants.itemSpacing) / 2)
+            let smallImageSize: CGFloat = floor((maxWidth - Constants.itemSpacing * 2) / 3)
             return .twoHorizontalRows(
                 row1: ImageGroup(imageCount: 2, imageSize: .square(bigImageSize)),
                 row2: ImageGroup(imageCount: 3, imageSize: .square(smallImageSize)),
@@ -545,7 +538,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         }
     }
 
-    public func mediaView(forLocation location: CGPoint) -> CVMediaView? {
+    func mediaView(forLocation location: CGPoint) -> CVMediaView? {
         var bestMediaView: CVMediaView?
         var bestDistance: CGFloat = 0
         for itemView in itemViews {
@@ -560,7 +553,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         return bestMediaView
     }
 
-    public func isMoreItemsView(mediaView: CVMediaView) -> Bool {
+    func isMoreItemsView(mediaView: CVMediaView) -> Bool {
         return moreItemsView == mediaView
     }
 
@@ -622,30 +615,28 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
 
 // MARK: -
 
-public struct CVMediaAlbumItem: Equatable {
+struct CVMediaAlbumItem: Equatable {
 
-    public let attachment: CVAttachment
+    let attachment: CVAttachment
 
-    // This property will only be set if the attachment is downloaded and valid.
-    public let attachmentStream: AttachmentStream?
+    /// This property will only be set if the attachment is downloaded and valid.
+    let attachmentStream: AttachmentStream?
 
-    public var renderingFlag: AttachmentReference.RenderingFlag {
+    var renderingFlag: AttachmentReference.RenderingFlag {
         attachment.attachment.reference.renderingFlag
     }
 
-    public let hasCaption: Bool
+    let hasCaption: Bool
 
-    // This property will be non-zero if the attachment is valid.
-    //
-    // TODO: Add units to name.
-    public let mediaSize: CGSize
+    /// This property will be non-zero if the attachment is valid.
+    let mediaSize: CGSize
 
-    public let isBroken: Bool
+    let isBroken: Bool
 
     /// Whether the containing thread has a pending message request
-    public let threadHasPendingMessageRequest: Bool
+    let threadHasPendingMessageRequest: Bool
 
-    public static func ==(lhs: CVMediaAlbumItem, rhs: CVMediaAlbumItem) -> Bool {
+    static func ==(lhs: CVMediaAlbumItem, rhs: CVMediaAlbumItem) -> Bool {
         return lhs.attachment == rhs.attachment
             && lhs.hasCaption == rhs.hasCaption
             && lhs.mediaSize == rhs.mediaSize

@@ -15,7 +15,7 @@ public class RegistrationSessionManagerMock: RegistrationSessionManager {
 
     public var sessionToRestore: RegistrationSession?
 
-    public func restoreSession() -> RegistrationSession? {
+    public func restoreSession(logger: PrefixedLogger) -> RegistrationSession? {
         return sessionToRestore
     }
 
@@ -30,7 +30,7 @@ public class RegistrationSessionManagerMock: RegistrationSessionManager {
         beginSessionResponseMocks.append(mock)
     }
 
-    public func beginOrRestoreSession(e164: E164, apnsToken: String?) async -> Registration.BeginSessionResponse {
+    public func beginOrRestoreSession(e164: E164, apnsToken: String?, logger: PrefixedLogger) async -> Registration.BeginSessionResponse {
         // TODO: Append step to known steps
         return beginSessionResponseMocks.removeFirst()
     }
@@ -46,6 +46,7 @@ public class RegistrationSessionManagerMock: RegistrationSessionManager {
     public func fulfillChallenge(
         for session: RegistrationSession,
         fulfillment: Registration.ChallengeFulfillment,
+        logger: PrefixedLogger,
     ) async -> Registration.UpdateSessionResponse {
         latestChallengeFulfillment = fulfillment
         return fulfillChallengeResponseMocks.removeFirst()
@@ -62,6 +63,7 @@ public class RegistrationSessionManagerMock: RegistrationSessionManager {
     public func requestVerificationCode(
         for session: RegistrationSession,
         transport: Registration.CodeTransport,
+        logger: PrefixedLogger,
     ) async -> Registration.UpdateSessionResponse {
         didRequestCode = true
         // TODO: Append step to known steps
@@ -78,6 +80,7 @@ public class RegistrationSessionManagerMock: RegistrationSessionManager {
     public func submitVerificationCode(
         for session: RegistrationSession,
         code: String,
+        logger: PrefixedLogger,
     ) async -> Registration.UpdateSessionResponse {
         return submitCodeResponseMocks.removeFirst()
     }

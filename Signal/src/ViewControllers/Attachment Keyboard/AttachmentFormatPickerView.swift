@@ -354,6 +354,9 @@ class AttachmentFormatPickerView: UIView {
             textLabel.text = text
             button.configuration?.image = UIImage(imageLiteralResourceName: imageName)
             accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "format-\(attachmentType.rawValue)")
+            isAccessibilityElement = true
+            accessibilityLabel = text
+            accessibilityTraits = .button
         }
     }
 }

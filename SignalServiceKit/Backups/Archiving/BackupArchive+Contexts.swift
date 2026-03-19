@@ -23,6 +23,9 @@ extension BackupArchive {
         let startDate: Date
         /// The remote config at the start of archiving.
         let remoteConfig: RemoteConfig
+        /// The upload era at the start of archiving.
+        /// - SeeAlso ``BackupAttachmentUploadEraStore``
+        let currentUploadEra: String
         /// For benchmarking archive steps.
         let bencher: BackupArchive.ArchiveBencher
         /// Counts archived attachment bytes for future progress reporting.
@@ -36,6 +39,7 @@ extension BackupArchive {
             localIdentifiers: LocalIdentifiers,
             startDate: Date,
             remoteConfig: RemoteConfig,
+            currentUploadEra: String,
             bencher: BackupArchive.ArchiveBencher,
             attachmentByteCounter: BackupArchiveAttachmentByteCounter,
             includedContentFilter: IncludedContentFilter,
@@ -44,6 +48,7 @@ extension BackupArchive {
             self.localIdentifiers = localIdentifiers
             self.startDate = startDate
             self.remoteConfig = remoteConfig
+            self.currentUploadEra = currentUploadEra
             self.bencher = bencher
             self.attachmentByteCounter = attachmentByteCounter
             self.includedContentFilter = includedContentFilter

@@ -454,7 +454,7 @@ extension TSAccountManagerImpl {
 
             let isPrimaryDevice: Bool?
             if let persistedDeviceId {
-                isPrimaryDevice = persistedDeviceId == OWSDevice.primaryDeviceId
+                isPrimaryDevice = persistedDeviceId == DeviceId.primary.rawValue
                 logger?.info("Device id loaded, is primary: \(isPrimaryDevice!)")
             } else {
                 isPrimaryDevice = nil

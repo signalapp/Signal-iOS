@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 struct DeviceMessage {
     let type: SSKProtoEnvelopeType

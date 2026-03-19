@@ -2153,54 +2153,26 @@ public extension %(class_name)s {
     // Records are not visited in any particular order.
     class func anyEnumerate(
         transaction: DBReadTransaction,
-        block: (%s, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) {
-        anyEnumerate(transaction: transaction, batched: false, block: block)
-    }
-
-    // Traverses all records.
-    // Records are not visited in any particular order.
-    class func anyEnumerate(
-        transaction: DBReadTransaction,
-        batched: Bool = false,
-        block: (%s, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) {
-        let batchSize = batched ? Batching.kDefaultBatchSize : 0
-        anyEnumerate(transaction: transaction, batchSize: batchSize, block: block)
-    }
-
-    // Traverses all records.
-    // Records are not visited in any particular order.
-    //
-    // If batchSize > 0, the enumeration is performed in autoreleased batches.
-    class func anyEnumerate(
-        transaction: DBReadTransaction,
-        batchSize: UInt,
-        block: (%s, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (%s) -> Void,
     ) {
         let cursor = %s.grdbFetchCursor(transaction: transaction)
-        Batching.loop(batchSize: batchSize,
-                        loopBlock: { stop in
-                            do {
-                                guard let value = try cursor.next() else {
-                                    stop.pointee = true
-                                    return
-                                }
-                                block(value, stop)
-                            } catch let error {
-                                owsFailDebug("Couldn't fetch model: \\(error)")
-                            }
-                            })
+        do {
+            while let value = try cursor.next() {
+                block(value)
+            }
+        } catch let error {
+            owsFailDebug("Couldn't fetch model: \\(error)")
+        }
     }
 """ % (
-            (str(clazz.name),) * 4
+            (str(clazz.name),) * 2
         )
 
         swift_body += """
     // Does not order the results.
     class func anyFetchAll(transaction: DBReadTransaction) -> [%s] {
         var result = [%s]()
-        anyEnumerate(transaction: transaction) { (model, _) in
+        anyEnumerate(transaction: transaction) { model in
             result.append(model)
         }
         return result

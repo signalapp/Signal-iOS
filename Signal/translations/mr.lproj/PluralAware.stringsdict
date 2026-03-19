@@ -29,6 +29,22 @@
 			<string>%2$d सेकंद</string>
 		</dict>
 	</dict>
+	<key>ACCESSIBILITY_LABEL_MULTIPLE_ATTACHMENTS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d media item</string>
+			<key>other</key>
+			<string>%1$d media items</string>
+		</dict>
+	</dict>
 	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

@@ -28,13 +28,6 @@ public struct FileHandleImageSource: OWSImageSource {
         return try fileHandle.read(upToCount: byteLength) ?? Data()
     }
 
-    public func readIntoMemory() throws -> Data {
-        if try fileHandle.offset() != 0 {
-            fileHandle.seek(toFileOffset: 0)
-        }
-        return try fileHandle.readToEnd() ?? Data()
-    }
-
     // Class-bound wrapper around FileHandle
     class FileHandleWrapper {
         let fileHandle: FileHandle

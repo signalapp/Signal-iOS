@@ -7,6 +7,9 @@
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Tentang Signal";
 
+/* Label for forward button in media control panel */
+"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Forward";
+
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Lampiran";
 
@@ -26,7 +29,7 @@
 "ACCESSIBILITY_LABEL_STICKER" = "Stiker";
 
 /* Accessibility label for stickers. Embeds {{ name of top emoji the sticker resembles }} */
-"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "Stiker mirip dengan %1$@";
+"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "Stiker yang mirip dengan %1$@";
 
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Pesan suara";
@@ -804,9 +807,6 @@
 
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Detail Pencadangan";
-
-/* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Ini adalah fitur beta dan terus disempurnakan seiring waktu.";
 
 /* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "Anda harus terdaftar agar dapat membuat Kunci Pemulihan baru.";
@@ -1976,7 +1976,7 @@
 "COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "Kelola";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Signal memiliki akses terbatas ke kontak sistem Anda";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION" = "Akses Signal ke kontak di sistem Anda terbatas";
 
 /* Button to open settings from an empty compose-screen contact picker. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Buka pengaturan";
@@ -2087,7 +2087,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Untuk melihat nama kontak dan fotonya dalam obrolan Anda:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Ketuk \"Buka pengaturan\" di bawah";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Ketuk \"Buka Pengaturan\" di bawah";
 
 /* Second step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Aktifkan \"Kontak\"";
@@ -2102,7 +2102,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Izinkan Akses";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Izinkan akses ke daftar kontak Anda agar bisa cepat menemukan mereka di Signal.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Izinkan akses ke daftar kontak Anda agar mereka cepat ditemukan di Signal.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Temukan kontak di Signal";
@@ -2351,10 +2351,10 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Semua anggota";
 
 /* Label for 'edit member label access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "Add Member Labels";
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "Tambahkan Label Anggota";
 
 /* Description for the 'edit member label access'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "Choose who can add member labels in this group.";
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "Pilih siapa yang bisa menambahkan label anggota di grup ini.";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Tambahkan anggota";
@@ -2372,10 +2372,10 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ akan dapat mengedit grup ini dan anggotanya.";
 
 /* Label for button that sets 'member labels access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON" = "Only Admins";
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON" = "Hanya Admin";
 
 /* Label for button that sets 'member labels access' to 'members-only'. */
-"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON" = "Semua Anggota";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Permintaan & Undangan";
@@ -2447,7 +2447,7 @@
 "CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "Tidak ada grup yang sama";
 
 /* Label for 'permissions' action in conversation settings view. */
-"CONVERSATION_SETTINGS_PERMISSIONS" = "Perizinan";
+"CONVERSATION_SETTINGS_PERMISSIONS" = "Izin";
 
 /* Label for 'remove from group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Hapus Dari Grup";
@@ -3386,31 +3386,31 @@
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Aktivitas";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Binatang & Alam";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Binatang dan Alam";
 
 /* The name for the emoji category 'Flags' */
 "EMOJI_CATEGORY_FLAGS_NAME" = "Bendera";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "Makanan & Minuman";
+"EMOJI_CATEGORY_FOOD_NAME" = "Makanan dan Minuman";
 
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Obyek";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Objek";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Pesan Ini";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Pesan ini";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Baru";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smiley & Orang";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smiley dan Orang";
 
 /* The name for the emoji category 'Symbols' */
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "Simbol";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Perjalanan & Destinasi";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Wisata dan Destinasi";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Kontak Anda tidak ada yang menggunakan Signal.";
@@ -3677,7 +3677,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Masukkan pencarian Anda";
 
 /* Label for the 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Pergi ke Pengaturan";
+"GO_TO_SETTINGS_BUTTON" = "Buka Pengaturan";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Anda mengubah siapa yang bisa mengedit info grup menjadi “%1$@”.";
@@ -3689,7 +3689,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Info grup bisa diubah oleh “%1$@”.";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Only Admins";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Hanya Admin";
 
 /* Description of the 'all users' access level. */
 "GROUP_ACCESS_LEVEL_ANY" = "Semua Pengguna";
@@ -3704,13 +3704,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Ternonaktifkan";
 
 /* Message indicating that the access to setting member labels was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can add member labels to “%1$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT" = "Anda mengganti siapa yang bisa menambahkan label anggota menjadi “%1$@”.";
 
 /* Message indicating that the access to setting member labels was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can add member labels to “%2$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ mengganti siapa yang bisa menambahkan label anggota menjadi “%2$@”.";
 
 /* Message indicating that the access to setting member labels was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT" = "An admin changed who can add member labels to “%1$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT" = "Admin mengganti siapa yang bisa menambahkan label anggota menjadi “%1$@”.";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Anda mengubah siapa yang bisa mengedit keanggotaan grup menjadi “%1$@”.";
@@ -3739,14 +3739,14 @@
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ diblokir";
 
-/* Context menu action to view a call participant's contact details. */
-"GROUP_CALL_CONTEXT_MENU_CONTACT_DETAILS" = "Contact Details";
-
 /* Context menu action to navigate to the chat with a call participant. */
-"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "Go to Chat";
+"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "Buka Obrolan";
 
 /* Context menu action to mute a call participant's audio. */
-"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "Mute Audio";
+"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "Senyapkan Audio";
+
+/* Context menu action to view a call participant's profile details. */
+"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Profile Details";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Lanjutkan Panggilan";
@@ -5180,7 +5180,7 @@
 "MEMBER_LABEL_VIEW_TITLE" = "Label Anggota";
 
 /* A one-time confirmation that you, as an admin, want to delete for everyone */
-"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "Group members on the latest versions of Signal will see that you deleted these messages.";
+"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "Anggota grup dengan Signal versi terkini bisa melihat bahwa Anda menghapus pesan-pesan ini.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Salin teks pesan";
@@ -5804,7 +5804,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Untuk menerima pemberitahuan untuk pesan baru:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Ketuk \"Pergi ke Pengaturan\" di bawah";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Ketuk \"Buka Pengaturan\" di bawah";
 
 /* Third step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Nyalakan: \"Izinkan Pemberitahuan\"";
@@ -5996,7 +5996,7 @@
 "ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal ingin meminta izin berikut.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Berikan Perizinan";
+"ONBOARDING_PERMISSIONS_TITLE" = "Berikan Izin";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Pilih siapa yang dapat mencari Anda di Signal dengan nomor telepon %1$@";
@@ -7189,8 +7189,8 @@
 /* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "Untuk mentransfer akun ini ke perangkat baru, ketuk \"Lanjutkan\" dan pindai kode QR dengan kamera Signal. Pastikan Anda hanya memindai kode QR yang diperoleh langsung dari Signal.";
 
-/* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Membalas pesan %1$@.";
+/* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@. %2$@";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
@@ -7250,40 +7250,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Semua. %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Menanggapi %1$@ pada pesan Anda";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Memberikan %1$@ di pesan Anda";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Menanggapi %1$@ pada album Anda";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Memberikan %1$@ di album Anda";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Menanggapi %1$@ pada audio Anda";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Memberikan %1$@ di audio Anda";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Menanggapi %1$@ pada kiriman kontak yang Anda bagikan";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Memberikan %1$@ di kiriman kontak yang Anda bagikan";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Menanggapi %1$@ pada file Anda";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Memberikan %1$@ di file Anda";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Menanggapi %1$@ pada GIF Anda";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Memberikan %1$@ di GIF Anda";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Menanggapi %1$@ pada foto Anda";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Memberikan %1$@ di foto Anda";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Menanggapi %1$@ pada stiker Anda";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Memberikan %1$@ di stiker Anda";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Menanggapi %1$@ pada: \"%2$@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Memberikan %1$@ di: \"%2$@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Menanggapi %1$@ pada video Anda";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Memberikan %1$@ di video Anda";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Menanggapi %1$@ pada media sekali-lihat Anda";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Memberikan %1$@ di media sekali-lihat Anda";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Menanggapi %1$@ pada pesan suara Anda";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Memberikan %1$@ di pesan suara Anda";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Terbaca";
@@ -7520,10 +7520,10 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "Siapkan profil Anda";
 
 /* Error shown if an SMS/call service provider is unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "We are unable to send an SMS to your number. Please try again in several hours.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Kami tidak bisa mengirimkan SMS ke nomor Anda. Coba lagi dalam beberapa jam.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "We are unable to send an SMS to your number. Please try again in a few minutes.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Kami tidak bisa mengirimkan SMS ke nomor Anda. Coba lagi dalam beberapa menit.";
 
 /* Third step in directions for how to make a backup */
 "REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Aktifkan pencadangan dan tunggu hingga prosesnya selesai";
@@ -7607,7 +7607,7 @@
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Ada yang salah dengan kode QR dan tautan nama pengguna Anda, tautan tersebut sudah tidak valid. Buat tautan baru untuk dibagikan dengan orang lain.";
 
 /* Toast that appears when local user tried to delete a message that has disappeared */
-"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "Message disappeared before it could be deleted.";
+"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "Pesan hilang sebelum bisa dihapus.";
 
 /* A message that displays when one person in a call remotely muted another participant. Embeds {{name}} {{name}} */
 "REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@ membisukan %2$@.";
@@ -9335,16 +9335,16 @@
 "STORY_PRIVACY_TITLE" = "Privasi Cerita";
 
 /* Text explaining that you reacted to someone else's story. Embeds {{ %1$@ reaction emoji, %2$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "Anda bereaksi %1$@ di cerita %2$@";
+"STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "Anda memberikan %1$@ di cerita %2$@";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "Bereaksi %1$@ di cerita Anda";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "Memberikan %1$@ di cerita Anda";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Memberi tanggapan %1$@ pada sebuah cerita";
+"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Memberikan %1$@ di sebuah cerita";
 
 /* quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "Memberi tanggapan %1$@ pada sebuah cerita";
+"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "Memberikan  %1$@ di sebuah cerita";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Balas";
@@ -9485,7 +9485,7 @@
 "SUPPORT_EMAIL_SUBJECT" = "Permintaan Dukungan Signal iOS";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "Saran dan kesan (opsional)";
+"SUPPORT_EMOJI_PROMPT" = "Perasaan Anda? (opsional)";
 
 /* Label in support request informing user about Signal FAQ */
 "SUPPORT_FAQ_PROMPT" = "Sudahkah Anda membaca FAQ?";

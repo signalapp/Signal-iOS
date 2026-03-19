@@ -261,6 +261,10 @@ struct CVItemModelBuilder: CVItemBuilding {
         if let interactionId = interaction.grdbId?.int64Value {
             isPinnedMessage = threadViewModel.pinnedMessages.contains(where: { $0.grdbId?.int64Value == interactionId })
         }
+        var adminDeleteRecipientAddressStates: AdminDeleteManager.RecipientAddressStates?
+        if let message = interaction as? TSMessage, message.wasRemotelyDeleted {
+            adminDeleteRecipientAddressStates = AdminDeleteManager.recipientAddressStates(message: message, tx: transaction)
+        }
 
         if let paymentMessage = interaction as? OWSPaymentMessage {
             itemViewState.footerState = CVComponentFooter.buildPaymentState(
@@ -274,6 +278,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                 interaction: interaction,
                 tapForMoreState: tapForMoreState,
                 isPinnedMessage: isPinnedMessage,
+                adminDeleteRecipientStates: adminDeleteRecipientAddressStates,
                 transaction: transaction,
             )
         }

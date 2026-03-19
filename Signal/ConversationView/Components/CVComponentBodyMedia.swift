@@ -3,12 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
-public class CVComponentBodyMedia: CVComponentBase, CVComponent {
+class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
-    public var componentKey: CVComponentKey { .bodyMedia }
+    var componentKey: CVComponentKey { .bodyMedia }
 
     private let bodyMedia: CVComponentState.BodyMedia
     private var items: [CVMediaAlbumItem] {
@@ -43,18 +43,11 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         super.init(itemModel: itemModel)
     }
 
-    public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
+    func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
         CVComponentViewBodyMedia()
     }
 
-    private var bodyTextColor: UIColor {
-        guard let message = interaction as? TSMessage else {
-            return .black
-        }
-        return conversationStyle.bubbleTextColor(message: message)
-    }
-
-    public func configureForRendering(
+    func configureForRendering(
         componentView componentViewParam: CVComponentView,
         cellMeasurement: CVCellMeasurement,
         componentDelegate: CVComponentDelegate,
@@ -66,13 +59,15 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
 
         let conversationStyle = self.conversationStyle
+        let tintColor = Theme.primaryTextColor
+        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
 
         let albumView = componentView.albumView
         albumView.configure(
-            mediaCache: self.mediaCache,
-            items: self.items,
-            interaction: self.interaction,
-            isBorderless: self.isBorderless,
+            mediaCache: mediaCache,
+            items: items,
+            interaction: interaction,
+            isBorderless: isBorderless,
             cellMeasurement: cellMeasurement,
             conversationStyle: conversationStyle,
         )
@@ -87,7 +82,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             subviews: [albumView],
         )
 
-        if let footerOverlay = self.footerOverlay {
+        if let footerOverlay {
             let footerView: CVComponentView
             if let footerOverlayView = componentView.footerOverlayView {
                 footerView = footerOverlayView
@@ -163,24 +158,26 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         if bodyMedia.mediaAlbumHasPendingAttachment {
             let iconView = CVImageView()
-            iconView.setTemplateImageName(Theme.iconName(.arrowDown), tintColor: UIColor.ows_white)
+            iconView.setTemplateImageName(Theme.iconName(.arrowDown), tintColor: tintColor)
             if albumView.itemViews.count > 1 {
                 let downloadStackConfig = ManualStackView.Config(
                     axis: .horizontal,
                     alignment: .center,
-                    spacing: 8,
-                    layoutMargins: UIEdgeInsets(hMargin: 16, vMargin: 10),
+                    spacing: 6,
+                    layoutMargins: UIEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 14),
                 )
                 let downloadStack = ManualStackView(name: "downloadStack")
                 downloadStack.apply(config: downloadStackConfig)
                 var subviewInfos = [ManualStackSubviewInfo]()
 
                 let pillView = ManualLayoutViewWithLayer.pillView(name: "pillView")
-                pillView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
+                pillView.clipsToBounds = true
+                let blurView = UIVisualEffectView(effect: blurEffect)
+                pillView.addSubviewToFillSuperviewEdges(blurView)
                 downloadStack.addSubviewToFillSuperviewEdges(pillView)
 
                 downloadStack.addArrangedSubview(iconView)
-                subviewInfos.append(CGSize.square(20).asManualSubviewInfo(hasFixedSize: true))
+                subviewInfos.append(CGSize.square(24).asManualSubviewInfo(hasFixedSize: true))
 
                 let downloadLabel = CVLabel()
                 let downloadFormat = (
@@ -199,9 +196,9 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 downloadStack.addArrangedSubview(downloadLabel)
                 let downloadLabelConfig = CVLabelConfig(
                     text: .text(String.localizedStringWithFormat(downloadFormat, items.count)),
-                    displayConfig: .forUnstyledText(font: .dynamicTypeSubheadline, textColor: .ows_white),
+                    displayConfig: .forUnstyledText(font: .dynamicTypeSubheadline, textColor: tintColor),
                     font: .dynamicTypeSubheadline,
-                    textColor: UIColor.ows_white,
+                    textColor: tintColor,
                 )
                 downloadLabelConfig.applyForRendering(label: downloadLabel)
                 let downloadLabelSize = CVText.measureLabel(
@@ -221,8 +218,10 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 )
             } else {
                 let circleSize: CGFloat = 44
-                let circleView = OWSLayerView.circleView(size: circleSize)
-                circleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
+                let circleView = ManualLayoutViewWithLayer.circleView(name: "circleView")
+                circleView.clipsToBounds = true
+                let blurView = UIVisualEffectView(effect: blurEffect)
+                circleView.addSubviewToFillSuperviewEdges(blurView)
                 stackView.addSubviewToCenterOnSuperview(circleView, size: .square(circleSize))
                 stackView.addSubviewToCenterOnSuperview(iconView, size: .square(24))
             }
@@ -276,14 +275,17 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     }
 
                     let downloadSizeView = ManualLayoutViewWithLayer.pillView(name: "downloadSizeView")
-                    downloadSizeView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
-                    downloadSizeView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 1)
+                    downloadSizeView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 4)
+                    downloadSizeView.clipsToBounds = true
+
+                    let blurView = UIVisualEffectView(effect: blurEffect)
+                    downloadSizeView.addSubviewToFillSuperviewEdges(blurView)
 
                     let downloadSizeLabelConfig = CVLabelConfig(
                         text: .text(downloadSizeText.joined(separator: " • ")),
-                        displayConfig: .forUnstyledText(font: .dynamicTypeCaption1, textColor: .ows_white),
+                        displayConfig: .forUnstyledText(font: .dynamicTypeCaption1, textColor: tintColor),
                         font: .dynamicTypeCaption1,
-                        textColor: .ows_white,
+                        textColor: tintColor,
                     )
                     let downloadSizeLabel = CVLabel()
                     downloadSizeLabelConfig.applyForRendering(label: downloadSizeLabel)
@@ -296,15 +298,15 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     let downloadSizeViewSize = downloadSizeLabelSize + downloadSizeView.layoutMargins.asSize
                     stackView.addSubview(downloadSizeView)
                     stackView.addLayoutBlock { view in
-                        let hInset: CGFloat = 16
+                        let inset: CGFloat = 6
                         let x = (
                             CurrentAppContext().isRTL
-                                ? view.width - (downloadSizeViewSize.width - hInset)
-                                : hInset,
+                                ? view.width - (downloadSizeViewSize.width - inset)
+                                : inset,
                         )
                         downloadSizeView.frame = CGRect(
                             x: x,
-                            y: 9,
+                            y: inset,
                             width: downloadSizeViewSize.width,
                             height: downloadSizeViewSize.height,
                         )
@@ -314,15 +316,13 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
     }
 
-    public func bubbleViewPartner(componentView: CVComponentView) -> OWSBubbleViewPartner? {
+    func bubbleViewPartner(componentView: CVComponentView) -> OWSBubbleViewPartner? {
         guard let componentView = componentView as? CVComponentViewBodyMedia else {
             owsFailDebug("Unexpected componentView.")
             return nil
         }
         return componentView.innerShadowView
     }
-
-    private static var senderNameFont: UIFont { UIFont.dynamicTypeCaption1.semibold() }
 
     private var stackConfig: CVStackViewConfig {
         CVStackViewConfig(
@@ -344,7 +344,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     private static let measurementKey_stackView = "CVComponentBodyMedia.measurementKey_stackView"
     private static let measurementKey_footerSize = "CVComponentBodyMedia.measurementKey_footerSize"
 
-    public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
+    func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
         owsAssertDebug(items.count > 0)
 
@@ -381,7 +381,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
     // MARK: - Events
 
-    override public func cellWillBecomeVisible(
+    override func cellWillBecomeVisible(
         componentDelegate: CVComponentDelegate,
     ) {
         AssertIsOnMainThread()
@@ -394,7 +394,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
     }
 
-    override public func handleTap(
+    override func handleTap(
         sender: UIGestureRecognizer,
         componentDelegate: CVComponentDelegate,
         componentView: CVComponentView,
@@ -463,7 +463,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
     }
 
-    public func albumItemView(
+    func albumItemView(
         forAttachment attachment: ReferencedAttachment,
         componentView: CVComponentView,
     ) -> UIView? {
@@ -505,7 +505,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
-    public class CVComponentViewBodyMedia: NSObject, CVComponentView {
+    class CVComponentViewBodyMedia: NSObject, CVComponentView {
 
         fileprivate let stackView = CVComponentViewBodyMediaRootView(name: "stackView")
 
@@ -518,9 +518,9 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         fileprivate var innerShadowView: OWSBubbleShapeView?
 
-        public var isDedicatedCellView = false
+        var isDedicatedCellView = false
 
-        public var rootView: UIView {
+        var rootView: UIView {
             stackView
         }
 
@@ -533,7 +533,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         // MARK: -
 
-        public func setIsCellVisible(_ isCellVisible: Bool) {
+        func setIsCellVisible(_ isCellVisible: Bool) {
             if isCellVisible {
                 albumView.loadMedia()
             } else {
@@ -541,7 +541,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             }
         }
 
-        public func reset() {
+        func reset() {
             albumView.reset()
             stackView.reset()
             footerOverlayView?.reset()
@@ -580,12 +580,62 @@ extension CVComponentBodyMedia.CVComponentViewBodyMediaRootView: BodyMediaPresen
 // MARK: -
 
 extension CVComponentBodyMedia: CVAccessibilityComponent {
-    public var accessibilityDescription: String {
-        // TODO: We could describe how many media
-        // and their type (video, image, animated image).
-        OWSLocalizedString(
+    var accessibilityDescription: String {
+        let genericMediaString = OWSLocalizedString(
             "ACCESSIBILITY_LABEL_MEDIA",
             comment: "Accessibility label for media.",
         )
+
+        if bodyMedia.items.count > 1 {
+            return String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "ACCESSIBILITY_LABEL_MULTIPLE_ATTACHMENTS_%d",
+                    tableName: "PluralAware",
+                    comment: "Accessibility label for multiple attachment items. Embeds {{ number of attachments }}.",
+                ),
+                bodyMedia.items.count,
+            )
+        }
+
+        guard let mediaItem = bodyMedia.items.first else {
+            return genericMediaString
+        }
+
+        switch mediaItem.attachment {
+        case .stream(let referencedAttachmentStream):
+            switch referencedAttachmentStream.attachmentStream.contentType {
+            case .invalid:
+                return genericMediaString
+            case .file:
+                return CommonStrings.attachmentTypeFile
+            case .image:
+                return CommonStrings.attachmentTypePhoto
+            case .video:
+                if referencedAttachmentStream.reference.renderingFlag == .shouldLoop {
+                    return CommonStrings.attachmentTypeAnimated
+                }
+                return CommonStrings.attachmentTypeVideo
+            case .animatedImage:
+                return CommonStrings.attachmentTypeAnimated
+            case .audio:
+                return CommonStrings.attachmentTypeAudio
+            }
+        case .pointer(let referencedAttachmentPointer, _):
+            let mimeType = referencedAttachmentPointer.attachmentPointer.attachment.mimeType
+            if MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) {
+                return CommonStrings.attachmentTypeAnimated
+            }
+
+            if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
+                return CommonStrings.attachmentTypePhoto
+            }
+
+            if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
+                return CommonStrings.attachmentTypeVideo
+            }
+            return genericMediaString
+        case .backupThumbnail, .undownloadable:
+            return genericMediaString
+        }
     }
 }

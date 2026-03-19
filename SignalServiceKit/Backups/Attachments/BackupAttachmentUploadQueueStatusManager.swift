@@ -365,7 +365,7 @@ class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploadQueueS
             )
         }
 
-        self.batteryLevelMonitor = deviceBatteryLevelManager?.beginMonitoring(reason: "BackupDownloadQueue")
+        self.batteryLevelMonitor = deviceBatteryLevelManager?.beginMonitoring(reason: "BackupUploadQueue")
         self.state = State(
             isFullsizeQueueEmpty: state.isFullsizeQueueEmpty,
             isThumbnailQueueEmpty: state.isThumbnailQueueEmpty,

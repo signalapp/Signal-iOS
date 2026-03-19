@@ -318,6 +318,7 @@ extension ConversationViewController {
             }
             return DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(
                 originalMessage: interaction,
+                loadNormalizedImage: NormalizedImage.loadImage(imageSource:maxPixelSize:),
                 tx: transaction,
             )
 

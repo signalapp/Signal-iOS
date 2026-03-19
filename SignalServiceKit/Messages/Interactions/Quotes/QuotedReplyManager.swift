@@ -22,6 +22,7 @@ public protocol QuotedReplyManager {
 
     func buildDraftQuotedReply(
         originalMessage: TSMessage,
+        loadNormalizedImage: (CGImageSource, CGFloat) -> CGImage?,
         tx: DBReadTransaction,
     ) -> DraftQuotedReplyModel?
 
@@ -29,6 +30,7 @@ public protocol QuotedReplyManager {
         quotedReplyMessage: TSMessage,
         quotedReply: TSQuotedMessage,
         originalMessage: TSMessage?,
+        loadNormalizedImage: (CGImageSource, CGFloat) -> CGImage?,
         tx: DBReadTransaction,
     ) -> DraftQuotedReplyModel
 
@@ -396,6 +398,7 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
 
     func buildDraftQuotedReply(
         originalMessage: TSMessage,
+        loadNormalizedImage: (CGImageSource, CGFloat) -> CGImage?,
         tx: DBReadTransaction,
     ) -> DraftQuotedReplyModel? {
         if originalMessage is OWSPaymentMessage {
@@ -470,50 +473,28 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
             }
 
             // Sticker type metadata isn't reliable, so determine the sticker type by examining the actual sticker data.
-            let stickerType: StickerType
             let imageMetadata = DataImageSource(stickerData).imageMetadata()
             switch imageMetadata?.imageFormat {
-            case .png:
-                stickerType = .apng
-
-            case .gif:
-                stickerType = .gif
-
-            case .webp:
-                stickerType = .webp
-
-            case nil:
-                owsFailDebug("Unknown sticker data format")
+            case .png, .gif, .webp:
+                break
+            case let imageFormat:
+                owsFailDebug("Invalid sticker data format: \(imageFormat as Optional)")
                 return nil
+            }
 
-            case .some(let imageFormat):
-                owsFailDebug("Invalid sticker data format: \(imageFormat)")
+            let dataSource = CGImageSourceCreateWithData(
+                stickerData as CFData,
+                [kCGImageSourceShouldCache: false] as CFDictionary,
+            )
+            guard let dataSource else {
+                owsFailDebug("couldn't parse sticker")
                 return nil
             }
 
             let maxThumbnailSizePixels: CGFloat = 512
-            let thumbnailImage: UIImage? = { () -> UIImage? in
-                switch stickerType {
-                case .webp:
-                    let image: UIImage? = DataImageSource(stickerData).stillForWebpData()
-                    return image
-                case .apng:
-                    return UIImage(data: stickerData)
-                case .gif:
-                    do {
-                        let image = try OWSMediaUtils.thumbnail(
-                            forImageData: stickerData,
-                            maxDimensionPixels: maxThumbnailSizePixels,
-                        )
-                        return image
-                    } catch {
-                        owsFailDebug("Error: \(error)")
-                        return nil
-                    }
-                }
-            }()
-            guard let resizedThumbnailImage = thumbnailImage?.resized(maxDimensionPixels: maxThumbnailSizePixels) else {
-                owsFailDebug("Couldn't generate thumbnail for sticker.")
+            let thumbnailImage = loadNormalizedImage(dataSource, maxThumbnailSizePixels)
+            guard let thumbnailImage else {
+                owsFailDebug("couldn't resize sticker")
                 return nil
             }
 
@@ -521,7 +502,7 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
                 nil,
                 attachmentRef: attachment.reference,
                 attachment: attachment.attachment,
-                thumbnailImage: resizedThumbnailImage,
+                thumbnailImage: UIImage(cgImage: thumbnailImage),
             ))
         }
 
@@ -609,12 +590,14 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
         quotedReplyMessage: TSMessage,
         quotedReply: TSQuotedMessage,
         originalMessage: TSMessage?,
+        loadNormalizedImage: (CGImageSource, CGFloat) -> CGImage?,
         tx: DBReadTransaction,
     ) -> DraftQuotedReplyModel {
         if
             let originalMessage,
             let innerContent = self.buildDraftQuotedReply(
                 originalMessage: originalMessage,
+                loadNormalizedImage: loadNormalizedImage,
                 tx: tx,
             )
         {

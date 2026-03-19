@@ -756,13 +756,8 @@ extension CVComponentSystemMessage {
         {
 
             for (index, updateItem) in displayableGroupUpdates.enumerated() {
-                labelText.appendTemplatedImage(
-                    named: Self.iconName(displayableGroupUpdateItem: updateItem),
-                    font: font,
-                    heightReference: ImageAttachmentHeightReference.lineHeight,
-                )
-
-                labelText.append("  ", attributes: [:])
+                labelText.append(Self.symbol(forDisplayableGroupUpdateItem: updateItem).attributedString(dynamicTypeBaseSize: font.pointSize))
+                labelText.append(" ", attributes: [:])
                 labelText.append(updateItem.localizedText)
 
                 let isLast = index == displayableGroupUpdates.count - 1
@@ -778,13 +773,9 @@ extension CVComponentSystemMessage {
             return labelText
         }
 
-        if let icon = icon(forInteraction: interaction) {
-            labelText.appendImage(
-                icon.withRenderingMode(.alwaysTemplate),
-                font: font,
-                heightReference: ImageAttachmentHeightReference.lineHeight,
-            )
-            labelText.append("  ", attributes: [:])
+        if let symbol = symbol(forInteraction: interaction) {
+            labelText.append(symbol.attributedString(dynamicTypeBaseSize: font.pointSize))
+            labelText.append(" ", attributes: [:])
         }
 
         let systemMessageText = Self.systemMessageText(
@@ -810,7 +801,8 @@ extension CVComponentSystemMessage {
     ) -> String {
         if let errorMessage = interaction as? TSErrorMessage {
             return errorMessage.previewText(transaction: transaction)
-        } else if let verificationMessage = interaction as? OWSVerificationStateChangeMessage {
+        }
+        if let verificationMessage = interaction as? OWSVerificationStateChangeMessage {
             let format = switch (verificationMessage.isLocalChange, verificationMessage.isVerified()) {
             case (true, true):
                 OWSLocalizedString(
@@ -836,16 +828,18 @@ extension CVComponentSystemMessage {
 
             let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: verificationMessage.recipientAddress, tx: transaction).resolvedValue()
             return String(format: format, displayName)
-        } else if let infoMessage = interaction as? TSInfoMessage {
-            return infoMessage.conversationSystemMessageComponentText(with: transaction)
-        } else if let call = interaction as? TSCall {
-            return call.previewText(transaction: transaction)
-        } else if let groupCall = interaction as? OWSGroupCallMessage {
-            return groupCall.systemText(tx: transaction)
-        } else {
-            owsFailDebug("Not a system message.")
-            return ""
         }
+        if let infoMessage = interaction as? TSInfoMessage {
+            return infoMessage.conversationSystemMessageComponentText(with: transaction)
+        }
+        if let call = interaction as? TSCall {
+            return call.previewText(transaction: transaction)
+        }
+        if let groupCall = interaction as? OWSGroupCallMessage {
+            return groupCall.systemText(tx: transaction)
+        }
+        owsFailDebug("Not a system message.")
+        return ""
     }
 
     private static func titleColorOverride(forInteraction interaction: TSInteraction) -> UIColor? {
@@ -862,16 +856,16 @@ extension CVComponentSystemMessage {
         }
     }
 
-    private static func icon(forInteraction interaction: TSInteraction) -> UIImage? {
+    private static func symbol(forInteraction interaction: TSInteraction) -> SignalSymbol? {
         if let errorMessage = interaction as? TSErrorMessage {
             switch errorMessage.errorType {
             case .nonBlockingIdentityChange,
                  .wrongTrustedIdentityKey:
-                return Theme.iconImage(.safetyNumber16)
+                return .safetyNumber
             case .sessionRefresh:
-                return Theme.iconImage(.refresh16)
+                return .refresh
             case .decryptionFailure:
-                return Theme.iconImage(.error16)
+                return .error
             case .invalidKeyException,
                  .missingKeyId,
                  .noSession,
@@ -882,7 +876,8 @@ extension CVComponentSystemMessage {
                  .groupCreationFailed:
                 return nil
             }
-        } else if let infoMessage = interaction as? TSInfoMessage {
+        }
+        if let infoMessage = interaction as? TSInfoMessage {
             switch infoMessage.messageType {
             case .userNotRegistered,
                  .typeLocalUserEndedSession,
@@ -894,93 +889,93 @@ extension CVComponentSystemMessage {
                 return nil
             case .typeGroupUpdate,
                  .typeGroupQuit:
-                return Theme.iconImage(.group16)
+                return .group
             case .unknownProtocolVersion:
                 guard let message = interaction as? OWSUnknownProtocolVersionMessage else {
                     owsFailDebug("Invalid interaction.")
                     return nil
                 }
-                return Theme.iconImage(message.isProtocolVersionUnknown ? .error16 : .check16)
+                return message.isProtocolVersionUnknown ? .error : .checkmark
             case .typeDisappearingMessagesUpdate:
                 guard let message = interaction as? OWSDisappearingConfigurationUpdateInfoMessage else {
                     owsFailDebug("Invalid interaction.")
                     return nil
                 }
                 let areDisappearingMessagesEnabled = message.configurationIsEnabled
-                return Theme.iconImage(areDisappearingMessagesEnabled ? .timer16 : .timerDisabled16)
+                return areDisappearingMessagesEnabled ? .timer : .timerSlash
             case .verificationStateChange:
                 guard let message = interaction as? OWSVerificationStateChangeMessage else {
                     owsFailDebug("Invalid interaction.")
                     return nil
                 }
                 if message.isVerified() {
-                    return Theme.iconImage(.safetyNumber16)
-                } else {
-                    return nil
+                    return .safetyNumber
                 }
+                return nil
             case .userJoinedSignal:
-                return Theme.iconImage(.heart16)
+                return .heart
             case .syncedThread:
-                return Theme.iconImage(.info16)
+                return .info
             case .profileUpdate:
-                return Theme.iconImage(.profile16)
+                return .person
             case .phoneNumberChange:
-                return Theme.iconImage(.phone16)
+                return .phone
             case .recipientHidden:
-                return Theme.iconImage(.info16)
+                return .info
             case .paymentsActivationRequest, .paymentsActivated:
-                return Theme.iconImage(.settingsPayments)
+                return .creditcard
             case .threadMerge:
-                return Theme.iconImage(.merge16)
+                return .merge
             case .sessionSwitchover:
-                return Theme.iconImage(.info16)
+                return .info
             case .reportedSpam:
-                return Theme.iconImage(.spam)
+                return .spam
             case .learnedProfileName:
-                return Theme.iconImage(.threadCompact)
+                return Theme.isDarkThemeEnabled ? .thread : .threadFill
             case .blockedOtherUser:
-                return Theme.iconImage(.chatSettingsBlock)
+                return .block
             case .blockedGroup:
-                return Theme.iconImage(.chatSettingsBlock)
+                return .block
             case .unblockedOtherUser:
-                return Theme.iconImage(.threadCompact)
+                return Theme.isDarkThemeEnabled ? .thread : .threadFill
             case .unblockedGroup:
-                return Theme.iconImage(.threadCompact)
+                return Theme.isDarkThemeEnabled ? .thread : .threadFill
             case .acceptedMessageRequest:
-                return Theme.iconImage(.threadCompact)
+                return Theme.isDarkThemeEnabled ? .thread : .threadFill
             case .typeEndPoll:
-                return Theme.iconImage(.poll)
+                return .poll
             case .typePinnedMessage:
-                return Theme.iconImage(.pin)
+                return .pin
             }
-        } else if let call = interaction as? TSCall {
+        }
+        if let call = interaction as? TSCall {
             switch call.offerType {
             case .audio:
-                return Theme.iconImage(.phone16)
+                return .phone
             case .video:
-                return Theme.iconImage(.video16)
+                return .video
             }
-        } else if interaction is OWSGroupCallMessage {
-            return Theme.iconImage(.video16)
-        } else {
-            owsFailDebug("Unknown interaction type: \(type(of: interaction))")
-            return nil
         }
+        if interaction is OWSGroupCallMessage {
+            return .video
+        }
+        owsFailDebug("Unknown interaction type: \(type(of: interaction))")
+        return nil
     }
 
-    private static func iconName(displayableGroupUpdateItem: DisplayableGroupUpdateItem) -> String {
+    private static func symbol(forDisplayableGroupUpdateItem displayableGroupUpdateItem: DisplayableGroupUpdateItem) -> SignalSymbol {
         switch displayableGroupUpdateItem {
         case
             .localUserLeft,
             .otherUserLeft:
-            return Theme.iconName(.leave16)
+            return .leave
         case
             .localUserRemoved,
             .localUserRemovedByUnknownUser,
             .otherUserRemovedByLocalUser,
             .otherUserRemoved,
             .otherUserRemovedByUnknownUser:
-            return Theme.iconName(.memberRemove16)
+            return .personMinus
         case
             .unnamedUsersWereInvitedByLocalUser,
             .unnamedUsersWereInvitedByOtherUser,
@@ -1009,7 +1004,7 @@ extension CVComponentSystemMessage {
             .otherUserRequestApprovedByLocalUser,
             .otherUserRequestApproved,
             .otherUserRequestApprovedByUnknownUser:
-            return Theme.iconName(.memberAdded16)
+            return .personPlus
         case
             .createdByLocalUser,
             .createdByOtherUser,
@@ -1045,7 +1040,7 @@ extension CVComponentSystemMessage {
             .inviteLinkApprovalDisabledByOtherUser,
             .inviteLinkApprovalDisabledByUnknownUser,
             .inviteFriendsToNewlyCreatedGroup:
-            return Theme.iconName(.group16)
+            return .group
         case
             .unnamedUserInvitesWereRevokedByLocalUser,
             .unnamedUserInvitesWereRevokedByOtherUser,
@@ -1058,7 +1053,7 @@ extension CVComponentSystemMessage {
             .otherUserDeclinedInviteFromInviter,
             .otherUserDeclinedInviteFromUnknownUser,
             .otherUserInviteRevokedByLocalUser:
-            return Theme.iconName(.memberDeclined16)
+            return .personX
         case
             .wasMigrated,
             .localUserInvitedAfterMigration,
@@ -1091,7 +1086,7 @@ extension CVComponentSystemMessage {
             .announcementOnlyDisabledByLocalUser,
             .announcementOnlyDisabledByOtherUser,
             .announcementOnlyDisabledByUnknownUser:
-            return Theme.iconName(.megaphone16)
+            return .megaphone
         case
             .nameChangedByLocalUser,
             .nameChangedByOtherUser,
@@ -1105,7 +1100,7 @@ extension CVComponentSystemMessage {
             .descriptionRemovedByLocalUser,
             .descriptionRemovedByOtherUser,
             .descriptionRemovedByUnknownUser:
-            return Theme.iconName(.compose16)
+            return .edit
         case
             .avatarChangedByLocalUser,
             .avatarChangedByOtherUser,
@@ -1113,17 +1108,17 @@ extension CVComponentSystemMessage {
             .avatarRemovedByLocalUser,
             .avatarRemovedByOtherUser,
             .avatarRemovedByUnknownUser:
-            return Theme.iconName(.photo16)
+            return .photo
         case
             .disappearingMessagesEnabledByLocalUser,
             .disappearingMessagesEnabledByOtherUser,
             .disappearingMessagesEnabledByUnknownUser:
-            return Theme.iconName(.timer16)
+            return .timer
         case
             .disappearingMessagesDisabledByLocalUser,
             .disappearingMessagesDisabledByOtherUser,
             .disappearingMessagesDisabledByUnknownUser:
-            return Theme.iconName(.timerDisabled16)
+            return .timerSlash
         }
     }
 
@@ -1164,20 +1159,22 @@ extension CVComponentSystemMessage {
     ) -> Action? {
         if let errorMessage = interaction as? TSErrorMessage {
             return action(forErrorMessage: errorMessage)
-        } else if let infoMessage = interaction as? TSInfoMessage {
+        }
+        if let infoMessage = interaction as? TSInfoMessage {
             return action(forInfoMessage: infoMessage, transaction: transaction)
-        } else if let call = interaction as? TSCall {
+        }
+        if let call = interaction as? TSCall {
             return action(forCall: call, threadViewModel: threadViewModel)
-        } else if let groupCall = interaction as? OWSGroupCallMessage {
+        }
+        if let groupCall = interaction as? OWSGroupCallMessage {
             return action(
                 forGroupCall: groupCall,
                 threadViewModel: threadViewModel,
                 currentGroupThreadCallGroupId: currentGroupThreadCallGroupId,
             )
-        } else {
-            owsFailDebug("Invalid interaction.")
-            return nil
         }
+        owsFailDebug("Invalid interaction.")
+        return nil
     }
 
     private static func action(forErrorMessage message: TSErrorMessage) -> Action? {
@@ -1197,13 +1194,12 @@ extension CVComponentSystemMessage {
                     accessibilityIdentifier: "verify_safety_number",
                     action: .didTapPreviouslyVerifiedIdentityChange(address: address),
                 )
-            } else {
-                return Action(
-                    title: CommonStrings.learnMore,
-                    accessibilityIdentifier: "learn_more",
-                    action: .didTapUnverifiedIdentityChange(address: address),
-                )
             }
+            return Action(
+                title: CommonStrings.learnMore,
+                accessibilityIdentifier: "learn_more",
+                action: .didTapUnverifiedIdentityChange(address: address),
+            )
         case .wrongTrustedIdentityKey:
             return nil
         case .invalidKeyException,
@@ -1557,10 +1553,9 @@ extension CVComponentSystemMessage {
     ) -> CVComponentState.SystemMessage.Expiration? {
         if let infoMessage = interaction as? TSInfoMessage {
             return expiration(forInfoMessage: infoMessage, transaction: transaction)
-        } else {
-            // Expiration state not supported.
-            return nil
         }
+        // Expiration state not supported.
+        return nil
     }
 
     private static func expiration(

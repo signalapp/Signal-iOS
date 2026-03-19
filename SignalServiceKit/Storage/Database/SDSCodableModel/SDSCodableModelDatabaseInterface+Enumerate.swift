@@ -16,7 +16,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         modelType: Model.Type,
         transaction: DBReadTransaction,
         batchingPreference: BatchingPreference,
-        block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void,
+        block: (Model, inout Bool) -> Void,
     ) {
         let batchSize = batchSize(batchingPreference: batchingPreference)
         enumerateModels(
@@ -36,7 +36,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         sql: String,
         arguments: StatementArguments,
         batchingPreference: BatchingPreference,
-        block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void,
+        block: (Model, inout Bool) -> Void,
     ) {
         let batchSize = batchSize(batchingPreference: batchingPreference)
         enumerateModels(
@@ -68,7 +68,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         sql: String? = nil,
         arguments: StatementArguments? = nil,
         batchSize: UInt,
-        block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void,
+        block: (Model, inout Bool) -> Void,
     ) {
         failIfThrows {
             var recordCursor: RecordCursor<Model>
@@ -84,11 +84,11 @@ extension SDSCodableModelDatabaseInterfaceImpl {
 
             try Batching.loop(batchSize: batchSize) { stop in
                 guard let value = try recordCursor.next() else {
-                    stop.pointee = true
+                    stop = true
                     return
                 }
                 value.anyDidEnumerateOne(transaction: transaction)
-                block(value, stop)
+                block(value, &stop)
             }
         }
     }

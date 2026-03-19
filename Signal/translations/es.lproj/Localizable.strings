@@ -7,6 +7,9 @@
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Acerca de Signal";
 
+/* Label for forward button in media control panel */
+"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Forward";
+
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Archivo adjunto";
 
@@ -804,9 +807,6 @@
 
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Detalles de la copia de seguridad";
-
-/* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Esta es una función beta que seguiremos mejorando.";
 
 /* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "Debes registrarte para poder crear una nueva clave de recuperación.";
@@ -1796,7 +1796,7 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Hace que el color de las burbujas combine con el del fondo de pantalla del chat";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "Puedes cancelar el proceso de copia de seguridad, pero no se eliminará tu copia de seguridad. Puedes reanudar el proceso en cualquier momento desde Ajustes de copia de seguridad.";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "Si cancelas el proceso de copia de seguridad, no se eliminará tu copia de seguridad. Puedes reanudar el proceso en cualquier momento desde Ajustes de copia de seguridad.";
 
 /* Title for the action sheet shown when the user tries to cancel a backup. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_TITLE" = "¿Cancelar copia de seguridad?";
@@ -2351,10 +2351,10 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Cualquiera";
 
 /* Label for 'edit member label access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "Add Member Labels";
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "Añadir categorías de participante";
 
 /* Description for the 'edit member label access'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "Choose who can add member labels in this group.";
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "Elige quién puede añadir categorías de participante en este grupo.";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Añadir participantes";
@@ -2372,10 +2372,10 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ podrá editar los ajustes de este grupo y la lista de participantes.";
 
 /* Label for button that sets 'member labels access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON" = "Only Admins";
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON" = "Solo admins";
 
 /* Label for button that sets 'member labels access' to 'members-only'. */
-"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON" = "Cualquiera";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Solicitudes e invitaciones";
@@ -3689,7 +3689,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Quién puede editar los detalles del grupo: \"%1$@\".";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Only Admins";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Solo admins";
 
 /* Description of the 'all users' access level. */
 "GROUP_ACCESS_LEVEL_ANY" = "Cualquiera";
@@ -3704,13 +3704,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Desactivado";
 
 /* Message indicating that the access to setting member labels was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can add member labels to “%1$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT" = "Has cambiado quién puede añadir categorías de participante a \"%1$@\".";
 
 /* Message indicating that the access to setting member labels was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can add member labels to “%2$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha cambiado quién puede añadir categorías de participante a \"%2$@\".";
 
 /* Message indicating that the access to setting member labels was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT" = "An admin changed who can add member labels to “%1$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT" = "Un admin ha cambiado quién puede añadir categorías de participante a \"%1$@\".";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Has cambiado quién puede editar la lista de participantes del grupo a \"%1$@\".";
@@ -3739,14 +3739,14 @@
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "Se ha bloqueado a %1$@";
 
-/* Context menu action to view a call participant's contact details. */
-"GROUP_CALL_CONTEXT_MENU_CONTACT_DETAILS" = "Contact Details";
-
 /* Context menu action to navigate to the chat with a call participant. */
-"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "Go to Chat";
+"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "Ir al chat";
 
 /* Context menu action to mute a call participant's audio. */
-"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "Mute Audio";
+"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "Silenciar audio";
+
+/* Context menu action to view a call participant's profile details. */
+"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Profile Details";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Continuar llamada";
@@ -5180,13 +5180,13 @@
 "MEMBER_LABEL_VIEW_TITLE" = "Categoría de participante";
 
 /* A one-time confirmation that you, as an admin, want to delete for everyone */
-"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "Group members on the latest versions of Signal will see that you deleted these messages.";
+"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "Los participantes del grupo que tengan la versión más reciente de Signal podrán ver que has eliminado estos mensajes.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copiar mensaje";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Eliminar para todas las personas";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Eliminar para todos";
 
 /* A one-time confirmation that you want to delete for everyone */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Este mensaje se eliminará para todas las personas en el chat si usan una versión reciente de Signal. Podrán ver que has eliminado un mensaje.";
@@ -7189,8 +7189,8 @@
 /* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "Para transferir esta cuenta a un nuevo dispositivo, toca \"Continuar\" y escanea el código QR con la cámara en Signal. Asegúrate de escanear solo códigos QR que provengan directamente de Signal.";
 
-/* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Respuesta a %1$@";
+/* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@. %2$@";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
@@ -7520,10 +7520,10 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "Completa tu perfil";
 
 /* Error shown if an SMS/call service provider is unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "We are unable to send an SMS to your number. Please try again in several hours.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "No hemos podido enviarte un SMS a tu número. Vuelve a intentarlo dentro de unas horas.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "We are unable to send an SMS to your number. Please try again in a few minutes.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "No hemos podido enviar un SMS a tu número. Vuelve a intentarlo dentro de unos minutos.";
 
 /* Third step in directions for how to make a backup */
 "REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Habilita las copias de seguridad y espera hasta que se complete tu copia de seguridad";
@@ -7607,7 +7607,7 @@
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Ha habido un problema con el código QR y el enlace de tu alias, por lo que ya no son válidos. Crea un nuevo enlace para compartir con otras personas.";
 
 /* Toast that appears when local user tried to delete a message that has disappeared */
-"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "Message disappeared before it could be deleted.";
+"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "El mensaje ha desaparecido antes de poder eliminarlo.";
 
 /* A message that displays when one person in a call remotely muted another participant. Embeds {{name}} {{name}} */
 "REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@ ha silenciado a %2$@.";
@@ -7769,13 +7769,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Verificando cifrado…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Para los contactos con los que hayas iniciado la comunicación mediante un número de teléfono, Signal puede confirmar automáticamente si la conexión es segura usando un proceso llamado transparencia de claves. Para mayor seguridad, puedes seguir verificando manualmente tus contactos usando un código QR o comparando los números de seguridad.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Para los contactos con los que hayas iniciado la comunicación mediante un número de teléfono, Signal puede confirmar automáticamente si la conexión es segura usando un proceso llamado transparencia de claves. Para mayor seguridad, puedes seguir verificando tus contactos manualmente usando un código QR o comparando los números de seguridad.";
 
 /* Title for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Ahora, Signal puede verificar automáticamente el cifrado";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Ahora, Signal puede verificar el cifrado automáticamente";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal ya no puede verificar automáticamente el cifrado de este chat. Es probable que %1$@ haya cambiado su número de teléfono. Verifica manualmente el cifrado de extremo a extremo comparando los números en la pantalla anterior o escaneando el código que se muestra en su dispositivo.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal ya no puede verificar automáticamente el cifrado de este chat. Es probable que %1$@ haya cambiado su número de teléfono. Verifica el cifrado de extremo a extremo manualmente comparando los números en la pantalla anterior o escaneando el código que se muestra en su dispositivo.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "La verificación automática ya no está disponible para este chat";
@@ -7793,7 +7793,7 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_TITLE" = "La verificación automática no está disponible para este chat";
 
 /* Body for a sheet explaining that encryption auto-verification succeeded. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "Para los contactos con los que hayas iniciado la comunicación mediante un número de teléfono, Signal puede confirmar automáticamente si la conexión es segura usando un proceso llamado transparencia de claves. Para mayor seguridad, verifica manualmente el cifrado de extremo a extremo comparando los números en la pantalla anterior o escaneando el código que se muestra en el dispositivo de la otra persona.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "Para los contactos con los que hayas iniciado la comunicación mediante un número de teléfono, Signal puede confirmar automáticamente si la conexión es segura usando un proceso llamado transparencia de claves. Para mayor seguridad, verifica el cifrado de extremo a extremo manualmente comparando los números en la pantalla anterior o escaneando el código que se muestra en el dispositivo de la otra persona.";
 
 /* Title for a sheet explaining that encryption auto-verification succeeded. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_TITLE" = "El cifrado para este chat se ha verificado automáticamente";

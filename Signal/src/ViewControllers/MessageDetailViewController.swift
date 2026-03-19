@@ -1264,7 +1264,7 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapPendingOutgoingMessage(_ message: TSOutgoingMessage) {}
 
     // TODO:
-    func didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {}
+    func didTapFailedMessage(_ message: TSMessage) {}
 
     // TODO:
     func didTapGroupMigrationLearnMore() {}

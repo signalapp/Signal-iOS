@@ -661,7 +661,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                     if attachment.asStream() != nil {
                         backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                             attachment,
-                            mode: .fullsizeOnly,
+                            mode: .fullsize,
                             tx: tx,
                         )
                     }
@@ -694,7 +694,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                         if attachment.asStream() != nil {
                             backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                                 attachment,
-                                mode: .thumbnailOnly,
+                                mode: .thumbnail,
                                 tx: tx,
                             )
                         }
@@ -706,7 +706,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                         if attachment.asStream() != nil {
                             backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                                 attachment,
-                                mode: .fullsizeOnly,
+                                mode: .fullsize,
                                 tx: tx,
                             )
                         }

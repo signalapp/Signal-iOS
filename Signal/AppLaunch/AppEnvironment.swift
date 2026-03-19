@@ -254,6 +254,7 @@ public class AppEnvironment: NSObject {
                         try await backupIdService.registerBackupIDIfNecessary(
                             localAci: localIdentifiers.aci,
                             auth: .implicit(),
+                            logger: PrefixedLogger(prefix: "[Launch]"),
                         )
                     } catch {
                         // Do nothing, we'll try again on the next app launch.

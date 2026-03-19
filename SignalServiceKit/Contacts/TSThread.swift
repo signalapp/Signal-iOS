@@ -421,12 +421,11 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
 
     // MARK: -
 
-    @objc
-    public func updateWithInsertedInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
+    func updateWithInsertedInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
         updateWithInteraction(interaction, wasInteractionInserted: true, tx: tx)
     }
 
-    public func updateWithUpdatedInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
+    func updateWithUpdatedInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
         updateWithInteraction(interaction, wasInteractionInserted: false, tx: tx)
     }
 

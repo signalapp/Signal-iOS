@@ -245,6 +245,7 @@ public class PreparedOutgoingMessage {
             return {
                 try await DependenciesBridge.shared.attachmentUploadManager.uploadTransitTierAttachment(
                     attachmentId: attachmentId,
+                    progress: nil,
                 )
             }
         }

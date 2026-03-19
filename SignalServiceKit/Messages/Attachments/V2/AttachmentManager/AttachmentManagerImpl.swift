@@ -449,9 +449,20 @@ public class AttachmentManagerImpl: AttachmentManager {
             )
 
             if let sourceUnencryptedByteCount {
+                let estimatedMediaTierSize: UInt64
+                if
+                    let size = Cryptography
+                        .estimatedMediaTierCDNSize(unencryptedSize: UInt64(safeCast: sourceUnencryptedByteCount))
+                {
+                    estimatedMediaTierSize = size
+                } else {
+                    Logger.warn("Failed to get estimated media tier size for attachment \(attachment.id)!")
+                    estimatedMediaTierSize = UInt64(UInt32.max)
+                }
+
                 attachmentByteCounter.addToByteCount(
                     attachmentID: attachment.id,
-                    byteCount: Cryptography.estimatedMediaTierCDNSize(unencryptedSize: UInt64(safeCast: sourceUnencryptedByteCount)) ?? UInt64(UInt32.max),
+                    byteCount: estimatedMediaTierSize,
                 )
             }
 
@@ -990,7 +1001,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         } else {
             backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                 existingAttachment,
-                mode: .fullsizeAndThumbnailAsNeeded,
+                mode: .all,
                 tx: tx,
             )
         }

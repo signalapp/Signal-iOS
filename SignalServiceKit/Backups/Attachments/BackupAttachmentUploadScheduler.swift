@@ -5,10 +5,17 @@
 
 import Foundation
 
-public enum BackupAttachmentUploadEnqueueMode: Equatable {
-    case fullsizeOnly
-    case thumbnailOnly
-    case fullsizeAndThumbnailAsNeeded
+public struct BackupAttachmentUploadEnqueueMode: OptionSet {
+    public let rawValue: Int
+
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+
+    public static let fullsize = Self(rawValue: 1 << 0)
+    public static let thumbnail = Self(rawValue: 1 << 1)
+
+    static let all: BackupAttachmentUploadEnqueueMode = [.fullsize, .thumbnail]
 }
 
 public class BackupAttachmentUploadScheduler {
@@ -39,11 +46,10 @@ public class BackupAttachmentUploadScheduler {
     /// Returns true if the provided attachment is eligible to be uploaded
     /// to backup/media tier, independently of the current backupPlan state.
     ///
-    /// - parameter fullsize: true to check eligibility to upload fullsize,
-    /// false to check eligibility to upload the thumbnail.
+    /// - parameter mode: OptionSet instructing what eligibility type to check
     public func isEligibleToUpload(
         _ attachment: Attachment,
-        fullsize: Bool,
+        mode: BackupAttachmentUploadEnqueueMode,
         currentUploadEra: String,
         tx: DBReadTransaction,
     ) -> Bool {
@@ -55,10 +61,10 @@ public class BackupAttachmentUploadScheduler {
             currentUploadEra: currentUploadEra,
             remoteConfig: remoteConfigProvider.currentConfig(),
         )
-        if fullsize, !eligibility.needsUploadFullsize {
+        if mode.contains(.fullsize), !eligibility.needsUploadFullsize {
             return false
         }
-        if !fullsize, !eligibility.needsUploadThumbnail {
+        if mode.contains(.thumbnail), !eligibility.needsUploadThumbnail {
             return false
         }
 
@@ -115,7 +121,7 @@ public class BackupAttachmentUploadScheduler {
             return
         }
 
-        if mode != .thumbnailOnly {
+        if mode.contains(.fullsize) {
             if eligibility.needsUploadFullsize {
                 backupAttachmentUploadStore.enqueue(
                     stream,
@@ -130,7 +136,7 @@ public class BackupAttachmentUploadScheduler {
                 Logger.info("Skipping enqueue of fullsize \(attachment.id) from \(file) \(line): \(function)")
             }
         }
-        if mode != .fullsizeOnly {
+        if mode.contains(.thumbnail) {
             if eligibility.needsUploadThumbnail {
                 backupAttachmentUploadStore.enqueue(
                     stream,

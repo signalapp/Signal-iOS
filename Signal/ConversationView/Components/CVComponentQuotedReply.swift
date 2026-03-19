@@ -115,15 +115,18 @@ extension CVComponentQuotedReply: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         let format = OWSLocalizedString(
             "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT",
-            comment: "Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}.",
+            comment: "Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}.",
         )
 
+        let originalMessage = self.quotedReply.viewState.quotedReplyModel.originalMessageAccessibilityLabel ?? ""
+
         if quotedReply.quotedReplyModel.isOriginalMessageAuthorLocalUser {
-            return String(format: format, CommonStrings.you)
+            return String(format: format, CommonStrings.you, originalMessage)
         } else {
             return String(
                 format: format,
                 self.quotedReply.viewState.quotedAuthorName,
+                originalMessage,
             )
         }
     }

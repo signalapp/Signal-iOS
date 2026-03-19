@@ -3,15 +3,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
-public class CVMediaView: ManualLayoutViewWithLayer {
+class CVMediaView: ManualLayoutViewWithLayer {
 
     // MARK: -
 
     private let mediaCache: CVMediaCache
-    public let attachment: CVAttachment
+    let attachment: CVAttachment
     private let interaction: TSInteraction
     private let conversationStyle: ConversationStyle
     private let maxMessageWidth: CGFloat
@@ -21,9 +21,9 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     private let isBroken: Bool
     private var reusableMediaView: ReusableMediaView?
 
-    // MARK: - Initializers
+    // MARK: - Public
 
-    public init(
+    init(
         mediaCache: CVMediaCache,
         attachment: CVAttachment,
         interaction: TSInteraction,
@@ -50,6 +50,38 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         clipsToBounds = true
 
         createContents()
+    }
+
+    func loadMedia() {
+        AssertIsOnMainThread()
+
+        guard let reusableMediaView else {
+            return
+        }
+        guard reusableMediaView.owner != nil else {
+            Logger.warn("No longer owner of reusableMediaView.")
+            return
+        }
+        guard reusableMediaView.owner === self else {
+            owsFailDebug("No longer owner of reusableMediaView.")
+            return
+        }
+
+        reusableMediaView.load()
+    }
+
+    func unloadMedia() {
+        AssertIsOnMainThread()
+
+        guard let reusableMediaView else {
+            return
+        }
+        guard reusableMediaView.owner === self else {
+            // No longer owner of reusableMediaView.
+            return
+        }
+
+        reusableMediaView.unload()
     }
 
     // MARK: -
@@ -85,7 +117,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     private func configureForBackupThumbnailMedia(_ thumbnail: AttachmentBackupThumbnail) {
         configureForBackupThumbnail(attachmentBackupThumbnail: thumbnail)
 
-        _ = addProgressIfNecessary()
+        addProgressViewIfNeeded()
     }
 
     private func configureForUndownloadedMedia(_ attachment: Attachment) {
@@ -95,11 +127,11 @@ public class CVMediaView: ManualLayoutViewWithLayer {
             tryToConfigureForBlurHash(attachment: attachment)
         }
 
-        _ = addProgressIfNecessary()
+        addProgressViewIfNeeded()
     }
 
-    private func addProgressIfNecessary() -> Bool {
-
+    @discardableResult
+    private func addProgressViewIfNeeded() -> Bool {
         let direction: CVAttachmentProgressView.Direction
         switch CVAttachmentProgressView.progressType(
             forAttachment: attachment,
@@ -160,10 +192,8 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         }
         mediaView.backgroundColor = isBorderless ? .clear : Theme.washColor
 
-        if !addProgressIfNecessary() {
-            if reusableMediaView.isVideo {
-                addVideoPlayButton()
-            }
+        if addProgressViewIfNeeded() == false, reusableMediaView.isVideo {
+            addVideoPlayButton()
         }
     }
 
@@ -175,6 +205,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
 
     private func tryToConfigureForBlurHash(attachment: Attachment) {
         guard let blurHash = attachment.blurHash?.nilIfEmpty else { return }
+
         // NOTE: in the blurhash case, we use the blurHash itself as the
         // cachekey to avoid conflicts with the actual attachment contents.
         let cacheKey = CVMediaCache.CacheKey.blurHash(blurHash)
@@ -189,21 +220,13 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     }
 
     private func configureForLoopingVideo(attachmentStream: AttachmentStream) {
-        if
-            let reusableMediaView = mediaCache.getMediaView(
-                .attachment(attachmentStream.id),
-                isAnimated: true,
-            )
-        {
+        if let reusableMediaView = mediaCache.getMediaView(.attachment(attachmentStream.id), isAnimated: true) {
             applyReusableMediaView(reusableMediaView)
-        } else {
-            createNewReusableMediaView(
-                mediaViewAdapter: MediaViewAdapterLoopingVideo(
-                    attachmentStream: attachmentStream,
-                ),
-                isAnimated: true,
-            )
+            return
         }
+
+        let mediaViewAdapter = MediaViewAdapterLoopingVideo(attachmentStream: attachmentStream)
+        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: true)
     }
 
     private func configureForAnimatedImage(attachmentStream: AttachmentStream) {
@@ -260,7 +283,6 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     }
 
     private func addVideoPlayButton() {
-
         let playVideoButtonWidth: CGFloat = 44
         let playVideoIconWidth: CGFloat = 20
 
@@ -308,37 +330,5 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         iconView.tintColor = .white
         iconView.contentMode = .scaleAspectFit
         addSubviewToCenterOnSuperview(iconView, size: .init(square: 24))
-    }
-
-    public func loadMedia() {
-        AssertIsOnMainThread()
-
-        guard let reusableMediaView else {
-            return
-        }
-        guard reusableMediaView.owner != nil else {
-            Logger.warn("No longer owner of reusableMediaView.")
-            return
-        }
-        guard reusableMediaView.owner == self else {
-            owsFailDebug("No longer owner of reusableMediaView.")
-            return
-        }
-
-        reusableMediaView.load()
-    }
-
-    public func unloadMedia() {
-        AssertIsOnMainThread()
-
-        guard let reusableMediaView else {
-            return
-        }
-        guard reusableMediaView.owner == self else {
-            // No longer owner of reusableMediaView.
-            return
-        }
-
-        reusableMediaView.unload()
     }
 }

@@ -445,6 +445,7 @@ private extension InternalSettingsViewController {
                     localIdentifiers: localIdentifiers,
                     backupPurpose: .remoteExport(key: messageBackupKey, chatAuth: .implicit()),
                     progress: nil,
+                    logger: PrefixedLogger(prefix: "[Backups]"),
                 )
 
                 return (backupKey, exportMetadata)

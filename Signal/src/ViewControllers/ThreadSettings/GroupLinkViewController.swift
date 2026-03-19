@@ -122,14 +122,14 @@ public class GroupLinkViewController: OWSTableViewController2 {
 
         // MARK: - Member Requests
 
-        do {
-            let section = OWSTableSection()
-            section.footerTitle = OWSLocalizedString(
-                "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER",
-                comment: "Footer for the 'member requests' section of the 'group link' view.",
-            )
+        if groupModelV2.isGroupInviteLinkEnabled {
+            do {
+                let section = OWSTableSection()
+                section.footerTitle = OWSLocalizedString(
+                    "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER",
+                    comment: "Footer for the 'member requests' section of the 'group link' view.",
+                )
 
-            if groupModelV2.isGroupInviteLinkEnabled {
                 section.add(OWSTableItem.switch(
                     withText: OWSLocalizedString(
                         "GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH",
@@ -140,9 +140,8 @@ public class GroupLinkViewController: OWSTableViewController2 {
                     selector: #selector(didToggleApproveNewMembers(_:)),
                 ))
 
+                contents.add(section)
             }
-
-            contents.add(section)
         }
 
         self.contents = contents

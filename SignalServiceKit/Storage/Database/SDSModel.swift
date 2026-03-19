@@ -93,31 +93,6 @@ public extension TableRecord {
     }
 }
 
-// MARK: -
-
-public extension SDSModel {
-    // If batchSize > 0, the enumeration is performed in autoreleased batches.
-    static func grdbEnumerateUniqueIds(
-        transaction: DBReadTransaction,
-        sql: String,
-        batchSize: UInt,
-        block: (String, UnsafeMutablePointer<ObjCBool>) -> Void,
-    ) {
-        do {
-            let cursor = try String.fetchCursor(transaction.database, sql: sql)
-            try Batching.loop(batchSize: batchSize, loopBlock: { stop in
-                guard let uniqueId = try cursor.next() else {
-                    stop.pointee = true
-                    return
-                }
-                block(uniqueId, stop)
-            })
-        } catch let error {
-            owsFailDebug("Couldn't fetch uniqueIds: \(error)")
-        }
-    }
-}
-
 // MARK: - Cursors
 
 public protocol SDSCursor {

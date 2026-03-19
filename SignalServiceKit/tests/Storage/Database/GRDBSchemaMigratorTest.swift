@@ -5,6 +5,7 @@
 
 import GRDB
 import LibSignalClient
+import Testing
 import XCTest
 
 @testable import SignalServiceKit
@@ -1341,6 +1342,164 @@ class GRDBSchemaMigratorTest: XCTestCase {
             XCTAssertEqual(recipients[3]["status"] as Int64, 1)
             XCTAssertEqual(recipients[4]["status"] as Int64, 1)
             XCTAssertEqual(recipients[5]["status"] as Int64, 1)
+        }
+    }
+
+    func testUpdateCallLinkRootKeyConstraint() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE CallLink (
+                id INTEGER PRIMARY KEY NOT NULL,
+                roomId BLOB NOT NULL UNIQUE CHECK(length(roomId) IS 32),
+                rootKey BLOB NOT NULL CHECK(length(rootKey) IS 16),
+                adminPasskey BLOB CHECK(length(adminPasskey) > 0 OR adminPasskey IS NULL),
+                adminDeletedAtTimestampMs INTEGER,
+                activeCallId INTEGER,
+                isUpcoming INTEGER CHECK(NOT(isUpcoming IS TRUE AND expiration IS NULL)),
+                pendingActionCounter INTEGER NOT NULL DEFAULT 0,
+                name TEXT,
+                restrictions INTEGER,
+                revoked BOOLEAN,
+                expiration INTEGER
+            );
+            INSERT INTO CallLink VALUES (0, X'000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f', X'000102030405060708090a0b0c0d0e0f', NULL, 0, 0, 0, 0, 'A', 0, FALSE, NULL);
+            INSERT INTO CallLink VALUES (1, X'010102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f', X'000102030405060708090a0b0c0d0e0f', NULL, 0, 0, 0, 0, 'B', 0, FALSE, NULL);
+            INSERT INTO CallLink VALUES (2, X'020102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f', X'000102030405060708090a0b0c0d0e0f', NULL, 0, 0, 0, 0, 'C', 0, FALSE, NULL);
+
+            CREATE TABLE CallRecord (
+                id INTEGER PRIMARY KEY NOT NULL,
+                callLinkRowId INTEGER REFERENCES CallLink("id") ON DELETE RESTRICT ON UPDATE CASCADE
+            );
+            INSERT INTO CallRecord VALUES (0, 0);
+            INSERT INTO CallRecord VALUES (1, 0);
+            INSERT INTO CallRecord VALUES (2, 1);
+            INSERT INTO CallRecord VALUES (3, 2);
+            """)
+
+            do {
+                // Attempt to insert a call link with a root key longer than 16 bytes. This should fail.
+                try db.execute(sql: """
+                INSERT INTO CallLink VALUES (3, X'030102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f', X'000102030405060708090a0b0c0d0e0f00010203040506', NULL, 0, 0, 0, 0, 'D', 0, FALSE, NULL);
+                """)
+                XCTFail()
+            } catch {
+                // This is where we want to be
+            }
+        }
+
+        var migrator = DatabaseMigrator()
+        migrator.registerMigration("callLinkMigration", foreignKeyChecks: .deferred, migrate: { db in
+            let tx = DBWriteTransaction(database: db)
+            defer { tx.finalizeTransaction() }
+            try GRDBSchemaMigrator.modifyCallLinkRootKeyConstraint(tx: tx)
+        })
+        try migrator.migrate(databaseQueue)
+
+        try databaseQueue.write { db in
+            let rows = try Row.fetchAll(db, sql: "SELECT * FROM CallLink ORDER BY id")
+            XCTAssertEqual(rows[0]["id"], 0)
+            XCTAssertEqual(rows[0]["roomId"], Data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
+            XCTAssertEqual(rows[0]["rootKey"], Data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
+            XCTAssertEqual(rows[0]["adminPasskey"] as Data?, nil)
+            XCTAssertEqual(rows[0]["adminDeletedAtTimestampMs"], 0)
+            XCTAssertEqual(rows[0]["activeCallId"], 0)
+            XCTAssertEqual(rows[0]["isUpcoming"], 0)
+            XCTAssertEqual(rows[0]["pendingActionCounter"], 0)
+            XCTAssertEqual(rows[0]["name"], "A")
+            XCTAssertEqual(rows[0]["restrictions"], 0)
+            XCTAssertEqual(rows[0]["revoked"], false)
+            XCTAssertEqual(rows[0]["expiration"] as Int?, nil)
+            XCTAssertEqual(rows[1]["id"], 1)
+            XCTAssertEqual(rows[1]["roomId"], Data([1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
+            XCTAssertEqual(rows[1]["rootKey"], Data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
+            XCTAssertEqual(rows[1]["adminPasskey"] as Data?, nil)
+            XCTAssertEqual(rows[1]["adminDeletedAtTimestampMs"], 0)
+            XCTAssertEqual(rows[1]["activeCallId"], 0)
+            XCTAssertEqual(rows[1]["isUpcoming"], 0)
+            XCTAssertEqual(rows[1]["pendingActionCounter"], 0)
+            XCTAssertEqual(rows[1]["name"], "B")
+            XCTAssertEqual(rows[1]["restrictions"], 0)
+            XCTAssertEqual(rows[1]["revoked"], false)
+            XCTAssertEqual(rows[1]["expiration"] as Int?, nil)
+            XCTAssertEqual(rows[2]["id"], 2)
+            XCTAssertEqual(rows[2]["roomId"], Data([2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
+            XCTAssertEqual(rows[2]["rootKey"], Data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
+            XCTAssertEqual(rows[2]["adminPasskey"] as Data?, nil)
+            XCTAssertEqual(rows[2]["adminDeletedAtTimestampMs"], 0)
+            XCTAssertEqual(rows[2]["activeCallId"], 0)
+            XCTAssertEqual(rows[2]["isUpcoming"], 0)
+            XCTAssertEqual(rows[2]["pendingActionCounter"], 0)
+            XCTAssertEqual(rows[2]["name"], "C")
+            XCTAssertEqual(rows[2]["restrictions"], 0)
+            XCTAssertEqual(rows[2]["revoked"], false)
+            XCTAssertEqual(rows[2]["expiration"] as Int?, nil)
+
+            let recordRows = try Row.fetchAll(db, sql: "SELECT * FROM CallRecord ORDER BY id")
+            XCTAssertEqual(recordRows[0]["id"], 0)
+            XCTAssertEqual(recordRows[0]["callLinkRowId"], 0)
+            XCTAssertEqual(recordRows[1]["id"], 1)
+            XCTAssertEqual(recordRows[1]["callLinkRowId"], 0)
+            XCTAssertEqual(recordRows[2]["id"], 2)
+            XCTAssertEqual(recordRows[2]["callLinkRowId"], 1)
+            XCTAssertEqual(recordRows[3]["id"], 3)
+            XCTAssertEqual(recordRows[3]["callLinkRowId"], 2)
+
+            // Attempt to insert a call link with a root key longer than 16 bytes. This should succeed after migration.
+            try db.execute(sql: """
+            INSERT INTO CallLink VALUES (3, X'030102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f', X'000102030405060708090a0b0c0d0e0f00010203040506', NULL, 0, 0, 0, 0, 'D', 0, FALSE, NULL);
+            """)
+        }
+    }
+}
+
+struct GRDBSchemaMigratorTest2 {
+    @Test
+    func testAddDevice() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "OWSDevice" (
+                id INTEGER PRIMARY KEY,
+                deviceId INTEGER NOT NULL,
+                createdAt DOUBLE NOT NULL,
+                lastSeenAt DOUBLE NOT NULL,
+                name TEXT
+            );
+
+            INSERT INTO "OWSDevice" VALUES (7, 1, '2026-03-01 12:00:00.500', '2026-03-01 11:00:00.500', '');
+            INSERT INTO "OWSDevice" VALUES (2, 3, '2026-03-03 12:00:00.500', '2026-03-03 11:00:00.500', '');
+            INSERT INTO "OWSDevice" VALUES (3, 2, '2026-03-02 12:00:00.500', '2026-03-02 11:00:00.500', '');
+            INSERT INTO "OWSDevice" VALUES (8, 6, '2026-03-06 12:00:00.500', '2026-03-06 11:00:00.500', '');
+            INSERT INTO "OWSDevice" VALUES (9, 6, '2026-03-06 12:30:00.500', '2026-03-06 11:30:00.500', '');
+            INSERT INTO "OWSDevice" VALUES (4, 0, '2026-03-09 13:00:00.500', '2026-03-09 11:00:00.500', '');
+            INSERT INTO "OWSDevice" VALUES (5, 128, '2026-03-09 13:00:00.500', '2026-03-09 11:00:00.500', '');
+            """)
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.addDevice(tx: tx)
+            }
+
+            let devices = try Row.fetchAll(db, sql: "SELECT * FROM Device ORDER BY deviceId")
+            try #require(devices.count == 4)
+
+            #expect(devices[0]["deviceId"] as Int64 == 1)
+            #expect(devices[0]["createdAt"] as Double == 1772366400.5)
+            #expect(devices[0]["lastSeenAt"] as Double == 1772362800.5)
+
+            #expect(devices[1]["deviceId"] as Int64 == 2)
+            #expect(devices[1]["createdAt"] as Double == 1772452800.5)
+            #expect(devices[1]["lastSeenAt"] as Double == 1772449200.5)
+
+            #expect(devices[2]["deviceId"] as Int64 == 3)
+            #expect(devices[2]["createdAt"] as Double == 1772539200.5)
+            #expect(devices[2]["lastSeenAt"] as Double == 1772535600.5)
+
+            #expect(devices[3]["deviceId"] as Int64 == 6)
+            #expect(devices[3]["createdAt"] as Double == 1772798400.5)
+            #expect(devices[3]["lastSeenAt"] as Double == 1772794800.5)
         }
     }
 }

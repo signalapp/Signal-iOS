@@ -16,15 +16,18 @@ public protocol BackupIdService {
     func registerBackupIDIfNecessary(
         localAci: Aci,
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) async throws
 
     func updateMessageBackupIdForRegistration(
         key: MessageRootBackupKey,
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) async throws
 
     func fetchBackupIDLimits(
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) async throws -> BackupIdLimits
 }
 
@@ -74,6 +77,7 @@ final class BackupIdServiceImpl: BackupIdService {
     func registerBackupIDIfNecessary(
         localAci: Aci,
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) async throws {
         let (
             haveSetBackupId,
@@ -104,6 +108,7 @@ final class BackupIdServiceImpl: BackupIdService {
             messageBackupKey: messageBackupKey,
             mediaBackupKey: mediaBackupKey,
             auth: auth,
+            logger: logger,
         )
 
         await db.awaitableWrite { tx in
@@ -114,19 +119,27 @@ final class BackupIdServiceImpl: BackupIdService {
     func updateMessageBackupIdForRegistration(
         key: MessageRootBackupKey,
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) async throws {
         try await registerBackupId(
             localAci: key.aci,
             messageBackupKey: key,
             mediaBackupKey: nil,
             auth: auth,
+            logger: logger,
         )
     }
 
     func fetchBackupIDLimits(
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) async throws -> BackupIdLimits {
-        let response = try await networkManager.asyncRequest(.fetchBackupIdLimits(auth: auth))
+        let response = try await networkManager.asyncRequest(
+            .fetchBackupIdLimits(
+                auth: auth,
+                logger: logger,
+            ),
+        )
         guard let jsonData = response.responseBodyData else {
             throw OWSAssertionError("Missing or invalid JSON!")
         }
@@ -141,6 +154,7 @@ final class BackupIdServiceImpl: BackupIdService {
         messageBackupKey: MessageRootBackupKey,
         mediaBackupKey: MediaRootBackupKey?,
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) async throws {
         let messageBackupRequestContext: BackupAuthCredentialRequestContext = .create(
             backupKey: messageBackupKey.serialize(),
@@ -160,6 +174,7 @@ final class BackupIdServiceImpl: BackupIdService {
                 backupId: base64MessageRequestContext,
                 mediaBackupId: base64MediaRequestContext,
                 auth: auth,
+                logger: logger,
             ),
         )
     }
@@ -172,6 +187,7 @@ private extension TSRequest {
         backupId: String,
         mediaBackupId: String?,
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         var parameters = ["messagesBackupAuthCredentialRequest": backupId]
         if let mediaBackupId {
@@ -182,6 +198,7 @@ private extension TSRequest {
             url: URL(string: "v1/archives/backupid")!,
             method: "PUT",
             parameters: parameters,
+            logger: logger,
         )
         request.auth = .identified(auth)
         return request
@@ -189,11 +206,13 @@ private extension TSRequest {
 
     static func fetchBackupIdLimits(
         auth: ChatServiceAuth,
+        logger: PrefixedLogger,
     ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives/backupid/limits")!,
             method: "GET",
             parameters: nil,
+            logger: logger,
         )
         request.auth = .identified(auth)
         return request
@@ -205,15 +224,15 @@ private extension TSRequest {
 #if TESTABLE_BUILD
 
 class MockBackupIdService: BackupIdService {
-    func fetchBackupIDLimits(auth: ChatServiceAuth) async throws -> BackupIdLimits {
+    func fetchBackupIDLimits(auth: ChatServiceAuth, logger: PrefixedLogger) async throws -> BackupIdLimits {
         fatalError("Not implemented")
     }
 
-    func updateMessageBackupIdForRegistration(key: MessageRootBackupKey, auth: ChatServiceAuth) async throws {
+    func updateMessageBackupIdForRegistration(key: MessageRootBackupKey, auth: ChatServiceAuth, logger: PrefixedLogger) async throws {
         // Do nothing
     }
 
-    func registerBackupIDIfNecessary(localAci: Aci, auth: ChatServiceAuth) async throws {
+    func registerBackupIDIfNecessary(localAci: Aci, auth: ChatServiceAuth, logger: PrefixedLogger) async throws {
         // Do nothing
     }
 }

@@ -239,65 +239,48 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             return nil
         }
         let imageFormat = imageMetadata.imageFormat
+        let imageSize = imageMetadata.pixelSize
 
         let maxImageSize: CGFloat = 2400
+        let isOriginalValid: Bool = (
+            imageSize.width <= maxImageSize
+                && imageSize.height <= maxImageSize
+                && !imageMetadata.isAnimated
+                && (imageMetadata.imageFormat == .jpeg || imageMetadata.imageFormat == .png),
+        )
 
-        switch imageFormat {
-        case .webp:
-            guard let stillImage = imageSource.stillForWebpData() else {
-                owsFailDebug("Couldn't derive still image for Webp.")
+        if isOriginalValid {
+            // If we don't need to resize or convert the file format,
+            // return the original data.
+            return PreviewThumbnail(imageData: srcImageData, mimetype: imageFormat.mimeType.rawValue)
+        }
+
+        let cgImageSource = CGImageSourceCreateWithData(
+            srcImageData as CFData,
+            [kCGImageSourceShouldCache: false] as CFDictionary,
+        )
+        guard let cgImageSource else {
+            Logger.warn("couldn't parse image")
+            return nil
+        }
+        let dstImage = NormalizedImage.loadImage(imageSource: cgImageSource, maxPixelSize: maxImageSize)
+        guard let dstImage else {
+            Logger.warn("couldn't load/resize image")
+            return nil
+        }
+
+        if imageMetadata.hasAlpha {
+            guard let dstData = UIImage(cgImage: dstImage).pngData() else {
+                owsFailDebug("Could not write resized image to PNG.")
                 return nil
             }
-
-            var stillThumbnail = stillImage
-            let imageSize = stillImage.pixelSize
-            let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
-            if shouldResize {
-                guard let resizedImage = stillImage.resized(maxDimensionPixels: maxImageSize) else {
-                    owsFailDebug("Couldn't resize image.")
-                    return nil
-                }
-                stillThumbnail = resizedImage
-            }
-
-            guard let stillData = stillThumbnail.pngData() else {
-                owsFailDebug("Couldn't derive still image for Webp.")
+            return PreviewThumbnail(imageData: dstData, mimetype: MimeType.imagePng.rawValue)
+        } else {
+            guard let dstData = UIImage(cgImage: dstImage).jpegData(compressionQuality: 0.8) else {
+                owsFailDebug("Could not write resized image to JPEG.")
                 return nil
             }
-            return PreviewThumbnail(imageData: stillData, mimetype: MimeType.imagePng.rawValue)
-        default:
-            let mimeType = imageFormat.mimeType
-
-            let imageSize = imageMetadata.pixelSize
-            let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
-            if imageMetadata.imageFormat == .jpeg || imageMetadata.imageFormat == .png, !shouldResize {
-                // If we don't need to resize or convert the file format,
-                // return the original data.
-                return PreviewThumbnail(imageData: srcImageData, mimetype: mimeType.rawValue)
-            }
-
-            guard let srcImage = UIImage(data: srcImageData) else {
-                owsFailDebug("Could not parse image.")
-                return nil
-            }
-
-            guard let dstImage = srcImage.resized(maxDimensionPixels: maxImageSize) else {
-                owsFailDebug("Could not resize image.")
-                return nil
-            }
-            if imageMetadata.hasAlpha {
-                guard let dstData = dstImage.pngData() else {
-                    owsFailDebug("Could not write resized image to PNG.")
-                    return nil
-                }
-                return PreviewThumbnail(imageData: dstData, mimetype: MimeType.imagePng.rawValue)
-            } else {
-                guard let dstData = dstImage.jpegData(compressionQuality: 0.8) else {
-                    owsFailDebug("Could not write resized image to JPEG.")
-                    return nil
-                }
-                return PreviewThumbnail(imageData: dstData, mimetype: MimeType.imageJpeg.rawValue)
-            }
+            return PreviewThumbnail(imageData: dstData, mimetype: MimeType.imageJpeg.rawValue)
         }
     }
 

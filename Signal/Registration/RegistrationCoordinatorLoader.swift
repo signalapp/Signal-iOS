@@ -19,7 +19,11 @@ public protocol RegistrationCoordinatorLoader {
     /// `desiredMode` may not be the mode we end up in; for example if we
     /// were in the middle of re-registration and try to change number, that will
     /// be disallowed and we will fall back to re-registration.
-    func coordinator(forDesiredMode: RegistrationMode, transaction: DBWriteTransaction) -> RegistrationCoordinator
+    func coordinator(
+        forDesiredMode: RegistrationMode,
+        transaction: DBWriteTransaction,
+        logger: PrefixedLogger,
+    ) -> RegistrationCoordinator
 
     /// If true, message processing should be paused due to an in-progress change number.
     func hasPendingChangeNumber(transaction: DBReadTransaction) -> Bool
@@ -104,6 +108,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
     public func coordinator(
         forDesiredMode desiredMode: RegistrationMode,
         transaction: DBWriteTransaction,
+        logger: PrefixedLogger,
     ) -> RegistrationCoordinator {
         let mode = loadMode(transaction: transaction) ?? desiredMode.asInternalMode()
         do {
@@ -118,7 +123,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
         }
         let delegate = CoordinatorDelegate(loader: self)
         Logger.info("Starting registration, mode: \(mode.logString)")
-        return RegistrationCoordinatorImpl(mode: mode, loader: delegate, dependencies: deps)
+        return RegistrationCoordinatorImpl(mode: mode, loader: delegate, dependencies: deps, logger: logger)
     }
 
     public func hasPendingChangeNumber(transaction: DBReadTransaction) -> Bool {

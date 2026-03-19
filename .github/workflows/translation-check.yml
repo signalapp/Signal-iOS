@@ -1,0 +1,30 @@
+name: translation-check
+
+on:
+  push:
+    branches:
+      - release/*
+
+env:
+  # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md#xcode
+  DEVELOPER_DIR: /Applications/Xcode_26.3.app
+
+jobs:
+  check-strings:
+    name: check .strings
+
+    timeout-minutes: 5
+
+    runs-on: macos-26
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build translation-validator
+        run: swift build --package-path Scripts/translation-validator
+
+      - name: Validate InfoPlist.strings
+        run: Scripts/translation-validator/.build/debug/translation-validator Signal/translations/en.lproj/InfoPlist.strings
+
+      - name: Validate Localizable.strings
+        run: Scripts/translation-validator/.build/debug/translation-validator Signal/translations/en.lproj/Localizable.strings

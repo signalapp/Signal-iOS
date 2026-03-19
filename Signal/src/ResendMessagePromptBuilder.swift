@@ -16,10 +16,12 @@ class ResendMessagePromptBuilder {
         self.messageSenderJobQueue = messageSenderJobQueue
     }
 
-    func build(for message: TSOutgoingMessage) -> UIViewController {
+    func build(for message: TSMessage) -> UIViewController {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
         let sendAgain: () -> Void = { [databaseStorage, messageSenderJobQueue] in
             databaseStorage.write { tx in
-                let latestMessage = TSOutgoingMessage.fetchOutgoingMessageViaCache(uniqueId: message.uniqueId, transaction: tx)
+                let latestMessage = TSMessage.fetchMessageViaCache(uniqueId: message.uniqueId, transaction: tx)
                 guard let latestMessage, let latestThread = latestMessage.thread(tx: tx) else {
                     return
                 }
@@ -27,21 +29,46 @@ class ResendMessagePromptBuilder {
                 // rather than the message itself.
                 let preparedMessage: PreparedOutgoingMessage
                 if latestMessage.wasRemotelyDeleted {
-                    let messageToSend = OutgoingDeleteMessage(thread: latestThread, message: latestMessage, tx: tx)
+                    let messageToSend: TransientOutgoingMessage
+                    if let outgoingMessage = latestMessage as? TSOutgoingMessage {
+                        messageToSend = OutgoingDeleteMessage(thread: latestThread, message: outgoingMessage, tx: tx)
+                    } else if latestMessage.isIncoming {
+                        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
+                            return owsFailDebug("Local user not registered")
+                        }
+                        messageToSend = OutgoingAdminDeleteMessage(
+                            thread: latestThread,
+                            message: latestMessage,
+                            localIdentifiers: localIdentifiers,
+                            tx: tx,
+                        )
+                    } else {
+                        return owsFailDebug("Message to resend is not incoming or outgoing")
+                    }
                     preparedMessage = PreparedOutgoingMessage.preprepared(
                         transientMessageWithoutAttachments: messageToSend,
                     )
-                } else {
+                } else if let outgoingMessage = latestMessage as? TSOutgoingMessage {
                     preparedMessage = PreparedOutgoingMessage.preprepared(
-                        forResending: latestMessage,
-                        messageRowId: latestMessage.sqliteRowId!,
+                        forResending: outgoingMessage,
+                        messageRowId: outgoingMessage.sqliteRowId!,
                     )
+                } else {
+                    return owsFailDebug("Message to resend is not remotely deleted or outgoing")
                 }
                 messageSenderJobQueue.add(message: preparedMessage, transaction: tx)
             }
         }
 
-        let recipientsWithChangedSafetyNumber = message.failedRecipientAddresses(errorCode: UntrustedIdentityError.errorCode)
+        var recipientsWithChangedSafetyNumber: [SignalServiceAddress] = []
+        if let outgoingMessage = message as? TSOutgoingMessage {
+            recipientsWithChangedSafetyNumber = outgoingMessage.failedRecipientAddresses(errorCode: UntrustedIdentityError.errorCode)
+        } else if message.isIncoming {
+            if let recipientAddressStates = databaseStorage.read(block: { tx in AdminDeleteManager.recipientAddressStates(message: message, tx: tx) }) {
+                recipientsWithChangedSafetyNumber = AdminDeleteManager.failedRecipientsWithErrorCode(UntrustedIdentityError.errorCode, recipientAddressStates: recipientAddressStates)
+            }
+        }
+
         guard recipientsWithChangedSafetyNumber.isEmpty else {
             // Show special safety number change dialog
             let confirmationSheet = SafetyNumberConfirmationSheet(
@@ -56,7 +83,14 @@ class ResendMessagePromptBuilder {
             return confirmationSheet
         }
 
-        let actionSheet = ActionSheetController(title: nil, message: message.mostRecentFailureText)
+        var mostRecentFailureText: String?
+        if let outgoingMessage = message as? TSOutgoingMessage {
+            mostRecentFailureText = outgoingMessage.mostRecentFailureText
+        }
+        // TODO: [AdminDelete] message text for failed delete on incoming message
+        // Since we don't have mostRecentFailureText, we will just show generic error text.
+
+        let actionSheet = ActionSheetController(title: nil, message: mostRecentFailureText)
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.deleteForMeButton,

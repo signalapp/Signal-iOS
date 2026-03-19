@@ -7,6 +7,9 @@
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Signal 소개";
 
+/* Label for forward button in media control panel */
+"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Forward";
+
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "첨부 파일";
 
@@ -805,9 +808,6 @@
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "백업 세부 정보";
 
-/* Notice that backups is a beta feature */
-"BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "이 기능은 베타 단계이며, 앞으로 지속적으로 개선될 예정입니다.";
-
 /* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "새 복구 키를 만들려면 사용자 등록이 되어 있어야 합니다.";
 
@@ -1343,7 +1343,7 @@
 "CALL_LINK_JOIN_REQUEST_DENY_BUTTON" = "입장 거부";
 
 /* Tappable label that appears below a user's name on a toast when they request to join a call link. */
-"CALL_LINK_JOIN_REQUEST_PROMPT" = "전화 받기…";
+"CALL_LINK_JOIN_REQUEST_PROMPT" = "통화에 참여하고 싶어요";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
 "CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "이 링크를 사용하여 Signal 통화에 참여하세요.";
@@ -1472,16 +1472,16 @@
 "CALL_RAISE_HAND_BUTTON_LABEL" = "손 들기";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "전화로 돌아가기";
+"CALL_RETURN_BUTTON" = "통화로 돌아가기";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "응답 없음";
 
 /* Button to start a call */
-"CALL_START_BUTTON" = "전화 시작하기";
+"CALL_START_BUTTON" = "통화 시작하기";
 
 /* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "전화";
+"CALL_USER_ALERT_CALL_BUTTON" = "통화";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
 "CALL_USER_ALERT_MESSAGE_FORMAT" = "%1$@ 님에게 전화할까요?";
@@ -1517,13 +1517,13 @@
 "CALL_VIEW_HANGUP_LABEL" = "통화 종료";
 
 /* Accessibility label for leaving a call */
-"CALL_VIEW_LEAVE_CALL_LABEL" = "전화 종료";
+"CALL_VIEW_LEAVE_CALL_LABEL" = "통화에서 나가기";
 
 /* Accessibility label for the More button in the Call Controls row. */
 "CALL_VIEW_MORE_LABEL" = "더 보기";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "알림 끄기";
+"CALL_VIEW_MUTE_LABEL" = "음소거";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
 "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ 님께 메시지 요청이 전송됩니다. 메시지 요청이 수락되면 통화를 시작할 수 있습니다.";
@@ -1544,7 +1544,7 @@
 "CALL_VIEW_TURN_VIDEO_ON_LABEL" = "카메라 켜기";
 
 /* Accessibility label for unmuting the microphone */
-"CALL_VIEW_UNMUTE_LABEL" = "알림 켜기";
+"CALL_VIEW_UNMUTE_LABEL" = "음소거 해제";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
 "CALL_WAITING_TO_BE_LET_IN" = "승인을 기다리는 중…";
@@ -1562,7 +1562,7 @@
 "CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal 그룹";
 
 /* Title for the calls list view. */
-"CALLS_LIST_TITLE" = "전화";
+"CALLS_LIST_TITLE" = "통화";
 
 /* Label for an entry in the Calls Tab describing a call as incoming. */
 "CALLS_TAB_CALL_DIRECTION_LABEL_INCOMING" = "수신";
@@ -1616,7 +1616,7 @@
 "CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "친구에게 전화를 걸어 시작하세요.";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
-"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "전화로 돌아가기";
+"CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "통화로 돌아가기";
 
 /* Title for a button offering to let the user return to an ongoing call they're already in, associated with a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_BUTTON_TITLE" = "반환";
@@ -2255,7 +2255,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "대화를 삭제할까요?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "다음 기간 동안 이 대화 알림 끄기…";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "다음 기간 동안 이 대화 알림 끄기";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1일";
@@ -2351,10 +2351,10 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "모든 멤버";
 
 /* Label for 'edit member label access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "Add Member Labels";
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "멤버 라벨 추가";
 
 /* Description for the 'edit member label access'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "Choose who can add member labels in this group.";
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "이 그룹에서 멤버 라벨을 추가할 수 있는 사람을 선택하세요.";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "멤버 추가";
@@ -2372,10 +2372,10 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ 님이 이 그룹과 멤버를 수정할 수 있게 됩니다.";
 
 /* Label for button that sets 'member labels access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON" = "Only Admins";
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON" = "관리자";
 
 /* Label for button that sets 'member labels access' to 'members-only'. */
-"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+"CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON" = "모든 멤버";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "요청 & 초대";
@@ -2387,7 +2387,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "항상 알림";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "알림을 껐다면 무시";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "알림을 끈 경우 받지 않습니다";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "알림을 비활성화한 대화에서 멘션될 경우 알림을 받아보시겠어요?";
@@ -2399,7 +2399,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "메시지";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "다음 기간 동안 이 대화 알림 끄기…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "다음 기간 동안 이 대화 알림 끄기";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "항상";
@@ -2438,7 +2438,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%1$@까지";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%1$@까지 알림을 껐습니다.";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%1$@까지 알림 끔";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "새 연락처 만들기";
@@ -3689,7 +3689,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "이제 '%1$@'이(가) 그룹 정보를 변경할 수 있습니다.";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Only Admins";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "관리자";
 
 /* Description of the 'all users' access level. */
 "GROUP_ACCESS_LEVEL_ANY" = "모든 사용자";
@@ -3704,13 +3704,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "꺼짐";
 
 /* Message indicating that the access to setting member labels was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can add member labels to “%1$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT" = "멤버 라벨을 추가할 수 있는 사람을 '%1$@'로 변경했습니다.";
 
 /* Message indicating that the access to setting member labels was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can add member labels to “%2$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 멤버 라벨을 추가할 수 있는 사람을 '%2$@'로 변경했습니다.";
 
 /* Message indicating that the access to setting member labels was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT" = "An admin changed who can add member labels to “%1$@”.";
+"GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT" = "관리자가 멤버 라벨을 추가할 수 있는 사람을 '%1$@'로 변경했습니다.";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "그룹 멤버십을 수정할 수 있는 사람을 '%1$@'로 변경했습니다.";
@@ -3739,17 +3739,17 @@
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ 님을 차단함";
 
-/* Context menu action to view a call participant's contact details. */
-"GROUP_CALL_CONTEXT_MENU_CONTACT_DETAILS" = "Contact Details";
-
 /* Context menu action to navigate to the chat with a call participant. */
-"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "Go to Chat";
+"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "대화로 이동";
 
 /* Context menu action to mute a call participant's audio. */
-"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "Mute Audio";
+"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "음소거";
+
+/* Context menu action to view a call participant's profile details. */
+"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Profile Details";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "계속 전화";
+"GROUP_CALL_CONTINUE_BUTTON" = "통화 계속하기";
 
 /* Text in conversation view for a group call that has since ended */
 "GROUP_CALL_ENDED_MESSAGE" = "그룹 통화가 종료됨";
@@ -3761,22 +3761,22 @@
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "이 통화에 대한 최대 참가자 수에 도달했습니다. 나중에 다시 시도하세요.";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
-"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ 님이 그룹에 전화를 거는 중입니다.";
+"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ 님이 그룹에 전화를 거는 중입니다";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "통화 최대 참가자 수 도달";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%1$@ 님에게 전화를 거는 중…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%1$@ 님에게 전화를 거는 중입니다";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ 님과 %2$@ 님에게 전화를 거는 중…";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ 님과 %2$@ 님에게 전화를 거는 중입니다";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "전화 참여하기";
+"GROUP_CALL_JOIN_BUTTON" = "통화 참여하기";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "전화 나가기";
+"GROUP_CALL_LEAVE_BUTTON" = "통화에서 나가기";
 
 /* Title for a 'done' button on a sheet showing the group call members list */
 "GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE" = "확인";
@@ -3815,10 +3815,10 @@
 "GROUP_CALL_NO_ONE_HERE" = "아무도 없음";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ 님이 전화에 참가했습니다.";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ 님이 통화에 참여했습니다";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%1$@님이 전화를 끊었습니다.";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%1$@ 님이 통화에서 나갔습니다";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%1$@ 및 %2$@ 님이 통화에 참여했습니다.";
@@ -3893,10 +3893,10 @@
 "GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ 님과 %2$@ 님에게 알림이 갑니다.";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal에서 %1$@ 님에게 전화를 겁니다.";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal에서 %1$@ 님에게 전화를 겁니다";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal에서 %1$@ 님과 %2$@ 님에게 전화를 겁니다.";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal에서 %1$@ 님과 %2$@ 님에게 전화를 겁니다";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "그룹 통화 중입니다.";
@@ -4010,7 +4010,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ 님은 관리자만 메시지를 전송할 수 있도록 그룹 설정을 변경했습니다.";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "이 그룹에 참여하여 멤버들에게 이름과 사진을 공유하시겠어요?";
+"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "이 그룹에 참가하여 멤버들에게 이름과 사진을 공유하시겠어요?";
 
 /* Message text for the 'group invite link' action sheet, if the user will be requesting to join. */
 "GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST" = "가입을 요청하면 이름과 사진이 이 그룹의 멤버들과 공유됩니다. 관리자가 요청을 승인해야 합니다.";
@@ -4634,7 +4634,7 @@
 "INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE" = "휴대전화에서 Signal을 여세요.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "알림을 끄고 보관한 대화는 새 메시지가 도착해도 보관 상태로 유지됩니다.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "알림을 끈 상태로 보관한 대화는 새 메시지가 도착해도 보관 상태로 유지됩니다.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "새 메시지가 도착하면 보관한 대화가 받은 편지함으로 이동합니다.";
@@ -5180,7 +5180,7 @@
 "MEMBER_LABEL_VIEW_TITLE" = "멤버 라벨";
 
 /* A one-time confirmation that you, as an admin, want to delete for everyone */
-"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "Group members on the latest versions of Signal will see that you deleted these messages.";
+"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "Signal 최신 버전을 사용 중인 그룹 멤버에게 내가 해당 메시지를 삭제했다는 메시지가 표시됩니다.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "메시지 내용 복사";
@@ -5243,7 +5243,7 @@
 "MESSAGE_ACTION_PAYMENT_DETAILS" = "결제 세부 정보";
 
 /* Label for button to call a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_CALL" = "전화";
+"MESSAGE_ACTION_PHONE_NUMBER_CALL" = "전화 걸기";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime 음성 통화";
@@ -5474,7 +5474,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "그룹 참가 신청을 취소할까요?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "내 참가 요청을 그룹 관리자에게 보냈습니다. 관리자가 조치를 취할 때 알림을 받게 됩니다.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "내 참가 요청을 그룹 관리자에게 보냈습니다. 승인 여부가 결정되면 알림을 보내드립니다.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "전송됨";
@@ -5582,7 +5582,7 @@
 "MUTE_CONFIRMATION_TOAST_LABEL" = "마이크 꺼짐";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "알림 끄기";
+"MUTED_BADGE" = "음소거 상태";
 
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "내 스토리에 대한 업데이트가 여기 표시됩니다.";
@@ -5837,7 +5837,7 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "조치에는 '읽음으로 표시', '답장'과 '다시 전화'가 포함됩니다.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "이름 또는 내용 없음";
+"NOTIFICATIONS_NONE" = "이름 또는 내용 표시 안 함";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "앱이 열려 있을 때 재생";
@@ -6005,13 +6005,13 @@
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "내 번호로 나를 찾을 수 있는 사람";
 
 /* Placeholder string for phone number field during registration */
-"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "전화번호";
+"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "내 전화번호";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "몇 분 후 다시 시도해 주세요(%1$@).";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "잘못된 전화번호입니다. 올바른 전화번호 입력 후 가입하세요";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "잘못된 전화번호입니다. 등록하려면 올바른 전화번호를 입력해 주세요.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "PIN 입력 가능 횟수를 초과했습니다. 새 PIN을 설정하면 계정을 계속 사용할 수 있지만, 개인정보 보호를 위해 프로필 정보와 설정은 복원되지 않습니다.";
@@ -6065,7 +6065,7 @@
 "ONBOARDING_VERIFICATION_HELP_BULLET_1" = "SMS 또는 전화를 수신하려면 휴대전화에서 데이터 네트워크가 켜져 있어야 합니다.";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "전화번호로 전화를 받을 수 있는 확인하세요.";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "전화번호로 전화를 받을 수 있는지 확인하세요.";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
 "ONBOARDING_VERIFICATION_HELP_BULLET_3" = "전화번호를 올바르게 입력했는지 확인하세요.";
@@ -6593,7 +6593,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "모두에게 허용";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "내 전화번호가 있는 사람은 Signal에서 나를 보고 나와 대화를 시작할 수 있습니다.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "내 전화번호가 있는 사람은 내가 Signal을 사용 중임을 알 수 있으며, 나와 대화를 시작할 수 있습니다.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "모두에게 금지";
@@ -7189,8 +7189,8 @@
 /* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "이 계정을 새 기기로 이전하려면 '계속'을 탭하고 Signal 카메라로 QR 코드를 스캔하세요. Signal에서 직접 제공한 QR 코드만 스캔하세요.";
 
-/* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "%1$@ 님에게 답장하는 중입니다.";
+/* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@. %2$@";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
@@ -7520,10 +7520,10 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "프로필 설정";
 
 /* Error shown if an SMS/call service provider is unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "We are unable to send an SMS to your number. Please try again in several hours.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "해당 전화번호에 SMS를 전송할 수 없습니다. 몇 시간 정도 기다렸다가 다시 시도해 주세요.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "We are unable to send an SMS to your number. Please try again in a few minutes.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "해당 전화번호에 SMS를 전송할 수 없습니다. 몇 분 정도 기다렸다가 다시 시도해 주세요.";
 
 /* Third step in directions for how to make a backup */
 "REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "백업을 활성화하고 백업이 완료될까지 기다립니다";
@@ -7607,7 +7607,7 @@
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "사용자 이름 QR 코드와 링크에 문제가 발생하여 더 이상 사용할 수 없습니다. 다른 사용자와 공유하려면 새로운 링크를 만드세요.";
 
 /* Toast that appears when local user tried to delete a message that has disappeared */
-"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "Message disappeared before it could be deleted.";
+"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "이미 자동 삭제된 메시지예요.";
 
 /* A message that displays when one person in a call remotely muted another participant. Embeds {{name}} {{name}} */
 "REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@ 님이 %2$@ 님의 알림을 껐습니다.";
@@ -7733,7 +7733,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "무시하고 추가하기";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "무시하고 전화";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "무시하고 전화 걸기";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "무시하고 보내기";
@@ -8180,10 +8180,10 @@
 "SETTINGS_BLOCK_LIST_TITLE" = "차단 목록";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "항상 릴레이 통화";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "통화 시 항상 서버 경유";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "내 연락처에게 IP 주소가 표시되지 않도록 모든 통화를 Signal 서버로 중계합니다. 전화 품질이 떨어질 수 있습니다.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "상대방에게 IP 주소가 노출되지 않도록 모든 통화를 Signal 서버로 경유합니다. 통화 품질이 다소 저하될 수 있습니다.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "번호 편집";
@@ -8312,7 +8312,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "메시지 소리";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "알림을 끄고 보관한 대화는 새 메시지가 도착해도 보관 상태로 유지됩니다.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "알림을 끈 상태로 보관한 대화는 새 메시지가 도착해도 보관 상태로 유지됩니다.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "알림을 비활성화한 대화 보관 상태로 유지";
@@ -8363,7 +8363,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "알림을 비활성화한 대화 포함";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "배지 카운트";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "앱 아이콘 배지";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "휴대전화가 잠겨 있는 동안 통화 및 메시지 알림이 나타날 수 있습니다.";
@@ -8915,7 +8915,7 @@
 "SETTINGS_PINS_TITLE" = "Signal PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "검열 우회, 프록시, 중계 통화, 보낸 사람 감추기 설정.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "검열 우회, 프록시, 통화 서버 경유, 발신자 암호화 설정.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "고급";
@@ -9032,7 +9032,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "모든 사람으로부터 허용";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "연락처에 없는 사람과 프로필을 공유하지 않은 사람이 나에게 보내는 메시지에 발신자 암호화를 허용합니다.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "연락처에 없거나 프로필을 공유하지 않은 상대가 보내는 메시지에 발신자 암호화 기능을 적용합니다.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "버전";

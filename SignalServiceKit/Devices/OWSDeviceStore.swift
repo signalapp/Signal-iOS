@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 public struct MostRecentlyLinkedDeviceDetails: Codable {
     public let linkedTime: Date
     public let notificationDelay: TimeInterval
@@ -32,7 +34,7 @@ public struct OWSDeviceStore {
     }
 
     public func hasLinkedDevices(tx: DBReadTransaction) -> Bool {
-        return fetchAll(tx: tx).contains { $0.isLinkedDevice }
+        return fetchAll(tx: tx).contains { !$0.deviceId.isPrimary }
     }
 
     // MARK: -
@@ -41,33 +43,30 @@ public struct OWSDeviceStore {
         let existingDevices = fetchAll(tx: tx)
 
         for existingDevice in existingDevices {
-            do {
+            failIfThrows {
                 try existingDevice.delete(tx.database)
-            } catch {
-                owsFailDebug("Failed to delete device! \(error)")
             }
         }
 
-        for newDevice in newDevices {
-            do {
+        var newDeviceIds = Set<DeviceId>()
+        for var newDevice in newDevices {
+            guard newDeviceIds.insert(newDevice.deviceId).inserted else {
+                owsFailDebug("trying to insert device with duplicate id")
+                continue
+            }
+            failIfThrows {
                 try newDevice.insert(tx.database)
-            } catch {
-                owsFailDebug("Failed to insert device! \(error)")
             }
         }
 
-        let existingDeviceIds = Set(existingDevices.map { $0.deviceId })
-        let newDeviceIds = Set(newDevices.map { $0.deviceId })
-        return !newDeviceIds.symmetricDifference(existingDeviceIds).isEmpty
+        return !newDeviceIds.symmetricDifference(existingDevices.map(\.deviceId)).isEmpty
     }
 
     // MARK: -
 
     public func remove(_ device: OWSDevice, tx: DBWriteTransaction) {
-        do {
+        failIfThrows {
             try device.delete(tx.database)
-        } catch {
-            owsFailDebug("Failed to delete device! \(error)")
         }
     }
 
@@ -81,10 +80,8 @@ public struct OWSDeviceStore {
         var device = device
         device.name = name
 
-        do {
+        failIfThrows {
             try device.update(tx.database)
-        } catch {
-            owsFailDebug("Failed to update device with new encryptedName! \(error)")
         }
     }
 

@@ -391,7 +391,7 @@ public class GroupManager: NSObject {
         let newConfiguration = updateResult.newConfiguration
         let message = DisappearingMessagesConfigurationMessage(
             configuration: newConfiguration,
-            thread: contactThread,
+            contactThread: contactThread,
             tx: transaction,
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(

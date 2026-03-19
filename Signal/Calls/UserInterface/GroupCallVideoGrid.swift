@@ -52,7 +52,11 @@ class GroupCallVideoGrid: UICollectionView, UICollectionViewDelegate, UICollecti
         cell.configureRemoteVideo(device: remoteDevice)
     }
 
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
+        point: CGPoint,
+    ) -> UIContextMenuConfiguration? {
         guard
             indexPaths.count == 1,
             let indexPath = indexPaths.first,
@@ -61,19 +65,16 @@ class GroupCallVideoGrid: UICollectionView, UICollectionViewDelegate, UICollecti
             return nil
         }
 
-        let contactDisplayName: DisplayName = db.read { tx in
-            return contactManager.displayName(
-                for: SignalServiceAddress(remoteDevice.aci),
-                tx: tx,
-            )
-        }
-
-        return GroupCallContextMenuInteractionBuilder.build(
-            demuxId: remoteDevice.demuxId,
-            contactAci: remoteDevice.aci,
-            contactName: contactDisplayName.resolvedValue(),
-            isAudioMuted: remoteDevice.audioMuted == true,
-            ringRtcGroupCall: ringRtcCall,
+        return GroupCallVideoContextMenuConfiguration.build(
+            call: call,
+            groupCall: groupCall,
+            ringRtcCall: ringRtcCall,
+            remoteDevice: remoteDevice,
+            interactionProvider: { [weak self] in
+                return self?.interactions
+                    .compactMap({ $0 as? UIContextMenuInteraction })
+                    .first
+            },
         )
     }
 

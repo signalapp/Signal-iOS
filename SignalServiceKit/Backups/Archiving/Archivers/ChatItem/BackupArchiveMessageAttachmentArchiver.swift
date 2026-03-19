@@ -445,14 +445,16 @@ extension ReferencedAttachment {
         proto.locatorInfo = self.asBackupFilePointerLocatorInfo(context: context)
 
         if
-            attachment.mediaName != nil,
-            let unencryptedByteCount =
-            attachment.streamInfo?.unencryptedByteCount
-                ?? attachment.mediaTierInfo?.unencryptedByteCount
+            let mediaTierInfo = attachment.mediaTierInfo,
+            mediaTierInfo.isUploaded(currentUploadEra: context.currentUploadEra)
         {
+            let estimatedMediaTierSize = Cryptography.estimatedMediaTierCDNSize(
+                unencryptedSize: UInt64(safeCast: mediaTierInfo.unencryptedByteCount),
+            ) ?? UInt64(UInt32.max)
+
             context.attachmentByteCounter.addToByteCount(
                 attachmentID: attachment.id,
-                byteCount: Cryptography.estimatedMediaTierCDNSize(unencryptedSize: UInt64(safeCast: unencryptedByteCount)) ?? UInt64(UInt32.max),
+                byteCount: estimatedMediaTierSize,
             )
         }
 

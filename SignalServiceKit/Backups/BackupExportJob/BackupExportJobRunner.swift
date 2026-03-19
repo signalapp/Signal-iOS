@@ -20,25 +20,28 @@ public protocol BackupExportJobRunner {
     /// job is running.
     func updates() -> AsyncStream<BackupExportJobRunnerUpdate?>
 
-    /// Cooperatively cancel the running export job, if one exists.
-    func cancelIfRunning()
-
     /// Resume an interrupted ``BackupExportJob`` from a previous launch, if
-    /// one exists.
+    /// one exists. Resumed jobs are run using ``BackupExportJobMode/manual``.
     ///
     /// - SeeAlso ``BackupExportJobStore``
     func resumeIfNecessary()
 
+    /// Cancel the in-progress `BackupExportJob`, if one exists.
+    ///
+    /// - Returns
+    /// A `Task` tracking the teardown of the canceled `BackupExportJob`, if one
+    /// was running.
+    func cancelIfRunning() -> Task<Void, Error>?
+
     /// Run a ``BackupExportJob``, if one is not already running.
     ///
-    /// Only one export job is allowed to run at once, so calls to this method
-    /// will only start new async work if there is no job running. Callers who
-    /// wish to cancel a running job must use ``cancelIfRunning()``.
-    ///
     /// - Note
-    /// Callers should use ``updates()`` for status notifications about the
-    /// running job.
-    func startIfNecessary()
+    /// To receive granular updates on a running job, use ``updates()``.
+    ///
+    /// - Returns
+    /// A `Task` tracking a `BackupExportJob` run, which may be freshly started
+    /// or preexisting.
+    func startIfNecessary(mode: BackupExportJobMode) -> Task<Void, Error>
 }
 
 // MARK: -
@@ -51,7 +54,7 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
         }
 
         var updateObservers: [UpdateObserver] = []
-        var currentExportJobTask: Task<Void, Never>?
+        var currentExportJobTask: Task<Void, Error>?
 
         var nextProgressUpdate: OWSSequentialProgress<BackupExportJobStage>?
         var latestUpdate: BackupExportJobRunnerUpdate? {
@@ -142,41 +145,44 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
 
     // MARK: -
 
-    func cancelIfRunning() {
-        state.update { _state in
-            if let currentExportJobTask = _state.currentExportJobTask {
-                currentExportJobTask.cancel()
-            }
-        }
-    }
-
-    // MARK: -
-
     func resumeIfNecessary() {
         let resumptionPoint: BackupExportJobStore.ResumptionPoint? = db.read { tx in
             backupExportJobStore.lastReachedResumptionPoint(tx: tx)
         }
 
         if let resumptionPoint {
-            _startIfNecessary(resumptionPoint: resumptionPoint)
+            _ = _startIfNecessary(
+                mode: .manual,
+                resumptionPoint: resumptionPoint,
+            )
         }
     }
 
     // MARK: -
 
-    func startIfNecessary() {
-        _startIfNecessary(resumptionPoint: nil)
+    func cancelIfRunning() -> Task<Void, Error>? {
+        return state.update { _state in
+            _state.currentExportJobTask?.cancel()
+            return _state.currentExportJobTask
+        }
+    }
+
+    // MARK: -
+
+    func startIfNecessary(mode: BackupExportJobMode) -> Task<Void, Error> {
+        return _startIfNecessary(mode: mode, resumptionPoint: nil)
     }
 
     private func _startIfNecessary(
+        mode: BackupExportJobMode,
         resumptionPoint: BackupExportJobStore.ResumptionPoint?,
-    ) {
-        state.update { [self] _state in
-            if _state.currentExportJobTask != nil {
-                return
+    ) -> Task<Void, Error> {
+        return state.update { [self] _state in
+            if let currentExportJobTask = _state.currentExportJobTask {
+                return currentExportJobTask
             }
 
-            _state.currentExportJobTask = Task { () async -> Void in
+            let newExportJobTask = Task { () async throws -> Void in
                 let result = await Result(catching: {
                     let progressSink = await OWSSequentialProgress<BackupExportJobStage>
                         .createSink { [weak self] exportJobProgress in
@@ -184,15 +190,18 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
                         }
 
                     try await backupExportJob.run(
-                        mode: .manual(
-                            progressSink,
-                            resumptionPoint: resumptionPoint,
-                        ),
+                        mode: mode,
+                        resumptionPoint: resumptionPoint,
+                        progress: progressSink,
                     )
                 })
 
                 exportJobDidComplete(result: result)
+                try result.get()
             }
+
+            _state.currentExportJobTask = newExportJobTask
+            return newExportJobTask
         }
     }
 
