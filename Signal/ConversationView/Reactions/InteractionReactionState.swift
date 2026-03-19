@@ -5,21 +5,40 @@
 
 public import SignalServiceKit
 
+/// Key for grouping reactions on a message. Sticker reactions are grouped by
+/// (packId + stickerId), while emoji reactions are grouped by canonical base emoji.
+public enum ReactionGroupKey: Hashable {
+    case emoji(String)
+    case sticker(packId: Data, stickerId: UInt32)
+
+    init?(reaction: OWSReaction) {
+        if let sticker = reaction.sticker {
+            self = .sticker(packId: sticker.packId, stickerId: sticker.stickerId)
+        } else if let emoji = EmojiWithSkinTones(rawValue: reaction.emoji) {
+            self = .emoji(emoji.baseEmoji.rawValue)
+        } else {
+            return nil
+        }
+    }
+}
+
 public class InteractionReactionState: NSObject {
     var hasReactions: Bool { return !emojiCounts.isEmpty }
 
     struct EmojiCount {
         let emoji: String
+        let groupKey: ReactionGroupKey
         let count: Int
         let highestSortOrder: UInt64
+        let stickerAttachment: CVAttachment?
     }
 
-    let reactionsByEmoji: [Emoji: [OWSReaction]]
+    let reactionsByGroupKey: [ReactionGroupKey: [OWSReaction]]
     let emojiCounts: [EmojiCount]
-    let localUserEmoji: String?
+    let localUserReaction: OWSReaction?
+    let stickerAttachmentByReactionId: [Int64: CVAttachment]
 
     init?(interaction: TSInteraction, transaction: DBReadTransaction) {
-        // No reactions on non-message interactions
         guard let message = interaction as? TSMessage else { return nil }
 
         guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress else {
@@ -31,27 +50,51 @@ public class InteractionReactionState: NSObject {
         let allReactions = finder.allReactions(transaction: transaction)
         let localUserReaction = allReactions.first(where: { $0.reactor == localAddress })
 
-        reactionsByEmoji = allReactions.reduce(
-            into: [Emoji: [OWSReaction]](),
+        var stickerAttachmentByReactionIdLocal = [Int64: CVAttachment]()
+        if let messageRowId = message.sqliteRowId {
+            let attachmentStore = DependenciesBridge.shared.attachmentStore
+            let allRefs = attachmentStore.fetchReferencedAttachmentsOwnedByMessage(
+                messageRowId: messageRowId,
+                tx: transaction,
+            )
+            for referencedAttachment in allRefs {
+                if case .message(.reactionSticker(let metadata)) = referencedAttachment.reference.owner {
+                    if let stream = referencedAttachment.asReferencedStream {
+                        stickerAttachmentByReactionIdLocal[metadata.reactionRowId] = .stream(stream)
+                    } else if let pointer = referencedAttachment.asReferencedAnyPointer {
+                        stickerAttachmentByReactionIdLocal[metadata.reactionRowId] = .pointer(
+                            pointer,
+                            downloadState: pointer.attachmentPointer.downloadState(tx: transaction)
+                        )
+                    } else {
+                        // If we can't download, fall back to displaying emoji (no sticker).
+                        stickerAttachmentByReactionIdLocal[metadata.reactionRowId] = nil
+                    }
+                }
+            }
+        }
+
+        // Group reactions by ReactionGroupKey so that sticker reactions are never
+        // merged with pure emoji reactions that share the same associated emoji.
+        reactionsByGroupKey = allReactions.reduce(
+            into: [ReactionGroupKey: [OWSReaction]](),
         ) { result, reaction in
-            guard let emoji = Emoji(reaction.emoji) else {
+            guard let key = ReactionGroupKey(reaction: reaction) else {
                 return owsFailDebug("Skipping reaction with [unknown emoji]")
             }
 
-            var reactions = result[emoji] ?? []
+            var reactions = result[key] ?? []
             reactions.append(reaction)
-            result[emoji] = reactions
+            result[key] = reactions
         }
 
-        emojiCounts = reactionsByEmoji.values.compactMap { reactions in
+        emojiCounts = reactionsByGroupKey.compactMap { (groupKey, reactions) in
             guard let mostRecentReaction = reactions.first else {
                 owsFailDebug("unexpectedly missing reactions")
                 return nil
             }
             let mostRecentEmoji = mostRecentReaction.emoji
 
-            // We show your own skintone (if you’ve reacted), or the most
-            // recent skintone (if you haven’t reacted).
             let emojiToRender: String
             if let localUserReaction, reactions.contains(localUserReaction) {
                 emojiToRender = localUserReaction.emoji
@@ -62,10 +105,22 @@ public class InteractionReactionState: NSObject {
             let highestSortOrder =
                 (reactions.map { $0.sortOrder }.max() ?? mostRecentReaction.sortOrder)
 
+            let stickerAttachment: CVAttachment? = {
+                if
+                    let reactionId = mostRecentReaction.id,
+                    let state = stickerAttachmentByReactionIdLocal[reactionId]
+                {
+                    return state
+                }
+                return nil
+            }()
+
             return EmojiCount(
                 emoji: emojiToRender,
+                groupKey: groupKey,
                 count: reactions.count,
                 highestSortOrder: highestSortOrder,
+                stickerAttachment: stickerAttachment,
             )
         }.sorted { (lhs: EmojiCount, rhs: EmojiCount) in
             if lhs.count != rhs.count {
@@ -80,6 +135,7 @@ public class InteractionReactionState: NSObject {
             }
         }
 
-        localUserEmoji = localUserReaction?.emoji
+        self.localUserReaction = localUserReaction
+        stickerAttachmentByReactionId = stickerAttachmentByReactionIdLocal
     }
 }
