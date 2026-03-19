@@ -983,9 +983,7 @@ extension AppSetup.GlobalsContinuation {
             tsAccountManager: tsAccountManager,
         )
 
-        let deleteForMeAddressableMessageFinder = DeleteForMeAddressableMessageFinderImpl(
-            tsAccountManager: tsAccountManager,
-        )
+        let deleteForMeAddressableMessageFinder = DeleteForMeAddressableMessageFinderImpl()
         let bulkDeleteInteractionJobQueue = BulkDeleteInteractionJobQueue(
             addressableMessageFinder: deleteForMeAddressableMessageFinder,
             db: db,
@@ -999,7 +997,10 @@ extension AppSetup.GlobalsContinuation {
             attachmentStore: attachmentStore,
             bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
             interactionDeleteManager: interactionDeleteManager,
+            recipientDatabaseTable: recipientDatabaseTable,
             threadSoftDeleteManager: threadSoftDeleteManager,
+            threadStore: threadStore,
+            tsAccountManager: tsAccountManager,
         )
 
         let threadRemover = ThreadRemoverImpl(
@@ -1813,9 +1814,6 @@ extension AppSetup.GlobalsContinuation {
             callMessageHandler: callMessageHandler,
             deleteForMeSyncMessageReceiver: DeleteForMeSyncMessageReceiverImpl(
                 deleteForMeIncomingSyncMessageManager: deleteForMeIncomingSyncMessageManager,
-                recipientDatabaseTable: recipientDatabaseTable,
-                threadStore: threadStore,
-                tsAccountManager: tsAccountManager,
             ),
         )
         let messageDecrypter = OWSMessageDecrypter(appReadiness: appReadiness)

@@ -2701,6 +2701,7 @@
 		D92C57552A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */; };
 		D92CA9EF2F500EA500FDE32D /* LeaveGroupCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92CA9EE2F500EA500FDE32D /* LeaveGroupCoordinator.swift */; };
 		D92CB5562F030F8300537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */; };
+		D92EFDE92F68E9F60031D257 /* DeleteForMeOutgoingSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92EFDE82F68E9F60031D257 /* DeleteForMeOutgoingSyncMessageTest.swift */; };
 		D93086272C616391008E3A27 /* TSOutgoingMessage+Builder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93086262C616391008E3A27 /* TSOutgoingMessage+Builder.swift */; };
 		D93086292C61672E008E3A27 /* TSErrorMessage+Builder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93086282C61672E008E3A27 /* TSErrorMessage+Builder.swift */; };
 		D93108042B30F7E3006A034E /* CallRecordQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93108032B30F7E3006A034E /* CallRecordQuerier.swift */; };
@@ -2907,7 +2908,6 @@
 		D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979DA152B8D1FDD000EEAB8 /* BadgeCountFetcher.swift */; };
 		D97C43962D7F74F300BA41E0 /* recipient_contacts_05.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D97C43952D7F74F300BA41E0 /* recipient_contacts_05.txtproto */; };
 		D97C43972D7F74F300BA41E0 /* recipient_contacts_05.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D97C43942D7F74F300BA41E0 /* recipient_contacts_05.binproto */; };
-		D984F7242C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */; };
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
 		D987C8CF2E1CBE00004072BC /* BackupTestFlightEntitlementManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D987C8CE2E1CBDFB004072BC /* BackupTestFlightEntitlementManager.swift */; };
 		D98ACAA72E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98ACAA62E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift */; };
@@ -3128,6 +3128,7 @@
 		D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */; };
 		D99554752AF5AFE90001E15C /* BadgeThanksSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */; };
 		D99655E32C50433800AD29FB /* BackupArchiveLearnedProfileChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99655E22C50433800AD29FB /* BackupArchiveLearnedProfileChatUpdateArchiver.swift */; };
+		D99677952F689E4400F4234D /* AddressableMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99677942F689E4100F4234D /* AddressableMessage.swift */; };
 		D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */; };
 		D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */; };
 		D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */; };
@@ -6972,6 +6973,7 @@
 		D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+DisplayableGroupUpdateItemTest.swift"; sourceTree = "<group>"; };
 		D92CA9EE2F500EA500FDE32D /* LeaveGroupCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveGroupCoordinator.swift; sourceTree = "<group>"; };
 		D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionAlreadyRedeemedSheet.swift; sourceTree = "<group>"; };
+		D92EFDE82F68E9F60031D257 /* DeleteForMeOutgoingSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageTest.swift; sourceTree = "<group>"; };
 		D93086262C616391008E3A27 /* TSOutgoingMessage+Builder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSOutgoingMessage+Builder.swift"; sourceTree = "<group>"; };
 		D93086282C61672E008E3A27 /* TSErrorMessage+Builder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSErrorMessage+Builder.swift"; sourceTree = "<group>"; };
 		D93108032B30F7E3006A034E /* CallRecordQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordQuerier.swift; sourceTree = "<group>"; };
@@ -7189,7 +7191,6 @@
 		D97C43952D7F74F300BA41E0 /* recipient_contacts_05.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = recipient_contacts_05.txtproto; sourceTree = "<group>"; };
 		D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupDisablingManager.swift; sourceTree = "<group>"; };
 		D98300B12936E6C70018FDC2 /* SubscriptionConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionConfigManager.swift; sourceTree = "<group>"; };
-		D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageTest.swift; sourceTree = "<group>"; };
 		D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerTest.swift; sourceTree = "<group>"; };
 		D987C8CE2E1CBDFB004072BC /* BackupTestFlightEntitlementManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupTestFlightEntitlementManager.swift; sourceTree = "<group>"; };
 		D98ACAA62E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadQueueStatusManager.swift; sourceTree = "<group>"; };
@@ -7410,6 +7411,7 @@
 		D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileBadgesSnapshot+Constructors.swift"; sourceTree = "<group>"; };
 		D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeThanksSheetPresenter.swift; sourceTree = "<group>"; };
 		D99655E22C50433800AD29FB /* BackupArchiveLearnedProfileChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveLearnedProfileChatUpdateArchiver.swift; sourceTree = "<group>"; };
+		D99677942F689E4100F4234D /* AddressableMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressableMessage.swift; sourceTree = "<group>"; };
 		D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMegaphone.swift; sourceTree = "<group>"; };
 		D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsernameSelectionViewController+UsernameTextField.swift"; sourceTree = "<group>"; };
 		D99840BE297A04EB00F7ED6D /* Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Usernames.swift; sourceTree = "<group>"; };
@@ -13539,7 +13541,7 @@
 			children = (
 				D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */,
 				D9E8EDEC2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift */,
-				D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */,
+				D92EFDE82F68E9F60031D257 /* DeleteForMeOutgoingSyncMessageTest.swift */,
 			);
 			path = DeleteForMe;
 			sourceTree = "<group>";
@@ -14708,6 +14710,7 @@
 				F9C5C917289453B100548EEE /* Stickers */,
 				F9C5C968289453B100548EEE /* Stories */,
 				F9C5C95F289453B100548EEE /* UD */,
+				D99677942F689E4100F4234D /* AddressableMessage.swift */,
 				500B25822DD6A08300E9ECAA /* BackgroundMessageFetcher.swift */,
 				50AABEE72CDD9A440077E306 /* BlockedGroupStore.swift */,
 				50F039C32C6D239500162B99 /* BlockedRecipientStore.swift */,
@@ -18893,6 +18896,7 @@
 				C18D6FE02D4D8FB40085E3B9 /* AccountEntropyPool.swift in Sources */,
 				D9EDF2782E4D2A2F001D4BEC /* AccountEntropyPoolManager.swift in Sources */,
 				C14D49CE2D667F830033BA69 /* AccountKeyStore.swift in Sources */,
+				D99677952F689E4400F4234D /* AddressableMessage.swift in Sources */,
 				50BE67532CAAF7DF006D7BC7 /* AdHocCallRecordManager.swift in Sources */,
 				0484CED02F44BD00009AB2CB /* AdminDeleteManager.swift in Sources */,
 				0484CECE2F44B7BE009AB2CB /* AdminDeleteRecord.swift in Sources */,
@@ -20147,7 +20151,7 @@
 				D91AC9362B61C79600814975 /* DeletedCallRecordStoreTest.swift in Sources */,
 				D96234702C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift in Sources */,
 				D9E8EDED2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift in Sources */,
-				D984F7242C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift in Sources */,
+				D92EFDE92F68E9F60031D257 /* DeleteForMeOutgoingSyncMessageTest.swift in Sources */,
 				F942629B289B1B5600460798 /* DeliveryReceiptContextTests.swift in Sources */,
 				F9426267289B1B5500460798 /* DispatchQueue+OWSTest.swift in Sources */,
 				D9D1A6EB2DD69D0800050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift in Sources */,

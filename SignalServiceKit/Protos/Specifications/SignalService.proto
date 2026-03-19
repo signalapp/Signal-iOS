@@ -730,24 +730,6 @@ message SyncMessage {
   }
 
   message DeleteForMe {
-    message ConversationIdentifier {
-      // oneof identifier {
-        optional string threadServiceId = 1;
-        optional bytes threadGroupId = 2;
-        optional string threadE164 = 3;
-        optional bytes threadServiceIdBinary = 4; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
-      // }
-    }
-
-    message AddressableMessage {
-      // oneof author {
-        optional string authorServiceId = 1;
-        optional string authorE164 = 2;
-        optional bytes authorServiceIdBinary = 4; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
-      // }
-      optional uint64 sentTimestamp = 3;
-    }
-
     message MessageDeletes {
       optional ConversationIdentifier conversation = 1;
       repeated AddressableMessage messages = 2;
@@ -942,4 +924,22 @@ message BodyRange {
 message EditMessage {
   optional uint64 targetSentTimestamp = 1;
   optional DataMessage dataMessage = 2;
+}
+
+message AddressableMessage {
+  // oneof author {
+    optional string authorServiceId = 1;
+    optional string authorE164 = 2;
+    optional bytes authorServiceIdBinary = 4; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
+  // }
+  optional uint64 sentTimestamp = 3;
+}
+
+message ConversationIdentifier {
+  // oneof identifier {
+    optional string threadServiceId = 1;
+    optional bytes threadGroupId = 2;
+    optional string threadE164 = 3;
+    optional bytes threadServiceIdBinary = 4; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
+  // }
 }

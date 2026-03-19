@@ -50,22 +50,22 @@ extension DeleteForMeOutgoingSyncMessage.Contents: ValidatableModel {
             DeleteForMeOutgoingSyncMessage.Contents(
                 messageDeletes: [
                     Outgoing.MessageDeletes(
-                        conversationIdentifier: .threadE164(e164: "+17735550199"),
-                        addressableMessages: [.forTests(author: .aci(aci: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"))), sentTimestamp: 1234)],
+                        conversationIdentifier: .e164(E164("+17735550199")!),
+                        addressableMessages: [AddressableMessage(author: .aci(Aci.constantForTesting("4C3B579D-C6E0-42C3-AEF3-E9B9801D9271")), sentTimestamp: 1234)],
                     ),
                 ],
                 nilAttachmentDeletes: (),
                 conversationDeletes: [
                     Outgoing.ConversationDelete(
-                        conversationIdentifier: .threadServiceId(serviceId: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("7A8709AA-B1CA-40B8-89C2-35330E88F2A9"))),
-                        mostRecentAddressableMessages: [.forTests(author: .e164(e164: "+17735550198"), sentTimestamp: 5678)],
+                        conversationIdentifier: .serviceId(Aci.constantForTesting("7A8709AA-B1CA-40B8-89C2-35330E88F2A9")),
+                        mostRecentAddressableMessages: [AddressableMessage(author: .e164(E164("+17735550198")!), sentTimestamp: 5678)],
                         nilNonExpiringAddressableMessages: (),
                         isFullDelete: true,
                     ),
                 ],
                 localOnlyConversationDelete: [
                     Outgoing.LocalOnlyConversationDelete(
-                        conversationIdentifier: .threadGroupId(groupId: Data(repeating: 4, count: 32)),
+                        conversationIdentifier: .groupIdentifier(try! GroupIdentifier(contents: Data(repeating: 4, count: 32))),
                     ),
                 ],
             ),
@@ -75,14 +75,14 @@ extension DeleteForMeOutgoingSyncMessage.Contents: ValidatableModel {
             DeleteForMeOutgoingSyncMessage.Contents(
                 messageDeletes: [
                     Outgoing.MessageDeletes(
-                        conversationIdentifier: .threadE164(e164: "+17735550199"),
-                        addressableMessages: [.forTests(author: .aci(aci: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"))), sentTimestamp: 1234)],
+                        conversationIdentifier: .e164(E164("+17735550199")!),
+                        addressableMessages: [AddressableMessage(author: .aci(Aci.constantForTesting("4C3B579D-C6E0-42C3-AEF3-E9B9801D9271")), sentTimestamp: 1234)],
                     ),
                 ],
                 attachmentDeletes: [
                     Outgoing.AttachmentDelete(
-                        conversationIdentifier: .threadServiceId(serviceId: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("D8626C3E-79BB-4665-B7D6-66884F543164"))),
-                        targetMessage: .forTests(author: .aci(aci: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("BF1C5C1B-15DA-4A49-92C7-EFBA8BFFDF4B"))), sentTimestamp: 9001),
+                        conversationIdentifier: .serviceId(Aci.constantForTesting("D8626C3E-79BB-4665-B7D6-66884F543164")),
+                        targetMessage: AddressableMessage(author: .aci(Aci.constantForTesting("BF1C5C1B-15DA-4A49-92C7-EFBA8BFFDF4B")), sentTimestamp: 9001),
                         clientUuid: UUID(uuidString: "C374CDB9-2440-4E39-8FE5-29CD4CB5C812")!,
                         encryptedDigest: Data(repeating: 24, count: 95),
                         plaintextHash: Data(repeating: 21, count: 92),
@@ -90,15 +90,15 @@ extension DeleteForMeOutgoingSyncMessage.Contents: ValidatableModel {
                 ],
                 conversationDeletes: [
                     Outgoing.ConversationDelete(
-                        conversationIdentifier: .threadServiceId(serviceId: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("7A8709AA-B1CA-40B8-89C2-35330E88F2A9"))),
-                        mostRecentAddressableMessages: [.forTests(author: .e164(e164: "+17735550198"), sentTimestamp: 5678)],
+                        conversationIdentifier: .serviceId(Aci.constantForTesting("7A8709AA-B1CA-40B8-89C2-35330E88F2A9")),
+                        mostRecentAddressableMessages: [AddressableMessage(author: .e164(E164("+17735550198")!), sentTimestamp: 5678)],
                         nilNonExpiringAddressableMessages: (),
                         isFullDelete: true,
                     ),
                 ],
                 localOnlyConversationDelete: [
                     Outgoing.LocalOnlyConversationDelete(
-                        conversationIdentifier: .threadGroupId(groupId: Data(repeating: 4, count: 32)),
+                        conversationIdentifier: .groupIdentifier(try! GroupIdentifier(contents: Data(repeating: 4, count: 32))),
                     ),
                 ],
             ),
@@ -108,14 +108,14 @@ extension DeleteForMeOutgoingSyncMessage.Contents: ValidatableModel {
             DeleteForMeOutgoingSyncMessage.Contents(
                 messageDeletes: [
                     Outgoing.MessageDeletes(
-                        conversationIdentifier: .threadE164(e164: "+17735550199"),
-                        addressableMessages: [.forTests(author: .aci(aci: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"))), sentTimestamp: 1234)],
+                        conversationIdentifier: .e164(E164("+17735550199")!),
+                        addressableMessages: [AddressableMessage(author: .aci(Aci.constantForTesting("4C3B579D-C6E0-42C3-AEF3-E9B9801D9271")), sentTimestamp: 1234)],
                     ),
                 ],
                 attachmentDeletes: [
                     Outgoing.AttachmentDelete(
-                        conversationIdentifier: .threadServiceId(serviceId: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("D8626C3E-79BB-4665-B7D6-66884F543164"))),
-                        targetMessage: .forTests(author: .aci(aci: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("BF1C5C1B-15DA-4A49-92C7-EFBA8BFFDF4B"))), sentTimestamp: 9001),
+                        conversationIdentifier: .serviceId(Aci.constantForTesting("D8626C3E-79BB-4665-B7D6-66884F543164")),
+                        targetMessage: AddressableMessage(author: .aci(Aci.constantForTesting("BF1C5C1B-15DA-4A49-92C7-EFBA8BFFDF4B")), sentTimestamp: 9001),
                         clientUuid: UUID(uuidString: "C374CDB9-2440-4E39-8FE5-29CD4CB5C812")!,
                         encryptedDigest: Data(repeating: 24, count: 95),
                         plaintextHash: Data(repeating: 21, count: 92),
@@ -123,15 +123,15 @@ extension DeleteForMeOutgoingSyncMessage.Contents: ValidatableModel {
                 ],
                 conversationDeletes: [
                     Outgoing.ConversationDelete(
-                        conversationIdentifier: .threadServiceId(serviceId: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("7A8709AA-B1CA-40B8-89C2-35330E88F2A9"))),
-                        mostRecentAddressableMessages: [.forTests(author: .e164(e164: "+17735550198"), sentTimestamp: 5678)],
-                        mostRecentNonExpiringAddressableMessages: [.forTests(author: .e164(e164: "+17735550197"), sentTimestamp: 1337)],
+                        conversationIdentifier: .serviceId(Aci.constantForTesting("7A8709AA-B1CA-40B8-89C2-35330E88F2A9")),
+                        mostRecentAddressableMessages: [AddressableMessage(author: .e164(E164("+17735550198")!), sentTimestamp: 5678)],
+                        mostRecentNonExpiringAddressableMessages: [AddressableMessage(author: .e164(E164("+17735550197")!), sentTimestamp: 1337)],
                         isFullDelete: true,
                     ),
                 ],
                 localOnlyConversationDelete: [
                     Outgoing.LocalOnlyConversationDelete(
-                        conversationIdentifier: .threadGroupId(groupId: Data(repeating: 4, count: 32)),
+                        conversationIdentifier: .groupIdentifier(try! GroupIdentifier(contents: Data(repeating: 4, count: 32))),
                     ),
                 ],
             ),

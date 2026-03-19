@@ -6,7 +6,7 @@
 protocol DeleteForMeAddressableMessageFinder {
     func findLocalMessage(
         threadUniqueId: String,
-        addressableMessage: DeleteForMeSyncMessage.Incoming.AddressableMessage,
+        addressableMessage: AddressableMessage,
         tx: DBReadTransaction,
     ) -> TSMessage?
 
@@ -19,26 +19,17 @@ protocol DeleteForMeAddressableMessageFinder {
 // MARK: -
 
 final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessageFinder {
-    private let tsAccountManager: TSAccountManager
-
-    init(tsAccountManager: TSAccountManager) {
-        self.tsAccountManager = tsAccountManager
-    }
-
     func findLocalMessage(
         threadUniqueId: String,
-        addressableMessage: DeleteForMeSyncMessage.Incoming.AddressableMessage,
+        addressableMessage: AddressableMessage,
         tx: DBReadTransaction,
     ) -> TSMessage? {
         let authorAddress: SignalServiceAddress
         switch addressableMessage.author {
-        case .localUser:
-            guard let localAddress = tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
-                return nil
-            }
-            authorAddress = localAddress
-        case .otherUser(let signalRecipient):
-            authorAddress = signalRecipient.address
+        case .aci(let aci):
+            authorAddress = SignalServiceAddress(aci)
+        case .e164(let e164):
+            authorAddress = SignalServiceAddress(e164)
         }
 
         return InteractionFinder.findMessage(
@@ -82,7 +73,7 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
 #if TESTABLE_BUILD
 
 open class MockDeleteForMeAddressableMessageFinder: DeleteForMeAddressableMessageFinder {
-    func findLocalMessage(threadUniqueId: String, addressableMessage: DeleteForMeSyncMessage.Incoming.AddressableMessage, tx: DBReadTransaction) -> TSMessage? {
+    func findLocalMessage(threadUniqueId: String, addressableMessage: AddressableMessage, tx: DBReadTransaction) -> TSMessage? {
         return nil
     }
 

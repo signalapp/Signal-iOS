@@ -15066,461 +15066,6 @@ extension SSKProtoSyncMessageCallLogEventBuilder {
 
 #endif
 
-// MARK: - SSKProtoSyncMessageDeleteForMeConversationIdentifier
-
-@objc
-public class SSKProtoSyncMessageDeleteForMeConversationIdentifier: NSObject, Codable, NSSecureCoding {
-
-    fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier
-
-    @objc
-    public var threadServiceID: String? {
-        guard hasThreadServiceID else {
-            return nil
-        }
-        return proto.threadServiceID
-    }
-    @objc
-    public var hasThreadServiceID: Bool {
-        return proto.hasThreadServiceID
-    }
-
-    @objc
-    public var threadGroupID: Data? {
-        guard hasThreadGroupID else {
-            return nil
-        }
-        return proto.threadGroupID
-    }
-    @objc
-    public var hasThreadGroupID: Bool {
-        return proto.hasThreadGroupID
-    }
-
-    @objc
-    public var threadE164: String? {
-        guard hasThreadE164 else {
-            return nil
-        }
-        return proto.threadE164
-    }
-    @objc
-    public var hasThreadE164: Bool {
-        return proto.hasThreadE164
-    }
-
-    @objc
-    public var threadServiceIDBinary: Data? {
-        guard hasThreadServiceIDBinary else {
-            return nil
-        }
-        return proto.threadServiceIDBinary
-    }
-    @objc
-    public var hasThreadServiceIDBinary: Bool {
-        return proto.hasThreadServiceIDBinary
-    }
-
-    public var hasUnknownFields: Bool {
-        return !proto.unknownFields.data.isEmpty
-    }
-    public var unknownFields: SwiftProtobuf.UnknownStorage? {
-        guard hasUnknownFields else { return nil }
-        return proto.unknownFields
-    }
-
-    private init(proto: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier) {
-        self.proto = proto
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc
-    public required convenience init(serializedData: Data) throws {
-        let proto = try SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier(serializedBytes: serializedData)
-        self.init(proto)
-    }
-
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier) {
-        self.init(proto: proto)
-    }
-
-    public required convenience init(from decoder: Swift.Decoder) throws {
-        let singleValueContainer = try decoder.singleValueContainer()
-        let serializedData = try singleValueContainer.decode(Data.self)
-        try self.init(serializedData: serializedData)
-    }
-    public func encode(to encoder: Swift.Encoder) throws {
-        var singleValueContainer = encoder.singleValueContainer()
-        try singleValueContainer.encode(try serializedData())
-    }
-
-    public static var supportsSecureCoding: Bool { true }
-
-    public required convenience init?(coder: NSCoder) {
-        guard let serializedData = coder.decodeData() else { return nil }
-        do {
-            try self.init(serializedData: serializedData)
-        } catch {
-            owsFailDebug("Failed to decode serialized data \(error)")
-            return nil
-        }
-    }
-
-    public func encode(with coder: NSCoder) {
-        do {
-            coder.encode(try serializedData())
-        } catch {
-            owsFailDebug("Failed to encode serialized data \(error)")
-        }
-    }
-
-    @objc
-    public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-extension SSKProtoSyncMessageDeleteForMeConversationIdentifier {
-    @objc
-    public static func builder() -> SSKProtoSyncMessageDeleteForMeConversationIdentifierBuilder {
-        return SSKProtoSyncMessageDeleteForMeConversationIdentifierBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> SSKProtoSyncMessageDeleteForMeConversationIdentifierBuilder {
-        let builder = SSKProtoSyncMessageDeleteForMeConversationIdentifierBuilder()
-        if let _value = threadServiceID {
-            builder.setThreadServiceID(_value)
-        }
-        if let _value = threadGroupID {
-            builder.setThreadGroupID(_value)
-        }
-        if let _value = threadE164 {
-            builder.setThreadE164(_value)
-        }
-        if let _value = threadServiceIDBinary {
-            builder.setThreadServiceIDBinary(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-}
-
-@objc
-public class SSKProtoSyncMessageDeleteForMeConversationIdentifierBuilder: NSObject {
-
-    private var proto = SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier()
-
-    @objc
-    fileprivate override init() {}
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setThreadServiceID(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        proto.threadServiceID = valueParam
-    }
-
-    public func setThreadServiceID(_ valueParam: String) {
-        proto.threadServiceID = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setThreadGroupID(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.threadGroupID = valueParam
-    }
-
-    public func setThreadGroupID(_ valueParam: Data) {
-        proto.threadGroupID = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setThreadE164(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        proto.threadE164 = valueParam
-    }
-
-    public func setThreadE164(_ valueParam: String) {
-        proto.threadE164 = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setThreadServiceIDBinary(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.threadServiceIDBinary = valueParam
-    }
-
-    public func setThreadServiceIDBinary(_ valueParam: Data) {
-        proto.threadServiceIDBinary = valueParam
-    }
-
-    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-        proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func buildInfallibly() -> SSKProtoSyncMessageDeleteForMeConversationIdentifier {
-        return SSKProtoSyncMessageDeleteForMeConversationIdentifier(proto)
-    }
-
-    @objc
-    public func buildSerializedData() throws -> Data {
-        return try SSKProtoSyncMessageDeleteForMeConversationIdentifier(proto).serializedData()
-    }
-}
-
-#if TESTABLE_BUILD
-
-extension SSKProtoSyncMessageDeleteForMeConversationIdentifier {
-    @objc
-    public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SSKProtoSyncMessageDeleteForMeConversationIdentifierBuilder {
-    @objc
-    public func buildIgnoringErrors() -> SSKProtoSyncMessageDeleteForMeConversationIdentifier? {
-        return self.buildInfallibly()
-    }
-}
-
-#endif
-
-// MARK: - SSKProtoSyncMessageDeleteForMeAddressableMessage
-
-@objc
-public class SSKProtoSyncMessageDeleteForMeAddressableMessage: NSObject, Codable, NSSecureCoding {
-
-    fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage
-
-    @objc
-    public var authorServiceID: String? {
-        guard hasAuthorServiceID else {
-            return nil
-        }
-        return proto.authorServiceID
-    }
-    @objc
-    public var hasAuthorServiceID: Bool {
-        return proto.hasAuthorServiceID
-    }
-
-    @objc
-    public var authorE164: String? {
-        guard hasAuthorE164 else {
-            return nil
-        }
-        return proto.authorE164
-    }
-    @objc
-    public var hasAuthorE164: Bool {
-        return proto.hasAuthorE164
-    }
-
-    @objc
-    public var authorServiceIDBinary: Data? {
-        guard hasAuthorServiceIDBinary else {
-            return nil
-        }
-        return proto.authorServiceIDBinary
-    }
-    @objc
-    public var hasAuthorServiceIDBinary: Bool {
-        return proto.hasAuthorServiceIDBinary
-    }
-
-    @objc
-    public var sentTimestamp: UInt64 {
-        return proto.sentTimestamp
-    }
-    @objc
-    public var hasSentTimestamp: Bool {
-        return proto.hasSentTimestamp
-    }
-
-    public var hasUnknownFields: Bool {
-        return !proto.unknownFields.data.isEmpty
-    }
-    public var unknownFields: SwiftProtobuf.UnknownStorage? {
-        guard hasUnknownFields else { return nil }
-        return proto.unknownFields
-    }
-
-    private init(proto: SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage) {
-        self.proto = proto
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc
-    public required convenience init(serializedData: Data) throws {
-        let proto = try SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage(serializedBytes: serializedData)
-        self.init(proto)
-    }
-
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage) {
-        self.init(proto: proto)
-    }
-
-    public required convenience init(from decoder: Swift.Decoder) throws {
-        let singleValueContainer = try decoder.singleValueContainer()
-        let serializedData = try singleValueContainer.decode(Data.self)
-        try self.init(serializedData: serializedData)
-    }
-    public func encode(to encoder: Swift.Encoder) throws {
-        var singleValueContainer = encoder.singleValueContainer()
-        try singleValueContainer.encode(try serializedData())
-    }
-
-    public static var supportsSecureCoding: Bool { true }
-
-    public required convenience init?(coder: NSCoder) {
-        guard let serializedData = coder.decodeData() else { return nil }
-        do {
-            try self.init(serializedData: serializedData)
-        } catch {
-            owsFailDebug("Failed to decode serialized data \(error)")
-            return nil
-        }
-    }
-
-    public func encode(with coder: NSCoder) {
-        do {
-            coder.encode(try serializedData())
-        } catch {
-            owsFailDebug("Failed to encode serialized data \(error)")
-        }
-    }
-
-    @objc
-    public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-extension SSKProtoSyncMessageDeleteForMeAddressableMessage {
-    @objc
-    public static func builder() -> SSKProtoSyncMessageDeleteForMeAddressableMessageBuilder {
-        return SSKProtoSyncMessageDeleteForMeAddressableMessageBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> SSKProtoSyncMessageDeleteForMeAddressableMessageBuilder {
-        let builder = SSKProtoSyncMessageDeleteForMeAddressableMessageBuilder()
-        if let _value = authorServiceID {
-            builder.setAuthorServiceID(_value)
-        }
-        if let _value = authorE164 {
-            builder.setAuthorE164(_value)
-        }
-        if let _value = authorServiceIDBinary {
-            builder.setAuthorServiceIDBinary(_value)
-        }
-        if hasSentTimestamp {
-            builder.setSentTimestamp(sentTimestamp)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-}
-
-@objc
-public class SSKProtoSyncMessageDeleteForMeAddressableMessageBuilder: NSObject {
-
-    private var proto = SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage()
-
-    @objc
-    fileprivate override init() {}
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setAuthorServiceID(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        proto.authorServiceID = valueParam
-    }
-
-    public func setAuthorServiceID(_ valueParam: String) {
-        proto.authorServiceID = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setAuthorE164(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        proto.authorE164 = valueParam
-    }
-
-    public func setAuthorE164(_ valueParam: String) {
-        proto.authorE164 = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setAuthorServiceIDBinary(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.authorServiceIDBinary = valueParam
-    }
-
-    public func setAuthorServiceIDBinary(_ valueParam: Data) {
-        proto.authorServiceIDBinary = valueParam
-    }
-
-    @objc
-    public func setSentTimestamp(_ valueParam: UInt64) {
-        proto.sentTimestamp = valueParam
-    }
-
-    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-        proto.unknownFields = unknownFields
-    }
-
-    @objc
-    public func buildInfallibly() -> SSKProtoSyncMessageDeleteForMeAddressableMessage {
-        return SSKProtoSyncMessageDeleteForMeAddressableMessage(proto)
-    }
-
-    @objc
-    public func buildSerializedData() throws -> Data {
-        return try SSKProtoSyncMessageDeleteForMeAddressableMessage(proto).serializedData()
-    }
-}
-
-#if TESTABLE_BUILD
-
-extension SSKProtoSyncMessageDeleteForMeAddressableMessage {
-    @objc
-    public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SSKProtoSyncMessageDeleteForMeAddressableMessageBuilder {
-    @objc
-    public func buildIgnoringErrors() -> SSKProtoSyncMessageDeleteForMeAddressableMessage? {
-        return self.buildInfallibly()
-    }
-}
-
-#endif
-
 // MARK: - SSKProtoSyncMessageDeleteForMeMessageDeletes
 
 @objc
@@ -15529,10 +15074,10 @@ public class SSKProtoSyncMessageDeleteForMeMessageDeletes: NSObject, Codable, NS
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes
 
     @objc
-    public let conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?
+    public let conversation: SSKProtoConversationIdentifier?
 
     @objc
-    public let messages: [SSKProtoSyncMessageDeleteForMeAddressableMessage]
+    public let messages: [SSKProtoAddressableMessage]
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -15543,8 +15088,8 @@ public class SSKProtoSyncMessageDeleteForMeMessageDeletes: NSObject, Codable, NS
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes,
-                 conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?,
-                 messages: [SSKProtoSyncMessageDeleteForMeAddressableMessage]) {
+                 conversation: SSKProtoConversationIdentifier?,
+                 messages: [SSKProtoAddressableMessage]) {
         self.proto = proto
         self.conversation = conversation
         self.messages = messages
@@ -15562,13 +15107,13 @@ public class SSKProtoSyncMessageDeleteForMeMessageDeletes: NSObject, Codable, NS
     }
 
     fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes) {
-        var conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?
+        var conversation: SSKProtoConversationIdentifier?
         if proto.hasConversation {
-            conversation = SSKProtoSyncMessageDeleteForMeConversationIdentifier(proto.conversation)
+            conversation = SSKProtoConversationIdentifier(proto.conversation)
         }
 
-        var messages: [SSKProtoSyncMessageDeleteForMeAddressableMessage] = []
-        messages = proto.messages.map { SSKProtoSyncMessageDeleteForMeAddressableMessage($0) }
+        var messages: [SSKProtoAddressableMessage] = []
+        messages = proto.messages.map { SSKProtoAddressableMessage($0) }
 
         self.init(proto: proto,
                   conversation: conversation,
@@ -15642,22 +15187,22 @@ public class SSKProtoSyncMessageDeleteForMeMessageDeletesBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setConversation(_ valueParam: SSKProtoSyncMessageDeleteForMeConversationIdentifier?) {
+    public func setConversation(_ valueParam: SSKProtoConversationIdentifier?) {
         guard let valueParam = valueParam else { return }
         proto.conversation = valueParam.proto
     }
 
-    public func setConversation(_ valueParam: SSKProtoSyncMessageDeleteForMeConversationIdentifier) {
+    public func setConversation(_ valueParam: SSKProtoConversationIdentifier) {
         proto.conversation = valueParam.proto
     }
 
     @objc
-    public func addMessages(_ valueParam: SSKProtoSyncMessageDeleteForMeAddressableMessage) {
+    public func addMessages(_ valueParam: SSKProtoAddressableMessage) {
         proto.messages.append(valueParam.proto)
     }
 
     @objc
-    public func setMessages(_ wrappedItems: [SSKProtoSyncMessageDeleteForMeAddressableMessage]) {
+    public func setMessages(_ wrappedItems: [SSKProtoAddressableMessage]) {
         proto.messages = wrappedItems.map { $0.proto }
     }
 
@@ -15702,10 +15247,10 @@ public class SSKProtoSyncMessageDeleteForMeAttachmentDelete: NSObject, Codable, 
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete
 
     @objc
-    public let conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?
+    public let conversation: SSKProtoConversationIdentifier?
 
     @objc
-    public let targetMessage: SSKProtoSyncMessageDeleteForMeAddressableMessage?
+    public let targetMessage: SSKProtoAddressableMessage?
 
     @objc
     public var clientUuid: Data? {
@@ -15752,8 +15297,8 @@ public class SSKProtoSyncMessageDeleteForMeAttachmentDelete: NSObject, Codable, 
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete,
-                 conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?,
-                 targetMessage: SSKProtoSyncMessageDeleteForMeAddressableMessage?) {
+                 conversation: SSKProtoConversationIdentifier?,
+                 targetMessage: SSKProtoAddressableMessage?) {
         self.proto = proto
         self.conversation = conversation
         self.targetMessage = targetMessage
@@ -15771,14 +15316,14 @@ public class SSKProtoSyncMessageDeleteForMeAttachmentDelete: NSObject, Codable, 
     }
 
     fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete) {
-        var conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?
+        var conversation: SSKProtoConversationIdentifier?
         if proto.hasConversation {
-            conversation = SSKProtoSyncMessageDeleteForMeConversationIdentifier(proto.conversation)
+            conversation = SSKProtoConversationIdentifier(proto.conversation)
         }
 
-        var targetMessage: SSKProtoSyncMessageDeleteForMeAddressableMessage?
+        var targetMessage: SSKProtoAddressableMessage?
         if proto.hasTargetMessage {
-            targetMessage = SSKProtoSyncMessageDeleteForMeAddressableMessage(proto.targetMessage)
+            targetMessage = SSKProtoAddressableMessage(proto.targetMessage)
         }
 
         self.init(proto: proto,
@@ -15864,23 +15409,23 @@ public class SSKProtoSyncMessageDeleteForMeAttachmentDeleteBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setConversation(_ valueParam: SSKProtoSyncMessageDeleteForMeConversationIdentifier?) {
+    public func setConversation(_ valueParam: SSKProtoConversationIdentifier?) {
         guard let valueParam = valueParam else { return }
         proto.conversation = valueParam.proto
     }
 
-    public func setConversation(_ valueParam: SSKProtoSyncMessageDeleteForMeConversationIdentifier) {
+    public func setConversation(_ valueParam: SSKProtoConversationIdentifier) {
         proto.conversation = valueParam.proto
     }
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setTargetMessage(_ valueParam: SSKProtoSyncMessageDeleteForMeAddressableMessage?) {
+    public func setTargetMessage(_ valueParam: SSKProtoAddressableMessage?) {
         guard let valueParam = valueParam else { return }
         proto.targetMessage = valueParam.proto
     }
 
-    public func setTargetMessage(_ valueParam: SSKProtoSyncMessageDeleteForMeAddressableMessage) {
+    public func setTargetMessage(_ valueParam: SSKProtoAddressableMessage) {
         proto.targetMessage = valueParam.proto
     }
 
@@ -15958,13 +15503,13 @@ public class SSKProtoSyncMessageDeleteForMeConversationDelete: NSObject, Codable
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete
 
     @objc
-    public let conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?
+    public let conversation: SSKProtoConversationIdentifier?
 
     @objc
-    public let mostRecentMessages: [SSKProtoSyncMessageDeleteForMeAddressableMessage]
+    public let mostRecentMessages: [SSKProtoAddressableMessage]
 
     @objc
-    public let mostRecentNonExpiringMessages: [SSKProtoSyncMessageDeleteForMeAddressableMessage]
+    public let mostRecentNonExpiringMessages: [SSKProtoAddressableMessage]
 
     @objc
     public var isFullDelete: Bool {
@@ -15984,9 +15529,9 @@ public class SSKProtoSyncMessageDeleteForMeConversationDelete: NSObject, Codable
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete,
-                 conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?,
-                 mostRecentMessages: [SSKProtoSyncMessageDeleteForMeAddressableMessage],
-                 mostRecentNonExpiringMessages: [SSKProtoSyncMessageDeleteForMeAddressableMessage]) {
+                 conversation: SSKProtoConversationIdentifier?,
+                 mostRecentMessages: [SSKProtoAddressableMessage],
+                 mostRecentNonExpiringMessages: [SSKProtoAddressableMessage]) {
         self.proto = proto
         self.conversation = conversation
         self.mostRecentMessages = mostRecentMessages
@@ -16005,16 +15550,16 @@ public class SSKProtoSyncMessageDeleteForMeConversationDelete: NSObject, Codable
     }
 
     fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete) {
-        var conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?
+        var conversation: SSKProtoConversationIdentifier?
         if proto.hasConversation {
-            conversation = SSKProtoSyncMessageDeleteForMeConversationIdentifier(proto.conversation)
+            conversation = SSKProtoConversationIdentifier(proto.conversation)
         }
 
-        var mostRecentMessages: [SSKProtoSyncMessageDeleteForMeAddressableMessage] = []
-        mostRecentMessages = proto.mostRecentMessages.map { SSKProtoSyncMessageDeleteForMeAddressableMessage($0) }
+        var mostRecentMessages: [SSKProtoAddressableMessage] = []
+        mostRecentMessages = proto.mostRecentMessages.map { SSKProtoAddressableMessage($0) }
 
-        var mostRecentNonExpiringMessages: [SSKProtoSyncMessageDeleteForMeAddressableMessage] = []
-        mostRecentNonExpiringMessages = proto.mostRecentNonExpiringMessages.map { SSKProtoSyncMessageDeleteForMeAddressableMessage($0) }
+        var mostRecentNonExpiringMessages: [SSKProtoAddressableMessage] = []
+        mostRecentNonExpiringMessages = proto.mostRecentNonExpiringMessages.map { SSKProtoAddressableMessage($0) }
 
         self.init(proto: proto,
                   conversation: conversation,
@@ -16093,32 +15638,32 @@ public class SSKProtoSyncMessageDeleteForMeConversationDeleteBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setConversation(_ valueParam: SSKProtoSyncMessageDeleteForMeConversationIdentifier?) {
+    public func setConversation(_ valueParam: SSKProtoConversationIdentifier?) {
         guard let valueParam = valueParam else { return }
         proto.conversation = valueParam.proto
     }
 
-    public func setConversation(_ valueParam: SSKProtoSyncMessageDeleteForMeConversationIdentifier) {
+    public func setConversation(_ valueParam: SSKProtoConversationIdentifier) {
         proto.conversation = valueParam.proto
     }
 
     @objc
-    public func addMostRecentMessages(_ valueParam: SSKProtoSyncMessageDeleteForMeAddressableMessage) {
+    public func addMostRecentMessages(_ valueParam: SSKProtoAddressableMessage) {
         proto.mostRecentMessages.append(valueParam.proto)
     }
 
     @objc
-    public func setMostRecentMessages(_ wrappedItems: [SSKProtoSyncMessageDeleteForMeAddressableMessage]) {
+    public func setMostRecentMessages(_ wrappedItems: [SSKProtoAddressableMessage]) {
         proto.mostRecentMessages = wrappedItems.map { $0.proto }
     }
 
     @objc
-    public func addMostRecentNonExpiringMessages(_ valueParam: SSKProtoSyncMessageDeleteForMeAddressableMessage) {
+    public func addMostRecentNonExpiringMessages(_ valueParam: SSKProtoAddressableMessage) {
         proto.mostRecentNonExpiringMessages.append(valueParam.proto)
     }
 
     @objc
-    public func setMostRecentNonExpiringMessages(_ wrappedItems: [SSKProtoSyncMessageDeleteForMeAddressableMessage]) {
+    public func setMostRecentNonExpiringMessages(_ wrappedItems: [SSKProtoAddressableMessage]) {
         proto.mostRecentNonExpiringMessages = wrappedItems.map { $0.proto }
     }
 
@@ -16168,7 +15713,7 @@ public class SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete: NSObject
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete
 
     @objc
-    public let conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?
+    public let conversation: SSKProtoConversationIdentifier?
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -16179,7 +15724,7 @@ public class SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete: NSObject
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete,
-                 conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?) {
+                 conversation: SSKProtoConversationIdentifier?) {
         self.proto = proto
         self.conversation = conversation
     }
@@ -16196,9 +15741,9 @@ public class SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete: NSObject
     }
 
     fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete) {
-        var conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?
+        var conversation: SSKProtoConversationIdentifier?
         if proto.hasConversation {
-            conversation = SSKProtoSyncMessageDeleteForMeConversationIdentifier(proto.conversation)
+            conversation = SSKProtoConversationIdentifier(proto.conversation)
         }
 
         self.init(proto: proto,
@@ -16271,12 +15816,12 @@ public class SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDeleteBuilder: N
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setConversation(_ valueParam: SSKProtoSyncMessageDeleteForMeConversationIdentifier?) {
+    public func setConversation(_ valueParam: SSKProtoConversationIdentifier?) {
         guard let valueParam = valueParam else { return }
         proto.conversation = valueParam.proto
     }
 
-    public func setConversation(_ valueParam: SSKProtoSyncMessageDeleteForMeConversationIdentifier) {
+    public func setConversation(_ valueParam: SSKProtoConversationIdentifier) {
         proto.conversation = valueParam.proto
     }
 
@@ -20057,6 +19602,461 @@ extension SSKProtoEditMessageBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoEditMessage? {
         return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoAddressableMessage
+
+@objc
+public class SSKProtoAddressableMessage: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_AddressableMessage
+
+    @objc
+    public var authorServiceID: String? {
+        guard hasAuthorServiceID else {
+            return nil
+        }
+        return proto.authorServiceID
+    }
+    @objc
+    public var hasAuthorServiceID: Bool {
+        return proto.hasAuthorServiceID
+    }
+
+    @objc
+    public var authorE164: String? {
+        guard hasAuthorE164 else {
+            return nil
+        }
+        return proto.authorE164
+    }
+    @objc
+    public var hasAuthorE164: Bool {
+        return proto.hasAuthorE164
+    }
+
+    @objc
+    public var authorServiceIDBinary: Data? {
+        guard hasAuthorServiceIDBinary else {
+            return nil
+        }
+        return proto.authorServiceIDBinary
+    }
+    @objc
+    public var hasAuthorServiceIDBinary: Bool {
+        return proto.hasAuthorServiceIDBinary
+    }
+
+    @objc
+    public var sentTimestamp: UInt64 {
+        return proto.sentTimestamp
+    }
+    @objc
+    public var hasSentTimestamp: Bool {
+        return proto.hasSentTimestamp
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_AddressableMessage) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_AddressableMessage(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_AddressableMessage) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoAddressableMessage {
+    @objc
+    public static func builder() -> SSKProtoAddressableMessageBuilder {
+        return SSKProtoAddressableMessageBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoAddressableMessageBuilder {
+        let builder = SSKProtoAddressableMessageBuilder()
+        if let _value = authorServiceID {
+            builder.setAuthorServiceID(_value)
+        }
+        if let _value = authorE164 {
+            builder.setAuthorE164(_value)
+        }
+        if let _value = authorServiceIDBinary {
+            builder.setAuthorServiceIDBinary(_value)
+        }
+        if hasSentTimestamp {
+            builder.setSentTimestamp(sentTimestamp)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoAddressableMessageBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_AddressableMessage()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAuthorServiceID(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.authorServiceID = valueParam
+    }
+
+    public func setAuthorServiceID(_ valueParam: String) {
+        proto.authorServiceID = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAuthorE164(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.authorE164 = valueParam
+    }
+
+    public func setAuthorE164(_ valueParam: String) {
+        proto.authorE164 = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAuthorServiceIDBinary(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.authorServiceIDBinary = valueParam
+    }
+
+    public func setAuthorServiceIDBinary(_ valueParam: Data) {
+        proto.authorServiceIDBinary = valueParam
+    }
+
+    @objc
+    public func setSentTimestamp(_ valueParam: UInt64) {
+        proto.sentTimestamp = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoAddressableMessage {
+        return SSKProtoAddressableMessage(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoAddressableMessage(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoAddressableMessage {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoAddressableMessageBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoAddressableMessage? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoConversationIdentifier
+
+@objc
+public class SSKProtoConversationIdentifier: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_ConversationIdentifier
+
+    @objc
+    public var threadServiceID: String? {
+        guard hasThreadServiceID else {
+            return nil
+        }
+        return proto.threadServiceID
+    }
+    @objc
+    public var hasThreadServiceID: Bool {
+        return proto.hasThreadServiceID
+    }
+
+    @objc
+    public var threadGroupID: Data? {
+        guard hasThreadGroupID else {
+            return nil
+        }
+        return proto.threadGroupID
+    }
+    @objc
+    public var hasThreadGroupID: Bool {
+        return proto.hasThreadGroupID
+    }
+
+    @objc
+    public var threadE164: String? {
+        guard hasThreadE164 else {
+            return nil
+        }
+        return proto.threadE164
+    }
+    @objc
+    public var hasThreadE164: Bool {
+        return proto.hasThreadE164
+    }
+
+    @objc
+    public var threadServiceIDBinary: Data? {
+        guard hasThreadServiceIDBinary else {
+            return nil
+        }
+        return proto.threadServiceIDBinary
+    }
+    @objc
+    public var hasThreadServiceIDBinary: Bool {
+        return proto.hasThreadServiceIDBinary
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_ConversationIdentifier) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_ConversationIdentifier(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_ConversationIdentifier) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoConversationIdentifier {
+    @objc
+    public static func builder() -> SSKProtoConversationIdentifierBuilder {
+        return SSKProtoConversationIdentifierBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoConversationIdentifierBuilder {
+        let builder = SSKProtoConversationIdentifierBuilder()
+        if let _value = threadServiceID {
+            builder.setThreadServiceID(_value)
+        }
+        if let _value = threadGroupID {
+            builder.setThreadGroupID(_value)
+        }
+        if let _value = threadE164 {
+            builder.setThreadE164(_value)
+        }
+        if let _value = threadServiceIDBinary {
+            builder.setThreadServiceIDBinary(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoConversationIdentifierBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_ConversationIdentifier()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setThreadServiceID(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.threadServiceID = valueParam
+    }
+
+    public func setThreadServiceID(_ valueParam: String) {
+        proto.threadServiceID = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setThreadGroupID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.threadGroupID = valueParam
+    }
+
+    public func setThreadGroupID(_ valueParam: Data) {
+        proto.threadGroupID = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setThreadE164(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.threadE164 = valueParam
+    }
+
+    public func setThreadE164(_ valueParam: String) {
+        proto.threadE164 = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setThreadServiceIDBinary(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.threadServiceIDBinary = valueParam
+    }
+
+    public func setThreadServiceIDBinary(_ valueParam: Data) {
+        proto.threadServiceIDBinary = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoConversationIdentifier {
+        return SSKProtoConversationIdentifier(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoConversationIdentifier(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoConversationIdentifier {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoConversationIdentifierBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoConversationIdentifier? {
+        return self.buildInfallibly()
     }
 }
 

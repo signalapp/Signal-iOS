@@ -68,7 +68,7 @@ extension DeleteForMeSyncMessage {
                 }
 
                 guard
-                    let addressableMessage: AddressableMessage = .addressing(
+                    let addressableMessage = AddressableMessage(
                         message: message,
                         localIdentifiers: localIdentifiers,
                     ) else { return }
@@ -203,8 +203,8 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
             return
         }
 
-        let addressableMessages = deletedMessages.compactMap { message -> Outgoing.AddressableMessage? in
-            return .addressing(message: message, localIdentifiers: localIdentifiers)
+        let addressableMessages = deletedMessages.compactMap { message -> AddressableMessage? in
+            return AddressableMessage(message: message, localIdentifiers: localIdentifiers)
         }
 
         if addressableMessages.isEmpty { return }
@@ -243,7 +243,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
         let attachmentDeletes: [Outgoing.AttachmentDelete] = deletedAttachmentIdentifiers
             .compactMap { message, attachmentIdentifiers -> [Outgoing.AttachmentDelete]? in
                 guard
-                    let targetMessage: Outgoing.AddressableMessage = .addressing(
+                    let targetMessage = AddressableMessage(
                         message: message,
                         localIdentifiers: localIdentifiers,
                     )
@@ -295,7 +295,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
                     conversationDeletes.append(Outgoing.ConversationDelete(
                         conversationIdentifier: context.conversationIdentifier,
                         mostRecentAddressableMessages: context.mostRecentAddressableMessages,
-                        mostRecentNonExpiringAddressableMessages: { () -> [Outgoing.AddressableMessage] in
+                        mostRecentNonExpiringAddressableMessages: { () -> [AddressableMessage] in
                             if context.areAnyMostRecentMessagesExpiring {
                                 return context.mostRecentNonExpiringAddressableMessages
                             }
@@ -342,19 +342,22 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
     private func conversationIdentifier(
         thread: TSThread,
         tx: DBReadTransaction,
-    ) -> Outgoing.ConversationIdentifier? {
+    ) -> ConversationIdentifier? {
         if
             let contactThread = thread as? TSContactThread,
             let contactServiceId = recipientDatabaseTable.fetchServiceId(contactThread: contactThread, tx: tx)
         {
-            return .threadServiceId(serviceId: ServiceIdUppercaseString(wrappedValue: contactServiceId))
+            return .serviceId(contactServiceId)
         } else if
             let contactThread = thread as? TSContactThread,
-            let contactE164 = contactThread.contactPhoneNumber
+            let contactE164 = E164(contactThread.contactPhoneNumber)
         {
-            return .threadE164(e164: contactE164)
-        } else if let groupThread = thread as? TSGroupThread {
-            return .threadGroupId(groupId: groupThread.groupId)
+            return .e164(contactE164)
+        } else if
+            let groupThread = thread as? TSGroupThread,
+            let groupIdentifier = try? groupThread.groupIdentifier
+        {
+            return .groupIdentifier(groupIdentifier)
         }
 
         logger.warn("No conversation identifier for thread of type: \(type(of: thread)).")
@@ -394,7 +397,7 @@ private extension DeleteForMeOutgoingSyncMessageManagerImpl {
             static let maxThreadContextsPerSyncMessage: Int = 100
         }
 
-        func batch(addressableMessages: [Outgoing.AddressableMessage]) -> [[Outgoing.AddressableMessage]] {
+        func batch(addressableMessages: [AddressableMessage]) -> [[AddressableMessage]] {
             return batch(
                 addressableMessages,
                 maxBatchSize: MaxSyncMessageSizeConstants.maxInteractionsPerSyncMessage,
@@ -482,49 +485,3 @@ final class _DeleteForMeOutgoingSyncMessageManagerImpl_SyncMessageSender_Wrapper
         )
     }
 }
-
-// MARK: - Mock
-
-#if TESTABLE_BUILD
-
-open class MockDeleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManager {
-    var sendMessagesMock: ((
-        _ messages: [TSMessage],
-    ) -> Void)!
-    public func send(deletedMessages: [TSMessage], thread: TSThread, localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {
-        sendMessagesMock(deletedMessages)
-    }
-
-    var sendAttachmentsMock: ((
-        _ attachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]],
-    ) -> Void)!
-    public func send(deletedAttachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]], thread: TSThread, localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {
-        sendAttachmentsMock(deletedAttachmentIdentifiers)
-    }
-
-    var sendDeletionContextMock: ((
-        _ threadContexts: [Outgoing.ThreadDeletionContext],
-    ) -> Void)!
-    public func send(threadDeletionContexts: [Outgoing.ThreadDeletionContext], tx: DBWriteTransaction) {
-        sendDeletionContextMock(threadDeletionContexts)
-    }
-
-    public func makeThreadDeletionContext(thread: TSThread, isFullDelete: Bool, localIdentifiers: LocalIdentifiers, tx: DBReadTransaction) -> Outgoing.ThreadDeletionContext? {
-        let conversationIdentifier: Outgoing.ConversationIdentifier = if let contactThread = thread as? TSContactThread {
-            .threadServiceId(serviceId: ServiceIdUppercaseString(wrappedValue: try! ServiceId.parseFrom(serviceIdString: contactThread.contactUUID!)))
-        } else if let groupThread = thread as? TSGroupThread {
-            .threadGroupId(groupId: groupThread.groupId)
-        } else {
-            owsFail("Invalid thread!")
-        }
-
-        return Outgoing.ThreadDeletionContext(
-            conversationIdentifier: conversationIdentifier,
-            isFullDelete: isFullDelete,
-            threadUniqueId: thread.uniqueId,
-            localIdentifiers: localIdentifiers,
-        )
-    }
-}
-
-#endif

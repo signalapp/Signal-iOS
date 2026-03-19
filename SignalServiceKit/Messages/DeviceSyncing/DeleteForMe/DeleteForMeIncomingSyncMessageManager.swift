@@ -8,42 +8,6 @@ import LibSignalClient
 /// A namespace for types related to "delete for me" sync messages.
 public enum DeleteForMeSyncMessage {
     public enum Incoming {
-        public enum Conversation {
-            case localUser(TSContactThread)
-            case contact(TSContactThread)
-            case group(TSGroupThread)
-
-            var thread: TSThread {
-                switch self {
-                case .localUser(let contactThread): return contactThread
-                case .contact(let contactThread): return contactThread
-                case .group(let groupThread): return groupThread
-                }
-            }
-
-            var threadUniqueId: String {
-                return thread.uniqueId
-            }
-        }
-
-        /// Describes a message that can be "addressed" across clients.
-        public struct AddressableMessage {
-            enum Author: CustomStringConvertible {
-                case localUser
-                case otherUser(SignalRecipient)
-
-                var description: String {
-                    switch self {
-                    case .localUser: return "localUser"
-                    case .otherUser(let recipient): return "\(recipient.address)"
-                    }
-                }
-            }
-
-            let author: Author
-            let sentTimestamp: UInt64
-        }
-
         /// Identifies an attachment within a message across clients, using a
         /// variety of identifying information about the attachment.
         public struct AttachmentIdentifier {
@@ -69,14 +33,12 @@ public enum DeleteForMeSyncMessage {
 /// This is contrasted with "delete for everyone" actions, which use a
 /// ``OutgoingDeleteMessage`` to ask the recipients of a "target message" to
 /// delete that message and replace it with a tombstone.
-public protocol DeleteForMeIncomingSyncMessageManager {
-    typealias Conversation = DeleteForMeSyncMessage.Incoming.Conversation
-    typealias AddressableMessage = DeleteForMeSyncMessage.Incoming.AddressableMessage
+protocol DeleteForMeIncomingSyncMessageManager {
     typealias AttachmentIdentifier = DeleteForMeSyncMessage.Incoming.AttachmentIdentifier
 
     /// Delete the given message from the given conversation.
     func handleMessageDelete(
-        conversation: Conversation,
+        conversationIdentifier: ConversationIdentifier,
         addressableMessage: AddressableMessage,
         tx: DBWriteTransaction,
     )
@@ -84,7 +46,7 @@ public protocol DeleteForMeIncomingSyncMessageManager {
     /// Delete the given attachment from the given message in the given
     /// conversation.
     func handleAttachmentDelete(
-        conversation: Conversation,
+        conversationIdentifier: ConversationIdentifier,
         targetMessage: AddressableMessage,
         attachmentIdentifier: AttachmentIdentifier,
         tx: DBWriteTransaction,
@@ -105,7 +67,7 @@ public protocol DeleteForMeIncomingSyncMessageManager {
     /// includes actions in addition to removing all messages such as removing
     /// from the chat list.
     func handleConversationDelete(
-        conversation: Conversation,
+        conversationIdentifier: ConversationIdentifier,
         mostRecentAddressableMessages: [AddressableMessage],
         mostRecentNonExpiringAddressableMessages: [AddressableMessage],
         isFullDelete: Bool,
@@ -115,7 +77,7 @@ public protocol DeleteForMeIncomingSyncMessageManager {
     /// Delete the given conversation, which the sender believes contained only
     /// non-addressable (local-only) messages.
     func handleLocalOnlyConversationDelete(
-        conversation: Conversation,
+        conversationIdentifier: ConversationIdentifier,
         tx: DBWriteTransaction,
     )
 }
@@ -126,7 +88,10 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
     private let attachmentStore: AttachmentStore
     private let bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue
     private let interactionDeleteManager: any InteractionDeleteManager
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let threadSoftDeleteManager: any ThreadSoftDeleteManager
+    private let threadStore: ThreadStore
+    private let tsAccountManager: TSAccountManager
 
     private let logger = PrefixedLogger(prefix: "[DeleteForMe]")
 
@@ -136,29 +101,42 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         attachmentStore: AttachmentStore,
         bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue,
         interactionDeleteManager: any InteractionDeleteManager,
+        recipientDatabaseTable: RecipientDatabaseTable,
         threadSoftDeleteManager: any ThreadSoftDeleteManager,
+        threadStore: ThreadStore,
+        tsAccountManager: TSAccountManager,
     ) {
         self.addressableMessageFinder = addressableMessageFinder
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.bulkDeleteInteractionJobQueue = bulkDeleteInteractionJobQueue
         self.interactionDeleteManager = interactionDeleteManager
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.threadSoftDeleteManager = threadSoftDeleteManager
+        self.threadStore = threadStore
+        self.tsAccountManager = tsAccountManager
     }
 
+    // MARK: -
+
     func handleMessageDelete(
-        conversation: Conversation,
+        conversationIdentifier: ConversationIdentifier,
         addressableMessage: AddressableMessage,
         tx: DBWriteTransaction,
     ) {
+        guard let thread = resolveThread(conversationIdentifier: conversationIdentifier, tx: tx) else {
+            logger.warn("Missing thread for incoming message-delete sync.")
+            return
+        }
+
         guard
             let message = addressableMessageFinder.findLocalMessage(
-                threadUniqueId: conversation.threadUniqueId,
+                threadUniqueId: thread.uniqueId,
                 addressableMessage: addressableMessage,
                 tx: tx,
             )
         else {
-            logger.warn("No message found for incoming message-delete sync: \(addressableMessage.author):\(addressableMessage.sentTimestamp) in \(conversation.threadUniqueId).")
+            logger.warn("No message found for incoming message-delete sync: \(addressableMessage.author):\(addressableMessage.sentTimestamp) in \(thread.uniqueId).")
             return
         }
 
@@ -170,16 +148,21 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
     }
 
     func handleAttachmentDelete(
-        conversation: Conversation,
+        conversationIdentifier: ConversationIdentifier,
         targetMessage: AddressableMessage,
         attachmentIdentifier: AttachmentIdentifier,
         tx: DBWriteTransaction,
     ) {
-        let logger = logger.suffixed(with: "[\(targetMessage.author):\(targetMessage.sentTimestamp) in \(conversation.threadUniqueId)]")
+        guard let thread = resolveThread(conversationIdentifier: conversationIdentifier, tx: tx) else {
+            logger.warn("Missing thread for incoming attachment-delete sync.")
+            return
+        }
+
+        let logger = logger.suffixed(with: "[\(targetMessage.author):\(targetMessage.sentTimestamp) in \(thread.uniqueId)]")
 
         guard
             let targetMessage = addressableMessageFinder.findLocalMessage(
-                threadUniqueId: conversation.threadUniqueId,
+                threadUniqueId: thread.uniqueId,
                 addressableMessage: targetMessage,
                 tx: tx,
             )
@@ -242,23 +225,28 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
     }
 
     func handleConversationDelete(
-        conversation: Conversation,
+        conversationIdentifier: ConversationIdentifier,
         mostRecentAddressableMessages: [AddressableMessage],
         mostRecentNonExpiringAddressableMessages: [AddressableMessage],
         isFullDelete: Bool,
         tx: DBWriteTransaction,
     ) {
+        guard let thread = resolveThread(conversationIdentifier: conversationIdentifier, tx: tx) else {
+            logger.warn("Missing thread for incoming conversation-delete sync.")
+            return
+        }
+
         let potentialAnchorMessages: [TSMessage] = (mostRecentAddressableMessages + mostRecentNonExpiringAddressableMessages)
             .compactMap { addressableMessage in
                 return addressableMessageFinder.findLocalMessage(
-                    threadUniqueId: conversation.threadUniqueId,
+                    threadUniqueId: thread.uniqueId,
                     addressableMessage: addressableMessage,
                     tx: tx,
                 )
             }
 
         if potentialAnchorMessages.isEmpty {
-            logger.warn("No anchor messages found for incoming thread-delete sync: \(conversation.threadUniqueId).")
+            logger.warn("No anchor messages found for incoming thread-delete sync: \(thread.uniqueId).")
             return
         }
 
@@ -292,18 +280,23 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         bulkDeleteInteractionJobQueue.addJob(
             anchorMessageRowId: localAnchorMessage.sqliteRowId!,
             isFullThreadDelete: isFullDelete,
-            threadUniqueId: conversation.threadUniqueId,
+            threadUniqueId: thread.uniqueId,
             tx: tx,
         )
     }
 
     func handleLocalOnlyConversationDelete(
-        conversation: Conversation,
+        conversationIdentifier: ConversationIdentifier,
         tx: DBWriteTransaction,
     ) {
+        guard let thread = resolveThread(conversationIdentifier: conversationIdentifier, tx: tx) else {
+            logger.warn("Missing thread for incoming local-only conversation-delete sync.")
+            return
+        }
+
         if
             addressableMessageFinder.threadContainsAnyAddressableMessages(
-                threadUniqueId: conversation.threadUniqueId,
+                threadUniqueId: thread.uniqueId,
                 tx: tx,
             )
         {
@@ -320,9 +313,43 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         /// doing asynchronous delete", since we have no "anchor" message before
         /// which we know it's safe to delete.
         threadSoftDeleteManager.softDelete(
-            threads: [conversation.thread],
+            threads: [thread],
             sendDeleteForMeSyncMessage: false,
             tx: tx,
         )
+    }
+
+    // MARK: -
+
+    private func resolveThread(
+        conversationIdentifier: ConversationIdentifier,
+        tx: DBReadTransaction,
+    ) -> TSThread? {
+        switch conversationIdentifier {
+        case .serviceId(let serviceId):
+            guard
+                let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx),
+                let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx)
+            else {
+                return nil
+            }
+            return contactThread
+        case .e164(let e164):
+            guard
+                let recipient = recipientDatabaseTable.fetchRecipient(phoneNumber: e164.stringValue, transaction: tx),
+                let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx)
+            else {
+                return nil
+            }
+            // We should only be deleting by E164 if we have no ACI. If we do,
+            // something is up and we'll err on the side of not deleting.
+            if recipient.aci != nil {
+                logger.warn("Received E164 conversation identifier, but we have an ACI for this thread. Skipping delete.")
+                return nil
+            }
+            return contactThread
+        case .groupIdentifier(let groupIdentifier):
+            return threadStore.fetchGroupThread(groupId: groupIdentifier, tx: tx)
+        }
     }
 }
