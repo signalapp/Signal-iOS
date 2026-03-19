@@ -66,6 +66,10 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
         let contactManager = SSKEnvironment.shared.contactManagerRef
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
+            return []
+        }
+
         func avatarImage(aci: Aci) -> UIImage? {
             return avatarBuilder.avatarImage(
                 forAddress: SignalServiceAddress(aci),
@@ -75,28 +79,41 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
             )
         }
 
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
-            return []
+        func names(aci: Aci) -> (
+            resolved: String,
+            comparable: DisplayName.ComparableValue,
+            isUnknown: Bool,
+        ) {
+            let resolvedName: String
+            let comparableName: DisplayName.ComparableValue
+            let isUnknown: Bool
+            if aci == localIdentifiers.aci {
+                resolvedName = OWSLocalizedString(
+                    "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
+                    comment: "Text describing the local user in the group call members sheet when connected from another device.",
+                )
+                comparableName = .nameValue(resolvedName)
+                isUnknown = false
+            } else {
+                let displayName = contactManager.displayName(for: SignalServiceAddress(aci), tx: tx)
+                resolvedName = displayName.resolvedValue(config: config.displayNameConfig)
+                comparableName = displayName.comparableValue(config: config)
+                isUnknown = switch displayName {
+                case .nickname, .systemContactName, .profileName, .phoneNumber, .username:
+                    false
+                case .unknown, .deletedAccount:
+                    true
+                }
+            }
+
+            return (resolvedName, comparableName, isUnknown)
         }
 
         var members = [JoinedMember]()
         let config: DisplayName.ComparableValue.Config = .current()
         if self.ringRtcCall.localDeviceState.joinState == .joined {
             members += self.ringRtcCall.remoteDeviceStates.values.map { member in
-                let resolvedName: String
-                let comparableName: DisplayName.ComparableValue
-                if member.aci == localIdentifiers.aci {
-                    resolvedName = OWSLocalizedString(
-                        "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
-                        comment: "Text describing the local user in the group call members sheet when connected from another device.",
-                    )
-                    comparableName = .nameValue(resolvedName)
-                } else {
-                    let displayName = contactManager.displayName(for: member.address, tx: tx)
-                    resolvedName = displayName.resolvedValue(config: config.displayNameConfig)
-                    comparableName = displayName.comparableValue(config: config)
-                }
-
+                let (resolvedName, comparableName, isUnknown) = names(aci: member.aci)
                 return JoinedMember(
                     id: .demuxID(member.demuxId),
                     aci: member.aci,
@@ -105,7 +122,7 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
                     avatarImage: avatarImage(aci: member.aci),
                     demuxID: member.demuxId,
                     isLocalUser: false,
-                    isUnknown: false,
+                    isUnknown: isUnknown,
                     isAudioMuted: member.audioMuted,
                     isVideoMuted: member.videoMuted,
                     isPresenting: member.presenting,
@@ -141,19 +158,12 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
             // We can get the list of joined members still, provided we are connected.
             members += self.ringRtcCall.peekInfo?.joinedMembers.map { aciUuid in
                 let aci = Aci(fromUUID: aciUuid)
-                let address = SignalServiceAddress(aci)
-                let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx)
-                let isUnknown = switch displayName {
-                case .nickname, .systemContactName, .profileName, .phoneNumber, .username:
-                    false
-                case .unknown, .deletedAccount:
-                    true
-                }
+                let (resolvedName, comparableName, isUnknown) = names(aci: aci)
                 return JoinedMember(
                     id: .aci(aci),
                     aci: aci,
-                    displayName: displayName.resolvedValue(config: config.displayNameConfig),
-                    comparableName: displayName.comparableValue(config: config),
+                    displayName: resolvedName,
+                    comparableName: comparableName,
                     avatarImage: avatarImage(aci: aci),
                     demuxID: nil,
                     isLocalUser: false,
