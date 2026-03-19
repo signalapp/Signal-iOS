@@ -269,8 +269,9 @@ public class NotificationActionHandler {
         do {
             try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 ReactionManager.localUserReacted(
-                    to: incomingMessage.uniqueId,
+                    to: incomingMessage,
                     emoji: "👍",
+                    sticker: nil,
                     isRemoving: false,
                     isHighPriority: false,
                     tx: transaction,
