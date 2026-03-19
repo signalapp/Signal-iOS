@@ -264,6 +264,11 @@ public struct BackupAttachmentDownloadEligibility {
         }
 
         switch backupPlan {
+        case
+            .paid(let optimizeLocalStorage) where optimizeLocalStorage == true,
+            .paidExpiringSoon(let optimizeLocalStorage) where optimizeLocalStorage == true,
+            .paidAsTester(let optimizeLocalStorage) where optimizeLocalStorage == true:
+            return .ineligible
         case .disabled:
             // Linked device can link'n'sync is backups are disabled
             // and should still restore from transit tier if so.
