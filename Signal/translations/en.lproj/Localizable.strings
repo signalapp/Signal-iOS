@@ -3748,6 +3748,9 @@
 /* Context menu action to view a call participant's profile details. */
 "GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Profile Details";
 
+/* Context menu action to remove a call participant from the call. */
+"GROUP_CALL_CONTEXT_MENU_REMOVE_FROM_CALL" = "Remove from Call";
+
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
 
@@ -3783,6 +3786,9 @@
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "In Call";
+
+/* Subtitle for a row representing a call member, when that member is presenting. */
+"GROUP_CALL_MEMBER_LIST_PRESENTING_SUBTITLE" = "Presenting";
 
 /* Title for the section of the group call member list which displays the list of members with their hand raised. */
 "GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Raised Hands";

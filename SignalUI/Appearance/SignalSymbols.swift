@@ -98,6 +98,8 @@ public enum SignalSymbol: Character {
     case refresh = "\u{E0C4}"
     case reply = "\u{E06D}"
     case safetyNumber = "\u{E06F}"
+    case shareScreen = "\u{E171}"
+    case shareScreenFill = "\u{E174}"
     case signal = "\u{E000}"
     case spam = "\u{E033}"
     case sticker = "\u{E070}"

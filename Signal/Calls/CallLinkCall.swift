@@ -30,6 +30,10 @@ final class CallLinkCall: Signal.GroupCall {
         )
     }
 
+    var isAdmin: Bool {
+        adminPasskey != nil
+    }
+
     var mayNeedToAskToJoin: Bool {
         return callLinkState.requiresAdminApproval && adminPasskey == nil
     }

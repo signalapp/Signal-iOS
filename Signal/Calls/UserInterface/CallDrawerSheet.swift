@@ -16,7 +16,7 @@ protocol CallDrawerDelegate: AnyObject {
 
 // MARK: - GroupCallSheet
 
-class CallDrawerSheet: InteractiveSheetViewController {
+class CallDrawerSheet: InteractiveSheetViewController, UITableViewDelegate, GroupCallMemberCellDelegate, CallDrawerSheetDataSourceObserver, EmojiPickerSheetPresenter, CallControlsHeightObserver {
     private let callControls: CallControls
 
     // MARK: Properties
@@ -206,22 +206,9 @@ class CallDrawerSheet: InteractiveSheetViewController {
                 return cell
             }
 
-            let isCallAdmin = self?.callLinkDataSource?.isAdmin ?? false
-            let canBeRemoved = section == .inCall && !viewModel.isLocalUser && isCallAdmin
-
-            let removeUserButtonVisibility: GroupCallMemberCell.Visibility =
-                if canBeRemoved {
-                    .visible
-                } else if isCallAdmin, section == .inCall {
-                    .spaceReserved
-                } else {
-                    .hidden
-                }
-
             cell.configure(
                 with: viewModel,
                 isHandRaised: section == .raisedHands,
-                removeUserButtonVisibility: removeUserButtonVisibility,
             )
 
             return cell
@@ -350,15 +337,16 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
     struct JoinedMember {
         enum ID: Hashable {
-            case serviceId(ServiceId)
+            case aci(Aci)
             case demuxID(DemuxId)
         }
 
         let id: ID
 
-        let serviceId: ServiceId
+        let aci: Aci
         let displayName: String
         let comparableName: DisplayName.ComparableValue
+        let avatarImage: UIImage?
         let demuxID: DemuxId?
         let isLocalUser: Bool
         let isUnknown: Bool
@@ -394,7 +382,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
                 if let existingViewModel = partialResult[member.id] {
                     existingViewModel.update(using: member)
                 } else {
-                    partialResult[member.id] = .init(member: member)
+                    partialResult[member.id] = GroupCallMemberCell.ViewModel(member: member)
                 }
             }
         }
@@ -425,8 +413,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
             if let nameComparison {
                 return nameComparison
             }
-            if $0.serviceId != $1.serviceId {
-                return $0.serviceId < $1.serviceId
+            if $0.aci != $1.aci {
+                return $0.aci < $1.aci
             }
             return $0.demuxID ?? 0 < $1.demuxID ?? 0
         }
@@ -642,11 +630,9 @@ class CallDrawerSheet: InteractiveSheetViewController {
         // The call drawer always uses dark styling regardless of the
         // system setting, so ignore.
     }
-}
 
-// MARK: UITableViewDelegate
+    // MARK: - UITableViewDelegate
 
-extension CallDrawerSheet: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let section = dataSource.snapshot().sectionIdentifiers[section]
         switch section {
@@ -733,88 +719,78 @@ extension CallDrawerSheet: UITableViewDelegate {
             guard
                 let viewModel = viewModelsByID[memberId],
                 !viewModel.isLocalUser,
-                let demuxId = viewModel.demuxId,
-                let contactAci = viewModel.serviceId as? Aci
+                let demuxId = viewModel.demuxId
             else {
                 return nil
             }
 
-            let ringRtcGroupCall: SignalRingRTC.GroupCall
+            let groupCall: GroupCall
             switch call.mode {
             case .individual:
                 return nil
             case .groupThread(let groupThreadCall):
-                ringRtcGroupCall = groupThreadCall.ringRtcCall
+                groupCall = groupThreadCall
             case .callLink(let callLinkCall):
-                ringRtcGroupCall = callLinkCall.ringRtcCall
+                groupCall = callLinkCall
             }
 
-            let actions = GroupCallContextMenuActionsBuilder.build(
+            return GroupCallVideoContextMenuConfiguration.build(
+                call: call,
+                groupCall: groupCall,
+                ringRtcCall: groupCall.ringRtcCall,
                 demuxId: demuxId,
-                contactAci: contactAci,
+                aci: viewModel.aci,
                 isAudioMuted: viewModel.isAudioMuted,
-                ringRtcGroupCall: ringRtcGroupCall,
-            )
-
-            return UIContextMenuConfiguration(
-                actionProvider: { _ in
-                    return UIMenu(title: viewModel.name, children: actions)
+                interactionProvider: { [weak tableView] in
+                    return tableView?.interactions
+                        .compactMap { $0 as? UIContextMenuInteraction }
+                        .first
                 },
             )
         }
     }
-}
 
-// MARK: GroupCallMemberCellDelegate
+    // MARK: - GroupCallMemberCellDelegate
 
-extension CallDrawerSheet: GroupCallMemberCellDelegate {
-    func raiseHand(raise: Bool) {
-        callSheetDataSource.raiseHand(raise: raise)
-    }
-
-    func removeMember(demuxId: DemuxId) {
-        guard let callLinkDataSource else {
-            return owsFailDebug("Missing call link data source")
-        }
-        guard let name = viewModelsByID[.demuxID(demuxId)]?.name else {
-            return owsFailDebug("Missing view model for demux ID")
+    fileprivate func overflowButtonContextMenuActions(demuxId: DemuxId, aci: Aci, displayName: String, isAudioMuted: Bool) -> [UIAction] {
+        let groupCall: Signal.GroupCall
+        switch call.mode {
+        case .individual:
+            owsFailDebug("Individual call with demux ID?")
+            return []
+        case .groupThread(let groupThreadCall):
+            groupCall = groupThreadCall
+        case .callLink(let callLinkCall):
+            groupCall = callLinkCall
         }
 
-        let actionSheet = ActionSheetController(
-            title: String(
-                format: OWSLocalizedString(
-                    "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE",
-                    comment: "Title for action sheet confirming removal of a member from a group call. embeds {{ name }}",
-                ),
-                name,
-            ),
+        return GroupCallVideoContextMenuConfiguration.contextMenuActions(
+            demuxId: demuxId,
+            aci: aci,
+            displayName: displayName,
+            isAudioMuted: isAudioMuted,
+            groupCall: groupCall,
+            ringRtcGroupCall: groupCall.ringRtcCall,
         )
-        actionSheet.overrideUserInterfaceStyle = .dark
-        actionSheet.addAction(.init(
-            title: OWSLocalizedString(
-                "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_REMOVE_ACTION",
-                comment: "Label for the button to confirm removing a member from a group call.",
-            ),
-        ) { [callLinkDataSource] _ in
-            callLinkDataSource.removeMember(demuxId: demuxId)
-        })
-        actionSheet.addAction(.init(
-            title: OWSLocalizedString(
-                "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_BLOCK_ACTION",
-                comment: "Label for a button to block a member from a group call.",
-            ),
-        ) { [callLinkDataSource] _ in
-            callLinkDataSource.blockMember(demuxId: demuxId)
-        })
-        actionSheet.addAction(.cancel)
-
-        self.presentActionSheet(actionSheet)
     }
-}
 
-// MARK: CallObserver
+    fileprivate func raiseHand(raise: Bool) {
+        let groupCall: Signal.GroupCall
+        switch call.mode {
+        case .individual:
+            owsFailDebug("Raising hand in 1:1 call?")
+            return
+        case .groupThread(let groupThreadCall):
+            groupCall = groupThreadCall
+        case .callLink(let callLinkCall):
+            groupCall = callLinkCall
+        }
 
-extension CallDrawerSheet: CallDrawerSheetDataSourceObserver {
+        groupCall.ringRtcCall.raiseHand(raise: raise)
+    }
+
+    // MARK: - CallDrawerSheetDataSourceObserver
+
     func callSheetMembershipDidChange(_ dataSource: CallDrawerSheetDataSource) {
         AssertIsOnMainThread()
         updateMembers()
@@ -824,15 +800,15 @@ extension CallDrawerSheet: CallDrawerSheetDataSourceObserver {
         AssertIsOnMainThread()
         updateSnapshotAndHeaders()
     }
-}
 
-extension CallDrawerSheet: EmojiPickerSheetPresenter {
+    // MARK: - EmojiPickerSheetPresenter
+
     func present(sheet: EmojiPickerSheet, animated: Bool) {
         self.present(sheet, animated: animated)
     }
-}
 
-extension CallDrawerSheet {
+    // MARK: -
+
     func isPresentingCallControls() -> Bool {
         return self.presentingViewController != nil && callControls.alpha == 1
     }
@@ -843,6 +819,33 @@ extension CallDrawerSheet {
 
     func isCrossFading() -> Bool {
         return self.presentingViewController != nil && callControls.alpha < 1 && tableView.alpha < 1
+    }
+
+    // MARK: - CallControlsHeightObserver
+
+    func callControlsHeightDidChange(newHeight: CGFloat) {
+        self.cancelAnimationAndUpdateConstraints()
+        self.animate {
+            self.setBottomSheetMinimizedHeight()
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    override open func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        self.setBottomSheetMinimizedHeight()
+    }
+
+    private var bottomPadding: CGFloat {
+        max(self.view.safeAreaInsets.bottom + HeightConstants.bottomPadding, HeightConstants.minimumBottomPaddingIncludingSafeArea)
+    }
+
+    private enum HeightConstants {
+        static let bottomPadding: CGFloat = 14
+        static let minimumBottomPaddingIncludingSafeArea: CGFloat = 30
+        static let initialTableInset: CGFloat = 25
+        static let titleViewBottomPadding: CGFloat = 16
+        static let tableViewTopPadding: CGFloat = 8
     }
 }
 
@@ -892,9 +895,9 @@ private class CallLinkURLCell: UITableViewCell, ReusableTableViewCell {
 
 // MARK: - GroupCallMemberCell
 
-protocol GroupCallMemberCellDelegate: AnyObject {
+private protocol GroupCallMemberCellDelegate: AnyObject {
+    func overflowButtonContextMenuActions(demuxId: DemuxId, aci: Aci, displayName: String, isAudioMuted: Bool) -> [UIAction]
     func raiseHand(raise: Bool)
-    func removeMember(demuxId: DemuxId)
 }
 
 private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
@@ -904,27 +907,27 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
     class ViewModel {
         typealias Member = CallDrawerSheet.JoinedMember
 
-        let serviceId: ServiceId
+        let aci: Aci
         let name: String
+        let avatarImage: UIImage?
         let isLocalUser: Bool
         let demuxId: DemuxId?
 
         @Published var isAudioMuted = false
-        @Published var isVideoMuted = false
         @Published var isPresenting = false
 
         init(member: Member) {
-            self.serviceId = member.serviceId
+            self.aci = member.aci
             self.name = member.displayName
+            self.avatarImage = member.avatarImage
             self.isLocalUser = member.isLocalUser
             self.demuxId = member.demuxID
             self.update(using: member)
         }
 
         func update(using member: Member) {
-            owsAssertDebug(serviceId == member.serviceId)
+            owsAssertDebug(aci == member.aci)
             self.isAudioMuted = member.isAudioMuted ?? false
-            self.isVideoMuted = member.isVideoMuted == true && member.isPresenting != true
             self.isPresenting = member.isPresenting ?? false
         }
     }
@@ -933,102 +936,62 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
     static let reuseIdentifier = "GroupCallMemberCell"
 
-    weak var delegate: GroupCallMemberCellDelegate?
-
-    private let avatarView = ConversationAvatarView(
-        sizeClass: .thirtySix,
-        localUserDisplayMode: .asUser,
-        badged: false,
-    )
-
-    private let nameLabel = UILabel()
-
-    private lazy var lowerHandButton = OWSButton(
-        title: CallStrings.lowerHandButton,
-        tintColor: .ows_white,
-        dimsWhenHighlighted: true,
-    ) { [weak self] in
-        self?.delegate?.raiseHand(raise: false)
-    }
-
-    private var demuxId: DemuxId?
-    private lazy var removeUserButton: OWSButton = {
-        let button = OWSButton { [weak self] in
-            guard let self, let demuxId else { return }
-            self.delegate?.removeMember(demuxId: demuxId)
-        }
-        button.setAttributedTitle(
-            SignalSymbol.minusCircle.attributedString(
-                dynamicTypeBaseSize: 24,
-                weight: .light,
-                attributes: [.foregroundColor: UIColor.Signal.label],
-            ),
-            for: .normal,
-        )
-        button.dimsWhenHighlighted = true
+    private lazy var lowerHandButton: UIButton = {
+        let button = UIButton(primaryAction: UIAction(handler: { [weak self] _ in
+            self?.delegate?.raiseHand(raise: false)
+        }))
+        var config = UIButton.Configuration.plain()
+        config.title = CallStrings.lowerHandButton
+        config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBody)
+        config.baseForegroundColor = .ows_white
+        config.contentInsets.leading = 0
+        config.contentInsets.trailing = 0
+        button.configuration = config
         return button
     }()
 
-    private let leadingWrapper = UIView()
-    private let videoMutedIndicator = UIImageView()
-    private let presentingIndicator = UIImageView()
+    private let raisedHandIndicator: UIImageView = {
+        let imageView = UIImageView(image: .raiseHand)
+        imageView.tintColor = .Signal.secondaryLabel
+        return imageView
+    }()
 
-    private let audioMutedIndicator = UIImageView()
-    private let raisedHandIndicator = UIImageView()
+    private lazy var audioMutedIndicator: UIImageView = {
+        let imageView = UIImageView(image: .micSlash)
+        imageView.tintColor = .Signal.secondaryLabel
+        return imageView
+    }()
 
-    private var subscriptions = Set<AnyCancellable>()
+    private lazy var overflowButton: ContextMenuButton = {
+        let button = ContextMenuButton(empty: ())
+        var config = UIButton.Configuration.plain()
+        config.image = .more
+        config.baseForegroundColor = .Signal.secondaryLabel
+        button.configuration = config
+        button.autoSetDimensions(to: .square(24))
+        return button
+    }()
 
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        selectionStyle = .none
-
-        nameLabel.textColor = Theme.darkThemePrimaryColor
-        nameLabel.font = .dynamicTypeBody
-
-        lowerHandButton.titleLabel?.font = .dynamicTypeBody
-
-        func setup(iconView: UIImageView, withImageNamed imageName: String, in wrapper: UIView) {
-            iconView.setTemplateImageName(imageName, tintColor: Theme.darkThemeSecondaryTextAndIconColor)
-            wrapper.addSubview(iconView)
-            iconView.autoPinEdgesToSuperviewEdges()
-            iconView.setCompressionResistanceHorizontalHigh()
-            iconView.setContentHuggingHorizontalHigh()
-        }
-
-        let trailingWrapper = UIView()
-        setup(iconView: audioMutedIndicator, withImageNamed: "mic-slash", in: trailingWrapper)
-        setup(iconView: raisedHandIndicator, withImageNamed: Theme.iconName(.raiseHand), in: trailingWrapper)
-
-        setup(iconView: videoMutedIndicator, withImageNamed: "video-slash", in: leadingWrapper)
-        setup(iconView: presentingIndicator, withImageNamed: "share_screen", in: leadingWrapper)
-
+    private lazy var accessoryStack: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [
-            avatarView,
-            nameLabel,
             lowerHandButton,
-            leadingWrapper,
-            trailingWrapper,
-            removeUserButton,
+            raisedHandIndicator,
+            audioMutedIndicator,
+            overflowButton,
         ])
         stackView.axis = .horizontal
         stackView.alignment = .center
-        contentView.addSubview(stackView)
-        stackView.autoPinWidthToSuperviewMargins()
-        stackView.autoPinHeightToSuperview(withMargin: 7)
-
         stackView.spacing = 16
-        stackView.setCustomSpacing(12, after: avatarView)
-        stackView.setCustomSpacing(8, after: nameLabel)
+        return stackView
+    }()
 
-        nameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        nameLabel.setContentHuggingHorizontalLow()
-        nameLabel.setCompressionResistanceHorizontalLow()
-        [leadingWrapper, trailingWrapper, removeUserButton, lowerHandButton]
-            .forEach {
-                $0.setContentHuggingHorizontalHigh()
-                $0.setCompressionResistanceHorizontalHigh()
-            }
+    private var subscriptions = Set<AnyCancellable>()
+
+    weak var delegate: GroupCallMemberCellDelegate?
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        selectionStyle = .none
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -1037,67 +1000,118 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
     // MARK: Configuration
 
-    enum Visibility {
-        case visible
-        case spaceReserved
-        case hidden
-    }
-
     // isHandRaised isn't part of ViewModel because the same view model is used
     // for any given member in both the members and raised hand sections.
+    //
+    // previewAvatarColor is a hack to support Xcode Previews, which can't build
+    // a contact avatar without globals set up.
     func configure(
         with viewModel: ViewModel,
         isHandRaised: Bool,
-        removeUserButtonVisibility: Visibility,
     ) {
         self.subscriptions.removeAll()
 
+        var config = defaultContentConfiguration()
+        defer {
+            self.contentConfiguration = config
+        }
+
+        config.directionalLayoutMargins = NSDirectionalEdgeInsets(hMargin: 16, vMargin: 7)
+
+        config.image = viewModel.avatarImage
+        config.imageProperties.tintColor = nil
+        config.imageProperties.reservedLayoutSize = .square(36)
+        config.imageProperties.maximumSize = .square(36)
+        config.imageProperties.cornerRadius = 18
+
+        config.text = viewModel.name
+        config.textProperties.color = .Signal.label
+        config.textProperties.font = .dynamicTypeBody
+
+        let isPresentingIconText = SignalSymbol.shareScreenFill.attributedString(dynamicTypeBaseSize: UIFont.dynamicTypeBody.pointSize)
+        let isPresentingAttributedText = isPresentingIconText + " " + OWSLocalizedString(
+            "GROUP_CALL_MEMBER_LIST_PRESENTING_SUBTITLE",
+            comment: "Subtitle for a row representing a call member, when that member is presenting.",
+        )
+        config.secondaryAttributedText = viewModel.isPresenting ? isPresentingAttributedText : nil
+        config.secondaryTextProperties.color = .Signal.secondaryLabel
+        config.secondaryTextProperties.font = .dynamicTypeBody
+        self.subscribe(to: viewModel.$isPresenting) { [weak self] isPresenting in
+            guard
+                let self,
+                var config = self.contentConfiguration as? UIListContentConfiguration
+            else { return }
+            config.secondaryAttributedText = isPresenting ? isPresentingAttributedText : nil
+            self.contentConfiguration = config
+        }
+
         if isHandRaised {
             self.raisedHandIndicator.isHidden = false
-            self.lowerHandButton.isHiddenInStackView = !viewModel.isLocalUser
+            self.lowerHandButton.isHidden = !viewModel.isLocalUser
+
             self.audioMutedIndicator.isHidden = true
-            self.leadingWrapper.isHiddenInStackView = true
+            self.overflowButton.isHidden = true
         } else {
             self.raisedHandIndicator.isHidden = true
-            self.lowerHandButton.isHiddenInStackView = true
-            self.leadingWrapper.isHiddenInStackView = false
-            self.subscribe(to: viewModel.$isAudioMuted, showing: self.audioMutedIndicator)
-            self.subscribe(to: viewModel.$isVideoMuted, showing: self.videoMutedIndicator)
-            self.subscribe(to: viewModel.$isPresenting, showing: self.presentingIndicator)
+            self.lowerHandButton.isHidden = true
+
+            configureAudioAndOverflowButtons(
+                demuxId: viewModel.demuxId,
+                aci: viewModel.aci,
+                displayName: viewModel.name,
+                isAudioMuted: viewModel.isAudioMuted,
+            )
+            self.subscribe(to: viewModel.$isAudioMuted) { [weak self] isMuted in
+                self?.configureAudioAndOverflowButtons(
+                    demuxId: viewModel.demuxId,
+                    aci: viewModel.aci,
+                    displayName: viewModel.name,
+                    isAudioMuted: isMuted,
+                )
+            }
         }
 
-        self.nameLabel.text = viewModel.name
-        self.avatarView.updateWithSneakyTransactionIfNecessary { config in
-            config.dataSource = .address(SignalServiceAddress(viewModel.serviceId))
-        }
+        self.accessoryStack.sizeToFit()
+        self.accessoryStack.frame = CGRect(
+            origin: .zero,
+            size: accessoryStack.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize),
+        )
+        self.accessoryView = accessoryStack
+    }
 
-        self.demuxId = viewModel.demuxId
-        switch removeUserButtonVisibility {
-        case .visible:
-            self.removeUserButton.isHiddenInStackView = false
-            self.removeUserButton.layer.opacity = 1
-        case .spaceReserved:
-            self.removeUserButton.isHiddenInStackView = false
-            self.removeUserButton.layer.opacity = 0
-        case .hidden:
-            self.removeUserButton.isHiddenInStackView = true
+    private func configureAudioAndOverflowButtons(
+        demuxId: DemuxId?,
+        aci: Aci,
+        displayName: String,
+        isAudioMuted: Bool,
+    ) {
+        // Always reserve space for mute icon, but conditionally show it.
+        self.audioMutedIndicator.isHidden = false
+        self.audioMutedIndicator.alpha = isAudioMuted ? 1 : 0
+
+        if let demuxId {
+            let actions = delegate?.overflowButtonContextMenuActions(
+                demuxId: demuxId,
+                aci: aci,
+                displayName: displayName,
+                isAudioMuted: isAudioMuted,
+            ) ?? []
+            self.overflowButton.isHidden = false
+            self.overflowButton.setActions(actions: actions)
+        } else {
+            self.overflowButton.isHidden = true
         }
     }
 
     func hideContent() {
-        self.raisedHandIndicator.isHidden = true
-        self.lowerHandButton.isHiddenInStackView = true
-        self.audioMutedIndicator.isHidden = true
-        self.leadingWrapper.isHiddenInStackView = true
-        self.removeUserButton.isHiddenInStackView = true
+        self.contentConfiguration = nil
+        self.accessoryView = nil
     }
 
-    private func subscribe(to publisher: Published<Bool>.Publisher, showing view: UIView) {
+    private func subscribe(to publisher: Published<Bool>.Publisher, onUpdate: @escaping (Bool) -> Void) {
         publisher
             .removeDuplicates()
-            .sink { [weak view] shouldShow in
-                view?.isHidden = !shouldShow
-            }
+            .sink { onUpdate($0) }
             .store(in: &self.subscriptions)
     }
 }
@@ -1275,53 +1289,97 @@ private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
         }
 
         frontAvatar.configure(
-            with: unknownMembers.members.first?.serviceId,
+            with: unknownMembers.members.first?.aci,
             totalAvatars: unknownMembers.members.count,
         )
         if unknownMembers.members.count == 2 {
             middleAvatar.hide()
             backAvatar.configure(
-                with: unknownMembers.members.last?.serviceId,
+                with: unknownMembers.members.last?.aci,
                 totalAvatars: unknownMembers.members.count,
             )
         } else {
             middleAvatar.configure(
-                with: unknownMembers.members[safe: 1]?.serviceId,
+                with: unknownMembers.members[safe: 1]?.aci,
                 totalAvatars: unknownMembers.members.count,
             )
             backAvatar.configure(
-                with: unknownMembers.members[safe: 2]?.serviceId,
+                with: unknownMembers.members[safe: 2]?.aci,
                 totalAvatars: unknownMembers.members.count,
             )
         }
     }
 }
 
-// MARK: - CallControlsHeightObserver
+// MARK: - Previews
 
-extension CallDrawerSheet: CallControlsHeightObserver {
-    func callControlsHeightDidChange(newHeight: CGFloat) {
-        self.cancelAnimationAndUpdateConstraints()
-        self.animate {
-            self.setBottomSheetMinimizedHeight()
-            self.view.layoutIfNeeded()
-        }
+#if DEBUG
+
+@available(iOS 17, *)
+#Preview("Group Call Member Cells") {
+    let dataSource = GroupCallMemberCellPreviewDataSource()
+    let tableView = UITableView(frame: .zero, style: .insetGrouped)
+    tableView.register(GroupCallMemberCell.self)
+    tableView.overrideUserInterfaceStyle = .dark
+    tableView.backgroundColor = UIColor(rgbHex: 0x1C1C1E)
+    tableView.dataSource = dataSource
+    tableView.allowsSelection = false
+    ObjectRetainer.retainObject(dataSource, forLifetimeOf: tableView)
+    return tableView
+}
+
+private class GroupCallMemberCellPreviewDataSource: NSObject, UITableViewDataSource {
+    struct CellConfig {
+        let aci = Aci.randomForTesting()
+        let name: String
+        let color: UIColor
+        let isAudioMuted: Bool
+        let isVideoMuted: Bool
+        let isPresenting: Bool
+        let isHandRaised: Bool
+        let isLocalUser: Bool
     }
 
-    override open func viewSafeAreaInsetsDidChange() {
-        super.viewSafeAreaInsetsDidChange()
-        self.setBottomSheetMinimizedHeight()
+    let configs: [CellConfig] = [
+        CellConfig(name: "Luke Skywalker", color: .systemBlue, isAudioMuted: false, isVideoMuted: false, isPresenting: false, isHandRaised: false, isLocalUser: false),
+        CellConfig(name: "Han Solo", color: .systemGreen, isAudioMuted: true, isVideoMuted: false, isPresenting: false, isHandRaised: false, isLocalUser: false),
+        CellConfig(name: "Leia Organa", color: .systemOrange, isAudioMuted: false, isVideoMuted: true, isPresenting: false, isHandRaised: false, isLocalUser: false),
+        CellConfig(name: "Obi-Wan Kenobi", color: .systemPurple, isAudioMuted: true, isVideoMuted: true, isPresenting: false, isHandRaised: false, isLocalUser: false),
+        CellConfig(name: "Padmé Amidala", color: .systemPink, isAudioMuted: false, isVideoMuted: false, isPresenting: true, isHandRaised: false, isLocalUser: false),
+        CellConfig(name: "Ahsoka Tano", color: .systemTeal, isAudioMuted: false, isVideoMuted: false, isPresenting: false, isHandRaised: true, isLocalUser: false),
+        CellConfig(name: "You", color: .systemRed, isAudioMuted: false, isVideoMuted: false, isPresenting: false, isHandRaised: true, isLocalUser: true),
+        CellConfig(name: "Chewbacca", color: .systemYellow, isAudioMuted: false, isVideoMuted: false, isPresenting: false, isHandRaised: false, isLocalUser: false),
+        CellConfig(name: "Lando Calrissian", color: .systemIndigo, isAudioMuted: true, isVideoMuted: false, isPresenting: false, isHandRaised: false, isLocalUser: false),
+    ]
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        configs.count
     }
 
-    private var bottomPadding: CGFloat {
-        max(self.view.safeAreaInsets.bottom + HeightConstants.bottomPadding, HeightConstants.minimumBottomPaddingIncludingSafeArea)
-    }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(GroupCallMemberCell.self)!
+        let config = configs[indexPath.row]
 
-    private enum HeightConstants {
-        static let bottomPadding: CGFloat = 14
-        static let minimumBottomPaddingIncludingSafeArea: CGFloat = 30
-        static let initialTableInset: CGFloat = 25
-        static let titleViewBottomPadding: CGFloat = 16
-        static let tableViewTopPadding: CGFloat = 8
+        let member = CallDrawerSheet.JoinedMember(
+            id: .aci(config.aci),
+            aci: config.aci,
+            displayName: config.name,
+            comparableName: .nameValue(config.name),
+            avatarImage: .building.withTintColor(config.color),
+            demuxID: 0,
+            isLocalUser: config.isLocalUser,
+            isUnknown: false,
+            isAudioMuted: config.isAudioMuted,
+            isVideoMuted: config.isVideoMuted,
+            isPresenting: config.isPresenting,
+        )
+        let viewModel = GroupCallMemberCell.ViewModel(member: member)
+        cell.configure(
+            with: viewModel,
+            isHandRaised: config.isHandRaised,
+        )
+        return cell
     }
 }
+
+#endif
