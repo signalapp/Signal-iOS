@@ -16,7 +16,7 @@ protocol CallDrawerDelegate: AnyObject {
 
 // MARK: - GroupCallSheet
 
-class CallDrawerSheet: InteractiveSheetViewController, UITableViewDelegate, GroupCallMemberCellDelegate, CallDrawerSheetDataSourceObserver, EmojiPickerSheetPresenter, CallControlsHeightObserver {
+class CallDrawerSheet: InteractiveSheetViewController, UITableViewDelegate, CallMemberCellDelegate, CallDrawerSheetDataSourceObserver, EmojiPickerSheetPresenter, CallControlsHeightObserver {
     private let callControls: CallControls
 
     // MARK: Properties
@@ -196,7 +196,7 @@ class CallDrawerSheet: InteractiveSheetViewController, UITableViewDelegate, Grou
     ) { [weak self] tableView, indexPath, id -> UITableViewCell? in
         switch id {
         case let .member(section: section, id: memberID):
-            let cell = tableView.dequeueReusableCell(GroupCallMemberCell.self, for: indexPath)
+            let cell = tableView.dequeueReusableCell(CallMemberCell.self, for: indexPath)
 
             cell.delegate = self
 
@@ -317,7 +317,7 @@ class CallDrawerSheet: InteractiveSheetViewController, UITableViewDelegate, Grou
         }
 
         tableView.register(CallLinkURLCell.self)
-        tableView.register(GroupCallMemberCell.self)
+        tableView.register(CallMemberCell.self)
         tableView.register(UnknownMembersCell.self)
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "UITableViewCell")
 
@@ -367,7 +367,7 @@ class CallDrawerSheet: InteractiveSheetViewController, UITableViewDelegate, Grou
     }
 
     private var unknownMembers = UnknownMembers()
-    private var viewModelsByID: [JoinedMember.ID: GroupCallMemberCell.ViewModel] = [:]
+    private var viewModelsByID: [JoinedMember.ID: CallMemberCell.ViewModel] = [:]
     private var sortedMembers = [JoinedMember]() {
         didSet {
             let oldMemberIDs = viewModelsByID.keys
@@ -382,7 +382,7 @@ class CallDrawerSheet: InteractiveSheetViewController, UITableViewDelegate, Grou
                 if let existingViewModel = partialResult[member.id] {
                     existingViewModel.update(using: member)
                 } else {
-                    partialResult[member.id] = GroupCallMemberCell.ViewModel(member: member)
+                    partialResult[member.id] = CallMemberCell.ViewModel(member: member)
                 }
             }
         }
@@ -750,7 +750,7 @@ class CallDrawerSheet: InteractiveSheetViewController, UITableViewDelegate, Grou
         }
     }
 
-    // MARK: - GroupCallMemberCellDelegate
+    // MARK: - CallMemberCellDelegate
 
     fileprivate func overflowButtonContextMenuActions(demuxId: DemuxId, aci: Aci, displayName: String, isAudioMuted: Bool) -> [UIAction] {
         let groupCall: Signal.GroupCall
@@ -893,14 +893,14 @@ private class CallLinkURLCell: UITableViewCell, ReusableTableViewCell {
     }
 }
 
-// MARK: - GroupCallMemberCell
+// MARK: - CallMemberCell
 
-private protocol GroupCallMemberCellDelegate: AnyObject {
+private protocol CallMemberCellDelegate: AnyObject {
     func overflowButtonContextMenuActions(demuxId: DemuxId, aci: Aci, displayName: String, isAudioMuted: Bool) -> [UIAction]
     func raiseHand(raise: Bool)
 }
 
-private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
+private class CallMemberCell: UITableViewCell, ReusableTableViewCell {
 
     // MARK: ViewModel
 
@@ -934,7 +934,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
     // MARK: Properties
 
-    static let reuseIdentifier = "GroupCallMemberCell"
+    static let reuseIdentifier = "CallMemberCell"
 
     private lazy var lowerHandButton: UIButton = {
         let button = UIButton(primaryAction: UIAction(handler: { [weak self] _ in
@@ -987,7 +987,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
     private var subscriptions = Set<AnyCancellable>()
 
-    weak var delegate: GroupCallMemberCellDelegate?
+    weak var delegate: CallMemberCellDelegate?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -1316,10 +1316,10 @@ private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
 #if DEBUG
 
 @available(iOS 17, *)
-#Preview("Group Call Member Cells") {
-    let dataSource = GroupCallMemberCellPreviewDataSource()
+#Preview("Call Member Cells") {
+    let dataSource = CallMemberCellPreviewDataSource()
     let tableView = UITableView(frame: .zero, style: .insetGrouped)
-    tableView.register(GroupCallMemberCell.self)
+    tableView.register(CallMemberCell.self)
     tableView.overrideUserInterfaceStyle = .dark
     tableView.backgroundColor = UIColor(rgbHex: 0x1C1C1E)
     tableView.dataSource = dataSource
@@ -1328,7 +1328,7 @@ private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
     return tableView
 }
 
-private class GroupCallMemberCellPreviewDataSource: NSObject, UITableViewDataSource {
+private class CallMemberCellPreviewDataSource: NSObject, UITableViewDataSource {
     struct CellConfig {
         let aci = Aci.randomForTesting()
         let name: String
@@ -1357,7 +1357,7 @@ private class GroupCallMemberCellPreviewDataSource: NSObject, UITableViewDataSou
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(GroupCallMemberCell.self)!
+        let cell = tableView.dequeueReusableCell(CallMemberCell.self)!
         let config = configs[indexPath.row]
 
         let member = CallDrawerSheet.JoinedMember(
@@ -1373,7 +1373,7 @@ private class GroupCallMemberCellPreviewDataSource: NSObject, UITableViewDataSou
             isVideoMuted: config.isVideoMuted,
             isPresenting: config.isPresenting,
         )
-        let viewModel = GroupCallMemberCell.ViewModel(member: member)
+        let viewModel = CallMemberCell.ViewModel(member: member)
         cell.configure(
             with: viewModel,
             isHandRaised: config.isHandRaised,
