@@ -89,10 +89,6 @@ extension CVNode {
         interaction is TSOutgoingMessage
     }
 
-    var wasNotCreatedLocally: Bool {
-        (interaction as? TSOutgoingMessage)?.wasNotCreatedLocally == true
-    }
-
     var wasRemotelyDeleted: Bool {
         guard let message = interaction as? TSMessage else {
             return false
