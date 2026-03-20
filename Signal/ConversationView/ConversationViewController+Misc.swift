@@ -326,6 +326,14 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
             self.navigationController?.popToViewController(self, animated: true, completion: completion)
         }
     }
+
+    public func deleteConversation() {
+        threadActionProviderDelegate?.deleteThreadWithConfirmation(threadViewModel: threadViewModel)
+    }
+
+    public func archiveConversation() {
+        threadActionProviderDelegate?.toggleThreadIsArchived(threadViewModel: threadViewModel)
+    }
 }
 
 // MARK: - Preview / 3D Touch / UIContextMenu Methods

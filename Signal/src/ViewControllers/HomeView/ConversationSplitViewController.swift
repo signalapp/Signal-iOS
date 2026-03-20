@@ -248,6 +248,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         }()
 
         showDetailViewController(viewController: detailVC, animated: animated)
+
+        conversationViewController.threadActionProviderDelegate = homeVC.chatListViewController
     }
 
     func showMyStoriesController(animated: Bool) {

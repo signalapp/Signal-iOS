@@ -47,6 +47,8 @@ public final class ConversationViewController: OWSViewController {
     public var pinnedMessageIndex: Int
     var memberLabelCoordinator: MemberLabelCoordinator?
 
+    weak var threadActionProviderDelegate: ThreadContextualActionProvider?
+
     var selectionToolbar: MessageActionsToolbar?
 
     var otherUsersProfileDidChangeEvent: DebouncedEvent?

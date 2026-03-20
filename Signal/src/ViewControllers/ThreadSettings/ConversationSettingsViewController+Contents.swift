@@ -1146,8 +1146,8 @@ extension ConversationSettingsViewController {
                     ),
                 )
             },
-            actionBlock: {
-                Logger.debug("unimplemented")
+            actionBlock: { [weak self] in
+                self?.conversationSettingsViewDelegate?.archiveConversation()
             },
         ))
 
@@ -1162,8 +1162,8 @@ extension ConversationSettingsViewController {
                     customColor: UIColor.ows_accentRed,
                 )
             },
-            actionBlock: {
-                Logger.debug("unimplemented")
+            actionBlock: { [weak self] in
+                self?.conversationSettingsViewDelegate?.deleteConversation()
             },
         ))
 

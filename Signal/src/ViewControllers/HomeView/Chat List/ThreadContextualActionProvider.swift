@@ -20,9 +20,11 @@ private struct ThreadContextualAction {
 
 // MARK: -
 
-protocol ThreadContextualActionProvider {
+protocol ThreadContextualActionProvider: AnyObject {
     func threadContextualActionShouldCloseThreadIfActive(threadViewModel: ThreadViewModel)
     func threadContextualActionDidComplete()
+    func deleteThreadWithConfirmation(threadViewModel: ThreadViewModel)
+    func toggleThreadIsArchived(threadViewModel: ThreadViewModel)
 }
 
 extension ThreadContextualActionProvider where Self: UIViewController {
@@ -278,7 +280,7 @@ extension ThreadContextualActionProvider where Self: UIViewController {
         threadContextualActionDidComplete()
     }
 
-    private func deleteThreadWithConfirmation(threadViewModel: ThreadViewModel) {
+    func deleteThreadWithConfirmation(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
         let db = DependenciesBridge.shared.db
         let threadSoftDeleteManager = DependenciesBridge.shared.threadSoftDeleteManager
