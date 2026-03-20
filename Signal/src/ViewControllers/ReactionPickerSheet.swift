@@ -263,9 +263,6 @@ class ReactionPickerSheet: OWSViewController, StickerPickerViewDelegate {
 
     // MARK: StickerPickerViewDelegate
 
-    // If a sticker has no emoji, fall back to this.
-    static let fallbackStickerEmoji = "💌"
-
     func didSelectSticker(_ stickerInfo: StickerInfo) {
         ImpactHapticFeedback.impactOccurred(style: .light)
         // Look up the sticker's associated emoji so we can build a complete CustomReactionItem.
@@ -274,7 +271,7 @@ class ReactionPickerSheet: OWSViewController, StickerPickerViewDelegate {
                 stickerInfo: stickerInfo,
                 transaction: tx
             )?.firstEmoji
-        } ?? Self.fallbackStickerEmoji
+        } ?? StickerManager.fallbackStickerEmoji
         let item = CustomReactionItem(emoji: emoji, sticker: stickerInfo)
         completionHandler(item)
         dismiss(animated: true)

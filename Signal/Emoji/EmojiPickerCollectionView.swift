@@ -260,6 +260,12 @@ class EmojiPickerCollectionView: UICollectionView {
             return
         }
 
+        // Mirror to recent reactions.
+        StickerManager.recordRecentReaction(
+            CustomReactionItem(emoji: emoji.rawValue, sticker: nil),
+            tx: transaction
+        )
+
         var newRecentEmoji = recentEmoji
 
         // Remove any existing entries for this emoji

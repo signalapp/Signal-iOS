@@ -35,6 +35,9 @@ public class StickerManager: NSObject {
     @objc
     public static let packKeyLength: UInt = 32
 
+    // If a sticker has no emoji, fall back to this.
+    public static let fallbackStickerEmoji = "💌"
+
     // MARK: - Notifications
 
     public static let packsDidChange = Notification.Name("packsDidChange")
@@ -607,9 +610,13 @@ public class StickerManager: NSObject {
     }
 
     public class func isStickerInstalled(stickerInfo: StickerInfo, transaction: DBReadTransaction) -> Bool {
+        return installedSticker(stickerInfo: stickerInfo, transaction: transaction) != nil
+    }
+
+    public class func installedSticker(stickerInfo: StickerInfo, transaction: DBReadTransaction) -> InstalledStickerRecord? {
         let installedStickerCache = SSKEnvironment.shared.modelReadCachesRef.installedStickerCache
         let uniqueId = InstalledStickerRecord.uniqueId(for: stickerInfo)
-        return installedStickerCache.getInstalledSticker(uniqueId: uniqueId, transaction: transaction) != nil
+        return installedStickerCache.getInstalledSticker(uniqueId: uniqueId, transaction: transaction)
     }
 
     typealias CleanupCompletion = () -> Void
@@ -944,7 +951,7 @@ public class StickerManager: NSObject {
     private static let kRecentStickersMaxCount: Int = 25
 
     public class func stickerWasSent(_ stickerInfo: StickerInfo, transaction: DBWriteTransaction) {
-        guard isStickerInstalled(stickerInfo: stickerInfo, transaction: transaction) else {
+        guard let installedSticker = installedSticker(stickerInfo: stickerInfo, transaction: transaction) else {
             return
         }
         store.prependToOrderedUniqueArray(
@@ -953,6 +960,16 @@ public class StickerManager: NSObject {
             maxCount: kRecentStickersMaxCount,
             tx: transaction,
         )
+
+        // Mirror to recent reactions.
+        Self.recordRecentReaction(
+            CustomReactionItem(
+                emoji: installedSticker.emojiString ?? fallbackStickerEmoji,
+                sticker: stickerInfo
+            ),
+            tx: transaction
+        )
+
         NotificationCenter.default.postOnMainThread(name: recentStickersDidChange, object: nil)
     }
 
@@ -961,6 +978,7 @@ public class StickerManager: NSObject {
         transaction: DBWriteTransaction,
     ) {
         store.removeFromOrderedUniqueArray(key: kRecentStickersKey, value: stickerInfo.asKey(), tx: transaction)
+        removeRecentReaction(withSticker: stickerInfo, tx: transaction)
         NotificationCenter.default.postOnMainThread(name: recentStickersDidChange, object: nil)
     }
 
@@ -993,6 +1011,54 @@ public class StickerManager: NSObject {
             result.append(installedSticker)
         }
         return result
+    }
+
+    private static let recentReactionsKey = "recentReactions"
+    public static let maxRecentReactionCount = 50
+
+    public static func getRecentReactions(tx: DBReadTransaction) -> [CustomReactionItem] {
+        let recentReactions: [CustomReactionItem] = (try? store.getCodableValue(
+            forKey: Self.recentReactionsKey,
+            transaction: tx
+        )) ?? []
+        var result = [CustomReactionItem]()
+        // Filter out uninstalled stickers
+        for reaction in recentReactions {
+            guard let sticker = reaction.sticker else {
+                result.append(reaction)
+                continue
+            }
+            guard
+                let installedSticker = Self.installedSticker(stickerInfo: sticker, transaction: tx)
+            else {
+                owsFailDebug("Couldn't fetch sticker")
+                continue
+            }
+            guard nil != self.stickerDataUrl(forInstalledSticker: installedSticker, verifyExists: true) else {
+                owsFailDebug("Missing sticker data for installed sticker.")
+                continue
+            }
+            result.append(reaction)
+        }
+        return recentReactions
+    }
+
+    public static func recordRecentReaction(_ reaction: CustomReactionItem, tx: DBWriteTransaction) {
+        var array = getRecentReactions(tx: tx)
+        array.insert(reaction, at: 0)
+        if array.count > Self.maxRecentReactionCount {
+            _ = array.popLast()
+        }
+        try? store.setCodable(array, key: Self.recentReactionsKey, transaction: tx)
+    }
+
+    private static func removeRecentReaction(
+        withSticker sticker: StickerInfo,
+        tx: DBWriteTransaction
+    ) {
+        var array = getRecentReactions(tx: tx)
+        array.removeAll(where: { $0.sticker == sticker })
+        try? store.setCodable(array, key: Self.recentReactionsKey, transaction: tx)
     }
 
     // MARK: - Misc.

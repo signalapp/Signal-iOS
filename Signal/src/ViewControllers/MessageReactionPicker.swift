@@ -384,27 +384,40 @@ class MessageReactionPicker: UIStackView {
 
             // Add recent emoji to inline picker
             if style.isInline {
-                let savedReactionSet = Set(savedReactions)
-
-                let recentEmoji = EmojiPickerCollectionView
-                    .getRecentEmoji(tx: transaction)
-                    .lazy
-                    .map { CustomReactionItem(emoji: $0.rawValue, sticker: nil) }
-                    .filter { !savedReactionSet.contains($0) }
-                let recentStickers = StickerManager
-                    .recentStickers(transaction: transaction)
-                    .lazy
-                    .map {
-                        CustomReactionItem(
-                            emoji: $0.emojiString ?? ReactionPickerSheet.fallbackStickerEmoji,
-                            sticker: $0.info
-                        )
+                var savedReactionSet = Set(savedReactions)
+                StickerManager
+                    .getRecentReactions(tx: transaction)
+                    .forEach {
+                        if savedReactionSet.insert($0).inserted {
+                            recentReactions.append($0)
+                        }
                     }
-                    .filter { !savedReactionSet.contains($0) }
-                for i in 0..<max(recentEmoji.count, recentStickers.count) {
-                    // TODO: apply global ordering, not just interleaving
-                    recentEmoji[safe: i].map { recentReactions.append($0) }
-                    recentStickers[safe: i].map { recentReactions.append($0) }
+
+                // For backwards compatibility, fill in with recent emoji and stickers.
+                var remainingCount = StickerManager.maxRecentReactionCount - recentReactions.count
+                if remainingCount > 0 {
+                    let recentEmoji = EmojiPickerCollectionView
+                        .getRecentEmoji(tx: transaction)
+                        .lazy
+                        .map { CustomReactionItem(emoji: $0.rawValue, sticker: nil) }
+                        .filter { !savedReactionSet.contains($0) }
+                        .prefix(remainingCount)
+                    recentReactions.append(contentsOf: recentEmoji)
+                }
+                remainingCount = StickerManager.maxRecentReactionCount - recentReactions.count
+                if remainingCount > 0 {
+                    let recentStickers = StickerManager
+                        .recentStickers(transaction: transaction)
+                        .lazy
+                        .map {
+                            CustomReactionItem(
+                                emoji: $0.emojiString ?? StickerManager.fallbackStickerEmoji,
+                                sticker: $0.info
+                            )
+                        }
+                        .filter { !savedReactionSet.contains($0) }
+                        .prefix(remainingCount)
+                    recentReactions.append(contentsOf: recentStickers)
                 }
             }
 
