@@ -1537,6 +1537,7 @@
 		76F4B581293ACCD200A7CF2F /* UIKit+Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F4B580293ACCD200A7CF2F /* UIKit+Animations.swift */; };
 		76F958632A09A5AE00B43E63 /* DebugUIDiskUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F958622A09A5AE00B43E63 /* DebugUIDiskUsage.swift */; };
 		76FCCDBC27AB8FBE00BAA7F0 /* MediaControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */; };
+		79246E552F6C9CC20085AD50 /* ReactionPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79246E542F6C9CC20085AD50 /* ReactionPickerSheet.swift */; };
 		797B94E52F677561001C9E24 /* CustomReactionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797B94E42F67755A001C9E24 /* CustomReactionItem.swift */; };
 		79F764502F656A1F001399AF /* StoryReaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F7644F2F656A1C001399AF /* StoryReaction.swift */; };
 		83B9573927C9A1FA00A678FD /* CaptchaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B9573827C9A1FA00A678FD /* CaptchaView.swift */; };
@@ -3493,7 +3494,7 @@
 		EC7A9D369AF9724FEEE5B653 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3F39202F831935AAE1C5F54 /* Pods_SignalUITests.framework */; };
 		F02564D8274EDF4600D7B48A /* BadgeIssueSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02564D7274EDF4600D7B48A /* BadgeIssueSheet.swift */; };
 		F05F51C926A90D6B00861034 /* ContextMenuActionsAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */; };
-		F090C8202762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F090C81F2762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift */; };
+		F090C8202762F2C5005C20FC /* CustomReactionPickerConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F090C81F2762F2C5005C20FC /* CustomReactionPickerConfigViewController.swift */; };
 		F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */; };
 		F0B872B8269D079B00D26481 /* ContextMenuConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */; };
 		F0EE4DB626A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */; };
@@ -5729,6 +5730,7 @@
 		76F4B580293ACCD200A7CF2F /* UIKit+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+Animations.swift"; sourceTree = "<group>"; };
 		76F958622A09A5AE00B43E63 /* DebugUIDiskUsage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIDiskUsage.swift; sourceTree = "<group>"; };
 		76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaControls.swift; sourceTree = "<group>"; };
+		79246E542F6C9CC20085AD50 /* ReactionPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionPickerSheet.swift; sourceTree = "<group>"; };
 		797B94E42F67755A001C9E24 /* CustomReactionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomReactionItem.swift; sourceTree = "<group>"; };
 		79F7644F2F656A1C001399AF /* StoryReaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryReaction.swift; sourceTree = "<group>"; };
 		7F965533D71CA51BE6704CC4 /* Pods_SignalNSE.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalNSE.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7789,7 +7791,7 @@
 		F00385FE273F6388000B5ABD /* Stripe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stripe.swift; sourceTree = "<group>"; };
 		F02564D7274EDF4600D7B48A /* BadgeIssueSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeIssueSheet.swift; sourceTree = "<group>"; };
 		F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuActionsAccessory.swift; sourceTree = "<group>"; };
-		F090C81F2762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiReactionPickerConfigViewController.swift; sourceTree = "<group>"; };
+		F090C81F2762F2C5005C20FC /* CustomReactionPickerConfigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomReactionPickerConfigViewController.swift; sourceTree = "<group>"; };
 		F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuInteraction.swift; sourceTree = "<group>"; };
 		F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuConfiguration.swift; sourceTree = "<group>"; };
 		F0C124B626D4788A0031C96F /* NSE-Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "NSE-Images.xcassets"; sourceTree = "<group>"; };
@@ -8736,7 +8738,7 @@
 				880D902B2480889B003D2B14 /* EmojiPickerCollectionView.swift */,
 				880D902D2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift */,
 				880D90292480887F003D2B14 /* EmojiPickerSheet.swift */,
-				F090C81F2762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift */,
+				F090C81F2762F2C5005C20FC /* CustomReactionPickerConfigViewController.swift */,
 				88238EBB24F21EE400F28079 /* EmojiSkinTonePicker.swift */,
 				3428577326BD8777005A2A96 /* EmojiWithSkinTones.swift */,
 			);
@@ -9346,6 +9348,7 @@
 		34B3F8331E8DF1700035BE1A /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				79246E542F6C9CC20085AD50 /* ReactionPickerSheet.swift */,
 				340FC87A204DAC8C007AEB0F /* AppSettings */,
 				8809CE8822F93C0D00D38867 /* Attachment Keyboard */,
 				883A7FC1269F4BE700841DF9 /* Avatars */,
@@ -18336,6 +18339,7 @@
 				F9B652C128D8CB75006914CA /* DatabaseRecoveryViewController.swift in Sources */,
 				346C19DF25ACDF0B00061D3A /* DataSettingsTableViewController.swift in Sources */,
 				88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */,
+				79246E552F6C9CC20085AD50 /* ReactionPickerSheet.swift in Sources */,
 				50A1CE3A2A00931900730C40 /* DebugLogger+MainApp.swift in Sources */,
 				04A573762E75B00B0019651F /* DebugLogPreviewViewController.swift in Sources */,
 				34067EAB2710D61A000407C3 /* DebugLogs.swift in Sources */,
@@ -18412,7 +18416,7 @@
 				880D902C2480889B003D2B14 /* EmojiPickerCollectionView.swift in Sources */,
 				880D902E2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift in Sources */,
 				880D902A2480887F003D2B14 /* EmojiPickerSheet.swift in Sources */,
-				F090C8202762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift in Sources */,
+				F090C8202762F2C5005C20FC /* CustomReactionPickerConfigViewController.swift in Sources */,
 				8855DF87238F1E0C0066D96F /* EmojiReactorsTableView.swift in Sources */,
 				88238EBC24F21EE400F28079 /* EmojiSkinTonePicker.swift in Sources */,
 				D94B71782EF5FD7A000C4C98 /* EmojiWithSkinTones+String.swift in Sources */,

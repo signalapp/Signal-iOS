@@ -6,10 +6,14 @@
 import SignalServiceKit
 public import SignalUI
 
-public class EmojiReactionPickerConfigViewController: UIViewController {
+protocol ReactionPickerConfigurationListener {
+    func didCompleteReactionPickerConfiguration()
+}
+
+public class CustomReactionPickerConfigViewController: UIViewController {
 
     private lazy var reactionPicker = MessageReactionPicker(
-        selectedEmoji: nil,
+        selectedReaction: nil,
         delegate: nil,
         style: .configure,
     )
@@ -67,19 +71,23 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
     }
 
     private func resetButtonTapped() {
-        let emojiSet: [EmojiWithSkinTones] = ReactionManager.defaultEmojiSet.map { EmojiWithSkinTones(rawValue: $0)! }
+        let defaultReactions = ReactionManager.defaultCustomReactionSet
 
-        for (index, emoji) in reactionPicker.currentEmojiSet().enumerated() {
-            if let newEmoji = emojiSet[safe: index]?.rawValue {
-                reactionPicker.replaceEmojiReaction(emoji, newEmoji: newEmoji, inPosition: index)
+        for (index, item) in reactionPicker.currentReactionItems().enumerated() {
+            if let newReaction = defaultReactions[safe: index] {
+                reactionPicker.replaceReaction(
+                    item,
+                    new: newReaction,
+                    inPosition: index
+                )
             }
         }
     }
 
     private func doneButtonTapped() {
-        let currentEmojiSet = reactionPicker.currentEmojiSet()
+        let items = reactionPicker.currentReactionItems()
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            ReactionManager.setCustomEmojiSet(currentEmojiSet, transaction: transaction)
+            ReactionManager.setCustomReactionSet(items, tx: transaction)
         }
         self.reactionPickerConfigurationListener?.didCompleteReactionPickerConfiguration()
         SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
@@ -88,36 +96,39 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
 
 }
 
-extension EmojiReactionPickerConfigViewController: MessageReactionPickerDelegate {
-    func didSelectReaction(reaction: String, isRemoving: Bool, inPosition position: Int) {
-
+extension CustomReactionPickerConfigViewController: MessageReactionPickerDelegate {
+    func didSelectReaction(
+        _ reaction: CustomReactionItem,
+        isRemoving: Bool,
+        inPosition position: Int
+    ) {
         if presentedViewController != nil {
             self.reactionPicker.endReplaceAnimation()
             presentedViewController?.dismiss(animated: true, completion: nil)
             return
         }
 
-        let picker = EmojiPickerSheet(message: nil, allowReactionConfiguration: false) { [weak self] emoji in
+        let picker = ReactionPickerSheet(message: nil, allowReactionConfiguration: false) { [weak self] newReaction in
             guard let self else { return }
 
-            guard let emojiString = emoji?.rawValue else {
+            guard let newReaction else {
                 self.reactionPicker.endReplaceAnimation()
                 return
             }
 
-            self.reactionPicker.replaceEmojiReaction(reaction, newEmoji: emojiString, inPosition: position)
+            self.reactionPicker.replaceReaction(
+                reaction,
+                new: newReaction,
+                inPosition: position,
+            )
             self.reactionPicker.endReplaceAnimation()
         }
 
-        reactionPicker.startReplaceAnimation(focusedEmoji: reaction, inPosition: position)
+        reactionPicker.startReplaceAnimation(focusedReaction: reaction, inPosition: position)
         present(picker, animated: true)
     }
 
-    func didSelectAnyEmoji() {
+    func didSelectMore() {
         // No-op for configuration
     }
-}
-
-protocol ReactionPickerConfigurationListener {
-    func didCompleteReactionPickerConfiguration()
 }

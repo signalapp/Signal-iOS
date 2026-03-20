@@ -99,6 +99,10 @@ class EmojiPickerCollectionView: UICollectionView {
         var messageEmojiSet = Set<EmojiWithSkinTones>()
         var dedupedEmoji = [EmojiWithSkinTones]()
         for react in messageReacts {
+            // Ignore sticker reactions; those are shown in the sticker tab.
+            guard react.sticker == nil else {
+                continue
+            }
             guard let emoji = EmojiWithSkinTones(rawValue: react.emoji) else {
                 continue
             }

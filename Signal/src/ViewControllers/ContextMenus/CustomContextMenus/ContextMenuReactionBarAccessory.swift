@@ -9,7 +9,7 @@ import UIKit
 public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessory, MessageReactionPickerDelegate {
     public let thread: TSThread
     public let itemViewModel: CVItemViewModelImpl?
-    public var didSelectReactionHandler: ((TSMessage, String, Bool) -> Void)? // = {(message: TSMessage, reaction: String, isRemoving: Bool) -> Void in }
+    public var didSelectReactionHandler: ((TSMessage, CustomReactionItem, Bool) -> Void)?
 
     private var reactionPicker: MessageReactionPicker
     private var highlightHoverGestureRecognizer: UIGestureRecognizer?
@@ -22,8 +22,12 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
         self.thread = thread
         self.itemViewModel = itemViewModel
 
+        let selectedReaction: CustomReactionItem? = {
+            guard let reaction = itemViewModel?.reactionState?.localUserReaction else { return nil }
+            return CustomReactionItem(emoji: reaction.emoji, sticker: reaction.sticker)
+        }()
         reactionPicker = MessageReactionPicker(
-            selectedEmoji: itemViewModel?.reactionState?.localUserEmoji,
+            selectedReaction: selectedReaction,
             delegate: nil,
             style: .contextMenu(allowGlass: true),
         )
@@ -89,15 +93,16 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
 
     @discardableResult
     override func touchLocationInViewDidEnd(locationInView: CGPoint) -> Bool {
-        // Send focused emoji if needed
-        if let focusedEmoji = reactionPicker.focusedEmoji {
-            switch focusedEmoji {
+        // Send focused reaction if needed
+        if let focusedReaction = reactionPicker.focusedReaction {
+            switch focusedReaction {
             case .more:
-                didSelectAnyEmoji()
-            case .emoji(let emoji):
-                let isRemoving = emoji == self.itemViewModel?.reactionState?.localUserEmoji
-                if let index = reactionPicker.currentEmojiSet().firstIndex(of: emoji) {
-                    didSelectReaction(reaction: emoji, isRemoving: isRemoving, inPosition: index)
+                didSelectMore()
+            case .reaction(let reaction):
+                let localUserReaction = self.itemViewModel?.reactionState?.localUserReaction
+                let isRemoving = localUserReaction.map { CustomReactionItem(emoji: $0.emoji, sticker: $0.sticker) } == reaction
+                if let index = reactionPicker.currentReactionItems().firstIndex(of: reaction) {
+                    didSelectReaction(reaction, isRemoving: isRemoving, inPosition: index)
                 }
             }
             return true
@@ -109,7 +114,7 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
     // MARK: MessageReactionPickerDelegate
 
     func didSelectReaction(
-        reaction: String,
+        _ reaction: CustomReactionItem,
         isRemoving: Bool,
         inPosition position: Int,
     ) {
@@ -125,7 +130,7 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
         }
     }
 
-    func didSelectAnyEmoji() {
+    func didSelectMore() {
         guard let message = itemViewModel?.interaction as? TSMessage else {
             owsFailDebug("Not sending reaction for unexpected interaction type")
             return
@@ -133,9 +138,10 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
 
         reactionPicker.playDismissalAnimation(duration: 0.2) { }
 
-        self.delegate?.contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(for: message, accessory: self) { emojiString in
-            let isRemoving = emojiString == self.itemViewModel?.reactionState?.localUserEmoji
-            self.didSelectReactionHandler?(message, emojiString, isRemoving)
+        self.delegate?.contextMenuTargetedPreviewAccessoryRequestsReactionPicker(for: message, accessory: self) { reaction in
+            let localUserReaction = self.itemViewModel?.reactionState?.localUserReaction
+            let isRemoving = localUserReaction.map { CustomReactionItem(emoji: $0.emoji, sticker: $0.sticker) } == reaction
+            self.didSelectReactionHandler?(message, reaction, isRemoving)
             self.delegate?.contextMenuTargetedPreviewAccessoryRequestsDismissal(self, completion: { })
         }
     }

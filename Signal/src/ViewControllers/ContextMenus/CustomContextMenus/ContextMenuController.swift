@@ -388,7 +388,7 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
         return UIVisualEffectView(effect: nil)
     }()
 
-    private var emojiPickerSheet: EmojiPickerSheet?
+    private var reactionPickerSheet: ReactionPickerSheet?
 
     init(
         configuration: ContextMenuConfiguration,
@@ -460,7 +460,7 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
 
         guard let superview = view.superview, presentedSize != superview.bounds.size else { return }
 
-        emojiPickerSheet?.dismiss(animated: true)
+        reactionPickerSheet?.dismiss(animated: true)
         delegate?.contextMenuControllerRequestsDismissal(self)
 
         // TODO: Support orientation changes.
@@ -729,25 +729,25 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
         }
     }
 
-    // MARK: Emoji Sheet
+    // MARK: Reaction Picker Sheet
 
-    func showEmojiSheet(message: TSMessage, completion: @escaping (String) -> Void) {
-        let picker = EmojiPickerSheet(message: message) { [weak self] emoji in
+    func showReactionPickerSheet(message: TSMessage, completion: @escaping (CustomReactionItem) -> Void) {
+        let picker = ReactionPickerSheet(message: message) { [weak self] reactionItem in
             guard let self else { return }
 
-            guard let emojiString = emoji?.rawValue else {
+            guard let reactionItem else {
                 self.delegate?.contextMenuControllerRequestsDismissal(self)
                 return
             }
 
-            completion(emojiString)
+            completion(reactionItem)
         }
-        emojiPickerSheet = picker
+        reactionPickerSheet = picker
         present(picker, animated: true)
     }
 
-    func dismissEmojiSheet(animated: Bool, completion: @escaping () -> Void) {
-        emojiPickerSheet?.dismiss(animated: true, completion: completion)
+    func dismissReactionPickerSheet(animated: Bool, completion: @escaping () -> Void) {
+        reactionPickerSheet?.dismiss(animated: true, completion: completion)
     }
 
     // MARK: ContextMenuViewDelegate

@@ -4,12 +4,13 @@
 //
 
 import Foundation
+import SDWebImage
 import SignalServiceKit
 import SignalUI
 
 protocol MessageReactionPickerDelegate: AnyObject {
-    func didSelectReaction(reaction: String, isRemoving: Bool, inPosition position: Int)
-    func didSelectAnyEmoji()
+    func didSelectReaction(_ reaction: CustomReactionItem, isRemoving: Bool, inPosition position: Int)
+    func didSelectMore()
 }
 
 class MessageReactionPicker: UIStackView {
@@ -34,66 +35,99 @@ class MessageReactionPicker: UIStackView {
     var reactionHeight: CGFloat { return pickerDiameter - (pickerPadding * 2) }
     var selectedBackgroundHeight: CGFloat { return pickerDiameter - 4 }
 
-    enum Emoji: Equatable {
-        case emoji(String)
+    enum Reaction: Equatable {
+        case reaction(CustomReactionItem)
         case more
     }
 
     private enum Button: Equatable {
-        case emoji(emoji: String, button: OWSFlatButton)
+        case reaction(item: CustomReactionItem, button: OWSFlatButton)
+        case stickerReaction(item: CustomReactionItem, button: OWSButton, imageView: SDAnimatedImageView)
         case more(UIView)
 
-        var emoji: Emoji {
+        var focusedReaction: Reaction {
             switch self {
-            case .emoji(let emoji, _): .emoji(emoji)
+            case .reaction(let item, _): .reaction(item)
+            case .stickerReaction(let item, _, _): .reaction(item)
             case .more: .more
+            }
+        }
+
+        var reactionItem: CustomReactionItem? {
+            switch self {
+            case .reaction(let item, _): item
+            case .stickerReaction(let item, _, _): item
+            case .more: nil
             }
         }
 
         var emojiButton: OWSFlatButton? {
             switch self {
-            case .emoji(_, let button): button
-            case .more: nil
+            case .reaction(_, let button): button
+            default: nil
+            }
+        }
+
+        var stickerImageView: SDAnimatedImageView? {
+            switch self {
+            case .stickerReaction(_, _, let imageView): imageView
+            default: nil
             }
         }
 
         var view: UIView {
             switch self {
-            case let .emoji(_, button): button
+            case let .reaction(_, button): button
+            case let .stickerReaction(_, button, _): button
             case let .more(button): button
+            }
+        }
+
+        static func == (lhs: Button, rhs: Button) -> Bool {
+            switch (lhs, rhs) {
+            case (.reaction(let l, _), .reaction(let r, _)): return l == r
+            case (.stickerReaction(let l, _, _), .stickerReaction(let r, _, _)): return l == r
+            case (.more, .more): return true
+            default: return false
             }
         }
     }
 
     private let emojiStackView: UIStackView = UIStackView()
-    private var buttonForEmoji = [Button]()
-    private var selectedEmoji: String?
+    private var buttonForReaction = [Button]()
+    private(set) var selectedReaction: CustomReactionItem?
     private var backgroundView: UIView?
 
     private let style: Style
+    private let allowStickers: Bool
 
-    /// The individual emoji buttons and the Any button from `buttonForEmoji`
+    /// The individual reaction buttons and the Any button from `buttonForReaction`
     private var buttonViews: [UIView] {
-        return buttonForEmoji.map(\.view)
+        return buttonForReaction.map(\.view)
     }
 
+    /// If allowStickers is false, and a sticker is set as one of the default displayed
+    /// "custom reaction set" items, will fall back to that sticker's emoji. (And will not
+    /// show the sticker picker tab).
     init(
-        selectedEmoji: String?,
+        selectedReaction: CustomReactionItem?,
         delegate: MessageReactionPickerDelegate?,
         style: Style,
+        allowStickers: Bool = true,
     ) {
-        if let selectedEmoji {
-            if EmojiWithSkinTones(rawValue: selectedEmoji) == nil {
+        if let selectedReaction {
+            if EmojiWithSkinTones(rawValue: selectedReaction.emoji) == nil {
                 owsFailDebug("Invalid (unknown) preselected emoji")
-                self.selectedEmoji = nil
+                self.selectedReaction = nil
             } else {
-                self.selectedEmoji = selectedEmoji
+                self.selectedReaction = selectedReaction
             }
         } else {
-            self.selectedEmoji = nil
+            self.selectedReaction = nil
         }
         self.delegate = delegate
         self.style = style
+        self.allowStickers = allowStickers
 
         super.init(frame: .zero)
 
@@ -150,16 +184,16 @@ class MessageReactionPicker: UIStackView {
             trailing: style.isInline ? 4 : pickerPadding,
         )
 
-        let emojiSet = currentEmojiSetOnDisk(style: style)
+        let reactionSet = currentReactionSetOnDisk(style: style)
 
-        var addAnyButton = !style.isConfigure
+        var addMoreButton = !style.isConfigure
 
         if
             !style.isConfigure,
-            let selectedEmoji = self.selectedEmoji,
-            nil == emojiSet.firstIndex(of: selectedEmoji)
+            let selected = self.selectedReaction,
+            nil == reactionSet.firstIndex(of: selected)
         {
-            addAnyButton = false
+            addMoreButton = false
         }
 
         switch style {
@@ -174,40 +208,36 @@ class MessageReactionPicker: UIStackView {
             self.addArrangedSubview(scrollView)
         }
 
-        for (index, emoji) in emojiSet.enumerated() {
-            let button = OWSFlatButton()
-            button.autoSetDimensions(to: CGSize(square: reactionHeight))
-            button.setTitle(
-                title: emoji,
-                font: .systemFont(ofSize: reactionFontSize),
-                titleColor: .Signal.label,
-            )
-            button.setPressedBlock { [weak self] in
-                // current title of button may have changed in the meantime
-                if let currentEmoji = button.button.title(for: .normal) {
-                    ImpactHapticFeedback.impactOccurred(style: .light)
-                    self?.delegate?.didSelectReaction(reaction: currentEmoji, isRemoving: currentEmoji == self?.selectedEmoji, inPosition: index)
-                }
+        for (index, item) in reactionSet.enumerated() {
+            let buttonView: UIView
+            if allowStickers, item.isStickerReaction, let stickerInfo = item.sticker {
+                let (button, imageView) = buildStickerButton(item: item, stickerInfo: stickerInfo, index: index)
+                buttonView = button
+                buttonForReaction.append(.stickerReaction(item: item, button: button, imageView: imageView))
+                emojiStackView.addArrangedSubview(button)
+            } else {
+                let button = buildEmojiButton(item: item, index: index)
+                buttonForReaction.append(.reaction(item: item, button: button))
+                emojiStackView.addArrangedSubview(button)
+                buttonView = button
             }
-            buttonForEmoji.append(.emoji(emoji: emoji, button: button))
-            emojiStackView.addArrangedSubview(button)
 
-            // Add a circle behind the currently selected emoji
-            if self.selectedEmoji == emoji {
+            // Add a circle behind the currently selected reaction
+            if self.selectedReaction == item {
                 let selectedBackgroundView = UIView()
                 selectedBackgroundView.backgroundColor = .Signal.secondaryFill
                 selectedBackgroundView.clipsToBounds = true
                 selectedBackgroundView.layer.cornerRadius = selectedBackgroundHeight / 2
                 backgroundContentView?.addSubview(selectedBackgroundView)
                 selectedBackgroundView.autoSetDimensions(to: CGSize(square: selectedBackgroundHeight))
-                selectedBackgroundView.autoAlignAxis(.horizontal, toSameAxisOf: button)
-                selectedBackgroundView.autoAlignAxis(.vertical, toSameAxisOf: button)
+                selectedBackgroundView.autoAlignAxis(.horizontal, toSameAxisOf: buttonView)
+                selectedBackgroundView.autoAlignAxis(.vertical, toSameAxisOf: buttonView)
             }
         }
 
-        if addAnyButton {
+        if addMoreButton {
             let button = OWSButton { [weak self] in
-                self?.delegate?.didSelectAnyEmoji()
+                self?.delegate?.didSelectMore()
             }
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
             button.dimsWhenHighlighted = true
@@ -238,88 +268,212 @@ class MessageReactionPicker: UIStackView {
             backgroundBackground.autoCenterInSuperview()
             backgroundBackground.isUserInteractionEnabled = false
 
-            buttonForEmoji.append(.more(button))
+            buttonForReaction.append(.more(button))
             self.addArrangedSubview(button)
         }
     }
 
-    private func currentEmojiSetOnDisk(style: Style) -> [String] {
-        var emojiSet = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            let customSet: [String] = []
+    private func buildEmojiButton(
+        item: CustomReactionItem,
+        index: Int
+    ) -> OWSFlatButton {
+        let button = OWSFlatButton()
+        button.autoSetDimensions(to: CGSize(square: reactionHeight))
+        button.setTitle(
+            title: item.emoji,
+            font: .systemFont(ofSize: reactionFontSize),
+            titleColor: .Signal.label,
+        )
+        button.setPressedBlock { [weak self, weak button] in
+            guard let self, let currentEmoji = button?.button.title(for: .normal) else { return }
+            ImpactHapticFeedback.impactOccurred(style: .light)
+            let reaction = CustomReactionItem(emoji: currentEmoji, sticker: nil)
+            let isRemoving = self.selectedReaction == reaction
+            if self.allowStickers {
+                self.delegate?.didSelectReaction(
+                    reaction,
+                    isRemoving: isRemoving,
+                    inPosition: index)
+            } else {
+                self.delegate?.didSelectReaction(
+                    CustomReactionItem(emoji: reaction.emoji, sticker: nil),
+                    isRemoving: isRemoving,
+                    inPosition: index
+                )
+            }
+        }
+        return button
+    }
+
+    private func buildStickerButton(
+        item: CustomReactionItem,
+        stickerInfo: StickerInfo,
+        index: Int,
+    ) -> (OWSButton, SDAnimatedImageView) {
+        let button = OWSButton { [weak self] in
+            guard let self else { return }
+            ImpactHapticFeedback.impactOccurred(style: .light)
+            let isRemoving = self.selectedReaction == item
+            self.delegate?.didSelectReaction(item, isRemoving: isRemoving, inPosition: index)
+        }
+        button.autoSetDimensions(to: CGSize(square: reactionHeight))
+        button.dimsWhenHighlighted = true
+
+        let imageView = SDAnimatedImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        button.addSubview(imageView)
+        imageView.autoCenterInSuperview()
+        let imageSize: CGFloat = reactionHeight - 4
+        imageView.autoSetDimensions(to: CGSize(square: imageSize))
+
+        loadStickerImage(stickerInfo: stickerInfo, into: imageView, index: index)
+
+        return (button, imageView)
+    }
+
+    private func loadStickerImage(
+        stickerInfo: StickerInfo,
+        into imageView: SDAnimatedImageView,
+        index: Int
+    ) {
+        Task { [weak self, weak imageView] in
+            let image: UIImage? = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                guard
+                    let metadata = StickerManager.installedStickerMetadata(stickerInfo: stickerInfo, transaction: tx),
+                    let data = try? metadata.readStickerData()
+                else {
+                    return nil
+                }
+                return SDAnimatedImage(data: data)
+            }
+            await MainActor.run {
+                guard
+                    let self,
+                    let imageView,
+                    let currentSticker = self.buttonForReaction[safe: index]?.reactionItem?.sticker,
+                    currentSticker.packId == stickerInfo.packId,
+                    currentSticker.stickerId == stickerInfo.stickerId
+                else {
+                    return
+                }
+                imageView.image = image
+            }
+        }
+    }
+
+    private func currentReactionSetOnDisk(style: Style) -> [CustomReactionItem] {
+        var reactionSet = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            let customSet = ReactionManager.customReactionSet(tx: transaction)
+                ?? ReactionManager.defaultCustomReactionSet
 
             // Any holes or invalid choices are filled in with the default reactions.
             // This could happen if another platform supports an emoji that we don't yet (say, because there's a newer
             // version of Unicode), or if a bug results in a string that's not valid at all, or fewer entries than the
             // default.
-            let savedReactions = [String]().enumerated().map { i, defaultEmoji -> String in
+            let savedReactions = ReactionManager.defaultCustomReactionSet.enumerated().map { i, defaultReaction -> CustomReactionItem in
                 // Treat "out-of-bounds index" and "in-bounds but not valid" the same way.
                 if let customReaction = customSet[safe: i] ?? nil {
                     return customReaction
                 } else {
-                    return defaultEmoji
+                    return defaultReaction
                 }
             }
 
-            var recentReactions = [String]()
+            var recentReactions = [CustomReactionItem]()
 
             // Add recent emoji to inline picker
             if style.isInline {
                 let savedReactionSet = Set(savedReactions)
 
-                recentReactions = EmojiPickerCollectionView
+                let recentEmoji = EmojiPickerCollectionView
                     .getRecentEmoji(tx: transaction)
                     .lazy
-                    .map(\.rawValue)
+                    .map { CustomReactionItem(emoji: $0.rawValue, sticker: nil) }
                     .filter { !savedReactionSet.contains($0) }
+                let recentStickers = StickerManager
+                    .recentStickers(transaction: transaction)
+                    .lazy
+                    .map {
+                        CustomReactionItem(
+                            emoji: $0.emojiString ?? ReactionPickerSheet.fallbackStickerEmoji,
+                            sticker: $0.info
+                        )
+                    }
+                    .filter { !savedReactionSet.contains($0) }
+                for i in 0..<max(recentEmoji.count, recentStickers.count) {
+                    // TODO: apply global ordering, not just interleaving
+                    recentEmoji[safe: i].map { recentReactions.append($0) }
+                    recentStickers[safe: i].map { recentReactions.append($0) }
+                }
             }
 
             return savedReactions + recentReactions
         }
 
-        if !style.isConfigure, let selectedEmoji = self.selectedEmoji {
-            // If the local user reacted with any of the default emoji set,
-            // we should show it in the normal place in the picker bar.
-            // NOTE: This used to match independent of skin tone, but we decided to drop that behavior.
-            if let index = emojiSet.firstIndex(of: selectedEmoji) {
-                emojiSet[index] = selectedEmoji
+        if !style.isConfigure, let selected = self.selectedReaction {
+            if let index = reactionSet.firstIndex(of: selected) {
+                reactionSet[index] = selected
             } else {
-                emojiSet.append(selectedEmoji)
+                reactionSet.append(selected)
             }
         }
 
-        return emojiSet
+        return reactionSet
     }
 
-    func updateReactionPickerEmojis() {
-        let currentEmojis = currentEmojiSetOnDisk(style: self.style)
-        for (index, emoji) in self.currentEmojiSet().enumerated() {
-            if let newEmoji = currentEmojis[safe: index] {
-                self.replaceEmojiReaction(emoji, newEmoji: newEmoji, inPosition: index)
-            }
-        }
-    }
-
-    func replaceEmojiReaction(_ oldEmoji: String, newEmoji: String, inPosition position: Int) {
-        guard let button = buttonForEmoji[position].emojiButton else { return }
-        button.setTitle(title: newEmoji, font: .systemFont(ofSize: reactionFontSize), titleColor: .Signal.label)
-        buttonForEmoji.replaceSubrange(
-            position...position,
-            with: [.emoji(emoji: newEmoji, button: button)],
-        )
-    }
-
-    func currentEmojiSet() -> [String] {
-        buttonForEmoji.compactMap { button in
-            switch button {
-            case .emoji(let emoji, _):
-                emoji
-            case .more:
-                nil
+    func updateReactionPickerItems() {
+        let currentItems = currentReactionSetOnDisk(style: self.style)
+        for (index, item) in currentReactionItems().enumerated() {
+            if let newItem = currentItems[safe: index] {
+                self.replaceReaction(item, new: newItem, inPosition: index)
             }
         }
     }
 
-    func startReplaceAnimation(focusedEmoji: String, inPosition position: Int) {
+    func replaceReaction(
+        _ old: CustomReactionItem,
+        new: CustomReactionItem,
+        inPosition position: Int
+    ) {
+        guard let existingButton = buttonForReaction[safe: position] else {
+            return
+        }
+        if allowStickers, let sticker = new.sticker {
+            if let imageView = existingButton.stickerImageView, case .stickerReaction(_, let existingBtn, _) = existingButton {
+                loadStickerImage(stickerInfo: sticker, into: imageView, index: position)
+                buttonForReaction.replaceSubrange(
+                    position...position,
+                    with: [.stickerReaction(item: new, button: existingBtn, imageView: imageView)],
+                )
+            } else {
+                let (button, imageView) = buildStickerButton(item: new, stickerInfo: sticker, index: position)
+                buttonForReaction[position] = .stickerReaction(item: new, button: button, imageView: imageView)
+                emojiStackView.arrangedSubviews[position].removeFromSuperview()
+                emojiStackView.insertArrangedSubview(button, at: position)
+            }
+        } else {
+            if let button = existingButton.emojiButton {
+                button.setTitle(title: new.emoji, font: .systemFont(ofSize: reactionFontSize), titleColor: .Signal.label)
+                buttonForReaction.replaceSubrange(
+                    position...position,
+                    with: [.reaction(item: new, button: button)],
+                )
+            } else {
+                let button = buildEmojiButton(item: new, index: position)
+                buttonForReaction[position] = .reaction(item: new, button: button)
+                emojiStackView.arrangedSubviews[position].removeFromSuperview()
+                emojiStackView.insertArrangedSubview(button, at: position)
+            }
+        }
+    }
+
+    /// Returns all reaction items (emoji + sticker) for non-more buttons.
+    func currentReactionItems() -> [CustomReactionItem] {
+        buttonForReaction.compactMap(\.reactionItem)
+    }
+
+    func startReplaceAnimation(focusedReaction: CustomReactionItem, inPosition position: Int) {
         var buttonToWiggle: UIView?
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
             for (index, button) in self.buttonViews.enumerated() {
@@ -389,23 +543,25 @@ class MessageReactionPicker: UIStackView {
         }
     }
 
-    var focusedEmoji: Emoji?
+    var focusedReaction: Reaction?
     func updateFocusPosition(_ position: CGPoint, animated: Bool) {
         var previouslyFocusedButton: UIView?
         var focusedButton: UIView?
 
         if
-            let focusedEmoji,
-            let focusedButton = buttonForEmoji.first(where: { $0.emoji == focusedEmoji })?.view
+            let focusedReaction,
+            let focusedButton = buttonForReaction
+                .first(where: { $0.focusedReaction == focusedReaction })?
+                .view
         {
             previouslyFocusedButton = focusedButton
         }
 
-        focusedEmoji = nil
+        focusedReaction = nil
 
-        for button in buttonForEmoji {
+        for button in buttonForReaction {
             guard focusArea(for: button.view).contains(position) else { continue }
-            focusedEmoji = button.emoji
+            focusedReaction = button.focusedReaction
             focusedButton = button.view
             break
         }

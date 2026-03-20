@@ -10,9 +10,11 @@ import UIKit
 class CallControlsOverflowView: UIView {
     private lazy var reactionPicker: MessageReactionPicker = {
         let picker = MessageReactionPicker(
-            selectedEmoji: nil,
+            selectedReaction: nil,
             delegate: self,
             style: .contextMenu(allowGlass: false),
+            // Calls only support emoji reactions, not stickers.
+            allowStickers: false,
         )
         picker.overrideUserInterfaceStyle = .dark
         picker.translatesAutoresizingMaskIntoConstraints = false
@@ -236,11 +238,16 @@ class CallControlsOverflowView: UIView {
 // MARK: - MessageReactionPickerDelegate
 
 extension CallControlsOverflowView: MessageReactionPickerDelegate {
-    func didSelectReaction(reaction: String, isRemoving: Bool, inPosition position: Int) {
-        self.react(with: reaction)
+    func didSelectReaction(
+        _ reaction: CustomReactionItem,
+        isRemoving: Bool,
+        inPosition position: Int
+    ) {
+        // Calls only support emoji reactions, not stickers.
+        self.react(with: reaction.emoji)
     }
 
-    func didSelectAnyEmoji() {
+    func didSelectMore() {
         let sheet = EmojiPickerSheet(
             message: nil,
             reactionPickerConfigurationListener: self,
@@ -283,7 +290,7 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
 
 extension CallControlsOverflowView: ReactionPickerConfigurationListener {
     func didCompleteReactionPickerConfiguration() {
-        self.reactionPicker.updateReactionPickerEmojis()
+        self.reactionPicker.updateReactionPickerItems()
     }
 }
 

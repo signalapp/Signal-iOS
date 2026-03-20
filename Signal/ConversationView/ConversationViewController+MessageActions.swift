@@ -167,19 +167,16 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         // Add reaction bar if necessary
         if thread.canSendReactionToThread, shouldShowReactionPickerForInteraction(contextInteraction.itemViewModel.interaction) {
             let reactionBarAccessory = ContextMenuReactionBarAccessory(thread: self.thread, itemViewModel: contextInteraction.itemViewModel)
-            reactionBarAccessory.didSelectReactionHandler = { [weak self] (message: TSMessage, reaction: String, isRemoving: Bool) in
-
-                guard self != nil else {
-                    owsFailDebug("conversationViewController was unexpectedly nil")
-                    return
-                }
-
-                SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
-                    ReactionManager.localUserReacted(
-                        to: message.uniqueId,
-                        emoji: reaction,
-                        isRemoving: isRemoving,
-                        tx: transaction,
+            reactionBarAccessory.didSelectReactionHandler = { [weak self] (message: TSMessage, reaction: CustomReactionItem, isRemoving: Bool) in
+                Task { [weak self] in
+                    guard let self else {
+                        owsFailDebug("conversationViewController was unexpectedly nil")
+                        return
+                    }
+                    await self.sendReaction(
+                        message: message,
+                        reaction: reaction,
+                        isRemoving: isRemoving
                     )
                 }
             }
@@ -270,6 +267,56 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
             return true
         default:
             return false
+        }
+    }
+
+    private func sendReaction(
+        message: TSMessage,
+        reaction: CustomReactionItem,
+        isRemoving: Bool,
+    ) async {
+        let stickerDataSource: MessageStickerDataSource?
+        if !isRemoving, let stickerInfo = reaction.sticker {
+            let stickerMetadata = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                StickerManager.installedStickerMetadata(stickerInfo: stickerInfo, transaction: tx)
+            }
+
+            guard let stickerMetadata else {
+                owsFailDebug("Could not find installed sticker metadata for reaction")
+                return
+            }
+
+            guard let stickerData = try? stickerMetadata.readStickerData() else {
+                owsFailDebug("Could not read sticker data for reaction")
+                return
+            }
+
+            let draft = MessageStickerDraft(
+                info: stickerInfo,
+                stickerData: stickerData,
+                stickerType: stickerMetadata.stickerType,
+                emoji: reaction.emoji,
+            )
+
+            do {
+                stickerDataSource = try await DependenciesBridge.shared.messageStickerManager
+                    .buildDataSource(fromDraft: draft)
+            } catch {
+                owsFailDebug("Failed to build sticker data source for reaction: \(error)")
+                return
+            }
+        } else {
+            stickerDataSource = nil
+        }
+
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            _ = ReactionManager.localUserReacted(
+                to: message,
+                emoji: reaction.emoji,
+                sticker: stickerDataSource,
+                isRemoving: isRemoving,
+                tx: tx,
+            )
         }
     }
 

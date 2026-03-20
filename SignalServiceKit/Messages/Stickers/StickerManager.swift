@@ -970,7 +970,7 @@ public class StickerManager: NSObject {
     public class func recentStickers() -> [StickerInfo] {
         var result = [StickerInfo]()
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            result = self.recentStickers(transaction: transaction)
+            result = self.recentStickers(transaction: transaction).map(\.info)
         }
         return result
     }
@@ -978,9 +978,9 @@ public class StickerManager: NSObject {
     // Returned in descending order of recency.
     //
     // Only returns installed stickers.
-    private class func recentStickers(transaction: DBReadTransaction) -> [StickerInfo] {
+    public class func recentStickers(transaction: DBReadTransaction) -> [InstalledStickerRecord] {
         let keys = store.orderedUniqueArray(forKey: kRecentStickersKey, tx: transaction)
-        var result = [StickerInfo]()
+        var result = [InstalledStickerRecord]()
         for key in keys {
             guard let installedSticker = InstalledStickerRecord.anyFetch(uniqueId: key, transaction: transaction) else {
                 owsFailDebug("Couldn't fetch sticker")
@@ -990,7 +990,7 @@ public class StickerManager: NSObject {
                 owsFailDebug("Missing sticker data for installed sticker.")
                 continue
             }
-            result.append(installedSticker.info)
+            result.append(installedSticker)
         }
         return result
     }

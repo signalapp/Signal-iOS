@@ -8,6 +8,7 @@ import SignalUI
 
 // MARK: - EmojiPickerSheet
 
+/// A picker for _just_ emoji. If you want emoji + stickers, use ``ReactionPickerSheet``.
 class EmojiPickerSheet: OWSViewController {
     let completionHandler: (EmojiWithSkinTones?) -> Void
 
@@ -133,7 +134,7 @@ class EmojiPickerSheet: OWSViewController {
 
     @objc
     private func didSelectConfigureButton(sender: UIButton) {
-        let configVC = EmojiReactionPickerConfigViewController(
+        let configVC = CustomReactionPickerConfigViewController(
             reactionPickerConfigurationListener: self.reactionPickerConfigurationListener,
         )
         let navController = UINavigationController(rootViewController: configVC)

@@ -56,10 +56,10 @@ public class ContextMenu {
 protocol ContextMenuTargetedPreviewAccessoryInteractionDelegate: AnyObject {
     func contextMenuTargetedPreviewAccessoryRequestsDismissal(_ accessory: ContextMenuTargetedPreviewAccessory, completion: @escaping () -> Void)
     func contextMenuTargetedPreviewAccessoryPreviewAlignment(_ accessory: ContextMenuTargetedPreviewAccessory) -> ContextMenuTargetedPreview.Alignment
-    func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(
+    func contextMenuTargetedPreviewAccessoryRequestsReactionPicker(
         for message: TSMessage,
         accessory: ContextMenuTargetedPreviewAccessory,
-        completion: @escaping (String) -> Void,
+        completion: @escaping (CustomReactionItem) -> Void,
     )
 }
 

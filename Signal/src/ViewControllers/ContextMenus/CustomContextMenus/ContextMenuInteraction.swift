@@ -260,14 +260,14 @@ extension ContextMenuInteraction: ContextMenuControllerDelegate, ContextMenuTarg
         dismissMenu(animated: true, completion: { })
     }
 
-    func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(
+    func contextMenuTargetedPreviewAccessoryRequestsReactionPicker(
         for message: TSMessage,
         accessory: ContextMenuTargetedPreviewAccessory,
-        completion: @escaping (String) -> Void,
+        completion: @escaping (CustomReactionItem) -> Void,
     ) {
-        contextMenuController?.showEmojiSheet(message: message, completion: { emojiString in
-            self.contextMenuController?.dismissEmojiSheet(animated: true, completion: {
-                completion(emojiString)
+        contextMenuController?.showReactionPickerSheet(message: message, completion: { reactionItem in
+            self.contextMenuController?.dismissReactionPickerSheet(animated: true, completion: {
+                completion(reactionItem)
             })
         })
     }
