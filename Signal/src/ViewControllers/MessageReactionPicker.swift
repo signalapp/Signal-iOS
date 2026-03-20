@@ -67,7 +67,7 @@ class MessageReactionPicker: UIStackView {
 
     private let emojiStackView: UIStackView = UIStackView()
     private var buttonForEmoji = [Button]()
-    private var selectedEmoji: EmojiWithSkinTones?
+    private var selectedEmoji: String?
     private var backgroundView: UIView?
 
     private let style: Style
@@ -83,8 +83,12 @@ class MessageReactionPicker: UIStackView {
         style: Style,
     ) {
         if let selectedEmoji {
-            self.selectedEmoji = EmojiWithSkinTones(rawValue: selectedEmoji)
-            owsAssertDebug(self.selectedEmoji != nil)
+            if EmojiWithSkinTones(rawValue: selectedEmoji) == nil {
+                owsFailDebug("Invalid (unknown) preselected emoji")
+                self.selectedEmoji = nil
+            } else {
+                self.selectedEmoji = selectedEmoji
+            }
         } else {
             self.selectedEmoji = nil
         }
@@ -174,7 +178,7 @@ class MessageReactionPicker: UIStackView {
             let button = OWSFlatButton()
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
             button.setTitle(
-                title: emoji.rawValue,
+                title: emoji,
                 font: .systemFont(ofSize: reactionFontSize),
                 titleColor: .Signal.label,
             )
@@ -182,10 +186,10 @@ class MessageReactionPicker: UIStackView {
                 // current title of button may have changed in the meantime
                 if let currentEmoji = button.button.title(for: .normal) {
                     ImpactHapticFeedback.impactOccurred(style: .light)
-                    self?.delegate?.didSelectReaction(reaction: currentEmoji, isRemoving: currentEmoji == self?.selectedEmoji?.rawValue, inPosition: index)
+                    self?.delegate?.didSelectReaction(reaction: currentEmoji, isRemoving: currentEmoji == self?.selectedEmoji, inPosition: index)
                 }
             }
-            buttonForEmoji.append(.emoji(emoji: emoji.rawValue, button: button))
+            buttonForEmoji.append(.emoji(emoji: emoji, button: button))
             emojiStackView.addArrangedSubview(button)
 
             // Add a circle behind the currently selected emoji
@@ -239,25 +243,24 @@ class MessageReactionPicker: UIStackView {
         }
     }
 
-    private func currentEmojiSetOnDisk(style: Style) -> [EmojiWithSkinTones] {
+    private func currentEmojiSetOnDisk(style: Style) -> [String] {
         var emojiSet = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            let customSetStrings = ReactionManager.customEmojiSet(transaction: transaction) ?? []
-            let customSet = customSetStrings.lazy.map { EmojiWithSkinTones(rawValue: $0) }
+            let customSet: [String] = []
 
             // Any holes or invalid choices are filled in with the default reactions.
             // This could happen if another platform supports an emoji that we don't yet (say, because there's a newer
             // version of Unicode), or if a bug results in a string that's not valid at all, or fewer entries than the
             // default.
-            let savedReactions = ReactionManager.defaultEmojiSet.enumerated().map { i, defaultEmoji -> EmojiWithSkinTones in
+            let savedReactions = [String]().enumerated().map { i, defaultEmoji -> String in
                 // Treat "out-of-bounds index" and "in-bounds but not valid" the same way.
                 if let customReaction = customSet[safe: i] ?? nil {
                     return customReaction
                 } else {
-                    return EmojiWithSkinTones(rawValue: defaultEmoji)!
+                    return defaultEmoji
                 }
             }
 
-            var recentReactions = [EmojiWithSkinTones]()
+            var recentReactions = [String]()
 
             // Add recent emoji to inline picker
             if style.isInline {
@@ -265,6 +268,8 @@ class MessageReactionPicker: UIStackView {
 
                 recentReactions = EmojiPickerCollectionView
                     .getRecentEmoji(tx: transaction)
+                    .lazy
+                    .map(\.rawValue)
                     .filter { !savedReactionSet.contains($0) }
             }
 
@@ -288,7 +293,7 @@ class MessageReactionPicker: UIStackView {
     func updateReactionPickerEmojis() {
         let currentEmojis = currentEmojiSetOnDisk(style: self.style)
         for (index, emoji) in self.currentEmojiSet().enumerated() {
-            if let newEmoji = currentEmojis[safe: index]?.rawValue {
+            if let newEmoji = currentEmojis[safe: index] {
                 self.replaceEmojiReaction(emoji, newEmoji: newEmoji, inPosition: index)
             }
         }
