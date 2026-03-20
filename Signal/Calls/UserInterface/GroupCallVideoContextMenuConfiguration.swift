@@ -91,16 +91,16 @@ enum GroupCallVideoContextMenuConfiguration {
     ) -> [UIAction] {
         var contextMenuActions: [UIAction] = []
 
-        if
-            BuildFlags.RemoteMute.send,
-            !isAudioMuted
-        {
+        if BuildFlags.RemoteMute.send {
+            let attributes: UIMenuElement.Attributes = isAudioMuted ? .disabled : []
+
             contextMenuActions.append(UIAction(
                 title: OWSLocalizedString(
                     "GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO",
                     comment: "Context menu action to mute a call participant's audio.",
                 ),
                 image: .micSlash,
+                attributes: attributes,
                 handler: { [weak ringRtcGroupCall] _ in
                     guard let ringRtcGroupCall else { return }
 
