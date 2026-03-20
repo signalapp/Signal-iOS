@@ -16,6 +16,7 @@ struct ConversationHeaderBuilder {
     let options: Options
 
     var subviews = [UIView]()
+    var terminatedBanner: UIView?
 
     struct Options: OptionSet {
         let rawValue: Int
@@ -85,10 +86,19 @@ struct ConversationHeaderBuilder {
         delegate: ConversationHeaderDelegate,
         transaction: DBReadTransaction,
     ) -> UIView {
+
+        var isTerminated = false
+        if let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 {
+            if groupModelV2.isTerminated {
+                isTerminated = true
+            }
+        }
+
         var builder = ConversationHeaderBuilder(
             delegate: delegate,
             sizeClass: sizeClass,
             options: options,
+            isTerminatedGroup: isTerminated,
             transaction: transaction,
         )
 
@@ -161,6 +171,7 @@ struct ConversationHeaderBuilder {
             delegate: delegate,
             sizeClass: sizeClass,
             options: options,
+            isTerminatedGroup: false,
             transaction: transaction,
         )
 
@@ -199,6 +210,7 @@ struct ConversationHeaderBuilder {
         delegate: ConversationHeaderDelegate,
         sizeClass: ConversationAvatarView.Configuration.SizeClass,
         options: Options,
+        isTerminatedGroup: Bool,
         transaction: DBReadTransaction,
     ) {
 
@@ -207,10 +219,17 @@ struct ConversationHeaderBuilder {
         self.options = options
         self.transaction = transaction
 
-        addFirstSubviews(transaction: transaction)
+        addFirstSubviews(isTerminatedGroup: isTerminatedGroup, transaction: transaction)
     }
 
-    mutating func addFirstSubviews(transaction: DBReadTransaction) {
+    mutating func addFirstSubviews(isTerminatedGroup: Bool, transaction: DBReadTransaction) {
+        if isTerminatedGroup {
+            let _terminatedBanner = buildGroupTerminatedBanner()
+            subviews.append(_terminatedBanner)
+            terminatedBanner = _terminatedBanner
+            subviews.append(UIView.spacer(withHeight: 8))
+        }
+
         let avatarView = buildAvatarView(transaction: transaction)
 
         let avatarWrapper = UIView.container()
@@ -424,6 +443,28 @@ struct ConversationHeaderBuilder {
         hasSubtitleLabel = true
     }
 
+    func buildGroupTerminatedBanner() -> UIView {
+        let banner = UIView()
+        banner.backgroundColor = UIColor.Signal.quaternaryFill
+        banner.layer.cornerRadius = 26
+        banner.layer.masksToBounds = true
+
+        let textLabel = UILabel()
+        textLabel.text = OWSLocalizedString("END_GROUP_BANNER_LABEL", comment: "Label for a banner in group settings indicating that the group has been ended")
+        textLabel.font = .dynamicTypeSubheadlineClamped
+        textLabel.textColor = UIColor.Signal.label
+        textLabel.numberOfLines = 0
+        banner.addSubview(textLabel)
+
+        textLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            textLabel.leadingAnchor.constraint(equalTo: banner.leadingAnchor, constant: 20),
+            textLabel.centerYAnchor.constraint(equalTo: banner.centerYAnchor),
+        ])
+
+        return banner
+    }
+
     func buildAvatarView(transaction: DBReadTransaction) -> UIView {
         let avatarView = ConversationAvatarView(
             sizeClass: sizeClass,
@@ -583,6 +624,10 @@ struct ConversationHeaderBuilder {
         if !options.contains(.noBackground) {
             header.addBackgroundView(withBackgroundColor: delegate.tableViewController.tableBackgroundColor)
         }
+
+        terminatedBanner?.translatesAutoresizingMaskIntoConstraints = false
+        terminatedBanner?.widthAnchor.constraint(equalTo: header.widthAnchor).isActive = true
+        terminatedBanner?.heightAnchor.constraint(equalToConstant: 52).isActive = true
 
         return header
     }

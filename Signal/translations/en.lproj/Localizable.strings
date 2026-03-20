@@ -3430,6 +3430,9 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Call failed";
 
+/* Label for a banner in group settings indicating that the group has been ended */
+"END_GROUP_BANNER_LABEL" = "This group was ended.";
+
 /* Label for group chats that have been ended */
 "END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group was ended.";
 
