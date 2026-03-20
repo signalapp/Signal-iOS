@@ -1047,10 +1047,13 @@ public struct AttachmentStore {
     /// Call this when viewing an attachment "fullscreen", which really means "anything
     /// other than scrolling past it in a conversation".
     public func markViewedFullscreen(
-        attachment: Attachment,
+        attachmentId: Attachment.IDType,
         timestamp: UInt64,
         tx: DBWriteTransaction,
     ) {
+        guard let attachment = self.fetch(id: attachmentId, tx: tx) else {
+            return
+        }
         var newRecord = Attachment.Record(
             params: .forMarkingViewedFullscreen(
                 attachment: attachment,

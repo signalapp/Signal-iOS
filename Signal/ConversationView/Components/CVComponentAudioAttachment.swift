@@ -201,11 +201,8 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             let attachmentId = audioAttachment.attachment.id
             Task {
                 await DependenciesBridge.shared.db.awaitableWrite { tx in
-                    guard let attachment = DependenciesBridge.shared.attachmentStore.fetch(id: attachmentId, tx: tx) else {
-                        return
-                    }
                     DependenciesBridge.shared.attachmentStore.markViewedFullscreen(
-                        attachment: attachment,
+                        attachmentId: attachmentId,
                         timestamp: timestamp,
                         tx: tx,
                     )
