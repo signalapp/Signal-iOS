@@ -264,7 +264,8 @@ public final class TSGroupModelV2: TSGroupModel {
             !membershipChangeRequiresInfoMessage,
             access == otherGroupModel.access,
             isAnnouncementsOnly == otherGroupModel.isAnnouncementsOnly,
-            inviteLinkPassword == otherGroupModel.inviteLinkPassword
+            inviteLinkPassword == otherGroupModel.inviteLinkPassword,
+            isTerminated == otherGroupModel.isTerminated
         else {
             return true
         }

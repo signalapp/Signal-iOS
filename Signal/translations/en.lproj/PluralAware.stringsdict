@@ -456,6 +456,22 @@
 			<string>of %d matches</string>
 		</dict>
 	</dict>
+	<key>CONVERSATION_SETTINGS_FORMER_MEMBERS_SECTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d Former Member</string>
+			<key>other</key>
+			<string>%d Former Members</string>
+		</dict>
+	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

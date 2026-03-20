@@ -1289,6 +1289,9 @@ final class BackupArchiveGroupUpdateSwiftToProtoConverter {
                 },
                 asUpdate: { .groupMemberJoinedByLinkUpdate($0) },
             )
+        case .groupTerminatedByLocalUser, .groupTerminatedByUnknownUser, .groupTerminatedByOtherUser:
+            // TODO: replace when group terminate is in backups
+            return .skippableInteraction(.groupTerminate)
         }
 
         return .success(update)

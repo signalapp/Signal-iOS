@@ -20,6 +20,7 @@ enum CVCBottomViewType: Equatable {
     case appExpired
     case notRegistered
     case notLinked
+    case groupEnded
 }
 
 protocol ConversationBottomBar: UIView {
@@ -87,6 +88,13 @@ public extension ConversationViewController {
             case nil:
                 break
             }
+            if
+                let groupModel = thread.groupModelIfGroupThread as? TSGroupModelV2,
+                groupModel.isTerminated
+            {
+                return .groupEnded
+            }
+
             if threadViewModel.hasPendingMessageRequest {
                 let messageRequestType = SSKEnvironment.shared.databaseStorageRef.read { tx in
                     return MessageRequestView.messageRequestType(forThread: self.threadViewModel.threadRecord, transaction: tx)
@@ -193,6 +201,13 @@ public extension ConversationViewController {
             )
             requestView = notRegisteredView
             bottomView = notRegisteredView
+        case .groupEnded:
+            let groupEndedView = BlockingErrorBottomPanelView(
+                text: NSAttributedString(string: OWSLocalizedString("END_GROUP_BOTTOM_PANEL_LABEL", comment: "Label for group chats that have been ended")),
+                onTap: {},
+            )
+            requestView = groupEndedView
+            bottomView = groupEndedView
         }
 
         bottomBarContainer.removeAllSubviews()

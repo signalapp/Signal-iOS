@@ -155,6 +155,10 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         thread.isGroupThread
     }
 
+    var isTerminatedGroup: Bool {
+        groupViewHelper.isTerminatedGroup
+    }
+
     // MARK: - View Lifecycle
 
     override func viewDidLoad() {
@@ -174,7 +178,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     func updateNavigationBar() {
-        guard canEditConversationAttributes, isGroupThread else {
+        guard canEditConversationAttributes, isGroupThread, !isTerminatedGroup else {
             navigationItem.rightBarButtonItem = nil
             return
         }

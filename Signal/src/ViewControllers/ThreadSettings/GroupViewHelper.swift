@@ -140,6 +140,16 @@ class GroupViewHelper {
 
     }
 
+    var isTerminatedGroup: Bool {
+        guard
+            let groupThread = thread as? TSGroupThread,
+            let groupModelV2 = groupThread.groupModel as? TSGroupModelV2
+        else {
+            return false
+        }
+        return groupModelV2.isTerminated
+    }
+
     var canResendInvites: Bool {
         return !threadViewModel.hasPendingMessageRequest && isLocalUserFullMember
     }

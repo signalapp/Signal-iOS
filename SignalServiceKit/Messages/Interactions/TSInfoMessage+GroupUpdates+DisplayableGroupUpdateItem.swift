@@ -191,6 +191,10 @@ public enum DisplayableGroupUpdateItem {
 
     case sequenceOfInviteLinkRequestAndCancels(userName: String, userAddress: SignalServiceAddress, count: UInt, isTail: Bool)
 
+    case groupTerminatedByLocalUser
+    case groupTerminatedByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
+    case groupTerminatedByUnknownUser
+
     // MARK: -
 
     /// Localized text representing this update.
@@ -1157,6 +1161,24 @@ public enum DisplayableGroupUpdateItem {
                     .name(userName, userAddress),
                 ],
             )
+        case .groupTerminatedByLocalUser:
+            return OWSLocalizedString(
+                "GROUP_TERMINATED_BY_LOCAL_USER",
+                comment: "Message indicating that the group was terminated by the local user.",
+            ).attributed
+        case let .groupTerminatedByOtherUser(updaterName, updaterAddress):
+            return NSAttributedString.make(
+                fromFormat: OWSLocalizedString(
+                    "GROUP_TERMINATED_BY_OTHER_USER",
+                    comment: "Message indicating that the group was terminated by a remote user. Embeds {{ user who terminated the group }}.",
+                ),
+                groupUpdateFormatArgs: [.name(updaterName, updaterAddress)],
+            )
+        case .groupTerminatedByUnknownUser:
+            return OWSLocalizedString(
+                "GROUP_TERMINATED_BY_UNKNOWN_USER",
+                comment: "Message indicating that the group was terminated by an unknown user.",
+            ).attributed
         }
     }
 }

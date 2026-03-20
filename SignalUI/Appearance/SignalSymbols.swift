@@ -113,6 +113,7 @@ public enum SignalSymbol: Character {
     case viewOnce = "\u{E078}"
     case viewOnceSlash = "\u{E079}"
     case xCircle = "\u{E1EE}"
+    case groupXInline = "\u{E0AE}"
 
     // MARK: Localized symbols
 

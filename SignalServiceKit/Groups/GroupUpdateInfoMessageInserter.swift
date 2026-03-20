@@ -232,6 +232,19 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                 wantsSound: true,
                 transaction: tx,
             )
+        } else if
+            let newGroupModelv2 = newGroupModel as? TSGroupModelV2,
+            let oldGroupModelv2 = oldGroupModel as? TSGroupModelV2,
+            !oldGroupModelv2.isTerminated,
+            newGroupModelv2.isTerminated
+        {
+            // Notify when the group ends.
+            notificationPresenter.notifyUser(
+                forTSMessage: infoMessage,
+                thread: groupThread,
+                wantsSound: true,
+                transaction: tx,
+            )
         }
     }
 }

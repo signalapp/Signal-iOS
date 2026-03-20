@@ -287,6 +287,12 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
                 return nil
             case .otherUserJoinedViaInviteLink(let userAci):
                 return userAci.wrappedValue
+            case .groupTerminatedByLocalUser:
+                return nil
+            case .groupTerminatedByOtherUser(let updaterAci):
+                return updaterAci.wrappedValue
+            case .groupTerminatedByUnknownUser:
+                return nil
             }
         }()
 

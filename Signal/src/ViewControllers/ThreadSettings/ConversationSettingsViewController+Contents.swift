@@ -62,7 +62,11 @@ extension ConversationSettingsViewController {
             contents.add(buildGroupMembershipSection(groupModel: groupModel, sectionIndex: contents.sections.count))
 
             if let groupModelV2 = groupModel as? TSGroupModelV2 {
-                buildGroupSettingsSection(groupModelV2: groupModelV2, contents: contents)
+                if groupModelV2.isTerminated {
+                    buildTerminatedGroupSettingsSection(contents: contents)
+                } else {
+                    buildGroupSettingsSection(groupModelV2: groupModelV2, contents: contents)
+                }
             }
         } else if isContactThread, hasGroupThreads, !isNoteToSelf {
             contents.add(buildMutualGroupsSection(sectionIndex: contents.sections.count))
@@ -484,10 +488,10 @@ extension ConversationSettingsViewController {
                         ? DateUtil.formatDuration(seconds: disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
                         : CommonStrings.switchOff,
                     accessoryType: .disclosureIndicator,
-                    customColor: canEditConversationAttributes ? nil : Theme.secondaryTextAndIconColor,
+                    customColor: canEditConversationAttributes && !isTerminatedGroup ? nil : Theme.secondaryTextAndIconColor,
                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "disappearing_messages"),
                 )
-                cell.isUserInteractionEnabled = canEditConversationAttributes
+                cell.isUserInteractionEnabled = canEditConversationAttributes && !isTerminatedGroup
                 return cell
             },
             actionBlock: { [weak self] in
@@ -542,7 +546,7 @@ extension ConversationSettingsViewController {
     private func buildBlockAndLeaveSection() -> OWSTableSection {
         let section = OWSTableSection()
 
-        if isGroupThread, isLocalUserFullOrInvitedMember {
+        if isGroupThread, isLocalUserFullOrInvitedMember, !isTerminatedGroup {
             section.add(OWSTableItem(
                 customCellBlock: { [weak self] in
                     guard let self else {
@@ -566,59 +570,61 @@ extension ConversationSettingsViewController {
             ))
         }
 
-        section.add(OWSTableItem(
-            customCellBlock: { [weak self] in
-                guard let self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
+        if !isTerminatedGroup {
+            section.add(OWSTableItem(
+                customCellBlock: { [weak self] in
+                    guard let self else {
+                        owsFailDebug("Missing self")
+                        return OWSTableItem.newCell()
+                    }
 
-                let cellTitle: String
-                var customColor: UIColor?
-                if self.threadViewModel.isBlocked {
-                    cellTitle =
-                        (
-                            self.thread.isGroupThread
-                                ? OWSLocalizedString(
-                                    "CONVERSATION_SETTINGS_UNBLOCK_GROUP",
-                                    comment: "Label for 'unblock group' action in conversation settings view.",
-                                )
-                                : OWSLocalizedString(
-                                    "CONVERSATION_SETTINGS_UNBLOCK_USER",
-                                    comment: "Label for 'unblock user' action in conversation settings view.",
-                                ),
-                        )
-                } else {
-                    cellTitle =
-                        (
-                            self.thread.isGroupThread
-                                ? OWSLocalizedString(
-                                    "CONVERSATION_SETTINGS_BLOCK_GROUP",
-                                    comment: "Label for 'block group' action in conversation settings view.",
-                                )
-                                : OWSLocalizedString(
-                                    "CONVERSATION_SETTINGS_BLOCK_USER",
-                                    comment: "Label for 'block user' action in conversation settings view.",
-                                ),
-                        )
-                    customColor = UIColor.ows_accentRed
-                }
-                let cell = OWSTableItem.buildCell(
-                    icon: .chatSettingsBlock,
-                    itemName: cellTitle,
-                    customColor: customColor,
-                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "block"),
-                )
-                return cell
-            },
-            actionBlock: { [weak self] in
-                if self?.threadViewModel.isBlocked == true {
-                    self?.didTapUnblockThread()
-                } else {
-                    self?.didTapBlockThread()
-                }
-            },
-        ))
+                    let cellTitle: String
+                    var customColor: UIColor?
+                    if self.threadViewModel.isBlocked {
+                        cellTitle =
+                            (
+                                self.thread.isGroupThread
+                                    ? OWSLocalizedString(
+                                        "CONVERSATION_SETTINGS_UNBLOCK_GROUP",
+                                        comment: "Label for 'unblock group' action in conversation settings view.",
+                                    )
+                                    : OWSLocalizedString(
+                                        "CONVERSATION_SETTINGS_UNBLOCK_USER",
+                                        comment: "Label for 'unblock user' action in conversation settings view.",
+                                    ),
+                            )
+                    } else {
+                        cellTitle =
+                            (
+                                self.thread.isGroupThread
+                                    ? OWSLocalizedString(
+                                        "CONVERSATION_SETTINGS_BLOCK_GROUP",
+                                        comment: "Label for 'block group' action in conversation settings view.",
+                                    )
+                                    : OWSLocalizedString(
+                                        "CONVERSATION_SETTINGS_BLOCK_USER",
+                                        comment: "Label for 'block user' action in conversation settings view.",
+                                    ),
+                            )
+                        customColor = UIColor.ows_accentRed
+                    }
+                    let cell = OWSTableItem.buildCell(
+                        icon: .chatSettingsBlock,
+                        itemName: cellTitle,
+                        customColor: customColor,
+                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "block"),
+                    )
+                    return cell
+                },
+                actionBlock: { [weak self] in
+                    if self?.threadViewModel.isBlocked == true {
+                        self?.didTapUnblockThread()
+                    } else {
+                        self?.didTapBlockThread()
+                    }
+                },
+            ))
+        }
 
         let hasReportedSpam = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return InteractionFinder(threadUniqueId: thread.uniqueId).hasUserReportedSpam(transaction: tx)
@@ -685,7 +691,7 @@ extension ConversationSettingsViewController {
         let groupMembership = groupModel.groupMembership
 
         // "Add Members" cell.
-        if canEditConversationMembership {
+        if canEditConversationMembership, !isTerminatedGroup {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self else {
                     owsFailDebug("Missing self")
@@ -726,11 +732,20 @@ extension ConversationSettingsViewController {
 
         let totalMemberCount = sortedGroupMembers.count
 
-        let format = OWSLocalizedString(
-            "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d",
-            tableName: "PluralAware",
-            comment: "Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}.",
-        )
+        let format: String
+        if isTerminatedGroup {
+            format = OWSLocalizedString(
+                "CONVERSATION_SETTINGS_FORMER_MEMBERS_SECTION_TITLE_%d",
+                tableName: "PluralAware",
+                comment: "Format for the section title of the 'members' section in conversation settings view after a group has been terminated. Embeds: {{ the number of former group members }}.",
+            )
+        } else {
+            format = OWSLocalizedString(
+                "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d",
+                tableName: "PluralAware",
+                comment: "Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}.",
+            )
+        }
         section.headerTitle = String.localizedStringWithFormat(format, totalMemberCount)
 
         var membersToRender = sortedGroupMembers
@@ -764,7 +779,7 @@ extension ConversationSettingsViewController {
                 )
             }
 
-            let showAddMemberLabel = isLocalUser && memberLabel == nil && self.groupViewHelper.canEditMemberLabels
+            let showAddMemberLabel = isLocalUser && memberLabel == nil && self.groupViewHelper.canEditMemberLabels && !isTerminatedGroup
 
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self else {
@@ -1116,5 +1131,42 @@ extension ConversationSettingsViewController {
         }
 
         return section
+    }
+
+    private func buildTerminatedGroupSettingsSection(contents: OWSTableContents) {
+        let section = OWSTableSection()
+
+        section.add(OWSTableItem(
+            customCellBlock: {
+                return OWSTableItem.buildCell(
+                    icon: .contextMenuArchive,
+                    itemName: OWSLocalizedString(
+                        "CONVERSATION_SETTINGS_ARCHIVE_CHAT",
+                        comment: "Label for 'archive chat' action in conversation settings view.",
+                    ),
+                )
+            },
+            actionBlock: {
+                Logger.debug("unimplemented")
+            },
+        ))
+
+        section.add(OWSTableItem(
+            customCellBlock: {
+                return OWSTableItem.buildCell(
+                    icon: .contextMenuArchive,
+                    itemName: OWSLocalizedString(
+                        "CONVERSATION_SETTINGS_DELETE_CHAT",
+                        comment: "Label for 'delete chat' action in conversation settings view.",
+                    ),
+                    customColor: UIColor.ows_accentRed,
+                )
+            },
+            actionBlock: {
+                Logger.debug("unimplemented")
+            },
+        ))
+
+        contents.add(section)
     }
 }

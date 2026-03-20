@@ -1119,6 +1119,11 @@ extension CVComponentSystemMessage {
             .disappearingMessagesDisabledByOtherUser,
             .disappearingMessagesDisabledByUnknownUser:
             return .timerSlash
+        case
+            .groupTerminatedByLocalUser,
+            .groupTerminatedByUnknownUser,
+            .groupTerminatedByOtherUser:
+            return .groupXInline
         }
     }
 

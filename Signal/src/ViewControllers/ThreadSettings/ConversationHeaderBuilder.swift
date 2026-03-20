@@ -97,7 +97,7 @@ struct ConversationHeaderBuilder {
             if let descriptionText = groupModel.descriptionText {
                 isShowingGroupDescription = true
                 builder.addGroupDescriptionPreview(text: descriptionText)
-            } else if delegate.canEditConversationAttributes {
+            } else if delegate.canEditConversationAttributes, !groupModel.isTerminated {
                 isShowingGroupDescription = true
                 builder.addCreateGroupDescriptionButton()
             }
@@ -718,7 +718,9 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
 
     func buildMainHeader() -> UIView {
         let options: ConversationHeaderBuilder.Options
-        if callRecords.isEmpty {
+        if isTerminatedGroup {
+            options = [.mute, .search]
+        } else if callRecords.isEmpty {
             options = [.videoCall, .audioCall, .mute, .search, .renderLocalUserAsNoteToSelf]
         } else {
             // Call details

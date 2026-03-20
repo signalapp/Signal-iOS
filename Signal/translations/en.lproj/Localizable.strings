@@ -2308,6 +2308,9 @@
 /* Header title for the section showing all media in conversation settings */
 "CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "All Media";
 
+/* Label for 'archive chat' action in conversation settings view. */
+"CONVERSATION_SETTINGS_ARCHIVE_CHAT" = "Archive Chat";
+
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Choose who can edit the group name, photo, description, disappearing messages timer, and pinned messages.";
 
@@ -2340,6 +2343,9 @@
 
 /* A label indicating that a call was an outgoing voice call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Outgoing voice call";
+
+/* Label for 'delete chat' action in conversation settings view. */
+"CONVERSATION_SETTINGS_DELETE_CHAT" = "Delete Chat";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
@@ -3424,6 +3430,9 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Call failed";
 
+/* Label for group chats that have been ended */
+"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group was ended.";
+
 /* Label explaining that an entered 'Recovery Key' is incorrect. */
 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Incorrect recovery key";
 
@@ -4341,6 +4350,15 @@
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
+/* Message indicating that the group was terminated by the local user. */
+"GROUP_TERMINATED_BY_LOCAL_USER" = "You ended the group";
+
+/* Message indicating that the group was terminated by a remote user. Embeds {{ user who terminated the group }}. */
+"GROUP_TERMINATED_BY_OTHER_USER" = "%@ ended the group";
+
+/* Message indicating that the group was terminated by an unknown user. */
+"GROUP_TERMINATED_BY_UNKNOWN_USER" = "The group was ended";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Group updated.";

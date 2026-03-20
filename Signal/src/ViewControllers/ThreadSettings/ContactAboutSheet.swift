@@ -200,7 +200,8 @@ class ContactAboutSheet: StackSheetViewController {
         if
             isLocalUser,
             groupViewHelper?.canEditMemberLabels ?? false,
-            let presenter = fromViewController as? MemberLabelViewControllerPresenter
+            let presenter = fromViewController as? MemberLabelViewControllerPresenter,
+            !(groupViewHelper?.isTerminatedGroup ?? false)
         {
             stackView.addArrangedSubview(ProfileDetailLabel.memberLabel(memberLabel?.label, tapAction: { [weak self] in
                 self?.groupViewHelper?.memberLabelCoordinator?.presenter = presenter

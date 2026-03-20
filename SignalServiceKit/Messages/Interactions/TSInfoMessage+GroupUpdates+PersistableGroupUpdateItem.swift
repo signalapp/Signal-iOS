@@ -385,6 +385,9 @@ extension TSInfoMessage {
             case inviteLinkApprovalEnabledByUnknownUser
             case localUserJoinedViaInviteLink
             case otherUserJoinedViaInviteLink
+            case groupTerminatedByLocalUser
+            case groupTerminatedByOtherUser
+            case groupTerminatedByUnknownUser
         }
 
         /// Represents a sequence of "request to join" and "canceled request to
@@ -594,6 +597,9 @@ extension TSInfoMessage {
         case localUserJoinedViaInviteLink
         case otherUserJoinedViaInviteLink(userAci: AciUuid)
 
+        case groupTerminatedByLocalUser
+        case groupTerminatedByOtherUser(updaterAci: AciUuid)
+        case groupTerminatedByUnknownUser
     }
 }
 
@@ -641,7 +647,8 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
             .inviteLinkDisabledByOtherUser(let updaterAci),
             .inviteLinkApprovalDisabledByOtherUser(let updaterAci),
             .inviteLinkApprovalEnabledByOtherUser(let updaterAci),
-            .memberLabelsAccessChangedByOtherUser(let updaterAci, _):
+            .memberLabelsAccessChangedByOtherUser(let updaterAci, _),
+            .groupTerminatedByOtherUser(let updaterAci):
             return updaterAci
         case
             .sequenceOfInviteLinkRequestAndCancels,
@@ -739,7 +746,9 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
             .otherUserJoinedViaInviteLink,
             .inviteLinkApprovalDisabledByLocalUser,
             .memberLabelsAccessChangedByLocalUser,
-            .memberLabelsAccessChangedByUnknownUser:
+            .memberLabelsAccessChangedByUnknownUser,
+            .groupTerminatedByLocalUser,
+            .groupTerminatedByUnknownUser:
             return nil
         }
     }

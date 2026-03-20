@@ -897,6 +897,16 @@ private struct PrecomputedGroupUpdateItemBuilder {
         case .otherUserJoinedViaInviteLink(let userAci):
             let (userName, userAddress) = expandAci(userAci)
             return .otherUserJoinedViaInviteLink(userName: userName, userAddress: userAddress)
+
+        case .groupTerminatedByLocalUser:
+            return .groupTerminatedByLocalUser
+
+        case .groupTerminatedByOtherUser(let updaterAci):
+            let (updaterName, updaterAddress) = expandAci(updaterAci)
+            return .groupTerminatedByOtherUser(updaterName: updaterName, updaterAddress: updaterAddress)
+
+        case .groupTerminatedByUnknownUser:
+            return .groupTerminatedByUnknownUser
         }
     }
 
@@ -1233,6 +1243,11 @@ private struct DiffingGroupUpdateItemBuilder {
             )
 
             addIsAnnouncementOnlyLinkUpdates(
+                oldGroupModel: oldGroupModel,
+                newGroupModel: newGroupModel,
+            )
+
+            addGroupTerminatedUpdate(
                 oldGroupModel: oldGroupModel,
                 newGroupModel: newGroupModel,
             )
@@ -2444,6 +2459,42 @@ private struct DiffingGroupUpdateItemBuilder {
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.announcementOnlyDisabledByUnknownUser)
             }
+        }
+    }
+
+    // MARK: Group Terminated
+
+    mutating func addGroupTerminatedUpdate(
+        oldGroupModel: TSGroupModel,
+        newGroupModel: TSGroupModel,
+    ) {
+        guard let oldGroupModel = oldGroupModel as? TSGroupModelV2 else {
+            return
+        }
+        guard let newGroupModel = newGroupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid group model.")
+            return
+        }
+        let oldIsTerminated = oldGroupModel.isTerminated
+        let newIsTerminated = newGroupModel.isTerminated
+
+        guard oldIsTerminated != newIsTerminated else {
+            return
+        }
+
+        if newIsTerminated {
+            switch groupUpdateSource {
+            case .localUser:
+                addItem(.groupTerminatedByLocalUser)
+            case let .aci(aci):
+                addItem(.groupTerminatedByOtherUser(
+                    updaterAci: aci.codableUuid,
+                ))
+            case .rejectedInviteToPni, .legacyE164, .unknown:
+                addItem(.groupTerminatedByUnknownUser)
+            }
+        } else {
+            owsFailDebug("Cannot unterminate a group")
         }
     }
 
