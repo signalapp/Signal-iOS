@@ -652,6 +652,17 @@ final class BackupArchiveGroupUpdateProtoToSwiftConverter {
             case .invalidAci(let error):
                 return .messageFailure([error])
             }
+        case .groupTerminateChangeUpdate(let proto):
+            switch unwrapOptionalAci(proto, \.updaterAci) {
+            case .unknown:
+                return .success([.groupTerminatedByUnknownUser])
+            case .localUser:
+                return .success([.groupTerminatedByLocalUser])
+            case .otherUser(let aci):
+                return .success([.groupTerminatedByOtherUser(updaterAci: aci)])
+            case .invalidAci(let error):
+                return .messageFailure([error])
+            }
         }
     }
 }

@@ -1289,9 +1289,28 @@ final class BackupArchiveGroupUpdateSwiftToProtoConverter {
                 },
                 asUpdate: { .groupMemberJoinedByLinkUpdate($0) },
             )
-        case .groupTerminatedByLocalUser, .groupTerminatedByUnknownUser, .groupTerminatedByOtherUser:
-            // TODO: replace when group terminate is in backups
-            return .skippableInteraction(.groupTerminate)
+        case .groupTerminatedByLocalUser:
+            setUpdate(
+                BackupProto_GroupTerminateChangeUpdate(),
+                setFields: {
+                    $0.updaterAci = localAciData
+                },
+                asUpdate: { .groupTerminateChangeUpdate($0) },
+            )
+        case .groupTerminatedByOtherUser(let updaterAci):
+            setUpdate(
+                BackupProto_GroupTerminateChangeUpdate(),
+                setFields: {
+                    $0.updaterAci = aciData(updaterAci)
+                },
+                asUpdate: { .groupTerminateChangeUpdate($0) },
+            )
+        case .groupTerminatedByUnknownUser:
+            setUpdate(
+                BackupProto_GroupTerminateChangeUpdate(),
+                setFields: { _ in },
+                asUpdate: { .groupTerminateChangeUpdate($0) },
+            )
         }
 
         return .success(update)

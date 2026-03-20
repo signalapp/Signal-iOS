@@ -1580,6 +1580,8 @@ public struct BackupProto_Group: @unchecked Sendable {
 
     public var membersBanned: [BackupProto_Group.MemberBanned] = []
 
+    public var terminated: Bool = false
+
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     public init() {}
@@ -5132,6 +5134,14 @@ public struct BackupProto_GroupChangeChatUpdate: Sendable {
       set {update = .groupMemberLabelAccessLevelChangeUpdate(newValue)}
     }
 
+    public var groupTerminateChangeUpdate: BackupProto_GroupTerminateChangeUpdate {
+      get {
+        if case .groupTerminateChangeUpdate(let v)? = update {return v}
+        return BackupProto_GroupTerminateChangeUpdate()
+      }
+      set {update = .groupTerminateChangeUpdate(newValue)}
+    }
+
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     /// If unset, importers should consider it to be a GenericGroupUpdate with unset updaterAci
@@ -5171,6 +5181,7 @@ public struct BackupProto_GroupChangeChatUpdate: Sendable {
       case groupSequenceOfRequestsAndCancelsUpdate(BackupProto_GroupSequenceOfRequestsAndCancelsUpdate)
       case groupExpirationTimerUpdate(BackupProto_GroupExpirationTimerUpdate)
       case groupMemberLabelAccessLevelChangeUpdate(BackupProto_GroupMemberLabelAccessLevelChangeUpdate)
+      case groupTerminateChangeUpdate(BackupProto_GroupTerminateChangeUpdate)
 
     }
 
@@ -5948,6 +5959,27 @@ public struct BackupProto_GroupExpirationTimerUpdate: Sendable {
 
   /// 0 means the expiration timer was disabled
   public var expiresInMs: UInt64 = 0
+
+  public var updaterAci: Data {
+    get {_updaterAci ?? Data()}
+    set {_updaterAci = newValue}
+  }
+  /// Returns true if `updaterAci` has been explicitly set.
+  public var hasUpdaterAci: Bool {self._updaterAci != nil}
+  /// Clears the value of `updaterAci`. Subsequent reads from it will return its default value.
+  public mutating func clearUpdaterAci() {self._updaterAci = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _updaterAci: Data? = nil
+}
+
+public struct BackupProto_GroupTerminateChangeUpdate: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
 
   public var updaterAci: Data {
     get {_updaterAci ?? Data()}
@@ -8145,7 +8177,7 @@ extension BackupProto_Group.StorySendMode: SwiftProtobuf._ProtoNameProviding {
 
 extension BackupProto_Group.GroupSnapshot: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Group.protoMessageName + ".GroupSnapshot"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}title\0\u{1}avatarUrl\0\u{1}disappearingMessagesTimer\0\u{1}accessControl\0\u{1}version\0\u{1}members\0\u{1}membersPendingProfileKey\0\u{1}membersPendingAdminApproval\0\u{1}inviteLinkPassword\0\u{1}description\0\u{3}announcements_only\0\u{3}members_banned\0\u{c}\u{1}\u{1}")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}title\0\u{1}avatarUrl\0\u{1}disappearingMessagesTimer\0\u{1}accessControl\0\u{1}version\0\u{1}members\0\u{1}membersPendingProfileKey\0\u{1}membersPendingAdminApproval\0\u{1}inviteLinkPassword\0\u{1}description\0\u{3}announcements_only\0\u{3}members_banned\0\u{1}terminated\0\u{c}\u{1}\u{1}")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8165,6 +8197,7 @@ extension BackupProto_Group.GroupSnapshot: SwiftProtobuf.Message, SwiftProtobuf.
       case 11: try { try decoder.decodeSingularMessageField(value: &self._description_p) }()
       case 12: try { try decoder.decodeSingularBoolField(value: &self.announcementsOnly) }()
       case 13: try { try decoder.decodeRepeatedMessageField(value: &self.membersBanned) }()
+      case 14: try { try decoder.decodeSingularBoolField(value: &self.terminated) }()
       default: break
       }
     }
@@ -8211,6 +8244,9 @@ extension BackupProto_Group.GroupSnapshot: SwiftProtobuf.Message, SwiftProtobuf.
     if !self.membersBanned.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.membersBanned, fieldNumber: 13)
     }
+    if self.terminated != false {
+      try visitor.visitSingularBoolField(value: self.terminated, fieldNumber: 14)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -8227,6 +8263,7 @@ extension BackupProto_Group.GroupSnapshot: SwiftProtobuf.Message, SwiftProtobuf.
     if lhs.inviteLinkPassword != rhs.inviteLinkPassword {return false}
     if lhs.announcementsOnly != rhs.announcementsOnly {return false}
     if lhs.membersBanned != rhs.membersBanned {return false}
+    if lhs.terminated != rhs.terminated {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -12238,7 +12275,7 @@ extension BackupProto_GroupChangeChatUpdate: SwiftProtobuf.Message, SwiftProtobu
 
 extension BackupProto_GroupChangeChatUpdate.Update: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_GroupChangeChatUpdate.protoMessageName + ".Update"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}genericGroupUpdate\0\u{1}groupCreationUpdate\0\u{1}groupNameUpdate\0\u{1}groupAvatarUpdate\0\u{1}groupDescriptionUpdate\0\u{1}groupMembershipAccessLevelChangeUpdate\0\u{1}groupAttributesAccessLevelChangeUpdate\0\u{1}groupAnnouncementOnlyChangeUpdate\0\u{1}groupAdminStatusUpdate\0\u{1}groupMemberLeftUpdate\0\u{1}groupMemberRemovedUpdate\0\u{1}selfInvitedToGroupUpdate\0\u{1}selfInvitedOtherUserToGroupUpdate\0\u{1}groupUnknownInviteeUpdate\0\u{1}groupInvitationAcceptedUpdate\0\u{1}groupInvitationDeclinedUpdate\0\u{1}groupMemberJoinedUpdate\0\u{1}groupMemberAddedUpdate\0\u{1}groupSelfInvitationRevokedUpdate\0\u{1}groupInvitationRevokedUpdate\0\u{1}groupJoinRequestUpdate\0\u{1}groupJoinRequestApprovalUpdate\0\u{1}groupJoinRequestCanceledUpdate\0\u{1}groupInviteLinkResetUpdate\0\u{1}groupInviteLinkEnabledUpdate\0\u{1}groupInviteLinkAdminApprovalUpdate\0\u{1}groupInviteLinkDisabledUpdate\0\u{1}groupMemberJoinedByLinkUpdate\0\u{1}groupV2MigrationUpdate\0\u{1}groupV2MigrationSelfInvitedUpdate\0\u{1}groupV2MigrationInvitedMembersUpdate\0\u{1}groupV2MigrationDroppedMembersUpdate\0\u{1}groupSequenceOfRequestsAndCancelsUpdate\0\u{1}groupExpirationTimerUpdate\0\u{1}groupMemberLabelAccessLevelChangeUpdate\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}genericGroupUpdate\0\u{1}groupCreationUpdate\0\u{1}groupNameUpdate\0\u{1}groupAvatarUpdate\0\u{1}groupDescriptionUpdate\0\u{1}groupMembershipAccessLevelChangeUpdate\0\u{1}groupAttributesAccessLevelChangeUpdate\0\u{1}groupAnnouncementOnlyChangeUpdate\0\u{1}groupAdminStatusUpdate\0\u{1}groupMemberLeftUpdate\0\u{1}groupMemberRemovedUpdate\0\u{1}selfInvitedToGroupUpdate\0\u{1}selfInvitedOtherUserToGroupUpdate\0\u{1}groupUnknownInviteeUpdate\0\u{1}groupInvitationAcceptedUpdate\0\u{1}groupInvitationDeclinedUpdate\0\u{1}groupMemberJoinedUpdate\0\u{1}groupMemberAddedUpdate\0\u{1}groupSelfInvitationRevokedUpdate\0\u{1}groupInvitationRevokedUpdate\0\u{1}groupJoinRequestUpdate\0\u{1}groupJoinRequestApprovalUpdate\0\u{1}groupJoinRequestCanceledUpdate\0\u{1}groupInviteLinkResetUpdate\0\u{1}groupInviteLinkEnabledUpdate\0\u{1}groupInviteLinkAdminApprovalUpdate\0\u{1}groupInviteLinkDisabledUpdate\0\u{1}groupMemberJoinedByLinkUpdate\0\u{1}groupV2MigrationUpdate\0\u{1}groupV2MigrationSelfInvitedUpdate\0\u{1}groupV2MigrationInvitedMembersUpdate\0\u{1}groupV2MigrationDroppedMembersUpdate\0\u{1}groupSequenceOfRequestsAndCancelsUpdate\0\u{1}groupExpirationTimerUpdate\0\u{1}groupMemberLabelAccessLevelChangeUpdate\0\u{1}groupTerminateChangeUpdate\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12701,6 +12738,19 @@ extension BackupProto_GroupChangeChatUpdate.Update: SwiftProtobuf.Message, Swift
           self.update = .groupMemberLabelAccessLevelChangeUpdate(v)
         }
       }()
+      case 36: try {
+        var v: BackupProto_GroupTerminateChangeUpdate?
+        var hadOneofValue = false
+        if let current = self.update {
+          hadOneofValue = true
+          if case .groupTerminateChangeUpdate(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.update = .groupTerminateChangeUpdate(v)
+        }
+      }()
       default: break
       }
     }
@@ -12851,6 +12901,10 @@ extension BackupProto_GroupChangeChatUpdate.Update: SwiftProtobuf.Message, Swift
     case .groupMemberLabelAccessLevelChangeUpdate?: try {
       guard case .groupMemberLabelAccessLevelChangeUpdate(let v)? = self.update else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 35)
+    }()
+    case .groupTerminateChangeUpdate?: try {
+      guard case .groupTerminateChangeUpdate(let v)? = self.update else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 36)
     }()
     case nil: break
     }
@@ -14141,6 +14195,40 @@ extension BackupProto_GroupExpirationTimerUpdate: SwiftProtobuf.Message, SwiftPr
 
   public static func ==(lhs: BackupProto_GroupExpirationTimerUpdate, rhs: BackupProto_GroupExpirationTimerUpdate) -> Bool {
     if lhs.expiresInMs != rhs.expiresInMs {return false}
+    if lhs._updaterAci != rhs._updaterAci {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_GroupTerminateChangeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GroupTerminateChangeUpdate"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._updaterAci) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._updaterAci {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_GroupTerminateChangeUpdate, rhs: BackupProto_GroupTerminateChangeUpdate) -> Bool {
     if lhs._updaterAci != rhs._updaterAci {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
