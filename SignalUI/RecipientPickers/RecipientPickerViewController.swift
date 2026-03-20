@@ -488,7 +488,7 @@ extension RecipientPickerViewController {
             return nil
         case .groupsThatUserIsMemberOfWhenSearching:
             groupThreads = searchResults.groupThreads.filter { thread in
-                thread.groupModel.groupMembership.isLocalUserFullMember
+                thread.groupModel.groupMembership.isLocalUserFullMember && !thread.isTerminatedGroup
             }
         case .allGroupsWhenSearching:
             groupThreads = searchResults.groupThreads

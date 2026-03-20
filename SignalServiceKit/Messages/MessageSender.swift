@@ -873,6 +873,11 @@ public class MessageSender {
                 guard groupModel.groupMembership.isLocalUserFullMember else {
                     throw OWSGenericError("can't send because we're not a member")
                 }
+
+                guard !groupModel.isTerminated else {
+                    throw OWSGenericError("can't send because group is ended")
+                }
+
                 // We can't send most messages to GV2 "announcement-only" threads if we're
                 // not an admin. See also `processFlaglessDataMessage`.
                 guard

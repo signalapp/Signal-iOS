@@ -388,6 +388,7 @@ class ContactAboutSheet: StackSheetViewController {
         )
         .filter(\.groupModel.groupMembership.isLocalUserFullMember)
         .filter(\.shouldThreadBeVisible)
+        .filter { !$0.isTerminatedGroup }
         // We don't want to show "no groups in common",
         // so return nil instead of an empty array.
         .nilIfEmpty

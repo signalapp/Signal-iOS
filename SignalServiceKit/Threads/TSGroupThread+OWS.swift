@@ -144,4 +144,14 @@ public extension TSThread {
         }
         return groupThread.groupModel.groupMembership.isLocalUserFullMember
     }
+
+    var isTerminatedGroup: Bool {
+        guard
+            let groupThread = self as? TSGroupThread,
+            let groupModelV2 = groupThread.groupModel as? TSGroupModelV2
+        else {
+            return false
+        }
+        return groupModelV2.isTerminated
+    }
 }

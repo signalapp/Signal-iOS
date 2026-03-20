@@ -87,7 +87,10 @@ public class GroupCallManager {
             return
         }
 
-        guard groupThread.groupModel.groupMembership.isLocalUserFullMember else {
+        guard
+            groupThread.groupModel.groupMembership.isLocalUserFullMember,
+            !groupThread.isTerminatedGroup
+        else {
             logger.info("Cleaning up unended calls for non-member thread")
             await self.databaseStorage.awaitableWrite { tx in
                 _ = self.cleanUpUnendedCallMessagesAsNecessary(

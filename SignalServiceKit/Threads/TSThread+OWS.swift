@@ -55,7 +55,7 @@ public extension TSThread {
             }
         }
         if let groupThread = self as? TSGroupThread {
-            guard groupThread.groupModel.groupMembership.isLocalUserFullMember else {
+            guard groupThread.groupModel.groupMembership.isLocalUserFullMember, !isTerminatedGroup else {
                 return false
             }
         }

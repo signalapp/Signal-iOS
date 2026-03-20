@@ -274,6 +274,9 @@ extension ConversationViewController: CVComponentDelegate {
         if thread.isGroupThread, !thread.isLocalUserFullMemberOfThread {
             return false
         }
+        if thread.isGroupThread, thread.isTerminatedGroup {
+            return false
+        }
         if self.threadViewModel.hasPendingMessageRequest {
             return false
         }
@@ -1367,7 +1370,7 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
-        if let groupThread = self.thread as? TSGroupThread, !groupThread.groupModel.groupMembership.isLocalUserFullMember {
+        if let groupThread = self.thread as? TSGroupThread, !groupThread.groupModel.groupMembership.isLocalUserFullMember || groupThread.isTerminatedGroup {
             return
         }
 

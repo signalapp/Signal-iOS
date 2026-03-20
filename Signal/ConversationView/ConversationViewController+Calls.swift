@@ -85,17 +85,7 @@ public extension ConversationViewController {
     }
 
     func refreshCallState() {
-        let groupThread = thread as? TSGroupThread
-
-        guard
-            let groupThread,
-            let groupModelV2 = groupThread.groupModel as? TSGroupModelV2,
-            !groupModelV2.isTerminated
-        else {
-            return
-        }
-
-        if let groupId = try? groupThread.groupIdentifier {
+        if let groupId = try? (thread as? TSGroupThread)?.groupIdentifier {
             Task {
                 await SSKEnvironment.shared.groupCallManagerRef.peekGroupCallAndUpdateThread(
                     forGroupId: groupId,

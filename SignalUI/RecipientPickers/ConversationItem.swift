@@ -429,7 +429,10 @@ public struct StoryConversationItem {
     ) -> Self? {
         let backingItem: StoryConversationItem.ItemType? = {
             if let groupThread = thread as? TSGroupThread {
-                guard groupThread.groupModel.groupMembership.isLocalUserFullMember else {
+                guard
+                    groupThread.groupModel.groupMembership.isLocalUserFullMember,
+                    !groupThread.isTerminatedGroup
+                else {
                     return nil
                 }
                 return .groupStory(GroupConversationItem(

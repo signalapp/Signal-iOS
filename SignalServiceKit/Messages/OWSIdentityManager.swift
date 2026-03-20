@@ -418,7 +418,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         )
         contactThreadMessage.anyInsert(transaction: tx)
 
-        for groupThread in TSGroupThread.groupThreads(with: SignalServiceAddress(serviceId), transaction: tx) {
+        for groupThread in TSGroupThread.groupThreads(with: SignalServiceAddress(serviceId), transaction: tx).filter({ !$0.isTerminatedGroup }) {
             TSErrorMessage.nonblockingIdentityChange(
                 thread: groupThread,
                 address: SignalServiceAddress(serviceId),

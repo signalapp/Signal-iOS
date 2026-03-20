@@ -132,6 +132,7 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
             )
             .filter(\.groupModel.groupMembership.isLocalUserFullMember)
             .filter(\.shouldThreadBeVisible)
+            .filter { !$0.isTerminatedGroup }
 
             let contactTitle = ConversationHeaderBuilder.threadAttributedString(
                 threadName: self.approvalRequest.name,

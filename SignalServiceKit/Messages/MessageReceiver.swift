@@ -1058,6 +1058,10 @@ public final class MessageReceiver {
             Logger.info("Ignoring message from not in group user \(envelope.sourceAci)")
             return nil
         }
+        guard !groupModel.isTerminated else {
+            Logger.info("Ignoring message for terminated group")
+            return nil
+        }
         return groupThread
     }
 

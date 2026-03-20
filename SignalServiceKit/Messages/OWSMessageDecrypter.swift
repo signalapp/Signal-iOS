@@ -543,6 +543,7 @@ public class OWSMessageDecrypter {
                     ) { thread, stop in
                         guard thread.isGroupV2Thread else { return }
                         guard thread.groupModel.groupMembership.isLocalUserFullMember else { return }
+                        guard !thread.isTerminatedGroup else { return }
                         stop.pointee = true
                         needsReactiveProfileKeyMessage = true
                     }

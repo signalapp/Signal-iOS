@@ -249,6 +249,10 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
             return false
         }
 
+        guard !threadViewModel.threadRecord.isTerminatedGroup else {
+            return false
+        }
+
         switch interaction {
         case let outgoingMessage as TSOutgoingMessage:
             if outgoingMessage.wasRemotelyDeleted { return false }

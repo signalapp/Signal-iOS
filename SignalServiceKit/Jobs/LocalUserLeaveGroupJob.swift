@@ -101,6 +101,10 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
         guard groupModel.groupMembership.isLocalUserFullMember else {
             return
         }
+        guard !groupModel.isTerminated else {
+            return
+        }
+
         let groupSendEndorsementStore = DependenciesBridge.shared.groupSendEndorsementStore
         let combinedEndorsement = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return try? groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: threadId, tx: tx)
