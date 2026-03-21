@@ -691,9 +691,15 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                             attachment: attachment,
                             tx: tx,
                         )
-                        if attachment.asStream() != nil {
+                        if
+                            let refetchedAttachment = attachmentStore.fetch(
+                                id: attachment.id,
+                                tx: tx,
+                            ),
+                            refetchedAttachment.asStream() != nil
+                        {
                             backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
-                                attachment,
+                                refetchedAttachment,
                                 mode: .thumbnail,
                                 tx: tx,
                             )
@@ -703,9 +709,15 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                             attachment: attachment,
                             tx: tx,
                         )
-                        if attachment.asStream() != nil {
+                        if
+                            let refetchedAttachment = attachmentStore.fetch(
+                                id: attachment.id,
+                                tx: tx,
+                            ),
+                            refetchedAttachment.asStream() != nil
+                        {
                             backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
-                                attachment,
+                                refetchedAttachment,
                                 mode: .fullsize,
                                 tx: tx,
                             )
