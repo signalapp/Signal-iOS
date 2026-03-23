@@ -12,8 +12,9 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
     private var reactionState: InteractionReactionState
     private let reactionFinder: ReactionFinder
 
+    let stickerImageCache = StickerReactionImageCache()
     let stackView = UIStackView()
-    let emojiCountsCollectionView = EmojiCountsCollectionView()
+    lazy var emojiCountsCollectionView = EmojiCountsCollectionView(stickerImageCache: stickerImageCache)
 
     override var interactiveScrollViews: [UIScrollView] { emojiReactorsViews }
 
@@ -23,8 +24,8 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         reactionState.emojiCounts
     }
 
-    private var allEmoji: [Emoji] {
-        return emojiCounts.compactMap { Emoji($0.emoji) }
+    private var allGroupKeys: [ReactionGroupKey] {
+        return emojiCounts.map { $0.groupKey }
     }
 
     init(reactionState: InteractionReactionState, message: TSMessage) {
@@ -52,8 +53,8 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
 
         // Prepare paging between emoji reactors
         setupPaging()
-        // Select the "all" reaction page by setting selected emoji to nil
-        setSelectedEmoji(nil)
+        // Select the "all" reaction page by setting selected group key to nil
+        setSelectedGroupKey(nil)
     }
 
     override func viewIsAppearing(_ animated: Bool) {
@@ -83,45 +84,46 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
 
         buildEmojiCountItems()
 
-        // If the currently selected emoji still exists, keep it selected.
-        // Otherwise, select the "all" page by setting selected emoji to nil.
-        let newSelectedEmoji: Emoji?
-        if let selectedEmoji, allEmoji.contains(selectedEmoji) {
-            newSelectedEmoji = selectedEmoji
+        // If the currently selected group key still exists, keep it selected.
+        // Otherwise, select the "all" page by setting selected group key to nil.
+        let newSelectedGroupKey: ReactionGroupKey?
+        if let selectedGroupKey, allGroupKeys.contains(selectedGroupKey) {
+            newSelectedGroupKey = selectedGroupKey
         } else {
-            newSelectedEmoji = nil
+            newSelectedGroupKey = nil
         }
 
-        setSelectedEmoji(newSelectedEmoji, transaction: transaction)
+        setSelectedGroupKey(newSelectedGroupKey, transaction: transaction)
     }
 
     func buildEmojiCountItems() {
         let allReactionsItem = EmojiItem(emoji: nil, count: emojiCounts.lazy.map { $0.count }.reduce(0, +)) { [weak self] in
-            self?.setSelectedEmoji(nil)
+            self?.setSelectedGroupKey(nil)
         }
 
         emojiCountsCollectionView.items = [allReactionsItem] + emojiCounts.map { emojiCount in
-            EmojiItem(
-                emoji: emojiCount.emoji,
+            return EmojiItem(
+                emoji: emojiCount.stickerAttachment != nil ? nil : emojiCount.emoji,
                 count: emojiCount.count,
+                sticker: emojiCount.stickerAttachment,
             ) { [weak self] in
-                self?.setSelectedEmoji(Emoji(emojiCount.emoji))
+                self?.setSelectedGroupKey(emojiCount.groupKey)
             }
         }
     }
 
-    // MARK: - Emoji Selection
+    // MARK: - Group Key Selection
 
-    private var selectedEmoji: Emoji?
+    private var selectedGroupKey: ReactionGroupKey?
 
-    func setSelectedEmoji(_ emoji: Emoji?) {
-        SSKEnvironment.shared.databaseStorageRef.read { self.setSelectedEmoji(emoji, transaction: $0) }
+    func setSelectedGroupKey(_ groupKey: ReactionGroupKey?) {
+        SSKEnvironment.shared.databaseStorageRef.read { self.setSelectedGroupKey(groupKey, transaction: $0) }
     }
 
-    func setSelectedEmoji(_ emoji: Emoji?, transaction: DBReadTransaction) {
-        let oldValue = selectedEmoji
-        selectedEmoji = emoji
-        selectedEmojiChanged(oldSelectedEmoji: oldValue, transaction: transaction)
+    func setSelectedGroupKey(_ groupKey: ReactionGroupKey?, transaction: DBReadTransaction) {
+        let oldValue = selectedGroupKey
+        selectedGroupKey = groupKey
+        selectedGroupKeyChanged(oldSelectedGroupKey: oldValue, transaction: transaction)
     }
 
     // MARK: - Paging
@@ -130,11 +132,15 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
     /// 0 - Previous Page
     /// 1 - Current Page
     /// 2 - Next Page
-    private lazy var emojiReactorsViews = [
-        EmojiReactorsTableView(),
-        EmojiReactorsTableView(),
-        EmojiReactorsTableView(),
-    ]
+    private lazy var emojiReactorsViews: [EmojiReactorsTableView] = {
+        let views = [
+            EmojiReactorsTableView(stickerImageCache: stickerImageCache),
+            EmojiReactorsTableView(stickerImageCache: stickerImageCache),
+            EmojiReactorsTableView(stickerImageCache: stickerImageCache)
+        ]
+        views.forEach { $0.reactorDelegate = self }
+        return views
+    }()
     private var emojiReactorsViewConstraints = [NSLayoutConstraint]()
 
     private var currentPageReactorsView: EmojiReactorsTableView {
@@ -151,26 +157,26 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
 
     private let emojiPagingScrollView = UIScrollView()
 
-    private var nextPageEmoji: Emoji? {
-        // If we don't have an emoji defined, the first emoji is always up next
-        guard let emoji = selectedEmoji else { return allEmoji.first }
+    private var nextPageGroupKey: ReactionGroupKey? {
+        // If we don't have a group key defined, the first group is always up next
+        guard let key = selectedGroupKey else { return allGroupKeys.first }
 
         // If we don't have an index, or we're at the end of the array, "all" is up next
-        guard let index = allEmoji.firstIndex(of: emoji), index < (allEmoji.count - 1) else { return nil }
+        guard let index = allGroupKeys.firstIndex(of: key), index < (allGroupKeys.count - 1) else { return nil }
 
-        // Otherwise, use the next emoji in the array
-        return allEmoji[index + 1]
+        // Otherwise, use the next group key in the array
+        return allGroupKeys[index + 1]
     }
 
-    private var previousPageEmoji: Emoji? {
-        // If we don't have an emoji defined, the last emoji is always previous
-        guard let emoji = selectedEmoji else { return allEmoji.last }
+    private var previousPageGroupKey: ReactionGroupKey? {
+        // If we don't have a group key defined, the last group is always previous
+        guard let key = selectedGroupKey else { return allGroupKeys.last }
 
         // If we don't have an index, or we're at the start of the array, "all" is previous
-        guard let index = allEmoji.firstIndex(of: emoji), index > 0 else { return nil }
+        guard let index = allGroupKeys.firstIndex(of: key), index > 0 else { return nil }
 
-        // Otherwise, use the previous emoji in the array
-        return allEmoji[index - 1]
+        // Otherwise, use the previous group key in the array
+        return allGroupKeys[index - 1]
     }
 
     private var pageWidth: CGFloat { return min(contentView.frame.width, maxWidth) }
@@ -220,60 +226,60 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         }
     }
 
-    private func reactions(for emoji: Emoji?, transaction: DBReadTransaction) -> [OWSReaction] {
-        guard let emoji else {
+    private func reactions(for groupKey: ReactionGroupKey?, transaction: DBReadTransaction) -> [OWSReaction] {
+        guard let groupKey else {
             return reactionFinder.allReactions(transaction: transaction)
         }
 
-        guard let reactions = reactionState.reactionsByEmoji[emoji] else {
-            owsFailDebug("missing reactions for emoji \(emoji)")
+        guard let reactions = reactionState.reactionsByGroupKey[groupKey] else {
+            owsFailDebug("missing reactions for group key")
             return []
         }
 
         return reactions
     }
 
-    private func selectedEmojiChanged(oldSelectedEmoji: Emoji?, transaction: DBReadTransaction) {
+    private func selectedGroupKeyChanged(oldSelectedGroupKey: ReactionGroupKey?, transaction: DBReadTransaction) {
         AssertIsOnMainThread()
 
         // We're paging backwards!
-        if oldSelectedEmoji == nextPageEmoji, oldSelectedEmoji != selectedEmoji {
+        if oldSelectedGroupKey == nextPageGroupKey, oldSelectedGroupKey != selectedGroupKey {
             // The previous page becomes the current page and the current page becomes
             // the next page. We have to load the new previous.
 
             emojiReactorsViews.insert(emojiReactorsViews.removeLast(), at: 0)
             emojiReactorsViewConstraints.insert(emojiReactorsViewConstraints.removeLast(), at: 0)
 
-            let previousPageReactions = reactions(for: previousPageEmoji, transaction: transaction)
-            previousPageReactorsView.configure(for: previousPageReactions, transaction: transaction)
+            let previousPageReactions = reactions(for: previousPageGroupKey, transaction: transaction)
+            previousPageReactorsView.configure(for: previousPageReactions, stickerAttachmentByReactionId: reactionState.stickerAttachmentByReactionId, transaction: transaction)
 
             // We're paging forwards!
-        } else if oldSelectedEmoji == previousPageEmoji, oldSelectedEmoji != selectedEmoji {
+        } else if oldSelectedGroupKey == previousPageGroupKey, oldSelectedGroupKey != selectedGroupKey {
             // The next page becomes the current page and the current page becomes
             // the previous page. We have to load the new next.
 
             emojiReactorsViews.append(emojiReactorsViews.removeFirst())
             emojiReactorsViewConstraints.append(emojiReactorsViewConstraints.removeFirst())
 
-            let nextPageReactions = reactions(for: nextPageEmoji, transaction: transaction)
-            nextPageReactorsView.configure(for: nextPageReactions, transaction: transaction)
+            let nextPageReactions = reactions(for: nextPageGroupKey, transaction: transaction)
+            nextPageReactorsView.configure(for: nextPageReactions, stickerAttachmentByReactionId: reactionState.stickerAttachmentByReactionId, transaction: transaction)
 
             // We didn't get here through paging, stuff probably changed. Reload all the things.
         } else {
-            let currentPageReactions = reactions(for: selectedEmoji, transaction: transaction)
-            currentPageReactorsView.configure(for: currentPageReactions, transaction: transaction)
+            let currentPageReactions = reactions(for: selectedGroupKey, transaction: transaction)
+            currentPageReactorsView.configure(for: currentPageReactions, stickerAttachmentByReactionId: reactionState.stickerAttachmentByReactionId, transaction: transaction)
 
-            let previousPageReactions = reactions(for: previousPageEmoji, transaction: transaction)
-            previousPageReactorsView.configure(for: previousPageReactions, transaction: transaction)
+            let previousPageReactions = reactions(for: previousPageGroupKey, transaction: transaction)
+            previousPageReactorsView.configure(for: previousPageReactions, stickerAttachmentByReactionId: reactionState.stickerAttachmentByReactionId, transaction: transaction)
 
-            let nextPageReactions = reactions(for: nextPageEmoji, transaction: transaction)
-            nextPageReactorsView.configure(for: nextPageReactions, transaction: transaction)
+            let nextPageReactions = reactions(for: nextPageGroupKey, transaction: transaction)
+            nextPageReactorsView.configure(for: nextPageReactions, stickerAttachmentByReactionId: reactionState.stickerAttachmentByReactionId, transaction: transaction)
         }
 
         updatePageConstraints()
 
-        // Update selection on the counts view to reflect our new selected emoji
-        if let selectedEmoji, let index = allEmoji.firstIndex(of: selectedEmoji) {
+        // Update selection on the counts view to reflect our new selected group key
+        if let selectedGroupKey, let index = allGroupKeys.firstIndex(of: selectedGroupKey) {
             emojiCountsCollectionView.setSelectedIndex(index + 1)
         } else {
             emojiCountsCollectionView.setSelectedIndex(0)
@@ -340,11 +346,11 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
 
         // Scrolled left a page
         if offsetX <= previousPageThreshold {
-            setSelectedEmoji(previousPageEmoji)
+            setSelectedGroupKey(previousPageGroupKey)
 
             // Scrolled right a page
         } else if offsetX >= nextPageThreshold {
-            setSelectedEmoji(nextPageEmoji)
+            setSelectedGroupKey(nextPageGroupKey)
 
         }
 
@@ -352,7 +358,16 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
     }
 }
 
-// MARK: -
+// MARK: - EmojiReactorsTableViewDelegate
+
+extension ReactionsDetailSheet: EmojiReactorsTableViewDelegate {
+    func emojiReactorsTableView(_ tableView: EmojiReactorsTableView, didTapSticker stickerInfo: StickerInfo) {
+        let packView = StickerPackViewController(stickerPackInfo: stickerInfo.packInfo)
+        packView.present(from: self, animated: true)
+    }
+}
+
+// MARK: - UIScrollViewDelegate
 
 extension ReactionsDetailSheet: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

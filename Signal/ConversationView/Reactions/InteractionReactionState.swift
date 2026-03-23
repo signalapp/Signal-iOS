@@ -38,6 +38,10 @@ public class InteractionReactionState: NSObject {
     let localUserReaction: OWSReaction?
     let stickerAttachmentByReactionId: [Int64: CVAttachment]
 
+    var localUserReactionGroupKey: ReactionGroupKey? {
+        localUserReaction.flatMap { ReactionGroupKey(reaction: $0) }
+    }
+
     init?(interaction: TSInteraction, transaction: DBReadTransaction) {
         guard let message = interaction as? TSMessage else { return nil }
 

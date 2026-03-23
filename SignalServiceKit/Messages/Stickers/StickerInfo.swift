@@ -66,7 +66,7 @@ public final class StickerInfo: NSObject, NSSecureCoding {
         )
     }
 
-    var packInfo: StickerPackInfo {
+    public var packInfo: StickerPackInfo {
         return StickerPackInfo(packId: self.packId, packKey: self.packKey)
     }
 

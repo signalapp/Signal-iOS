@@ -1538,6 +1538,7 @@
 		76F958632A09A5AE00B43E63 /* DebugUIDiskUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F958622A09A5AE00B43E63 /* DebugUIDiskUsage.swift */; };
 		76FCCDBC27AB8FBE00BAA7F0 /* MediaControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */; };
 		79246E552F6C9CC20085AD50 /* ReactionPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79246E542F6C9CC20085AD50 /* ReactionPickerSheet.swift */; };
+		79246E592F71E0470085AD50 /* StickerReactionImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79246E582F71E0470085AD50 /* StickerReactionImageCache.swift */; };
 		797B94E52F677561001C9E24 /* CustomReactionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797B94E42F67755A001C9E24 /* CustomReactionItem.swift */; };
 		79F764502F656A1F001399AF /* StoryReaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F7644F2F656A1C001399AF /* StoryReaction.swift */; };
 		83B9573927C9A1FA00A678FD /* CaptchaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B9573827C9A1FA00A678FD /* CaptchaView.swift */; };
@@ -5731,6 +5732,7 @@
 		76F958622A09A5AE00B43E63 /* DebugUIDiskUsage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIDiskUsage.swift; sourceTree = "<group>"; };
 		76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaControls.swift; sourceTree = "<group>"; };
 		79246E542F6C9CC20085AD50 /* ReactionPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionPickerSheet.swift; sourceTree = "<group>"; };
+		79246E582F71E0470085AD50 /* StickerReactionImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerReactionImageCache.swift; sourceTree = "<group>"; };
 		797B94E42F67755A001C9E24 /* CustomReactionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomReactionItem.swift; sourceTree = "<group>"; };
 		79F7644F2F656A1C001399AF /* StoryReaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryReaction.swift; sourceTree = "<group>"; };
 		7F965533D71CA51BE6704CC4 /* Pods_SignalNSE.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalNSE.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -9963,6 +9965,7 @@
 		50E7E1D12BACC3DB00A94861 /* Reactions */ = {
 			isa = PBXGroup;
 			children = (
+				79246E582F71E0470085AD50 /* StickerReactionImageCache.swift */,
 				8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */,
 				8855DF86238F1E0C0066D96F /* EmojiReactorsTableView.swift */,
 				88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */,
@@ -18039,6 +18042,7 @@
 				882BDAAE249050F000C14587 /* AddToGroupViewController.swift in Sources */,
 				D9E43C112CC194140001536E /* AdHocCallStateObserver.swift in Sources */,
 				88C7597324B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift in Sources */,
+				79246E592F71E0470085AD50 /* StickerReactionImageCache.swift in Sources */,
 				887B381325F0681400685845 /* AdvancedPrivacySettingsViewController.swift in Sources */,
 				45D49115296F69AA00B92BB1 /* AllMediaViewController.swift in Sources */,
 				32E958AA25C12B3800BF12AD /* AnimatedProgressView.swift in Sources */,

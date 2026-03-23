@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SDWebImage
 import SignalServiceKit
 public import SignalUI
 
@@ -12,22 +13,35 @@ public struct EmojiItem {
     // If a specific emoji is not specified, this item represents "all" emoji
     let emoji: String?
     let count: Int
+    let sticker: CVAttachment?
 
     let didSelect: () -> Void
+
+    init(emoji: String?, count: Int, sticker: CVAttachment? = nil, didSelect: @escaping () -> Void) {
+        self.emoji = emoji
+        self.count = count
+        self.sticker = sticker
+        self.didSelect = didSelect
+    }
 }
 
 public class EmojiCountsCollectionView: UICollectionView {
 
     let itemHeight: CGFloat = 36
+    let stickerImageCache: StickerReactionImageCache
+
+    private var pendingDownloadAttachmentIds = Set<Attachment.IDType>()
 
     public var items = [EmojiItem]() {
         didSet {
             AssertIsOnMainThread()
+            updatePendingDownloadAttachmentIds()
             reloadData()
         }
     }
 
-    public init() {
+    init(stickerImageCache: StickerReactionImageCache) {
+        self.stickerImageCache = stickerImageCache
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
@@ -44,6 +58,13 @@ public class EmojiCountsCollectionView: UICollectionView {
 
         contentInset = UIEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
         autoSetDimension(.height, toSize: itemHeight + contentInset.top + contentInset.bottom)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(attachmentDownloadProgress(_:)),
+            name: AttachmentDownloads.attachmentDownloadProgressNotification,
+            object: nil,
+        )
     }
 
     func setSelectedIndex(_ index: Int) {
@@ -52,6 +73,34 @@ public class EmojiCountsCollectionView: UICollectionView {
 
     public required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    private func updatePendingDownloadAttachmentIds() {
+        pendingDownloadAttachmentIds.removeAll()
+        for item in items {
+            guard let sticker = item.sticker else { continue }
+            if sticker.attachmentStream == nil {
+                pendingDownloadAttachmentIds.insert(sticker.attachment.attachment.id)
+            }
+        }
+    }
+
+    @objc
+    private func attachmentDownloadProgress(_ notification: Notification) {
+        guard
+            let attachmentId = notification
+                .userInfo?[AttachmentDownloads.attachmentDownloadAttachmentIDKey]
+                as? Attachment.IDType,
+            pendingDownloadAttachmentIds.contains(attachmentId),
+            let progress = notification
+                .userInfo?[AttachmentDownloads.attachmentDownloadProgressKey]
+                as? NSNumber,
+            progress.floatValue >= 1.0
+        else {
+            return
+        }
+        pendingDownloadAttachmentIds.remove(attachmentId)
+        reloadData()
     }
 }
 
@@ -95,15 +144,19 @@ extension EmojiCountsCollectionView: UICollectionViewDataSource {
             return cell
         }
 
-        emojiCell.configure(with: item)
+        emojiCell.configure(with: item, imageCache: stickerImageCache)
 
         return emojiCell
     }
 }
 
 class EmojiCountCell: UICollectionViewCell {
-    let emoji = UILabel()
-    let count = UILabel()
+    let emojiLabel = UILabel()
+    let countLabel = UILabel()
+    let stickerImageView = SDAnimatedImageView()
+    private static let stickerSize: CGFloat = 22
+
+    private var stickerAttachmentId: Attachment.IDType?
 
     static let reuseIdentifier = "EmojiCountCell"
 
@@ -114,7 +167,12 @@ class EmojiCountCell: UICollectionViewCell {
         selectedBackground.backgroundColor = UIColor.Signal.secondaryFill
         selectedBackgroundView = selectedBackground
 
-        let stackView = UIStackView(arrangedSubviews: [emoji, count])
+        stickerImageView.contentMode = .scaleAspectFit
+        stickerImageView.clipsToBounds = true
+        stickerImageView.autoSetDimensions(to: CGSize(square: Self.stickerSize))
+        stickerImageView.isHidden = true
+
+        let stackView = UIStackView(arrangedSubviews: [emojiLabel, stickerImageView, countLabel])
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.layoutMargins = UIEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
         stackView.spacing = 4
@@ -122,24 +180,47 @@ class EmojiCountCell: UICollectionViewCell {
         stackView.autoPinEdgesToSuperviewEdges()
         stackView.autoSetDimension(.height, toSize: 32)
 
-        emoji.font = .systemFont(ofSize: 22)
+        emojiLabel.font = .systemFont(ofSize: 22)
 
-        count.font = UIFont.dynamicTypeSubheadlineClamped.monospaced().semibold()
-        count.textColor = Theme.primaryTextColor
+        countLabel.font = UIFont.dynamicTypeSubheadlineClamped.monospaced().semibold()
+        countLabel.textColor = Theme.primaryTextColor
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with item: EmojiItem) {
-        emoji.text = item.emoji
-        emoji.isHidden = item.emoji == nil
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        stickerAttachmentId = nil
+        stickerImageView.image = nil
+        stickerImageView.isHidden = true
+        emojiLabel.isHidden = false
+        emojiLabel.text = nil
+    }
 
-        if item.emoji != nil {
-            count.text = item.count.abbreviatedString
+    func configure(with item: EmojiItem, imageCache: StickerReactionImageCache?) {
+        if let sticker = item.sticker, let stream = sticker.attachmentStream, let imageCache {
+            let attachmentId = sticker.attachment.attachment.id
+            self.stickerAttachmentId = attachmentId
+
+            Task { [weak self] in
+                let image = await imageCache.image(for: stream)
+                guard let self, self.stickerAttachmentId == attachmentId else { return }
+                if let image {
+                    self.applyStickerImage(image)
+                }
+            }
         } else {
-            count.text = String(
+            emojiLabel.text = item.emoji
+            emojiLabel.isHidden = item.emoji == nil
+            stickerImageView.isHidden = true
+        }
+
+        if item.emoji != nil || item.sticker != nil {
+            countLabel.text = item.count.abbreviatedString
+        } else {
+            countLabel.text = String(
                 format: OWSLocalizedString(
                     "REACTION_DETAIL_ALL_FORMAT",
                     comment: "The header used to indicate All reactions to a given message. Embeds {{number of reactions}}",
@@ -147,6 +228,12 @@ class EmojiCountCell: UICollectionViewCell {
                 item.count.abbreviatedString,
             )
         }
+    }
+
+    private func applyStickerImage(_ image: UIImage) {
+        stickerImageView.image = image
+        stickerImageView.isHidden = false
+        emojiLabel.isHidden = true
     }
 
     override func layoutSubviews() {

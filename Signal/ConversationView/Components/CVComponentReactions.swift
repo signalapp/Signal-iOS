@@ -47,6 +47,8 @@ public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibility
         reactionCountsView.configure(
             state: viewState,
             cellMeasurement: cellMeasurement,
+            componentView: componentView,
+            mediaCache: mediaCache
         )
     }
 
@@ -95,6 +97,15 @@ public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibility
                     count,
                     emoji,
                 )
+            case .sticker(_, _, let count, _):
+                string = String.localizedStringWithFormat(
+                    OWSLocalizedString(
+                        "MESSAGE_REACTIONS_STICKER_ACCESSIBILITY_LABEL_%d",
+                        tableName: "PluralAware",
+                        comment: "Accessibility label reading out a sticker reaction to a message and its count. Embeds {{ count }}.",
+                    ),
+                    count,
+                )
             case .moreCount(let count, _):
                 string = String.localizedStringWithFormat(
                     OWSLocalizedString(
@@ -120,16 +131,34 @@ public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibility
 
         fileprivate let reactionCountsView = CVReactionCountsView()
 
+        public var reusableMediaViews: [ReusableMediaView?] = [nil, nil, nil]
+
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
             reactionCountsView
         }
 
-        public func setIsCellVisible(_ isCellVisible: Bool) {}
+        public func setIsCellVisible(_ isCellVisible: Bool) {
+            for rmv in reusableMediaViews.compactMap({ $0 }) {
+                guard rmv.owner === self else { continue }
+                if isCellVisible {
+                    rmv.load()
+                } else {
+                    rmv.unload()
+                }
+            }
+        }
 
         public func reset() {
             reactionCountsView.reset()
+
+            for rmv in reusableMediaViews.compactMap({ $0 }) {
+                if rmv.owner === self {
+                    rmv.unload()
+                }
+            }
+            reusableMediaViews = [nil, nil, nil]
         }
 
     }
