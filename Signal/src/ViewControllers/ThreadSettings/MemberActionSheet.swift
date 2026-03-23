@@ -229,7 +229,7 @@ class MemberActionSheet: OWSTableSheetViewController {
         }
 
         if let groupViewHelper = self.groupViewHelper, groupViewHelper.isFullOrInvitedMember(address) {
-            if groupViewHelper.canRemoveFromGroup(address: address), !isBlocked {
+            if groupViewHelper.canRemoveFromGroup(address: address) {
                 section.add(.item(
                     icon: .groupMemberRemoveFromGroup,
                     tintColor: .Signal.label,
@@ -263,7 +263,7 @@ class MemberActionSheet: OWSTableSheetViewController {
                     },
                 ))
             }
-            if groupViewHelper.memberActionSheetCanRevokeGroupAdmin(address: address), !isBlocked {
+            if groupViewHelper.memberActionSheetCanRevokeGroupAdmin(address: address) {
                 section.add(.item(
                     icon: .groupMemberRevokeGroupAdmin,
                     tintColor: .Signal.label,
