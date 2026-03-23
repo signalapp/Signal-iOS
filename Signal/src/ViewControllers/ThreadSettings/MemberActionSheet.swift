@@ -192,8 +192,8 @@ class MemberActionSheet: OWSTableSheetViewController {
             },
         ))
 
-        // If blocked, only show unblock as an option
-        guard !threadViewModel.isBlocked else {
+        let isBlocked = threadViewModel.isBlocked
+        if isBlocked {
             section.add(.item(
                 icon: .chatSettingsBlock,
                 tintColor: .Signal.label,
@@ -206,31 +206,30 @@ class MemberActionSheet: OWSTableSheetViewController {
                     self?.didTapUnblockThread {}
                 },
             ))
-            return contents
+        } else {
+            section.add(.item(
+                icon: .chatSettingsBlock,
+                tintColor: .Signal.label,
+                name: OWSLocalizedString(
+                    "BLOCK_LIST_BLOCK_BUTTON",
+                    comment: "Button label for the 'block' button",
+                ),
+                textColor: .Signal.label,
+                actionBlock: { [weak self] in
+                    guard let self, let fromViewController = self.fromViewController else { return }
+                    self.dismiss(animated: true) {
+                        BlockListUIUtils.showBlockAddressActionSheet(
+                            self.address,
+                            from: fromViewController,
+                            completion: nil,
+                        )
+                    }
+                },
+            ))
         }
 
-        section.add(.item(
-            icon: .chatSettingsBlock,
-            tintColor: .Signal.label,
-            name: OWSLocalizedString(
-                "BLOCK_LIST_BLOCK_BUTTON",
-                comment: "Button label for the 'block' button",
-            ),
-            textColor: .Signal.label,
-            actionBlock: { [weak self] in
-                guard let self, let fromViewController = self.fromViewController else { return }
-                self.dismiss(animated: true) {
-                    BlockListUIUtils.showBlockAddressActionSheet(
-                        self.address,
-                        from: fromViewController,
-                        completion: nil,
-                    )
-                }
-            },
-        ))
-
         if let groupViewHelper = self.groupViewHelper, groupViewHelper.isFullOrInvitedMember(address) {
-            if groupViewHelper.canRemoveFromGroup(address: address) {
+            if groupViewHelper.canRemoveFromGroup(address: address), !isBlocked {
                 section.add(.item(
                     icon: .groupMemberRemoveFromGroup,
                     tintColor: .Signal.label,
@@ -247,7 +246,7 @@ class MemberActionSheet: OWSTableSheetViewController {
                     },
                 ))
             }
-            if groupViewHelper.memberActionSheetCanMakeGroupAdmin(address: address) {
+            if groupViewHelper.memberActionSheetCanMakeGroupAdmin(address: address), !isBlocked {
                 section.add(.item(
                     icon: .groupMemberMakeGroupAdmin,
                     tintColor: .Signal.label,
@@ -264,7 +263,7 @@ class MemberActionSheet: OWSTableSheetViewController {
                     },
                 ))
             }
-            if groupViewHelper.memberActionSheetCanRevokeGroupAdmin(address: address) {
+            if groupViewHelper.memberActionSheetCanRevokeGroupAdmin(address: address), !isBlocked {
                 section.add(.item(
                     icon: .groupMemberRevokeGroupAdmin,
                     tintColor: .Signal.label,
@@ -286,26 +285,28 @@ class MemberActionSheet: OWSTableSheetViewController {
             }
         }
 
-        section.add(.item(
-            icon: .groupMemberAddToGroup,
-            tintColor: .Signal.label,
-            name: OWSLocalizedString(
-                "ADD_TO_GROUP",
-                comment: "Label for button or row which allows users to add to another group.",
-            ),
-            textColor: .Signal.label,
-            actionBlock: { [weak self] in
-                guard let self, let fromViewController = self.fromViewController else { return }
-                self.dismiss(animated: true) {
-                    AddToGroupViewController.presentForUser(self.address, from: fromViewController)
-                }
-            },
-        ))
+        if !isBlocked {
+            section.add(.item(
+                icon: .groupMemberAddToGroup,
+                tintColor: .Signal.label,
+                name: OWSLocalizedString(
+                    "ADD_TO_GROUP",
+                    comment: "Label for button or row which allows users to add to another group.",
+                ),
+                textColor: .Signal.label,
+                actionBlock: { [weak self] in
+                    guard let self, let fromViewController = self.fromViewController else { return }
+                    self.dismiss(animated: true) {
+                        AddToGroupViewController.presentForUser(self.address, from: fromViewController)
+                    }
+                },
+            ))
+        }
 
         let isSystemContact = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return SSKEnvironment.shared.contactManagerRef.fetchSignalAccount(for: address, transaction: tx) != nil
         }
-        if isSystemContact {
+        if !isBlocked, isSystemContact {
             section.add(.item(
                 icon: .contactInfoUserInContacts,
                 tintColor: .Signal.label,
@@ -319,7 +320,7 @@ class MemberActionSheet: OWSTableSheetViewController {
                     self.viewSystemContactDetails(contactAddress: self.address)
                 },
             ))
-        } else if address.phoneNumber != nil {
+        } else if !isBlocked, address.phoneNumber != nil {
             section.add(.item(
                 icon: .contactInfoAddToContacts,
                 tintColor: .Signal.label,
@@ -335,21 +336,23 @@ class MemberActionSheet: OWSTableSheetViewController {
             ))
         }
 
-        section.add(.item(
-            icon: .contactInfoSafetyNumber,
-            tintColor: .Signal.label,
-            name: OWSLocalizedString(
-                "VERIFY_PRIVACY",
-                comment: "Label for button or row which allows users to verify the safety number of another user.",
-            ),
-            textColor: .Signal.label,
-            actionBlock: { [weak self] in
-                guard let self, let fromViewController = self.fromViewController else { return }
-                self.dismiss(animated: true) {
-                    FingerprintViewController.present(for: self.address.aci, from: fromViewController)
-                }
-            },
-        ))
+        if !isBlocked {
+            section.add(.item(
+                icon: .contactInfoSafetyNumber,
+                tintColor: .Signal.label,
+                name: OWSLocalizedString(
+                    "VERIFY_PRIVACY",
+                    comment: "Label for button or row which allows users to verify the safety number of another user.",
+                ),
+                textColor: .Signal.label,
+                actionBlock: { [weak self] in
+                    guard let self, let fromViewController = self.fromViewController else { return }
+                    self.dismiss(animated: true) {
+                        FingerprintViewController.present(for: self.address.aci, from: fromViewController)
+                    }
+                },
+            ))
+        }
 
         return contents
     }
