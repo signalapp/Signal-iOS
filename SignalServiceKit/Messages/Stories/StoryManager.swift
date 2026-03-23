@@ -64,9 +64,10 @@ public class StoryManager {
 
             guard
                 let groupThread = TSGroupThread.fetch(groupId: contextInfo.groupId.serialize(), transaction: transaction),
-                groupThread.groupMembership.isFullMember(author)
+                groupThread.groupMembership.isFullMember(author),
+                !groupThread.isTerminatedGroup
             else {
-                Logger.warn("Dropping story message with timestamp \(timestamp) from author \(author) not in group")
+                Logger.warn("Dropping story message with timestamp \(timestamp) from author \(author) not in group or terminated group.")
                 return
             }
 
