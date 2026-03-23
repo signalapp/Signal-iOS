@@ -931,17 +931,15 @@ extension CVComponentSystemMessage {
             case .reportedSpam:
                 return .spam
             case .learnedProfileName:
-                return Theme.isDarkThemeEnabled ? .thread : .threadFill
+                return .thread
             case .blockedOtherUser:
                 return .block
             case .blockedGroup:
                 return .block
-            case .unblockedOtherUser:
-                return Theme.isDarkThemeEnabled ? .thread : .threadFill
-            case .unblockedGroup:
-                return Theme.isDarkThemeEnabled ? .thread : .threadFill
+            case .unblockedOtherUser, .unblockedGroup:
+                return .thread
             case .acceptedMessageRequest:
-                return Theme.isDarkThemeEnabled ? .thread : .threadFill
+                return .thread
             case .typeEndPoll:
                 return .poll
             case .typePinnedMessage:
