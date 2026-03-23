@@ -102,7 +102,6 @@ public enum SignalSymbol: Character {
     case spam = "\u{E033}"
     case sticker = "\u{E070}"
     case thread = "\u{E071}"
-    case threadFill = "\u{E072}"
     case timer = "\u{E073}"
     case timerSlash = "\u{E074}"
     case timesCircle = "\u{2297}"
