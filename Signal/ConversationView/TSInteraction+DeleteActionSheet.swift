@@ -127,7 +127,7 @@ public extension TSInteraction {
         }
 
         let canAdminDelete = db.read { tx in adminDeleteManager.canAdminDeleteMessage(message: message, thread: thread, tx: tx) }
-        if message.canBeRemotelyDeletedByNonAdmin || canAdminDelete {
+        if !thread.isTerminatedGroup, message.canBeRemotelyDeletedByNonAdmin || canAdminDelete {
             return ActionSheetAction(
                 title: CommonStrings.deleteForEveryoneButton,
                 style: .destructive,

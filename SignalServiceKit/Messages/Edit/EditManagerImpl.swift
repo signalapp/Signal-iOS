@@ -160,6 +160,10 @@ public class EditManagerImpl: EditManager {
             return .messageTypeNotSupported
         }
 
+        if thread.isTerminatedGroup {
+            return .editWindowClosed
+        }
+
         if !thread.isNoteToSelf {
             let (result, isOverflow) = interaction.timestamp.addingReportingOverflow(Constants.editSendWindowMilliseconds)
             guard !isOverflow, Date.ows_millisecondTimestamp() <= result else {

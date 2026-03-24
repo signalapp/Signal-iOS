@@ -16,7 +16,7 @@ class ResendMessagePromptBuilder {
         self.messageSenderJobQueue = messageSenderJobQueue
     }
 
-    func build(for message: TSMessage) -> UIViewController {
+    func build(for message: TSMessage, allowRetrySend: Bool) -> UIViewController {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         let sendAgain: () -> Void = { [databaseStorage, messageSenderJobQueue] in
@@ -108,11 +108,13 @@ class ResendMessagePromptBuilder {
                 }
             },
         ))
-        actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString("SEND_AGAIN_BUTTON", comment: ""),
-            style: .default,
-            handler: { _ in sendAgain() },
-        ))
+        if allowRetrySend {
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString("SEND_AGAIN_BUTTON", comment: ""),
+                style: .default,
+                handler: { _ in sendAgain() },
+            ))
+        }
         return actionSheet
     }
 }

@@ -218,6 +218,10 @@ enum MessageActionBuilder {
             return nil
         }
 
+        if itemViewModel.thread.isTerminatedGroup {
+            return nil
+        }
+
         guard let footerState = itemViewModel.renderItem.itemViewState.footerState else {
             return nil
         }

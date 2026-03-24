@@ -993,7 +993,8 @@ extension ConversationViewController: CVComponentDelegate {
             messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
         )
         dismissKeyBoard()
-        self.present(promptBuilder.build(for: message), animated: true)
+
+        self.present(promptBuilder.build(for: message, allowRetrySend: !thread.isTerminatedGroup), animated: true)
     }
 
     public func didTapGroupMigrationLearnMore() {

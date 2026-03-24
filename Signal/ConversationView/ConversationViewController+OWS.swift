@@ -435,11 +435,30 @@ public extension ConversationViewController {
         guard groupThread.isGroupV2Thread else {
             return
         }
+
+        if groupThread.isTerminatedGroup {
+            showUnableToInviteSheet()
+            return
+        }
+
         let view = GroupLinkPromotionActionSheet(
             groupThread: groupThread,
             conversationViewController: self,
         )
         view.present(fromViewController: self)
+    }
+
+    func showUnableToInviteSheet() {
+        let alert = ActionSheetController(
+            title: nil,
+            message: OWSLocalizedString(
+                "END_GROUP_INVITE_ERROR",
+                comment: "Description for error sheet that says the user can no longer invite friends or add members to a group.",
+            ),
+        )
+
+        alert.addAction(OWSActionSheets.okayAction)
+        presentActionSheet(alert)
     }
 }
 

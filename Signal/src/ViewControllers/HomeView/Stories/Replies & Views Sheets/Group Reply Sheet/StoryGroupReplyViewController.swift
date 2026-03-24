@@ -224,7 +224,13 @@ extension StoryGroupReplyViewController: UITableViewDelegate {
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
         )
-        self.present(promptBuilder.build(for: message), animated: true)
+
+        var allowRetrySend = true
+        if let groupThread = thread as? TSGroupThread {
+            allowRetrySend = !groupThread.isTerminatedGroup
+        }
+
+        self.present(promptBuilder.build(for: message, allowRetrySend: allowRetrySend), animated: true)
     }
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
