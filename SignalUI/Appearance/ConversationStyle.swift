@@ -198,6 +198,7 @@ public struct ConversationStyle {
         shouldDimWallpaperInDarkMode: Bool,
     ) -> UIVisualEffect? {
         guard hasWallpaper else { return nil }
+        guard UIAccessibility.isReduceTransparencyEnabled == false else { return nil }
         if isDarkThemeEnabled, shouldDimWallpaperInDarkMode {
             return UIBlurEffect(style: .systemUltraThinMaterial)
         }
@@ -228,6 +229,9 @@ public struct ConversationStyle {
         shouldDimWallpaperInDarkMode: Bool,
         isDarkThemeEnabled: Bool,
     ) -> ColorOrGradientValue {
+        guard UIAccessibility.isReduceTransparencyEnabled == false else {
+            return .solidColor(color: Theme.backgroundColor)
+        }
         if
             let blurEffect = bubbleBackgroundBlurEffect(
                 hasWallpaper: hasWallpaper,

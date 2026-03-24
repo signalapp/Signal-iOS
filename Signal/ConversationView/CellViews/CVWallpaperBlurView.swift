@@ -11,6 +11,7 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer, CVDimmableView {
     private weak var provider: WallpaperBlurProvider?
     private var isPreview = false
     private var state: WallpaperBlurState?
+    private var isReduceTransparencyMode = false
 
     private let imageView = CVImageView()
     private let imageViewMaskLayer = CAShapeLayer()
@@ -30,8 +31,9 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer, CVDimmableView {
         imageView.contentMode = .scaleAspectFill
         imageView.layer.mask = imageViewMaskLayer
         imageView.layer.masksToBounds = true
-        imageView.layer.addSublayer(strokeLayer)
         addSubview(imageView)
+
+        layer.addSublayer(strokeLayer)
 
         owsAssertDebug(layer.delegate === self)
         imageViewMaskLayer.disableAnimationsWithDelegate()
@@ -49,7 +51,7 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer, CVDimmableView {
         UIView.performWithoutAnimation {
             imageView.frame = imageViewFrame
             imageViewMaskLayer.frame = imageView.layer.bounds
-            strokeLayer.frame = imageView.layer.bounds
+            strokeLayer.frame = layer.bounds
 
             if let bubbleConfig {
                 // Corners.
@@ -60,7 +62,7 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer, CVDimmableView {
                 // Stroke.
                 if
                     let stroke = bubbleConfig.stroke,
-                    let strokePath = bubbleConfig.strokePath(for: maskFrame)
+                    let strokePath = bubbleConfig.strokePath(for: strokeLayer.frame)
                 {
                     strokeLayer.lineWidth = stroke.width
                     strokeLayer.strokeColor = stroke.color.cgColor
@@ -88,12 +90,13 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer, CVDimmableView {
         // TODO: Observe provider changes.
         self.provider = provider
         self.bubbleConfig = bubbleConfig
+        self.isReduceTransparencyMode = UIAccessibility.isReduceTransparencyEnabled
 
         updateIfNecessary()
     }
 
     public func updateIfNecessary() {
-        guard !isPreview else {
+        guard isPreview == false, isReduceTransparencyMode == false else {
             backgroundColor = Theme.backgroundColor
             imageView.isHidden = true
             return
@@ -122,13 +125,13 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer, CVDimmableView {
     private var maskFrame: CGRect = .zero
 
     private func ensurePositioning() {
-        guard !isPreview else {
-            return
-        }
+        guard isPreview == false, isReduceTransparencyMode == false else { return }
+
         guard let state else {
             resetContent()
             return
         }
+
         let referenceView = state.referenceView
         imageViewFrame = convert(referenceView.bounds, from: referenceView)
         maskFrame = referenceView.convert(bounds, from: self)
@@ -150,6 +153,7 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer, CVDimmableView {
         isPreview = false
         provider = nil
         bubbleConfig = nil
+        isReduceTransparencyMode = false
 
         resetContent()
     }
