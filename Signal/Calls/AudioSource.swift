@@ -6,6 +6,7 @@
 import Foundation
 public import AVFoundation
 import SignalServiceKit
+import UIKit
 
 public struct AudioSource: Hashable, CustomDebugStringConvertible {
 

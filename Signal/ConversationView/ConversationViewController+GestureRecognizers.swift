@@ -5,6 +5,7 @@
 
 import SignalServiceKit
 public import SignalUI
+import UIKit
 
 public class CVAccessibilityCustomAction: UIAccessibilityCustomAction {
     public var messageAction: MessageAction?

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import UIKit
 
 #if TESTABLE_BUILD
 

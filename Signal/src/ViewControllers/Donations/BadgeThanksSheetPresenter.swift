@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 
 class BadgeThanksSheetPresenter {
     private enum Deps {

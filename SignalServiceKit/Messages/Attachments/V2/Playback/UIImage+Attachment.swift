@@ -5,6 +5,7 @@
 
 import Foundation
 import SDWebImage
+public import UIKit
 
 extension UIImage {
 

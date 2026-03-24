@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 
 // Accommodates remaining scrolled to the same "apparent" position when new content is inserted
 // into the top of a collectionView. There are multiple ways to solve this problem, but this

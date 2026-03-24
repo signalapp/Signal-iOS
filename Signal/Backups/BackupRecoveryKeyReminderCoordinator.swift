@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import UIKit
 
 class BackupRecoveryKeyReminderCoordinator {
     private let aep: AccountEntropyPool

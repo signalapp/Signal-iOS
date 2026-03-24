@@ -7,6 +7,7 @@ import AVFAudio
 public import SignalServiceKit
 import LibSignalClient
 import SignalUI
+public import UIKit
 
 extension ConversationViewController: MessageActionsDelegate {
     func messageActionsEditItem(_ itemViewModel: CVItemViewModelImpl) {

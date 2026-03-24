@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public import UIKit
+
 // View model for a draft which has already fetched any attachments
 // from the original message.
 public class DraftQuotedReplyModel {

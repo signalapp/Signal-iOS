@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 public import UniformTypeIdentifiers
 
 /// Represents an argument passed when creating an attributed string using

@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 
 class CallControlsConfirmationToastView: UIView {
     enum ControlType {

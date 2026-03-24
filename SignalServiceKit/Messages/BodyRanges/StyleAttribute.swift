@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import UIKit
 
 // Note that this struct gets put into NSAttributedString,
 // so we want it to mostly contain simple types and not

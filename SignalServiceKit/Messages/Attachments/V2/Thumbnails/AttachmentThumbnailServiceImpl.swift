@@ -6,6 +6,7 @@
 import CoreImage
 import Foundation
 import SDWebImageWebPCoder
+public import UIKit
 
 public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
 

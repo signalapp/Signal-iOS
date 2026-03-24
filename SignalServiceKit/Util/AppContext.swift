@@ -5,7 +5,7 @@
 
 import CoreGraphics
 import Foundation
-import UIKit
+public import UIKit
 
 public typealias BackgroundTaskExpirationHandler = () -> Void
 public typealias AppActiveBlock = () -> Void

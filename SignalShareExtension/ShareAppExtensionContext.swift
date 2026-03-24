@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 
 // This is _NOT_ a singleton and will be instantiated each time that the SAE is used.
 final class ShareAppExtensionContext: NSObject {

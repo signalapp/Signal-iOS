@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import UIKit
 
 /// Like MessageBody but with styles only, no mentions.
 public class StyleOnlyMessageBody: Codable, Equatable {

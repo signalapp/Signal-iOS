@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 
 final class InactiveLinkedDeviceReminderMegaphone: MegaphoneView {
     private var inactiveLinkedDeviceFinder: InactiveLinkedDeviceFinder {

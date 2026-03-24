@@ -5,6 +5,7 @@
 
 import Foundation
 import LibSignalClient
+public import UIKit
 
 public typealias MentionIDType = Int
 

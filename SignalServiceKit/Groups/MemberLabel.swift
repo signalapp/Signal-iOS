@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
+public import UIKit
 
 /// Used for rendering a member label in the UI.
 /// Label is the full member label string, including an optional emoji.

@@ -6,6 +6,7 @@
 import CoreServices
 import Foundation
 import ImageIO
+public import UIKit
 import UniformTypeIdentifiers
 
 public class BadgeAssets {

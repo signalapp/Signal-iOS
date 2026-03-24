@@ -7,7 +7,7 @@ import Foundation
 public import SignalServiceKit
 import LibSignalClient
 import SignalUI
-import UIKit
+public import UIKit
 
 public extension TSInteraction {
     func presentDeletionActionSheet(from fromViewController: UIViewController, forceDarkTheme: Bool = false) {

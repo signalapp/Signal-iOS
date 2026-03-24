@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 public import AVFoundation
+import Foundation
+public import UIKit
 
 public enum OWSMediaError: Error {
     case failure(description: String)

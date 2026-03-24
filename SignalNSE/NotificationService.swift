@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 import UserNotifications
 
 // The lifecycle of the NSE looks something like the following:

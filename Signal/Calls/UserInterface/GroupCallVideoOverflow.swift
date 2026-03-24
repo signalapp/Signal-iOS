@@ -5,6 +5,7 @@
 
 import SignalRingRTC
 import SignalServiceKit
+import UIKit
 
 protocol GroupCallVideoOverflowDelegate: AnyObject {
     var firstOverflowMemberIndex: Int { get }

@@ -5,6 +5,7 @@
 
 public import Contacts
 import Foundation
+public import UIKit
 
 public protocol ContactManager: ContactsManagerProtocol {
     func fetchSignalAccounts(for phoneNumbers: [String], transaction: DBReadTransaction) -> [SignalAccount?]

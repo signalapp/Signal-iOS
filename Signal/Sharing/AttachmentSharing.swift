@@ -4,6 +4,7 @@
 //
 
 public import SignalServiceKit
+public import UIKit
 
 public class AttachmentSharing {
 

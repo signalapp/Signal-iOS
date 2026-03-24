@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 
 /// Produces styled QR codes containing aesthetic features such as an overlaid
 /// Signal logo and rounded "pixels". They are scaled up so as to appropriately

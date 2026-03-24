@@ -5,6 +5,7 @@
 
 import SignalRingRTC
 import SignalServiceKit
+import UIKit
 
 protocol GroupCallVideoGridLayoutDelegate: AnyObject {
     var maxColumns: Int { get }

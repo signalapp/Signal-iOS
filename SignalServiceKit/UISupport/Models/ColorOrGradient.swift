@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import UIKit
 
 // ColorOrGradientSetting is used for persistence and comparison.
 // ColorOrGradientValue is used for rendering.

@@ -6,6 +6,7 @@
 public import SignalServiceKit
 import SDWebImage
 import SignalUI
+public import UIKit
 
 // MARK: -
 

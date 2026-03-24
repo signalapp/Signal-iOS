@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import UIKit
 
 /// Failed story send notifications check if the topmost view controller conforms
 /// to this protocol.

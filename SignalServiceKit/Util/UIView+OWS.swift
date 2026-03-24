@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import UIKit
 
 public extension UIEdgeInsets {
     init(top: CGFloat, leading: CGFloat, bottom: CGFloat, trailing: CGFloat) {

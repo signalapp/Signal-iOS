@@ -4,6 +4,7 @@
 //
 
 public import SignalServiceKit
+public import UIKit
 
 // TODO: This will be part of our reuse strategy.
 // We'll probably want to have reuse identifiers

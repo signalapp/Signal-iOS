@@ -7,6 +7,7 @@ public import Contacts
 import CryptoKit
 import Foundation
 import LibSignalClient
+public import UIKit
 
 extension Notification.Name {
     public static let OWSContactsManagerSignalAccountsDidChange = Notification.Name("OWSContactsManagerSignalAccountsDidChangeNotification")

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 public enum AttachmentThumbnailQuality: CaseIterable {
     case small

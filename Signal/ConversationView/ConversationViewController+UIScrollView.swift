@@ -4,7 +4,8 @@
 //
 
 public import Foundation
-public import SignalServiceKit
+import SignalServiceKit
+public import UIKit
 
 extension ConversationViewController {
 

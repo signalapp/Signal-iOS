@@ -5,6 +5,7 @@
 
 import SignalRingRTC
 import SignalServiceKit
+import UIKit
 
 class CallControlsOverflowView: UIView {
     private lazy var reactionPicker: MessageReactionPicker = {

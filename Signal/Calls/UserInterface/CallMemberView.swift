@@ -8,6 +8,7 @@ import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
 import SignalUI
+import UIKit
 
 enum CallMemberVisualContext: Equatable {
     case videoGrid

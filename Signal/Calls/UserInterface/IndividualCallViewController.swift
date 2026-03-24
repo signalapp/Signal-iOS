@@ -6,6 +6,7 @@
 import SignalRingRTC
 import SignalServiceKit
 import SignalUI
+import UIKit
 import WebRTC
 
 // TODO: Add category so that button handlers can be defined where button is created.

@@ -5,6 +5,7 @@
 
 public import SignalServiceKit
 import SignalUI
+public import UIKit
 
 public protocol SendMessageDelegate: AnyObject {
     func sendMessageFlowDidComplete(threads: [TSThread])

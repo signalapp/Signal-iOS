@@ -5,6 +5,7 @@
 
 import Foundation
 import NaturalLanguage
+public import UIKit
 
 extension NSString {
     @objc

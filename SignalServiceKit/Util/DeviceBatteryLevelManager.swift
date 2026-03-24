@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import UIKit
 
 extension Notification.Name {
     public static let batteryLevelChanged: Notification.Name = UIDevice.batteryLevelDidChangeNotification

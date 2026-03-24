@@ -5,6 +5,7 @@
 
 import Foundation
 public import SignalServiceKit
+import UIKit
 
 extension ConversationViewController {
 

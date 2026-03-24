@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 
 protocol GifPickerLayoutDelegate: AnyObject {
     func imageInfosForLayout() -> [GiphyImageInfo]

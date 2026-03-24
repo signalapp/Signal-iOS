@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 
 class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransition, UIGestureRecognizerDelegate {
     weak var pageViewController: StoryPageViewController!

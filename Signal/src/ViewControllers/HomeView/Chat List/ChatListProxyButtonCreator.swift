@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import UIKit
 
 protocol ChatListProxyButtonDelegate: AnyObject {
     func didUpdateButton(_ proxyButtonCreator: ChatListProxyButtonCreator)

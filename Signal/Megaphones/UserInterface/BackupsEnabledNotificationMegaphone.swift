@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import UIKit
 
 class BackupsEnabledNotificationMegaphone: MegaphoneView {
     private let db: DB

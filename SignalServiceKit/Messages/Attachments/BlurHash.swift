@@ -5,6 +5,7 @@
 
 import blurhash
 import Foundation
+public import UIKit
 
 public class BlurHash {
 

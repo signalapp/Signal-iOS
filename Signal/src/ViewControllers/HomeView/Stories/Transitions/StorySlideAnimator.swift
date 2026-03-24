@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 
 class StorySlideAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     weak var coordinator: StoryInteractiveTransitionCoordinator!

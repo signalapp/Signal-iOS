@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 
 class SquareMediaTileViewLayout: UICollectionViewFlowLayout, ScrollPositionPreserving {
     private var contentSizeBeforeInsertingToTop: CGSize?

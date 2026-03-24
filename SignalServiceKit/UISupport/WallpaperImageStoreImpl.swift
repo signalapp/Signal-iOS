@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import UIKit
 
 public class WallpaperImageStoreImpl: WallpaperImageStore {
 

@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 
 extension Emoji {
     private static let availableCache = AtomicDictionary<Emoji, Bool>(lock: .sharedGlobal)

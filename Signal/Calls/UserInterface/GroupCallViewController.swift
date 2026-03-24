@@ -9,6 +9,7 @@ import SignalRingRTC
 import SignalServiceKit
 import SignalUI
 import SwiftUI
+import UIKit
 
 // MARK: - GroupCallViewController
 

@@ -5,6 +5,7 @@
 
 import CoreImage
 import Foundation
+public import UIKit
 
 public extension UIImage {
 

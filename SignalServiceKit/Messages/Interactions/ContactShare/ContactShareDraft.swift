@@ -4,6 +4,7 @@
 //
 
 public import Contacts
+public import UIKit
 
 public class ContactShareDraft {
     public var name: OWSContactName

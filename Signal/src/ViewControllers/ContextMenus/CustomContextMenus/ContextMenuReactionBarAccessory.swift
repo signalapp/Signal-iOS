@@ -4,6 +4,7 @@
 //
 
 public import SignalServiceKit
+import UIKit
 
 public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessory, MessageReactionPickerDelegate {
     public let thread: TSThread

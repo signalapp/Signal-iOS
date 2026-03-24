@@ -5,6 +5,7 @@
 
 import Contacts
 import Foundation
+import UIKit
 
 public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
     /// Informs the user that a new device was linked if they have

@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public import UIKit
+
 /// Preset color options for styled QR codes.
 public enum QRCodeColor: String, UnknownEnumCodable, CaseIterable {
     case blue

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 public protocol OWSProximityMonitoringManager: AnyObject {
     func add(lifetime: AnyObject)

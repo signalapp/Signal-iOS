@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import UIKit
+public import UIKit
 
 public struct ThemedColor: Equatable, Hashable {
     private let light: UIColor

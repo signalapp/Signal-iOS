@@ -5,6 +5,7 @@
 
 import Foundation
 import ImageIO
+public import UIKit
 
 import SDWebImage
 

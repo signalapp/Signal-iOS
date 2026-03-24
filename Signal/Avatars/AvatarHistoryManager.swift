@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 
 /// Responsible for persisting the history of user-selected avatars.
 ///

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import UIKit
 
 public class WallpaperStore {
     public static let wallpaperDidChangeNotification = NSNotification.Name("wallpaperDidChangeNotification")

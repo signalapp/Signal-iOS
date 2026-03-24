@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import UIKit
 
 struct AppActivePrecondition: Precondition {
     private let _precondition: NotificationPrecondition

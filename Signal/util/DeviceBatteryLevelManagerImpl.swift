@@ -4,6 +4,7 @@
 //
 
 public import SignalServiceKit
+import UIKit
 
 public class DeviceBatteryLevelMonitorImpl: DeviceBatteryLevelMonitor {
 

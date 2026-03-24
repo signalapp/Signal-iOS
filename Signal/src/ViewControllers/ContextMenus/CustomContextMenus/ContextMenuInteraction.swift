@@ -4,7 +4,7 @@
 //
 
 public import SignalServiceKit
-import UIKit
+public import UIKit
 
 /// UIContextMenuInteractionDelegate analog
 public protocol ContextMenuInteractionDelegate: AnyObject {

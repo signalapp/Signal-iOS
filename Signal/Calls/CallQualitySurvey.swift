@@ -5,6 +5,7 @@
 
 import SignalRingRTC
 import SignalServiceKit
+import UIKit
 
 enum CallQualitySurvey {
     enum CallType: String {

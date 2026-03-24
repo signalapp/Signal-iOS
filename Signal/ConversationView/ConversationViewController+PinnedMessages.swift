@@ -5,6 +5,7 @@
 
 import SignalUI
 public import SignalServiceKit
+public import UIKit
 
 protocol PinnedMessageInteractionManagerDelegate: AnyObject {
 

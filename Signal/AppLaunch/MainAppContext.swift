@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import UIKit
 
 class MainAppContext: NSObject, AppContext {
     let type: SignalServiceKit.AppContextType = .main

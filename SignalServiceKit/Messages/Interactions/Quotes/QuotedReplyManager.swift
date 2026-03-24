@@ -4,6 +4,7 @@
 //
 
 import LibSignalClient
+public import UIKit
 
 public struct ValidatedQuotedReply {
     public let quotedReply: TSQuotedMessage

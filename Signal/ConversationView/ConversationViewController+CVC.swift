@@ -6,6 +6,7 @@
 public import Foundation
 public import SignalServiceKit
 public import SignalUI
+import UIKit
 
 extension ConversationViewController {
 

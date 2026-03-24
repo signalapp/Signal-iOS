@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import QuartzCore
 
 extension Upload.Constants {
     fileprivate static let uploadMaxRetries = 8

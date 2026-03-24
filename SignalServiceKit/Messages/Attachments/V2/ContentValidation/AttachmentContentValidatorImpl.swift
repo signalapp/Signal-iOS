@@ -6,6 +6,7 @@
 import AVFoundation
 import CryptoKit
 import Foundation
+import UIKit
 
 public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 

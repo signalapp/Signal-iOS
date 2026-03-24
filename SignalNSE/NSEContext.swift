@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import UIKit
 
 class NSEContext: NSObject, AppContext {
     let type: SignalServiceKit.AppContextType = .nse

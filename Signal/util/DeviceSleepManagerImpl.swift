@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import UIKit
 
 /// This entity is responsible for keeping the screen on if certain
 /// behaviors (e.g., recording or playing voice messages) are in progress.

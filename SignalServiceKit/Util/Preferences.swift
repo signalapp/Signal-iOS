@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public import UIKit
+
 public enum NotificationType: UInt {
     case noNameNoPreview = 0
     case nameNoPreview = 1

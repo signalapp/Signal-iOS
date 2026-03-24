@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import UIKit
 
 public struct AvatarModel: Equatable {
     public let identifier: String

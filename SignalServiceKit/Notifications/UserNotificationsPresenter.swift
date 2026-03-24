@@ -6,6 +6,7 @@
 import Foundation
 import Intents
 import UserNotifications
+public import UIKit
 
 public class UserNotificationConfig {
 

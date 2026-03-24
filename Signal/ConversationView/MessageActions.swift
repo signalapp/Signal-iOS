@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import UIKit
 
 protocol MessageActionsDelegate: AnyObject {
     func messageActionsShowDetailsForItem(_ itemViewModel: CVItemViewModelImpl)

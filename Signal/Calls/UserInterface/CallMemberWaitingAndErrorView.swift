@@ -6,6 +6,7 @@
 import Foundation
 import SignalRingRTC
 import SignalServiceKit
+import UIKit
 
 /// Only used for group calls currently; adjust if individual calls come to need it.
 class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {

@@ -5,6 +5,7 @@
 
 import SignalRingRTC
 import SignalServiceKit
+import UIKit
 
 class GroupCallVideoGrid: UICollectionView, UICollectionViewDelegate, UICollectionViewDataSource, GroupCallVideoGridLayoutDelegate, GroupCallObserver {
     weak var memberViewErrorPresenter: CallMemberErrorPresenter?

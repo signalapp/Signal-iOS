@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import UIKit
+
 /// Abstract base class for jobs that need to delete elements as those elements
 /// "expire" while the app is running.
 ///
