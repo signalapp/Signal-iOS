@@ -50,7 +50,6 @@ public class ToastController: NSObject, ToastViewDelegate {
         }
 
         Logger.debug("")
-        toastView.alpha = 0
         parentView.addSubview(toastView)
         toastView.setCompressionResistanceHigh()
 
@@ -83,9 +82,7 @@ public class ToastController: NSObject, ToastViewDelegate {
         }
         type(of: self).currentToastController = self
 
-        UIView.animate(withDuration: 0.2) {
-            toastView.alpha = 1
-        }
+        toastView.animateIn()
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + dismissAfter) {
             // intentional strong reference to self.
@@ -168,16 +165,10 @@ public class ToastController: NSObject, ToastViewDelegate {
             type(of: self).currentToastController = nil
         }
 
-        UIView.animate(
-            withDuration: 0.2,
-            animations: {
-                toastView.alpha = 0
-            },
-            completion: { _ in
-                toastView.removeFromSuperview()
-                self.toastView = nil
-            },
-        )
+        toastView.animateOut {
+            toastView.removeFromSuperview()
+            self.toastView = nil
+        }
     }
 }
 
@@ -199,8 +190,18 @@ class ToastView: UIView {
 
     weak var delegate: ToastViewDelegate?
 
+    private let backgroundView = UIVisualEffectView(effect: nil)
     private let label: UILabel
-    private let darkThemeBackgroundOverlay = UIView()
+
+    @available(iOS 26.3, *)
+    private var glassEffect: UIGlassEffect {
+        let glassEffect = UIGlassEffect(style: .regular)
+        glassEffect.tintColor = UIColor(
+            light: UIColor(rgbHex: 0x3C3C43, alpha: 0.64),
+            dark: UIColor(rgbHex: 0xEBEBF5, alpha: 0.24),
+        )
+        return glassEffect
+    }
 
     // MARK: Initializers
 
@@ -208,22 +209,39 @@ class ToastView: UIView {
         label = UILabel()
         super.init(frame: frame)
 
-        self.layer.cornerRadius = 12
-        self.clipsToBounds = true
-        self.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
+        if #available(iOS 26.3, *) {
+            backgroundView.effect = glassEffect
+            backgroundView.contentView.layoutMargins = .init(hMargin: 20, vMargin: 14)
+            backgroundView.cornerConfiguration = .capsule(maximumRadius: 26)
 
-        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-        addSubview(blurEffectView)
-        blurEffectView.autoPinEdgesToSuperviewEdges()
+            label.font = .dynamicTypeBody
+        } else {
+            backgroundView.effect = UIBlurEffect(style: .dark)
+            backgroundView.contentView.layoutMargins = .init(margin: 12)
 
-        addSubview(darkThemeBackgroundOverlay)
-        darkThemeBackgroundOverlay.autoPinEdgesToSuperviewEdges()
-        darkThemeBackgroundOverlay.backgroundColor = UIColor.white.withAlphaComponent(0.10)
+            self.layer.cornerRadius = 12
+            self.clipsToBounds = true
+
+            label.font = UIFont.dynamicTypeSubheadline
+        }
+        addSubview(backgroundView)
+        backgroundView.autoPinHeightToSuperview()
+        backgroundView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
+        backgroundView.autoHCenterInSuperview()
+
+        if #unavailable(iOS 26.3) {
+            let darkThemeBackgroundOverlay = UIView()
+            addSubview(darkThemeBackgroundOverlay)
+            darkThemeBackgroundOverlay.autoPinEdgesToSuperviewEdges()
+            darkThemeBackgroundOverlay.backgroundColor = UIColor(
+                light: .clear,
+                dark: UIColor.white.withAlphaComponent(0.10),
+            )
+        }
 
         label.textColor = .ows_white
-        label.font = UIFont.dynamicTypeSubheadline
         label.numberOfLines = 0
-        self.addSubview(label)
+        backgroundView.contentView.addSubview(label)
         label.autoPinEdgesToSuperviewMargins()
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(gesture:)))
@@ -231,10 +249,6 @@ class ToastView: UIView {
 
         let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe(gesture:)))
         self.addGestureRecognizer(swipeGesture)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
-        applyTheme()
-
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -244,11 +258,6 @@ class ToastView: UIView {
     // MARK: Gestures
 
     @objc
-    private func applyTheme() {
-        darkThemeBackgroundOverlay.isHidden = !Theme.isDarkThemeEnabled
-    }
-
-    @objc
     private func didTap(gesture: UITapGestureRecognizer) {
         self.delegate?.didTapToastView(self)
     }
@@ -256,6 +265,53 @@ class ToastView: UIView {
     @objc
     private func didSwipe(gesture: UISwipeGestureRecognizer) {
         self.delegate?.didSwipeToastView(self)
+    }
+
+    // MARK: Animations
+
+    fileprivate func animateIn() {
+        let animator = UIViewPropertyAnimator(duration: 0.35, springDamping: 1, springResponse: 0.35)
+
+        if #available(iOS 26.3, *) {
+            UIView.performWithoutAnimation {
+                self.label.alpha = 0
+                self.transform = .scale(0.9)
+                self.backgroundView.effect = nil
+            }
+
+            animator.addAnimations {
+                self.label.alpha = 1
+                self.transform = .identity
+                self.backgroundView.effect = self.glassEffect
+            }
+        } else {
+            self.alpha = 0
+            animator.addAnimations {
+                self.alpha = 1
+            }
+        }
+
+        animator.startAnimation()
+    }
+
+    fileprivate func animateOut(completion: @escaping () -> Void) {
+        let animator = UIViewPropertyAnimator(duration: 0.35, springDamping: 1, springResponse: 0.35)
+        animator.addCompletion { _ in
+            completion()
+        }
+
+        if #available(iOS 26.3, *) {
+            animator.addAnimations {
+                self.label.alpha = 0
+                self.transform = .scale(0.9)
+                self.backgroundView.effect = nil
+            }
+        } else {
+            animator.addAnimations {
+                self.alpha = 0
+            }
+        }
+        animator.startAnimation()
     }
 }
 
