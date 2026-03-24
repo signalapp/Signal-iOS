@@ -597,6 +597,7 @@ private enum IsEnabledFlag: String, FlagType {
     case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
+    case groupTerminateReceiveKillSwitch = "ios.groupTerminateReceiveKillSwitch"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
     case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
@@ -605,7 +606,6 @@ private enum IsEnabledFlag: String, FlagType {
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case ringrtcVp9Enabled = "ios.ringrtcVp9Enabled.2"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
-    case groupTerminateReceiveKillSwitch = "ios.groupTerminateReceiveKillSwitch"
 
 #if TESTABLE_BUILD
     case hotSwappable = "test.hotSwappable.enabled"
@@ -624,6 +624,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .cardOneTimeDonationKillSwitch: false
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
+        case .groupTerminateReceiveKillSwitch: true
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
@@ -632,7 +633,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .ringrtcNwPathMonitorTrialKillSwitch: true // cached during launch, so not hot-swapped in practice
         case .ringrtcVp9Enabled: true
         case .serviceExtensionFailureKillSwitch: true
-        case .groupTerminateReceiveKillSwitch: true
 
 #if TESTABLE_BUILD
         case .hotSwappable: true
@@ -643,12 +643,15 @@ private enum IsEnabledFlag: String, FlagType {
 }
 
 private enum ValueFlag: String, FlagType {
+    case adminDeleteMaxAgeInSeconds = "global.adminDeleteMaxAgeInSeconds"
     case applePayDisabledRegions = "global.donations.apayDisabledRegions"
     case attachmentMaxEncryptedBytes = "global.attachments.maxBytes"
     case attachmentMaxEncryptedReceiveBytes = "global.attachments.maxReceiveBytes"
     case automaticSessionResetAttemptInterval = "ios.automaticSessionResetAttemptInterval"
     case backgroundRefreshInterval = "ios.backgroundRefreshInterval"
     case backupAttachmentMaxEncryptedBytes = "ios.backupAttachments.maxBytes"
+    case backupListMediaDefaultRefreshIntervalMs = "ios.backupListMediaDefaultRefreshIntervalMs"
+    case backupListMediaOutOfQuotaRefreshIntervalMs = "ios.backupListMediaOutOfQuotaRefreshIntervalMs"
     case callQualitySurveyPPM = "ios.callQualitySurveyPPM"
     case cdsSyncInterval = "cds.syncInterval.seconds"
     case clientExpiration = "ios.clientExpiration"
@@ -664,21 +667,18 @@ private enum ValueFlag: String, FlagType {
     case messageQueueTimeInSeconds = "global.messageQueueTimeInSeconds"
     case messageSendLogEntryLifetime = "ios.messageSendLogEntryLifetime"
     case minNicknameLength = "global.nicknames.min"
+    case normalDeleteMaxAgeInSeconds = "global.normalDeleteMaxAgeInSeconds"
     case paymentsDisabledRegions = "global.payments.disabledRegions"
     case paypalDisabledRegions = "global.donations.paypalDisabledRegions"
+    case pinnedMessageLimit = "global.pinned_message_limit"
+    case pinnedThreadLimit = "global.pinned_chat_limit"
     case reactiveProfileKeyAttemptInterval = "ios.reactiveProfileKeyAttemptInterval"
     case replaceableInteractionExpiration = "ios.replaceableInteractionExpiration"
+    case ringrtcVp9DeviceModelDenylist = "ios.ringrtcVp9DeviceModelDenylist"
+    case ringrtcVp9DeviceModelEnablelist = "ios.ringrtcVp9DeviceModelEnablelist"
     case sepaEnabledRegions = "global.donations.sepaEnabledRegions"
     case standardMediaQualityLevel = "ios.standardMediaQualityLevel"
     case videoAttachmentMaxEncryptedBytes = "ios.videoAttachments.maxBytes"
-    case backupListMediaDefaultRefreshIntervalMs = "ios.backupListMediaDefaultRefreshIntervalMs"
-    case backupListMediaOutOfQuotaRefreshIntervalMs = "ios.backupListMediaOutOfQuotaRefreshIntervalMs"
-    case pinnedMessageLimit = "global.pinned_message_limit"
-    case pinnedThreadLimit = "global.pinned_chat_limit"
-    case ringrtcVp9DeviceModelDenylist = "ios.ringrtcVp9DeviceModelDenylist"
-    case ringrtcVp9DeviceModelEnablelist = "ios.ringrtcVp9DeviceModelEnablelist"
-    case adminDeleteMaxAgeInSeconds = "global.adminDeleteMaxAgeInSeconds"
-    case normalDeleteMaxAgeInSeconds = "global.normalDeleteMaxAgeInSeconds"
 
 #if TESTABLE_BUILD
     case hotSwappable = "test.hotSwappable.value"
@@ -687,12 +687,15 @@ private enum ValueFlag: String, FlagType {
 
     var isHotSwappable: Bool {
         switch self {
+        case .adminDeleteMaxAgeInSeconds: true
         case .applePayDisabledRegions: true
         case .attachmentMaxEncryptedBytes: true
         case .attachmentMaxEncryptedReceiveBytes: true
         case .automaticSessionResetAttemptInterval: true
         case .backgroundRefreshInterval: true
         case .backupAttachmentMaxEncryptedBytes: true
+        case .backupListMediaDefaultRefreshIntervalMs: true
+        case .backupListMediaOutOfQuotaRefreshIntervalMs: true
         case .callQualitySurveyPPM: true
         case .cdsSyncInterval: false
         case .clientExpiration: true
@@ -708,21 +711,18 @@ private enum ValueFlag: String, FlagType {
         case .messageQueueTimeInSeconds: false
         case .messageSendLogEntryLifetime: false
         case .minNicknameLength: false
+        case .normalDeleteMaxAgeInSeconds: true
         case .paymentsDisabledRegions: true
         case .paypalDisabledRegions: true
+        case .pinnedMessageLimit: true
+        case .pinnedThreadLimit: true
         case .reactiveProfileKeyAttemptInterval: true
         case .replaceableInteractionExpiration: false
+        case .ringrtcVp9DeviceModelDenylist: true
+        case .ringrtcVp9DeviceModelEnablelist: true
         case .sepaEnabledRegions: true
         case .standardMediaQualityLevel: true
         case .videoAttachmentMaxEncryptedBytes: true
-        case .backupListMediaDefaultRefreshIntervalMs: true
-        case .backupListMediaOutOfQuotaRefreshIntervalMs: true
-        case .pinnedMessageLimit: true
-        case .pinnedThreadLimit: true
-        case .ringrtcVp9DeviceModelDenylist: true
-        case .ringrtcVp9DeviceModelEnablelist: true
-        case .adminDeleteMaxAgeInSeconds: true
-        case .normalDeleteMaxAgeInSeconds: true
 
 #if TESTABLE_BUILD
         case .hotSwappable: true
