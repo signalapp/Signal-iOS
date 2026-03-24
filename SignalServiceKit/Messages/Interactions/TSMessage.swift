@@ -692,28 +692,50 @@ public extension TSMessage {
         {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             let contactManager = SSKEnvironment.shared.contactManagerRef
+            let isStickerReaction = messageSticker != nil
 
             if
                 let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
                 localIdentifiers.contains(serviceId: storyAuthorAci)
             {
-                return .storyReactionEmoji(String(
-                    format: OWSLocalizedString(
-                        "STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON",
-                        comment: "Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}.",
-                    ),
-                    storyReactionEmoji,
-                ))
+                let text: String
+                if isStickerReaction {
+                    text = OWSLocalizedString(
+                        "STORY_REACTION_STICKER_PREVIEW_THIRD_PERSON",
+                        comment: "Text explaining that someone reacted to your story with a sticker.",
+                    )
+                } else {
+                    text = String(
+                        format: OWSLocalizedString(
+                            "STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON",
+                            comment: "Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}.",
+                        ),
+                        storyReactionEmoji,
+                    )
+                }
+                return .storyReactionEmoji(text)
             } else {
                 let storyAuthorName = contactManager.displayName(for: SignalServiceAddress(storyAuthorAci), tx: tx)
-                return .storyReactionEmoji(String(
-                    format: OWSLocalizedString(
-                        "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON",
-                        comment: "Text explaining that you reacted to someone else's story. Embeds {{ %1$@ reaction emoji, %2$@ story author name }}.",
-                    ),
-                    storyReactionEmoji,
-                    storyAuthorName.resolvedValue(useShortNameIfAvailable: true),
-                ))
+                let text: String
+                if isStickerReaction {
+                    text = String(
+                        format: OWSLocalizedString(
+                            "STORY_REACTION_STICKER_PREVIEW_FORMAT_SECOND_PERSON",
+                            comment: "Text explaining that you reacted to someone else's story with a sticker. Embeds {{ %1$@ story author name }}.",
+                        ),
+                        storyAuthorName.resolvedValue(useShortNameIfAvailable: true),
+                    )
+                } else {
+                    text = String(
+                        format: OWSLocalizedString(
+                            "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON",
+                            comment: "Text explaining that you reacted to someone else's story. Embeds {{ %1$@ reaction emoji, %2$@ story author name }}.",
+                        ),
+                        storyReactionEmoji,
+                        storyAuthorName.resolvedValue(useShortNameIfAvailable: true),
+                    )
+                }
+                return .storyReactionEmoji(text)
             }
         }
 

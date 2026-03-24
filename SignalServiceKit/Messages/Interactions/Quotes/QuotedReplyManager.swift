@@ -280,20 +280,39 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
             isGiftBadge = false
             isPoll = false
         } else if let storyReactionEmoji = originalMessage.storyReactionEmoji?.nilIfEmpty {
-            let formatString: String = {
+            body = {
                 if authorAddress.isLocalAddress {
-                    return OWSLocalizedString(
-                        "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON",
-                        comment: "quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}}",
-                    )
+                    if originalMessage.messageSticker != nil {
+                        return OWSLocalizedString(
+                            "STORY_REACTION_STICKER_QUOTE_SECOND_PERSON",
+                            comment: "quote text for a reaction to a story by the user with a sticker (the header on the bubble says \"You\").",
+                        )
+                    } else {
+                        return String(
+                            format: OWSLocalizedString(
+                                "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON",
+                                comment: "quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}}",
+                            ),
+                            storyReactionEmoji
+                        )
+                    }
                 } else {
-                    return OWSLocalizedString(
-                        "STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON",
-                        comment: "quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}}",
-                    )
+                    if originalMessage.messageSticker != nil {
+                        return OWSLocalizedString(
+                            "STORY_REACTION_STICKER_QUOTE_THIRD_PERSON",
+                            comment: "quote text for a reaction to a story by some other user with a sticker (the header on the bubble says their name, e.g. \"Bob\").",
+                        )
+                    } else {
+                        return String(
+                            format: OWSLocalizedString(
+                                "STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON",
+                                comment: "quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}}",
+                            ),
+                            storyReactionEmoji
+                        )
+                    }
                 }
             }()
-            body = String(format: formatString, storyReactionEmoji)
             bodyRanges = nil
             isGiftBadge = false
             isPoll = false

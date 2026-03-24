@@ -7339,6 +7339,48 @@
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
 
+/* notification body. */
+"REACTION_STICKER_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted with a sticker to your message";
+
+/* notification body. */
+"REACTION_STICKER_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted with a sticker to your album";
+
+/* notification body. */
+"REACTION_STICKER_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted with a sticker to your audio";
+
+/* notification body. */
+"REACTION_STICKER_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted with a sticker to your contact share";
+
+/* notification body. */
+"REACTION_STICKER_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted with a sticker to your file";
+
+/* notification body. */
+"REACTION_STICKER_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted with a sticker to your GIF";
+
+/* notification body. */
+"REACTION_STICKER_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted with a sticker to your photo";
+
+/* notification body. */
+"REACTION_STICKER_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted with a sticker to your sticker";
+
+/* notification body. and {{body text}} */
+"REACTION_STICKER_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted with a sticker to: \"%@\"";
+
+/* notification body. */
+"REACTION_STICKER_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted with a sticker to your video";
+
+/* notification body. */
+"REACTION_STICKER_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted with a sticker to your view-once media";
+
+/* notification body. */
+"REACTION_STICKER_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted with a sticker to your voice message";
+
+/* Title for the emoji tab in the reaction picker. */
+"REACTION_PICKER_EMOJI_TAB" = "Emoji";
+
+/* Title for the stickers tab in the reaction picker. */
+"REACTION_PICKER_STICKERS_TAB" = "Stickers";
+
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Read";
 
@@ -9391,14 +9433,26 @@
 /* Text explaining that you reacted to someone else's story. Embeds {{ %1$@ reaction emoji, %2$@ story author name }}. */
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "You reacted %1$@ to %2$@’s story";
 
+/* Text explaining that you reacted to someone else’s story with a sticker. Embeds {{ %1$@  story author name }}. */
+"STORY_REACTION_STICKER_PREVIEW_FORMAT_SECOND_PERSON" = "You reacted with a sticker to %1$@’s story";
+
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
 "STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "Reacted %1$@ to your story";
+
+/* Text explaining that someone reacted to your story with a sticker. */
+"STORY_REACTION_STICKER_PREVIEW_THIRD_PERSON" = "Reacted with a sticker to your story";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Reacted %@ to a story";
 
 /* quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "Reacted %@ to a story";
+
+/* quote text for a reaction to a story by the user with a sticker (the header on the bubble says \"You\"). */
+"STORY_REACTION_STICKER_QUOTE_SECOND_PERSON" = "Reacted with a sticker to a story";
+
+/* quote text for a reaction to a story by some other user with a sticker (the header on the bubble says their name, e.g. \"Bob\"). */
+"STORY_REACTION_STICKER_QUOTE_THIRD_PERSON" = "Reacted with a sticker to a story";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Reply";

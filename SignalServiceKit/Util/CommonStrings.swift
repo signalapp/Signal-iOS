@@ -562,6 +562,90 @@ public enum NotificationStrings {
             comment: "notification body. Embeds {{reaction emoji}}",
         )
     }
+
+    public static var incomingReactionSticker: String {
+        OWSLocalizedString(
+            "REACTION_STICKER_INCOMING_NOTIFICATION_BODY_FORMAT",
+            comment: "notification body.",
+        )
+    }
+
+    public static var incomingReactionStickerTextMessage: String {
+        OWSLocalizedString(
+            "REACTION_STICKER_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT",
+            comment: "notification body. Embeds {{body text}}",
+        )
+    }
+
+    public static var incomingReactionStickerViewOnceMessage: String {
+        OWSLocalizedString(
+            "REACTION_STICKER_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT",
+            comment: "notification body.",
+        )
+    }
+
+    public static var incomingReactionStickerStickerMessage: String {
+        OWSLocalizedString(
+            "REACTION_STICKER_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT",
+            comment: "notification body.",
+        )
+    }
+
+    public static var incomingReactionStickerContactShareMessage: String {
+        OWSLocalizedString(
+            "REACTION_STICKER_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT",
+            comment: "notification body.",
+        )
+    }
+
+    public static var incomingReactionStickerAlbumMessage: String {
+        OWSLocalizedString(
+            "REACTION_STICKER_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT",
+            comment: "notification body.",
+        )
+    }
+
+    public static var incomingReactionStickerPhotoMessage: String {
+        OWSLocalizedString(
+            "REACTION_STICKER_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT",
+            comment: "notification body.",
+        )
+    }
+
+    public static var incomingReactionStickerVideoMessage: String {
+        OWSLocalizedString(
+            "REACTION_STICKER_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT",
+            comment: "notification body.",
+        )
+    }
+
+    public static var incomingReactionStickerVoiceMessage: String {
+        OWSLocalizedString(
+            "REACTION_STICKER_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT",
+            comment: "notification body.",
+        )
+    }
+
+    public static var incomingReactionStickerAudioMessage: String {
+        OWSLocalizedString(
+            "REACTION_STICKER_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT",
+            comment: "notification body.",
+        )
+    }
+
+    public static var incomingReactionStickerGifMessage: String {
+        OWSLocalizedString(
+            "REACTION_STICKER_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT",
+            comment: "notification body.",
+        )
+    }
+
+    public static var incomingReactionStickerFileMessage: String {
+        OWSLocalizedString(
+            "REACTION_STICKER_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT",
+            comment: "notification body.",
+        )
+    }
 }
 
 // MARK: -

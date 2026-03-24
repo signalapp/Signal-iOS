@@ -969,13 +969,29 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 return nil
             }
         }() {
-            notificationBody = String(format: NotificationStrings.incomingReactionTextMessageFormat, reaction.emoji, bodyDescription)
+            if reaction.sticker != nil {
+                notificationBody = String(format: NotificationStrings.incomingReactionStickerTextMessage, bodyDescription)
+            } else {
+                notificationBody = String(format: NotificationStrings.incomingReactionTextMessageFormat, reaction.emoji, bodyDescription)
+            }
         } else if message.isViewOnceMessage {
-            notificationBody = String(format: NotificationStrings.incomingReactionViewOnceMessageFormat, reaction.emoji)
+            if reaction.sticker != nil {
+                notificationBody = NotificationStrings.incomingReactionStickerViewOnceMessage
+            } else {
+                notificationBody = String(format: NotificationStrings.incomingReactionViewOnceMessageFormat, reaction.emoji)
+            }
         } else if message.messageSticker != nil {
-            notificationBody = String(format: NotificationStrings.incomingReactionStickerMessageFormat, reaction.emoji)
+            if reaction.sticker != nil {
+                notificationBody = NotificationStrings.incomingReactionStickerStickerMessage
+            } else {
+                notificationBody = String(format: NotificationStrings.incomingReactionStickerMessageFormat, reaction.emoji)
+            }
         } else if message.contactShare != nil {
-            notificationBody = String(format: NotificationStrings.incomingReactionContactShareMessageFormat, reaction.emoji)
+            if reaction.sticker != nil {
+                notificationBody = NotificationStrings.incomingReactionStickerContactShareMessage
+            } else {
+                notificationBody = String(format: NotificationStrings.incomingReactionContactShareMessageFormat, reaction.emoji)
+            }
         } else if
             let messageRowId = message.sqliteRowId,
             let mediaAttachments = DependenciesBridge.shared.attachmentStore
@@ -992,27 +1008,63 @@ public class NotificationPresenterImpl: NotificationPresenter {
             let firstMimeType = firstAttachment.attachment.mimeType
 
             if mediaAttachments.count > 1 {
-                notificationBody = String(format: NotificationStrings.incomingReactionAlbumMessageFormat, reaction.emoji)
+                if reaction.sticker != nil {
+                    notificationBody = NotificationStrings.incomingReactionStickerAlbumMessage
+                } else {
+                    notificationBody = String(format: NotificationStrings.incomingReactionAlbumMessageFormat, reaction.emoji)
+                }
             } else if MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(firstMimeType) {
-                notificationBody = String(format: NotificationStrings.incomingReactionGifMessageFormat, reaction.emoji)
+                if reaction.sticker != nil {
+                    notificationBody = NotificationStrings.incomingReactionStickerGifMessage
+                } else {
+                    notificationBody = String(format: NotificationStrings.incomingReactionGifMessageFormat, reaction.emoji)
+                }
             } else if MimeTypeUtil.isSupportedImageMimeType(firstMimeType) {
-                notificationBody = String(format: NotificationStrings.incomingReactionPhotoMessageFormat, reaction.emoji)
+                if reaction.sticker != nil {
+                    notificationBody = NotificationStrings.incomingReactionStickerPhotoMessage
+                } else {
+                    notificationBody = String(format: NotificationStrings.incomingReactionPhotoMessageFormat, reaction.emoji)
+                }
             } else if
                 MimeTypeUtil.isSupportedVideoMimeType(firstMimeType),
                 firstRenderingFlag == .shouldLoop
             {
-                notificationBody = String(format: NotificationStrings.incomingReactionGifMessageFormat, reaction.emoji)
+                if reaction.sticker != nil {
+                    notificationBody = NotificationStrings.incomingReactionStickerGifMessage
+                } else {
+                    notificationBody = String(format: NotificationStrings.incomingReactionGifMessageFormat, reaction.emoji)
+                }
             } else if MimeTypeUtil.isSupportedVideoMimeType(firstMimeType) {
-                notificationBody = String(format: NotificationStrings.incomingReactionVideoMessageFormat, reaction.emoji)
+                if reaction.sticker != nil {
+                    notificationBody = NotificationStrings.incomingReactionStickerVideoMessage
+                } else {
+                    notificationBody = String(format: NotificationStrings.incomingReactionVideoMessageFormat, reaction.emoji)
+                }
             } else if firstRenderingFlag == .voiceMessage {
-                notificationBody = String(format: NotificationStrings.incomingReactionVoiceMessageFormat, reaction.emoji)
+                if reaction.sticker != nil {
+                    notificationBody = NotificationStrings.incomingReactionStickerVoiceMessage
+                } else {
+                    notificationBody = String(format: NotificationStrings.incomingReactionVoiceMessageFormat, reaction.emoji)
+                }
             } else if MimeTypeUtil.isSupportedAudioMimeType(firstMimeType) {
-                notificationBody = String(format: NotificationStrings.incomingReactionAudioMessageFormat, reaction.emoji)
+                if reaction.sticker != nil {
+                    notificationBody = NotificationStrings.incomingReactionStickerAudioMessage
+                } else {
+                    notificationBody = String(format: NotificationStrings.incomingReactionAudioMessageFormat, reaction.emoji)
+                }
             } else {
-                notificationBody = String(format: NotificationStrings.incomingReactionFileMessageFormat, reaction.emoji)
+                if reaction.sticker != nil {
+                    notificationBody = NotificationStrings.incomingReactionStickerFileMessage
+                } else {
+                    notificationBody = String(format: NotificationStrings.incomingReactionFileMessageFormat, reaction.emoji)
+                }
             }
         } else {
-            notificationBody = String(format: NotificationStrings.incomingReactionFormat, reaction.emoji)
+            if reaction.sticker != nil {
+                notificationBody = NotificationStrings.incomingReactionSticker
+            } else {
+                notificationBody = String(format: NotificationStrings.incomingReactionFormat, reaction.emoji)
+            }
         }
 
         // Don't reply from lockscreen if anyone in this conversation is
