@@ -1850,6 +1850,12 @@ public final class MessageReceiver {
                 Logger.info("Ignoring message for left group")
                 return
             }
+
+            guard !groupThread.isTerminatedGroup else {
+                Logger.info("Ignoring message for terminated group")
+                return
+            }
+
             if let groupModel = groupThread.groupModel as? TSGroupModelV2, groupModel.isAnnouncementsOnly {
                 guard groupModel.groupMembership.isFullMemberAndAdministrator(envelope.sourceAci) else {
                     return
