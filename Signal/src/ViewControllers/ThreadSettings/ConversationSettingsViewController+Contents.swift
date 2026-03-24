@@ -1173,25 +1173,35 @@ extension ConversationSettingsViewController {
     private func buildTerminatedGroupSettingsSection(contents: OWSTableContents) {
         let section = OWSTableSection()
 
+        let itemName: String
+        if threadViewModel.isArchived {
+            itemName = OWSLocalizedString(
+                "CONVERSATION_SETTINGS_UNARCHIVE_CHAT",
+                comment: "Label for 'unarchive chat' action in conversation settings view.",
+            )
+        } else {
+            itemName = OWSLocalizedString(
+                "CONVERSATION_SETTINGS_ARCHIVE_CHAT",
+                comment: "Label for 'archive chat' action in conversation settings view.",
+            )
+        }
+
         section.add(OWSTableItem(
             customCellBlock: {
                 return OWSTableItem.buildCell(
                     icon: .contextMenuArchive,
-                    itemName: OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_ARCHIVE_CHAT",
-                        comment: "Label for 'archive chat' action in conversation settings view.",
-                    ),
+                    itemName: itemName,
                 )
             },
             actionBlock: { [weak self] in
-                self?.conversationSettingsViewDelegate?.archiveConversation()
+                self?.conversationSettingsViewDelegate?.toggleConversationArchived()
             },
         ))
 
         section.add(OWSTableItem(
             customCellBlock: {
                 return OWSTableItem.buildCell(
-                    icon: .contextMenuArchive,
+                    icon: .contextMenuDelete,
                     itemName: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_DELETE_CHAT",
                         comment: "Label for 'delete chat' action in conversation settings view.",

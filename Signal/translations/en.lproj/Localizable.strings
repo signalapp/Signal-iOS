@@ -2488,6 +2488,9 @@
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Only Admins";
 
+/* Label for 'unarchive chat' action in conversation settings view. */
+"CONVERSATION_SETTINGS_UNARCHIVE_CHAT" = "Unarchive Chat";
+
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
 

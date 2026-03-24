@@ -331,7 +331,7 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
         threadActionProviderDelegate?.deleteThreadWithConfirmation(threadViewModel: threadViewModel)
     }
 
-    public func archiveConversation() {
+    public func toggleConversationArchived() {
         threadActionProviderDelegate?.toggleThreadIsArchived(threadViewModel: threadViewModel)
     }
 }

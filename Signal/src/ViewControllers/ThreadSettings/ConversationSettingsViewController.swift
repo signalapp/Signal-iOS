@@ -20,7 +20,7 @@ public enum ConversationSettingsPresentationMode: UInt {
 public protocol ConversationSettingsViewDelegate: AnyObject {
     func conversationSettingsDidRequestConversationSearch()
     func deleteConversation()
-    func archiveConversation()
+    func toggleConversationArchived()
 }
 
 // MARK: -
