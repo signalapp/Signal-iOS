@@ -306,14 +306,6 @@ public class Attachment {
         )
     }
 
-    public var isUploadedToTransitTier: Bool {
-        return latestTransitTierInfo != nil
-    }
-
-    public var hasMediaTierInfo: Bool {
-        return mediaTierInfo != nil
-    }
-
     public func asStream() -> AttachmentStream? {
         return AttachmentStream(attachment: self)
     }

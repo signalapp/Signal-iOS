@@ -398,17 +398,16 @@ class CVAttachmentProgressView: ManualLayoutView {
 
         switch direction {
         case .upload(let attachmentStream):
-            guard !attachmentStream.attachment.isUploadedToTransitTier else {
-                stateView.state = .uploadProgress(progress: 1)
-                return
+            if attachmentStream.attachment.latestTransitTierInfo != nil {
+                updateState(uploadProgress: 1)
+            } else {
+                updateState(uploadProgress: progress)
             }
         case .download:
             owsFailDebug("Invalid attachment.")
             stateView.state = .uploadUnknownProgress
             return
         }
-
-        updateState(uploadProgress: progress)
     }
 
     private func updateState(uploadProgress progress: NSNumber?) {
@@ -429,7 +428,7 @@ class CVAttachmentProgressView: ManualLayoutView {
     private func updateUploadProgress(attachmentStream: AttachmentStream) {
         AssertIsOnMainThread()
 
-        if attachmentStream.attachment.isUploadedToTransitTier {
+        if attachmentStream.attachment.latestTransitTierInfo != nil {
             stateView.state = .uploadProgress(progress: 1)
         } else {
             stateView.state = .uploadUnknownProgress
