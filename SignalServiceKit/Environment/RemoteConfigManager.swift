@@ -359,6 +359,10 @@ public class RemoteConfig {
         ))
     }
 
+    public var shouldUseDynamicSendMessageTimeout: Bool {
+        return !isEnabled(.dynamicSendMessageTimeoutKillSwitch)
+    }
+
     // MARK: - RingRTC
 
     public var ringrtcNwPathMonitorTrial: Bool {
@@ -595,6 +599,7 @@ private enum IsEnabledFlag: String, FlagType {
     case cardGiftDonationKillSwitch = "ios.cardGiftDonationKillSwitch"
     case cardMonthlyDonationKillSwitch = "ios.cardMonthlyDonationKillSwitch"
     case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
+    case dynamicSendMessageTimeoutKillSwitch = "ios.dynamicSendMessageTimeoutKillSwitch"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
     case groupTerminateReceiveKillSwitch = "ios.groupTerminateReceiveKillSwitch"
@@ -622,6 +627,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .cardGiftDonationKillSwitch: false
         case .cardMonthlyDonationKillSwitch: false
         case .cardOneTimeDonationKillSwitch: false
+        case .dynamicSendMessageTimeoutKillSwitch: true
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
         case .groupTerminateReceiveKillSwitch: true

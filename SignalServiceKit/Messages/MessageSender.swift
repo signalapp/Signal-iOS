@@ -647,7 +647,6 @@ public class MessageSender {
         var canRefreshExpiringGroupSendEndorsements = true
         var canUseMultiRecipientSealedSender = true
         var canHandleMultiRecipientMismatchedDevices = true
-        var canHandleMultiRecipientStaleDevices = true
 
         func mutated(_ block: (inout Self) -> Void) -> Self {
             var mutableSelf = self
@@ -841,12 +840,8 @@ public class MessageSender {
                     retryRecoveryState = recoveryState.mutated({ $0.canUseMultiRecipientSealedSender = false })
                     break
                 }
-                if recoveryState.canHandleMultiRecipientMismatchedDevices, sendMessageFailure.containsAny(of: .deviceUpdate) {
+                if recoveryState.canHandleMultiRecipientMismatchedDevices, sendMessageFailure.containsAny(of: .mismatchedDevices) {
                     retryRecoveryState = recoveryState.mutated({ $0.canHandleMultiRecipientMismatchedDevices = false })
-                    break
-                }
-                if recoveryState.canHandleMultiRecipientStaleDevices, sendMessageFailure.containsAny(of: .staleDevices) {
-                    retryRecoveryState = recoveryState.mutated({ $0.canHandleMultiRecipientStaleDevices = false })
                     break
                 }
             }
@@ -1042,7 +1037,19 @@ public class MessageSender {
     }
 
     static func isRetryableError(_ error: any Error) -> Bool {
-        return (error.isRetryable && error.httpStatusCode != 508) || error.httpStatusCode == 429 || error is AccountChecker.RateLimitError
+        if error.isRetryable, error.httpStatusCode != 508 {
+            return true
+        }
+        if error.httpStatusCode == 429 {
+            return true
+        }
+        if case SignalError.rateLimitedError(retryAfter: _, message: _) = error {
+            return true
+        }
+        if error is AccountChecker.RateLimitError {
+            return true
+        }
+        return false
     }
 
     private func normalizeRecipientStatesIfNeeded(

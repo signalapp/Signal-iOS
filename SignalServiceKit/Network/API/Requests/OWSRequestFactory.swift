@@ -11,7 +11,6 @@ public enum OWSRequestFactory {
     static let textSecureAccountsAPI = "v1/accounts"
     static let textSecureAttributesAPI = "v1/accounts/attributes/"
     static let textSecureMessagesAPI = "v1/messages/"
-    static let textSecureMultiRecipientMessageAPI = "v1/messages/multi_recipient"
     static let textSecureKeysAPI = "v2/keys"
     static let textSecureSignedKeysAPI = "v2/keys/signed"
     static let textSecureDirectoryAPI = "v1/directory"
@@ -133,34 +132,7 @@ public enum OWSRequestFactory {
         return request
     }
 
-    static func submitMultiRecipientMessageRequest(
-        ciphertext: Data,
-        timestamp: UInt64,
-        isOnline: Bool,
-        isUrgent: Bool,
-        auth: TSRequest.SealedSenderAuth,
-    ) -> TSRequest {
-        owsAssertDebug(timestamp > 0)
-
-        // We build the URL by hand instead of passing the query parameters into the query parameters
-        // AFNetworking won't handle both query parameters and an httpBody (which we need here)
-        var components = URLComponents(string: self.textSecureMultiRecipientMessageAPI)!
-        components.queryItems = [
-            URLQueryItem(name: "ts", value: "\(timestamp)"),
-            URLQueryItem(name: "online", value: isOnline ? "true" : "false"),
-            URLQueryItem(name: "urgent", value: isUrgent ? "true" : "false"),
-            URLQueryItem(name: "story", value: auth.isStory ? "true" : "false"),
-        ]
-
-        var request = TSRequest(url: components.url!, method: "PUT", parameters: nil)
-        request.timeoutInterval = sendMessageTimeout(estimatedRequestSize: ciphertext.count + 200)
-        request.headers["Content-Type"] = "application/vnd.signal-messenger.mrm"
-        request.auth = .sealedSender(auth)
-        request.body = .data(ciphertext)
-        return request
-    }
-
-    private static func sendMessageTimeout(estimatedRequestSize: Int) -> TimeInterval {
+    static func sendMessageTimeout(estimatedRequestSize: Int) -> TimeInterval {
         let bandwidthEstimate: Double = 40_000 // kbit/s
         let transferEstimate = Double(estimatedRequestSize) / (bandwidthEstimate / 8)
         let latencyEstimate: Double = Self.textSecureHTTPTimeOut

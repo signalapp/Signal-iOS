@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 /// Durably enqueues outgoing messages.
 ///
@@ -545,6 +546,9 @@ public class MessageSenderJobQueue {
                 // expect we'll be able to complete the entire send successfully.
                 if let retryAfterDelay = error.httpResponseHeaders?.retryAfterTimeInterval {
                     suggestedRetryDelay = max(suggestedRetryDelay, retryAfterDelay)
+                }
+                if case SignalError.rateLimitedError(retryAfter: let retryAfter, message: _) = error {
+                    suggestedRetryDelay = max(suggestedRetryDelay, retryAfter)
                 }
                 // If there's a Retry-After from the AccountChecker, we want to wait for
                 // the sum of the Retry-Afters. (This avoids pathological O(n^2) behavior.)
