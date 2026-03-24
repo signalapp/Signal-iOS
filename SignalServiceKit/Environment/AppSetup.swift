@@ -543,7 +543,7 @@ extension AppSetup.GlobalsContinuation {
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
         )
 
-        let attachmentThumbnailService = AttachmentThumbnailServiceImpl()
+        let attachmentThumbnailService = AttachmentThumbnailServiceImpl(remoteConfigProvider: remoteConfigProvider)
         let attachmentUploadManager = AttachmentUploadManagerImpl(
             accountKeyStore: accountKeyStore,
             attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),

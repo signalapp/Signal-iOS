@@ -251,6 +251,13 @@ public class RemoteConfig {
         ))
     }
 
+    public var backupMaxThumbnailFileSize: UInt32 {
+        return getUInt32Value(
+            forFlag: .maxThumbnailFileSizeBytes,
+            defaultValue: AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes,
+        )
+    }
+
     public var backupListMediaDefaultRefreshInterval: TimeInterval {
         let defaultValue: UInt64
         if BuildFlags.Backups.useLowerDefaultListMediaRefreshInterval {
@@ -652,6 +659,7 @@ private enum ValueFlag: String, FlagType {
     case maxGroupSizeRecommended = "global.groupsv2.maxGroupSize"
     case maxNicknameLength = "global.nicknames.max"
     case maxSenderKeyAge = "ios.maxSenderKeyAge"
+    case maxThumbnailFileSizeBytes = "global.backups.maxThumbnailFileSizeBytes"
     case mediaTierFallbackCdnNumber = "global.backups.mediaTierFallbackCdnNumber"
     case messageQueueTimeInSeconds = "global.messageQueueTimeInSeconds"
     case messageSendLogEntryLifetime = "ios.messageSendLogEntryLifetime"
@@ -695,6 +703,7 @@ private enum ValueFlag: String, FlagType {
         case .maxGroupSizeRecommended: true
         case .maxNicknameLength: false
         case .maxSenderKeyAge: true
+        case .maxThumbnailFileSizeBytes: true
         case .mediaTierFallbackCdnNumber: true
         case .messageQueueTimeInSeconds: false
         case .messageSendLogEntryLifetime: false
