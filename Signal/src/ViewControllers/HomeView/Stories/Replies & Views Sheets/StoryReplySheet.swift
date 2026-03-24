@@ -114,6 +114,7 @@ extension StoryReplySheet {
         }
 
         let stickerDataSource: MessageStickerDataSource?
+        let stickerImage: UIImage?
         if let stickerInfo = reaction.sticker {
             let stickerMetadata = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 StickerManager.installedStickerMetadata(stickerInfo: stickerInfo, transaction: tx)
@@ -128,6 +129,8 @@ extension StoryReplySheet {
                 owsFailDebug("Could not read sticker data for story reaction")
                 return
             }
+
+            stickerImage = SDAnimatedImage(data: stickerData)
 
             let draft = MessageStickerDraft(
                 info: stickerInfo,
@@ -145,6 +148,7 @@ extension StoryReplySheet {
             }
         } else {
             stickerDataSource = nil
+            stickerImage = nil
         }
 
         owsAssertDebug(
@@ -166,7 +170,12 @@ extension StoryReplySheet {
 
         tryToSendMessage(builder, messageBody: nil, messageStickerDraft: stickerDataSource)
 
-        await ReactionFlybyAnimation(reaction: reaction.emoji).present(from: self)
+        Task {
+            await ReactionFlybyAnimation(
+                reaction: reaction.emoji,
+                stickerImage: stickerImage,
+            ).present(from: self)
+        }
     }
 }
 

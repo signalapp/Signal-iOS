@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SDWebImage
 import SignalServiceKit
 import SignalUI
 public import UIKit
@@ -10,9 +11,12 @@ public import UIKit
 public class ReactionFlybyAnimation: UIView {
     private static let maxWidth: CGFloat = 500
     let reaction: String
-    init(reaction: String) {
-        owsAssertDebug(reaction.isSingleEmoji)
+    private let stickerImage: UIImage?
+
+    init(reaction: String, stickerImage: UIImage?) {
+        owsAssertDebug(stickerImage != nil || reaction.isSingleEmoji)
         self.reaction = reaction
+        self.stickerImage = stickerImage
         super.init(frame: .zero)
         isUserInteractionEnabled = false
     }
@@ -147,24 +151,42 @@ public class ReactionFlybyAnimation: UIView {
         size: CGFloat,
         rotation: ClosedRange<CGFloat>? = nil,
     ) -> () -> Void {
-        let font = UIFont.systemFont(ofSize: size)
+        let containerSize: CGSize
+        let contentView: UIView
 
-        let label = UILabel()
-        label.text = reaction
-        label.textAlignment = .center
-        label.font = font
-
-        let reactionSize = reaction.boundingRect(
-            with: CGSize(square: .greatestFiniteMagnitude),
-            options: .init(rawValue: 0),
-            attributes: [.font: font],
-            context: nil,
-        ).size
-
-        let container = OWSLayerView(frame: CGRect(origin: .zero, size: reactionSize * 4)) { view in
-            label.frame = view.bounds
+        if let stickerImage {
+            let imageView = SDAnimatedImageView()
+            imageView.contentMode = .scaleAspectFit
+            imageView.clipsToBounds = true
+            if let animated = stickerImage as? SDAnimatedImage {
+                imageView.image = animated
+            } else {
+                imageView.image = stickerImage
+            }
+            containerSize = CGSize(square: size * 2)
+            imageView.frame = CGRect(origin: .zero, size: containerSize)
+            contentView = imageView
+        } else {
+            let font = UIFont.systemFont(ofSize: size)
+            let label = UILabel()
+            label.text = reaction
+            label.textAlignment = .center
+            label.font = font
+            let reactionSize = reaction.boundingRect(
+                with: CGSize(square: .greatestFiniteMagnitude),
+                options: .init(rawValue: 0),
+                attributes: [.font: font],
+                context: nil,
+            ).size
+            containerSize = reactionSize * 4
+            label.frame = CGRect(origin: .zero, size: containerSize)
+            contentView = label
         }
-        container.addSubview(label)
+
+        let container = OWSLayerView(frame: CGRect(origin: .zero, size: containerSize)) { view in
+            contentView.frame = view.bounds
+        }
+        container.addSubview(contentView)
         if let rotation {
             container.transform = .init(rotationAngle: rotation.lowerBound.toRadians)
         }
@@ -172,9 +194,9 @@ public class ReactionFlybyAnimation: UIView {
         let xPosition: CGFloat
         switch relativeXPosition {
         case .left(let offset):
-            xPosition = offset - (container.width / 2) + (reactionSize.width / 2)
+            xPosition = offset - (container.width / 2) + (containerSize.width / 2)
         case .right(let offset):
-            xPosition = bounds.maxX - container.width - offset + ((container.width - reactionSize.width) / 2)
+            xPosition = bounds.maxX - container.width - offset + ((container.width - containerSize.width) / 2)
         case .center(let offset):
             xPosition = bounds.midX - (container.width / 2) + offset
         }
@@ -183,7 +205,7 @@ public class ReactionFlybyAnimation: UIView {
 
         return {
             UIView.addKeyframe(withRelativeStartTime: relativeStartTime, relativeDuration: relativeDuration) {
-                container.frame.origin.y = -container.height
+                container.frame.origin.y = -(container.height + contentView.height)
                 if let rotation {
                     container.transform = .init(rotationAngle: rotation.upperBound.toRadians)
                 }
