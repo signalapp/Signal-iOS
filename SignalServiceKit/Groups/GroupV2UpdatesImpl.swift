@@ -70,6 +70,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
                     let groupThread = thread as? TSGroupThread,
                     let groupModel = groupThread.groupModel as? TSGroupModelV2,
                     groupModel.groupMembership.isLocalUserFullOrInvitedMember,
+                    !groupModel.isTerminated,
                     let groupSecretParams = try? groupModel.secretParams(),
                     let groupId = try? groupSecretParams.getPublicParams().getGroupIdentifier(),
                     !SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: transaction)
