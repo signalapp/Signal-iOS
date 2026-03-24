@@ -51,6 +51,7 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
             componentDelegate: componentDelegate,
             sharpCorners: sharpCornersForQuotedMessage,
             cellMeasurement: cellMeasurement,
+            mediaCache: mediaCache
         )
     }
 
@@ -81,8 +82,20 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
         componentView: CVComponentView,
         renderItem: CVRenderItem,
     ) -> Bool {
+        guard let componentView = componentView as? CVComponentViewQuotedReply else {
+            owsFailDebug("Unexpected componentView.")
+            return false
+        }
 
-        componentDelegate.didTapQuotedReply(quotedReplyModel)
+        let quotedMessageView = componentView.quotedMessageView
+        let tapPoint = sender.location(in: quotedMessageView)
+        if let packInfo = quotedMessageView.stickerPackInfoForReactionTap(at: tapPoint) {
+            componentDelegate.didTapStickerPack(packInfo)
+        } else if quotedMessageView.handleUndownloadedStickerReactionTapIfNeeded(at: tapPoint) {
+            // Download was triggered via the CVQuotedMessageViewDelegate.
+        } else {
+            componentDelegate.didTapQuotedReply(quotedReplyModel)
+        }
         return true
     }
 

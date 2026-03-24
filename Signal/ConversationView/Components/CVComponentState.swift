@@ -1207,7 +1207,10 @@ private extension CVComponentState.Builder {
             return try buildContact(message: message, contact: contact)
         }
 
-        if let messageSticker = message.messageSticker, !message.isStoryReply {
+        if
+            let messageSticker = message.messageSticker,
+            !(message.isStoryReply && !message.isGroupStoryReply)
+        {
             return try buildSticker(message: message, messageSticker: messageSticker)
         }
 
@@ -1582,8 +1585,55 @@ private extension CVComponentState.Builder {
                 transaction: transaction,
             )
         }
+
+        let storyReactionSticker: CVComponentState.Sticker?
+        if
+            message.isStoryReply && !message.isGroupStoryReply,
+            let messageSticker = message.messageSticker,
+            let rowId = message.sqliteRowId,
+            let attachment = DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
+                for: .messageSticker(messageRowId: rowId),
+                tx: transaction,
+            )
+        {
+            if let referencedAttachmentStream = attachment.asReferencedStream {
+                let stickerMetadata = EncryptedStickerMetadata(
+                    stickerInfo: messageSticker.info,
+                    stickerType: StickerManager.stickerType(
+                        forContentType: referencedAttachmentStream.attachment.mimeType
+                    ),
+                    emojiString: messageSticker.emoji,
+                    encryptedStickerDataUrl: referencedAttachmentStream.attachmentStream.fileURL,
+                    encryptionKey: referencedAttachmentStream.attachmentStream.attachment.encryptionKey,
+                    plaintextLength: referencedAttachmentStream.attachmentStream.info.unencryptedByteCount,
+                )
+
+                storyReactionSticker = .available(
+                    stickerMetadata: stickerMetadata,
+                    attachmentStream: referencedAttachmentStream,
+                )
+            } else if let attachmentPointer = attachment.asReferencedAnyPointer {
+                let downloadState = attachmentPointer.attachmentPointer.downloadState(tx: transaction)
+                switch downloadState {
+                case .enqueuedOrDownloading:
+                    storyReactionSticker = .downloading(attachmentPointer: attachmentPointer)
+                case .failed, .none:
+                    storyReactionSticker = .failedOrPending(
+                        attachmentPointer: attachmentPointer,
+                        downloadState: downloadState,
+                    )
+                }
+            } else {
+                // If undownloadable, we drop the sticker and use reaction emoji.
+                storyReactionSticker = nil
+            }
+        } else {
+            storyReactionSticker = nil
+        }
+
         let viewState = CVQuotedMessageView.stateForConversation(
             quotedReplyModel: quotedReplyModel,
+            storyReactionSticker: storyReactionSticker,
             displayableQuotedText: displayableQuotedText,
             conversationStyle: conversationStyle,
             isOutgoing: isOutgoing,

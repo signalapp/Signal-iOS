@@ -99,7 +99,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private var sharpCornersForQuotedMessage: OWSDirectionalRectCorner {
         var sharpCorners = sharpCorners
 
-        if itemViewState.senderNameState != nil || componentState.quotedReply?.quotedReplyModel.storyReactionEmoji != nil {
+        if itemViewState.senderNameState != nil || componentState.quotedReply?.quotedReplyModel.storyReaction != nil {
             sharpCorners.insert(.topLeading)
             sharpCorners.insert(.topTrailing)
         }

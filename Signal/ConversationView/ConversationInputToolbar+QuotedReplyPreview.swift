@@ -520,7 +520,7 @@ private class QuotedMessageSnippetView: UIView {
             imageView.contentMode = .scaleAspectFit
             thumbnailView = imageView
 
-        case .payment, .text, .viewOnce, .contactShare, .storyReactionEmoji, .poll:
+        case .payment, .text, .viewOnce, .contactShare, .storyReaction, .poll:
             break
         }
 
@@ -627,7 +627,7 @@ private class QuotedMessageSnippetView: UIView {
             return (attachment.mimeType, reference.renderingFlag)
         case .edit(_, _, let innerContent):
             return mimeTypeAndRenderingFlag(innerContent)
-        case .giftBadge, .text, .payment, .viewOnce, .contactShare, .storyReactionEmoji, .poll:
+        case .giftBadge, .text, .payment, .viewOnce, .contactShare, .storyReaction, .poll:
             return nil
         }
     }
@@ -683,7 +683,7 @@ private class QuotedMessageSnippetView: UIView {
             return reference.sourceFilename
         case .edit(_, _, let innerContent):
             return sourceFilenameForSnippet(innerContent)
-        case .giftBadge, .text, .payment, .contactShare, .viewOnce, .storyReactionEmoji, .poll:
+        case .giftBadge, .text, .payment, .contactShare, .viewOnce, .storyReaction, .poll:
             return nil
         }
     }

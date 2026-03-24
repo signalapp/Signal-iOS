@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
+import SDWebImage
+public import SignalServiceKit
 public import SignalUI
 
 public protocol CVQuotedMessageViewDelegate: AnyObject {
@@ -17,6 +18,7 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
 
     public struct State: Equatable {
         let quotedReplyModel: QuotedReplyModel
+        let storyReactionSticker: CVComponentState.Sticker?
         let displayableQuotedText: DisplayableText?
         let conversationStyle: ConversationStyle
         let isOutgoing: Bool
@@ -49,6 +51,7 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
     private let quoteContentSourceLabel = CVLabel()
     private let quoteReactionHeaderLabel = CVLabel()
     private let quoteReactionLabel = CVLabel()
+    private var quoteReactionStickerView: ReusableMediaView?
     private let quotedImageView = CVImageView()
     private let remotelySourcedContentIconView = CVImageView()
 
@@ -58,6 +61,7 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
 
     static func stateForConversation(
         quotedReplyModel: QuotedReplyModel,
+        storyReactionSticker: CVComponentState.Sticker?,
         displayableQuotedText: DisplayableText?,
         conversationStyle: ConversationStyle,
         isOutgoing: Bool,
@@ -65,6 +69,7 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
     ) -> State {
         return State(
             quotedReplyModel: quotedReplyModel,
+            storyReactionSticker: storyReactionSticker,
             displayableQuotedText: displayableQuotedText,
             conversationStyle: conversationStyle,
             isOutgoing: isOutgoing,
@@ -145,7 +150,12 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
         }
 
         var quotedReactionRect: CGRect {
-            CGRect(x: 0, y: quotedAttachmentSize.height - 32, width: hasQuotedThumbnail ? 32 : 40, height: 32)
+            CGRect(
+                x: 0,
+                y: quotedAttachmentSize.height - 46,
+                width: hasQuotedThumbnail ? 46 : 52,
+                height: 46,
+            )
         }
 
         let remotelySourcedContentIconSize: CGFloat = 16
@@ -200,7 +210,7 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
         }
 
         var hasReaction: Bool {
-            quotedReplyModel.storyReactionEmoji != nil
+            quotedReplyModel.storyReaction != nil
         }
 
         var mimeType: String? {
@@ -429,7 +439,7 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
         var quoteReactionLabelConfig: CVLabelConfig {
             let font = UIFont.systemFont(ofSize: 28)
             return CVLabelConfig(
-                text: .attributedText((quotedReplyModel.storyReactionEmoji ?? "").styled(with: .lineHeightMultiple(0.6))),
+                text: .attributedText((quotedReplyModel.storyReaction?.emoji ?? "").styled(with: .lineHeightMultiple(0.6))),
                 displayConfig: .forUnstyledText(font: font, textColor: quotedTextColor),
                 font: font,
                 textColor: quotedTextColor,
@@ -526,6 +536,7 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
         componentDelegate: CVComponentDelegate,
         sharpCorners: OWSDirectionalRectCorner,
         cellMeasurement: CVCellMeasurement,
+        mediaCache: CVMediaCache,
     ) {
         self.state = state
         self.delegate = delegate
@@ -702,11 +713,11 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
                     thumbnailView.frame = CGRect(origin: CGPoint(x: 16, y: 0), size: configurator.quotedAttachmentSize)
                 }
 
-                let reactionLabelConfig = configurator.quoteReactionLabelConfig
-                reactionLabelConfig.applyForRendering(label: quoteReactionLabel)
-
-                quoteReactionLabel.frame = configurator.quotedReactionRect
-                wrapper.addSubview(quoteReactionLabel)
+                addReactionView(
+                    to: wrapper,
+                    configurator: configurator,
+                    mediaCache: mediaCache
+                )
 
                 trailingView = wrapper
             } else {
@@ -715,11 +726,11 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
         } else if configurator.hasReaction {
             let wrapper = ManualLayoutView(name: "reactionWrapper")
 
-            let reactionLabelConfig = configurator.quoteReactionLabelConfig
-            reactionLabelConfig.applyForRendering(label: quoteReactionLabel)
-
-            quoteReactionLabel.frame = configurator.quotedReactionRect
-            wrapper.addSubview(quoteReactionLabel)
+            addReactionView(
+                to: wrapper,
+                configurator: configurator,
+                mediaCache: mediaCache
+            )
 
             trailingView = wrapper
         } else {
@@ -796,6 +807,22 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
 
     public func setIsCellVisible(_ isCellVisible: Bool) {
         quotedTextSpoilerConfigBuilder.isViewVisible = isCellVisible
+
+        if isCellVisible {
+            if
+                let quoteReactionStickerView,
+                quoteReactionStickerView.owner == self
+            {
+                quoteReactionStickerView.load()
+            }
+        } else {
+            if
+                let quoteReactionStickerView,
+                quoteReactionStickerView.owner == self
+            {
+                quoteReactionStickerView.unload()
+            }
+        }
     }
 
     // MARK: - Measurement
@@ -969,6 +996,118 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
         return animator
     }()
 
+    // MARK: - Story Reaction
+
+    /// Adds either a sticker image view or emoji label for the reaction, at `quotedReactionRect`.
+    private func addReactionView(
+        to wrapper: ManualLayoutView,
+        configurator: Configurator,
+        mediaCache: CVMediaCache
+    ) {
+        switch configurator.state.storyReactionSticker {
+        case .available(_, let attachment):
+            let attachmentStream = attachment.attachmentStream
+            let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.id)
+            let reusableMediaView: ReusableMediaView
+            if let cachedView = mediaCache.getMediaView(
+                cacheKey,
+                isAnimated: attachmentStream.contentType.isAnimatedImage
+            ) {
+                reusableMediaView = cachedView
+            } else {
+                let mediaViewAdapter = MediaViewAdapterSticker(
+                    attachmentStream: attachmentStream
+                )
+                reusableMediaView = ReusableMediaView(
+                    mediaViewAdapter: mediaViewAdapter,
+                    mediaCache: mediaCache
+                )
+                mediaCache.setMediaView(
+                    reusableMediaView,
+                    forKey: cacheKey,
+                    isAnimated: attachmentStream.contentType.isAnimatedImage
+                )
+            }
+
+            reusableMediaView.owner = self
+            self.quoteReactionStickerView = reusableMediaView
+            let mediaView = reusableMediaView.mediaView
+
+            mediaView.frame = configurator.quotedReactionRect
+            wrapper.addSubview(mediaView)
+        case .downloading(let attachmentPointer):
+            addUndownloadedStickerView(
+                to: wrapper,
+                attachmentPointer: attachmentPointer,
+                downloadState: .enqueuedOrDownloading,
+                configurator: configurator,
+                mediaCache: mediaCache
+            )
+        case .failedOrPending(let attachmentPointer, let downloadState):
+            addUndownloadedStickerView(
+                to: wrapper,
+                attachmentPointer: attachmentPointer,
+                downloadState: downloadState,
+                configurator: configurator,
+                mediaCache: mediaCache
+            )
+        case nil:
+            let reactionLabelConfig = configurator.quoteReactionLabelConfig
+            reactionLabelConfig.applyForRendering(label: quoteReactionLabel)
+            quoteReactionLabel.frame = configurator.quotedReactionRect
+            wrapper.addSubview(quoteReactionLabel)
+        }
+    }
+
+    private func addUndownloadedStickerView(
+        to wrapper: ManualLayoutView,
+        attachmentPointer: ReferencedAttachmentPointer,
+        downloadState: AttachmentDownloadState,
+        configurator: Configurator,
+        mediaCache: CVMediaCache,
+    ) {
+        let placeholderView = UIView()
+        placeholderView.backgroundColor = Theme.secondaryBackgroundColor
+        placeholderView.layer.cornerRadius = 18
+
+        let progressView = CVAttachmentProgressView(
+            direction: .download(
+                attachmentPointer: attachmentPointer.attachmentPointer,
+                downloadState: downloadState,
+            ),
+            colorConfiguration: .init(
+                conversationStyle: configurator.conversationStyle,
+                isIncoming: configurator.isIncoming
+            ),
+            mediaCache: mediaCache,
+        )
+        progressView.frame = configurator.quotedReactionRect
+        wrapper.addSubview(progressView)
+    }
+
+    /// If the point (in receiver's coordinate space) hits the sticker reaction view, returns
+    /// the `StickerPackInfo` needed to open the sticker pack sheet. Returns `nil` otherwise.
+    public func stickerPackInfoForReactionTap(at point: CGPoint) -> StickerPackInfo? {
+        guard let quoteReactionStickerView else { return nil }
+        guard quoteReactionStickerView.mediaView.superview != nil else { return nil }
+        let localPoint = convert(point, to: quoteReactionStickerView.mediaView)
+        guard quoteReactionStickerView.mediaView.bounds.contains(localPoint) else { return nil }
+        return state?.quotedReplyModel.storyReaction?.stickerInfo?.packInfo
+    }
+
+    /// If the tap hits an undownloaded sticker reaction, triggers a download
+    /// via the delegate and returns `true`. Returns `false` otherwise.
+    public func handleUndownloadedStickerReactionTapIfNeeded(at point: CGPoint) -> Bool {
+        guard let state else { return false }
+        switch state.storyReactionSticker {
+        case .failedOrPending(_, let downloadState) where downloadState == .none || downloadState == .failed:
+            delegate?.didTapDownloadQuotedReplyAttachment(state.quotedReplyModel)
+            return true
+        default:
+            return false
+        }
+    }
+
     // MARK: -
 
     @objc
@@ -1008,5 +1147,12 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
 
         tintView.reset()
         tintView.removeFromSuperview()
+
+        if
+            let quoteReactionStickerView,
+            quoteReactionStickerView.owner == self
+        {
+            quoteReactionStickerView.unload()
+        }
     }
 }

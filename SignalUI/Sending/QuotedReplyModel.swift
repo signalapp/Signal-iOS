@@ -370,7 +370,10 @@ public class QuotedReplyModel {
             }
             storyReaction = StoryReaction(
                 emoji: emoji,
-                sticker: stickerAttachment
+                sticker: stickerAttachment,
+                stickerInfo: stickerAttachment == nil
+                    ? nil
+                    : message.messageSticker?.info
             )
         } else {
             storyReaction = nil
