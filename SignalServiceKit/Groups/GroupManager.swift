@@ -654,6 +654,14 @@ public class GroupManager: NSObject {
         }
     }
 
+    // MARK: - Group Terminate
+
+    public static func terminateGroup(groupModel: TSGroupModelV2) async throws {
+        try await updateGroupV2(groupModel: groupModel, description: "Terminate group") { groupChangeSet in
+            groupChangeSet.setShouldTerminateGroup()
+        }
+    }
+
     // MARK: - Removed from Group or Invite Revoked
 
     public static func handleNotInGroup(groupId: GroupIdentifier) async {

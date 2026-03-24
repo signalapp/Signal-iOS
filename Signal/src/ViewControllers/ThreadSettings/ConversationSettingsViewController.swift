@@ -600,6 +600,78 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         ).startLeaveGroupFlow(rootViewController: self)
     }
 
+    func showEndGroupConfirmation(title: String?, description: String, action: @escaping () -> Void) {
+        let alert = ActionSheetController(
+            title: title,
+            message: description,
+        )
+
+        alert.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "END_GROUP_LABEL",
+                comment: "Label in conversation settings to end a group",
+            ),
+            style: .destructive,
+            handler: { _ in
+                action()
+            },
+        ))
+
+        alert.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(alert)
+    }
+
+    func didTapEndGroup() {
+        guard let groupModelV2 = currentGroupModel as? TSGroupModelV2 else {
+            return
+        }
+
+        let confirmationTitle = String(
+            format: OWSLocalizedString(
+                "END_GROUP_LABEL_SPECIFIC",
+                comment: "End group confirmation title for a specific group. Embeds {{ group name }}",
+            ),
+            groupModelV2.groupNameOrDefault,
+        )
+
+        let confirmationDescription1 = OWSLocalizedString(
+            "END_GROUP_DESCRIPTION",
+            comment: "End group confirmation description",
+        )
+
+        showEndGroupConfirmation(
+            title: confirmationTitle,
+            description: confirmationDescription1,
+            action: { [weak self] in
+                guard let self else { return }
+
+                let finalConfirmationDescription = OWSLocalizedString(
+                    "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION",
+                    comment: "Description for final confirmation screen when user tries to end a group",
+                )
+
+                showEndGroupConfirmation(title: nil, description: finalConfirmationDescription, action: {
+                    Task { @MainActor in
+                        do {
+                            try await ModalActivityIndicatorViewController.presentAndPropagateResult(from: self) {
+                                try await GroupManager.terminateGroup(groupModel: groupModelV2)
+                            }
+                            self.reloadThreadAndUpdateContent()
+                        } catch {
+                            OWSActionSheets.showActionSheet(
+                                title: nil,
+                                message: OWSLocalizedString(
+                                    "END_GROUP_ERROR_DESCRIPTION",
+                                    comment: "Body for error sheet shown if the group failed to end",
+                                ),
+                            )
+                        }
+                    }
+                })
+            },
+        )
+    }
+
     func didTapUnblockThread(completion: @escaping () -> Void = {}) {
         BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self) { [weak self] _ in
             self?.reloadThreadAndUpdateContent()

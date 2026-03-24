@@ -85,6 +85,8 @@ public class GroupsV2OutgoingChanges {
 
     private var membersToChangeLabel = [Aci: MemberLabel?]()
 
+    private var shouldTerminateGroup = false
+
     public init(groupSecretParams: GroupSecretParams) {
         self.groupSecretParams = groupSecretParams
     }
@@ -201,6 +203,11 @@ public class GroupsV2OutgoingChanges {
     public func setShouldUpdateLocalProfileKey() {
         owsAssertDebug(!shouldUpdateLocalProfileKey)
         shouldUpdateLocalProfileKey = true
+    }
+
+    public func setShouldTerminateGroup() {
+        owsAssertDebug(!shouldTerminateGroup)
+        shouldTerminateGroup = true
     }
 
     // MARK: - Change Protos
@@ -742,6 +749,13 @@ public class GroupsV2OutgoingChanges {
             ))
             actionsBuilder.addModifyMemberProfileKeys(actionBuilder.buildInfallibly())
             didChange = true
+        }
+
+        if BuildFlags.GroupTerminate.send {
+            if shouldTerminateGroup {
+                actionsBuilder.setTerminateGroup(GroupsProtoGroupChangeActionsTerminateGroupAction.builder().buildInfallibly())
+                didChange = true
+            }
         }
 
         // MARK: - Change action insertion point

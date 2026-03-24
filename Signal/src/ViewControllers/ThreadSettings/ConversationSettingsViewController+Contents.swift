@@ -80,6 +80,15 @@ extension ConversationSettingsViewController {
             contents.add(buildBlockAndLeaveSection())
         }
 
+        if
+            BuildFlags.GroupTerminate.send,
+            let groupModelV2 = currentGroupModel as? TSGroupModelV2,
+            groupModelV2.groupMembership.isLocalUserFullMemberAndAdministrator,
+            !groupModelV2.isTerminated
+        {
+            contents.add(buildEndGroupSection())
+        }
+
         if DebugFlags.internalSettings {
             contents.add(buildInternalSection())
         }
@@ -653,6 +662,34 @@ extension ConversationSettingsViewController {
                 },
             ))
         }
+
+        return section
+    }
+
+    private func buildEndGroupSection() -> OWSTableSection {
+        let section = OWSTableSection()
+
+        section.add(OWSTableItem(
+            customCellBlock: { [weak self] in
+                guard let self else {
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
+                }
+
+                return OWSTableItem.buildCell(
+                    icon: .xCircle,
+                    itemName: OWSLocalizedString(
+                        "END_GROUP_LABEL",
+                        comment: "Label in conversation settings to end a group",
+                    ),
+                    customColor: UIColor.ows_accentRed,
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "end_group"),
+                )
+            },
+            actionBlock: { [weak self] in
+                self?.didTapEndGroup()
+            },
+        ))
 
         return section
     }
