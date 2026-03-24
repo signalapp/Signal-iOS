@@ -13,6 +13,9 @@ class StoryGroupReplyViewItem {
     let interactionUniqueId: String
     let displayableText: DisplayableText?
     let reactionEmoji: String?
+    let reactionSticker: Attachment?
+    let reactionStickerInfo: StickerInfo?
+    let reactionStickerDownloadState: AttachmentDownloadState?
     let wasRemotelyDeleted: Bool
     let receivedAtTimestamp: UInt64
     let authorDisplayName: String?
@@ -54,9 +57,35 @@ class StoryGroupReplyViewItem {
         if let reactionEmoji = message.storyReactionEmoji {
             self.cellType = .init(kind: .reaction)
             self.reactionEmoji = reactionEmoji
+
+            let attachmentStore = DependenciesBridge.shared.attachmentStore
+            if
+                let messageRowId = message.sqliteRowId,
+                let attachment = attachmentStore.fetchAnyReferencedAttachment(
+                    for: .messageSticker(messageRowId: messageRowId),
+                    tx: transaction,
+                ),
+                let stickerInfo = message.messageSticker?.info
+            {
+                self.reactionSticker = attachment.attachment
+                self.reactionStickerInfo = stickerInfo
+                if attachment.attachment.asStream() == nil {
+                    self.reactionStickerDownloadState = attachment.attachment
+                        .asAnyPointer()?.downloadState(tx: transaction)
+                } else {
+                    self.reactionStickerDownloadState = nil
+                }
+            } else {
+                self.reactionSticker = nil
+                self.reactionStickerInfo = nil
+                self.reactionStickerDownloadState = nil
+            }
         } else {
             self.cellType = .init(kind: .text)
             self.reactionEmoji = nil
+            self.reactionSticker = nil
+            self.reactionStickerInfo = nil
+            self.reactionStickerDownloadState = nil
         }
     }
 }

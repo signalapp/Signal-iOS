@@ -5,6 +5,7 @@
 
 import Foundation
 import LibSignalClient
+import SDWebImage
 import SignalServiceKit
 import SignalUI
 import UIKit
@@ -24,6 +25,7 @@ extension StoryReplySheet {
     func tryToSendMessage(
         _ builder: TSOutgoingMessageBuilder,
         messageBody: ValidatedMessageBody?,
+        messageStickerDraft: MessageStickerDataSource?
     ) {
         guard let thread else {
             return owsFailDebug("Unexpectedly missing thread")
@@ -33,7 +35,11 @@ extension StoryReplySheet {
         guard !isThreadBlocked else {
             BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self) { [weak self] isBlocked in
                 guard !isBlocked else { return }
-                self?.tryToSendMessage(builder, messageBody: messageBody)
+                self?.tryToSendMessage(
+                    builder,
+                    messageBody: messageBody,
+                    messageStickerDraft: messageStickerDraft
+                )
             }
             return
         }
@@ -51,7 +57,11 @@ extension StoryReplySheet {
                 forceDarkTheme: true,
                 completion: { [weak self] didConfirmIdentity in
                     guard didConfirmIdentity else { return }
-                    self?.tryToSendMessage(builder, messageBody: messageBody)
+                    self?.tryToSendMessage(
+                        builder,
+                        messageBody: messageBody,
+                        messageStickerDraft: messageStickerDraft
+                    )
                 },
             ) else { return }
 
@@ -76,6 +86,7 @@ extension StoryReplySheet {
             let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
                 builder.build(transaction: transaction),
                 body: messageBody,
+                messageStickerDraft: messageStickerDraft
             )
             guard let preparedMessage = try? unpreparedMessage.prepare(tx: transaction) else {
                 owsFailDebug("Failed to prepare message")
@@ -95,12 +106,51 @@ extension StoryReplySheet {
         }
     }
 
-    func tryToSendReaction(_ reaction: String) {
-        owsAssertDebug(reaction.isSingleEmoji)
+    func tryToSendReaction(_ reaction: CustomReactionItem) async {
+        owsAssertDebug(reaction.emoji.isSingleEmoji)
 
         guard let thread else {
             return owsFailDebug("Unexpectedly missing thread")
         }
+
+        let stickerDataSource: MessageStickerDataSource?
+        if let stickerInfo = reaction.sticker {
+            let stickerMetadata = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                StickerManager.installedStickerMetadata(stickerInfo: stickerInfo, transaction: tx)
+            }
+
+            guard let stickerMetadata else {
+                owsFailDebug("Could not find installed sticker metadata for story reaction")
+                return
+            }
+
+            guard let stickerData = try? stickerMetadata.readStickerData() else {
+                owsFailDebug("Could not read sticker data for story reaction")
+                return
+            }
+
+            let draft = MessageStickerDraft(
+                info: stickerInfo,
+                stickerData: stickerData,
+                stickerType: stickerMetadata.stickerType,
+                emoji: reaction.emoji,
+            )
+
+            do {
+                stickerDataSource = try await DependenciesBridge.shared.messageStickerManager
+                    .buildDataSource(fromDraft: draft)
+            } catch {
+                owsFailDebug("Failed to validate sticker for story reaction: \(error)")
+                return
+            }
+        } else {
+            stickerDataSource = nil
+        }
+
+        owsAssertDebug(
+            !storyMessage.authorAddress.isSystemStoryAddress,
+            "Should be impossible to reply to system stories"
+        )
 
         owsAssertDebug(
             !storyMessage.authorAddress.isSystemStoryAddress,
@@ -111,28 +161,32 @@ extension StoryReplySheet {
             thread: thread,
             storyAuthorAci: storyMessage.authorAci,
             storyTimestamp: storyMessage.timestamp,
-            storyReactionEmoji: reaction,
+            storyReactionEmoji: reaction.emoji,
         )
 
-        tryToSendMessage(builder, messageBody: nil)
+        tryToSendMessage(builder, messageBody: nil, messageStickerDraft: stickerDataSource)
 
-        ReactionFlybyAnimation(reaction: reaction).present(from: self)
+        await ReactionFlybyAnimation(reaction: reaction.emoji).present(from: self)
     }
 }
 
 // MARK: - MessageReactionPickerDelegate
 
 extension StoryReplySheet {
-    func didSelectReaction(reaction: String, isRemoving: Bool, inPosition position: Int) {
-        tryToSendReaction(reaction)
+    func didSelectReaction(_ reaction: CustomReactionItem, isRemoving: Bool, inPosition position: Int) {
+        Task {
+            await tryToSendReaction(reaction)
+        }
     }
 
     func didSelectMore() {
         // nil is intentional, the message is for showing other reactions already
         // on the message, which we don't wanna do for stories.
-        let sheet = EmojiPickerSheet(message: nil) { [weak self] selectedEmoji in
-            guard let selectedEmoji else { return }
-            self?.tryToSendReaction(selectedEmoji.rawValue)
+        let sheet = ReactionPickerSheet(message: nil) { [weak self] reaction in
+            guard let self, let reaction else { return }
+            Task {
+                await self.tryToSendReaction(reaction)
+            }
         }
         sheet.overrideUserInterfaceStyle = .dark
         present(sheet, animated: true)
@@ -169,7 +223,7 @@ extension StoryReplySheet {
             storyTimestamp: storyMessage.timestamp,
         )
 
-        tryToSendMessage(builder, messageBody: messageBody)
+        tryToSendMessage(builder, messageBody: messageBody, messageStickerDraft: nil)
     }
 
     func storyReplyInputToolbarDidBeginEditing(_ storyReplyInputToolbar: StoryReplyInputToolbar) {}

@@ -212,7 +212,7 @@ class StoryReplyInputToolbar: UIView {
         textView.resignFirstResponder()
     }
 
-    private lazy var reactionPicker: MessageReactionPicker = MessageReactionPicker(selectedEmoji: nil, delegate: delegate, style: .inline)
+    private lazy var reactionPicker: MessageReactionPicker = MessageReactionPicker(selectedReaction: nil, delegate: delegate, style: .inline)
 
     private lazy var placeholderTextView: UITextView = {
         let placeholderTextView = buildTextView()

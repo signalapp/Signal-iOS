@@ -21,6 +21,8 @@ class StoryGroupReplyLoader {
         didSet { AssertIsOnMainThread() }
     }
 
+    public var attachmentIds = Set<Attachment.IDType>()
+
     var numberOfRows: Int { replyUniqueIds.count }
 
     private(set) var oldestLoadedRow: Int?
@@ -197,6 +199,10 @@ class StoryGroupReplyLoader {
         let replyUniqueIds = messageBatchFetcher.uniqueIdsAndRowIds.map { $0.uniqueId }
         let oldestLoadedRow = messageLoader.loadedInteractions.first.flatMap { replyUniqueIds.firstIndex(of: $0.uniqueId) }
         let newestLoadedRow = messageLoader.loadedInteractions.last.flatMap { replyUniqueIds.firstIndex(of: $0.uniqueId) }
+        var newAttachmentIds = Set<Attachment.IDType>()
+        newReplyItems.lazy
+            .compactMap(\.value.reactionSticker?.id)
+            .forEach({ newAttachmentIds.insert($0) })
 
         DispatchQueue.main.async {
             let wasScrolledToBottom = self.isScrolledToBottom
@@ -205,6 +211,7 @@ class StoryGroupReplyLoader {
             self.newestLoadedRow = newestLoadedRow
             self.replyUniqueIds = replyUniqueIds
             self.replyItems = newReplyItems
+            self.attachmentIds = newAttachmentIds
             self.tableView?.reloadData()
 
             if wasScrolledToBottom { self.scrollToBottomOfLoadWindow(animated: true) }

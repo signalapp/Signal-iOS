@@ -4,10 +4,17 @@
 //
 
 import BonMot
+import SDWebImage
 import SignalServiceKit
 import SignalUI
 
+protocol StoryGroupReplyCellDelegate: AnyObject {
+    func storyGroupReplyCellDidTapStickerPack(_ cell: StoryGroupReplyCell, stickerPackInfo: StickerPackInfo)
+    func storyGroupReplyCellDidTapDownloadSticker(_ cell: StoryGroupReplyCell)
+}
+
 class StoryGroupReplyCell: UITableViewCell {
+    weak var cellDelegate: StoryGroupReplyCellDelegate?
     lazy var avatarView = ConversationAvatarView(sizeClass: .twentyEight, localUserDisplayMode: .asUser, useAutolayout: true)
     lazy var messageLabel: UILabel = {
         let label = UILabel()
@@ -27,6 +34,32 @@ class StoryGroupReplyCell: UITableViewCell {
         label.textAlignment = .trailing
         return label
     }()
+
+    lazy var reactionStickerImageView: SDAnimatedImageView = {
+        let imageView = SDAnimatedImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        imageView.autoSetDimensions(to: CGSize(square: 28))
+        return imageView
+    }()
+
+    lazy var reactionStickerSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView(style: .medium)
+        spinner.tintColor = .ows_gray25
+        spinner.autoSetDimensions(to: CGSize(square: 28))
+        return spinner
+    }()
+
+    lazy var reactionStickerDownloadIcon: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = .ows_gray25
+        imageView.autoSetDimensions(to: CGSize(square: 28))
+        return imageView
+    }()
+
+    private var stickerAttachmentId: Attachment.IDType?
+    private var stickerInfo: StickerInfo?
 
     lazy var bubbleView: UIView = {
         let view = UIView()
@@ -236,6 +269,12 @@ class StoryGroupReplyCell: UITableViewCell {
         hStack.addArrangedSubview(.hStretchingSpacer())
 
         if cellType.isReaction {
+            hStack.addArrangedSubview(reactionStickerImageView)
+            reactionStickerImageView.isHiddenInStackView = true
+            hStack.addArrangedSubview(reactionStickerSpinner)
+            reactionStickerSpinner.isHiddenInStackView = true
+            hStack.addArrangedSubview(reactionStickerDownloadIcon)
+            reactionStickerDownloadIcon.isHiddenInStackView = true
             hStack.addArrangedSubview(reactionLabel)
         }
 
@@ -270,10 +309,16 @@ class StoryGroupReplyCell: UITableViewCell {
 
     private var item: StoryGroupReplyViewItem?
     private var spoilerState: SpoilerRenderState?
+    private var stickerImageCache: StickerReactionImageCache?
 
-    func configure(with item: StoryGroupReplyViewItem, spoilerState: SpoilerRenderState) {
+    func configure(
+        with item: StoryGroupReplyViewItem,
+        spoilerState: SpoilerRenderState,
+        stickerImageCache: StickerReactionImageCache?,
+    ) {
         self.item = item
         self.spoilerState = spoilerState
+        self.stickerImageCache = stickerImageCache
         if cellType.hasAuthor {
             authorNameLabel.textColor = item.authorColor
             authorNameLabel.text = item.authorDisplayName
@@ -286,7 +331,7 @@ class StoryGroupReplyCell: UITableViewCell {
         }
 
         if cellType.isReaction {
-            reactionLabel.text = item.reactionEmoji
+            configureStickerReaction(item: item, stickerImageCache: stickerImageCache)
         }
 
         configureBodyAndFooter(for: item, spoilerState: spoilerState)
@@ -545,51 +590,138 @@ class StoryGroupReplyCell: UITableViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
+        cellDelegate = nil
+        stickerImageCache = nil
         spoilerState = nil
         item = nil
         messageSpoilerConfigBuilder.text = nil
         messageSpoilerConfigBuilder.displayConfig = nil
+        if cellType.isReaction {
+            stickerAttachmentId = nil
+            stickerInfo = nil
+            reactionStickerImageView.image = nil
+            reactionStickerSpinner.stopAnimating()
+            reactionStickerDownloadIcon.image = nil
+            reactionLabel.isHiddenInStackView = false
+            reactionStickerImageView.isHiddenInStackView = true
+            reactionStickerSpinner.isHiddenInStackView = true
+            reactionStickerDownloadIcon.isHiddenInStackView = true
+        }
+    }
+
+    private func configureStickerReaction(
+        item: StoryGroupReplyViewItem,
+        stickerImageCache: StickerReactionImageCache?,
+    ) {
+        self.stickerInfo = item.reactionStickerInfo
+        if let stream = item.reactionSticker?.asStream(), let stickerImageCache {
+            let attachmentId = stream.id
+            stickerAttachmentId = attachmentId
+
+            Task { [weak self] in
+                let image = await stickerImageCache.image(for: stream)
+                guard let self, self.stickerAttachmentId == attachmentId else { return }
+                self.reactionStickerImageView.image = image
+                self.reactionStickerImageView.isHiddenInStackView = false
+                self.reactionLabel.isHiddenInStackView = true
+                self.reactionStickerSpinner.stopAnimating()
+                self.reactionStickerSpinner.isHiddenInStackView = true
+            }
+
+            reactionLabel.text = nil
+            reactionLabel.isHiddenInStackView = true
+            reactionStickerImageView.isHiddenInStackView = true
+            reactionStickerSpinner.isHiddenInStackView = true
+        } else {
+            switch item.reactionStickerDownloadState {
+            case .enqueuedOrDownloading:
+                reactionStickerSpinner.startAnimating()
+                reactionStickerSpinner.isHiddenInStackView = false
+                reactionLabel.isHiddenInStackView = true
+                reactionStickerImageView.isHiddenInStackView = true
+                reactionStickerDownloadIcon.isHiddenInStackView = true
+            case .some(.none):
+                reactionStickerDownloadIcon.image = Theme.iconImage(.arrowDown, isDarkThemeEnabled: true)
+                reactionStickerDownloadIcon.isHiddenInStackView = false
+                reactionLabel.isHiddenInStackView = true
+                reactionStickerImageView.isHiddenInStackView = true
+                reactionStickerSpinner.isHiddenInStackView = true
+            case .failed:
+                reactionStickerDownloadIcon.image = Theme.iconImage(.refresh, isDarkThemeEnabled: true)
+                reactionStickerDownloadIcon.isHiddenInStackView = false
+                reactionLabel.isHiddenInStackView = true
+                reactionStickerImageView.isHiddenInStackView = true
+                reactionStickerSpinner.isHiddenInStackView = true
+            case nil:
+                reactionLabel.text = item.reactionEmoji
+                reactionLabel.isHiddenInStackView = false
+                reactionStickerImageView.isHiddenInStackView = true
+                reactionStickerSpinner.isHiddenInStackView = true
+                reactionStickerDownloadIcon.isHiddenInStackView = true
+            }
+        }
     }
 
     @objc
     func handleTap(_ recognizer: UITapGestureRecognizer) {
         let labelLocation = recognizer.location(in: messageLabel)
-        guard
+        if
             let item,
             let spoilerState,
             messageLabel.bounds.contains(labelLocation),
             let tapIndex = messageLabel.characterIndex(of: labelLocation)
-        else {
-            return
-        }
-        guard let messageText: CVTextValue = item.displayableText?.displayTextValue else {
-            return
-        }
+        {
+            guard let messageText: CVTextValue = item.displayableText?.displayTextValue else {
+                return
+            }
 
-        switch messageText {
-        case .text, .attributedText:
-            return
-        case .messageBody(let body):
-            let revealedSpoilerIds = spoilerState.revealState.revealedSpoilerIds(
-                interactionIdentifier: item.interactionIdentifier,
-            )
-            for tappableItem in body.tappableItems(revealedSpoilerIds: revealedSpoilerIds, dataDetector: nil) {
-                switch tappableItem {
-                case .data, .mention:
-                    continue
-                case .unrevealedSpoiler(let unrevealedSpoiler):
-                    if unrevealedSpoiler.range.contains(tapIndex) {
-                        spoilerState.revealState.setSpoilerRevealed(
-                            withID: unrevealedSpoiler.id,
-                            interactionIdentifier: item.interactionIdentifier,
-                        )
-                        // Re-configure. This is ok because revealing the spoiler
-                        // doesn't change the sizing.
-                        configure(with: item, spoilerState: spoilerState)
-                        return
+            switch messageText {
+            case .text, .attributedText:
+                return
+            case .messageBody(let body):
+                let revealedSpoilerIds = spoilerState.revealState.revealedSpoilerIds(
+                    interactionIdentifier: item.interactionIdentifier,
+                )
+                for tappableItem in body.tappableItems(revealedSpoilerIds: revealedSpoilerIds, dataDetector: nil) {
+                    switch tappableItem {
+                    case .data, .mention:
+                        continue
+                    case .unrevealedSpoiler(let unrevealedSpoiler):
+                        if unrevealedSpoiler.range.contains(tapIndex) {
+                            spoilerState.revealState.setSpoilerRevealed(
+                                withID: unrevealedSpoiler.id,
+                                interactionIdentifier: item.interactionIdentifier,
+                            )
+                            // Re-configure. This is ok because revealing the spoiler
+                            // doesn't change the sizing.
+                            configure(
+                                with: item,
+                                spoilerState: spoilerState,
+                                stickerImageCache: stickerImageCache,
+                            )
+                            return
+                        }
                     }
                 }
             }
+        }
+
+        let stickerLocation = recognizer.location(in: reactionStickerImageView)
+        if
+            let stickerInfo,
+            !reactionStickerImageView.isHiddenInStackView,
+            reactionStickerImageView.bounds.contains(stickerLocation)
+        {
+            cellDelegate?.storyGroupReplyCellDidTapStickerPack(self, stickerPackInfo: stickerInfo.packInfo)
+            return
+        }
+
+        let downloadIconLocation = recognizer.location(in: reactionStickerDownloadIcon)
+        if
+            !reactionStickerDownloadIcon.isHiddenInStackView,
+            reactionStickerDownloadIcon.bounds.contains(downloadIconLocation)
+        {
+            cellDelegate?.storyGroupReplyCellDidTapDownloadSticker(self)
         }
     }
 

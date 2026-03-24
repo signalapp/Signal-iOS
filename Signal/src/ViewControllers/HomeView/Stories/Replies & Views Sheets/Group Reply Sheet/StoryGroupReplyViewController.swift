@@ -16,6 +16,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
     private(set) lazy var tableView = UITableView()
 
     private let spoilerState: SpoilerRenderState
+    let stickerImageCache = StickerReactionImageCache()
 
     let bottomBar = UIView()
     private(set) lazy var inputToolbar = StoryReplyInputToolbar(isGroupStory: true, spoilerState: spoilerState)
@@ -58,6 +59,28 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
         super.init()
 
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(attachmentDownloadProgress(_:)),
+            name: AttachmentDownloads.attachmentDownloadProgressNotification,
+            object: nil,
+        )
+    }
+
+    @objc
+    private func attachmentDownloadProgress(_ notification: Notification) {
+        guard
+            let attachmentId = notification
+                .userInfo?[AttachmentDownloads.attachmentDownloadAttachmentIDKey]
+                as? Attachment.IDType,
+            replyLoader?.attachmentIds.contains(attachmentId) == true,
+            let progress = notification
+                .userInfo?[AttachmentDownloads.attachmentDownloadProgressKey]
+                as? NSNumber,
+            progress.floatValue >= 1.0
+        else { return }
+        replyLoader?.reload()
     }
 
     fileprivate var replyLoader: StoryGroupReplyLoader?
@@ -256,7 +279,8 @@ extension StoryGroupReplyViewController: UITableViewDataSource {
         }
 
         let cell = tableView.dequeueReusableCell(withIdentifier: item.cellType.rawValue, for: indexPath) as! StoryGroupReplyCell
-        cell.configure(with: item, spoilerState: spoilerState)
+        cell.cellDelegate = self
+        cell.configure(with: item, spoilerState: spoilerState, stickerImageCache: stickerImageCache)
 
         return cell
     }
@@ -269,6 +293,31 @@ extension StoryGroupReplyViewController: UITableViewDataSource {
         let numberOfRows = replyLoader?.numberOfRows ?? 0
         emptyStateView.isHidden = numberOfRows > 0
         return numberOfRows
+    }
+}
+
+extension StoryGroupReplyViewController: StoryGroupReplyCellDelegate {
+    func storyGroupReplyCellDidTapStickerPack(_ cell: StoryGroupReplyCell, stickerPackInfo: StickerPackInfo) {
+        let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo)
+        packView.present(from: self, animated: true)
+    }
+
+    func storyGroupReplyCellDidTapDownloadSticker(_ cell: StoryGroupReplyCell) {
+        guard
+            let indexPath = tableView.indexPath(for: cell),
+            let item = replyLoader?.replyItem(for: indexPath)
+        else { return }
+
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
+            guard let message = TSMessage.fetchMessageViaCache(uniqueId: item.interactionUniqueId, transaction: tx) else {
+                return
+            }
+            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
+                message,
+                priority: .userInitiated,
+                tx: tx,
+            )
+        }
     }
 }
 
