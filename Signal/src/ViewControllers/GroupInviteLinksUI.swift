@@ -478,6 +478,11 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                                         "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE",
                                         comment: "Error message the attempt to request to join the group failed due to network connectivity.",
                                     )
+                                case let httpError as OWSHTTPError where httpError.responseStatusCode == 423:
+                                    return OWSLocalizedString(
+                                        "GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE",
+                                        comment: "Error message the attempt to request to join the group failed due to the group being ended.",
+                                    )
                                 default:
                                     return OWSLocalizedString(
                                         "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE",

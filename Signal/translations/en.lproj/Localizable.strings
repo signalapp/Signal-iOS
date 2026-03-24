@@ -4057,6 +4057,9 @@
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Can’t join group";
 
+/* Error message the attempt to request to join the group failed due to the group being ended. */
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Join by link failed, group has ended";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";
 
