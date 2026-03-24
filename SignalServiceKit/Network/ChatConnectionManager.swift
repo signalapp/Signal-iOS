@@ -42,9 +42,10 @@ public protocol ChatConnectionManager {
     /// *outside* the callback.
     ///
     /// This method can be called from any thread.
-    func withUnauthService<Service, Output>(
+    func withUnauthServiceImpl<Service, Output>(
         _ service: Service,
-        do callback: (Service.Api) async throws -> Output,
+        timeout: TimeInterval,
+        do callback: @escaping (Service.Api) async throws -> Output,
     ) async throws -> Output where Service: UnauthServiceSelector
 }
 
@@ -54,6 +55,14 @@ extension ChatConnectionManager {
             requestIdentifiedConnection(),
             requestUnidentifiedConnection(),
         ]
+    }
+
+    public func withUnauthService<Service, Output>(
+        _ service: Service,
+        timeout: TimeInterval = .infinity,
+        do callback: @escaping (Service.Api) async throws -> Output,
+    ) async throws -> Output where Service: UnauthServiceSelector {
+        return try await withUnauthServiceImpl(service, timeout: timeout, do: callback)
     }
 }
 
@@ -158,11 +167,12 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     }
 
     // This method can be called from any thread.
-    public func withUnauthService<Service, Output>(
+    public func withUnauthServiceImpl<Service, Output>(
         _ service: Service,
-        do callback: (Service.Api) async throws -> Output,
+        timeout: TimeInterval,
+        do callback: @escaping (Service.Api) async throws -> Output,
     ) async throws -> Output where Service: UnauthServiceSelector {
-        try await connectionUnidentified.withLibsignalConnection { connection in
+        try await connectionUnidentified.withLibsignalConnection(timeout: timeout) { connection in
             // This force-cast is guaranteed by UnauthServiceSelector only being provided for valid service protocols.
             try await callback(connection as! Service.Api)
         }
@@ -238,9 +248,10 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
         fatalError("must override for tests")
     }
 
-    public func withUnauthService<Service, Output>(
+    public func withUnauthServiceImpl<Service, Output>(
         _ service: Service,
-        do callback: (Service.Api) async throws -> Output,
+        timeout: TimeInterval,
+        do callback: @escaping (Service.Api) async throws -> Output,
     ) async throws -> Output where Service: UnauthServiceSelector {
         fatalError("must override for tests")
     }

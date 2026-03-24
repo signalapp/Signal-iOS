@@ -182,14 +182,13 @@ public class OWSChatConnection {
                     }
                 }
             }
-
-            let output = try await operation()
-            OutageDetection.shared.reportConnectionSuccess()
-            return output
-
         } catch is CooperativeTimeoutError {
             throw OWSHTTPError.networkFailure(.genericFailure)
         }
+
+        let output = try await operation()
+        OutageDetection.shared.reportConnectionSuccess()
+        return output
     }
 
     func waitForDisconnectIfClosed() async {
@@ -708,27 +707,19 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
         let libsignalRequest = ChatConnection.Request(method: httpMethod, pathAndQuery: "/\(requestUrl.relativeString)", headers: httpHeaders.headers, body: body, timeout: request.timeoutInterval)
 
         let chatService = await getOpenConnectionAfterHavingWaited()
+        guard let chatService else {
+            throw OWSHTTPError.networkFailure(.genericFailure)
+        }
 
         let connectionInfo: ConnectionInfo
         let response: ChatConnection.Response
         do {
-            guard let chatService else {
-                throw SignalError.chatServiceInactive("no connection to chat server")
-            }
-
             connectionInfo = chatService.info()
             response = try await chatService.send(libsignalRequest)
         } catch {
             switch error {
             case SignalError.connectionTimeoutError(_), SignalError.requestTimeoutError:
-                // cycleSocket(), but only if the chatService we just used is the one that's still connected.
-                self.serialQueue.async { [weak chatService] in
-                    if let chatService, self.connection.isActive(chatService) {
-                        self.disconnectIfNeeded()
-                    }
-                }
-                applyDesiredSocketState()
-                throw OWSHTTPError.networkFailure(.genericTimeout)
+                throw handleRequestTimeout(usingChatService: chatService)
             case SignalError.webSocketError(_), SignalError.possibleCaptiveNetwork(_), SignalError.connectionFailed(_), SignalError.chatServiceInactive:
                 throw OWSHTTPError.networkFailure(.genericFailure)
             case SignalError.connectionInvalidated:
@@ -758,6 +749,17 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
             responseHeaders: headers,
             responseData: response.body,
         )
+    }
+
+    private func handleRequestTimeout(usingChatService chatService: Connection) -> OWSHTTPError {
+        // cycleSocket(), but only if the chatService we just used is the one that's still connected.
+        self.serialQueue.async { [weak chatService] in
+            if let chatService, self.connection.isActive(chatService) {
+                self.disconnectIfNeeded()
+            }
+        }
+        applyDesiredSocketState()
+        return OWSHTTPError.networkFailure(.genericTimeout)
     }
 
     func connectionWasInterrupted(_ service: Connection, error: Error?) {
@@ -821,14 +823,21 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
     }
 
     func withLibsignalConnection<Output>(
-        _ callback: (Connection) async throws -> Output,
+        timeout: TimeInterval = .infinity,
+        _ callback: @escaping (Connection) async throws -> Output,
     ) async throws -> Output {
         try await waitUntilReadyAndPerformRequest {
             guard let service = await getOpenConnectionAfterHavingWaited() else {
                 throw SignalError.chatServiceInactive("no connection to chat server")
             }
             try Task.checkCancellation()
-            return try await callback(service)
+            do {
+                return try await withCooperativeTimeout(seconds: timeout) {
+                    return try await callback(service)
+                }
+            } catch is CooperativeTimeoutError {
+                throw self.handleRequestTimeout(usingChatService: service)
+            }
         }
     }
 }
