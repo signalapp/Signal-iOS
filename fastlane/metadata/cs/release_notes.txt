@@ -1,2 +1,2 @@
-• We added convenient shortcuts to open chats or view profile details during group calls. Now you can long-press on any call participant and press them to say something (or tell them you're impressed with the point they just made).
-• This update also includes several VoiceOver accessibility improvements, particularly for quoted replies.
+• Přidali jsme praktické zkratky pro otevírání chatů nebo zobrazení podrobností o profilu během skupinových hovorů.
+• Tato aktualizace přináší také několik vylepšení přístupnosti pro VoiceOver.

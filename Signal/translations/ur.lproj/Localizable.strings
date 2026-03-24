@@ -8,7 +8,7 @@
 "ABOUT_SECTION_TITLE" = "Signal کے بارے میں";
 
 /* Label for forward button in media control panel */
-"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Forward";
+"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "آگے";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "منسلک مواد";
@@ -3746,7 +3746,7 @@
 "GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "آڈیو میوٹ کریں";
 
 /* Context menu action to view a call participant's profile details. */
-"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Profile Details";
+"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "پروفائل کی تفصیلات";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "کال جاری رکھیں";
@@ -7190,7 +7190,7 @@
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "اس اکاؤنٹ کو ایک نئی ڈیوائس پر ٹرانسفر کرنے کے لیے، \"جاری رکھیں\" پر ٹیپ کریں اور Signal کے کیمرے کے ساتھ QR کوڈ کو اسکین کریں۔ صرف ان QR کوڈز کو اسکین کرنا یقینی بنائیں جو براہ راست Signal سے آتے ہیں۔";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@. %2$@";
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "%1$@ کو جواب دے رہے ہیں۔ %2$@";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";

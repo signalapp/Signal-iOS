@@ -40,9 +40,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d media item</string>
+			<string>‏%1$d فایل رسانه</string>
 			<key>other</key>
-			<string>%1$d media items</string>
+			<string>‏%1$d فایل رسانه</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>

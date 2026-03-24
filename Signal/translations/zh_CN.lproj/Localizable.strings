@@ -8,7 +8,7 @@
 "ABOUT_SECTION_TITLE" = "关于 Signal";
 
 /* Label for forward button in media control panel */
-"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Forward";
+"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "转发";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "附件";
@@ -3746,7 +3746,7 @@
 "GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "静音";
 
 /* Context menu action to view a call participant's profile details. */
-"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Profile Details";
+"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "个人资料详情";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "继续通话";
@@ -7190,7 +7190,7 @@
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "要将此账户转移到新设备，请点击“继续”，然后使用 Signal 相机扫描二维码。请确保只扫描由 Signal 直接生成的二维码。";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@. %2$@";
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "回复 %1$@。 %2$@";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";

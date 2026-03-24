@@ -1,2 +1,2 @@
-• We added convenient shortcuts to open chats or view profile details during group calls. Now you can long-press on any call participant and press them to say something (or tell them you're impressed with the point they just made).
-• This update also includes several VoiceOver accessibility improvements, particularly for quoted replies.
+• 我們新增了方便的捷徑，讓你在群組通話期間輕鬆開啟聊天或檢視個人檔案資訊。現在，你可以長按任何通話參與者，並提醒他們要按順序發言（或按一個表情符號讚賞他們剛才提出的觀點）。
+• 此更新還包含多項「旁白」輔助功能改進，特別是針對引用回覆的部分。

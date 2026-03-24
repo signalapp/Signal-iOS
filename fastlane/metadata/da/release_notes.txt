@@ -1,2 +1,2 @@
-• We added convenient shortcuts to open chats or view profile details during group calls. Now you can long-press on any call participant and press them to say something (or tell them you're impressed with the point they just made).
-• This update also includes several VoiceOver accessibility improvements, particularly for quoted replies.
+• Vi har tilføjet praktiske genveje til at åbne chats eller se profiloplysninger under gruppeopkald. Nu kan du trykke og holde på en deltager i opkaldet for at opfordre dem til at sige noget (eller fortælle dem, at du er imponeret over det, de lige har sagt).
+• Denne opdatering indeholder også flere tilgængelighedsforbedringer til VoiceOver, især for citerede svar.

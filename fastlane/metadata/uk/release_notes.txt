@@ -1,2 +1,2 @@
-• We added convenient shortcuts to open chats or view profile details during group calls. Now you can long-press on any call participant and press them to say something (or tell them you're impressed with the point they just made).
-• This update also includes several VoiceOver accessibility improvements, particularly for quoted replies.
+★ Ми додали зручну можливість відкривати чати й переглядати профілі учасників під час групових викликів. Тепер достатньо натиснути й утримувати ім'я учасника виклику, щоб написати йому (наприклад, що вас вразила презентація).
+• У цьому оновленні ми також поліпшили деякі спеціальні можливості VoiceOver, зокрема для цитат.

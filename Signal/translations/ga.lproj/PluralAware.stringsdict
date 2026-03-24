@@ -52,15 +52,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d media item</string>
+			<string>%1$d mhír mheán</string>
 			<key>two</key>
-			<string>%1$d media items</string>
+			<string>%1$d mhír mheán</string>
 			<key>few</key>
-			<string>%1$d media items</string>
+			<string>%1$d mhír mheán</string>
 			<key>many</key>
-			<string>%1$d media items</string>
+			<string>%1$d mír mheán</string>
 			<key>other</key>
-			<string>%1$d media items</string>
+			<string>%1$d mír mheán</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>

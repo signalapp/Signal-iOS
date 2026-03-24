@@ -8,7 +8,7 @@
 "ABOUT_SECTION_TITLE" = "Tentang Signal";
 
 /* Label for forward button in media control panel */
-"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Forward";
+"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Teruskan";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Lampiran";
@@ -3284,7 +3284,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING" = "Donasi tertunda";
 
 /* A label describing a donation payment that was made by a method other than bank transfer (such as by credit card), which is still processing and has not completed. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "Memproses Donasi…";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "Memproses Donasi …";
 
 /* A label describing a donation payment that has failed to process. */
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED" = "Gagal Memproses Donasi";
@@ -3746,7 +3746,7 @@
 "GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "Senyapkan Audio";
 
 /* Context menu action to view a call participant's profile details. */
-"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Profile Details";
+"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Detail Profil";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Lanjutkan Panggilan";
@@ -6404,7 +6404,7 @@
 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Pembayaran ke %1$@";
 
 /* Payment status context while sending */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Memproses pembayaran…";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Memproses pembayaran …";
 
 /* Payment status context with contact name, incoming. Embeds {{ Name of sending contact }} */
 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@ mengirimi Anda";
@@ -7190,7 +7190,7 @@
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "Untuk mentransfer akun ini ke perangkat baru, ketuk \"Lanjutkan\" dan pindai kode QR dengan kamera Signal. Pastikan Anda hanya memindai kode QR yang diperoleh langsung dari Signal.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@. %2$@";
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Balasan untuk %1$@. %2$@";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
@@ -9527,7 +9527,7 @@
 "SUSTAINER_VIEW_PRICING" = "%1$@/bulan";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Memproses donasi…";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Memproses donasi …";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Perpanjang %1$@";

@@ -1,2 +1,2 @@
-• We added convenient shortcuts to open chats or view profile details during group calls. Now you can long-press on any call participant and press them to say something (or tell them you're impressed with the point they just made).
-• This update also includes several VoiceOver accessibility improvements, particularly for quoted replies.
+• हमने ग्रुप कॉल के दौरान चैट खोलने या प्रोफ़ाइल की जानकारी देखने के लिए, सुविधाजनक शॉर्टकट बनाए हैं। अब आपके लिए यह मुमकिन है कॉल में शामिल किसी भी व्यक्ति पर लॉन्ग-प्रेस करके उन्हें कुछ बोलने के लिए कहें (या उन्हें बताएं कि उनकी राय आपको अच्छी लगी है)।
+• इस अपडेट में VoiceOver एक्सेसिबिलिटी से जुड़े कई सुधार भी शामिल हैं, खासतौर पर कोट किए गए रिप्लाई के लिए।

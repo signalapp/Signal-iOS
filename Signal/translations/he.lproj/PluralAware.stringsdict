@@ -48,13 +48,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d media item</string>
+			<string>פריט מדיה %1$d</string>
 			<key>two</key>
-			<string>%1$d media items</string>
+			<string>%1$d פריטי מדיה</string>
 			<key>many</key>
-			<string>%1$d media items</string>
+			<string>%1$d פריטי מדיה</string>
 			<key>other</key>
-			<string>%1$d media items</string>
+			<string>%1$d פריטי מדיה</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>

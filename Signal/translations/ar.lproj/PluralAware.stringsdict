@@ -56,17 +56,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d media items</string>
+			<string>%1$d عناصر وسائط</string>
 			<key>one</key>
-			<string>%1$d media item</string>
+			<string>%1$d عنصر وسائط</string>
 			<key>two</key>
-			<string>%1$d media items</string>
+			<string>%1$d عنصرا وسائط</string>
 			<key>few</key>
-			<string>%1$d media items</string>
+			<string>%1$d عناصر وسائط</string>
 			<key>many</key>
-			<string>%1$d media items</string>
+			<string>%1$d عنصر وسائط</string>
 			<key>other</key>
-			<string>%1$d media items</string>
+			<string>%1$d عنصر وسائط</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>

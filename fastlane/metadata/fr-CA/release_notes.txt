@@ -1,2 +1,2 @@
-• We added convenient shortcuts to open chats or view profile details during group calls. Now you can long-press on any call participant and press them to say something (or tell them you're impressed with the point they just made).
-• This update also includes several VoiceOver accessibility improvements, particularly for quoted replies.
+• De nouveaux raccourcis s'invitent dans les appels de groupe. Il vous suffit maintenant d'appuyer longuement sur la photo de profil d'un participant pour accéder à ses infos de profil ou à votre conversation individuelle.
+• Les utilisateurs de VoiceOver ne sont pas en reste : car nous avons aussi amélioré l'accessibilité de l'application, notamment pour les réponses aux messages.

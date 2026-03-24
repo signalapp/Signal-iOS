@@ -44,11 +44,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d media item</string>
+			<string>%1$d articol media</string>
 			<key>few</key>
-			<string>%1$d media items</string>
+			<string>%1$d articole media</string>
 			<key>other</key>
-			<string>%1$d media items</string>
+			<string>%1$d de articole media</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>

@@ -1,2 +1,2 @@
-• We added convenient shortcuts to open chats or view profile details during group calls. Now you can long-press on any call participant and press them to say something (or tell them you're impressed with the point they just made).
-• This update also includes several VoiceOver accessibility improvements, particularly for quoted replies.
+• Dodaliśmy wygodne skróty, które pozwalają szybko otwierać czaty lub wyświetlać szczegóły profilu podczas połączeń grupowych. Od teraz możesz łatwo podejrzeć informacje o poszczególnych osobach uczestniczących w połączeniu – i odezwać się do każdej z nich na czacie prywatnym.
+• W tej aktualizacji usprawniliśmy też głosowe ułatwienia dostępu, szczególnie te dotyczące cytowanych wiadomości.
