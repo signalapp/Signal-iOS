@@ -71,7 +71,9 @@ extension GroupViewHelper {
             groupMembership.isFullMember(address) &&
                 !groupMembership.isFullMemberAndAdministrator(address),
         )
-        return canEditConversationMembership && isLocalUserAdmin && canBecomeAdmin
+        let isGroupEnded = (groupThread.groupModel as? TSGroupModelV2)?.isTerminated ?? false
+
+        return canEditConversationMembership && isLocalUserAdmin && canBecomeAdmin && !isGroupEnded
     }
 
     @MainActor
@@ -170,7 +172,9 @@ extension GroupViewHelper {
         let isLocalUserAdmin = groupMembership.isFullMemberAndAdministrator(localAddress)
         let isAddressInGroup = groupMembership.isMemberOfAnyKind(address)
         let isRemovalTargetLocalAdress = address.isLocalAddress
-        return canEditConversationMembership && isLocalUserAdmin && isAddressInGroup && !isRemovalTargetLocalAdress
+        let isGroupEnded = (groupThread.groupModel as? TSGroupModelV2)?.isTerminated ?? false
+
+        return canEditConversationMembership && isLocalUserAdmin && isAddressInGroup && !isRemovalTargetLocalAdress && !isGroupEnded
     }
 
     @MainActor
