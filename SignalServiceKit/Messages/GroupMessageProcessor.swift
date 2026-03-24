@@ -813,6 +813,10 @@ public class GroupMessageProcessorManager {
                 owsFailDebug("Invalid group model.")
                 return .discard
             }
+            guard !groupModel.isTerminated else {
+                Logger.warn("Discarding envelope; group is ended.")
+                return .discard
+            }
             guard groupModel.groupMembership.isFullMember(localAddress) else {
                 // * Local user might have just left the group.
                 // * Local user may have just learned that we were removed from the group.
