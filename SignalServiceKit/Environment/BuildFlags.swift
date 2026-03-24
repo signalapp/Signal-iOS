@@ -57,8 +57,6 @@ public enum BuildFlags {
         public static let send = build <= .internal
     }
 
-    public static let callQualitySurvey = true
-
     static let netBuildVariant: Net.BuildVariant = build <= .beta ? .beta : .production
 
     // Turn this off after all still-registered clients have run this
