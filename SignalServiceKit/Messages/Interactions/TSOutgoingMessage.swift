@@ -389,12 +389,7 @@ extension TSOutgoingMessage {
         if let storyTimestamp, let storyAuthorAci {
             if let storyReactionEmoji {
                 let reactionBuilder = SSKProtoDataMessageReaction.builder(emoji: storyReactionEmoji, timestamp: storyTimestamp.uint64Value)
-                if BuildFlags.serviceIdStrings {
-                    reactionBuilder.setTargetAuthorAci(storyAuthorAci.serviceIdString)
-                }
-                if BuildFlags.serviceIdBinaryConstantOverhead {
-                    reactionBuilder.setTargetAuthorAciBinary(storyAuthorAci.serviceIdBinary)
-                }
+                reactionBuilder.setTargetAuthorAciBinary(storyAuthorAci.serviceIdBinary)
 
                 do {
                     builder.setReaction(try reactionBuilder.build())
@@ -405,12 +400,7 @@ extension TSOutgoingMessage {
             }
 
             let storyContextBuilder = SSKProtoDataMessageStoryContext.builder()
-            if BuildFlags.serviceIdStrings {
-                storyContextBuilder.setAuthorAci(storyAuthorAci.serviceIdString)
-            }
-            if BuildFlags.serviceIdBinaryConstantOverhead {
-                storyContextBuilder.setAuthorAciBinary(storyAuthorAci.serviceIdBinary)
-            }
+            storyContextBuilder.setAuthorAciBinary(storyAuthorAci.serviceIdBinary)
             storyContextBuilder.setSentTimestamp(storyTimestamp.uint64Value)
 
             builder.setStoryContext(storyContextBuilder.buildInfallibly())

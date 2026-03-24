@@ -125,12 +125,7 @@ public final class OutgoingMessageRequestResponseSyncMessage: OutgoingSyncMessag
         if let groupId {
             messageRequestResponseBuilder.setGroupID(groupId)
         } else if let threadAci {
-            if BuildFlags.serviceIdStrings {
-                messageRequestResponseBuilder.setThreadAci(threadAci.serviceIdString)
-            }
-            if BuildFlags.serviceIdBinaryConstantOverhead {
-                messageRequestResponseBuilder.setThreadAciBinary(threadAci.serviceIdBinary)
-            }
+            messageRequestResponseBuilder.setThreadAciBinary(threadAci.serviceIdBinary)
         } else if self.version < 2 {
             // Fallback behavior. Messages of this version are no longer created.
             // Eventually, all enqueued messages of this type should be resolved
@@ -146,12 +141,7 @@ public final class OutgoingMessageRequestResponseSyncMessage: OutgoingSyncMessag
                 messageRequestResponseBuilder.setGroupID(thread.groupModel.groupId)
             case let thread as TSContactThread:
                 if let threadAci = thread.contactAddress.serviceId as? Aci {
-                    if BuildFlags.serviceIdStrings {
-                        messageRequestResponseBuilder.setThreadAci(threadAci.serviceIdString)
-                    }
-                    if BuildFlags.serviceIdBinaryConstantOverhead {
-                        messageRequestResponseBuilder.setThreadAciBinary(threadAci.serviceIdBinary)
-                    }
+                    messageRequestResponseBuilder.setThreadAciBinary(threadAci.serviceIdBinary)
                 }
             default:
                 owsFailDebug("Thread is invalid type for message request response")

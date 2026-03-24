@@ -142,12 +142,7 @@ final class OutgoingReactionMessage: TransientOutgoingMessage {
             owsFailDebug("Missing author for reaction.")
             return nil
         }
-        if BuildFlags.serviceIdStrings {
-            reactionBuilder.setTargetAuthorAci(messageAuthor.serviceIdString)
-        }
-        if BuildFlags.serviceIdBinaryConstantOverhead {
-            reactionBuilder.setTargetAuthorAciBinary(messageAuthor.serviceIdBinary)
-        }
+        reactionBuilder.setTargetAuthorAciBinary(messageAuthor.serviceIdBinary)
 
         do {
             return try reactionBuilder.build()

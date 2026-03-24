@@ -64,12 +64,7 @@ final class OutgoingBlockedSyncMessage: OutgoingSyncMessage {
     override func syncMessageBuilder(tx: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
         let blockedBuilder = SSKProtoSyncMessageBlocked.builder()
         blockedBuilder.setNumbers(self.phoneNumbers)
-        if BuildFlags.serviceIdStrings {
-            blockedBuilder.setAcis(self.acis.map(\.serviceIdString))
-        }
-        if BuildFlags.serviceIdBinaryVariableOverhead {
-            blockedBuilder.setAcisBinary(self.acis.map(\.serviceIdBinary))
-        }
+        blockedBuilder.setAcisBinary(self.acis.map(\.serviceIdBinary))
         blockedBuilder.setGroupIds(self.groupIds)
 
         let blockedProto = blockedBuilder.buildInfallibly()

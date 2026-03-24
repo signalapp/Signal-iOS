@@ -421,11 +421,7 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             guard let builder = self.protoBuilder(mention.range, maxBodyLength: maxBodyLength) else {
                 return
             }
-            if BuildFlags.serviceIdBinaryOneOf {
-                builder.setMentionAciBinary(mention.value.serviceIdBinary)
-            } else {
-                builder.setMentionAci(mention.value.serviceIdString)
-            }
+            builder.setMentionAciBinary(mention.value.serviceIdBinary)
             protos.append(builder.buildInfallibly())
         }
 

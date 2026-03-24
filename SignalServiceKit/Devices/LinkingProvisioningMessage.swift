@@ -153,18 +153,8 @@ public struct LinkingProvisioningMessage {
         messageBuilder.setReadReceipts(areReadReceiptsEnabled)
         messageBuilder.setProvisioningVersion(Constants.provisioningVersion)
         messageBuilder.setNumber(phoneNumber)
-        if BuildFlags.serviceIdStrings {
-            messageBuilder.setAci(aci.rawUUID.uuidString.lowercased())
-        }
-        if BuildFlags.serviceIdBinaryProvisioning {
-            messageBuilder.setAciBinary(aci.rawUUID.data)
-        }
-        if BuildFlags.serviceIdStrings {
-            messageBuilder.setPni(pni.rawUUID.uuidString.lowercased())
-        }
-        if BuildFlags.serviceIdBinaryProvisioning {
-            messageBuilder.setPniBinary(pni.rawUUID.data)
-        }
+        messageBuilder.setAciBinary(aci.rawUUID.data)
+        messageBuilder.setPniBinary(pni.rawUUID.data)
 
         switch rootKey {
         case .accountEntropyPool(let accountEntropyPool):

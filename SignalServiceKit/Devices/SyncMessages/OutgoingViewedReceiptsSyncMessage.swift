@@ -57,12 +57,7 @@ final class OutgoingViewedReceiptsSyncMessage: OutgoingSyncMessage {
             let viewedProtoBuilder = SSKProtoSyncMessageViewed.builder(timestamp: viewedReceipt.messageIdTimestamp)
 
             if let aci = viewedReceipt.senderAddress.serviceId as? Aci {
-                if BuildFlags.serviceIdStrings {
-                    viewedProtoBuilder.setSenderAci(aci.serviceIdString)
-                }
-                if BuildFlags.serviceIdBinaryVariableOverhead {
-                    viewedProtoBuilder.setSenderAciBinary(aci.serviceIdBinary)
-                }
+                viewedProtoBuilder.setSenderAciBinary(aci.serviceIdBinary)
             } else {
                 owsFailDebug("can't send viewed receipt for message without an ACI")
             }

@@ -72,12 +72,7 @@ struct AddressableMessage {
         let protoBuilder = SSKProtoAddressableMessage.builder()
         protoBuilder.setSentTimestamp(sentTimestamp)
         switch author {
-        case .aci(let aci):
-            if BuildFlags.serviceIdBinaryOneOf {
-                protoBuilder.setAuthorServiceIDBinary(aci.serviceIdBinary)
-            } else {
-                protoBuilder.setAuthorServiceID(aci.serviceIdString)
-            }
+        case .aci(let aci): protoBuilder.setAuthorServiceIDBinary(aci.serviceIdBinary)
         case .e164(let e164): protoBuilder.setAuthorE164(e164.stringValue)
         }
         return protoBuilder.buildInfallibly()
@@ -114,12 +109,7 @@ enum ConversationIdentifier {
     var asProto: SSKProtoConversationIdentifier {
         let protoBuilder = SSKProtoConversationIdentifier.builder()
         switch self {
-        case .serviceId(let serviceId):
-            if BuildFlags.serviceIdBinaryOneOf {
-                protoBuilder.setThreadServiceIDBinary(serviceId.serviceIdBinary)
-            } else {
-                protoBuilder.setThreadServiceID(serviceId.serviceIdString)
-            }
+        case .serviceId(let serviceId): protoBuilder.setThreadServiceIDBinary(serviceId.serviceIdBinary)
         case .e164(let e164): protoBuilder.setThreadE164(e164.stringValue)
         case .groupIdentifier(let groupIdentifier): protoBuilder.setThreadGroupID(groupIdentifier.serialize())
         }

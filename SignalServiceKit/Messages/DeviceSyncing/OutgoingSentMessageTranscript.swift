@@ -71,12 +71,7 @@ class OutgoingSentMessageTranscript: OutgoingSyncMessage {
             sentBuilder.setDestinationE164(phoneNumber)
         }
         if let serviceId = self.sentRecipientAddress?.serviceId {
-            if BuildFlags.serviceIdStrings {
-                sentBuilder.setDestinationServiceID(serviceId.serviceIdString)
-            }
-            if BuildFlags.serviceIdBinaryConstantOverhead {
-                sentBuilder.setDestinationServiceIDBinary(serviceId.serviceIdBinary)
-            }
+            sentBuilder.setDestinationServiceIDBinary(serviceId.serviceIdBinary)
         }
         sentBuilder.setIsRecipientUpdate(self.isRecipientUpdate)
 
@@ -172,12 +167,7 @@ class OutgoingSentMessageTranscript: OutgoingSyncMessage {
             }
 
             let statusBuilder = SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.builder()
-            if BuildFlags.serviceIdStrings {
-                statusBuilder.setDestinationServiceID(recipientServiceId.serviceIdString)
-            }
-            if BuildFlags.serviceIdBinaryVariableOverhead {
-                statusBuilder.setDestinationServiceIDBinary(recipientServiceId.serviceIdBinary)
-            }
+            statusBuilder.setDestinationServiceIDBinary(recipientServiceId.serviceIdBinary)
             statusBuilder.setUnidentified(recipientState.wasSentByUD)
 
             sentBuilder.addUnidentifiedStatus(statusBuilder.buildInfallibly())

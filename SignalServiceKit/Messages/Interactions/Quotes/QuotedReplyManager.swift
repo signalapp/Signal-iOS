@@ -868,12 +868,7 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
         guard let authorAci = quote.authorAddress.aci else {
             throw OWSAssertionError("It should be impossible to quote a message without a UUID")
         }
-        if BuildFlags.serviceIdStrings {
-            quoteBuilder.setAuthorAci(authorAci.serviceIdString)
-        }
-        if BuildFlags.serviceIdBinaryConstantOverhead {
-            quoteBuilder.setAuthorAciBinary(authorAci.serviceIdBinary)
-        }
+        quoteBuilder.setAuthorAciBinary(authorAci.serviceIdBinary)
 
         var hasQuotedText = false
         var hasQuotedAttachment = false

@@ -269,24 +269,14 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         var usernameBetterIdentifierChecker = Usernames.BetterIdentifierChecker(forRecipient: recipient)
 
         if let aci = contact.aci {
-            if BuildFlags.serviceIdStrings {
-                builder.setAci(aci.serviceIdString)
-            }
-            if BuildFlags.serviceIdBinaryConstantOverhead {
-                builder.setAciBinary(aci.serviceIdBinary)
-            }
+            builder.setAciBinary(aci.serviceIdBinary)
         }
         if let phoneNumber = contact.phoneNumber {
             builder.setE164(phoneNumber.stringValue)
             usernameBetterIdentifierChecker.add(e164: phoneNumber.stringValue)
         }
         if let pni = contact.pni {
-            if BuildFlags.serviceIdStrings {
-                builder.setPni(pni.rawUUID.uuidString.lowercased())
-            }
-            if BuildFlags.serviceIdBinaryConstantOverhead {
-                builder.setPniBinary(pni.rawUUID.data)
-            }
+            builder.setPniBinary(pni.rawUUID.data)
         }
 
         if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
@@ -1957,12 +1947,7 @@ extension StorageServiceAccountRecordUpdater {
             } else if let contactThread = pinnedThread as? TSContactThread {
                 var contactBuilder = StorageServiceProtoAccountRecordPinnedConversationContact.builder()
                 if let serviceId = contactThread.contactAddress.serviceId {
-                    if BuildFlags.serviceIdStrings {
-                        contactBuilder.setServiceID(serviceId.serviceIdString)
-                    }
-                    if BuildFlags.serviceIdBinaryConstantOverhead {
-                        contactBuilder.setServiceIDBinary(serviceId.serviceIdBinary)
-                    }
+                    contactBuilder.setServiceIDBinary(serviceId.serviceIdBinary)
                 } else if let e164 = contactThread.contactAddress.phoneNumber {
                     contactBuilder.setE164(e164)
                 } else {
@@ -2042,12 +2027,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             builder.setName(story.name)
             let recipients = (try? storyRecipientManager.fetchRecipients(forStoryThread: story, tx: transaction)) ?? []
             let serviceIds = recipients.compactMap { $0.aci ?? $0.pni }
-            if BuildFlags.serviceIdStrings {
-                builder.setRecipientServiceIds(serviceIds.map(\.serviceIdString))
-            }
-            if BuildFlags.serviceIdBinaryVariableOverhead {
-                builder.setRecipientServiceIdsBinary(serviceIds.map(\.serviceIdBinary))
-            }
+            builder.setRecipientServiceIdsBinary(serviceIds.map(\.serviceIdBinary))
             builder.setAllowsReplies(story.allowsReplies)
             builder.setIsBlockList(story.storyViewMode == .blockList)
         } else {

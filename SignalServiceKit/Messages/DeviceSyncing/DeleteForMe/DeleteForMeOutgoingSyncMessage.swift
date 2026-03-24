@@ -155,11 +155,7 @@ extension DeleteForMeSyncMessage.Outgoing {
             let protoBuilder = SSKProtoConversationIdentifier.builder()
             switch self {
             case .threadServiceId(let serviceId):
-                if BuildFlags.serviceIdBinaryOneOf {
-                    protoBuilder.setThreadServiceIDBinary(serviceId.wrappedValue.serviceIdBinary)
-                } else {
-                    protoBuilder.setThreadServiceID(serviceId.wrappedValue.serviceIdString)
-                }
+                protoBuilder.setThreadServiceIDBinary(serviceId.wrappedValue.serviceIdBinary)
             case .threadE164(let e164): protoBuilder.setThreadE164(e164)
             case .threadGroupId(let groupId): protoBuilder.setThreadGroupID(groupId)
             }
@@ -191,11 +187,7 @@ extension DeleteForMeSyncMessage.Outgoing {
             protoBuilder.setSentTimestamp(sentTimestamp)
             switch author {
             case .aci(let aci):
-                if BuildFlags.serviceIdBinaryOneOf {
-                    protoBuilder.setAuthorServiceIDBinary(aci.wrappedValue.serviceIdBinary)
-                } else {
-                    protoBuilder.setAuthorServiceID(aci.wrappedValue.serviceIdString)
-                }
+                protoBuilder.setAuthorServiceIDBinary(aci.wrappedValue.serviceIdBinary)
             case .e164(let e164): protoBuilder.setAuthorE164(e164)
             }
             return protoBuilder.buildInfallibly()

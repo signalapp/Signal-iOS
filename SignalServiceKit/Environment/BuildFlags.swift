@@ -69,13 +69,6 @@ public enum BuildFlags {
     // that's now dead because this is false.
     public static let migrateDeprecatedSessions = true
 
-    public static let serviceIdBinaryProvisioning = true
-    public static let serviceIdBinaryConstantOverhead = !serviceIdStrings || (build <= .internal)
-    public static let serviceIdBinaryVariableOverhead = !serviceIdStrings || (build <= .dev)
-    public static let serviceIdBinaryOneOf = !serviceIdStrings
-
-    public static let serviceIdStrings = false
-
     public enum MemberLabel {
         public static let display = true
         public static let send = true

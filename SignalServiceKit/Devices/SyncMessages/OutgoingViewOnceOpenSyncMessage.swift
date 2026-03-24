@@ -87,12 +87,7 @@ final class OutgoingViewOnceOpenSyncMessage: OutgoingSyncMessage {
 
         let readProtoBuilder = SSKProtoSyncMessageViewOnceOpen.builder(timestamp: self.messageIdTimestamp)
         if let senderAci = self.senderAddress.serviceId as? Aci {
-            if BuildFlags.serviceIdStrings {
-                readProtoBuilder.setSenderAci(senderAci.serviceIdString)
-            }
-            if BuildFlags.serviceIdBinaryConstantOverhead {
-                readProtoBuilder.setSenderAciBinary(senderAci.serviceIdBinary)
-            }
+            readProtoBuilder.setSenderAciBinary(senderAci.serviceIdBinary)
         } else {
             owsFailDebug("can't send view once open sync for message without an ACI")
         }
