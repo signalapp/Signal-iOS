@@ -918,6 +918,8 @@ class AttachmentStoreTests: XCTestCase {
                     XCTAssertEqual(metadata.threadRowId, threadId)
                 case .sticker(let metadata):
                     XCTAssertEqual(metadata.threadRowId, threadId)
+                case .reactionSticker(let metadata):
+                    XCTAssertEqual(metadata.threadRowId, threadId)
                 case .contactAvatar(let metadata):
                     XCTAssertEqual(metadata.threadRowId, threadId)
                 }
