@@ -48,13 +48,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d media item</string>
+			<string>פריט מדיה %1$d</string>
 			<key>two</key>
-			<string>%1$d media items</string>
+			<string>%1$d פריטי מדיה</string>
 			<key>many</key>
-			<string>%1$d media items</string>
+			<string>%1$d פריטי מדיה</string>
 			<key>other</key>
-			<string>%1$d media items</string>
+			<string>%1$d פריטי מדיה</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>
@@ -570,6 +570,26 @@
 			<string>מתוך %2$d התאמות</string>
 			<key>other</key>
 			<string>מתוך %2$d התאמות</string>
+		</dict>
+	</dict>
+	<key>CONVERSATION_SETTINGS_FORMER_MEMBERS_SECTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d Former Member</string>
+			<key>two</key>
+			<string>%1$d Former Members</string>
+			<key>many</key>
+			<string>%1$d Former Members</string>
+			<key>other</key>
+			<string>%1$d Former Members</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>

@@ -8,7 +8,7 @@
 "ABOUT_SECTION_TITLE" = "À propos de Signal";
 
 /* Label for forward button in media control panel */
-"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Forward";
+"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Transférer";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Pièce jointe";
@@ -2308,6 +2308,9 @@
 /* Header title for the section showing all media in conversation settings */
 "CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Tous les médias";
 
+/* Label for 'archive chat' action in conversation settings view. */
+"CONVERSATION_SETTINGS_ARCHIVE_CHAT" = "Archive Chat";
+
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Choisissez qui peut modifier le nom, la photo et la présentation du groupe, ainsi que les messages épinglés et le délai avant disparition des messages éphémères.";
 
@@ -2340,6 +2343,9 @@
 
 /* A label indicating that a call was an outgoing voice call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Appel vocal sortant";
+
+/* Label for 'delete chat' action in conversation settings view. */
+"CONVERSATION_SETTINGS_DELETE_CHAT" = "Delete Chat";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Modifier les infos du groupe";
@@ -2481,6 +2487,9 @@
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Les administrateurs";
+
+/* Label for 'unarchive chat' action in conversation settings view. */
+"CONVERSATION_SETTINGS_UNARCHIVE_CHAT" = "Unarchive Chat";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Débloquer le groupe";
@@ -3424,6 +3433,30 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Échec de l'appel";
 
+/* Label for a banner in group settings indicating that the group has been ended */
+"END_GROUP_BANNER_LABEL" = "This group was ended.";
+
+/* Label for group chats that have been ended */
+"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group was ended.";
+
+/* End group confirmation description */
+"END_GROUP_DESCRIPTION" = "Members will no longer be able to send messages or start calls in the group. They will be notified that you ended the group, and will still have access to message history.";
+
+/* Description for final confirmation screen when user tries to end a group */
+"END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "This will end the group permanently. Are you sure you want to proceed?";
+
+/* Body for error sheet shown if the group failed to end */
+"END_GROUP_ERROR_DESCRIPTION" = "Ending the group failed. Check your connection and try again.";
+
+/* Description for error sheet that says the user can no longer invite friends or add members to a group. */
+"END_GROUP_INVITE_ERROR" = "You can no longer invite friends or add members to this group.";
+
+/* Label in conversation settings to end a group */
+"END_GROUP_LABEL" = "End Group";
+
+/* End group confirmation title for a specific group. Embeds {{ group name }} */
+"END_GROUP_LABEL_SPECIFIC" = "End “%1$@”?";
+
 /* Label explaining that an entered 'Recovery Key' is incorrect. */
 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Clé de récupération incorrecte";
 
@@ -3649,6 +3682,9 @@
 /* 'Get Started' button directing users to Chat Color settings */
 "GET_STARTED_CARD_CHAT_COLOR" = "Couleur des bulles";
 
+/* Accessibility label for the close button in each Get Started card. */
+"GET_STARTED_CARD_CLOSE_A11YLABEL" = "Remove suggestion";
+
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Inviter des amis";
 
@@ -3746,7 +3782,10 @@
 "GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "Couper le micro";
 
 /* Context menu action to view a call participant's profile details. */
-"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Profile Details";
+"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Infos du profil";
+
+/* Context menu action to remove a call participant from the call. */
+"GROUP_CALL_CONTEXT_MENU_REMOVE_FROM_CALL" = "Remove from Call";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Poursuivre l'appel";
@@ -3783,6 +3822,9 @@
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "Participants";
+
+/* Subtitle for a row representing a call member, when that member is presenting. */
+"GROUP_CALL_MEMBER_LIST_PRESENTING_SUBTITLE" = "Presenting";
 
 /* Title for the section of the group call member list which displays the list of members with their hand raised. */
 "GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Mains levées";
@@ -4020,6 +4062,9 @@
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Impossible de rejoindre le groupe";
+
+/* Error message the attempt to request to join the group failed due to the group being ended. */
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Join by link failed, group has ended";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Ce lien de groupe n'est plus valide.";
@@ -4335,6 +4380,15 @@
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Qui peut voir cette story ?";
+
+/* Message indicating that the group was terminated by the local user. */
+"GROUP_TERMINATED_BY_LOCAL_USER" = "You ended the group";
+
+/* Message indicating that the group was terminated by a remote user. Embeds {{ user who terminated the group }}. */
+"GROUP_TERMINATED_BY_OTHER_USER" = "%1$@ ended the group";
+
+/* Message indicating that the group was terminated by an unknown user. */
+"GROUP_TERMINATED_BY_UNKNOWN_USER" = "The group was ended";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Groupe mis à jour.";
@@ -5117,7 +5171,7 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Nous vous le rappellerons plus tard.";
 
 /* Label for an action to add a member label */
-"MEMBER_LABEL_ADD" = "Ajouter une étiquette de membre";
+"MEMBER_LABEL_ADD" = "Créer une étiquette de membre";
 
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
 "MEMBER_LABEL_ADD_CSVC" = "Créer une étiquette de membre";
@@ -5153,7 +5207,7 @@
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "Affichage de votre étiquette de membre";
 
 /* Body for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "Ajoutez une étiquette de membre pour vous décrire ou indiquer votre rôle dans ce groupe. Votre étiquette ne s'affichera que dans ce groupe.";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "Créez une étiquette de membre pour vous décrire ou indiquer votre rôle dans ce groupe. Votre étiquette ne s'affichera que dans ce groupe.";
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Étiquettes de membre";
@@ -5171,10 +5225,10 @@
 "MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Salut !";
 
 /* Placeholder text in text field where user can edit their member label. */
-"MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT" = "Ajoutez une étiquette";
+"MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT" = "Créez une étiquette";
 
 /* Subtitle for a view where users can edit and preview their member label. */
-"MEMBER_LABEL_VIEW_SUBTITLE" = "Ajoutez une étiquette de membre pour vous décrire ou indiquer votre rôle dans ce groupe. Votre étiquette ne s'affichera que dans ce groupe.";
+"MEMBER_LABEL_VIEW_SUBTITLE" = "Créez une étiquette de membre pour vous décrire ou indiquer votre rôle dans ce groupe. Votre étiquette ne s'affichera que dans ce groupe.";
 
 /* Title for a view where users can edit and preview their member label. */
 "MEMBER_LABEL_VIEW_TITLE" = "Étiquette de membre";
@@ -5894,7 +5948,7 @@
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE" = "Restaurer une sauvegarde sécurisée";
 
 /* Body for a sheet warning users about skipping restore. */
-"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY" = "Si vous ne restaurez pas votre sauvegarde maintenant, vous ne pourrez pas le faire plus tard. Si vous réactivez les sauvegardes sur cet appareil, Signal supprimera votre sauvegarde actuelle et en créera une nouvelle, qui ne contiendra pas vos anciens messages.";
+"ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY" = "Si vous ne restaurez pas votre sauvegarde maintenant, vous ne pourrez pas le faire plus tard. Si vous réactivez les sauvegardes sur cet appareil, Signal supprimera votre sauvegarde actuelle et en créera une nouvelle, qui ne contiendra que vos nouveaux messages.";
 
 /* Title for a sheet warning users about skipping restore. */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE" = "Ignorer la restauration ?";
@@ -7190,7 +7244,7 @@
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "Pour transférer ce compte vers un nouvel appareil, appuyez sur \"Continuer\", puis scannez le code QR avec l'appareil photo intégré à l'application. Attention : ne scannez que les codes QR qui proviennent directement de Signal.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@. %2$@";
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Vous répondez à %1$@. %2$@";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";

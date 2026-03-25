@@ -44,11 +44,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d media item</string>
+			<string>%1$d articol media</string>
 			<key>few</key>
-			<string>%1$d media items</string>
+			<string>%1$d articole media</string>
 			<key>other</key>
-			<string>%1$d media items</string>
+			<string>%1$d de articole media</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>
@@ -512,6 +512,24 @@
 			<string>din %2$d rezultate</string>
 			<key>other</key>
 			<string>din %2$d de rezultate</string>
+		</dict>
+	</dict>
+	<key>CONVERSATION_SETTINGS_FORMER_MEMBERS_SECTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d Former Member</string>
+			<key>few</key>
+			<string>%1$d Former Members</string>
+			<key>other</key>
+			<string>%1$d Former Members</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>

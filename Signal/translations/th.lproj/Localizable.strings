@@ -8,7 +8,7 @@
 "ABOUT_SECTION_TITLE" = "เกี่ยวกับ Signal";
 
 /* Label for forward button in media control panel */
-"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Forward";
+"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "ส่งต่อ";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "แฟ้มแนบ";
@@ -2308,6 +2308,9 @@
 /* Header title for the section showing all media in conversation settings */
 "CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "สื่อทั้งหมด";
 
+/* Label for 'archive chat' action in conversation settings view. */
+"CONVERSATION_SETTINGS_ARCHIVE_CHAT" = "Archive Chat";
+
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "เลือกว่าใครสามารถแก้ไขชื่อกลุ่ม รูปภาพ คำอธิบาย รวมถึงตั้งเวลาให้ข้อความหายไปและข้อความที่ปักหมุดไว้";
 
@@ -2340,6 +2343,9 @@
 
 /* A label indicating that a call was an outgoing voice call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "การโทรด้วยเสียงขาออก";
+
+/* Label for 'delete chat' action in conversation settings view. */
+"CONVERSATION_SETTINGS_DELETE_CHAT" = "Delete Chat";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "แก้ไขข้อมูลกลุ่ม";
@@ -2481,6 +2487,9 @@
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "เฉพาะผู้ดูแล";
+
+/* Label for 'unarchive chat' action in conversation settings view. */
+"CONVERSATION_SETTINGS_UNARCHIVE_CHAT" = "Unarchive Chat";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "เลิกบล็อกกลุ่ม";
@@ -3424,6 +3433,30 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "ดำเนินการโทรไม่สำเร็จ";
 
+/* Label for a banner in group settings indicating that the group has been ended */
+"END_GROUP_BANNER_LABEL" = "This group was ended.";
+
+/* Label for group chats that have been ended */
+"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group was ended.";
+
+/* End group confirmation description */
+"END_GROUP_DESCRIPTION" = "Members will no longer be able to send messages or start calls in the group. They will be notified that you ended the group, and will still have access to message history.";
+
+/* Description for final confirmation screen when user tries to end a group */
+"END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "This will end the group permanently. Are you sure you want to proceed?";
+
+/* Body for error sheet shown if the group failed to end */
+"END_GROUP_ERROR_DESCRIPTION" = "Ending the group failed. Check your connection and try again.";
+
+/* Description for error sheet that says the user can no longer invite friends or add members to a group. */
+"END_GROUP_INVITE_ERROR" = "You can no longer invite friends or add members to this group.";
+
+/* Label in conversation settings to end a group */
+"END_GROUP_LABEL" = "End Group";
+
+/* End group confirmation title for a specific group. Embeds {{ group name }} */
+"END_GROUP_LABEL_SPECIFIC" = "End “%1$@”?";
+
 /* Label explaining that an entered 'Recovery Key' is incorrect. */
 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "กุญแจกู้คืนไม่ถูกต้อง";
 
@@ -3649,6 +3682,9 @@
 /* 'Get Started' button directing users to Chat Color settings */
 "GET_STARTED_CARD_CHAT_COLOR" = "สีแชท";
 
+/* Accessibility label for the close button in each Get Started card. */
+"GET_STARTED_CARD_CLOSE_A11YLABEL" = "Remove suggestion";
+
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "ชวนเพื่อน";
 
@@ -3746,7 +3782,10 @@
 "GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "ปิดเสียง";
 
 /* Context menu action to view a call participant's profile details. */
-"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Profile Details";
+"GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "ข้อมูลโปรไฟล์";
+
+/* Context menu action to remove a call participant from the call. */
+"GROUP_CALL_CONTEXT_MENU_REMOVE_FROM_CALL" = "Remove from Call";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "ดำเนินการโทรต่อ";
@@ -3783,6 +3822,9 @@
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "อยู่ในสาย";
+
+/* Subtitle for a row representing a call member, when that member is presenting. */
+"GROUP_CALL_MEMBER_LIST_PRESENTING_SUBTITLE" = "Presenting";
 
 /* Title for the section of the group call member list which displays the list of members with their hand raised. */
 "GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "ยกมือ";
@@ -4020,6 +4062,9 @@
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "ไม่สามารถเข้าร่วมกลุ่ม";
+
+/* Error message the attempt to request to join the group failed due to the group being ended. */
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Join by link failed, group has ended";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ลิงก์กลุ่มนี้ใช้ไม่ได้แล้ว";
@@ -4335,6 +4380,15 @@
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "ใครเห็นสตอรี่นี้บ้าง";
+
+/* Message indicating that the group was terminated by the local user. */
+"GROUP_TERMINATED_BY_LOCAL_USER" = "You ended the group";
+
+/* Message indicating that the group was terminated by a remote user. Embeds {{ user who terminated the group }}. */
+"GROUP_TERMINATED_BY_OTHER_USER" = "%1$@ ended the group";
+
+/* Message indicating that the group was terminated by an unknown user. */
+"GROUP_TERMINATED_BY_UNKNOWN_USER" = "The group was ended";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "ปรับปรุงกลุ่มแล้ว";
@@ -7190,7 +7244,7 @@
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "ถ่ายโอนบัญชีนี้ไปยังอุปกรณ์เครื่องใหม่ โดยแตะ “ดำเนินการต่อ” แล้วใช้กล้องใน Signal สแกนคิวอาร์โค้ด โปรดตรวจสอบให้แน่ใจว่าคุณสแกนคิวอาร์โค้ดที่มาจาก Signal โดยตรงเท่านั้น";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@. %2$@";
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "ตอบกลับหา %1$@ %2$@";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";

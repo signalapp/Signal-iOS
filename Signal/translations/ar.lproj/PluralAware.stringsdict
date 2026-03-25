@@ -56,17 +56,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d media items</string>
+			<string>%1$d عناصر وسائط</string>
 			<key>one</key>
-			<string>%1$d media item</string>
+			<string>%1$d عنصر وسائط</string>
 			<key>two</key>
-			<string>%1$d media items</string>
+			<string>%1$d عنصرا وسائط</string>
 			<key>few</key>
-			<string>%1$d media items</string>
+			<string>%1$d عناصر وسائط</string>
 			<key>many</key>
-			<string>%1$d media items</string>
+			<string>%1$d عنصر وسائط</string>
 			<key>other</key>
-			<string>%1$d media items</string>
+			<string>%1$d عنصر وسائط</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>
@@ -686,6 +686,30 @@
 			<string>من %2$d نتيجةً</string>
 			<key>other</key>
 			<string>من %2$d نتيجةٍ</string>
+		</dict>
+	</dict>
+	<key>CONVERSATION_SETTINGS_FORMER_MEMBERS_SECTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>%1$d Former Members</string>
+			<key>one</key>
+			<string>%1$d Former Member</string>
+			<key>two</key>
+			<string>%1$d Former Members</string>
+			<key>few</key>
+			<string>%1$d Former Members</string>
+			<key>many</key>
+			<string>%1$d Former Members</string>
+			<key>other</key>
+			<string>%1$d Former Members</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>

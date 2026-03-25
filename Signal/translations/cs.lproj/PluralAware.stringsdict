@@ -48,13 +48,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d media item</string>
+			<string>%1$d položka médií</string>
 			<key>few</key>
-			<string>%1$d media items</string>
+			<string>%1$d položky médií</string>
 			<key>many</key>
-			<string>%1$d media items</string>
+			<string>%1$d položek médií</string>
 			<key>other</key>
-			<string>%1$d media items</string>
+			<string>%1$d položek médií</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>
@@ -570,6 +570,26 @@
 			<string>z %2$d shod</string>
 			<key>other</key>
 			<string>z %2$d shod</string>
+		</dict>
+	</dict>
+	<key>CONVERSATION_SETTINGS_FORMER_MEMBERS_SECTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d Former Member</string>
+			<key>few</key>
+			<string>%1$d Former Members</string>
+			<key>many</key>
+			<string>%1$d Former Members</string>
+			<key>other</key>
+			<string>%1$d Former Members</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
