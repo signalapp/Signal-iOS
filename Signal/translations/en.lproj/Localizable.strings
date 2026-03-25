@@ -4390,6 +4390,9 @@
 /* Message indicating that the group was terminated by an unknown user. */
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "The group was ended";
 
+/* Error indicating a send failure due to the group being terminated. */
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "Send failed because the group was ended. You can no longer send and receive messages in this group.";
+
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Group updated.";
 

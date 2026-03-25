@@ -225,12 +225,12 @@ extension StoryGroupReplyViewController: UITableViewDelegate {
             messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
         )
 
-        var allowRetrySend = true
+        var isTerminatedGroupThread = false
         if let groupThread = thread as? TSGroupThread {
-            allowRetrySend = !groupThread.isTerminatedGroup
+            isTerminatedGroupThread = groupThread.isTerminatedGroup
         }
 
-        self.present(promptBuilder.build(for: message, allowRetrySend: allowRetrySend), animated: true)
+        self.present(promptBuilder.build(for: message, isTerminatedGroup: isTerminatedGroupThread), animated: true)
     }
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

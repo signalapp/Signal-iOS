@@ -994,7 +994,7 @@ extension ConversationViewController: CVComponentDelegate {
         )
         dismissKeyBoard()
 
-        self.present(promptBuilder.build(for: message, allowRetrySend: !thread.isTerminatedGroup), animated: true)
+        self.present(promptBuilder.build(for: message, isTerminatedGroup: thread.isTerminatedGroup), animated: true)
     }
 
     public func didTapGroupMigrationLearnMore() {

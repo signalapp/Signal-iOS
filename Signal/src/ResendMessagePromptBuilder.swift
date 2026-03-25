@@ -16,7 +16,7 @@ class ResendMessagePromptBuilder {
         self.messageSenderJobQueue = messageSenderJobQueue
     }
 
-    func build(for message: TSMessage, allowRetrySend: Bool) -> UIViewController {
+    func build(for message: TSMessage, isTerminatedGroup: Bool) -> UIViewController {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         let sendAgain: () -> Void = { [databaseStorage, messageSenderJobQueue] in
@@ -87,6 +87,14 @@ class ResendMessagePromptBuilder {
         if let outgoingMessage = message as? TSOutgoingMessage {
             mostRecentFailureText = outgoingMessage.mostRecentFailureText
         }
+
+        if isTerminatedGroup {
+            mostRecentFailureText = OWSLocalizedString(
+                "GROUP_TERMINATED_MESSAGE_SEND_ERROR",
+                comment: "Error indicating a send failure due to the group being terminated.",
+            )
+        }
+
         // TODO: [AdminDelete] message text for failed delete on incoming message
         // Since we don't have mostRecentFailureText, we will just show generic error text.
 
@@ -108,7 +116,7 @@ class ResendMessagePromptBuilder {
                 }
             },
         ))
-        if allowRetrySend {
+        if !isTerminatedGroup {
             actionSheet.addAction(ActionSheetAction(
                 title: OWSLocalizedString("SEND_AGAIN_BUTTON", comment: ""),
                 style: .default,
