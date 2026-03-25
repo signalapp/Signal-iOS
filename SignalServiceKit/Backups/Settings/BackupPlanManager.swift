@@ -35,6 +35,7 @@ extension Notification.Name {
 class BackupPlanManagerImpl: BackupPlanManager {
 
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupAttachmentUploadProgress: BackupAttachmentUploadProgress
     private let backupSettingsStore: BackupSettingsStore
@@ -44,6 +45,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
 
     init(
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
+        backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress,
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
         backupSettingsStore: BackupSettingsStore,
@@ -51,6 +53,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
         tsAccountManager: TSAccountManager,
     ) {
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
+        self.backupAttachmentDownloadProgress = backupAttachmentDownloadProgress
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.backupSettingsStore = backupSettingsStore
@@ -151,6 +154,13 @@ class BackupPlanManagerImpl: BackupPlanManager {
         if oldBackupPlan != newBackupPlan {
             tx.addSyncCompletion {
                 NotificationCenter.default.post(name: .backupPlanChanged, object: nil)
+                Task {
+                    // This is run after the write transaction that updates the backup plan
+                    // completes.  This allows the download progress observer to recalculate
+                    // the new state of pending downloads and allow progress to be displayed,
+                    // even if the queue may not be started yet.
+                    try? await self.backupAttachmentDownloadProgress.beginObserving()
+                }
             }
         }
     }

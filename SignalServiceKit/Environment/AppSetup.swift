@@ -451,6 +451,16 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let backupAttachmentDownloadStore = BackupAttachmentDownloadStore()
+        let backupAttachmentDownloadProgress = BackupAttachmentDownloadProgressImpl(
+            appContext: appContext,
+            appReadiness: appReadiness,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupSettingsStore: backupSettingsStore,
+            dateProvider: dateProvider,
+            db: db,
+            remoteConfigProvider: remoteConfigManager,
+        )
+
         let backupAttachmentUploadEraStore = BackupAttachmentUploadEraStore()
         let backupAttachmentUploadProgress = BackupAttachmentUploadProgressImpl(
             attachmentStore: attachmentStore,
@@ -470,6 +480,7 @@ extension AppSetup.GlobalsContinuation {
 
         let backupPlanManager = BackupPlanManagerImpl(
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
+            backupAttachmentDownloadProgress: backupAttachmentDownloadProgress,
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupAttachmentUploadProgress: backupAttachmentUploadProgress,
             backupSettingsStore: backupSettingsStore,
@@ -591,16 +602,6 @@ extension AppSetup.GlobalsContinuation {
             dateProvider: dateProvider,
             db: db,
             notificationPresenter: notificationPresenter,
-        )
-
-        let backupAttachmentDownloadProgress = BackupAttachmentDownloadProgressImpl(
-            appContext: appContext,
-            appReadiness: appReadiness,
-            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
-            backupSettingsStore: backupSettingsStore,
-            dateProvider: dateProvider,
-            db: db,
-            remoteConfigProvider: remoteConfigManager,
         )
 
         let backupAttachmentUploadScheduler = BackupAttachmentUploadScheduler(
