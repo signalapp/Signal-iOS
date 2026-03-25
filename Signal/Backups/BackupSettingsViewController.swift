@@ -2314,6 +2314,14 @@ private struct BackupAttachmentDownloadProgressView: View {
         let bytesDownloaded: UInt64
         let totalBytesToDownload: UInt64
         let percentageDownloaded: Float
+
+        var bytesRemaining: UInt64 {
+            let remainingBytes = totalBytesToDownload.subtractingReportingOverflow(bytesDownloaded)
+            guard !remainingBytes.overflow else {
+                return 0
+            }
+            return remainingBytes.partialValue
+        }
     }
 
     let backupPlan: BackupPlan
@@ -2340,7 +2348,7 @@ private struct BackupAttachmentDownloadProgressView: View {
                             "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED",
                             comment: "Subtitle for a view explaining that downloads are available but not running. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}.",
                         ),
-                        latestDownloadUpdate.totalBytesToDownload.formatted(.owsByteCount()),
+                        latestDownloadUpdate.bytesRemaining.formatted(.owsByteCount()),
                     )
                 case .disabling, .paidExpiringSoon:
                     String(
@@ -2348,7 +2356,7 @@ private struct BackupAttachmentDownloadProgressView: View {
                             "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING",
                             comment: "Subtitle for a view explaining that downloads are available but not running, and the user's paid subscription is expiring. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}.",
                         ),
-                        latestDownloadUpdate.totalBytesToDownload.formatted(.owsByteCount()),
+                        latestDownloadUpdate.bytesRemaining.formatted(.owsByteCount()),
                     )
                 }
             case .running:
