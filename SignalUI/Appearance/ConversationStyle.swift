@@ -229,7 +229,7 @@ public struct ConversationStyle {
         shouldDimWallpaperInDarkMode: Bool,
         isDarkThemeEnabled: Bool,
     ) -> ColorOrGradientValue {
-        guard UIAccessibility.isReduceTransparencyEnabled == false else {
+        if UIAccessibility.isReduceTransparencyEnabled, hasWallpaper {
             return .solidColor(color: Theme.backgroundColor)
         }
         if
