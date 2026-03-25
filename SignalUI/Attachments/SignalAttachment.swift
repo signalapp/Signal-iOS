@@ -249,6 +249,9 @@ public class SignalAttachment: CustomDebugStringConvertible {
         } else {
             additionalTypes.append(UTType("com.adobe.raw-image")!)
         }
+        if #available(iOS 16.0, *) {
+            additionalTypes.append(UTType("public.avif")!)
+        }
         additionalTypes.append(.heif)
         additionalTypes.append(.heic)
         additionalTypes.append(.webP)
