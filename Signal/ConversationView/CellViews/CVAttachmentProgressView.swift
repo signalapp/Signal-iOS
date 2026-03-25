@@ -457,8 +457,8 @@ class CVAttachmentProgressView: ManualLayoutView {
                 let hasSendFailed = outgoingMessage.messageState == .failed
                 let wasNotCreatedLocally = outgoingMessage.wasNotCreatedLocally
                 guard
-                    !attachmentStream.attachment.isUploadedToTransitTier,
-                    !attachmentStream.attachment.hasMediaTierInfo,
+                    attachmentStream.attachment.latestTransitTierInfo == nil,
+                    attachmentStream.attachment.mediaTierInfo == nil,
                     !wasNotCreatedLocally,
                     !hasSendFailed
                 else {
