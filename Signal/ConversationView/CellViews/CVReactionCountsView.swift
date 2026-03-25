@@ -32,7 +32,7 @@ class CVReactionCountsView: ManualStackView {
         let pill3: PillState?
     }
 
-    static let height: CGFloat = 24
+    static let height: CGFloat = 26
     static let inset: CGFloat = 7
 
     private static let pillKey1 = "pill1"
@@ -214,7 +214,7 @@ class CVReactionCountsView: ManualStackView {
         }
         private static var stickerSize: CGFloat {
             // Slightly bigger than the emoji
-            emojiFont.lineHeight * 1.25
+            emojiFont.lineHeight * 1.75
         }
 
         init(pillKey: String) {
@@ -225,7 +225,7 @@ class CVReactionCountsView: ManualStackView {
             emojiLabel.clipsToBounds = true
             clipsToBounds = true
 
-            let spinnerSize = Self.stickerSize
+            let spinnerSize = Self.stickerSize * 0.75
             stickerSpinner.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
                 stickerSpinner.widthAnchor.constraint(equalToConstant: spinnerSize),

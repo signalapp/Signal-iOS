@@ -147,7 +147,7 @@ private class EmojiReactorCell: UITableViewCell {
     let nameLabel = UILabel()
     let emojiLabel = UILabel()
     let stickerImageView = SDAnimatedImageView()
-    private static let stickerSize: CGFloat = 28
+    private static let stickerSize: CGFloat = 36
 
     weak var delegate: EmojiReactorCellDelegate?
 

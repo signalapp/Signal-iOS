@@ -153,14 +153,16 @@ extension EmojiCountsCollectionView: UICollectionViewDataSource {
 class EmojiCountCell: UICollectionViewCell {
     let emojiLabel = UILabel()
     let countLabel = UILabel()
+    let stackView: UIStackView
     let stickerImageView = SDAnimatedImageView()
-    private static let stickerSize: CGFloat = 22
+    private static let stickerSize: CGFloat = 28
 
     private var stickerAttachmentId: Attachment.IDType?
 
     static let reuseIdentifier = "EmojiCountCell"
 
     override init(frame: CGRect) {
+        stackView = UIStackView(arrangedSubviews: [emojiLabel, stickerImageView, countLabel])
         super.init(frame: .zero)
 
         let selectedBackground = UIView()
@@ -172,9 +174,7 @@ class EmojiCountCell: UICollectionViewCell {
         stickerImageView.autoSetDimensions(to: CGSize(square: Self.stickerSize))
         stickerImageView.isHidden = true
 
-        let stackView = UIStackView(arrangedSubviews: [emojiLabel, stickerImageView, countLabel])
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
         stackView.spacing = 4
         contentView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
@@ -201,17 +201,20 @@ class EmojiCountCell: UICollectionViewCell {
 
     func configure(with item: EmojiItem, imageCache: StickerReactionImageCache?) {
         if let sticker = item.sticker, let stream = sticker.attachmentStream, let imageCache {
+            stackView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 4)
             let attachmentId = sticker.attachment.attachment.id
             self.stickerAttachmentId = attachmentId
+
+            stickerImageView.isHidden = false
+            emojiLabel.isHidden = true
 
             Task { [weak self] in
                 let image = await imageCache.image(for: stream)
                 guard let self, self.stickerAttachmentId == attachmentId else { return }
-                if let image {
-                    self.applyStickerImage(image)
-                }
+                self.stickerImageView.image = image
             }
         } else {
+            stackView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 8)
             emojiLabel.text = item.emoji
             emojiLabel.isHidden = item.emoji == nil
             stickerImageView.isHidden = true
@@ -228,12 +231,6 @@ class EmojiCountCell: UICollectionViewCell {
                 item.count.abbreviatedString,
             )
         }
-    }
-
-    private func applyStickerImage(_ image: UIImage) {
-        stickerImageView.image = image
-        stickerImageView.isHidden = false
-        emojiLabel.isHidden = true
     }
 
     override func layoutSubviews() {
