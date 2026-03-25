@@ -26,9 +26,8 @@ class ProvisioningSplashViewController: ProvisioningBaseViewController {
                 self.provisioningController.provisioningSplashRequestedModeSwitch(viewController: self)
             },
         )
-        modeSwitchButton.configuration?.image = .init(named: "link-slash")
+        modeSwitchButton.configuration?.image = .linkSlash
         modeSwitchButton.tintColor = .ows_gray25
-        modeSwitchButton.accessibilityIdentifier = "onboarding.splash.modeSwitch"
         view.addSubview(modeSwitchButton)
         modeSwitchButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -39,13 +38,12 @@ class ProvisioningSplashViewController: ProvisioningBaseViewController {
         ])
 
         // Image at the top.
-        let imageView = UIImageView(image: UIImage(named: "onboarding_splash_hero"))
+        let imageView = UIImageView(image: .onboardingSplashHero)
         imageView.contentMode = .scaleAspectFit
         imageView.layer.minificationFilter = .trilinear
         imageView.layer.magnificationFilter = .trilinear
         imageView.setCompressionResistanceLow()
         imageView.setContentHuggingVerticalLow()
-        imageView.accessibilityIdentifier = "onboarding.splash.heroImageView"
         let heroImageContainer = UIView.container()
         heroImageContainer.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
