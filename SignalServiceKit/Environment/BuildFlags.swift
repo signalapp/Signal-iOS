@@ -87,8 +87,8 @@ public enum BuildFlags {
     }
 
     public enum GroupTerminate {
-        public static let receive = build <= .dev
-        public static let send = build <= .dev
+        public static let receive = build <= .internal
+        public static let send = build <= .internal
     }
 }
 
