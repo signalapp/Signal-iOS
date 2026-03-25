@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+#if TESTABLE_BUILD
+
 public import CoreGraphics
 import Foundation
-
-#if TESTABLE_BUILD
 
 extension AttachmentReference.ConstructionParams {
 

@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+#if TESTABLE_BUILD
+
 import Foundation
 public import UIKit
-
-#if TESTABLE_BUILD
 
 @objc
 public class TestAppContext: NSObject, AppContext {
