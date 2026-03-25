@@ -102,7 +102,7 @@ class GroupsV2ProfileKeyUpdater {
 
         let groupMembership = groupThread.groupModel.groupMembership
         // We only need to update v2 groups of which we are a full member.
-        guard groupThread.isGroupV2Thread, groupMembership.isFullMember(localAddress) else {
+        guard groupThread.isGroupV2Thread, groupMembership.isFullMember(localAddress), !groupThread.isTerminatedGroup else {
             return
         }
         let groupId = groupThread.groupModel.groupId

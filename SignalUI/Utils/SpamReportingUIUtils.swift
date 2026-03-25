@@ -43,7 +43,7 @@ public enum ReportSpamUIUtils {
                 },
             ),
         )
-        if !isBlocked {
+        if !isBlocked, !thread.isTerminatedGroup {
             actionSheet.addAction(
                 ActionSheetAction(
                     title: OWSLocalizedString(
