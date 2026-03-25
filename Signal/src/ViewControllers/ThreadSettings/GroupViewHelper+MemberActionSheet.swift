@@ -114,7 +114,7 @@ extension GroupViewHelper {
         let groupMembership = groupThread.groupModel.groupMembership
         let isLocalUserAdmin = groupMembership.isFullMemberAndAdministrator(localAddress)
         let canRevokeAdmin = groupMembership.isFullMemberAndAdministrator(address)
-        return canEditConversationMembership && isLocalUserAdmin && canRevokeAdmin
+        return canEditConversationMembership && isLocalUserAdmin && canRevokeAdmin && !groupThread.isTerminatedGroup
     }
 
     @MainActor
