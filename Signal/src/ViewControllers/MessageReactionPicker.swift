@@ -411,7 +411,7 @@ class MessageReactionPicker: UIStackView {
                         .lazy
                         .map {
                             CustomReactionItem(
-                                emoji: $0.emojiString ?? StickerManager.fallbackStickerEmoji,
+                                emoji: $0.emojiString?.nilIfEmpty ?? StickerManager.fallbackStickerEmoji,
                                 sticker: $0.info
                             )
                         }

@@ -270,7 +270,7 @@ class ReactionPickerSheet: OWSViewController, StickerPickerViewDelegate {
             StickerManager.installedStickerMetadata(
                 stickerInfo: stickerInfo,
                 transaction: tx
-            )?.firstEmoji
+            )?.firstEmoji?.nilIfEmpty
         } ?? StickerManager.fallbackStickerEmoji
         let item = CustomReactionItem(emoji: emoji, sticker: stickerInfo)
         completionHandler(item)

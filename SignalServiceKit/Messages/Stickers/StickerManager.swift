@@ -964,7 +964,7 @@ public class StickerManager: NSObject {
         // Mirror to recent reactions.
         Self.recordRecentReaction(
             CustomReactionItem(
-                emoji: installedSticker.emojiString ?? fallbackStickerEmoji,
+                emoji: installedSticker.emojiString?.nilIfEmpty ?? fallbackStickerEmoji,
                 sticker: stickerInfo
             ),
             tx: transaction
