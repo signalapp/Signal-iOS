@@ -48,7 +48,8 @@
 --rules redundantInternal
 --rules redundantMemberwiseInit
 --rules redundantOptionalBinding
---rules redundantParens
+# Disabled because of `@MainActor () async throws -> ...` closures.
+# --rules redundantParens
 --rules redundantPattern
 --rules redundantPublic
 --rules semicolons
