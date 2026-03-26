@@ -10,7 +10,7 @@ protocol StoryGroupReplyDelegate: AnyObject {
     func storyGroupReplyViewControllerDidBeginEditing(_ storyGroupReplyViewController: StoryGroupReplyViewController)
 }
 
-class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
+class StoryGroupReplyViewController: OWSViewController, StoryReplySheet, StoryGroupReplyMessageResendDelegate {
     weak var delegate: StoryGroupReplyDelegate?
 
     private(set) lazy var tableView = UITableView()
@@ -179,6 +179,26 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
         replyLoader?.reload()
         inputToolbar.setMessageBody(nil, txProvider: DependenciesBridge.shared.db.readTxProvider)
     }
+
+    func askToResendMessage(for item: StoryGroupReplyViewItem) {
+        let message = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            TSOutgoingMessage.fetchOutgoingMessageViaCache(uniqueId: item.interactionUniqueId, transaction: tx)
+        }
+        guard let message else {
+            return
+        }
+        let promptBuilder = ResendMessagePromptBuilder(
+            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+            messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
+        )
+
+        var isTerminatedGroupThread = false
+        if let groupThread = thread as? TSGroupThread {
+            isTerminatedGroupThread = groupThread.isTerminatedGroup
+        }
+
+        self.present(promptBuilder.build(for: message, isTerminatedGroup: isTerminatedGroupThread), animated: true)
+    }
 }
 
 extension StoryGroupReplyViewController: UIScrollViewDelegate {
@@ -203,36 +223,6 @@ extension StoryGroupReplyViewController: UIScrollViewDelegate {
 }
 
 extension StoryGroupReplyViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: false)
-
-        guard let item = replyLoader?.replyItem(for: indexPath) else { return }
-
-        guard case .failed = item.recipientStatus else { return }
-
-        askToResendMessage(for: item)
-    }
-
-    private func askToResendMessage(for item: StoryGroupReplyViewItem) {
-        let message = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            TSOutgoingMessage.fetchOutgoingMessageViaCache(uniqueId: item.interactionUniqueId, transaction: tx)
-        }
-        guard let message else {
-            return
-        }
-        let promptBuilder = ResendMessagePromptBuilder(
-            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-            messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
-        )
-
-        var isTerminatedGroupThread = false
-        if let groupThread = thread as? TSGroupThread {
-            isTerminatedGroupThread = groupThread.isTerminatedGroup
-        }
-
-        self.present(promptBuilder.build(for: message, isTerminatedGroup: isTerminatedGroupThread), animated: true)
-    }
-
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let cell = cell as? StoryGroupReplyCell else {
             return
@@ -256,7 +246,7 @@ extension StoryGroupReplyViewController: UITableViewDataSource {
         }
 
         let cell = tableView.dequeueReusableCell(withIdentifier: item.cellType.rawValue, for: indexPath) as! StoryGroupReplyCell
-        cell.configure(with: item, spoilerState: spoilerState)
+        cell.configure(with: item, spoilerState: spoilerState, resendMessageDelegate: self)
 
         return cell
     }

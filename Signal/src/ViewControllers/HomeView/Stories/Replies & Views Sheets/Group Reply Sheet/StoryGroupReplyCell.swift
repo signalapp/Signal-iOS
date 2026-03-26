@@ -7,6 +7,10 @@ import BonMot
 import SignalServiceKit
 import SignalUI
 
+protocol StoryGroupReplyMessageResendDelegate: AnyObject {
+    func askToResendMessage(for: StoryGroupReplyViewItem)
+}
+
 class StoryGroupReplyCell: UITableViewCell {
     lazy var avatarView = ConversationAvatarView(sizeClass: .twentyEight, localUserDisplayMode: .asUser, useAutolayout: true)
     lazy var messageLabel: UILabel = {
@@ -270,10 +274,12 @@ class StoryGroupReplyCell: UITableViewCell {
 
     private var item: StoryGroupReplyViewItem?
     private var spoilerState: SpoilerRenderState?
+    private weak var resendMessageDelegate: StoryGroupReplyMessageResendDelegate?
 
-    func configure(with item: StoryGroupReplyViewItem, spoilerState: SpoilerRenderState) {
+    func configure(with item: StoryGroupReplyViewItem, spoilerState: SpoilerRenderState, resendMessageDelegate: StoryGroupReplyMessageResendDelegate?) {
         self.item = item
         self.spoilerState = spoilerState
+        self.resendMessageDelegate = resendMessageDelegate
         if cellType.hasAuthor {
             authorNameLabel.textColor = item.authorColor
             authorNameLabel.text = item.authorDisplayName
@@ -562,6 +568,11 @@ class StoryGroupReplyCell: UITableViewCell {
         else {
             return
         }
+
+        if case .failed = item.recipientStatus {
+            resendMessageDelegate?.askToResendMessage(for: item)
+        }
+
         guard let messageText: CVTextValue = item.displayableText?.displayTextValue else {
             return
         }
@@ -585,7 +596,7 @@ class StoryGroupReplyCell: UITableViewCell {
                         )
                         // Re-configure. This is ok because revealing the spoiler
                         // doesn't change the sizing.
-                        configure(with: item, spoilerState: spoilerState)
+                        configure(with: item, spoilerState: spoilerState, resendMessageDelegate: resendMessageDelegate)
                         return
                     }
                 }
