@@ -110,7 +110,7 @@ extension CVComponentState {
                     await touchMessage()
                 } catch {
                     switch error {
-                    case GroupsV2Error.expiredGroupInviteLink, GroupsV2Error.localUserBlockedFromJoining:
+                    case GroupsV2Error.expiredGroupInviteLink, GroupsV2Error.localUserBlockedFromJoining, GroupsV2Error.terminatedGroupInviteLink:
                         Logger.warn("Failed to fetch group link content: \(error)")
                         if Self.updateExpirationList(url: url, isExpired: true) {
                             await touchMessage()

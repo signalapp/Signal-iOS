@@ -158,6 +158,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: nil,
             behavior400: isRetryingAfterRecoverable400 ? .fail : .reportForRecovery,
             behavior403: .fail,
+            behavior423: .ignore,
         )
 
         let groupResponseProto = try GroupsProtoGroupResponse(serializedData: response.responseBodyData ?? Data())
@@ -336,6 +337,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             behavior400: behavior400,
             behavior403: .fetchGroupUpdates,
+            behavior423: .ignore,
         )
 
         return GroupUpdateResult(
@@ -577,6 +579,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             behavior400: .fail,
             behavior403: .fetchGroupUpdates,
+            behavior423: .ignore,
         )
 
         guard let protoData = response.responseBodyData else {
@@ -615,6 +618,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             behavior400: .fail,
             behavior403: .removeFromGroup,
+            behavior423: .ignore,
         )
 
         let groupResponseProto = try GroupsProtoGroupResponse(serializedData: response.responseBodyData ?? Data())
@@ -753,6 +757,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             behavior400: .fail,
             behavior403: .ignore, // actually means "throw error"
+            behavior423: .ignore,
         )
         guard let groupChangesProtoData = response.responseBodyData else {
             throw OWSAssertionError("Invalid responseObject.")
@@ -836,6 +841,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             behavior400: .fail,
             behavior403: .ignore,
+            behavior423: .ignore,
         )
 
         guard let memberData = response.responseBodyData else {
@@ -1042,6 +1048,11 @@ public class GroupsV2Impl: GroupsV2 {
         case localUserIsNotARequestingMember
     }
 
+    private enum Behavior423 {
+        case ignore
+        case reportTerminatedGroupLink
+    }
+
     /// Make a request to the GV2 service, produced by the given
     /// `requestBuilder`. Specifies how to respond if the request results in
     /// certain errors.
@@ -1050,6 +1061,7 @@ public class GroupsV2Impl: GroupsV2 {
         groupId: GroupIdentifier?,
         behavior400: Behavior400,
         behavior403: Behavior403,
+        behavior423: Behavior423,
     ) async throws -> HTTPResponse {
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             throw OWSAssertionError("Missing localIdentifiers.")
@@ -1069,6 +1081,7 @@ public class GroupsV2Impl: GroupsV2 {
                         groupId: groupId,
                         behavior400: behavior400,
                         behavior403: behavior403,
+                        behavior423: behavior423,
                     )
                 }
             },
@@ -1082,6 +1095,7 @@ public class GroupsV2Impl: GroupsV2 {
         groupId: GroupIdentifier?,
         behavior400: Behavior400,
         behavior403: Behavior403,
+        behavior423: Behavior423,
     ) async throws -> Never {
         // Fall through to retry if retry-able,
         // otherwise reject immediately.
@@ -1174,6 +1188,14 @@ public class GroupsV2Impl: GroupsV2 {
                 // retrying, using the change set and the most recent state
                 // from the service.
                 throw GroupsV2Error.conflictingChangeOnService
+            case 423:
+                switch behavior423 {
+                case .ignore:
+                    break
+                case .reportTerminatedGroupLink:
+                    throw GroupsV2Error.terminatedGroupInviteLink
+                }
+                fallthrough
             default:
                 // Unexpected status code.
                 throw error
@@ -1225,7 +1247,7 @@ public class GroupsV2Impl: GroupsV2 {
             }
 
             // These status codes will be handled by performServiceRequest.
-            if let statusCode = error.httpStatusCode, [400, 401, 403, 404, 409].contains(statusCode) {
+            if let statusCode = error.httpStatusCode, [400, 401, 403, 404, 409, 423].contains(statusCode) {
                 throw error
             }
 
@@ -1451,6 +1473,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: nil,
             behavior400: .fail,
             behavior403: behavior403,
+            behavior423: .reportTerminatedGroupLink,
         )
         guard let protoData = response.responseBodyData else {
             throw OWSAssertionError("Invalid responseObject.")
@@ -1686,6 +1709,7 @@ public class GroupsV2Impl: GroupsV2 {
                 groupId: groupId,
                 behavior400: .fail,
                 behavior403: .reportInvalidOrBlockedGroupLink,
+                behavior423: .reportTerminatedGroupLink,
             )
 
             let changeResponse = try GroupsProtoGroupChangeResponse(serializedData: response.responseBodyData ?? Data())
@@ -1994,6 +2018,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             behavior400: .fail,
             behavior403: .fail,
+            behavior423: .reportTerminatedGroupLink,
         )
 
         return newRevision
@@ -2097,6 +2122,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: try secretParams.getPublicParams().getGroupIdentifier(),
             behavior400: .fail,
             behavior403: .fetchGroupUpdates,
+            behavior423: .ignore,
         )
 
         guard let groupProtoData = response.responseBodyData else {

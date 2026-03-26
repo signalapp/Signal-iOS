@@ -896,6 +896,7 @@ extension GroupsV2Error: IsRetryableProvider {
             .localUserIsNotARequestingMember,
             .cantApplyChangesToPlaceholder,
             .expiredGroupInviteLink,
+            .terminatedGroupInviteLink,
             .groupBlocked,
             .localUserBlockedFromJoining,
             .groupChangeProtoForIncompatibleRevision,

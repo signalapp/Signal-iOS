@@ -269,6 +269,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
     private enum LinkPreviewLoadResult {
         case success(GroupInviteLinkPreview)
         case expiredLink
+        case terminatedLink
         case failure(Error)
     }
 
@@ -308,6 +309,8 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                 }
             } catch GroupsV2Error.expiredGroupInviteLink {
                 self?.applyLinkPreviewLoadResult(.expiredLink)
+            } catch GroupsV2Error.terminatedGroupInviteLink {
+                self?.applyLinkPreviewLoadResult(.terminatedLink)
             } catch GroupsV2Error.localUserBlockedFromJoining {
                 Logger.warn("User blocked")
                 self?.dismiss(animated: true, completion: {
@@ -373,6 +376,19 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                 message: OWSLocalizedString(
                     "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
                     comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet.",
+                ),
+            )
+            customHeader = nil
+
+        case .terminatedLink:
+            setTitle(
+                OWSLocalizedString(
+                    "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
+                    comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet.",
+                ),
+                message: OWSLocalizedString(
+                    "GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE",
+                    comment: "Error message the attempt to request to join the group failed due to the group being ended.",
                 ),
             )
             customHeader = nil
@@ -473,15 +489,15 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                                         "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE",
                                         comment: "Subtitle indicating that the local user has been blocked from joining the group",
                                     )
+                                case GroupsV2Error.terminatedGroupInviteLink:
+                                    return OWSLocalizedString(
+                                        "GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE",
+                                        comment: "Error message the attempt to request to join the group failed due to the group being ended.",
+                                    )
                                 case _ where error.isNetworkFailureOrTimeout:
                                     return OWSLocalizedString(
                                         "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE",
                                         comment: "Error message the attempt to request to join the group failed due to network connectivity.",
-                                    )
-                                case let httpError as OWSHTTPError where httpError.responseStatusCode == 423:
-                                    return OWSLocalizedString(
-                                        "GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE",
-                                        comment: "Error message the attempt to request to join the group failed due to the group being ended.",
                                     )
                                 default:
                                     return OWSLocalizedString(
