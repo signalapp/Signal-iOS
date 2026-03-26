@@ -456,7 +456,12 @@ class MessageActions: NSObject {
         )
         actions.append(selectAction)
 
-        if let poll = itemViewModel.componentState.poll?.state.poll, poll.ownerIsLocalUser, !poll.isEnded {
+        if
+            let poll = itemViewModel.componentState.poll?.state.poll,
+            poll.ownerIsLocalUser,
+            !poll.isEnded,
+            !itemViewModel.thread.isTerminatedGroup
+        {
             let endPollAction = MessageActionBuilder.endPoll(
                 itemViewModel: itemViewModel,
                 delegate: delegate,
