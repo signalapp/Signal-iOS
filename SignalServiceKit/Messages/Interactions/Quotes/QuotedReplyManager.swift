@@ -531,7 +531,7 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
                         sticker: attachment,
                         stickerInfo: originalMessage.messageSticker?.info
                     ),
-                    stickerThumbnail: resizedThumbnailImage
+                    stickerThumbnail: UIImage(cgImage: thumbnailImage)
                 ))
             }
 

@@ -152,14 +152,8 @@ final class OutgoingReactionMessage: TransientOutgoingMessage {
                     for: .messageReactionSticker(messageRowId: messageRowId, reactionRowId: reactionRowId),
                     tx: tx,
                 ),
-                let transitPointer = referencedAttachment.attachment.asTransitTierPointer(),
-                case let .digestSHA256Ciphertext(digest) = transitPointer.info.integrityCheck
+                let attachmentProto = referencedAttachment.asProtoForSending()
             {
-                let attachmentProto = DependenciesBridge.shared.attachmentManager.buildProtoForSending(
-                    from: referencedAttachment.reference,
-                    pointer: transitPointer,
-                    digestSHA256Ciphertext: digest,
-                )
                 let stickerBuilder = SSKProtoDataMessageSticker.builder(
                     packID: sticker.packId,
                     packKey: sticker.packKey,

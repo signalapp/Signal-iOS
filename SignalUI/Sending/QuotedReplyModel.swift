@@ -223,8 +223,8 @@ public class QuotedReplyModel {
             return messageBody?.text
         case .giftBadge:
             return nil
-        case .storyReactionEmoji(let string):
-            return string
+        case .storyReaction(let reaction):
+            return reaction.emoji
         case .attachmentStub(let messageBody, _):
             var captionString = ""
             let caption = messageBody?.text.nilIfEmpty
