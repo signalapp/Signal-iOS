@@ -437,7 +437,7 @@ public extension ConversationViewController {
         }
 
         if groupThread.isTerminatedGroup {
-            showUnableToInviteSheet()
+            showUnableToTakeActionInEndedGroupSheet()
             return
         }
 
@@ -448,12 +448,12 @@ public extension ConversationViewController {
         view.present(fromViewController: self)
     }
 
-    func showUnableToInviteSheet() {
+    func showUnableToTakeActionInEndedGroupSheet() {
         let alert = ActionSheetController(
             title: nil,
             message: OWSLocalizedString(
-                "END_GROUP_INVITE_ERROR",
-                comment: "Description for error sheet that says the user can no longer invite friends or add members to a group.",
+                "END_GROUP_ACTION_ERROR",
+                comment: "Description for error sheet that says the user can no longer take this action because the group has ended.",
             ),
         )
 

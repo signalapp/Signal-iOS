@@ -1041,6 +1041,11 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapShowConversationSettingsAndShowMemberRequests() {
         AssertIsOnMainThread()
 
+        if thread.isTerminatedGroup {
+            showUnableToTakeActionInEndedGroupSheet()
+            return
+        }
+
         showConversationSettingsAndShowMemberRequests()
     }
 
@@ -1050,6 +1055,11 @@ extension ConversationViewController: CVComponentDelegate {
         requesterAci: Aci,
     ) {
         AssertIsOnMainThread()
+
+        if thread.isTerminatedGroup {
+            showUnableToTakeActionInEndedGroupSheet()
+            return
+        }
 
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(

@@ -1016,6 +1016,10 @@ private extension ConversationViewController {
             return nil
         }
 
+        guard !thread.isTerminatedGroup else {
+            return nil
+        }
+
         // We will skip this read if the above checks fail, which will be most of the time.
         guard
             SSKEnvironment.shared.databaseStorageRef.read(block: { tx in

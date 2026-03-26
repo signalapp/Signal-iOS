@@ -3433,6 +3433,9 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Call failed";
 
+/* Description for error sheet that says the user can no longer take this action because the group has ended. */
+"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+
 /* Label for a banner in group settings indicating that the group has been ended */
 "END_GROUP_BANNER_LABEL" = "This group was ended.";
 
@@ -3447,9 +3450,6 @@
 
 /* Body for error sheet shown if the group failed to end */
 "END_GROUP_ERROR_DESCRIPTION" = "Ending the group failed. Check your connection and try again.";
-
-/* Description for error sheet that says the user can no longer invite friends or add members to a group. */
-"END_GROUP_INVITE_ERROR" = "You can no longer invite friends or add members to this group.";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "End Group";
