@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import UniformTypeIdentifiers
 public import SignalServiceKit
+import UniformTypeIdentifiers
 
 // MARK: - ItemProviderError
 

@@ -11,6 +11,7 @@ import UIKit
 // MARK: - Camera Controls
 
 protocol CameraCaptureControlDelegate: AnyObject {
+
     // MARK: Photo
 
     func cameraCaptureControlDidRequestCapturePhoto(_ control: CameraCaptureControl)

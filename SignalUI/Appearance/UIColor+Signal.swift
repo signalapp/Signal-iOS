@@ -4,8 +4,8 @@
 //
 
 import SignalServiceKit
-import UIKit
 public import SwiftUI
+import UIKit
 
 // MARK: - Custom Colors -
 

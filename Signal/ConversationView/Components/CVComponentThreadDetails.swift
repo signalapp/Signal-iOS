@@ -4,9 +4,9 @@
 //
 
 import Foundation
+import Lottie
 import SignalServiceKit
 public import SignalUI
-import Lottie
 
 public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 

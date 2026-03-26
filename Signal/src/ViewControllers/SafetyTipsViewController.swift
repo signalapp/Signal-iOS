@@ -4,8 +4,8 @@
 //
 
 import Foundation
-public import SignalUI
 import SignalServiceKit
+public import SignalUI
 
 public enum SafetyTipsType {
     case contact

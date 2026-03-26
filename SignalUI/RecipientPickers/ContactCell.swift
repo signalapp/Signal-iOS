@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 public import Contacts
 public import SignalServiceKit
+import UIKit
 
 public class ContactCell: UITableViewCell, ReusableTableViewCell {
     public static let reuseIdentifier = "ContactCell"

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SafariServices
 import LibSignalClient
+public import SafariServices
 import SignalServiceKit
 import SignalUI
 

@@ -4,8 +4,8 @@
 //
 
 import GRDB
-@testable import SignalServiceKit
 public import XCTest
+@testable import SignalServiceKit
 
 public class AttachmentV2MigrationTest: XCTestCase {
 

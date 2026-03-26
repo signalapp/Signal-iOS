@@ -4,9 +4,9 @@
 //
 
 import Foundation
-import UIKit
 public import SignalServiceKit
 import SignalUI
+import UIKit
 
 protocol BadgeIssueSheetDelegate: AnyObject {
     func badgeIssueSheetActionTapped(_ action: BadgeIssueSheetAction)

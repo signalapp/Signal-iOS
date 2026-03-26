@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import MobileCoin
 public import SignalServiceKit
-import LibSignalClient
 import SignalUI
 
 public enum CVAttachment: Equatable {

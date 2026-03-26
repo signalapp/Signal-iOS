@@ -4,8 +4,8 @@
 //
 
 import AVFAudio
-public import SignalServiceKit
 import LibSignalClient
+public import SignalServiceKit
 import SignalUI
 public import UIKit
 

@@ -639,7 +639,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .ringrtcNwPathMonitorTrialKillSwitch: true // cached during launch, so not hot-swapped in practice
         case .ringrtcVp9Enabled: true
         case .serviceExtensionFailureKillSwitch: true
-
 #if TESTABLE_BUILD
         case .hotSwappable: true
         case .nonSwappable: false
@@ -729,7 +728,6 @@ private enum ValueFlag: String, FlagType {
         case .sepaEnabledRegions: true
         case .standardMediaQualityLevel: true
         case .videoAttachmentMaxEncryptedBytes: true
-
 #if TESTABLE_BUILD
         case .hotSwappable: true
         case .nonSwappable: false

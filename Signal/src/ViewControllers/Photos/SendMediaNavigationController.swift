@@ -410,7 +410,7 @@ extension SendMediaNavigationController: PHPickerViewControllerDelegate {
             },
         )
 
-        let resolvablePendingAttachments = results.compactMap { (result) -> (() async throws -> PendingAttachment)? in
+        let resolvablePendingAttachments = results.compactMap { result -> (() async throws -> PendingAttachment)? in
             guard let assetIdentifier = result.assetIdentifier else {
                 owsFailDebug("can't select asset without an identifier")
                 return nil

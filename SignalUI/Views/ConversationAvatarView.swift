@@ -5,8 +5,8 @@
 
 import GRDB
 import LibSignalClient
-import UIKit
 public import SignalServiceKit
+import UIKit
 
 public protocol ConversationAvatarViewDelegate: UIViewController {
     func didTapBadge()

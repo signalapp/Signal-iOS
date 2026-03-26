@@ -4,8 +4,8 @@
 //
 
 import Foundation
-public import SignalServiceKit
 import LibSignalClient
+public import SignalServiceKit
 
 public class AttachmentMultisend {
 

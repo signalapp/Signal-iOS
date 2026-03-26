@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CocoaLumberjack
 public import XCTest
 @testable public import SignalServiceKit
-import CocoaLumberjack
 
 public class SSKBaseTest: XCTestCase {
     private var oldContext: (any AppContext)!

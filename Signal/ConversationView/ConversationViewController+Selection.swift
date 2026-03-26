@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 public import SignalServiceKit
 public import SignalUI
-import LibSignalClient
 
 public struct CVSelectionType: OptionSet {
     public let rawValue: UInt

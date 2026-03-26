@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public import SDWebImage
 import SignalServiceKit
 import UIKit
-public import SDWebImage
 
 public class CVUtils {
 

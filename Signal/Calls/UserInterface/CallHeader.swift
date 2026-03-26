@@ -17,6 +17,7 @@ protocol CallHeaderDelegate: AnyObject {
 }
 
 class CallHeader: UIView {
+
     // MARK: - Views
 
     private lazy var gradientView: UIView = {

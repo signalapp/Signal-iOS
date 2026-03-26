@@ -6,9 +6,9 @@
 import BonMot
 import Foundation
 import Lottie
+import SafariServices
 public import SignalServiceKit
 public import SignalUI
-import SafariServices
 import UIKit
 
 // MARK: - Profile badge lookup

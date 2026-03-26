@@ -7,6 +7,7 @@ import Foundation
 public import SignalServiceKit
 
 extension ThreadUtil {
+
     // MARK: - Durable Message Enqueue
 
     public class func enqueueMessage(

@@ -4,8 +4,8 @@
 //
 
 import Foundation
-public import WebKit
 import SignalServiceKit
+public import WebKit
 
 public protocol CaptchaViewDelegate: NSObjectProtocol {
     func captchaView(_: CaptchaView, didCompleteCaptchaWithToken: String)

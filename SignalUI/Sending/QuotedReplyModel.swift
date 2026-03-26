@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
 public import LibSignalClient
+public import SignalServiceKit
 
 /// View model for an existing quoted reply which has already fetched any attachments.
 /// NOT used for draft quoted replies; this is for TSMessages with quoted replies (or story replies)

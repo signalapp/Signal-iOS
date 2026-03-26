@@ -7,6 +7,7 @@ import Foundation
 import LibSignalClient
 
 extension TSInfoMessage {
+
     // MARK: - Convenience initializers
 
     public convenience init(

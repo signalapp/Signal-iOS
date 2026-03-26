@@ -33,6 +33,7 @@ public extension TextViewWithPlaceholderDelegate {
     func textView(_ textView: TextViewWithPlaceholder, uiTextView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         return true
     }
+
     func textViewDidBeginEditing(_ textView: TextViewWithPlaceholder) {}
     func textViewDidEndEditing(_ textView: TextViewWithPlaceholder) {}
 }
@@ -40,6 +41,7 @@ public extension TextViewWithPlaceholderDelegate {
 // MARK: -
 
 public class TextViewWithPlaceholder: UIView, UITextViewDelegate {
+
     // MARK: - Public Properties
 
     /// A delegate to receive callbacks on any data updates

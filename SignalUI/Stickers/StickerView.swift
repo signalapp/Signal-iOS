@@ -4,8 +4,8 @@
 //
 
 import Lottie
-public import SignalServiceKit
 import SDWebImage
+public import SignalServiceKit
 
 public class StickerView {
 

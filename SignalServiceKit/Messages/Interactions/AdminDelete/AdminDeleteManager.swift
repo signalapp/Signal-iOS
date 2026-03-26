@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import LibSignalClient
 import GRDB
+public import LibSignalClient
 
 public enum RemoteDeleteAuthor: Equatable {
     case admin(aci: Aci, displayName: String)

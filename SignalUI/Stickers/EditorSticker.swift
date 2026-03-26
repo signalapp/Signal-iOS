@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 public import SignalServiceKit
+import UIKit
 
 private class LayerContainerView: UIView {
     let contentLayer: CALayer

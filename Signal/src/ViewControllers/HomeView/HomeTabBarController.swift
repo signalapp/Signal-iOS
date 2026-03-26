@@ -4,9 +4,9 @@
 //
 
 public import Foundation
-public import UIKit
 import SignalServiceKit
 import SignalUI
+public import UIKit
 
 class HomeTabBarController: UITabBarController {
 

@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import Reachability
 public import LibSignalClient
+import Reachability
 
 public protocol NetworkManagerProtocol {
     func asyncRequestImpl(

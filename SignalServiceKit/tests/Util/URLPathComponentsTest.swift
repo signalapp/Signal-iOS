@@ -7,6 +7,7 @@ import SignalServiceKit
 import XCTest
 
 final class URLPathComponentsTest: XCTestCase {
+
     // MARK: - URLPathComponents tests
 
     func testExpressibleByArrayLiteral() {

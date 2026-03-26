@@ -4,8 +4,8 @@
 //
 
 import Foundation
-public import LibSignalClient
 public import GRDB
+public import LibSignalClient
 
 public struct ArchivedPayment: Codable, Hashable, FetchableRecord, PersistableRecord {
     public static let databaseTableName: String = "ArchivedPayment"

@@ -180,6 +180,7 @@ extension OWSURLSessionProtocol {
 // MARK: -
 
 public extension OWSURLSessionProtocol {
+
     // MARK: - Upload Tasks Convenience
 
     func performUpload(

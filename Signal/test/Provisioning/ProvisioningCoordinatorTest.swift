@@ -4,8 +4,8 @@
 //
 
 import Foundation
-public import XCTest
 import LibSignalClient
+public import XCTest
 
 @testable import Signal
 @testable import SignalServiceKit

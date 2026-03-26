@@ -7,6 +7,7 @@ import XCTest
 @testable import Signal
 
 final class DonationPaymentDetailsViewControllerTest: XCTestCase {
+
     // MARK: - Formatting tests
 
     func testFormatCardNumber() {

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalUI
 public import SignalServiceKit
+import SignalUI
 public import UIKit
 
 protocol PinnedMessageInteractionManagerDelegate: AnyObject {

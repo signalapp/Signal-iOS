@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
 import SDWebImage
+public import SignalServiceKit
 import SignalUI
 public import UIKit
 

@@ -12,6 +12,7 @@ extension Upload.Constants {
 }
 
 public enum AttachmentUpload {
+
     // MARK: - Upload Entrypoint
 
     /// The main entry point into the CDN2/CDN3 upload flow.

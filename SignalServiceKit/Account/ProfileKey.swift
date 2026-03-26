@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import LibSignalClient
 import Foundation
+public import LibSignalClient
 
 extension ProfileKey {
     public convenience init(_ profileKey: Aes256Key) {

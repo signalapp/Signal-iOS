@@ -4,8 +4,8 @@
 //
 
 import Foundation
-@testable import SignalServiceKit
 public import XCTest
+@testable import SignalServiceKit
 
 public class RegistrationRequestFactoryTest: XCTestCase {
 

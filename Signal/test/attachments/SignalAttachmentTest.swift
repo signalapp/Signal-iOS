@@ -10,6 +10,7 @@ import XCTest
 @testable import SignalUI
 
 class SignalAttachmentTest: XCTestCase {
+
     // MARK: - Utilities
 
     func testMetadataStrippingDoesNotChangeOrientation(url: URL) throws {

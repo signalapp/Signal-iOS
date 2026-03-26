@@ -10,6 +10,7 @@ import XCTest
 @testable import SignalServiceKit
 
 final class DatabaseRecoveryTest: SSKBaseTest {
+
     // MARK: - Setup
 
     override func setUp() {

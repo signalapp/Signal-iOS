@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
 public import GRDB
+import LibSignalClient
 
 open class TSContactThread: TSThread {
     override public class var recordType: SDSRecordType { .contactThread }

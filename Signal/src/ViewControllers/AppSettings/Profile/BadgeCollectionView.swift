@@ -116,6 +116,7 @@ class BadgeCollectionView: UICollectionView {
 }
 
 extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+
     // MARK: Selection
 
     func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {

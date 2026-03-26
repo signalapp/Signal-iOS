@@ -4,8 +4,8 @@
 //
 
 import Foundation
-public import LibSignalClient
 public import GRDB
+public import LibSignalClient
 
 extension Aci {
     /// Parses an ACI from its string representation.

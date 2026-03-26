@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import LibSignalClient
 public import GRDB
+public import LibSignalClient
 
 extension Notification.Name {
     public static let TSGroupThreadAvatarChanged = Notification.Name("TSGroupThreadAvatarChangedNotification")

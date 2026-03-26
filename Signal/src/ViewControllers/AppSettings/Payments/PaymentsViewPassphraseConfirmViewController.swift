@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalUI
 public import SignalServiceKit
+public import SignalUI
 
 public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController2 {
 

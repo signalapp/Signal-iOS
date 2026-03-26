@@ -7,6 +7,7 @@ import SignalServiceKit
 import XCTest
 
 final class UnfairLockTest: XCTestCase {
+
     // MARK: - Lock + Unlock
 
     func testSimpleLockAndUnlock() {
