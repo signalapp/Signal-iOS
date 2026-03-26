@@ -238,13 +238,13 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
             return (5, 0)
         case .inactivePrimaryDeviceReminder:
             return (6, 0)
-        case .pinReminder:
-            return (7, 0)
         case .backupKeyReminder:
-            return (8, 0)
+            return (7, 0)
         case .enableBackupsReminder:
-            return (9, 0)
+            return (8, 0)
         case .haveEnabledBackupsNotification:
+            return (9, 0)
+        case .pinReminder:
             return (10, 0)
         case .contactPermissionReminder:
             return (11, 0)
