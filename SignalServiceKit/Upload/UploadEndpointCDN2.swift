@@ -165,11 +165,12 @@ struct UploadEndpointCDN2: UploadEndpoint {
         }
 
         headers["Content-Length"] = "\(uploadData.count)"
-        if startPoint > 0 {
+        if truncated || startPoint > 0 {
             // Example: Resuming after uploading 2359296 of 7351375 bytes.
             // Content-Range: bytes 2359296-7351374/7351375
             // Content-Length: 4992079
             // Since this is an index into the range, subtract one from the byte count uploaded
+            // `truncated` (chunked) uploads should always add this header, even on the first request
             headers["Content-Range"] = "bytes \(startPoint)-\(startPoint + uploadData.count - 1)/\(totalDataLength)"
         }
 
@@ -184,12 +185,11 @@ struct UploadEndpointCDN2: UploadEndpoint {
             )
             switch response.responseStatusCode {
             case 200, 201:
-                if truncated {
-                    // The upload succeeded in uploading a chunk of data. Throw this error
-                    // to the caller, which should trigger an immediate resume with the next chunk
-                    throw Upload.Error.partialUpload(bytesUploaded: UInt32(clamping: uploadData.count))
-                }
                 return
+            case 308 where truncated:
+                // The upload succeeded in uploading a chunk of data. Throw this error
+                // to the caller, which should trigger an immediate resume with the next chunk
+                throw Upload.Error.partialUpload(bytesUploaded: UInt32(clamping: uploadData.count))
             default:
                 throw Upload.Error.unknown
             }

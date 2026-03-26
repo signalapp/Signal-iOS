@@ -323,7 +323,7 @@ class AttachmentUploadManagerMockHelper {
     }
 
     enum UploadResultType {
-        case success
+        case success(_ code: Int)
         case failure(code: Int)
         case networkError
         case networkTimeout
@@ -346,10 +346,10 @@ class AttachmentUploadManagerMockHelper {
                     responseHeaders: HttpHeaders(),
                     responseData: nil,
                 ))
-            case .success:
+            case .success(let code):
                 return HTTPResponse(
                     requestUrl: request.url!,
-                    status: 200,
+                    status: code,
                     headers: HttpHeaders(),
                     bodyData: nil,
                 )
