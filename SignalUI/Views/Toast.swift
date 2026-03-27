@@ -362,7 +362,6 @@ public extension UIView {
 public extension UIViewController {
     func presentToast(text: String, image: UIImage? = nil, extraVInset: CGFloat = 0) {
         let toastController = ToastController(text: text, image: image)
-        // TODO: There should be a better way to do this.
         let bottomInset = view.safeAreaInsets.bottom + 8 + extraVInset
         toastController.presentToastView(from: .bottom, of: view, inset: bottomInset)
     }

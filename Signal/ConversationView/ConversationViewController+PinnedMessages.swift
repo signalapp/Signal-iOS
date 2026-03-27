@@ -381,12 +381,10 @@ extension ConversationViewController: PinnedMessageInteractionManagerDelegate {
             for message in threadViewModel.pinnedMessages {
                 await handleActionUnpinAsync(message: message)
             }
-            presentToast(
-                text: OWSLocalizedString(
-                    "PINNED_MESSAGE_TOAST",
-                    comment: "Text to show on a toast when someone unpins a message",
-                ),
-            )
+            presentToastCVC(OWSLocalizedString(
+                "PINNED_MESSAGE_TOAST",
+                comment: "Text to show on a toast when someone unpins a message",
+            ))
         }
     }
 }

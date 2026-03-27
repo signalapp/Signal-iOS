@@ -490,7 +490,11 @@ extension ForwardMessageViewController {
                 comment: "Indicates that a single message was forwarded.",
             )
         }
-        fromViewController.presentToast(text: toast, image: .check)
+        if let cvc = fromViewController as? ConversationViewController {
+            cvc.presentToastCVC(toast, image: .check)
+        } else {
+            fromViewController.presentToast(text: toast, image: .check)
+        }
     }
 }
 
