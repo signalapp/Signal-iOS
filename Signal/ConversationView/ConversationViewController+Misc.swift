@@ -144,8 +144,8 @@ extension ConversationViewController {
 
     // MARK: - Toast
 
-    func presentToastCVC(_ toastText: String) {
-        let toastController = ToastController(text: toastText)
+    func presentToastCVC(_ toastText: String, image: UIImage? = nil) {
+        let toastController = ToastController(text: toastText, image: image)
         let kToastInset: CGFloat = 10
         let bottomInset = kToastInset + collectionView.contentInset.bottom + view.layoutMargins.bottom
         toastController.presentToastView(from: .bottom, of: self.view, inset: bottomInset)
@@ -178,7 +178,7 @@ extension ConversationViewController {
             "VIEW_ONCE_ALREADY_VIEWED_TOAST",
             comment: "Toast alert text shown when tapping on a view-once message that has already been viewed.",
         )
-        presentToastCVC(toastText)
+        presentToastCVC(toastText, image: .viewOnceDash)
     }
 
     func presentViewOnceOutgoingToast() {

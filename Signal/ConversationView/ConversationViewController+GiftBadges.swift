@@ -166,7 +166,7 @@ extension ConversationViewController: BadgeIssueSheetDelegate {
                 case let .monthlySubscriptionCancelled(donateSheet, toastText):
                     donateSheet.dismiss(animated: true) { [weak self] in
                         guard let self else { return }
-                        self.view.presentToast(text: toastText, fromViewController: self)
+                        self.presentToastCVC(toastText)
                     }
                 }
             }

@@ -136,10 +136,13 @@ enum AttachmentSaving {
 
                 Logger.info("Saved attachments to photo library.")
 
-                ToastController(text: OWSLocalizedString(
-                    "ATTACHMENT_SAVING_SUCCESS_MESSAGE",
-                    comment: "Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name.",
-                )).presentToastView(
+                ToastController(
+                    text: OWSLocalizedString(
+                        "ATTACHMENT_SAVING_SUCCESS_MESSAGE",
+                        comment: "Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name.",
+                    ),
+                    image: .check,
+                ).presentToastView(
                     from: .bottom,
                     of: fromViewController.view,
                     inset: 40,

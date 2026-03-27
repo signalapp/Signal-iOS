@@ -354,10 +354,13 @@ extension ConversationViewController: CVComponentDelegate {
     // MARK: -
 
     public func didTapUndownloadableMedia() {
-        let toast = ToastController(text: OWSLocalizedString(
-            "UNAVAILABLE_MEDIA_TAP_TOAST",
-            comment: "Toast shown when tapping older media that can no longer be downloaded",
-        ))
+        let toast = ToastController(
+            text: OWSLocalizedString(
+                "UNAVAILABLE_MEDIA_TAP_TOAST",
+                comment: "Toast shown when tapping older media that can no longer be downloaded",
+            ),
+            image: .photoSlash,
+        )
         let inset = (self.inputToolbar?.height ?? 0) + 16
         toast.presentToastView(from: .bottom, of: self.view, inset: inset)
     }
