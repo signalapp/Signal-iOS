@@ -901,7 +901,7 @@ extension ConversationSettingsViewController {
         }
 
         if hasMoreMembers {
-            let offset = canEditConversationMembership ? 1 : 0
+            let offset = canEditConversationMembership && !isTerminatedGroup ? 1 : 0
             let expandedMemberIndices = ((membersToRender.count + offset)..<(totalMemberCount + offset)).map {
                 IndexPath(row: $0, section: sectionIndex)
             }
