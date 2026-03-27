@@ -237,10 +237,13 @@ class StoryInfoSheet: OWSTableSheetViewController {
         let messageTimestamp = "\(storyMessage.timestamp)"
         UIPasteboard.general.string = messageTimestamp
 
-        let toast = ToastController(text: OWSLocalizedString(
-            "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP",
-            comment: "Toast indicating that the user has copied the sent timestamp.",
-        ))
+        let toast = ToastController(
+            text: OWSLocalizedString(
+                "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP",
+                comment: "Toast indicating that the user has copied the sent timestamp.",
+            ),
+            image: .copy,
+        )
         toast.presentToastView(from: .bottom, of: view, inset: view.safeAreaInsets.bottom + 8)
     }
 

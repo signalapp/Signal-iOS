@@ -647,17 +647,23 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     }
 
     private func showUsernameCopiedToast() {
-        self.presentToast(text: OWSLocalizedString(
-            "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED",
-            comment: "Text presented in a toast notifying the user that their username was copied to the system clipboard.",
-        ))
+        self.presentToast(
+            text: OWSLocalizedString(
+                "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED",
+                comment: "Text presented in a toast notifying the user that their username was copied to the system clipboard.",
+            ),
+            image: .copy,
+        )
     }
 
     private func showUsernameLinkCopiedToast() {
-        self.presentToast(text: OWSLocalizedString(
-            "USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED",
-            comment: "Text presented in a toast notifying the user that their username link was copied to the system clipboard.",
-        ))
+        self.presentToast(
+            text: OWSLocalizedString(
+                "USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED",
+                comment: "Text presented in a toast notifying the user that their username link was copied to the system clipboard.",
+            ),
+            image: .copy,
+        )
     }
 
     override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {

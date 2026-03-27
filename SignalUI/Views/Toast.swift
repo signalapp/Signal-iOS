@@ -13,11 +13,13 @@ public class ToastController: NSObject, ToastViewDelegate {
     private weak var toastView: ToastView?
     private var isDismissing: Bool
     private let toastText: String
+    private let toastIcon: UIImage?
 
     // MARK: Initializers
 
-    public init(text: String) {
+    public init(text: String, image: UIImage? = nil) {
         self.toastText = text
+        self.toastIcon = image
         isDismissing = false
 
         super.init()
@@ -36,6 +38,7 @@ public class ToastController: NSObject, ToastViewDelegate {
     ) {
         let toastView = ToastView()
         toastView.text = self.toastText
+        toastView.image = self.toastIcon
         toastView.delegate = self
         self.toastView = toastView
 
@@ -188,10 +191,19 @@ class ToastView: UIView {
         }
     }
 
+    var image: UIImage? {
+        didSet {
+            imageView.image = image
+            imageView.isHiddenInStackView = (image == nil)
+        }
+    }
+
     weak var delegate: ToastViewDelegate?
 
     private let backgroundView = UIVisualEffectView(effect: nil)
+    private let stackView: UIStackView
     private let label: UILabel
+    private let imageView = UIImageView()
 
     @available(iOS 26.3, *)
     private var glassEffect: UIGlassEffect {
@@ -207,9 +219,15 @@ class ToastView: UIView {
 
     override init(frame: CGRect) {
         label = UILabel()
+        stackView = UIStackView(arrangedSubviews: [label])
         super.init(frame: frame)
 
+        // iOS 26.0 through 26.2 have a bug where the glass effect tint color
+        // would not be present during animations. This was fixed in 26.3.
         if #available(iOS 26.3, *) {
+            stackView.insertArrangedSubview(imageView, at: 0)
+            imageView.autoSetDimensions(to: .square(24))
+
             backgroundView.effect = glassEffect
             backgroundView.contentView.layoutMargins = .init(hMargin: 20, vMargin: 14)
             backgroundView.cornerConfiguration = .capsule(maximumRadius: 26)
@@ -239,10 +257,16 @@ class ToastView: UIView {
             )
         }
 
+        imageView.tintColor = .white
+
         label.textColor = .ows_white
         label.numberOfLines = 0
-        backgroundView.contentView.addSubview(label)
-        label.autoPinEdgesToSuperviewMargins()
+
+        stackView.axis = .horizontal
+        stackView.spacing = 12
+        stackView.alignment = .center
+        backgroundView.contentView.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewMargins()
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(gesture:)))
         self.addGestureRecognizer(tapGesture)
@@ -274,13 +298,13 @@ class ToastView: UIView {
 
         if #available(iOS 26.3, *) {
             UIView.performWithoutAnimation {
-                self.label.alpha = 0
+                self.stackView.alpha = 0
                 self.transform = .scale(0.9)
                 self.backgroundView.effect = nil
             }
 
             animator.addAnimations {
-                self.label.alpha = 1
+                self.stackView.alpha = 1
                 self.transform = .identity
                 self.backgroundView.effect = self.glassEffect
             }
@@ -302,7 +326,7 @@ class ToastView: UIView {
 
         if #available(iOS 26.3, *) {
             animator.addAnimations {
-                self.label.alpha = 0
+                self.stackView.alpha = 0
                 self.transform = .scale(0.9)
                 self.backgroundView.effect = nil
             }
@@ -316,28 +340,28 @@ class ToastView: UIView {
 }
 
 public class ToastViewHelper {
-    public static func presentToastOnFrontmostViewController(text: String) {
+    public static func presentToastOnFrontmostViewController(text: String, image: UIImage? = nil) {
         guard let fromViewController = CurrentAppContext().frontmostViewController() else {
             owsFailDebug("frontmostViewController was unexpectedly nil")
             return
         }
-        fromViewController.presentToast(text: text)
+        fromViewController.presentToast(text: text, image: image)
     }
 }
 
 // MARK: -
 
 public extension UIView {
-    func presentToast(text: String, fromViewController: UIViewController) {
-        fromViewController.presentToast(text: text)
+    func presentToast(text: String, image: UIImage? = nil, fromViewController: UIViewController) {
+        fromViewController.presentToast(text: text, image: image)
     }
 }
 
 // MARK: -
 
 public extension UIViewController {
-    func presentToast(text: String, extraVInset: CGFloat = 0) {
-        let toastController = ToastController(text: text)
+    func presentToast(text: String, image: UIImage? = nil, extraVInset: CGFloat = 0) {
+        let toastController = ToastController(text: text, image: image)
         // TODO: There should be a better way to do this.
         let bottomInset = view.safeAreaInsets.bottom + 8 + extraVInset
         toastController.presentToastView(from: .bottom, of: view, inset: bottomInset)

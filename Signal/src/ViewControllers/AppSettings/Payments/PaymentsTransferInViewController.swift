@@ -208,10 +208,13 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         }
         UIPasteboard.general.string = walletAddressBase58
 
-        presentToast(text: OWSLocalizedString(
-            "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED",
-            comment: "Indicator that the payments wallet address has been copied to the pasteboard.",
-        ))
+        presentToast(
+            text: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED",
+                comment: "Indicator that the payments wallet address has been copied to the pasteboard.",
+            ),
+            image: .copy,
+        )
     }
 
     @objc

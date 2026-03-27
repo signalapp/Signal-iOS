@@ -659,7 +659,7 @@ public extension OWSTableItem {
                     comment: "Indicator that a value has been copied to the clipboard.",
                 )
 
-                fromVC.presentToast(text: toast)
+                fromVC.presentToast(text: toast, image: UIImage(named: "check"))
             },
         )
     }
