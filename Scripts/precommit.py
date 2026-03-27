@@ -220,7 +220,7 @@ if __name__ == "__main__":
     result = True
 
     print("Checking license headers...", flush=True)
-    proc = subprocess.run(["Scripts/lint/lint-license-headers", "--fix", *file_paths])
+    proc = subprocess.run(["Scripts/lint/lint-license-headers", *file_paths])
     if proc.returncode != 0:
         result = False
     print("")
