@@ -7,6 +7,8 @@ import LibSignalClient
 public import SignalServiceKit
 
 public enum ReportSpamUIUtils {
+    /// Called only if the user reports spam.
+    /// The `Bool` parameter represents if the thread was also blocked.
     public typealias Completion = (Bool) -> Void
 
     public static func showReportSpamActionSheet(
@@ -15,11 +17,11 @@ public enum ReportSpamUIUtils {
         from viewController: UIViewController,
         completion: Completion?,
     ) {
-        let actionSheet = createReportSpamActionSheet(for: thread, isBlocked: isBlocked)
+        let actionSheet = createReportSpamActionSheet(for: thread, isBlocked: isBlocked, completion: completion)
         viewController.presentActionSheet(actionSheet)
     }
 
-    public static func createReportSpamActionSheet(for thread: TSThread, isBlocked: Bool) -> ActionSheetController {
+    public static func createReportSpamActionSheet(for thread: TSThread, isBlocked: Bool, completion: Completion? = nil) -> ActionSheetController {
         let actionSheetTitle = OWSLocalizedString(
             "MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE",
             comment: "Action sheet title to confirm reporting a conversation as spam via a message request.",
@@ -40,6 +42,7 @@ public enum ReportSpamUIUtils {
                     SSKEnvironment.shared.databaseStorageRef.write { tx in
                         Self.reportSpam(in: thread, tx: tx)
                     }
+                    completion?(false)
                 },
             ),
         )
@@ -54,12 +57,27 @@ public enum ReportSpamUIUtils {
                         SSKEnvironment.shared.databaseStorageRef.write { tx in
                             Self.blockAndReport(in: thread, tx: tx)
                         }
+                        completion?(true)
                     },
                 ),
             )
         }
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel))
         return actionSheet
+    }
+
+    public static func successfulReportText(didBlock: Bool) -> String {
+        if didBlock {
+            OWSLocalizedString(
+                "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED",
+                comment: "String indicating that spam has been reported and the chat has been blocked.",
+            )
+        } else {
+            OWSLocalizedString(
+                "MESSAGE_REQUEST_SPAM_REPORTED",
+                comment: "String indicating that spam has been reported.",
+            )
+        }
     }
 
     public static func blockAndReport(in thread: TSThread, tx: DBWriteTransaction) {

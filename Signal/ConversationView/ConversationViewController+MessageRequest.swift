@@ -131,12 +131,7 @@ private extension ConversationViewController {
             ReportSpamUIUtils.blockAndReport(in: thread, tx: tx)
         }
 
-        presentToastCVC(
-            OWSLocalizedString(
-                "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED",
-                comment: "String indicating that spam has been reported and the chat has been blocked.",
-            ),
-        )
+        presentToastCVC(ReportSpamUIUtils.successfulReportText(didBlock: true))
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
 
@@ -145,12 +140,7 @@ private extension ConversationViewController {
             ReportSpamUIUtils.report(in: thread, tx: tx)
         }
 
-        presentToastCVC(
-            OWSLocalizedString(
-                "MESSAGE_REQUEST_SPAM_REPORTED",
-                comment: "String indicating that spam has been reported.",
-            ),
-        )
+        presentToastCVC(ReportSpamUIUtils.successfulReportText(didBlock: false))
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
 

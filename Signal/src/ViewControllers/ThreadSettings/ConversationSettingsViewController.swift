@@ -712,8 +712,9 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             thread,
             isBlocked: threadViewModel.isBlocked,
             from: self,
-        ) { [weak self] _ in
+        ) { [weak self] didBlock in
             self?.reloadThreadAndUpdateContent()
+            self?.presentToast(text: ReportSpamUIUtils.successfulReportText(didBlock: didBlock))
         }
     }
 
