@@ -283,10 +283,11 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
         _ interaction: UIContextMenuInteraction,
         configurationForMenuAtLocation location: CGPoint,
     ) -> UIContextMenuConfiguration? {
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
             var actions: [UIAction] = []
-            actions.append(contentsOf: [
-                UIAction(
+            guard let self else { return UIMenu() }
+            if !thread.isTerminatedGroup {
+                actions.append(UIAction(
                     title: OWSLocalizedString(
                         "PINNED_MESSAGES_UNPIN",
                         comment: "Action menu item to unpin a message",
@@ -300,7 +301,10 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
                             modalDelegate: self,
                         )
                     }
-                },
+                })
+            }
+
+            actions.append(contentsOf: [
                 UIAction(
                     title: OWSLocalizedString(
                         "PINNED_MESSAGES_GO_TO_MESSAGE",

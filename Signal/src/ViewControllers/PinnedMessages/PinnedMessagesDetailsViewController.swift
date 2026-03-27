@@ -132,12 +132,14 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
                 self?.delegate?.unpinAllMessages()
             },
         )
-        view.addSubview(unpinAllButton)
-        unpinAllButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            unpinAllButton.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor, constant: -16),
-            unpinAllButton.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
-        ])
+        if !threadViewModel.threadRecord.isTerminatedGroup {
+            view.addSubview(unpinAllButton)
+            unpinAllButton.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                unpinAllButton.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor, constant: -16),
+                unpinAllButton.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
+            ])
+        }
     }
 
     private func updatePinnedMessageState() {
@@ -388,18 +390,20 @@ private class PinnedMessageLongPressDelegate: NSObject, UIContextMenuInteraction
                     )
                 }
 
+                if !itemViewModel.thread.isTerminatedGroup {
+                    actions.append(UIAction(
+                        title: OWSLocalizedString(
+                            "PINNED_MESSAGES_UNPIN",
+                            comment: "Action menu item to unpin a message",
+                        ),
+                        image: .pinSlash,
+                    ) { [weak self] _ in
+                        guard let self else { return }
+                        actionDelegate?.unpinMessage(itemViewModel: itemViewModel)
+                    })
+                }
                 actions.append(
                     contentsOf: [
-                        UIAction(
-                            title: OWSLocalizedString(
-                                "PINNED_MESSAGES_UNPIN",
-                                comment: "Action menu item to unpin a message",
-                            ),
-                            image: .pinSlash,
-                        ) { [weak self] _ in
-                            guard let self else { return }
-                            actionDelegate?.unpinMessage(itemViewModel: itemViewModel)
-                        },
                         UIAction(
                             title: OWSLocalizedString(
                                 "CONTEXT_MENU_DELETE_MESSAGE",
