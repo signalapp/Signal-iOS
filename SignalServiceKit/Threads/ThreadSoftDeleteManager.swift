@@ -31,6 +31,8 @@ public protocol ThreadSoftDeleteManager {
         sendDeleteForMeSyncMessage: Bool,
         tx: DBWriteTransaction,
     )
+
+    func removeIntentsForTerminatedGroup(threadUniqueId: String)
 }
 
 final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
@@ -138,6 +140,10 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
                 tx: tx,
             )
         }
+    }
+
+    func removeIntentsForTerminatedGroup(threadUniqueId: String) {
+        intentsManager.deleteAllIntents(withGroupIdentifier: threadUniqueId)
     }
 
     private func softDelete(
@@ -279,6 +285,7 @@ final class _ThreadSoftDeleteManagerImpl_IntentsManager_Wrapper: _ThreadSoftDele
 open class MockThreadSoftDeleteManager: ThreadSoftDeleteManager {
     open func softDelete(threads: [TSThread], sendDeleteForMeSyncMessage: Bool, tx: DBWriteTransaction) {}
     open func removeAllInteractions(thread: TSThread, sendDeleteForMeSyncMessage: Bool, tx: DBWriteTransaction) {}
+    open func removeIntentsForTerminatedGroup(threadUniqueId: String) {}
 }
 
 #endif

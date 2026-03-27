@@ -209,6 +209,18 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         let wasLocalUserRequestingMember = oldGroupModel?.groupMembership.isLocalUserRequestingMember ?? false
         let isLocalUserRequestingMember = newGroupModel.groupMembership.isLocalUserRequestingMember
 
+        let isTerminatedGroup: Bool
+        if
+            let newGroupModelv2 = newGroupModel as? TSGroupModelV2,
+            let oldGroupModelv2 = oldGroupModel as? TSGroupModelV2,
+            !oldGroupModelv2.isTerminated,
+            newGroupModelv2.isTerminated
+        {
+            isTerminatedGroup = true
+        } else {
+            isTerminatedGroup = false
+        }
+
         let isLocalUserUpdate: Bool
         switch groupUpdateSource {
         case .localUser:
@@ -232,12 +244,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                 wantsSound: true,
                 transaction: tx,
             )
-        } else if
-            let newGroupModelv2 = newGroupModel as? TSGroupModelV2,
-            let oldGroupModelv2 = oldGroupModel as? TSGroupModelV2,
-            !oldGroupModelv2.isTerminated,
-            newGroupModelv2.isTerminated
-        {
+        } else if isTerminatedGroup {
             // Notify when the group ends.
             notificationPresenter.notifyUser(
                 forTSMessage: infoMessage,
@@ -245,6 +252,11 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                 wantsSound: true,
                 transaction: tx,
             )
+        }
+
+        // Delete intents for terminated group.
+        if isTerminatedGroup {
+            DependenciesBridge.shared.threadSoftDeleteManager.removeIntentsForTerminatedGroup(threadUniqueId: groupThread.uniqueId)
         }
     }
 }
