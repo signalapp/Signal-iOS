@@ -335,6 +335,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         }
 
         updateTableContents()
+        updateNavigationBar()
     }
 
     // MARK: -
@@ -1145,9 +1146,10 @@ extension ConversationSettingsViewController: GroupPermissionsSettingsDelegate {
 extension ConversationSettingsViewController: DatabaseChangeDelegate {
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        if databaseChanges.didUpdate(tableName: TSGroupMember.databaseTableName) {
+        if databaseChanges.didUpdate(tableName: TSGroupMember.databaseTableName) || databaseChanges.didUpdateThreads {
             updateMutualGroupThreads()
             updateTableContents()
+            reloadThreadAndUpdateContent()
         }
     }
 
