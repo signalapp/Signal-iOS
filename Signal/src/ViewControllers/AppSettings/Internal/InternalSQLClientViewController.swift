@@ -138,7 +138,7 @@ class InternalSQLClientViewController: UIViewController {
         // Copy output text to clipboard
         UIPasteboard.general.string = output
 
-        presentToast(text: "Copied!")
+        presentToast(text: "Copied!", image: .copy)
     }
 }
 

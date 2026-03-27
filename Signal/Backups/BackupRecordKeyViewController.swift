@@ -177,10 +177,13 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
             options: [.expirationDate: Date().addingTimeInterval(60)],
         )
 
-        let toast = ToastController(text: OWSLocalizedString(
-            "BACKUP_KEY_COPIED_MESSAGE_TOAST",
-            comment: "Toast indicating that the user has copied their recovery key.",
-        ))
+        let toast = ToastController(
+            text: OWSLocalizedString(
+                "BACKUP_KEY_COPIED_MESSAGE_TOAST",
+                comment: "Toast indicating that the user has copied their recovery key.",
+            ),
+            image: .copy,
+        )
         toast.presentToastView(from: .bottom, of: view, inset: view.safeAreaInsets.bottom + 8)
     }
 }

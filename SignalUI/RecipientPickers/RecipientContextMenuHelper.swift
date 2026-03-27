@@ -410,7 +410,10 @@ class RecipientContextMenuHelper {
             ),
             displayName,
         )
-        ToastController(text: toastMessage).presentToastView(
+        ToastController(
+            text: toastMessage,
+            image: UIImage(named: "person-minus-compact-light"),
+        ).presentToastView(
             from: .bottom,
             of: fromViewController.view,
             inset: fromViewController.view.safeAreaInsets.bottom + Constants.toastInset,

@@ -230,6 +230,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
                 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD",
                 comment: "Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views.",
             ),
+            image: .copy,
             extraVInset: bottomStack.height,
         )
     }

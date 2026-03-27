@@ -299,7 +299,7 @@ final class CallLinkViewController: OWSTableViewController2 {
     private func copyCallLink() {
         self.persistIfNeeded()
         UIPasteboard.general.url = self.callLink.url()
-        self.presentToast(text: CommonStrings.copiedToClipboardToast)
+        self.presentToast(text: CommonStrings.copiedToClipboardToast, image: .copy)
     }
 
     private func shareCallLinkViaSystem() {

@@ -490,7 +490,7 @@ extension ForwardMessageViewController {
                 comment: "Indicates that a single message was forwarded.",
             )
         }
-        fromViewController.presentToast(text: toast)
+        fromViewController.presentToast(text: toast, image: .check)
     }
 }
 
