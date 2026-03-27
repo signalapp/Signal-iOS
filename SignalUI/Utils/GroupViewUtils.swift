@@ -62,10 +62,21 @@ public class GroupViewUtils {
                 ),
             )
         } else {
-            OWSActionSheets.showActionSheet(title: OWSLocalizedString(
-                "UPDATE_GROUP_FAILED",
-                comment: "Error indicating that a group could not be updated.",
-            ))
+            switch error {
+            case GroupsV2Error.terminatedGroupInviteLink:
+                OWSActionSheets.showActionSheet(
+                    title: nil,
+                    message: OWSLocalizedString(
+                        "END_GROUP_ACTION_ERROR",
+                        comment: "Description for error sheet that says the user can no longer take this action because the group has ended.",
+                    ),
+                )
+            default:
+                OWSActionSheets.showActionSheet(title: OWSLocalizedString(
+                    "UPDATE_GROUP_FAILED",
+                    comment: "Error indicating that a group could not be updated.",
+                ))
+            }
         }
     }
 
