@@ -26,8 +26,9 @@ class PollDetailsViewController: HostingController<PollDetailsView> {
         pollManager: PollMessageManager,
         db: DB,
         databaseChangeObserver: DatabaseChangeObserver,
+        isTerminatedGroup: Bool,
     ) {
-        self.viewModel = PollDetailsViewModel(poll: poll)
+        self.viewModel = PollDetailsViewModel(poll: poll, isTerminatedGroup: isTerminatedGroup)
         self.message = message
         self.pollManager = pollManager
         self.db = db
@@ -78,9 +79,11 @@ extension PollDetailsViewController: PollDetailsViewModel.ActionsDelegate {
 
 private class PollDetailsViewModel: ObservableObject {
     @Published var poll: OWSPoll
+    let isTerminatedGroup: Bool
 
-    init(poll: OWSPoll) {
+    init(poll: OWSPoll, isTerminatedGroup: Bool) {
         self.poll = poll
+        self.isTerminatedGroup = isTerminatedGroup
     }
 
     protocol ActionsDelegate: AnyObject {
@@ -144,7 +147,7 @@ struct PollDetailsView: View {
                     )
                 }
                 if #unavailable(iOS 26) {
-                    if !poll.isEnded, poll.ownerIsLocalUser {
+                    if !poll.isEnded, poll.ownerIsLocalUser, !viewModel.isTerminatedGroup {
                         SignalSection {
                             Button {
                                 viewModel.pollTerminate()
@@ -212,7 +215,7 @@ struct PollDetailsView: View {
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if #available(iOS 26.0, *) {
-                if !poll.isEnded, poll.ownerIsLocalUser {
+                if !poll.isEnded, poll.ownerIsLocalUser, !viewModel.isTerminatedGroup {
                     Button {
                         viewModel.pollTerminate()
                     } label: {
@@ -287,7 +290,7 @@ struct PollDetailsView: View {
         ownerIsLocalUser: false,
     )
 
-    PollDetailsView(viewModel: PollDetailsViewModel(poll: poll))
+    PollDetailsView(viewModel: PollDetailsViewModel(poll: poll, isTerminatedGroup: false))
 }
 
 extension PollDetailsViewController: DatabaseChangeDelegate {

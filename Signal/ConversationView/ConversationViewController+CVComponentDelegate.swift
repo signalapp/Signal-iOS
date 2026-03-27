@@ -1363,6 +1363,7 @@ extension ConversationViewController: CVComponentDelegate {
             pollManager: DependenciesBridge.shared.pollMessageManager,
             db: DependenciesBridge.shared.db,
             databaseChangeObserver: DependenciesBridge.shared.databaseChangeObserver,
+            isTerminatedGroup: thread.isTerminatedGroup,
         )
         pollDetails.delegate = self
         self.present(OWSNavigationController(rootViewController: pollDetails), animated: true)

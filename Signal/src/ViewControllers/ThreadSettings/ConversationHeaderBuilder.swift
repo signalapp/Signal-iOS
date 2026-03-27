@@ -473,6 +473,9 @@ struct ConversationHeaderBuilder {
             textStackView.bottomAnchor.constraint(equalTo: banner.bottomAnchor, constant: -6),
         ])
 
+        banner.isAccessibilityElement = true
+        banner.accessibilityLabel = textLabel.text
+
         return banner
     }
 
