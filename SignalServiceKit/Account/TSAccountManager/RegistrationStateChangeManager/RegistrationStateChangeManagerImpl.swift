@@ -25,6 +25,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let db: DB
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let identityManager: OWSIdentityManager
+    private let keyTransparencyStore: KeyTransparencyStore
     private let networkManager: NetworkManager
     private let notificationPresenter: any NotificationPresenter
     private let paymentsEvents: PaymentsEvents
@@ -48,6 +49,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         db: DB,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         identityManager: OWSIdentityManager,
+        keyTransparencyStore: KeyTransparencyStore,
         networkManager: NetworkManager,
         notificationPresenter: any NotificationPresenter,
         paymentsEvents: PaymentsEvents,
@@ -70,6 +72,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         self.db = db
         self.dmConfigurationStore = dmConfigurationStore
         self.identityManager = identityManager
+        self.keyTransparencyStore = keyTransparencyStore
         self.networkManager = networkManager
         self.notificationPresenter = notificationPresenter
         self.paymentsEvents = paymentsEvents
@@ -152,6 +155,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
     public func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) {
         let didChange = tsAccountManager.setIsDeregisteredOrDelinked(isDeregisteredOrDelinked, tx: tx)
+        let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
         guard didChange else {
             return
         }
@@ -172,6 +176,13 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             // eventually re-register.
             authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
             backupCDNCredentialStore.wipe(tx: tx)
+
+            // Wipe KT state for the local user. If we re-register, we'll want
+            // to start self-monitoring from a clean slate.
+            keyTransparencyStore.wipeSelfCheckState(
+                localAci: localIdentifiers?.aci,
+                tx: tx,
+            )
 
             // A registration event that caused us to become deregistered will
             // have wiped our server-side Backup entitlement, so we should make

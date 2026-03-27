@@ -207,43 +207,23 @@ public final class KeyTransparencyManager {
             keyTransparencyStore: keyTransparencyStore,
         )
 
-        let existingKeyTransparencyBlob: Data?
-        let selfCheckState: KeyTransparencyStore.SelfCheckState?
-        (
-            existingKeyTransparencyBlob,
-            selfCheckState,
-        ) = db.read { tx in
-            return (
-                keyTransparencyStore.getKeyTransparencyBlob(
-                    aci: params.aciInfo.aci,
-                    tx: tx,
-                ),
-                keyTransparencyStore.selfCheckState(tx: tx),
-            )
-        }
-
         if params.isLocalUser {
-            if existingKeyTransparencyBlob != nil {
-                logger.info("Monitoring for self.")
-
-                try await ktClient.monitor(
-                    for: .`self`,
-                    account: params.aciInfo,
-                    e164: params.e164Info,
-                    usernameHash: params.username?.hash,
-                    store: libSignalStore,
-                )
-            } else {
-                logger.info("Searching for self.")
-
-                try await ktClient.search(
-                    account: params.aciInfo,
-                    e164: params.e164Info,
-                    usernameHash: params.username?.hash,
-                    store: libSignalStore,
-                )
+            let isDiscoverable = db.read { tx in
+                return tsAccountManager.phoneNumberDiscoverability(tx: tx).orDefault.isDiscoverable
             }
+            logger.info("Checking for self.")
+            try await ktClient.check(
+                for: .self(isE164Discoverable: isDiscoverable),
+                account: params.aciInfo,
+                e164: params.e164Info,
+                usernameHash: params.username?.hash,
+                store: libSignalStore,
+            )
         } else {
+            let selfCheckState = db.read { tx in
+                return keyTransparencyStore.selfCheckState(tx: tx)
+            }
+
             // Require a self-check to succeed before checking others.
             switch selfCheckState {
             case nil:
@@ -254,24 +234,13 @@ public final class KeyTransparencyManager {
                 throw OWSGenericError("Cannot check other with failed self-check.")
             }
 
-            if existingKeyTransparencyBlob != nil {
-                logger.info("Monitoring for other.")
-
-                try await ktClient.monitor(
-                    for: .other,
-                    account: params.aciInfo,
-                    e164: params.e164Info,
-                    store: libSignalStore,
-                )
-            } else {
-                logger.info("Searching for other.")
-
-                try await ktClient.search(
-                    account: params.aciInfo,
-                    e164: params.e164Info,
-                    store: libSignalStore,
-                )
-            }
+            logger.info("Checking for other.")
+            try await ktClient.check(
+                for: .contact,
+                account: params.aciInfo,
+                e164: params.e164Info,
+                store: libSignalStore,
+            )
         }
     }
 
@@ -562,8 +531,8 @@ public struct KeyTransparencyStore {
         .map { SelfCheckState(rawValue: $0)! }
     }
 
-    fileprivate func setSelfCheckState(_ state: SelfCheckState, tx: DBWriteTransaction) {
-        kvStore.writeValue(state.rawValue, forKey: KVStoreKeys.selfCheckState, tx: tx)
+    fileprivate func setSelfCheckState(_ state: SelfCheckState?, tx: DBWriteTransaction) {
+        kvStore.writeValue(state?.rawValue, forKey: KVStoreKeys.selfCheckState, tx: tx)
     }
 
     public func shouldWarnSelfCheckFailed(tx: DBReadTransaction) -> Bool {
@@ -581,6 +550,19 @@ public struct KeyTransparencyStore {
             setSelfCheckState(.failedRepeatedlyAndWarned, tx: tx)
         case nil, .succeeded, .failedOnce, .failedRepeatedlyAndWarned:
             owsFailDebug("Unexpectedly setting warned, but shouldn't have warned?")
+        }
+    }
+
+    public func wipeSelfCheckState(
+        localAci: Aci?,
+        tx: DBWriteTransaction,
+    ) {
+        setSelfCheckState(nil, tx: tx)
+
+        if let localAci {
+            failIfThrows {
+                try KeyTransparencyRecord.deleteOne(tx.database, key: localAci.rawUUID)
+            }
         }
     }
 

@@ -1096,6 +1096,7 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let inactivePrimaryDeviceStore = InactivePrimaryDeviceStore()
+        let keyTransparencyStore = KeyTransparencyStore()
 
         let registrationStateChangeManager = RegistrationStateChangeManagerImpl(
             authCredentialStore: authCredentialStore,
@@ -1108,6 +1109,7 @@ extension AppSetup.GlobalsContinuation {
             db: db,
             dmConfigurationStore: disappearingMessagesConfigurationStore,
             identityManager: identityManager,
+            keyTransparencyStore: keyTransparencyStore,
             networkManager: networkManager,
             notificationPresenter: notificationPresenter,
             paymentsEvents: paymentsEvents,
@@ -1234,7 +1236,6 @@ extension AppSetup.GlobalsContinuation {
             whoAmIManager: whoAmIManager,
         ))
 
-        let keyTransparencyStore = KeyTransparencyStore()
         let keyTransparencyManager = KeyTransparencyManager(
             chatConnectionManager: chatConnectionManager,
             dateProvider: dateProvider,
