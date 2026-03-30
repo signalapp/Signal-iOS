@@ -9253,6 +9253,9 @@
 /* Title asking the user if they are sure they want to delete their story */
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Delete this story? It will also be deleted for everyone who received it.";
 
+/* Title asking the user if they are sure they want to delete their story for themselves only. */
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Forward";
 
