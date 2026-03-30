@@ -54,7 +54,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
     public func process(
         _ transcript: SentMessageTranscript,
-        localIdentifiers: LocalIdentifiers,
+        registeredState: RegisteredState,
         tx: DBWriteTransaction,
     ) -> Result<TSOutgoingMessage?, Error> {
 
@@ -154,7 +154,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 return .failure(OWSAssertionError("Protocol version validation failed"))
             }
 
-            updateDisappearingMessageTokenIfNecessary(target: target, localIdentifiers: localIdentifiers, tx: tx)
+            updateDisappearingMessageTokenIfNecessary(target: target, localIdentifiers: registeredState.localIdentifiers, tx: tx)
             return .success(nil)
         case .message(let messageParams):
             Logger.info("Recording transcript in thread: \(messageParams.target.thread.logString) timestamp: \(transcript.timestamp)")
@@ -164,7 +164,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             return self.process(
                 messageParams: messageParams,
                 transcript: transcript,
-                localIdentifiers: localIdentifiers,
+                registeredState: registeredState,
                 tx: tx,
             ).map { $0 }
         }
@@ -173,14 +173,16 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     private func process(
         messageParams: SentMessageTranscriptType.Message,
         transcript: SentMessageTranscript,
-        localIdentifiers: LocalIdentifiers,
+        registeredState: RegisteredState,
         tx: DBWriteTransaction,
     ) -> Result<TSOutgoingMessage, Error> {
         guard validateProtocolVersion(for: transcript, thread: messageParams.target.thread, tx: tx) else {
             return .failure(OWSAssertionError("Protocol version validation failed"))
         }
 
-        updateDisappearingMessageTokenIfNecessary(target: messageParams.target, localIdentifiers: localIdentifiers, tx: tx)
+        let localIdentifiers = registeredState.localIdentifiers
+
+        updateDisappearingMessageTokenIfNecessary(target: messageParams.target, localIdentifiers: registeredState.localIdentifiers, tx: tx)
 
         let outgoingMessageBuilder = TSOutgoingMessageBuilder(
             thread: messageParams.target.thread,
@@ -400,7 +402,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             )
         }
 
-        self.earlyMessageManager.applyPendingMessages(for: outgoingMessage, localIdentifiers: localIdentifiers, tx: tx)
+        self.earlyMessageManager.applyPendingMessages(for: outgoingMessage, registeredState: registeredState, tx: tx)
 
         if outgoingMessage.isViewOnceMessage {
             // Don't download attachments for "view-once" messages from linked devices.

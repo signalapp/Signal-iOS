@@ -338,10 +338,10 @@ public class EarlyMessageManager {
         }
     }
 
-    public func applyPendingMessages(for message: TSMessage, localIdentifiers: LocalIdentifiers, transaction: DBWriteTransaction) {
+    public func applyPendingMessages(for message: TSMessage, registeredState: RegisteredState, transaction: DBWriteTransaction) {
         let identifier: MessageIdentifier
         if let message = message as? TSOutgoingMessage {
-            identifier = MessageIdentifier(timestamp: message.timestamp, author: localIdentifiers.aci)
+            identifier = MessageIdentifier(timestamp: message.timestamp, author: registeredState.localIdentifiers.aci)
         } else if let message = message as? TSIncomingMessage {
             guard let authorAci = Aci.parseFrom(aciString: message.authorUUID) else {
                 return owsFailDebug("Attempted to apply pending messages for message missing sender aci with type \(message.interactionType) from \(message.authorAddress)")
@@ -352,7 +352,7 @@ public class EarlyMessageManager {
             return owsFailDebug("attempted to apply pending messages for unsupported message type \(message.interactionType)")
         }
 
-        applyPendingMessages(for: identifier, localIdentifiers: localIdentifiers, tx: transaction) { earlyReceipt in
+        applyPendingMessages(for: identifier, registeredState: registeredState, tx: transaction) { earlyReceipt in
             switch earlyReceipt {
             case .outgoingMessageRead(let sender, let deviceId, let timestamp):
                 Logger.info("Applying early read receipt from \(sender):\(deviceId) for outgoing message \(identifier)")
@@ -432,12 +432,12 @@ public class EarlyMessageManager {
             Logger.info("Not processing viewed receipt for system story")
             return
         }
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
+        guard let registeredState = try? DependenciesBridge.shared.tsAccountManager.registeredState(tx: transaction) else {
             owsFailDebug("Can't process messages when not registered.")
             return
         }
         let identifier = MessageIdentifier(timestamp: storyMessage.timestamp, author: storyMessage.authorAci)
-        applyPendingMessages(for: identifier, localIdentifiers: localIdentifiers, tx: transaction) { earlyReceipt in
+        applyPendingMessages(for: identifier, registeredState: registeredState, tx: transaction) { earlyReceipt in
             switch earlyReceipt {
             case .outgoingMessageRead(let sender, let deviceId, _):
                 owsFailDebug("Unexpectedly received early read receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
@@ -476,7 +476,7 @@ public class EarlyMessageManager {
 
     private func applyPendingMessages(
         for identifier: MessageIdentifier,
-        localIdentifiers: LocalIdentifiers,
+        registeredState: RegisteredState,
         tx transaction: DBWriteTransaction,
         earlyReceiptProcessor: (EarlyReceipt) -> Void,
     ) {
@@ -518,7 +518,7 @@ public class EarlyMessageManager {
                 wasReceivedByUD: earlyEnvelope.wasReceivedByUD,
                 serverDeliveryTimestamp: earlyEnvelope.serverDeliveryTimestamp,
                 shouldDiscardVisibleMessages: false,
-                localIdentifiers: localIdentifiers,
+                registeredState: registeredState,
                 tx: transaction,
             )
         }

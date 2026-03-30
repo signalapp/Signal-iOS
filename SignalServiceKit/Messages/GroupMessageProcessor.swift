@@ -346,13 +346,19 @@ class SpecificGroupMessageProcessor {
             // Do nothing.
             break
         case .doNotDiscard, .discardVisibleMessages:
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard let registeredState = try? tsAccountManager.registeredState(tx: tx) else {
+                Logger.warn("Missing registeredState!")
+                return
+            }
+
             SSKEnvironment.shared.messageReceiverRef.processEnvelope(
                 jobInfo.envelope,
                 plaintextData: jobInfo.plaintextData,
                 wasReceivedByUD: jobInfo.job.wasReceivedByUD,
                 serverDeliveryTimestamp: jobInfo.job.serverDeliveryTimestamp,
                 shouldDiscardVisibleMessages: discardMode == .discardVisibleMessages,
-                localIdentifiers: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)!,
+                registeredState: registeredState,
                 tx: tx,
             )
         }

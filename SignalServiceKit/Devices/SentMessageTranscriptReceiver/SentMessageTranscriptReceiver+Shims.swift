@@ -26,7 +26,7 @@ public protocol _SentMessageTranscriptReceiver_EarlyMessageManagerShim {
 
     func applyPendingMessages(
         for message: TSMessage,
-        localIdentifiers: LocalIdentifiers,
+        registeredState: RegisteredState,
         tx: DBWriteTransaction,
     )
 }
@@ -39,8 +39,8 @@ public class _SentMessageTranscriptReceiver_EarlyMessageManagerWrapper: _SentMes
         self.earlyMessageManager = earlyMessageManager
     }
 
-    public func applyPendingMessages(for message: TSMessage, localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {
-        earlyMessageManager.applyPendingMessages(for: message, localIdentifiers: localIdentifiers, transaction: tx)
+    public func applyPendingMessages(for message: TSMessage, registeredState: RegisteredState, tx: DBWriteTransaction) {
+        earlyMessageManager.applyPendingMessages(for: message, registeredState: registeredState, transaction: tx)
     }
 }
 

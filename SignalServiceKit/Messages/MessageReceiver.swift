@@ -125,11 +125,11 @@ public final class MessageReceiver {
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
         shouldDiscardVisibleMessages: Bool,
-        localIdentifiers: LocalIdentifiers,
+        registeredState: RegisteredState,
         tx: DBWriteTransaction,
     ) {
         do {
-            let validatedEnvelope = try ValidatedIncomingEnvelope(envelope, localIdentifiers: localIdentifiers)
+            let validatedEnvelope = try ValidatedIncomingEnvelope(envelope, localIdentifiers: registeredState.localIdentifiers)
             switch validatedEnvelope.kind {
             case .unidentifiedSender, .identifiedSender:
                 // At this point, unidentifiedSender envelopes have already been updated
@@ -164,7 +164,7 @@ public final class MessageReceiver {
                     handleRequest(
                         messageReceiverRequest,
                         context: PassthroughDeliveryReceiptContext(),
-                        localIdentifiers: localIdentifiers,
+                        registeredState: registeredState,
                         tx: tx,
                     )
                     fallthrough
@@ -184,7 +184,7 @@ public final class MessageReceiver {
     func handleRequest(
         _ request: MessageReceiverRequest,
         context: DeliveryReceiptContext,
-        localIdentifiers: LocalIdentifiers,
+        registeredState: RegisteredState,
         tx: DBWriteTransaction,
     ) {
         let protoContent = request.protoContent
@@ -200,13 +200,13 @@ public final class MessageReceiver {
 
         switch request.messageType {
         case .syncMessage(let syncMessage):
-            handleIncomingEnvelope(request: request, syncMessage: syncMessage, localIdentifiers: localIdentifiers, tx: tx)
+            handleIncomingEnvelope(request: request, syncMessage: syncMessage, registeredState: registeredState, tx: tx)
             DependenciesBridge.shared.deviceManager.setHasReceivedSyncMessage(transaction: tx)
         case .dataMessage(let dataMessage):
-            handleIncomingEnvelope(request: request, dataMessage: dataMessage, localIdentifiers: localIdentifiers, tx: tx)
+            handleIncomingEnvelope(request: request, dataMessage: dataMessage, registeredState: registeredState, tx: tx)
         case .callMessage(let callMessage):
             owsAssertDebug(!request.shouldDiscardVisibleMessages)
-            handleIncomingEnvelope(request: request, callMessage: callMessage, localIdentifiers: localIdentifiers, tx: tx)
+            handleIncomingEnvelope(request: request, callMessage: callMessage, registeredState: registeredState, tx: tx)
         case .typingMessage(let typingMessage):
             handleIncomingEnvelope(request: request, typingMessage: typingMessage, tx: tx)
         case .nullMessage:
@@ -216,7 +216,7 @@ public final class MessageReceiver {
         case .decryptionErrorMessage(let decryptionErrorMessage):
             handleIncomingEnvelope(request: request, decryptionErrorMessage: decryptionErrorMessage, tx: tx)
         case .storyMessage(let storyMessage):
-            handleIncomingEnvelope(request: request, storyMessage: storyMessage, localIdentifiers: localIdentifiers, tx: tx)
+            handleIncomingEnvelope(request: request, storyMessage: storyMessage, registeredState: registeredState, tx: tx)
         case .editMessage(let editMessage):
             let result = handleIncomingEnvelope(request: request, editMessage: editMessage, tx: tx)
             switch result {
@@ -362,9 +362,10 @@ public final class MessageReceiver {
     private func handleIncomingEnvelope(
         request: MessageReceiverRequest,
         syncMessage: SSKProtoSyncMessage,
-        localIdentifiers: LocalIdentifiers,
+        registeredState: RegisteredState,
         tx: DBWriteTransaction,
     ) {
+        let localIdentifiers = registeredState.localIdentifiers
         let decryptedEnvelope = request.decryptedEnvelope
 
         guard decryptedEnvelope.sourceAci == localIdentifiers.aci else {
@@ -546,10 +547,6 @@ public final class MessageReceiver {
                         Logger.warn("Received GroupCallUpdate for invalid groupId")
                     }
                 } else if let pollTerminate = dataMessage.pollTerminate {
-                    guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
-                        owsFailDebug("Missing local identifiers!")
-                        return
-                    }
                     do {
                         let targetMessage = try DependenciesBridge.shared.pollMessageManager.processIncomingPollTerminate(
                             pollTerminateProto: pollTerminate,
@@ -584,10 +581,6 @@ public final class MessageReceiver {
                         return
                     }
                 } else if let pollVote = dataMessage.pollVote {
-                    guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
-                        owsFailDebug("Missing local identifiers!")
-                        return
-                    }
                     do {
                         guard
                             let (targetMessage, _) = try DependenciesBridge.shared.pollMessageManager.processIncomingPollVote(
@@ -637,13 +630,9 @@ public final class MessageReceiver {
                         owsFailDebug("Could not unpin message \(error)")
                     }
                 } else {
-                    guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
-                        owsFailDebug("Missing local identifiers!")
-                        return
-                    }
                     DependenciesBridge.shared.sentMessageTranscriptReceiver.process(
                         transcript,
-                        localIdentifiers: localIdentifiers,
+                        registeredState: registeredState,
                         tx: tx,
                     )
                 }
@@ -938,7 +927,7 @@ public final class MessageReceiver {
     private func handleIncomingEnvelope(
         request: MessageReceiverRequest,
         dataMessage: SSKProtoDataMessage,
-        localIdentifiers: LocalIdentifiers,
+        registeredState: RegisteredState,
         tx: DBWriteTransaction,
     ) {
         guard SDS.fitsInInt64(dataMessage.timestamp) else {
@@ -946,6 +935,7 @@ public final class MessageReceiver {
             return
         }
 
+        let localIdentifiers = registeredState.localIdentifiers
         let envelope = request.decryptedEnvelope
 
         if let groupId = self.groupId(for: dataMessage) {
@@ -978,7 +968,7 @@ public final class MessageReceiver {
         } else if dataMessage.flags & UInt32(SSKProtoDataMessageFlags.profileKeyUpdate.rawValue) != 0 {
             // Do nothing, we handle profile keys on all incoming messages above.
         } else {
-            message = processFlaglessDataMessage(dataMessage, request: request, thread: thread, tx: tx)
+            message = processFlaglessDataMessage(dataMessage, request: request, thread: thread, registeredState: registeredState, tx: tx)
         }
 
         // Send delivery receipts for "valid data" messages received via UD.
@@ -1069,6 +1059,7 @@ public final class MessageReceiver {
         _ dataMessage: SSKProtoDataMessage,
         request: MessageReceiverRequest,
         thread: TSThread,
+        registeredState: RegisteredState,
         tx: DBWriteTransaction,
     ) -> TSIncomingMessage? {
         let envelope = request.decryptedEnvelope
@@ -1676,12 +1667,7 @@ public final class MessageReceiver {
 
         owsAssertDebug(message.insertedMessageHasRenderableContent(rowId: message.sqliteRowId!, tx: tx))
 
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
-            owsFailDebug("Can't process messages when not registered.")
-            return nil
-        }
-
-        SSKEnvironment.shared.earlyMessageManagerRef.applyPendingMessages(for: message, localIdentifiers: localIdentifiers, transaction: tx)
+        SSKEnvironment.shared.earlyMessageManagerRef.applyPendingMessages(for: message, registeredState: registeredState, transaction: tx)
 
         // Any messages sent from the current user - from this device or another -
         // should be automatically marked as read.
@@ -1749,9 +1735,10 @@ public final class MessageReceiver {
     private func handleIncomingEnvelope(
         request: MessageReceiverRequest,
         callMessage: SSKProtoCallMessage,
-        localIdentifiers: LocalIdentifiers,
+        registeredState: RegisteredState,
         tx: DBWriteTransaction,
     ) {
+        let localIdentifiers = registeredState.localIdentifiers
         let envelope = request.decryptedEnvelope
 
         // If destinationDevice is defined, ignore messages not addressed to this device.
@@ -2057,7 +2044,7 @@ public final class MessageReceiver {
     private func handleIncomingEnvelope(
         request: MessageReceiverRequest,
         storyMessage: SSKProtoStoryMessage,
-        localIdentifiers: LocalIdentifiers,
+        registeredState: RegisteredState,
         tx: DBWriteTransaction,
     ) {
         do {
@@ -2065,7 +2052,7 @@ public final class MessageReceiver {
                 storyMessage,
                 timestamp: request.decryptedEnvelope.timestamp,
                 author: request.decryptedEnvelope.sourceAci,
-                localIdentifiers: localIdentifiers,
+                localIdentifiers: registeredState.localIdentifiers,
                 transaction: tx,
             )
         } catch {

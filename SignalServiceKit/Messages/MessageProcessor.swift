@@ -223,12 +223,12 @@ public class MessageProcessor {
             startTime = CACurrentMediaTime()
 
             // This is only called via `drainPendingEnvelopes`, and that confirms that
-            // we're registered. If we're registered, we must have `LocalIdentifiers`,
-            // so this (generally) shouldn't fail.
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
+            // we're registered. Consequently, this generally shouldn't fail.
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard let registeredState = try? tsAccountManager.registeredState(tx: tx) else {
                 return
             }
-            let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx)
+            let localDeviceId = tsAccountManager.storedDeviceId(tx: tx)
 
             var remainingEnvelopes = batchEnvelopes[...]
             while
@@ -244,7 +244,7 @@ public class MessageProcessor {
                     // stop processing envelopes.
                     let relatedRequests = buildNextCombinedRequest(
                         envelopes: &remainingEnvelopes,
-                        localIdentifiers: localIdentifiers,
+                        localIdentifiers: registeredState.localIdentifiers,
                         localDeviceId: localDeviceId,
                         tx: tx,
                     )
@@ -255,7 +255,7 @@ public class MessageProcessor {
                     }
                     handle(
                         relatedRequests: relatedRequests,
-                        localIdentifiers: localIdentifiers,
+                        registeredState: registeredState,
                         transaction: tx,
                     )
                 }
@@ -307,12 +307,12 @@ public class MessageProcessor {
         return results
     }
 
-    private func handle(relatedRequests: [ProcessingRequest], localIdentifiers: LocalIdentifiers, transaction: DBWriteTransaction) {
+    private func handle(relatedRequests: [ProcessingRequest], registeredState: RegisteredState, transaction: DBWriteTransaction) {
         // Efficiently handle delivery receipts for the same message by fetching the sent message only
         // once and only using one updateWith... to update the message with new recipient state.
         BatchingDeliveryReceiptContext.withDeferredUpdates(transaction: transaction) { context in
             for request in relatedRequests {
-                handleProcessingRequest(request, context: context, localIdentifiers: localIdentifiers, tx: transaction)
+                handleProcessingRequest(request, context: context, registeredState: registeredState, tx: transaction)
             }
         }
     }
@@ -320,7 +320,7 @@ public class MessageProcessor {
     private func reallyHandleProcessingRequest(
         _ request: ProcessingRequest,
         context: DeliveryReceiptContext,
-        localIdentifiers: LocalIdentifiers,
+        registeredState: RegisteredState,
         transaction: DBWriteTransaction,
     ) {
         switch request.state {
@@ -335,7 +335,7 @@ public class MessageProcessor {
             )
             SSKEnvironment.shared.messageReceiverRef.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
         case .messageReceiverRequest(let messageReceiverRequest):
-            SSKEnvironment.shared.messageReceiverRef.handleRequest(messageReceiverRequest, context: context, localIdentifiers: localIdentifiers, tx: transaction)
+            SSKEnvironment.shared.messageReceiverRef.handleRequest(messageReceiverRequest, context: context, registeredState: registeredState, tx: transaction)
             SSKEnvironment.shared.messageReceiverRef.finishProcessingEnvelope(messageReceiverRequest.decryptedEnvelope, tx: transaction)
         case .clearPlaceholdersOnly(let decryptedEnvelope):
             SSKEnvironment.shared.messageReceiverRef.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
@@ -347,10 +347,10 @@ public class MessageProcessor {
     private func handleProcessingRequest(
         _ request: ProcessingRequest,
         context: DeliveryReceiptContext,
-        localIdentifiers: LocalIdentifiers,
+        registeredState: RegisteredState,
         tx: DBWriteTransaction,
     ) {
-        reallyHandleProcessingRequest(request, context: context, localIdentifiers: localIdentifiers, transaction: tx)
+        reallyHandleProcessingRequest(request, context: context, registeredState: registeredState, transaction: tx)
         tx.addSyncCompletion { request.receivedEnvelope.completion() }
     }
 
