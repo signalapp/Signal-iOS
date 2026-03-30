@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CommonCrypto
 import CryptoKit
 import Foundation
 import System
@@ -21,6 +22,49 @@ public enum Cryptography {
             }
         } while bytesRead > 0
         return Data(sha256.finalize())
+    }
+
+    static func decrypt(encryptedData: Data, key: Data, iv: Data) throws -> Data {
+        return try _crypt(op: CCOperation(kCCDecrypt), inputData: encryptedData, key: key, iv: iv)
+    }
+
+    static func encrypt(plaintextData: Data, key: Data, iv: Data) throws -> Data {
+        return try _crypt(op: CCOperation(kCCEncrypt), inputData: plaintextData, key: key, iv: iv)
+    }
+
+    private static func _crypt(op: CCOperation, inputData: Data, key: Data, iv: Data) throws -> Data {
+        var outputData = Data(count: inputData.count + kCCBlockSizeAES128)
+        guard iv.count == kCCBlockSizeAES128 else {
+            throw OWSGenericError("iv must be \(kCCBlockSizeAES128) bytes")
+        }
+        var outputDataCount = 0
+        let result = key.withUnsafeBytes { key in
+            return iv.withUnsafeBytes { iv in
+                return inputData.withUnsafeBytes { inputData in
+                    return outputData.withUnsafeMutableBytes { outputData in
+                        return CCCrypt(
+                            op,
+                            CCAlgorithm(kCCAlgorithmAES),
+                            CCOptions(kCCOptionPKCS7Padding),
+                            key.baseAddress,
+                            key.count,
+                            iv.baseAddress,
+                            inputData.baseAddress,
+                            inputData.count,
+                            outputData.baseAddress,
+                            outputData.count,
+                            &outputDataCount,
+                        )
+                    }
+                }
+            }
+        }
+
+        guard result == kCCSuccess else {
+            throw OWSGenericError("CCCrypt failure: \(result)")
+        }
+
+        return outputData.prefix(outputDataCount)
     }
 }
 

@@ -50,44 +50,14 @@ public class ProvisioningCipher {
             throw ProvisioningError.invalidProvisionMessage("data too long to encrypt.")
         }
 
-        let ciphertextBufferSize = data.count + kCCBlockSizeAES128
-
-        var ciphertextData = Data(count: ciphertextBufferSize)
-
-        var bytesEncrypted = 0
-        let cryptStatus: CCCryptorStatus = cipherKey.withUnsafeBytes { keyBytes in
-            initializationVector.withUnsafeBytes { ivBytes in
-                data.withUnsafeBytes { dataBytes in
-                    ciphertextData.withUnsafeMutableBytes { ciphertextBytes in
-                        let status = CCCrypt(
-                            CCOperation(kCCEncrypt),
-                            CCAlgorithm(kCCAlgorithmAES),
-                            CCOptions(kCCOptionPKCS7Padding),
-                            keyBytes.baseAddress,
-                            keyBytes.count,
-                            ivBytes.baseAddress,
-                            dataBytes.baseAddress,
-                            dataBytes.count,
-                            ciphertextBytes.baseAddress,
-                            ciphertextBytes.count,
-                            &bytesEncrypted,
-                        )
-                        return status
-                    }
-                }
-            }
-        }
-
-        guard cryptStatus == kCCSuccess else {
-            throw ProvisioningError.invalidProvisionMessage("failure with status \(cryptStatus)")
-        }
+        let ciphertextData = try Cryptography.encrypt(plaintextData: data, key: cipherKey, iv: initializationVector)
 
         var message = Data()
         let version: UInt8 = 1
         message.append(version)
         // message format is (iv || ciphertext)
         message.append(initializationVector)
-        message.append(ciphertextData.prefix(bytesEncrypted))
+        message.append(ciphertextData)
         message.append(contentsOf: HMAC<SHA256>.authenticationCode(for: message, using: .init(data: macKey)))
         return message
     }
@@ -132,34 +102,6 @@ public class ProvisioningCipher {
             throw ProvisioningError.invalidProvisionMessage("mac mismatch")
         }
 
-        var bytesDecrypted: size_t = 0
-        var plaintextData = Data(count: ciphertext.count)
-        let cryptStatus = cipherKey.withUnsafeBytes { keyBytes in
-            initializationVector.withUnsafeBytes { ivBytes in
-                ciphertext.withUnsafeBytes { ciphertextBytes in
-                    plaintextData.withUnsafeMutableBytes { dataBytes in
-                        CCCrypt(
-                            CCOperation(kCCDecrypt),
-                            CCAlgorithm(kCCAlgorithmAES128),
-                            CCOptions(kCCOptionPKCS7Padding),
-                            keyBytes.baseAddress,
-                            keyBytes.count,
-                            ivBytes.baseAddress,
-                            ciphertextBytes.baseAddress,
-                            ciphertextBytes.count,
-                            dataBytes.baseAddress,
-                            dataBytes.count,
-                            &bytesDecrypted,
-                        )
-                    }
-                }
-            }
-        }
-
-        guard cryptStatus == kCCSuccess else {
-            throw OWSAssertionError("failure with cryptStatus: \(cryptStatus)")
-        }
-
-        return plaintextData.prefix(bytesDecrypted)
+        return try Cryptography.decrypt(encryptedData: ciphertext, key: cipherKey, iv: initializationVector)
     }
 }
