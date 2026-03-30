@@ -384,8 +384,9 @@ class SentStoryCell: UITableViewCell {
                 self?.saveAttachmentBlock()
             },
         )
-        button.configuration?.image = UIImage(imageLiteralResourceName: "save-20")
-        button.configuration?.contentInsets = .init(margin: 6)
+        button.configuration?.image = .save
+        let margin: CGFloat = if #available(iOS 26, *) { 10 } else { 6 }
+        button.configuration?.contentInsets = .init(margin: margin)
         button.configuration?.baseForegroundColor = .Signal.label
         button.configuration?.baseBackgroundColor = .Signal.secondaryBackground
         button.configuration?.cornerStyle = .capsule
@@ -395,15 +396,17 @@ class SentStoryCell: UITableViewCell {
     private let contextButton: ContextMenuButton = {
         let button = ContextMenuButton(empty: ())
         button.configuration = .gray()
-        button.configuration?.image = UIImage(imageLiteralResourceName: "more-compact")
-        button.configuration?.contentInsets = .init(margin: 8)
+        button.configuration?.image = .more
+        let margin: CGFloat = if #available(iOS 26, *) { 10 } else { 8 }
+        button.configuration?.contentInsets = .init(margin: margin)
         button.configuration?.baseForegroundColor = .Signal.label
         button.configuration?.baseBackgroundColor = .Signal.secondaryBackground
         button.configuration?.cornerStyle = .capsule
         // ContextMenuButton overrides `intrinsicContentSize` so manually specify size.
+        let size: CGFloat = if #available(iOS 26, *) { 44 } else { 32 }
         button.addConstraints([
-            button.widthAnchor.constraint(equalToConstant: 32),
-            button.heightAnchor.constraint(equalToConstant: 32),
+            button.widthAnchor.constraint(equalToConstant: size),
+            button.heightAnchor.constraint(equalToConstant: size),
         ])
         return button
     }()
@@ -434,6 +437,7 @@ class SentStoryCell: UITableViewCell {
         vStackView.axis = .vertical
         vStackView.alignment = .leading
 
+        let buttonSpacing: CGFloat = if #available(iOS 26, *) { 16 } else { 20 }
         let contentHStackView = UIStackView(
             arrangedSubviews: [
                 attachmentThumbnail,
@@ -442,7 +446,7 @@ class SentStoryCell: UITableViewCell {
                 vStackView,
                 .hStretchingSpacer(),
                 saveButton,
-                .spacer(withWidth: 20),
+                .spacer(withWidth: buttonSpacing),
                 contextButton,
             ],
         )
