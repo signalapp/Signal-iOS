@@ -3,7 +3,7 @@ name: translation-tool
 on:
   pull_request:
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/translation-tool.yml'
       - 'Scripts/translation-tool/**'
 
 # On PRs, "head_ref" is defined and is consistent across updates. On

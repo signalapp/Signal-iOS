@@ -3,7 +3,7 @@ name: translation-validator
 on:
   pull_request:
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/translation-validator.yml'
       - 'Scripts/translation-validator/**'
 
 # On PRs, "head_ref" is defined and is consistent across updates. On
