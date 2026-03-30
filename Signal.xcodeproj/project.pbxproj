@@ -335,7 +335,6 @@
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
 		346C19DF25ACDF0B00061D3A /* DataSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */; };
 		346C19E125ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */; };
-		346CD5C226306578004162D6 /* UnknownThreadWarningInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346CD5C126306578004162D6 /* UnknownThreadWarningInteraction.swift */; };
 		346E09012662FBBE0042375E /* ChatListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346E09002662FBBE0042375E /* ChatListCell.swift */; };
 		346EAA1225013CDF00E8AB6F /* SendMessageFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */; };
 		346EAA14250199A400E8AB6F /* MemberRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EAA13250199A300E8AB6F /* MemberRequestView.swift */; };
@@ -4425,7 +4424,6 @@
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSettingsTableViewController.swift; sourceTree = "<group>"; };
 		346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaDownloadSettingsViewController.swift; sourceTree = "<group>"; };
-		346CD5C126306578004162D6 /* UnknownThreadWarningInteraction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnknownThreadWarningInteraction.swift; sourceTree = "<group>"; };
 		346E09002662FBBE0042375E /* ChatListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatListCell.swift; sourceTree = "<group>"; };
 		346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendMessageFlow.swift; sourceTree = "<group>"; };
 		346EAA13250199A300E8AB6F /* MemberRequestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberRequestView.swift; sourceTree = "<group>"; };
@@ -9928,7 +9926,6 @@
 				88DBDFB8263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift */,
 				88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */,
 				34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */,
-				346CD5C126306578004162D6 /* UnknownThreadWarningInteraction.swift */,
 				4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */,
 			);
 			path = DynamicInteractions;
@@ -18764,7 +18761,6 @@
 				F93BCB9A29EDE86400E3C6A0 /* UIDevice+CanUpgradeOperatingSystem.swift in Sources */,
 				342FFE7A271EF581000AC89F /* UIResponder+OWS.swift in Sources */,
 				342FFE7B271EF581000AC89F /* UIStoryboard+OWS.swift in Sources */,
-				346CD5C226306578004162D6 /* UnknownThreadWarningInteraction.swift in Sources */,
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
 				7653A1F22B06D3F00071CCC3 /* UpdateSystemContacts.swift in Sources */,
 				5033D47029DCACEF007FEADA /* UrlOpener.swift in Sources */,
