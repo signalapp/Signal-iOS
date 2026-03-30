@@ -6,9 +6,9 @@
 import Testing
 @testable import SignalServiceKit
 
-class AttachmentUploadManagerTests {
-    var uploadManager: AttachmentUploadManager!
-    var helper: AttachmentUploadManagerMockHelper!
+struct AttachmentUploadManagerTests {
+    let uploadManager: AttachmentUploadManager
+    let helper: AttachmentUploadManagerMockHelper
 
     init() {
         helper = AttachmentUploadManagerMockHelper()
@@ -109,7 +109,7 @@ class AttachmentUploadManagerTests {
                 #expect(request.allHTTPHeaderFields!["Upload-Length"] == nil)
             }
         } else { Issue.record("Unexpected request encountered.") }
-        #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
+        #expect(helper.getUploadedAttachment(id: attachmentID).unencryptedByteCount == unencryptedSize)
     }
 
     @Test(arguments: CDNEndpoint.allCases)
@@ -169,7 +169,7 @@ class AttachmentUploadManagerTests {
                 #expect(request.allHTTPHeaderFields!["upload-length"] == nil)
             }
         } else { Issue.record("Unexpected request encountered.") }
-        #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
+        #expect(helper.getUploadedAttachment(id: attachmentID).unencryptedByteCount == unencryptedSize)
     }
 
     @Test(arguments: CDNEndpoint.allCases)
@@ -251,7 +251,7 @@ class AttachmentUploadManagerTests {
                 #expect(request.allHTTPHeaderFields!["upload-length"] == nil)
             }
         } else { Issue.record("Unexpected request encountered.") }
-        #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
+        #expect(helper.getUploadedAttachment(id: attachmentID).unencryptedByteCount == unencryptedSize)
     }
 
     @Test(arguments: CDNEndpoint.allCases)
@@ -280,7 +280,7 @@ class AttachmentUploadManagerTests {
             #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(encryptedSize)")
             #expect(request.allHTTPHeaderFields!["Content-Range"] == nil)
         } else { Issue.record("Unexpected request encountered.") }
-        #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
+        #expect(helper.getUploadedAttachment(id: attachmentID).unencryptedByteCount == unencryptedSize)
     }
 
     @Test(arguments: CDNEndpoint.allCases)
@@ -314,7 +314,7 @@ class AttachmentUploadManagerTests {
             #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(encryptedSize)")
             #expect(request.allHTTPHeaderFields!["Content-Range"] == nil)
         } else { Issue.record("Unexpected request encountered.") }
-        #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
+        #expect(helper.getUploadedAttachment(id: attachmentID).unencryptedByteCount == unencryptedSize)
     }
 
     @Test(arguments: CDNEndpoint.allCases)
@@ -357,7 +357,7 @@ class AttachmentUploadManagerTests {
             #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(encryptedSize)")
             #expect(request.allHTTPHeaderFields!["Content-Range"] == nil)
         } else { Issue.record("Unexpected request encountered.") }
-        #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
+        #expect(helper.getUploadedAttachment(id: attachmentID).unencryptedByteCount == unencryptedSize)
     }
 
     /// Test getting a 500 back, and reporting local progress. Each failure should result in an increasing backoff
@@ -403,7 +403,7 @@ class AttachmentUploadManagerTests {
             #expect(request.allHTTPHeaderFields!["Content-Length"] == "\(encryptedSize)")
             #expect(request.allHTTPHeaderFields!["Content-Range"] == nil)
         } else { Issue.record("Unexpected request encountered.") }
-        #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
+        #expect(helper.getUploadedAttachment(id: attachmentID).unencryptedByteCount == unencryptedSize)
     }
 
     @Test(arguments: CDNEndpoint.allCases)
@@ -449,7 +449,7 @@ class AttachmentUploadManagerTests {
             #expect(request.httpMethod == attempt.resumeUploadHttpMethod)
             #expect(request.allHTTPHeaderFields!["Content-Range"] == nil)
         } else { Issue.record("Unexpected request encountered.") }
-        #expect(helper.mockAttachmentUploadStore.uploadedAttachments.first!.unencryptedByteCount == unencryptedSize)
+        #expect(helper.getUploadedAttachment(id: attachmentID).unencryptedByteCount == unencryptedSize)
     }
 
     // MARK: Testing reupload strategies
@@ -461,8 +461,7 @@ class AttachmentUploadManagerTests {
 
         // Set up an attachment that isn't a stream.
         let attachmentID = helper.insertMockAttachment(
-            MockAttachment.mock(
-                streamInfo: nil,
+            Attachment.mock(
                 transitTierInfo: .mock(
                     uploadTimestamp: uploadTimestamp.ows_millisecondsSince1970,
                 ),
@@ -483,7 +482,7 @@ class AttachmentUploadManagerTests {
         let uploadTimestamp = Date(timeIntervalSinceNow: -10000)
         helper.mockDate = uploadTimestamp.addingTimeInterval(Upload.Constants.uploadReuseWindow / 2)
         let attachmentID = helper.insertMockAttachment(
-            MockAttachmentStream.mock(
+            AttachmentStream.mock(
                 transitTierInfo: .mock(
                     uploadTimestamp: uploadTimestamp.ows_millisecondsSince1970,
                 ),
@@ -501,7 +500,7 @@ class AttachmentUploadManagerTests {
         let encryptedSize: UInt32 = 27
         let attachmentID = helper.setup(
             encryptedUploadSize: encryptedSize,
-            mockAttachment: MockAttachmentStream.mock(
+            mockAttachment: AttachmentStream.mock(
                 streamInfo: .mock(encryptedByteCount: encryptedSize),
                 transitTierInfo: nil,
                 mediaTierInfo: nil,
@@ -552,7 +551,7 @@ class AttachmentUploadManagerTests {
             unencryptedByteCount: encryptedSize + 2,
         )
 
-        let attachment = MockAttachmentStream.mock(
+        let attachment = AttachmentStream.mock(
             streamInfo: streamInfo,
             transitTierInfo: transitTierInfo,
             mediaTierInfo: nil,
@@ -618,7 +617,7 @@ class AttachmentUploadManagerTests {
         // We should use fresh encryption, so set these to intentionally
         // non matching sizes.
         let streamInfo = Attachment.StreamInfo.mock(encryptedByteCount: encryptedSize + 1)
-        let attachment = MockAttachmentStream.mock(
+        let attachment = AttachmentStream.mock(
             streamInfo: streamInfo,
             transitTierInfo: nil,
             mediaTierInfo: .mock(),

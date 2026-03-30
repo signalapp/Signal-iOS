@@ -89,17 +89,15 @@ extension Attachment.ThumbnailMediaTierInfo {
     }
 }
 
-// MARK: - Params
-
-extension Attachment.ConstructionParams {
+extension Attachment.Record {
 
     public static func mockPointer(
         blurHash: String? = UUID().uuidString,
         mimeType: String = MimeType.imageJpeg.rawValue,
         encryptionKey: Data = UUID().data,
         transitTierInfo: Attachment.TransitTierInfo = .mock(),
-    ) -> Attachment.ConstructionParams {
-        return Attachment.ConstructionParams.fromPointer(
+    ) -> Attachment.Record {
+        return .forInsertingPointer(
             blurHash: blurHash,
             mimeType: mimeType,
             encryptionKey: encryptionKey,
@@ -114,8 +112,8 @@ extension Attachment.ConstructionParams {
         sha256ContentHash: Data? = nil,
         mediaName: String? = nil,
         streamInfo: Attachment.StreamInfo = .mock(),
-    ) -> Attachment.ConstructionParams {
-        return Attachment.ConstructionParams.fromStream(
+    ) -> Attachment.Record {
+        return .forInsertingStream(
             blurHash: blurHash,
             mimeType: mimeType,
             encryptionKey: encryptionKey,
@@ -126,9 +124,7 @@ extension Attachment.ConstructionParams {
     }
 }
 
-// MARK: - Attachment
-
-public class MockAttachment: Attachment {
+extension Attachment {
 
     public static func mock(
         blurHash: String? = nil,
@@ -143,7 +139,7 @@ public class MockAttachment: Attachment {
         localRelativeFilePathThumbnail: String? = nil,
         originalAttachmentIdForQuotedReply: Attachment.IDType? = nil,
         lastFullscreenViewTimestamp: UInt64? = nil,
-    ) -> MockAttachment {
+    ) -> Attachment {
         let record = Attachment.Record(
             sqliteId: .random(in: 0..<(.max)),
             blurHash: blurHash,
@@ -161,15 +157,11 @@ public class MockAttachment: Attachment {
             lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
         )
 
-        return try! MockAttachment(record: record)
-    }
-
-    override public func asStream() -> AttachmentStream? {
-        return MockAttachmentStream(attachment: self)
+        return try! Attachment(record: record)
     }
 }
 
-public class MockAttachmentStream: AttachmentStream {
+extension AttachmentStream {
 
     public static func mock(
         blurHash: String? = nil,
@@ -180,8 +172,8 @@ public class MockAttachmentStream: AttachmentStream {
         mediaTierInfo: Attachment.MediaTierInfo? = nil,
         thumbnailInfo: Attachment.ThumbnailMediaTierInfo? = nil,
         localRelativeFilePathThumbnail: String? = nil,
-    ) -> MockAttachmentStream {
-        let attachment = MockAttachment.mock(
+    ) -> AttachmentStream {
+        let attachment = Attachment.mock(
             blurHash: blurHash,
             mimeType: mimeType,
             mediaName: mediaName,
@@ -191,11 +183,7 @@ public class MockAttachmentStream: AttachmentStream {
             thumbnailInfo: thumbnailInfo,
             localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,
         )
-        return MockAttachmentStream(attachment: attachment)!
-    }
-
-    override public var fileURL: URL {
-        return URL(string: localRelativeFilePath)!
+        return AttachmentStream(attachment: attachment)!
     }
 }
 

@@ -601,7 +601,7 @@ public struct AttachmentStore {
 
     public func updateAttachmentAsDownloaded(
         attachment: Attachment,
-        from source: QueuedAttachmentDownloadRecord.SourceType,
+        sourceType: QueuedAttachmentDownloadRecord.SourceType,
         priority: AttachmentDownloadPriority,
         validatedMimeType: String,
         streamInfo: Attachment.StreamInfo,
@@ -642,41 +642,62 @@ public struct AttachmentStore {
             lastFullscreenViewTimestamp = nil
         }
 
-        var newRecord: Attachment.Record
-        switch source {
-        case .transitTier:
-            newRecord = Attachment.Record(
-                params: .forUpdatingAsDownlodedFromTransitTier(
-                    attachment: attachment,
-                    validatedMimeType: validatedMimeType,
-                    streamInfo: streamInfo,
-                    sha256ContentHash: streamInfo.sha256ContentHash,
-                    digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext,
-                    mediaName: streamInfo.mediaName,
-                    lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
-                ),
-            )
-        case .mediaTierFullsize:
-            newRecord = Attachment.Record(
-                params: .forUpdatingAsDownlodedFromMediaTier(
-                    attachment: attachment,
-                    validatedMimeType: validatedMimeType,
-                    streamInfo: streamInfo,
-                    sha256ContentHash: streamInfo.sha256ContentHash,
-                    mediaName: streamInfo.mediaName,
-                    lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
-                ),
-            )
-        case .mediaTierThumbnail:
-            newRecord = Attachment.Record(
-                params: .forUpdatingAsDownlodedThumbnailFromMediaTier(
-                    attachment: attachment,
-                    validatedMimeType: validatedMimeType,
-                    streamInfo: streamInfo,
-                ),
-            )
+        let latestTransitTierInfo: Attachment.TransitTierInfo?
+        if
+            var existingTransitTierInfo = attachment.latestTransitTierInfo,
+            existingTransitTierInfo.encryptionKey == attachment.encryptionKey
+        {
+            // Whatever the integrity check was before, we now want it
+            // to be the ciphertext digest NOT the plaintext hash.
+            // We disallow reusing existing transit tier info when
+            // forwarding if it doesn't have a digest, as digest is
+            // required on the outgoing proto. So to allow forwarding
+            // (where otherwise applicable) set the digest here.
+            existingTransitTierInfo.integrityCheck = .digestSHA256Ciphertext(streamInfo.digestSHA256Ciphertext)
+            // Wipe the last download attempt time; its now succeeded.
+            existingTransitTierInfo.lastDownloadAttemptTimestamp = nil
+
+            latestTransitTierInfo = existingTransitTierInfo
+        } else if
+            let existingTransitTierInfo = attachment.latestTransitTierInfo,
+            case .digestSHA256Ciphertext = existingTransitTierInfo.integrityCheck
+        {
+            latestTransitTierInfo = existingTransitTierInfo
+        } else {
+            latestTransitTierInfo = nil
         }
-        newRecord.sqliteId = attachment.id
+
+        switch sourceType {
+        case .transitTier:
+            attachment.mimeType = validatedMimeType
+            attachment.streamInfo = streamInfo
+            attachment.sha256ContentHash = streamInfo.sha256ContentHash
+            attachment.latestTransitTierInfo = latestTransitTierInfo
+            attachment.mediaName = streamInfo.mediaName
+            attachment.lastFullscreenViewTimestamp = lastFullscreenViewTimestamp ?? attachment.lastFullscreenViewTimestamp
+        case .mediaTierFullsize:
+            attachment.mimeType = validatedMimeType
+            attachment.streamInfo = streamInfo
+            attachment.sha256ContentHash = streamInfo.sha256ContentHash
+            attachment.latestTransitTierInfo = latestTransitTierInfo
+            attachment.mediaName = streamInfo.mediaName
+            if var mediaTierInfo = attachment.mediaTierInfo {
+                // Wipe the last download attempt time; its now succeeded.
+                mediaTierInfo.lastDownloadAttemptTimestamp = nil
+
+                attachment.mediaTierInfo = mediaTierInfo
+            }
+            attachment.lastFullscreenViewTimestamp = lastFullscreenViewTimestamp ?? attachment.lastFullscreenViewTimestamp
+        case .mediaTierThumbnail:
+            if var thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo {
+                thumbnailMediaTierInfo.lastDownloadAttemptTimestamp = nil
+
+                attachment.thumbnailMediaTierInfo = thumbnailMediaTierInfo
+            }
+            attachment.localRelativeFilePathThumbnail = streamInfo.localRelativeFilePath
+        }
+
+        let newRecord = Attachment.Record(attachment: attachment)
         failIfThrows {
             try newRecord.update(tx.database)
         }
@@ -702,61 +723,146 @@ public struct AttachmentStore {
             "Merging stream info into an attachment that is already a stream!",
         )
 
-        var newRecord = Attachment.Record(params: .forMerging(
-            streamInfo: streamInfo,
-            into: attachment,
-            encryptionKey: encryptionKey,
-            mimeType: validatedMimeType,
-            latestTransitTierInfo: latestTransitTierInfo,
-            originalTransitTierInfo: originalTransitTierInfo,
-            mediaTierInfo: mediaTierInfo,
-            thumbnailMediaTierInfo: thumbnailMediaTierInfo,
-        ))
+        attachment.mimeType = validatedMimeType
+        attachment.encryptionKey = encryptionKey
+        attachment.streamInfo = streamInfo
+        attachment.latestTransitTierInfo = latestTransitTierInfo
+        attachment.originalTransitTierInfo = originalTransitTierInfo
+        attachment.sha256ContentHash = streamInfo.sha256ContentHash
+        attachment.mediaName = streamInfo.mediaName
+        attachment.mediaTierInfo = mediaTierInfo
+        attachment.thumbnailMediaTierInfo = thumbnailMediaTierInfo
+        attachment.localRelativeFilePathThumbnail = nil
 
-        newRecord.sqliteId = attachment.id
+        let newRecord = Attachment.Record(attachment: attachment)
         failIfThrows {
             try newRecord.update(tx.database)
         }
     }
 
     public func updateAttachmentAsFailedToDownload(
-        attachment existingAttachment: Attachment,
-        source: QueuedAttachmentDownloadRecord.SourceType,
+        attachment: Attachment,
+        sourceType: QueuedAttachmentDownloadRecord.SourceType,
         timestamp: UInt64,
         tx: DBWriteTransaction,
     ) {
-        guard existingAttachment.asStream() == nil else {
+        guard attachment.asStream() == nil else {
             Logger.warn("Attachment already a stream!")
             return
         }
 
-        var newRecord: Attachment.Record
-        switch source {
+        switch sourceType {
         case .transitTier:
-            newRecord = Attachment.Record(
-                params: .forUpdatingAsFailedDownlodFromTransitTier(
-                    attachment: existingAttachment,
-                    timestamp: timestamp,
-                ),
-            )
+            if var latestTransitTierInfo = attachment.latestTransitTierInfo {
+                latestTransitTierInfo.lastDownloadAttemptTimestamp = timestamp
+                attachment.latestTransitTierInfo = latestTransitTierInfo
+            }
         case .mediaTierFullsize:
-            newRecord = Attachment.Record(
-                params: .forUpdatingAsFailedDownlodFromMediaTier(
-                    attachment: existingAttachment,
-                    timestamp: timestamp,
-                ),
-            )
+            if var mediaTierInfo = attachment.mediaTierInfo {
+                mediaTierInfo.lastDownloadAttemptTimestamp = timestamp
+                attachment.mediaTierInfo = mediaTierInfo
+            }
         case .mediaTierThumbnail:
-            newRecord = Attachment.Record(
-                params: .forUpdatingAsFailedThumbnailDownlodFromMediaTier(
-                    attachment: existingAttachment,
-                    timestamp: timestamp,
-                ),
-            )
+            if var thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo {
+                thumbnailMediaTierInfo.lastDownloadAttemptTimestamp = timestamp
+                attachment.thumbnailMediaTierInfo = thumbnailMediaTierInfo
+            }
         }
-        newRecord.sqliteId = existingAttachment.id
+
+        let newRecord = Attachment.Record(attachment: attachment)
         failIfThrows {
             try newRecord.update(tx.database)
+        }
+    }
+
+    // MARK: -
+
+    public func saveLatestTransitTierInfo(
+        attachmentStream: AttachmentStream,
+        transitTierInfo: Attachment.TransitTierInfo,
+        tx: DBWriteTransaction,
+    ) {
+        // After we upload, we set the original transit tier info if the
+        // upload's encryption key matches the primary attachment key.
+        // Also check digest; we never expect this check to fail (how would we
+        // have reused an encryption key but changed the IV?) but it is easy
+        // to check and is one less assumption made by this code.
+        // Otherwise keep the existing originalTransitTierInfo, including if it is nil.
+        let originalTransitTierInfo: Attachment.TransitTierInfo?
+        if transitTierInfo.encryptionKey == attachmentStream.attachment.encryptionKey {
+            switch transitTierInfo.integrityCheck {
+            case .digestSHA256Ciphertext(let digest):
+                if digest == attachmentStream.encryptedFileSha256Digest {
+                    originalTransitTierInfo = transitTierInfo
+                } else {
+                    owsFailDebug("How are we reusing encryption key but have a different digest?")
+                    originalTransitTierInfo = attachmentStream.attachment.originalTransitTierInfo
+                }
+            case .sha256ContentHash:
+                owsFailDebug("Using plaintext hash for just-uploaded attachment integrity check; unable to verify digest")
+                originalTransitTierInfo = attachmentStream.attachment.originalTransitTierInfo
+            }
+        } else {
+            originalTransitTierInfo = attachmentStream.attachment.originalTransitTierInfo
+        }
+
+        attachmentStream.attachment.latestTransitTierInfo = transitTierInfo
+        attachmentStream.attachment.originalTransitTierInfo = originalTransitTierInfo
+
+        let record = Attachment.Record(attachment: attachmentStream.attachment)
+        failIfThrows {
+            try record.update(tx.database)
+        }
+    }
+
+    public func saveMediaTierInfo(
+        attachment: Attachment,
+        mediaTierInfo: Attachment.MediaTierInfo,
+        mediaName: String,
+        tx: DBWriteTransaction,
+    ) {
+        attachment.mediaTierInfo = mediaTierInfo
+        attachment.mediaName = mediaName
+
+        let record = Attachment.Record(attachment: attachment)
+        failIfThrows {
+            try record.update(tx.database)
+        }
+    }
+
+    func saveMediaTierThumbnailInfo(
+        attachment: Attachment,
+        thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
+        mediaName: String,
+        tx: DBWriteTransaction,
+    ) {
+        attachment.mediaName = mediaName
+        attachment.thumbnailMediaTierInfo = thumbnailMediaTierInfo
+
+        let record = Attachment.Record(attachment: attachment)
+        failIfThrows {
+            try record.update(tx.database)
+        }
+    }
+
+    // MARK: -
+
+    public func removeTransitTierInfo(
+        _ info: Attachment.TransitTierInfo,
+        attachment: Attachment,
+        tx: DBWriteTransaction,
+    ) {
+        if attachment.latestTransitTierInfo?.cdnKey == info.cdnKey {
+            attachment.latestTransitTierInfo = nil
+        }
+
+        if attachment.originalTransitTierInfo?.cdnKey == info.cdnKey {
+            attachment.originalTransitTierInfo = nil
+        }
+
+        let record = Attachment.Record(attachment: attachment)
+        failIfThrows {
+            try record.update(tx.database)
         }
     }
 
@@ -764,12 +870,11 @@ public struct AttachmentStore {
         attachment: Attachment,
         tx: DBWriteTransaction,
     ) {
-        var newRecord = Attachment.Record(
-            params: .forRemovingMediaTierInfo(attachment: attachment),
-        )
-        newRecord.sqliteId = attachment.id
+        attachment.mediaTierInfo = nil
+
+        let record = Attachment.Record(attachment: attachment)
         failIfThrows {
-            try newRecord.update(tx.database)
+            try record.update(tx.database)
         }
     }
 
@@ -777,12 +882,11 @@ public struct AttachmentStore {
         attachment: Attachment,
         tx: DBWriteTransaction,
     ) {
-        var newRecord = Attachment.Record(
-            params: .forRemovingThumbnailMediaTierInfo(attachment: attachment),
-        )
-        newRecord.sqliteId = attachment.id
+        attachment.thumbnailMediaTierInfo = nil
+
+        let record = Attachment.Record(attachment: attachment)
         failIfThrows {
-            try newRecord.update(tx.database)
+            try record.update(tx.database)
         }
     }
 
@@ -796,17 +900,16 @@ public struct AttachmentStore {
         blurHash: String?,
         tx: DBWriteTransaction,
     ) {
-        var newRecord = Attachment.Record(
-            params: .forUpdatingWithRevalidatedContentType(
-                attachment: attachment,
-                contentType: contentType,
-                mimeType: mimeType,
-                blurHash: blurHash,
-            ),
-        )
-        newRecord.sqliteId = attachment.id
-        // NOTE: a sqlite trigger handles updating all attachment reference rows
-        // with the new content type.
+        attachment.blurHash = blurHash
+        attachment.mimeType = mimeType
+        if var streamInfo = attachment.streamInfo {
+            streamInfo.contentType = contentType
+            attachment.streamInfo = streamInfo
+        }
+
+        // A SQL post-update trigger will update `contentType` on all associated
+        // AttachmentReference rows.
+        let newRecord = Attachment.Record(attachment: attachment)
         failIfThrows {
             try newRecord.update(tx.database)
         }
@@ -952,13 +1055,13 @@ public struct AttachmentStore {
 
     @discardableResult
     public func insert(
-        _ attachmentParams: Attachment.ConstructionParams,
+        _ attachmentRecord: inout Attachment.Record,
         reference referenceParams: AttachmentReference.ConstructionParams,
         tx: DBWriteTransaction,
     ) throws(AttachmentInsertError) -> Attachment {
         // Find if there is already an attachment with the same plaintext hash.
         if
-            let sha256ContentHash = attachmentParams.sha256ContentHash ?? attachmentParams.streamInfo?.sha256ContentHash,
+            let sha256ContentHash = attachmentRecord.sha256ContentHash,
             let existingAttachmentId = fetchAttachmentRecord(
                 sha256ContentHash: sha256ContentHash,
                 tx: tx,
@@ -969,7 +1072,7 @@ public struct AttachmentStore {
 
         // Find if there is already an attachment with the same media name.
         if
-            let mediaName = attachmentParams.mediaName,
+            let mediaName = attachmentRecord.mediaName,
             let existingAttachmentId = fetchAttachmentRecord(
                 mediaName: mediaName,
                 tx: tx,
@@ -982,7 +1085,6 @@ public struct AttachmentStore {
             // Note that there are UNIQUE constraints on this table (e.g.,
             // plaintext hash and mediaName). Importantly, those are checked
             // above manually.
-            var attachmentRecord = Attachment.Record(params: attachmentParams)
             try attachmentRecord.insert(tx.database)
             return try Attachment(record: attachmentRecord)
         }
@@ -1044,6 +1146,24 @@ public struct AttachmentStore {
 
     // MARK: -
 
+    public func markOffloaded(
+        attachment: Attachment,
+        localRelativeFilePathThumbnail: String?,
+        tx: DBWriteTransaction,
+    ) {
+        // Wipe streamInfo, but keep the plaintext sha256ContentHash and mediaName
+        // so we can redownload eventually.
+        attachment.streamInfo = nil
+        attachment.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail ?? attachment.localRelativeFilePathThumbnail
+
+        let newRecord = Attachment.Record(attachment: attachment)
+        failIfThrows {
+            try newRecord.update(tx.database)
+        }
+    }
+
+    // MARK: -
+
     /// Call this when viewing an attachment "fullscreen", which really means "anything
     /// other than scrolling past it in a conversation".
     public func markViewedFullscreen(
@@ -1054,13 +1174,10 @@ public struct AttachmentStore {
         guard let attachment = self.fetch(id: attachmentId, tx: tx) else {
             return
         }
-        var newRecord = Attachment.Record(
-            params: .forMarkingViewedFullscreen(
-                attachment: attachment,
-                viewTimestamp: timestamp,
-            ),
-        )
-        newRecord.sqliteId = attachment.id
+
+        attachment.lastFullscreenViewTimestamp = timestamp
+
+        let newRecord = Attachment.Record(attachment: attachment)
         failIfThrows {
             try newRecord.update(tx.database)
         }

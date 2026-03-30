@@ -385,38 +385,29 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     // we want to start an upload fresh next time.
                     self.cleanup(record: record, logger: logger, tx: tx)
 
+                    guard let attachment = attachmentStore.fetch(id: attachmentStream.id, tx: tx) else {
+                        return
+                    }
+
                     if fileMissingOrEmpty {
                         logger.error("Missing attachment file!")
 
-                        guard let attachment = attachmentStore.fetch(id: attachmentStream.id, tx: tx) else {
-                            return
-                        }
-
-                        let params = Attachment.ConstructionParams.forOffloadingFiles(
+                        attachmentStore.markOffloaded(
                             attachment: attachment,
                             localRelativeFilePathThumbnail: nil,
+                            tx: tx,
                         )
-                        var newRecord = Attachment.Record(params: params)
-                        newRecord.sqliteId = attachment.id
-                        failIfThrows {
-                            try newRecord.update(tx.database)
-                        }
                     }
 
                     if
                         uploadResult.localUploadMetadata.isReusedTransitTierUpload,
-                        let transitTierInfo = attachmentStream.attachment.latestTransitTierInfo
+                        let transitTierInfo = attachment.latestTransitTierInfo
                     {
                         // We reused a transit tier upload but the source couldn't be found.
                         // That transit tier upload is now invalid.
-                        // Refetch the attachment
-                        guard let attachment = attachmentStore.fetch(id: attachmentStream.id, tx: tx) else {
-                            return
-                        }
-
-                        attachmentUploadStore.markTransitTierUploadExpired(
+                        attachmentStore.removeTransitTierInfo(
+                            transitTierInfo,
                             attachment: attachment,
-                            info: transitTierInfo,
                             tx: tx,
                         )
                     }
@@ -445,7 +436,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 lastDownloadAttemptTimestamp: nil,
             )
 
-            attachmentUploadStore.markUploadedToMediaTier(
+            attachmentStore.saveMediaTierInfo(
                 attachment: attachmentStream.attachment,
                 mediaTierInfo: mediaTierInfo,
                 mediaName: attachmentStream.info.mediaName,
@@ -500,14 +491,12 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     incrementalMacInfo: nil,
                     lastDownloadAttemptTimestamp: nil,
                 )
-                // Refetch so we get the updated media tier info from above.
-                if let attachmentStream = attachmentStore.fetch(id: attachmentStream.id, tx: tx)?.asStream() {
-                    attachmentUploadStore.markUploadedToTransitTier(
-                        attachmentStream: attachmentStream,
-                        info: transitTierInfo,
-                        tx: tx,
-                    )
-                }
+
+                attachmentStore.saveLatestTransitTierInfo(
+                    attachmentStream: attachmentStream,
+                    transitTierInfo: transitTierInfo,
+                    tx: tx,
+                )
             }
 
             self.cleanup(record: record, logger: logger, tx: tx)
@@ -581,7 +570,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 lastDownloadAttemptTimestamp: nil,
             )
 
-            attachmentUploadStore.markThumbnailUploadedToMediaTier(
+            attachmentStore.saveMediaTierThumbnailInfo(
                 attachment: attachmentStream.attachment,
                 thumbnailMediaTierInfo: thumbnailInfo,
                 mediaName: attachmentStream.info.mediaName,
@@ -833,7 +822,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     progress: progress,
                 )
             } else if case Upload.Error.missingFile = error {
-                try await db.awaitableWrite { tx in
+                await db.awaitableWrite { tx in
                     if
                         let attachmentRelFilePath = attachment.streamInfo?.localRelativeFilePath,
                         // If the missing file matches the url of the primary attachment file,
@@ -842,13 +831,11 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                         let attachment = attachmentStore.fetch(id: attachmentId, tx: tx)
                     {
                         logger.error("Primary attachment file missing!")
-                        let params = Attachment.ConstructionParams.forOffloadingFiles(
+                        attachmentStore.markOffloaded(
                             attachment: attachment,
                             localRelativeFilePathThumbnail: nil,
+                            tx: tx,
                         )
-                        var newRecord = Attachment.Record(params: params)
-                        newRecord.sqliteId = attachment.id
-                        try newRecord.update(tx.database)
                     }
                     // Delete the upload record; whatever the state was we need to start over next time.
                     attachmentUploadStore.removeRecord(
@@ -1082,9 +1069,9 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             lastDownloadAttemptTimestamp: nil,
         )
 
-        attachmentUploadStore.markUploadedToTransitTier(
+        attachmentStore.saveLatestTransitTierInfo(
             attachmentStream: attachmentStream,
-            info: transitTierInfo,
+            transitTierInfo: transitTierInfo,
             tx: tx,
         )
 

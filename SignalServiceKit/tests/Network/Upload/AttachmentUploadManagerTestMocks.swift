@@ -176,52 +176,9 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
     }
 }
 
-// MARK: - AttachmentStore
+// MARK: -
 
 class AttachmentUploadStoreMock: AttachmentUploadStore {
-
-    var uploadedAttachments = [AttachmentStream]()
-
-    override func markUploadedToTransitTier(
-        attachmentStream: AttachmentStream,
-        info: Attachment.TransitTierInfo,
-        tx: SignalServiceKit.DBWriteTransaction,
-    ) {
-        uploadedAttachments.append(attachmentStream)
-    }
-
-    override func markTransitTierUploadExpired(
-        attachment: Attachment,
-        info: Attachment.TransitTierInfo,
-        tx: DBWriteTransaction,
-    ) {
-        // Do nothing
-    }
-
-    override func markUploadedToMediaTier(
-        attachment: Attachment,
-        mediaTierInfo: Attachment.MediaTierInfo,
-        mediaName: String,
-        tx: DBWriteTransaction,
-    ) {}
-
-    override func markMediaTierUploadExpired(
-        attachment: Attachment,
-        tx: DBWriteTransaction,
-    ) {}
-
-    override func markThumbnailUploadedToMediaTier(
-        attachment: Attachment,
-        thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
-        mediaName: String,
-        tx: DBWriteTransaction,
-    ) {}
-
-    override func markThumbnailMediaTierUploadExpired(
-        attachment: Attachment,
-        tx: DBWriteTransaction,
-    ) {}
-
     override func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) { }
 
     override func removeRecord(

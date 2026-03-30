@@ -151,27 +151,8 @@ extension Attachment {
             )
         }
 
-        init(params: Attachment.ConstructionParams) {
-            self.init(
-                optionalSqliteId: nil,
-                blurHash: params.blurHash,
-                mimeType: params.mimeType,
-                encryptionKey: params.encryptionKey,
-                sha256ContentHash: params.sha256ContentHash,
-                mediaName: params.mediaName,
-                localRelativeFilePathThumbnail: params.localRelativeFilePathThumbnail,
-                streamInfo: params.streamInfo,
-                latestTransitTierInfo: params.latestTransitTierInfo,
-                originalTransitTierInfo: params.originalTransitTierInfo,
-                mediaTierInfo: params.mediaTierInfo,
-                thumbnailMediaTierInfo: params.thumbnailMediaTierInfo,
-                originalAttachmentIdForQuotedReply: params.originalAttachmentIdForQuotedReply,
-                lastFullscreenViewTimestamp: params.lastFullscreenViewTimestamp,
-            )
-        }
-
         init(
-            sqliteId: IDType,
+            sqliteId: IDType?,
             blurHash: String?,
             mimeType: String,
             encryptionKey: Data,
@@ -186,42 +167,7 @@ extension Attachment {
             originalAttachmentIdForQuotedReply: Int64?,
             lastFullscreenViewTimestamp: UInt64?,
         ) {
-            self.init(
-                optionalSqliteId: sqliteId,
-                blurHash: blurHash,
-                mimeType: mimeType,
-                encryptionKey: encryptionKey,
-                sha256ContentHash: sha256ContentHash,
-                mediaName: mediaName,
-                localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,
-                streamInfo: streamInfo,
-                latestTransitTierInfo: latestTransitTierInfo,
-                originalTransitTierInfo: originalTransitTierInfo,
-                mediaTierInfo: mediaTierInfo,
-                thumbnailMediaTierInfo: thumbnailMediaTierInfo,
-                originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply,
-                lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
-            )
-        }
-
-        // Private as we want to be deliberate around when sqlite id is not provided.
-        private init(
-            optionalSqliteId: IDType?,
-            blurHash: String?,
-            mimeType: String,
-            encryptionKey: Data,
-            sha256ContentHash: Data?,
-            mediaName: String?,
-            localRelativeFilePathThumbnail: String?,
-            streamInfo: Attachment.StreamInfo?,
-            latestTransitTierInfo: Attachment.TransitTierInfo?,
-            originalTransitTierInfo: Attachment.TransitTierInfo?,
-            mediaTierInfo: Attachment.MediaTierInfo?,
-            thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
-            originalAttachmentIdForQuotedReply: Int64?,
-            lastFullscreenViewTimestamp: UInt64?,
-        ) {
-            self.sqliteId = optionalSqliteId
+            self.sqliteId = sqliteId
             self.blurHash = blurHash
             self.sha256ContentHash = sha256ContentHash
             self.encryptedByteCount = streamInfo?.encryptedByteCount
@@ -318,6 +264,137 @@ extension Attachment {
             self.cachedVideoDurationSeconds = cachedVideoDurationSeconds
             self.audioWaveformRelativeFilePath = audioWaveformRelativeFilePath
             self.videoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
+        }
+
+        // MARK: -
+
+        static func forInsertingPointer(
+            blurHash: String?,
+            mimeType: String,
+            encryptionKey: Data,
+            latestTransitTierInfo: Attachment.TransitTierInfo,
+        ) -> Record {
+            return Record(
+                sqliteId: nil,
+                blurHash: blurHash,
+                mimeType: mimeType,
+                encryptionKey: encryptionKey,
+                sha256ContentHash: nil,
+                mediaName: nil,
+                localRelativeFilePathThumbnail: nil,
+                streamInfo: nil,
+                latestTransitTierInfo: latestTransitTierInfo,
+                originalTransitTierInfo: latestTransitTierInfo.encryptionKey == encryptionKey
+                    ? latestTransitTierInfo : nil,
+                mediaTierInfo: nil,
+                thumbnailMediaTierInfo: nil,
+                originalAttachmentIdForQuotedReply: nil,
+                lastFullscreenViewTimestamp: nil,
+            )
+        }
+
+        static func forInsertingStream(
+            blurHash: String?,
+            mimeType: String,
+            encryptionKey: Data,
+            streamInfo: Attachment.StreamInfo,
+            sha256ContentHash: Data,
+            mediaName: String,
+        ) -> Record {
+            return Record(
+                sqliteId: nil,
+                blurHash: blurHash,
+                mimeType: mimeType,
+                encryptionKey: encryptionKey,
+                sha256ContentHash: sha256ContentHash,
+                mediaName: mediaName,
+                localRelativeFilePathThumbnail: nil,
+                streamInfo: streamInfo,
+                latestTransitTierInfo: nil,
+                originalTransitTierInfo: nil,
+                mediaTierInfo: nil,
+                thumbnailMediaTierInfo: nil,
+                originalAttachmentIdForQuotedReply: nil,
+                lastFullscreenViewTimestamp: nil,
+            )
+        }
+
+        static func forInsertingFromBackup(
+            blurHash: String?,
+            mimeType: String,
+            encryptionKey: Data,
+            latestTransitTierInfo: Attachment.TransitTierInfo?,
+            sha256ContentHashAndMediaName: (hash: Data, mediaName: String)?,
+            mediaTierInfo: Attachment.MediaTierInfo?,
+            thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
+        ) -> Record {
+            return Record(
+                sqliteId: nil,
+                blurHash: blurHash,
+                mimeType: mimeType,
+                encryptionKey: encryptionKey,
+                sha256ContentHash: sha256ContentHashAndMediaName?.hash,
+                mediaName: sha256ContentHashAndMediaName?.mediaName,
+                localRelativeFilePathThumbnail: nil,
+                streamInfo: nil,
+                latestTransitTierInfo: latestTransitTierInfo,
+                originalTransitTierInfo: latestTransitTierInfo?.encryptionKey == encryptionKey
+                    ? latestTransitTierInfo : nil,
+                mediaTierInfo: mediaTierInfo,
+                thumbnailMediaTierInfo: thumbnailMediaTierInfo,
+                originalAttachmentIdForQuotedReply: nil,
+                lastFullscreenViewTimestamp: nil,
+            )
+        }
+
+        static func forInsertingInvalidBackupAttachment(
+            blurHash: String?,
+            mimeType: String,
+        ) -> Record {
+            return Record(
+                sqliteId: nil,
+                blurHash: blurHash,
+                mimeType: mimeType,
+                // We don't have any cdn info from which to download, so what
+                // encryption key we use is irrelevant. Just generate a new one.
+                encryptionKey: AttachmentKey.generate().combinedKey,
+                sha256ContentHash: nil,
+                mediaName: nil,
+                localRelativeFilePathThumbnail: nil,
+                streamInfo: nil,
+                latestTransitTierInfo: nil,
+                originalTransitTierInfo: nil,
+                mediaTierInfo: nil,
+                thumbnailMediaTierInfo: nil,
+                originalAttachmentIdForQuotedReply: nil,
+                lastFullscreenViewTimestamp: nil,
+            )
+        }
+
+        static func forQuotedReplyThumbnailPointer(
+            originalAttachment: Attachment,
+            thumbnailBlurHash: String?,
+            thumbnailMimeType: String,
+            thumbnailEncryptionKey: Data,
+            thumbnailTransitTierInfo: Attachment.TransitTierInfo?,
+        ) -> Record {
+            return .init(
+                sqliteId: nil,
+                blurHash: thumbnailBlurHash,
+                mimeType: thumbnailMimeType,
+                encryptionKey: thumbnailEncryptionKey,
+                sha256ContentHash: nil,
+                mediaName: nil,
+                localRelativeFilePathThumbnail: nil,
+                streamInfo: nil,
+                latestTransitTierInfo: thumbnailTransitTierInfo,
+                originalTransitTierInfo: thumbnailTransitTierInfo?.encryptionKey == thumbnailEncryptionKey
+                    ? thumbnailTransitTierInfo : nil,
+                mediaTierInfo: nil,
+                thumbnailMediaTierInfo: nil,
+                originalAttachmentIdForQuotedReply: originalAttachment.id,
+                lastFullscreenViewTimestamp: nil,
+            )
         }
     }
 }

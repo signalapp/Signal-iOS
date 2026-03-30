@@ -274,7 +274,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
         let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
         try! interaction.asRecord().insert(tx.database)
 
-        let attachmentParams = Attachment.ConstructionParams.mockPointer()
+        var attachmentParams = Attachment.Record.mockPointer()
         let referenceParams = AttachmentReference.ConstructionParams.mock(
             owner: .message(.bodyAttachment(.init(
                 messageRowId: interaction.sqliteRowId!,
@@ -290,7 +290,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
             ))),
         )
         try! attachmentStore.insert(
-            attachmentParams,
+            &attachmentParams,
             reference: referenceParams,
             tx: tx,
         )

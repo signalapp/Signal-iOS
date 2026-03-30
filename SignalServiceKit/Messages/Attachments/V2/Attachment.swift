@@ -19,28 +19,28 @@ public class Attachment {
     /// * undownloaded attachments where the sender didn't include the value.
     /// Otherwise this contains the value from the sender for undownloaded attachments,
     /// and our locally computed blurhash value for downloading attachments.
-    public let blurHash: String?
+    public var blurHash: String?
 
     /// MIME type we get from the attachment's sender, known even before downloading the attachment.
     /// **If undownloaded, unverified (spoofable by the sender) and may not match the type of the actual bytes.**
     /// If downloaded, check ``AttachmentStream/contentType`` for a validated representation of the type..
-    public let mimeType: String
+    public var mimeType: String
 
     /// Encryption key used for the local file AND media tier.
     /// If from an incoming message, we get this from the proto, and can reuse it for local and media backup encryption.
     /// If outgoing, we generate the key ourselves when we create the attachment.
-    public let encryptionKey: Data
+    public var encryptionKey: Data
 
-    public let streamInfo: StreamInfo?
+    public var streamInfo: StreamInfo?
 
     /// Information for the latest transit tier upload, if known to be uploaded.
     /// The encryption key may not match the tip-level encryption key used for the local file;
     /// they may differ if the attachment was reuploaded for forwarding.
-    public let latestTransitTierInfo: TransitTierInfo?
+    public var latestTransitTierInfo: TransitTierInfo?
 
     /// Information for a transit tier upload using the local encryption key, if known to be uploaded.
     /// Always uses the local encryption key; will be nil if no upload at the same encryption key is known.
-    public let originalTransitTierInfo: TransitTierInfo?
+    public var originalTransitTierInfo: TransitTierInfo?
 
     /// Used for quoted reply thumbnail attachments.
     /// The id of the quoted reply's target message's attachment that is to be thumbnail'ed.
@@ -51,31 +51,31 @@ public class Attachment {
 
     /// Validated Sha256 hash of the plaintext of the media content. Used to deduplicate incoming media.
     /// Nonnull if downloaded OR possibly if restored from a backup (which we trust to have validated).
-    public let sha256ContentHash: Data?
+    public var sha256ContentHash: Data?
 
     /// MediaName used for backups (but assigned even if backups disabled).
     /// Nonnull if downloaded OR if restored from a backup.
-    public let mediaName: String?
+    public var mediaName: String?
 
     /// If null, the resource has not been uploaded to the media tier.
-    public let mediaTierInfo: MediaTierInfo?
+    public var mediaTierInfo: MediaTierInfo?
 
     /// Not to be confused with thumbnails used for rendering, or those created for quoted message replies.
     /// This thumbnail is exclusively used for backup purposes.
     /// If null, the thumbnail resource has not been uploaded to the media tier.
-    public let thumbnailMediaTierInfo: ThumbnailMediaTierInfo?
+    public var thumbnailMediaTierInfo: ThumbnailMediaTierInfo?
 
     /// Filepath to the encrypted thumbnail file on local disk.
     /// Not to be confused with thumbnails used for rendering, or those created for quoted message replies.
     /// This thumbnail is exclusively used for backup purposes.
-    public let localRelativeFilePathThumbnail: String?
+    public var localRelativeFilePathThumbnail: String?
 
     /// The last time the user viewed this attachment ("fullscreen", which really means "not just scrolling past it
     /// in a conversation"). Set if viewing in the media gallery, story viewer, etc.
     /// Not set when viewing a thread wallpaper.
     /// May not be set for e.g. attachments that were viewed before we started tracking this; do not use
     /// this for anything that would rely on this being historically correct.
-    public let lastFullscreenViewTimestamp: UInt64?
+    public var lastFullscreenViewTimestamp: UInt64?
 
     // MARK: - Inner structs
 
@@ -113,7 +113,7 @@ public class Attachment {
         public let unencryptedByteCount: UInt32
 
         /// For downloaded attachments, the validated type of content in the actual file.
-        public let contentType: ContentType
+        public var contentType: ContentType
 
         /// File digest info.
         ///
@@ -151,14 +151,14 @@ public class Attachment {
 
         /// Generated locally for outgoing attachments.
         /// For incoming attachments, taken off the service proto. If validation fails, the download is rejected.
-        public let integrityCheck: AttachmentIntegrityCheck
+        public var integrityCheck: AttachmentIntegrityCheck
 
         /// Incremental mac info used for streaming, if available. Only set for streamable types.
         public let incrementalMacInfo: IncrementalMacInfo?
 
         /// Timestamp we last tried (and failed) to download from the transit tier.
         /// Nil if we have not tried or have successfully downloaded.
-        public let lastDownloadAttemptTimestamp: UInt64?
+        public var lastDownloadAttemptTimestamp: UInt64?
     }
 
     public struct MediaTierInfo {
@@ -188,7 +188,7 @@ public class Attachment {
 
         /// Timestamp we last tried (and failed) to download from the media tier.
         /// Nil if we have not tried or have successfully downloaded.
-        public let lastDownloadAttemptTimestamp: UInt64?
+        public var lastDownloadAttemptTimestamp: UInt64?
     }
 
     public struct ThumbnailMediaTierInfo {
@@ -205,7 +205,7 @@ public class Attachment {
 
         /// Timestamp we last tried (and failed) to download the thumbnail from the media tier.
         /// Nil if we have not tried or have successfully downloaded.
-        public let lastDownloadAttemptTimestamp: UInt64?
+        public var lastDownloadAttemptTimestamp: UInt64?
     }
 
     // MARK: - Init

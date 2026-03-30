@@ -22,7 +22,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
 
     func testEnqueue() {
         // Create an attachment and reference.
-        var attachmentRecord = Attachment.Record(params: .mockStream())
+        var attachmentRecord = Attachment.Record.mockStream()
 
         let (threadRowId, messageRowId) = insertThreadAndInteraction()
 
@@ -140,7 +140,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
     func testDequeue() {
         let timestamps: [UInt64?] = [1111, nil, 4444, 3333, 2222]
         for timestamp in timestamps {
-            var attachmentRecord = Attachment.Record(params: .mockStream())
+            var attachmentRecord = Attachment.Record.mockStream()
             let (threadRowId, messageRowId) = insertThreadAndInteraction()
 
             db.write { tx in
@@ -241,7 +241,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
     func testDequeue_thumbnail() throws {
         let timestamps: [UInt64] = [1111, 4444, 3333, 2222]
         for timestamp in timestamps {
-            var attachmentRecord = Attachment.Record(params: .mockStream())
+            var attachmentRecord = Attachment.Record.mockStream()
             let (threadRowId, messageRowId) = insertThreadAndInteraction()
 
             db.write { tx in

@@ -276,7 +276,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         orderInMessage: UInt32,
         idInOwner: UUID? = nil,
     ) throws -> Attachment.IDType {
-        let attachmentParams = Attachment.ConstructionParams.mockStream(
+        let attachmentParams = Attachment.Record.mockStream(
             streamInfo: .mock(
                 contentType: {
                     switch contentType {
@@ -311,7 +311,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             ))),
         )
 
-        var attachmentRecord = Attachment.Record(params: attachmentParams)
+        var attachmentRecord = attachmentParams
 
         try db.write { tx in
             try attachmentRecord.insert(tx.database)

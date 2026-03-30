@@ -31,7 +31,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
     func testDeleteAttachment() async throws {
         let localRelativeFilePath = UUID().uuidString
-        let attachmentParams = Attachment.ConstructionParams.mockStream(
+        var attachmentParams = Attachment.Record.mockStream(
             streamInfo: .mock(localRelativeFilePath: localRelativeFilePath),
         )
         let referenceParams = AttachmentReference.ConstructionParams.mock(
@@ -40,7 +40,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         try db.write { tx in
             _ = try attachmentStore.insert(
-                attachmentParams,
+                &attachmentParams,
                 reference: referenceParams,
                 tx: tx,
             )
@@ -91,7 +91,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         for _ in 0..<4 {
             let localRelativeFilePath = UUID().uuidString
-            let attachmentParams = Attachment.ConstructionParams.mockStream(
+            var attachmentParams = Attachment.Record.mockStream(
                 streamInfo: .mock(localRelativeFilePath: localRelativeFilePath),
             )
             let referenceParams = AttachmentReference.ConstructionParams.mock(
@@ -100,7 +100,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
             let attachment = try db.write { tx in
                 try attachmentStore.insert(
-                    attachmentParams,
+                    &attachmentParams,
                     reference: referenceParams,
                     tx: tx,
                 )

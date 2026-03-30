@@ -578,9 +578,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     let attachment = attachmentStore.fetch(id: record.attachmentId, tx: tx)
                 {
                     Logger.info("Expiring transit tier due to failed download")
-                    attachmentUploadStore.markTransitTierUploadExpired(
+                    attachmentStore.removeTransitTierInfo(
+                        error.transitTierInfo,
                         attachment: attachment,
-                        info: error.transitTierInfo,
                         tx: tx,
                     )
                 } else if
@@ -590,7 +590,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // Backup restore doenload queue does its own marking of failed state.
                     attachmentStore.updateAttachmentAsFailedToDownload(
                         attachment: attachment,
-                        source: record.sourceType,
+                        sourceType: record.sourceType,
                         timestamp: self.dateProvider().ows_millisecondsSince1970,
                         tx: tx,
                     )
@@ -2042,7 +2042,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 do throws(AttachmentInsertError) {
                     try self.attachmentStore.updateAttachmentAsDownloaded(
                         attachment: attachmentWeJustDownloaded,
-                        from: source,
+                        sourceType: source,
                         priority: priority,
                         validatedMimeType: pendingAttachment.mimeType,
                         streamInfo: streamInfo,
@@ -2200,7 +2200,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                 let alreadyAssignedFirstReference: Bool
 
-                let newAttachment: AttachmentStream
+                let newAttachmentStream: AttachmentStream
                 do {
                     guard self.orphanedAttachmentStore.orphanAttachmentExists(with: pendingAttachment.orphanRecordId, tx: tx) else {
                         throw OWSAssertionError("Attachment file deleted before creation")
@@ -2219,7 +2219,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         sourceUnencryptedByteCount: pendingAttachment.unencryptedByteCount,
                         sourceMediaSizePixels: mediaSizePixels,
                     )
-                    let attachmentParams = Attachment.ConstructionParams.fromStream(
+                    var attachmentRecord = Attachment.Record.forInsertingStream(
                         blurHash: pendingAttachment.blurHash,
                         mimeType: pendingAttachment.mimeType,
                         encryptionKey: pendingAttachment.encryptionKey,
@@ -2229,39 +2229,33 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
 
                     let attachment = try self.attachmentStore.insert(
-                        attachmentParams,
+                        &attachmentRecord,
                         reference: referenceParams,
                         tx: tx,
                     )
 
-                    if let mediaName = attachmentParams.mediaName {
-                        self.orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
-                            withMediaName: mediaName,
-                            tx: tx,
-                        )
+                    self.orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
+                        withMediaName: mediaName,
+                        tx: tx,
+                    )
 
-                        backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
-                            attachment,
-                            mode: .all,
-                            tx: tx,
-                        )
-                        tx.addSyncCompletion {
-                            NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
-                        }
+                    backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                        attachment,
+                        mode: .all,
+                        tx: tx,
+                    )
+
+                    tx.addSyncCompletion {
+                        NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
                     }
 
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
                     self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
 
-                    guard
-                        let attachment = attachmentStore.fetchAnyReferencedAttachment(
-                            for: referenceParams.owner.id,
-                            tx: tx,
-                        )?.attachment.asStream()
-                    else {
-                        throw OWSAssertionError("Missing attachment we just created")
-                    }
-                    newAttachment = attachment
+                    newAttachmentStream = AttachmentStream(
+                        attachment: attachment,
+                        info: streamInfo,
+                    )
                     alreadyAssignedFirstReference = true
                 } catch let error {
                     let existingAttachmentId: Attachment.IDType
@@ -2291,11 +2285,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // Already have an attachment with the same plaintext hash or media name!
                     // We will instead re-point all references to this attachment.
                     guard
-                        let attachment = self.attachmentStore.fetch(id: existingAttachmentId, tx: tx)?.asStream()
+                        let attachment = attachmentStore.fetch(
+                            id: existingAttachmentId,
+                            tx: tx,
+                        ),
+                        let attachmentStream = attachment.asStream()
                     else {
-                        throw OWSAssertionError("Missing attachment we just matched against")
+                        throw OWSAssertionError("Missing stream for attachment we just matched against!")
                     }
-                    newAttachment = attachment
+                    newAttachmentStream = attachmentStream
                     alreadyAssignedFirstReference = false
                 }
 
@@ -2309,14 +2307,16 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         tx: tx,
                     )
                     let newOwnerParams = AttachmentReference.ConstructionParams(
-                        owner: reference.owner.forReassignmentWithContentType(newAttachment.contentType.raw),
+                        owner: reference.owner.forReassignmentWithContentType(
+                            newAttachmentStream.contentType.raw,
+                        ),
                         sourceFilename: reference.sourceFilename,
                         sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
                         sourceMediaSizePixels: reference.sourceMediaSizePixels,
                     )
                     attachmentStore.addReference(
                         newOwnerParams,
-                        attachmentRowId: newAttachment.attachment.id,
+                        attachmentRowId: newAttachmentStream.attachment.id,
                         tx: tx,
                     )
                 }
@@ -2325,7 +2325,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // or story message id etc, which is what we use for this.
                     self.touchOwner(reference.owner, tx: tx)
                 }
-                return newAttachment
+                return newAttachmentStream
             }
         }
 
@@ -2408,7 +2408,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         sourceUnencryptedByteCount: pendingThumbnailAttachment.unencryptedByteCount,
                         sourceMediaSizePixels: mediaSizePixels,
                     )
-                    let attachmentParams = Attachment.ConstructionParams.fromStream(
+                    var attachmentRecord = Attachment.Record.forInsertingStream(
                         blurHash: pendingThumbnailAttachment.blurHash,
                         mimeType: pendingThumbnailAttachment.mimeType,
                         encryptionKey: pendingThumbnailAttachment.encryptionKey,
@@ -2418,25 +2418,23 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
 
                     let newAttachment = try self.attachmentStore.insert(
-                        attachmentParams,
+                        &attachmentRecord,
                         reference: referenceParams,
                         tx: tx,
                     )
 
-                    if let mediaName = attachmentParams.mediaName {
-                        self.orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
-                            withMediaName: mediaName,
-                            tx: tx,
-                        )
+                    self.orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
+                        withMediaName: mediaName,
+                        tx: tx,
+                    )
 
-                        backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
-                            newAttachment,
-                            mode: .all,
-                            tx: tx,
-                        )
-                        tx.addSyncCompletion {
-                            NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
-                        }
+                    backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                        newAttachment,
+                        mode: .all,
+                        tx: tx,
+                    )
+                    tx.addSyncCompletion {
+                        NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
                     }
 
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!

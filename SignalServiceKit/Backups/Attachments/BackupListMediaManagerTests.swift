@@ -44,9 +44,7 @@ public class BackupListMediaManagerTests {
         self.listMediaManager = BackupListMediaManagerImpl(
             accountKeyStore: accountKeyStore,
             attachmentStore: attachmentStore,
-            attachmentUploadStore: AttachmentUploadStore(
-                attachmentStore: attachmentStore,
-            ),
+            attachmentUploadStore: AttachmentUploadStore(),
             backupAttachmentDownloadProgress: BackupAttachmentDownloadProgressMock(),
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupAttachmentUploadProgress: BackupAttachmentUploadProgressMock(initialCompleted: 0, total: 100),
@@ -324,21 +322,18 @@ public class BackupListMediaManagerTests {
     ) -> Attachment.IDType {
         let thread = TSThread(uniqueId: UUID().uuidString)
         try! thread.insert(tx.database)
-        let attachmentParams = Attachment.ConstructionParams.mockStream(
-            mediaName: mediaName,
-        )
-        var attachmentRecord = Attachment.Record(params: attachmentParams)
+
+        var attachmentRecord = Attachment.Record.mockStream(mediaName: mediaName)
         try! attachmentRecord.insert(tx.database)
+
         if let mediaTierInfo {
-            let updateParams = Attachment.ConstructionParams.forUpdatingAsUploadedToMediaTier(
-                attachment: try! Attachment(record: attachmentRecord),
-                mediaTierInfo: mediaTierInfo,
-                mediaName: mediaName,
-            )
-            var updateRecord = Attachment.Record(params: updateParams)
-            updateRecord.sqliteId = attachmentRecord.sqliteId
-            try! updateRecord.update(tx.database)
+            let attachment = try! Attachment(record: attachmentRecord)
+            attachment.mediaTierInfo = mediaTierInfo
+
+            attachmentRecord = Attachment.Record(attachment: attachment)
+            try! attachmentRecord.update(tx.database)
         }
+
         // We make all the attachments just thread wallpapers for ease of setup;
         // for list media purposes it doesn't matter if its a message attachment
         // or thread wallpaper attachment.
@@ -353,6 +348,7 @@ public class BackupListMediaManagerTests {
             attachmentRowId: attachmentRecord.sqliteId!,
             tx: tx,
         )
+
         return attachmentRecord.sqliteId!
     }
 }

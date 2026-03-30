@@ -193,7 +193,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             sourceFilename: sourceFilename,
         )
 
-        let attachmentParams = Attachment.ConstructionParams.fromPointer(
+        var attachmentRecord = Attachment.Record.forInsertingPointer(
             blurHash: proto.blurHash,
             mimeType: mimeType,
             encryptionKey: transitTierInfo.encryptionKey,
@@ -227,17 +227,10 @@ public class AttachmentManagerImpl: AttachmentManager {
         )
 
         let attachment = try attachmentStore.insert(
-            attachmentParams,
+            &attachmentRecord,
             reference: referenceParams,
             tx: tx,
         )
-
-        if let mediaName = attachmentParams.mediaName {
-            orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
-                withMediaName: mediaName,
-                tx: tx,
-            )
-        }
 
         switch referenceParams.owner {
         case .message(.sticker(let stickerInfo)):
@@ -345,7 +338,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             incrementalMacInfo = nil
         }
 
-        let attachmentParams: Attachment.ConstructionParams
+        var attachmentRecord: Attachment.Record
         let sourceUnencryptedByteCount: UInt32?
 
         if
@@ -370,15 +363,17 @@ public class AttachmentManagerImpl: AttachmentManager {
                     fallthrough
                 }
                 let mediaTierCdnNumber = proto.locatorInfo.hasMediaTierCdnNumber ? proto.locatorInfo.mediaTierCdnNumber : nil
-                attachmentParams = .fromBackup(
+                attachmentRecord = .forInsertingFromBackup(
                     blurHash: proto.blurHash.nilIfEmpty,
                     mimeType: mimeType,
                     encryptionKey: encryptionKey,
                     latestTransitTierInfo: transitTierInfo,
-                    sha256ContentHash: sha256ContentHash,
-                    mediaName: Attachment.mediaName(
-                        sha256ContentHash: sha256ContentHash,
-                        encryptionKey: encryptionKey,
+                    sha256ContentHashAndMediaName: (
+                        sha256ContentHash,
+                        Attachment.mediaName(
+                            sha256ContentHash: sha256ContentHash,
+                            encryptionKey: encryptionKey,
+                        ),
                     ),
                     mediaTierInfo: .init(
                         cdnNumber: mediaTierCdnNumber,
@@ -399,25 +394,24 @@ public class AttachmentManagerImpl: AttachmentManager {
                 )
             case .encryptedDigest, .none:
                 if let transitTierInfo {
-                    attachmentParams = .fromBackup(
+                    attachmentRecord = .forInsertingFromBackup(
                         blurHash: proto.blurHash.nilIfEmpty,
                         mimeType: mimeType,
                         encryptionKey: encryptionKey,
                         latestTransitTierInfo: transitTierInfo,
-                        sha256ContentHash: nil,
-                        mediaName: nil,
+                        sha256ContentHashAndMediaName: nil,
                         mediaTierInfo: nil,
                         thumbnailMediaTierInfo: nil,
                     )
                 } else {
-                    attachmentParams = .forInvalidBackupAttachment(
+                    attachmentRecord = .forInsertingInvalidBackupAttachment(
                         blurHash: proto.blurHash.nilIfEmpty,
                         mimeType: mimeType,
                     )
                 }
             }
         } else {
-            attachmentParams = .forInvalidBackupAttachment(
+            attachmentRecord = .forInsertingInvalidBackupAttachment(
                 blurHash: proto.blurHash.nilIfEmpty,
                 mimeType: mimeType,
             )
@@ -443,7 +437,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
         do throws(AttachmentInsertError) {
             let attachment = try attachmentStore.insert(
-                attachmentParams,
+                &attachmentRecord,
                 reference: referenceParams,
                 tx: tx,
             )
@@ -466,7 +460,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 )
             }
 
-            if let mediaName = attachmentParams.mediaName {
+            if let mediaName = attachmentRecord.mediaName {
                 orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
                     withMediaName: mediaName,
                     tx: tx,
@@ -641,7 +635,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
                 localRelativeFilePath: pendingAttachment.localRelativeFilePath,
             )
-            let attachmentParams = Attachment.ConstructionParams.fromStream(
+            var attachmentRecord = Attachment.Record.forInsertingStream(
                 blurHash: pendingAttachment.blurHash,
                 mimeType: pendingAttachment.mimeType,
                 encryptionKey: pendingAttachment.encryptionKey,
@@ -682,7 +676,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
                 // Try and insert the new attachment.
                 let newAttachment = try attachmentStore.insert(
-                    attachmentParams,
+                    &attachmentRecord,
                     reference: referenceParams,
                     tx: tx,
                 )
@@ -691,18 +685,17 @@ public class AttachmentManagerImpl: AttachmentManager {
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
                     orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
                 }
-                if let mediaName = attachmentParams.mediaName {
-                    orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
-                        withMediaName: mediaName,
-                        tx: tx,
-                    )
 
-                    backupAttachmentUploadScheduler.enqueueIfNeededWithOwner(
-                        newAttachment,
-                        owner: owner,
-                        tx: tx,
-                    )
-                }
+                orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
+                    withMediaName: mediaName,
+                    tx: tx,
+                )
+
+                backupAttachmentUploadScheduler.enqueueIfNeededWithOwner(
+                    newAttachment,
+                    owner: owner,
+                    tx: tx,
+                )
 
                 return newAttachment.id
             } catch let error {
@@ -715,8 +708,8 @@ public class AttachmentManagerImpl: AttachmentManager {
                         pendingAttachmentEncryptionKey: pendingAttachment.encryptionKey,
                         pendingAttachmentMimeType: pendingAttachment.mimeType,
                         pendingAttachmentOrphanRecordId: hasOrphanRecord ? pendingAttachment.orphanRecordId : nil,
-                        pendingAttachmentLatestTransitTierInfo: attachmentParams.latestTransitTierInfo,
-                        pendingAttachmentOriginalTransitTierInfo: attachmentParams.originalTransitTierInfo,
+                        pendingAttachmentLatestTransitTierInfo: nil,
+                        pendingAttachmentOriginalTransitTierInfo: nil,
                         attachmentStore: attachmentStore,
                         orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                         orphanedAttachmentStore: orphanedAttachmentStore,
@@ -764,7 +757,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             try self.attachmentStore.updateAttachmentAsDownloaded(
                 attachment: attachment,
                 // Not technically true but close enough.
-                from: .mediaTierFullsize,
+                sourceType: .mediaTierFullsize,
                 priority: .backupRestore,
                 validatedMimeType: pendingAttachment.mimeType,
                 streamInfo: streamInfo,
@@ -1061,7 +1054,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
             // Create a new attachment, but add foreign key reference to the original
             // so that when/if we download the original we can update this thumbnail'ed copy.
-            let attachmentParams = Attachment.ConstructionParams.forQuotedReplyThumbnailPointer(
+            var attachmentRecord = Attachment.Record.forQuotedReplyThumbnailPointer(
                 originalAttachment: originalAttachment,
                 thumbnailBlurHash: thumbnailBlurHash,
                 thumbnailMimeType: thumbnailMimeType,
@@ -1080,17 +1073,10 @@ public class AttachmentManagerImpl: AttachmentManager {
             )
 
             let attachment = try attachmentStore.insert(
-                attachmentParams,
+                &attachmentRecord,
                 reference: referenceParams,
                 tx: tx,
             )
-
-            if let mediaName = attachmentParams.mediaName {
-                orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
-                    withMediaName: mediaName,
-                    tx: tx,
-                )
-            }
 
             // If we know we have a stream, enqueue the download at high priority
             // so that copy happens ASAP.

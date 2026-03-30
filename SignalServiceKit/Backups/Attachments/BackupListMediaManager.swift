@@ -841,7 +841,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                 // attachment is un-uploaded.
             }
 
-            attachmentUploadStore.markThumbnailMediaTierUploadExpired(
+            attachmentStore.removeThumbnailMediaTierInfo(
                 attachment: attachment,
                 tx: tx,
             )
@@ -855,16 +855,10 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                 // attachment is un-uploaded.
             }
 
-            attachmentUploadStore.markMediaTierUploadExpired(
+            attachmentStore.removeMediaTierInfo(
                 attachment: attachment,
                 tx: tx,
             )
-        }
-
-        // Refetch the attachment so it reflects the latest updates.
-        guard let attachment = attachmentStore.fetch(id: attachment.id, tx: tx) else {
-            owsFailDebug("How did the attachment get deleted?")
-            return
         }
 
         // If the media tier upload we had was expired, we need to
@@ -1031,7 +1025,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
     ) -> Bool {
         if isThumbnail {
             // Thumbnails are easy; no additional metadata is needed.
-            attachmentUploadStore.markThumbnailUploadedToMediaTier(
+            attachmentStore.saveMediaTierThumbnailInfo(
                 attachment: attachment,
                 thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo(
                     cdnNumber: listedMedia.cdnNumber,
@@ -1069,7 +1063,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
             return false
         }
 
-        attachmentUploadStore.markUploadedToMediaTier(
+        attachmentStore.saveMediaTierInfo(
             attachment: attachment,
             mediaTierInfo: Attachment.MediaTierInfo(
                 cdnNumber: listedMedia.cdnNumber,

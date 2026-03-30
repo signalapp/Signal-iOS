@@ -22,7 +22,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
 
     func testEnqueue() throws {
         // Create an attachment and reference.
-        var attachmentRecord = Attachment.Record(params: .mockPointer())
+        var attachmentRecord = Attachment.Record.mockPointer()
 
         let (threadRowId, messageRowId) = insertThreadAndInteraction()
 
@@ -152,7 +152,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
         ]
         for (isThumbnail, timestamps) in [(true, thumbnailTimestamps), (false, fullsizeTimestamps)] {
             for timestamp in timestamps {
-                var attachmentRecord = Attachment.Record(params: .mockPointer())
+                var attachmentRecord = Attachment.Record.mockPointer()
                 let (threadRowId, messageRowId) = insertThreadAndInteraction()
 
                 try db.write { tx in
@@ -182,7 +182,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
         // Add a bunch of very recent ineligible and done rows
         // that should be skipped in peek.
         for i: UInt64 in 1...10 {
-            var attachmentRecord = Attachment.Record(params: .mockPointer())
+            var attachmentRecord = Attachment.Record.mockPointer()
             let (threadRowId, messageRowId) = insertThreadAndInteraction()
             try db.write { tx in
                 try attachmentRecord.insert(

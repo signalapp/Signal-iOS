@@ -201,7 +201,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
 
         let pendingThumbnails = try await generateThumbnails(candidateAttachments)
 
-        try await db.awaitableWrite { tx in
+        await db.awaitableWrite { tx in
             guard offloadingIsAllowed(tx: tx) else {
                 return
             }
@@ -256,20 +256,19 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                     ),
                     tx: tx,
                 )
-                let params = Attachment.ConstructionParams.forOffloadingFiles(
+
+                attachmentStore.markOffloaded(
                     attachment: attachment,
                     localRelativeFilePathThumbnail: pendingThumbnails[attachment.id]?.reservedRelativeFilePath,
+                    tx: tx,
                 )
-                var newRecord = Attachment.Record(params: params)
-                newRecord.sqliteId = attachment.id
-                try newRecord.update(tx.database)
 
                 // Enqueue a download for the attachment we just offloaded, in the `ineligible` state,
                 // so that if we ever disable offloading again it will redownload.
                 backupAttachmentDownloadStore.enqueue(
                     ReferencedAttachment(
                         reference: mostRecentReference,
-                        attachment: try Attachment(record: newRecord),
+                        attachment: attachment,
                     ),
                     // Only re-enqueue the fullsize attachment for download
                     thumbnail: false,

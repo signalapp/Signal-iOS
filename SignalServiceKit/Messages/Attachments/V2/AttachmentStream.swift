@@ -30,7 +30,7 @@ public class AttachmentStream {
 
     // MARK: - Init
 
-    private init(
+    public init(
         attachment: Attachment,
         info: Attachment.StreamInfo,
     ) {

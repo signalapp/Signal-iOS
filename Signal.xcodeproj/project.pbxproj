@@ -988,7 +988,6 @@
 		663F81D92E78C2740033D2AE /* OrphanedBackupAttachmentScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663F81D82E78C2580033D2AE /* OrphanedBackupAttachmentScheduler.swift */; };
 		663F94082CED62EC002C9063 /* OWSProgressTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663F94072CED62E5002C9063 /* OWSProgressTest.swift */; };
 		6640132A2BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664013292BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift */; };
-		6640132C2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640132B2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift */; };
 		6640132E2BFFDC2700F10FC4 /* AttachmentReference+ConstructionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640132D2BFFDC2700F10FC4 /* AttachmentReference+ConstructionParams.swift */; };
 		664013302C00155E00F10FC4 /* AttachmentStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640132F2C00155E00F10FC4 /* AttachmentStoreTests.swift */; };
 		6640639E294D20A900997E0B /* OutgoingCallEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */; };
@@ -5250,7 +5249,6 @@
 		663F81D82E78C2580033D2AE /* OrphanedBackupAttachmentScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedBackupAttachmentScheduler.swift; sourceTree = "<group>"; };
 		663F94072CED62E5002C9063 /* OWSProgressTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSProgressTest.swift; sourceTree = "<group>"; };
 		664013292BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleOrDoubleTapGestureRecognizer.swift; sourceTree = "<group>"; };
-		6640132B2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Attachment+ConstructionParams.swift"; sourceTree = "<group>"; };
 		6640132D2BFFDC2700F10FC4 /* AttachmentReference+ConstructionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+ConstructionParams.swift"; sourceTree = "<group>"; };
 		6640132F2C00155E00F10FC4 /* AttachmentStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStoreTests.swift; sourceTree = "<group>"; };
 		6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessage.swift; sourceTree = "<group>"; };
@@ -10071,7 +10069,6 @@
 		66144B3B2BFD22EE00E2C9CD /* Records */ = {
 			isa = PBXGroup;
 			children = (
-				6640132B2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift */,
 				66144B3C2BFD22FA00E2C9CD /* AttachmentRecord.swift */,
 				6640132D2BFFDC2700F10FC4 /* AttachmentReference+ConstructionParams.swift */,
 				66144B3E2BFD3AA700E2C9CD /* AttachmentReference+Records.swift */,
@@ -18901,7 +18898,6 @@
 				C1DAA75A2C1742680078AE84 /* ArchivedPaymentStore.swift in Sources */,
 				F9C5CE0A289453B400548EEE /* Array+SSK.swift in Sources */,
 				F9C5CDF7289453B400548EEE /* Atomics.swift in Sources */,
-				6640132C2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift in Sources */,
 				66D7B91D2B97C5330005C98B /* Attachment+ContentType.swift in Sources */,
 				66E1AD762B8FD0B700C56B7B /* Attachment.swift in Sources */,
 				66C38A3A2D4055DC004B6B15 /* AttachmentBackupPointer.swift in Sources */,

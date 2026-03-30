@@ -22,14 +22,14 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
 
     func testDeleteAttachment() async throws {
         // Create an attachment.
-        let attachmentParams = Attachment.ConstructionParams.mockPointer()
+        var attachmentParams = Attachment.Record.mockPointer()
         let referenceParams = AttachmentReference.ConstructionParams.mock(
             owner: .thread(.globalThreadWallpaperImage(creationTimestamp: Date().ows_millisecondsSince1970)),
         )
 
         let attachmentRowId = try db.write { tx in
             try attachmentStore.insert(
-                attachmentParams,
+                &attachmentParams,
                 reference: referenceParams,
                 tx: tx,
             ).id

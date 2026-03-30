@@ -658,13 +658,11 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                         attachment: attachment,
                         tx: tx,
                     )
-                    if attachment.asStream() != nil {
-                        backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
-                            attachment,
-                            mode: .fullsize,
-                            tx: tx,
-                        )
-                    }
+                    backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                        attachment,
+                        mode: .fullsize,
+                        tx: tx,
+                    )
                 }
             } else if !isRetryable {
                 backupAttachmentDownloadStore.remove(
@@ -691,41 +689,25 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                             attachment: attachment,
                             tx: tx,
                         )
-                        if
-                            let refetchedAttachment = attachmentStore.fetch(
-                                id: attachment.id,
-                                tx: tx,
-                            ),
-                            refetchedAttachment.asStream() != nil
-                        {
-                            backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
-                                refetchedAttachment,
-                                mode: .thumbnail,
-                                tx: tx,
-                            )
-                        }
+                        backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                            attachment,
+                            mode: .thumbnail,
+                            tx: tx,
+                        )
                     case .mediaTierFullsize:
                         attachmentStore.removeMediaTierInfo(
                             attachment: attachment,
                             tx: tx,
                         )
-                        if
-                            let refetchedAttachment = attachmentStore.fetch(
-                                id: attachment.id,
-                                tx: tx,
-                            ),
-                            refetchedAttachment.asStream() != nil
-                        {
-                            backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
-                                refetchedAttachment,
-                                mode: .fullsize,
-                                tx: tx,
-                            )
-                        }
+                        backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                            attachment,
+                            mode: .fullsize,
+                            tx: tx,
+                        )
                     case .transitTier(let transitTierInfo):
-                        attachmentUploadStore.markTransitTierUploadExpired(
+                        attachmentStore.removeTransitTierInfo(
+                            transitTierInfo,
                             attachment: attachment,
-                            info: transitTierInfo,
                             tx: tx,
                         )
                     }
