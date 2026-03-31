@@ -415,7 +415,7 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
                     "QUOTED_REPLY_REACTION_TO_STORY_FORMAT_SECOND_PERSON",
                     comment: "Label explaining that the content of a quoted message includes you reacting to someone's story. Embeds {{ %1$@ the story author }}.",
                 )
-                text = String(format: formatText, quotedAuthorName)
+                text = String(format: formatText, quotedAuthorName.string)
             }
 
             return CVLabelConfig.unstyledText(
