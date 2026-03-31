@@ -229,7 +229,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // If there's a notification, queue it up for processing. (This processing
         // may happen immediately, after a short delay, or never.)
         if let remoteNotification = launchOptions?[.remoteNotification] as? [AnyHashable: Any] {
-            Logger.info("Application was launched by tapping a push notification.")
+            Logger.info("launched in response to an APNs push")
             Task {
                 try await processRemoteNotification(remoteNotification)
             }
