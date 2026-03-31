@@ -68,7 +68,7 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
         }
 
         do {
-            try await refreshGroupSendEndorsementsIfNeeded(threadId: groupThread.sqliteRowId!, groupModel: groupModel)
+            try await GroupManager.refreshGroupSendEndorsementsIfNeeded(threadId: groupThread.sqliteRowId!, groupModel: groupModel)
         } catch where !error.isNetworkFailureOrTimeout {
             Logger.warn("Tried and failed to refresh credentials; continuing anyways because credentials aren't required; error: \(error)")
         }
@@ -91,33 +91,6 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
         }
 
         return sendPromises
-    }
-
-    private func refreshGroupSendEndorsementsIfNeeded(
-        threadId: TSGroupThread.RowId,
-        groupModel: TSGroupModelV2,
-    ) async throws {
-        // If we're not a full member, we can't fetch credentials.
-        guard groupModel.groupMembership.isLocalUserFullMember else {
-            return
-        }
-        guard !groupModel.isTerminated else {
-            return
-        }
-
-        let groupSendEndorsementStore = DependenciesBridge.shared.groupSendEndorsementStore
-        let combinedEndorsement = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return try? groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: threadId, tx: tx)
-        }
-        // If we have recent-ish credentials, we don't need to refresh.
-        guard GroupSendEndorsements.willExpireSoon(expirationDate: combinedEndorsement?.expiration) else {
-            return
-        }
-        let secretParams = try groupModel.secretParams()
-        let groupId = try secretParams.getPublicParams().getGroupIdentifier()
-        Logger.info("Refreshing GSEs before leaving \(groupId)")
-        // Otherwise, try to refresh the credentials to use them when leaving.
-        try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(secretParams: secretParams)
     }
 }
 

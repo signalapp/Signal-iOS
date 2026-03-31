@@ -656,10 +656,38 @@ public class GroupManager: NSObject {
 
     // MARK: - Group Terminate
 
-    public static func terminateGroup(groupModel: TSGroupModelV2) async throws {
+    public static func terminateGroup(groupModel: TSGroupModelV2, threadId: Int64) async throws {
+        try await refreshGroupSendEndorsementsIfNeeded(threadId: threadId, groupModel: groupModel)
         try await updateGroupV2(groupModel: groupModel, description: "Terminate group") { groupChangeSet in
             groupChangeSet.setShouldTerminateGroup()
         }
+    }
+
+    static func refreshGroupSendEndorsementsIfNeeded(
+        threadId: TSGroupThread.RowId,
+        groupModel: TSGroupModelV2,
+    ) async throws {
+        // If we're not a full member, we can't fetch credentials.
+        guard groupModel.groupMembership.isLocalUserFullMember else {
+            return
+        }
+        guard !groupModel.isTerminated else {
+            return
+        }
+
+        let groupSendEndorsementStore = DependenciesBridge.shared.groupSendEndorsementStore
+        let combinedEndorsement = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return try? groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: threadId, tx: tx)
+        }
+        // If we have recent-ish credentials, we don't need to refresh.
+        guard GroupSendEndorsements.willExpireSoon(expirationDate: combinedEndorsement?.expiration) else {
+            return
+        }
+        let secretParams = try groupModel.secretParams()
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier()
+        Logger.info("Refreshing GSEs before leaving \(groupId)")
+        // Otherwise, try to refresh the credentials to use them when leaving.
+        try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(secretParams: secretParams)
     }
 
     // MARK: - Removed from Group or Invite Revoked
