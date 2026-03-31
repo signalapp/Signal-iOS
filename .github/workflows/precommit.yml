@@ -1,0 +1,85 @@
+name: precommit
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/precommit.yml'
+      - 'Scripts/lint/lint-license-headers'
+      - 'Scripts/lint/util.py'
+      - 'Scripts/precommit.py'
+      - 'Scripts/sort-Xcode-project-file'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+      - '**/*.m'
+      - '**/*.mm'
+      - '**/*.pbxproj'
+      - '**/*.pch'
+      - '**/*.proto'
+      - '**/*.swift'
+
+# On PRs, "head_ref" is defined and is consistent across updates. On
+# pushes, it's not defined, so we use "run_id", which is unique across
+# every run; as a result, all actions on pushes will run to completion.
+#
+# Reference: https://docs.github.com/en/actions/using-jobs/using-concurrency
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md#xcode
+  DEVELOPER_DIR: /Applications/Xcode_26.3.app
+  # v0.60.1
+  swiftformat-ref: c8e50ff2cfc2eab46246c072a9ae25ab656c6ec3
+
+jobs:
+  precommit:
+    name: precommit
+
+    timeout-minutes: 10
+
+    runs-on: macos-26
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: 'Signal-iOS'
+
+      - name: Fetch base commit
+        working-directory: Signal-iOS
+        run: git fetch origin --depth 1 ${{ github.base_ref }}
+
+      - name: Install dependencies
+        run: brew install clang-format
+
+      - name: Cache SwiftFormat
+        id: cache-swiftformat
+        uses: actions/cache@v5
+        with:
+          path: SwiftFormat/.build
+          key: SwiftFormat-${{ env.swiftformat-ref }}-${{ env.DEVELOPER_DIR }}
+
+      - uses: actions/checkout@v6
+        if: steps.cache-swiftformat.outputs.cache-hit != 'true'
+        with:
+          path: 'SwiftFormat'
+          ref: ${{ env.swiftformat-ref }}
+          repository: 'nicklockwood/SwiftFormat'
+
+      - name: Build SwiftFormat
+        if: steps.cache-swiftformat.outputs.cache-hit != 'true'
+        working-directory: SwiftFormat
+        run: swift build -c release --product swiftformat
+
+      - name: Add binaries to PATH
+        run: echo "$GITHUB_WORKSPACE/SwiftFormat/.build/release" >> "$GITHUB_PATH"
+
+      - name: Run precommit on files changed in the PR
+        working-directory: Signal-iOS
+        run: |
+          Scripts/precommit.py --ref origin/${{ github.base_ref }}
+
+          # https://help.github.com/en/actions/reference/development-tools-for-github-actions#logging-commands
+          git diff --name-only | sed -E 's|(.*)|::error file=\1::Incorrectly formatted (Scripts/precommit.py)|'
+          git diff --exit-code || exit 1

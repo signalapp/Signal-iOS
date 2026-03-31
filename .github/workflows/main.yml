@@ -98,29 +98,3 @@ jobs:
 
       - name: Check for any changes
         run: git diff --exit-code
-
-  precommit:
-    name: Precommit
-
-    timeout-minutes: 5
-
-    runs-on: macos-26
-
-    if: github.event_name == 'pull_request'
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Fetch base commit
-        run: git fetch origin --depth 1 ${{ github.base_ref }}
-
-      - name: Install Dependencies
-        run: brew install clang-format
-
-      - name: Run precommit on files changed in the PR
-        run: |
-          Scripts/precommit.py --ref origin/${{ github.base_ref }}
-
-          # https://help.github.com/en/actions/reference/development-tools-for-github-actions#logging-commands
-          git diff --name-only | sed -E 's|(.*)|::error file=\1::Incorrectly formatted (Scripts/precommit.py)|'
-          git diff --exit-code || exit 1
