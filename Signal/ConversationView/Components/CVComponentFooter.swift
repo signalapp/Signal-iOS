@@ -103,14 +103,12 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         CVComponentViewFooter()
     }
 
-    override public func updateScrollingContent(componentView: CVComponentView) {
-        super.updateScrollingContent(componentView: componentView)
-
+    override public func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
         guard let componentView = componentView as? CVComponentViewFooter else {
             owsFailDebug("Unexpected componentView.")
-            return
+            return nil
         }
-        componentView.chatColorView.updateAppearance()
+        return componentView.wallpaperBlurView
     }
 
     public static let textViewVSpacing: CGFloat = 2
@@ -135,16 +133,28 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         var innerViews = [UIView]()
 
         if isBorderless, conversationStyle.hasWallpaper {
-            let chatColorView = componentView.chatColorView
-            chatColorView.configure(
-                value: conversationStyle.bubbleChatColor(isIncoming: isIncoming),
-                referenceView: componentDelegate.view,
-                bubbleConfig: BubbleConfiguration(
-                    corners: .capsule(),
-                    stroke: conversationStyle.bubbleStroke(isIncoming: isIncoming),
-                ),
-            )
-            innerStack.addSubviewToFillSuperviewEdges(chatColorView)
+            let bubbleView: UIView
+            if conversationStyle.hasWallpaper {
+                let wallpaperBlurView = componentView.ensureWallpaperBlurView()
+                configureWallpaperBlurView(
+                    wallpaperBlurView: wallpaperBlurView,
+                    componentDelegate: componentDelegate,
+                    bubbleConfig: BubbleConfiguration(
+                        corners: .capsule(),
+                        stroke: ConversationStyle.bubbleStroke(isDarkThemeEnabled: isDarkThemeEnabled),
+                    ),
+                )
+                bubbleView = wallpaperBlurView
+            } else {
+                let chatColorView = componentView.chatColorView
+                chatColorView.configure(
+                    value: conversationStyle.bubbleChatColorIncoming,
+                    referenceView: componentDelegate.view,
+                    bubbleConfig: BubbleConfiguration(corners: .capsule()),
+                )
+                bubbleView = chatColorView
+            }
+            innerStack.addSubviewToFillSuperviewEdges(bubbleView)
         }
 
         if let tapForMoreLabelConfig = self.tapForMoreLabelConfig {
@@ -789,8 +799,20 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         fileprivate let statusIndicatorImageView = CVImageView()
         fileprivate let messageTimerView = MessageTimerView()
         fileprivate let smsLockIconView = SmsLockIconView()
-        fileprivate let chatColorView = CVColorOrGradientView()
         fileprivate let pinnedImageView = PinnedMessageIconView()
+
+        // Bubble view when there is no chat wallpaper.
+        fileprivate let chatColorView = CVColorOrGradientView()
+        // Bubble view when there is a chat wallpaper.
+        fileprivate var wallpaperBlurView: CVWallpaperBlurView?
+        fileprivate func ensureWallpaperBlurView() -> CVWallpaperBlurView {
+            if let wallpaperBlurView {
+                return wallpaperBlurView
+            }
+            let wallpaperBlurView = CVWallpaperBlurView()
+            self.wallpaperBlurView = wallpaperBlurView
+            return wallpaperBlurView
+        }
 
         public var isDedicatedCellView = false
 
@@ -824,6 +846,8 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
             chatColorView.reset()
             chatColorView.removeFromSuperview()
+
+            wallpaperBlurView?.removeFromSuperview()
         }
 
         fileprivate func animateSpinningIcon() {

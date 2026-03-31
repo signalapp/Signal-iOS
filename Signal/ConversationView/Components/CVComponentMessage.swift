@@ -466,7 +466,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         componentView.chatColorView.updateAppearance()
 
         // We propagate this event to all subcomponents that use the CVColorOrGradientView.
-        let keys: [CVComponentKey] = [.quotedReply, .footer]
+        let keys: [CVComponentKey] = [.senderName, .footer]
         for key in keys {
             if
                 let subcomponentAndView = findActiveComponentAndView(

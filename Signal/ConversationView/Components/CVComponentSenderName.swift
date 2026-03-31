@@ -33,6 +33,14 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
         CVComponentViewSenderName()
     }
 
+    override public func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
+        guard let componentView = componentView as? CVComponentViewSenderName else {
+            owsFailDebug("Unexpected componentView.")
+            return nil
+        }
+        return componentView.wallpaperBlurView
+    }
+
     private var bodyTextColor: UIColor {
         guard let message = interaction as? TSMessage else {
             return .black
@@ -60,16 +68,28 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
         if isBorderlessWithWallpaper {
             owsAssertDebug(isIncoming)
 
-            let backgroundView = CVColorOrGradientView()
-            backgroundView.configure(
-                value: conversationStyle.bubbleChatColorIncoming,
-                referenceView: componentDelegate.view,
-                bubbleConfig: BubbleConfiguration(
-                    corners: .capsule(),
-                    stroke: conversationStyle.bubbleStroke(isIncoming: isIncoming),
-                ),
-            )
-            innerStack.addSubviewToFillSuperviewEdges(backgroundView)
+            let bubbleView: UIView
+            if conversationStyle.hasWallpaper {
+                let wallpaperBlurView = componentView.ensureWallpaperBlurView()
+                configureWallpaperBlurView(
+                    wallpaperBlurView: wallpaperBlurView,
+                    componentDelegate: componentDelegate,
+                    bubbleConfig: BubbleConfiguration(
+                        corners: .capsule(),
+                        stroke: ConversationStyle.bubbleStroke(isDarkThemeEnabled: isDarkThemeEnabled),
+                    ),
+                )
+                bubbleView = wallpaperBlurView
+            } else {
+                let chatColorView = componentView.chatColorView
+                chatColorView.configure(
+                    value: conversationStyle.bubbleChatColorIncoming,
+                    referenceView: componentDelegate.view,
+                    bubbleConfig: BubbleConfiguration(corners: .capsule()),
+                )
+                bubbleView = chatColorView
+            }
+            innerStack.addSubviewToFillSuperviewEdges(bubbleView)
         }
 
         if let memberLabel = state.memberLabel {
@@ -204,6 +224,19 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
         fileprivate let outerStack = ManualStackView(name: "CVComponentViewSenderName.outerStack")
         fileprivate let innerStack = ManualStackView(name: "CVComponentViewSenderName.innerStack")
 
+        // Bubble view when there is no chat wallpaper.
+        fileprivate let chatColorView = CVColorOrGradientView()
+        // Bubble view when there is a chat wallpaper.
+        fileprivate var wallpaperBlurView: CVWallpaperBlurView?
+        fileprivate func ensureWallpaperBlurView() -> CVWallpaperBlurView {
+            if let wallpaperBlurView {
+                return wallpaperBlurView
+            }
+            let wallpaperBlurView = CVWallpaperBlurView()
+            self.wallpaperBlurView = wallpaperBlurView
+            return wallpaperBlurView
+        }
+
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
@@ -215,6 +248,11 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
         public func reset() {
             outerStack.reset()
             innerStack.reset()
+
+            chatColorView.reset()
+            chatColorView.removeFromSuperview()
+
+            wallpaperBlurView?.removeFromSuperview()
 
             label.text = nil
         }
