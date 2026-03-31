@@ -184,8 +184,6 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
         }
 
         private func _runNextCleanupJob() async {
-            // TODO: [Backups] does the BGProcessingTask count as "isMainApp"? I think yes but
-            // if this doesn't run this is the thing to check.
             guard CurrentAppContext().isMainApp else {
                 // Don't run the cleaner outside the main app.
                 return
