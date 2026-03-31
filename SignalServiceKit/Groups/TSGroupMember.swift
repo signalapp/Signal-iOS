@@ -140,38 +140,11 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
             .filter(Column(CodingKeys.groupThreadId) == groupThread.uniqueId)
             .fetchOne(tx.database)
     }
-
-    public class func enumerateGroupMembers(
-        for address: SignalServiceAddress,
-        transaction: DBReadTransaction,
-        block: @escaping (TSGroupMember, UnsafeMutablePointer<ObjCBool>) -> Void,
-    ) {
-        let sql = """
-            SELECT * FROM \(databaseTableName)
-            WHERE (\(columnName(.serviceId)) = ? OR \(columnName(.serviceId)) IS NULL)
-            AND (\(columnName(.phoneNumber)) = ? OR \(columnName(.phoneNumber)) IS NULL)
-            AND NOT (\(columnName(.serviceId)) IS NULL AND \(columnName(.phoneNumber)) IS NULL)
-        """
-
-        failIfThrows {
-            let cursor = try fetchCursor(
-                transaction.database,
-                sql: sql,
-                arguments: [address.serviceIdUppercaseString, address.phoneNumber],
-            )
-            while let member = try cursor.next() {
-                var stop: ObjCBool = false
-                block(member, &stop)
-                if stop.boolValue { break }
-            }
-        }
-    }
 }
 
 // MARK: -
 
 public extension TSGroupThread {
-    @objc(groupThreadsWithAddress:transaction:)
     class func groupThreads(
         with address: SignalServiceAddress,
         transaction: DBReadTransaction,
