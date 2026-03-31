@@ -92,7 +92,7 @@ class RotationControl: UIControl {
         initializeRuler()
 
         // Current Value Marking
-        currentValueMark.backgroundColor = UIColor.color(rgbHex: 0x62E87A)
+        currentValueMark.backgroundColor = UIColor(rgbHex: 0x62E87A)
         addSubview(currentValueMark)
         currentValueMark.autoSetDimension(.width, toSize: Constants.markingWidth)
         currentValueMark.autoPinEdge(.top, to: .top, of: scrollView)

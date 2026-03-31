@@ -214,7 +214,7 @@ public class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate 
                 icon: .backupErrorDisplayBold,
                 iconSize: 40,
                 tintColor: UIColor.Signal.orange,
-                backgroundColor: UIColor.color(rgbHex: 0xF9E4B6),
+                backgroundColor: UIColor(rgbHex: 0xF9E4B6),
             ),
             title: String(
                 format: OWSLocalizedString(
