@@ -47,7 +47,8 @@ class ArcView: UIView {
 
         let startAngle: CGFloat = -.pi / 2
         let endAngle = 2 * .pi * CGFloat(percentComplete)
-        context.setStrokeColor(UIColor.Signal.ultramarine.cgColor)
+        let color: UIColor = if #available(iOS 26, *) { .Signal.label } else { .Signal.ultramarine }
+        context.setStrokeColor(color.cgColor)
 
         context.addArc(
             center: center,

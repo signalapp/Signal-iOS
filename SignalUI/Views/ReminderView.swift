@@ -9,13 +9,41 @@ open class ReminderView: UIView {
     public enum Style {
         case info
         case warning
-    }
 
-    static func warningBackgroundColor(forceDarkMode: Bool = false) -> UIColor {
-        if forceDarkMode || Theme.isDarkThemeEnabled {
-            return .ows_gray75
-        } else {
-            return UIColor(rgbHex: 0xFCF0D9)
+        var textColor: UIColor {
+            switch self {
+            case .info:
+                UIColor.Signal.label
+            case .warning:
+                UIColor(
+                    light: .Signal.label,
+                    dark: UIColor(rgbHex: 0xC79869),
+                )
+            }
+        }
+
+        public var backgroundColor: UIColor {
+            switch self {
+            case .info:
+                UIColor.Signal.secondaryBackground
+            case .warning:
+                UIColor(
+                    light: UIColor(rgbHex: 0xFBF2E9),
+                    dark: UIColor(rgbHex: 0x26221D),
+                )
+            }
+        }
+
+        var buttonBackgroundColor: UIColor {
+            switch self {
+            case .info:
+                UIColor.Signal.secondaryFill
+            case .warning:
+                UIColor(
+                    light: UIColor(rgbHex: 0xF4DDC7),
+                    dark: UIColor(rgbHex: 0x392D22),
+                )
+            }
         }
     }
 
@@ -29,6 +57,8 @@ open class ReminderView: UIView {
     }
 
     public var tapAction: () -> Void
+
+    private let renderInCell: Bool
 
     @available(*, unavailable, message: "use other constructor instead.")
     public required init(coder: NSCoder) {
@@ -45,10 +75,13 @@ open class ReminderView: UIView {
         text: String,
         actionTitle: String? = nil,
         tapAction: @escaping () -> Void = {},
+        renderInCell: Bool = false,
     ) {
         self.style = style
         self.text = text
         self.tapAction = tapAction
+
+        self.renderInCell = renderInCell
 
         super.init(frame: .zero)
 
@@ -61,6 +94,8 @@ open class ReminderView: UIView {
             object: nil,
         )
 
+        // The action view is meant to look like a button,
+        // but you can actually tap anywhere on the reminder.
         self.addGestureRecognizer(UITapGestureRecognizer(
             target: self,
             action: #selector(handleTap(gestureRecognizer:)),
@@ -81,9 +116,28 @@ open class ReminderView: UIView {
         return result
     }()
 
+    private lazy var actionBackground = {
+        let view = UIView()
+
+        if #available(iOS 26, *) {
+            view.cornerConfiguration = .capsule()
+            view.layoutMargins = .init(hMargin: 16, vMargin: 6)
+        } else {
+            view.layoutMargins = .zero
+        }
+
+        view.addSubview(actionLabel)
+        actionLabel.autoPinEdgesToSuperviewMargins()
+        return view
+    }()
+
     private lazy var actionLabel: UILabel = {
         let result = UILabel()
-        result.font = .dynamicTypeSubheadline.semibold()
+        result.font = if #available(iOS 26, *) {
+            .dynamicTypeSubheadline.medium()
+        } else {
+            .dynamicTypeSubheadline.semibold()
+        }
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         return result
@@ -92,17 +146,28 @@ open class ReminderView: UIView {
     private lazy var textContainer: UIStackView = {
         let result = UIStackView()
         result.axis = .vertical
-        result.spacing = 8
+        result.spacing = if #available(iOS 26, *) { 12 } else { 8 }
         result.alignment = .trailing
         return result
     }()
 
     private func initialRender() {
-        self.layoutMargins = .init(hMargin: 18, vMargin: 12)
+        if renderInCell {
+            self.layoutMargins = .zero
+            backgroundView.layer.cornerRadius = 0
+        } else {
+            self.layoutMargins = .init(hMargin: 18, vMargin: 12)
+            let radius: CGFloat = if #available(iOS 26, *) { 26 } else { 12 }
+            backgroundView.layer.cornerRadius = radius
+        }
+
         self.addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewMargins()
-        backgroundView.layer.cornerRadius = 12
-        backgroundView.layoutMargins = .init(top: 14, leading: 16, bottom: 14, trailing: 16)
+        backgroundView.layoutMargins = if #available(iOS 26, *) {
+            .init(hMargin: 20, vMargin: 16)
+        } else {
+            .init(hMargin: 16, vMargin: 14)
+        }
 
         backgroundView.addSubview(textContainer)
         textContainer.addArrangedSubview(textLabel)
@@ -115,24 +180,25 @@ open class ReminderView: UIView {
     @objc
     private func render() {
         textLabel.text = text
-        textLabel.textColor = Theme.primaryTextColor
-        actionLabel.textColor = Theme.primaryTextColor
+        textLabel.textColor = self.style.textColor
 
-        textContainer.removeArrangedSubview(actionLabel)
+        textContainer.removeArrangedSubview(actionBackground)
         if let actionTitle {
             actionLabel.text = actionTitle
-            textContainer.addArrangedSubview(actionLabel)
-            layoutMargins.bottom = 10
+            actionLabel.textColor = self.style.textColor
+            textContainer.addArrangedSubview(actionBackground)
+            if #available(iOS 26, *) {
+                textContainer.layoutMargins.bottom = 20
+                actionBackground.backgroundColor = self.style.buttonBackgroundColor
+            } else {
+                textContainer.layoutMargins.bottom = 10
+                actionBackground.backgroundColor = .clear
+            }
         } else {
-            layoutMargins.bottom = 14
+            textContainer.layoutMargins.bottom = 14
         }
 
-        switch style {
-        case .warning:
-            backgroundView.backgroundColor = Self.warningBackgroundColor()
-        case .info:
-            backgroundView.backgroundColor = Theme.secondaryBackgroundColor
-        }
+        backgroundView.backgroundColor = self.style.backgroundColor
     }
 
     @objc
