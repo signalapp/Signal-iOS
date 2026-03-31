@@ -1,0 +1,90 @@
+name: protobuf-check
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/protobuf-check.yml'
+      - '**/*.pb.swift'
+      - '**/*.proto'
+      - 'SignalServiceKit/Protos/Generated/**'
+  push:
+    branches:
+      - main
+      - release/*
+    paths:
+      - '.github/workflows/protobuf-check.yml'
+      - '**/*.pb.swift'
+      - '**/*.proto'
+      - 'SignalServiceKit/Protos/Generated/**'
+
+# On PRs, "head_ref" is defined and is consistent across updates. On
+# pushes, it's not defined, so we use "run_id", which is unique across
+# every run; as a result, all actions on pushes will run to completion.
+#
+# Reference: https://docs.github.com/en/actions/using-jobs/using-concurrency
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md#xcode
+  DEVELOPER_DIR: /Applications/Xcode_26.3.app
+  # v1.36.1
+  swift-protobuf-ref: a008af1a102ff3dd6cc3764bb69bf63226d0f5f6
+
+jobs:
+  check-protobuf:
+    name: check protobufs
+
+    timeout-minutes: 10
+
+    runs-on: macos-26
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: 'Signal-iOS'
+
+      - name: Cache protoc
+        id: cache-protoc
+        uses: actions/cache@v5
+        with:
+          path: Swift-Protobuf/.build
+          key: swift-protobuf-${{ env.swift-protobuf-ref }}-${{ env.DEVELOPER_DIR }}
+
+      - uses: actions/checkout@v6
+        if: steps.cache-protoc.outputs.cache-hit != 'true'
+        with:
+          path: 'Swift-Protobuf'
+          ref: ${{ env.swift-protobuf-ref }}
+          repository: 'apple/swift-protobuf'
+          submodules: true
+
+      - name: Build swift-protobuf
+        if: steps.cache-protoc.outputs.cache-hit != 'true'
+        run: |
+          pushd Swift-Protobuf
+          swift build -c release
+          popd
+
+      - name: Add binaries to PATH
+        run: echo "$GITHUB_WORKSPACE/Swift-Protobuf/.build/release" >> "$GITHUB_PATH"
+
+      - name: Check for differences
+        working-directory: Signal-iOS
+        run: |
+          pushd SignalServiceKit/Protos
+          make
+          popd
+          git add .
+          Scripts/precommit.py
+          git add .
+          git diff --cached > ../diff.patch
+          git diff --cached --exit-code
+
+      - name: Upload patch
+        uses: actions/upload-artifact@v6
+        if: failure()
+        with:
+          name: diff.patch
+          path: diff.patch
