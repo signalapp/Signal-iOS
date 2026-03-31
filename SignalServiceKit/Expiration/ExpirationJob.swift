@@ -149,33 +149,37 @@ open class ExpirationJob<ExpiringElement> {
     }
 
     private func runLoop() async {
-        let backgroundTask = OWSBackgroundTask(label: logger.prefix)
-        defer { backgroundTask.end() }
-
         while !Task.isCancelled {
-            let delayValidityToken = state.get().delayValidityToken
-            let nextExpirationDate: Date?
-            do throws(CancellationError) {
-                nextExpirationDate = try await deleteExpiredElements()
-            } catch {
-                break
-            }
+            let nextExpirationDelayTask: Task<Void, Never>
 
-            let nextExpirationDelayTask: Task<Void, Never> = state.update { _state in
-                let now = dateProvider()
-                var nextExpirationDelay = (nextExpirationDate ?? .distantFuture).timeIntervalSince(now)
+            do {
+                let backgroundTask = OWSBackgroundTask(label: logger.prefix)
+                defer { backgroundTask.end() }
 
-                if _state.delayValidityToken != delayValidityToken {
-                    // If the token has changed, we can't trust the delay we
-                    // just computed. Use a minimum delay instead.
-                    nextExpirationDelay = 0
+                let delayValidityToken = state.get().delayValidityToken
+                let nextExpirationDate: Date?
+                do throws(CancellationError) {
+                    nextExpirationDate = try await deleteExpiredElements()
+                } catch {
+                    break
                 }
 
-                let nextExpirationDelayTask = Task {
-                    _ = try? await Task.sleep(nanoseconds: nextExpirationDelay.clampedNanoseconds)
+                nextExpirationDelayTask = state.update { _state in
+                    let now = dateProvider()
+                    var nextExpirationDelay = (nextExpirationDate ?? .distantFuture).timeIntervalSince(now)
+
+                    if _state.delayValidityToken != delayValidityToken {
+                        // If the token has changed, we can't trust the delay we
+                        // just computed. Use a minimum delay instead.
+                        nextExpirationDelay = 0
+                    }
+
+                    let nextExpirationDelayTask = Task {
+                        _ = try? await Task.sleep(nanoseconds: nextExpirationDelay.clampedNanoseconds)
+                    }
+                    _state.nextExpirationDelayTask = nextExpirationDelayTask
+                    return nextExpirationDelayTask
                 }
-                _state.nextExpirationDelayTask = nextExpirationDelayTask
-                return nextExpirationDelayTask
             }
 
             await withTaskGroup { taskGroup in
