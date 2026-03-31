@@ -222,6 +222,8 @@ class ToastView: UIView {
         stackView = UIStackView(arrangedSubviews: [label])
         super.init(frame: frame)
 
+        addSubview(backgroundView)
+
         // iOS 26.0 through 26.2 have a bug where the glass effect tint color
         // would not be present during animations. This was fixed in 26.3.
         if #available(iOS 26.3, *) {
@@ -232,20 +234,22 @@ class ToastView: UIView {
             backgroundView.contentView.layoutMargins = .init(hMargin: 20, vMargin: 14)
             backgroundView.cornerConfiguration = .capsule(maximumRadius: 26)
 
+            backgroundView.autoPinHeightToSuperview()
+            backgroundView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
+            backgroundView.autoHCenterInSuperview()
+
             label.font = .dynamicTypeBody
         } else {
             backgroundView.effect = UIBlurEffect(style: .dark)
             backgroundView.contentView.layoutMargins = .init(margin: 12)
+
+            backgroundView.autoPinEdgesToSuperviewEdges()
 
             self.layer.cornerRadius = 12
             self.clipsToBounds = true
 
             label.font = UIFont.dynamicTypeSubheadline
         }
-        addSubview(backgroundView)
-        backgroundView.autoPinHeightToSuperview()
-        backgroundView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
-        backgroundView.autoHCenterInSuperview()
 
         if #unavailable(iOS 26.3) {
             let darkThemeBackgroundOverlay = UIView()
