@@ -17,6 +17,11 @@ on:
       - '**/*.pch'
       - '**/*.proto'
       - '**/*.swift'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/precommit.yml'
 
 # On PRs, "head_ref" is defined and is consistent across updates. On
 # pushes, it's not defined, so we use "run_id", which is unique across
