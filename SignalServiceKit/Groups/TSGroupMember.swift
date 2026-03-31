@@ -214,7 +214,7 @@ public extension TSGroupThread {
     class func enumerateGroupThreads(
         with address: SignalServiceAddress,
         transaction: DBReadTransaction,
-        block: (TSGroupThread, UnsafeMutablePointer<ObjCBool>) -> Void,
+        block: (TSGroupThread, inout Bool) -> Void,
     ) {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId)) FROM \(TSGroupMember.databaseTableName)
@@ -240,9 +240,9 @@ public extension TSGroupThread {
                 owsFailDebug("Missing group thread")
                 continue
             }
-            var stop: ObjCBool = false
+            var stop = false
             block(groupThread, &stop)
-            if stop.boolValue { return }
+            if stop { return }
         }
     }
 

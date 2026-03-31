@@ -261,7 +261,7 @@ public class StoryManager {
             }
 
             if unviewedDownloadedStoriesForContext >= perContextAutomaticDownloadLimit {
-                stop.pointee = true
+                stop = true
             }
         }
 

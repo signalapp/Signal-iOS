@@ -163,7 +163,7 @@ public enum ReportSpamUIUtils {
                         }
                     }
                     guard guidsToReport.count < maxMessagesToReport else {
-                        stop.pointee = true
+                        stop = true
                         return
                     }
                 }

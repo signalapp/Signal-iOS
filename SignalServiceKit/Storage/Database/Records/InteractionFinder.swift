@@ -909,7 +909,7 @@ public class InteractionFinder: NSObject {
 
     public func enumerateRecentGroupUpdateMessages(
         transaction: DBReadTransaction,
-        block: (TSInfoMessage, UnsafeMutablePointer<ObjCBool>) -> Void,
+        block: (TSInfoMessage, inout Bool) -> Void,
     ) throws {
         let sql = """
         SELECT *
@@ -929,9 +929,9 @@ public class InteractionFinder: NSObject {
 
         while let interaction = try cursor.next() {
             guard let infoMessage = interaction as? TSInfoMessage else { return }
-            var stop: ObjCBool = false
+            var stop = false
             block(infoMessage, &stop)
-            if stop.boolValue {
+            if stop {
                 return
             }
         }

@@ -83,7 +83,7 @@ public class StoryFinder {
         }
     }
 
-    public static func enumerateOutgoingStories(transaction: DBReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateOutgoingStories(transaction: DBReadTransaction, block: (StoryMessage, inout Bool) -> Void) {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
@@ -94,9 +94,9 @@ public class StoryFinder {
         do {
             let cursor = try StoryMessage.fetchCursor(transaction.database, sql: sql)
             while let message = try cursor.next() {
-                var stop: ObjCBool = false
+                var stop = false
                 block(message, &stop)
-                if stop.boolValue {
+                if stop {
                     return
                 }
             }
@@ -107,7 +107,7 @@ public class StoryFinder {
 
     public static func enumerateUnreadIncomingStories(
         transaction: DBReadTransaction,
-        block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void,
+        block: (StoryMessage, inout Bool) -> Void,
     ) {
         let sql = """
             SELECT *
@@ -119,9 +119,9 @@ public class StoryFinder {
         do {
             let cursor = try StoryMessage.fetchCursor(transaction.database, sql: sql)
             while let message = try cursor.next() {
-                var stop: ObjCBool = false
+                var stop = false
                 block(message, &stop)
-                if stop.boolValue {
+                if stop {
                     return
                 }
             }
@@ -190,7 +190,7 @@ public class StoryFinder {
         }
     }
 
-    public static func enumerateStoriesForContext(_ context: StoryContext, transaction: DBReadTransaction, block: (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateStoriesForContext(_ context: StoryContext, transaction: DBReadTransaction, block: (StoryMessage, inout Bool) -> Void) {
 
         guard let contextQuery = context.query else { return }
 
@@ -204,9 +204,9 @@ public class StoryFinder {
         do {
             let cursor = try StoryMessage.fetchCursor(transaction.database, sql: sql)
             while let message = try cursor.next() {
-                var stop: ObjCBool = false
+                var stop = false
                 block(message, &stop)
-                if stop.boolValue {
+                if stop {
                     return
                 }
             }
@@ -218,7 +218,7 @@ public class StoryFinder {
     public static func enumerateStories(
         fromSender senderAci: Aci,
         tx: DBReadTransaction,
-        block: (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void,
+        block: (StoryMessage, inout Bool) -> Void,
     ) {
         let sql = """
             SELECT *
@@ -229,9 +229,9 @@ public class StoryFinder {
         do {
             let cursor = try StoryMessage.fetchCursor(tx.database, sql: sql, arguments: [senderAci.rawUUID.uuidString])
             while let message = try cursor.next() {
-                var stop: ObjCBool = false
+                var stop = false
                 block(message, &stop)
-                if stop.boolValue {
+                if stop {
                     return
                 }
             }
@@ -240,7 +240,7 @@ public class StoryFinder {
         }
     }
 
-    public static func enumerateUnviewedIncomingStoriesForContext(_ context: StoryContext, transaction: DBReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateUnviewedIncomingStoriesForContext(_ context: StoryContext, transaction: DBReadTransaction, block: (StoryMessage, inout Bool) -> Void) {
 
         guard let contextQuery = context.query else { return }
 
@@ -256,9 +256,9 @@ public class StoryFinder {
         do {
             let cursor = try StoryMessage.fetchCursor(transaction.database, sql: sql)
             while let message = try cursor.next() {
-                var stop: ObjCBool = false
+                var stop = false
                 block(message, &stop)
-                if stop.boolValue {
+                if stop {
                     return
                 }
             }
@@ -302,7 +302,7 @@ public class StoryFinder {
         }
     }
 
-    public static func enumerateSendingStories(transaction: DBReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateSendingStories(transaction: DBReadTransaction, block: (StoryMessage, inout Bool) -> Void) {
 
         let sql = """
             SELECT *
@@ -319,9 +319,9 @@ public class StoryFinder {
         do {
             let cursor = try StoryMessage.fetchCursor(transaction.database, sql: sql)
             while let message = try cursor.next() {
-                var stop: ObjCBool = false
+                var stop = false
                 block(message, &stop)
-                if stop.boolValue {
+                if stop {
                     return
                 }
             }

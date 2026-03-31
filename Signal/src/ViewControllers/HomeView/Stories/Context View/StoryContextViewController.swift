@@ -330,7 +330,7 @@ class StoryContextViewController: OWSViewController {
                 if self.delegate?.storyContextViewControllerShouldOnlyRenderMyStories(self) == true, !message.authorAddress.isLocalAddress { return }
                 guard let storyItem = self.buildStoryItem(for: message, transaction: transaction) else { return }
                 storyItems.append(storyItem)
-                if storyItems.count >= Self.maxItemsToRender { stop.pointee = true }
+                if storyItems.count >= Self.maxItemsToRender { stop = true }
             }
 
             DispatchQueue.main.async {
@@ -731,7 +731,7 @@ class StoryContextViewController: OWSViewController {
                         if self.delegate?.storyContextViewControllerShouldOnlyRenderMyStories(self) == true, !message.authorAddress.isLocalAddress { return }
                         guard let storyItem = self.buildStoryItem(for: message, transaction: transaction) else { return }
                         subsequentItems.append(storyItem)
-                        if subsequentItems.count >= Self.subsequentItemsToLoad { stop.pointee = true }
+                        if subsequentItems.count >= Self.subsequentItemsToLoad { stop = true }
                     }
                 }
 
