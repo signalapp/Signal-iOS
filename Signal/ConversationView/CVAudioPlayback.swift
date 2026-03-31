@@ -209,12 +209,12 @@ public class CVAudioPlayer: NSObject {
 
     public func setPlaybackProgress(
         progress: TimeInterval,
-        forAttachmentStream attachmentStream: AttachmentStream,
+        forAttachment attachment: Attachment,
     ) {
         AssertIsOnMainThread()
 
-        progressCache[attachmentStream.id] = progress
-        if let audioPlayback, audioPlayback.attachmentId == attachmentStream.id {
+        progressCache[attachment.id] = progress
+        if let audioPlayback, audioPlayback.attachmentId == attachment.id {
             audioPlayback.setProgress(progress)
         }
     }
