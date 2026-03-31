@@ -699,17 +699,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d Former Members</string>
+			<string>%1$d أعضاء سابقين</string>
 			<key>one</key>
-			<string>%1$d Former Member</string>
+			<string>%1$d عضو سابق</string>
 			<key>two</key>
-			<string>%1$d Former Members</string>
+			<string>%1$d عضوان سابقان</string>
 			<key>few</key>
-			<string>%1$d Former Members</string>
+			<string>%1$d أعضاء سابقين</string>
 			<key>many</key>
-			<string>%1$d Former Members</string>
+			<string>%1$d عضوًا سابقًا</string>
 			<key>other</key>
-			<string>%1$d Former Members</string>
+			<string>%1$d عضو سابق</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>

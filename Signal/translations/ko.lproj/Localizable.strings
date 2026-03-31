@@ -2309,7 +2309,7 @@
 "CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "모든 미디어";
 
 /* Label for 'archive chat' action in conversation settings view. */
-"CONVERSATION_SETTINGS_ARCHIVE_CHAT" = "Archive Chat";
+"CONVERSATION_SETTINGS_ARCHIVE_CHAT" = "대화 보관";
 
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "그룹 이름, 사진, 설명, 자동 삭제 메시지 시간, 고정 메시지를 수정할 수 있는 사람을 선택하세요.";
@@ -2345,7 +2345,7 @@
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "발신 음성 통화";
 
 /* Label for 'delete chat' action in conversation settings view. */
-"CONVERSATION_SETTINGS_DELETE_CHAT" = "Delete Chat";
+"CONVERSATION_SETTINGS_DELETE_CHAT" = "대화 삭제";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "그룹 정보 수정";
@@ -2489,7 +2489,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "관리자";
 
 /* Label for 'unarchive chat' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNARCHIVE_CHAT" = "Unarchive Chat";
+"CONVERSATION_SETTINGS_UNARCHIVE_CHAT" = "대화 보관 해제";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "그룹 차단 해제";
@@ -3434,28 +3434,28 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "통화 실패";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group was ended.";
+"END_GROUP_BANNER_LABEL" = "활동이 종료된 그룹입니다.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group was ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "그룹이 종료되어 메시지를 보낼 수 없습니다.";
 
 /* End group confirmation description */
-"END_GROUP_DESCRIPTION" = "Members will no longer be able to send messages or start calls in the group. They will be notified that you ended the group, and will still have access to message history.";
+"END_GROUP_DESCRIPTION" = "그룹이 종료되면 멤버들이 더 이상 그룹에서 메시지를 보내거나 통화를 시작할 수 없습니다. 멤버에게 그룹이 종료되었다는 알림이 전송되며, 그룹이 종료되어도 멤버는 메시지 기록을 확인할 수 있습니다.";
 
 /* Description for final confirmation screen when user tries to end a group */
-"END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "This will end the group permanently. Are you sure you want to proceed?";
+"END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "계속 진행하면 그룹이 영구 종료됩니다. 계속하시겠어요?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Ending the group failed. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "그룹을 종료하지 못했습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* Description for error sheet that says the user can no longer invite friends or add members to a group. */
-"END_GROUP_INVITE_ERROR" = "You can no longer invite friends or add members to this group.";
+"END_GROUP_INVITE_ERROR" = "더 이상 이 그룹에 친구를 초대하거나 멤버를 추가할 수 없습니다.";
 
 /* Label in conversation settings to end a group */
-"END_GROUP_LABEL" = "End Group";
+"END_GROUP_LABEL" = "그룹 종료";
 
 /* End group confirmation title for a specific group. Embeds {{ group name }} */
-"END_GROUP_LABEL_SPECIFIC" = "End “%1$@”?";
+"END_GROUP_LABEL_SPECIFIC" = "'%1$@' 그룹을 종료할까요?";
 
 /* Label explaining that an entered 'Recovery Key' is incorrect. */
 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "잘못된 복구 키";
@@ -3683,7 +3683,7 @@
 "GET_STARTED_CARD_CHAT_COLOR" = "대화창 색";
 
 /* Accessibility label for the close button in each Get Started card. */
-"GET_STARTED_CARD_CLOSE_A11YLABEL" = "Remove suggestion";
+"GET_STARTED_CARD_CLOSE_A11YLABEL" = "추천 항목 없애기";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "친구 초대";
@@ -3785,7 +3785,7 @@
 "GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "프로필 상세 정보";
 
 /* Context menu action to remove a call participant from the call. */
-"GROUP_CALL_CONTEXT_MENU_REMOVE_FROM_CALL" = "Remove from Call";
+"GROUP_CALL_CONTEXT_MENU_REMOVE_FROM_CALL" = "통화에서 내보내기";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "통화 계속하기";
@@ -3824,7 +3824,7 @@
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "통화 참여 중";
 
 /* Subtitle for a row representing a call member, when that member is presenting. */
-"GROUP_CALL_MEMBER_LIST_PRESENTING_SUBTITLE" = "Presenting";
+"GROUP_CALL_MEMBER_LIST_PRESENTING_SUBTITLE" = "화면 공유 중";
 
 /* Title for the section of the group call member list which displays the list of members with their hand raised. */
 "GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "손 든 사람";
@@ -3872,7 +3872,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%1$@ 님이 통화 중입니다.";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%1$@ 님이 발표 중입니다.";
+"GROUP_CALL_PRESENTING_FORMAT" = "%1$@ 님이 화면 공유 중입니다";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "다시 연결 중…";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "그룹에 참가할 수 없음";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Join by link failed, group has ended";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "그룹이 종료되어 링크로 참가할 수 없습니다.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "그룹 링크가 더 이상 유효하지 않습니다.";
@@ -4382,13 +4382,13 @@
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "이 스토리를 볼 수 있는 사람";
 
 /* Message indicating that the group was terminated by the local user. */
-"GROUP_TERMINATED_BY_LOCAL_USER" = "You ended the group";
+"GROUP_TERMINATED_BY_LOCAL_USER" = "그룹을 종료했습니다";
 
 /* Message indicating that the group was terminated by a remote user. Embeds {{ user who terminated the group }}. */
-"GROUP_TERMINATED_BY_OTHER_USER" = "%1$@ ended the group";
+"GROUP_TERMINATED_BY_OTHER_USER" = "%1$@ 님이 그룹을 종료했습니다";
 
 /* Message indicating that the group was terminated by an unknown user. */
-"GROUP_TERMINATED_BY_UNKNOWN_USER" = "The group was ended";
+"GROUP_TERMINATED_BY_UNKNOWN_USER" = "활동이 종료된 그룹입니다";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "그룹 업데이트됨.";
@@ -6602,7 +6602,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "'%1$@' 님에게 보낸 그룹 초대를 취소할까요?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "다른 그룹 멤버들이 초대한 사람들의 세부정보는 표시되지 않습니다. 초대된 사람이 그룹에 참가한다면 해당인의 정보가 그룹에 즉시 공유됩니다. 초대된 사람은 참가할 때까지 그룹 내 메시지를 볼 수 없습니다.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "다른 그룹 멤버가 초대한 사람의 상세 정보는 표시되지 않습니다. 초대된 사람이 그룹 참가를 선택하면 그때 정보가 그룹에 공유됩니다. 초대된 사람은 참가할 때까지 그룹 내 메시지를 볼 수 없습니다.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "그룹 링크로 \"%1$@\"에 참가하려는 사람들의 목록입니다.";
@@ -7856,13 +7856,13 @@
 "SAFETY_TIPS_BUTTON_ACTION_TITLE" = "안전 팁";
 
 /* Message contents for the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_BODY" = "모르는 사람이 암호화폐(예: 비트코인) 또는 금융 기회에 관해 메시지 할 경우 조심하세요. 사기일 가능성이 높습니다.";
+"SAFETY_TIPS_CRYPTO_BODY" = "모르는 사람으로부터 암호화폐(비트코인 등)나 금융 투자 제안 메시지를 받으셨다면 스팸일 가능성이 높으니 각별히 주의하시기 바랍니다.";
 
 /* Message title describing the crypto safety tip. */
 "SAFETY_TIPS_CRYPTO_TITLE" = "암호화폐 또는 금융 사기";
 
 /* Message contents for the safety tip concerning fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "비즈니스 또는 정부 기관에서 오는 연락을 조심하세요. 국세청, 배송 업체 등과 관련된 메시지는 스팸일 수 있습니다.";
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "기업이나 정부 기관을 사칭한 연락에 주의하세요. 국세청 등의 공공기관이나 배송 업체와 관련된 메시지는 스팸일 가능성이 높습니다.";
 
 /* Message title describing the safety tip about unknown or fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "가짜 비즈니스 또는 기관";
@@ -7883,7 +7883,7 @@
 "SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "모르는 상대의 메시지 요청을 수락할 때는 주의가 필요합니다. 특히 다음 사항에 유의하세요.";
 
 /* Message contents for the unknown links in messages safety tip. */
-"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "모르는 사람이 보내는 링크나 웹사이트가 있는 메시지를 조심하세요. 신뢰할 수 없는 사람이 보내는 링크를 절대 방문하지 마세요.";
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "모르는 사람이 보낸 웹사이트 링크가 포함된 메시지에 주의하세요. 신뢰할 수 없는 출처의 링크는 절대 클릭하지 마시기 바랍니다.";
 
 /* Message title describing the safety tip about unknown links in messages. */
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "링크가 있는 메시지";
@@ -8318,7 +8318,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "계정 삭제";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "이체하지 마세요";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "이체하지 않기";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "잔액이 %1$@입니다. 계정을 삭제하기 전에 다른 지갑 주소로 자금을 이체하지 않으면 영원히 잃게 됩니다.";

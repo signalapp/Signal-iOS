@@ -2309,7 +2309,7 @@
 "CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "सर्व मिडिया";
 
 /* Label for 'archive chat' action in conversation settings view. */
-"CONVERSATION_SETTINGS_ARCHIVE_CHAT" = "Archive Chat";
+"CONVERSATION_SETTINGS_ARCHIVE_CHAT" = "चॅट आर्काईव्ह करा";
 
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "गटाचे नाव, फोटो, वर्णन, लुप्त होणाऱ्या संदेशाचा टायमर, आणि पिन केलेले संदेश कोण संपादित करू शकते ते निवडा.";
@@ -2345,7 +2345,7 @@
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "बाहेर जाणारा व्हाईस कॉल";
 
 /* Label for 'delete chat' action in conversation settings view. */
-"CONVERSATION_SETTINGS_DELETE_CHAT" = "Delete Chat";
+"CONVERSATION_SETTINGS_DELETE_CHAT" = "चॅट हटवा";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "गट माहिती संपादित करा";
@@ -2489,7 +2489,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "फक्त प्रशासक";
 
 /* Label for 'unarchive chat' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNARCHIVE_CHAT" = "Unarchive Chat";
+"CONVERSATION_SETTINGS_UNARCHIVE_CHAT" = "चॅट अनआर्काईव्ह करा";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "गट अनावरोधित करा";
@@ -3434,28 +3434,28 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "कॉल अयशस्वी झाला";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group was ended.";
+"END_GROUP_BANNER_LABEL" = "हा गट बंद झाला आहे.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group was ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "तुम्ही संदेश पाठवू शकत नाही कारण हा गट बंद झाला आहे.";
 
 /* End group confirmation description */
-"END_GROUP_DESCRIPTION" = "Members will no longer be able to send messages or start calls in the group. They will be notified that you ended the group, and will still have access to message history.";
+"END_GROUP_DESCRIPTION" = "सदस्यांना या गटामध्ये आता संदेश पाठवता किंवा कॉल लावता येणार नाहीत. त्यांना सूचना मिळेल की तुम्ही गट बंद केलात, आणि त्यांच्याकडे संदेश इतिहास उपलब्ध राहील.";
 
 /* Description for final confirmation screen when user tries to end a group */
-"END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "This will end the group permanently. Are you sure you want to proceed?";
+"END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "यामुळे गट कायमस्वरूपी बंद होईल. तुम्हाला नक्की हे करायचे आहे का?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Ending the group failed. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "गट बंद करता आला नाही. तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Description for error sheet that says the user can no longer invite friends or add members to a group. */
-"END_GROUP_INVITE_ERROR" = "You can no longer invite friends or add members to this group.";
+"END_GROUP_INVITE_ERROR" = "तुम्ही आता या गटामध्ये मित्रांना बोलवू शकत नाही किंवा सदस्य समाविष्ट करू शकत नाही.";
 
 /* Label in conversation settings to end a group */
-"END_GROUP_LABEL" = "End Group";
+"END_GROUP_LABEL" = "गट बंद करा";
 
 /* End group confirmation title for a specific group. Embeds {{ group name }} */
-"END_GROUP_LABEL_SPECIFIC" = "End “%1$@”?";
+"END_GROUP_LABEL_SPECIFIC" = "\"%1$@\" बंद करायचा?";
 
 /* Label explaining that an entered 'Recovery Key' is incorrect. */
 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "चुकीची रीकव्हरी की";
@@ -3683,7 +3683,7 @@
 "GET_STARTED_CARD_CHAT_COLOR" = "चॅट रंग";
 
 /* Accessibility label for the close button in each Get Started card. */
-"GET_STARTED_CARD_CLOSE_A11YLABEL" = "Remove suggestion";
+"GET_STARTED_CARD_CLOSE_A11YLABEL" = "सूचना हटवा";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "मित्रांना आमंत्रित करा";
@@ -3785,7 +3785,7 @@
 "GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "प्रोफाईल तपशील";
 
 /* Context menu action to remove a call participant from the call. */
-"GROUP_CALL_CONTEXT_MENU_REMOVE_FROM_CALL" = "Remove from Call";
+"GROUP_CALL_CONTEXT_MENU_REMOVE_FROM_CALL" = "कॉलमधून हटवा";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "कॉल सुरू ठेवा";
@@ -3824,7 +3824,7 @@
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "कॉल मध्ये";
 
 /* Subtitle for a row representing a call member, when that member is presenting. */
-"GROUP_CALL_MEMBER_LIST_PRESENTING_SUBTITLE" = "Presenting";
+"GROUP_CALL_MEMBER_LIST_PRESENTING_SUBTITLE" = "सादर करत आहे";
 
 /* Title for the section of the group call member list which displays the list of members with their hand raised. */
 "GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "हात वर केले";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "गटात सामील होऊ शकत नाही";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Join by link failed, group has ended";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "लिंकमार्फत सामील होण्यास अपयश आले, गट बंद झाला आहे";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ही गट लिंक आता वैध नाही.";
@@ -4382,13 +4382,13 @@
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "ही स्टोरी कोण पाहू शकते";
 
 /* Message indicating that the group was terminated by the local user. */
-"GROUP_TERMINATED_BY_LOCAL_USER" = "You ended the group";
+"GROUP_TERMINATED_BY_LOCAL_USER" = "तुम्ही गट बंद केलात";
 
 /* Message indicating that the group was terminated by a remote user. Embeds {{ user who terminated the group }}. */
-"GROUP_TERMINATED_BY_OTHER_USER" = "%1$@ ended the group";
+"GROUP_TERMINATED_BY_OTHER_USER" = "%1$@ यांनी गट बंद केला";
 
 /* Message indicating that the group was terminated by an unknown user. */
-"GROUP_TERMINATED_BY_UNKNOWN_USER" = "The group was ended";
+"GROUP_TERMINATED_BY_UNKNOWN_USER" = "हा गट बंद करण्यात आला आहे";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "गट अद्यतनित.";

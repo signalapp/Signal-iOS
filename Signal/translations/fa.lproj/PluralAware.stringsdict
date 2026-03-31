@@ -467,9 +467,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Former Member</string>
+			<string>‏%1$d عضو قبلی</string>
 			<key>other</key>
-			<string>%1$d Former Members</string>
+			<string>‏%1$d عضو قبلی</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
