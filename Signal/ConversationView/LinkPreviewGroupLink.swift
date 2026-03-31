@@ -111,7 +111,7 @@ class LinkPreviewGroupLink: LinkPreviewState {
             "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR",
             comment: "Indicator for group conversations in the 'group invite link' action sheet.",
         )
-        let memberCount = GroupViewUtils.formatGroupMembersLabel(memberCount: Int(groupInviteLinkPreview.memberCount))
+        let memberCount = GroupViewUtils.formatGroupMembersLabel(memberCount: Int(groupInviteLinkPreview.memberCount), isTerminated: false)
         return groupIndicator + " | " + memberCount
     }
 

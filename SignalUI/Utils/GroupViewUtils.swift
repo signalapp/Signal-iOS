@@ -10,12 +10,21 @@ import UIKit
 
 public class GroupViewUtils {
 
-    public static func formatGroupMembersLabel(memberCount: Int) -> String {
-        let format = OWSLocalizedString(
-            "GROUP_MEMBER_COUNT_LABEL_%d",
-            tableName: "PluralAware",
-            comment: "The 'group member count' indicator when there are no members in the group.",
-        )
+    public static func formatGroupMembersLabel(memberCount: Int, isTerminated: Bool) -> String {
+        let format: String
+        if isTerminated {
+            format = OWSLocalizedString(
+                "CONVERSATION_SETTINGS_FORMER_MEMBERS_SECTION_TITLE_%d",
+                tableName: "PluralAware",
+                comment: "Format for the section title of the 'members' section in conversation settings view after a group has been terminated. Embeds: {{ the number of former group members }}.",
+            )
+        } else {
+            format = OWSLocalizedString(
+                "GROUP_MEMBER_COUNT_LABEL_%d",
+                tableName: "PluralAware",
+                comment: "The 'group member count' indicator when there are no members in the group.",
+            )
+        }
         return String.localizedStringWithFormat(format, memberCount)
     }
 

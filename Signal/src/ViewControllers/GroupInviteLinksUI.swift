@@ -357,6 +357,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
             groupNameLabel.text = groupName
             groupSubtitleLabel.text = GroupViewUtils.formatGroupMembersLabel(
                 memberCount: Int(groupInviteLinkPreview.memberCount),
+                isTerminated: false,
             )
             if let descriptionText = groupInviteLinkPreview.descriptionText?.filterForDisplay.nilIfEmpty {
                 groupDescriptionPreview.descriptionText = descriptionText

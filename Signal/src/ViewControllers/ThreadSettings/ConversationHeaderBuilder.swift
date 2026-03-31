@@ -114,7 +114,7 @@ struct ConversationHeaderBuilder {
 
         if !isShowingGroupDescription, !groupThread.groupModel.isPlaceholder {
             let memberCount = groupThread.groupModel.groupMembership.fullMembers.count
-            var groupMembersText = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
+            var groupMembersText = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount, isTerminated: groupThread.isTerminatedGroup)
             if groupThread.isGroupV1Thread {
                 groupMembersText.append(" ")
                 groupMembersText.append("•")

@@ -61,7 +61,7 @@ public class GroupTableViewCell: UITableViewCell {
         }
 
         let groupMembersCount = thread.groupModel.groupMembership.fullMembers.count
-        self.subtitleLabel.text = customSubtitle ?? GroupViewUtils.formatGroupMembersLabel(memberCount: groupMembersCount)
+        self.subtitleLabel.text = customSubtitle ?? GroupViewUtils.formatGroupMembersLabel(memberCount: groupMembersCount, isTerminated: false)
 
         self.avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .thread(thread)
