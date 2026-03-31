@@ -255,6 +255,17 @@ class WindowManager {
         screenBlockingWindow.windowLevel = ._background
     }
 
+    // MARK: - System PiP
+
+    /// The system Picture-in-Picture controller for video calls.
+    /// Created when a call starts, torn down when it ends.
+    private(set) var callPiPController: CallPictureInPictureController?
+
+    /// Whether system-level PiP (not the in-app PiP) is currently active.
+    var isSystemPiPActive: Bool {
+        return callPiPController?.isPictureInPictureActive ?? false
+    }
+
     // MARK: Calls
 
     var shouldShowCallView: Bool = false
@@ -279,6 +290,19 @@ class WindowManager {
 
         shouldShowCallView = true
 
+        // Set up system PiP controller for video calls.
+        let pipController = CallPictureInPictureController()
+        pipController.onRestoreUserInterface = { [weak self] in
+            self?.returnToCallView()
+        }
+        pipController.onPictureInPictureDidStop = {
+            MainActor.assumeIsolated {
+                AppEnvironment.shared.callService?.isPictureInPictureActive = false
+                AppEnvironment.shared.callService?.updateIsVideoEnabled()
+            }
+        }
+        self.callPiPController = pipController
+
         // CallViewController only supports portrait for iPhones, but if we're _already_ landscape it won't
         // automatically switch.
         if !UIDevice.current.isIPad {
@@ -295,6 +319,10 @@ class WindowManager {
             Logger.warn("Ignoring end call request from obsolete call view controller.")
             return
         }
+
+        // Tear down system PiP.
+        callPiPController?.tearDown()
+        callPiPController = nil
 
         callViewWindow.rootViewController = nil
         callViewController = nil

@@ -500,6 +500,11 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     // MARK: - Video
 
+    /// Whether system Picture-in-Picture is currently active for the call.
+    /// When true, the local video capture continues running even while the
+    /// app is backgrounded so the remote party still sees our video.
+    var isPictureInPictureActive: Bool = false
+
     var shouldHaveLocalVideoTrack: Bool {
         guard let call = self.callServiceState.currentCall else {
             return false
@@ -509,7 +514,12 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         // support or emulation (http://goo.gl/rHAnC1) so don't bother
         // trying to open a local stream.
         guard !Platform.isSimulator else { return false }
-        guard UIApplication.shared.applicationState != .background else { return false }
+
+        // When PiP is active, keep the local video track alive even in
+        // the background so the remote party continues to receive our video.
+        if !isPictureInPictureActive {
+            guard UIApplication.shared.applicationState != .background else { return false }
+        }
 
         switch call.mode {
         case .individual(let individualCall):

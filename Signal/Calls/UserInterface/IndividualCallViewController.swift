@@ -210,6 +210,48 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
     }
 
+    // MARK: - System PiP
+
+    override func appWillResignActive() {
+        super.appWillResignActive()
+        // Start PiP while the scene is still foregroundActive — starting
+        // later (in appDidEnterBackground) fails because the scene has
+        // already transitioned away from foregroundActive.
+        guard individualCall.state == .connected,
+              individualCall.hasLocalVideo || individualCall.isRemoteVideoEnabled else {
+            return
+        }
+        startSystemPiP()
+    }
+
+    override func appDidBecomeActive() {
+        super.appDidBecomeActive()
+        stopSystemPiP()
+    }
+
+    private func startSystemPiP() {
+        guard let pipController = AppEnvironment.shared.windowManagerRef.callPiPController else { return }
+        // isPictureInPictureActive is set eagerly in the PiP delegate's
+        // willStart callback so the camera stays alive even if PiP starts
+        // automatically before this method runs.
+        pipController.startPictureInPicture()
+    }
+
+    private func stopSystemPiP() {
+        // isPictureInPictureActive cleanup is handled by the
+        // onPictureInPictureDidStop callback in WindowManager.
+        AppEnvironment.shared.windowManagerRef.callPiPController?.stopPictureInPicture()
+    }
+
+    /// Keep the PiP controller's remote video track in sync with the call.
+    private func updatePiPVideoTracks() {
+        guard let pipController = AppEnvironment.shared.windowManagerRef.callPiPController else { return }
+        // Always attach the remote track (even if video is currently disabled)
+        // so frames are ready to render when PiP starts. The track will produce
+        // frames once the remote party enables video.
+        pipController.attachRemoteVideoTrack(individualCall.remoteVideoTrack)
+    }
+
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         coordinator.animate(alongsideTransition: { [weak self] _ in
@@ -279,6 +321,19 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             name: .OWSApplicationDidBecomeActive,
             object: nil,
         )
+
+        // Configure system PiP with our view as the source (must be in the
+        // window hierarchy for PiP to activate).
+        if let pipController = AppEnvironment.shared.windowManagerRef.callPiPController {
+            let captureSession = individualCall.videoCaptureController.captureSession
+            pipController.configure(sourceView: self.view)
+            pipController.enableMultitaskingCameraAccess(for: captureSession)
+            pipController.attachLocalCaptureSession(captureSession)
+        }
+
+        // Attach remote video track to the PiP controller so frames are
+        // available when system PiP starts.
+        updatePiPVideoTracks()
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -1096,6 +1151,12 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         Logger.info("new call status: \(state)")
 
         self.updateCallUI()
+        updatePiPVideoTracks()
+
+        // If the call has ended, stop PiP.
+        if call.hasTerminated {
+            stopSystemPiP()
+        }
     }
 
     func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {
@@ -1116,6 +1177,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {
         AssertIsOnMainThread()
         updateRemoteVideoTrack(remoteVideoTrack: isVideoMuted ? nil : call.remoteVideoTrack)
+        updatePiPVideoTracks()
         showCallControlsIfTheyMustBeVisible()
         scheduleBottomSheetTimeoutIfNecessary()
     }

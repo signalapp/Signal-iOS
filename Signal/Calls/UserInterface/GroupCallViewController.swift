@@ -587,6 +587,63 @@ final class GroupCallViewController: UIViewController {
             name: UserProfileNotifications.otherUsersProfileDidChange,
             object: nil,
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(groupCallAppWillResignActive),
+            name: .OWSApplicationWillResignActive,
+            object: nil,
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(groupCallAppDidBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil,
+        )
+
+        // Configure system PiP with our view as the source (must be in the
+        // window hierarchy for PiP to activate).
+        if let pipController = AppEnvironment.shared.windowManagerRef.callPiPController {
+            let captureSession = groupCall.videoCaptureController.captureSession
+            pipController.configure(sourceView: self.view)
+            pipController.enableMultitaskingCameraAccess(for: captureSession)
+            pipController.attachLocalCaptureSession(captureSession)
+        }
+    }
+
+    // MARK: - System PiP (Group Calls)
+
+    @objc
+    private func groupCallAppWillResignActive() {
+        // Start PiP while the scene is still foregroundActive.
+        guard ringRtcCall.localDeviceState.joinState == .joined,
+              !ringRtcCall.isOutgoingVideoMuted || !ringRtcCall.remoteDeviceStates.isEmpty else {
+            return
+        }
+        startGroupSystemPiP()
+    }
+
+    @objc
+    private func groupCallAppDidBecomeActive() {
+        stopGroupSystemPiP()
+    }
+
+    private func startGroupSystemPiP() {
+        guard let pipController = AppEnvironment.shared.windowManagerRef.callPiPController else { return }
+
+        // Attach the speaker (first remote) video track for PiP rendering.
+        if let firstRemote = ringRtcCall.remoteDeviceStates.sortedByAddedTime.first {
+            pipController.attachRemoteVideoTrack(firstRemote.videoTrack)
+        }
+
+        // isPictureInPictureActive is set eagerly in the PiP delegate's
+        // willStart callback so the camera stays alive.
+        pipController.startPictureInPicture()
+    }
+
+    private func stopGroupSystemPiP() {
+        AppEnvironment.shared.windowManagerRef.callPiPController?.stopPictureInPicture()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -1768,6 +1825,9 @@ extension GroupCallViewController: GroupCallObserver {
     func groupCallEnded(_ call: GroupCall, reason: CallEndReason) {
         AssertIsOnMainThread()
         owsPrecondition(self.groupCall === call)
+
+        // Stop system PiP when the call ends.
+        stopGroupSystemPiP()
 
         let title: String
         let message: String?
