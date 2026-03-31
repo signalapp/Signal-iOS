@@ -3,7 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CommonCrypto
+import CryptoKit
 import Foundation
+import Testing
 import XCTest
 @testable import SignalServiceKit
 
@@ -429,5 +432,46 @@ class CryptographyTestsSwift: XCTestCase {
         try encryptedFileHandle.seek(toOffset: UInt64(plaintextData1.count + plaintextData2.count + plaintextData3.count))
         decryptedData = try encryptedFileHandle.read(upToCount: plaintextData4.count)
         XCTAssertEqual(plaintextData4, decryptedData)
+    }
+}
+
+struct CryptographyTest2 {
+    private func writeSampleFile(attachmentKey: AttachmentKey) throws -> URL {
+        let iv = Data(count: 16)
+        let encryptionKey = attachmentKey.encryptionKey
+        let authenticationKey = attachmentKey.authenticationKey
+        let input = Data(count: 20)
+        let output = try Cryptography.encrypt(plaintextData: input, key: encryptionKey, iv: iv)
+        let hmac = HMAC<SHA256>.authenticationCode(for: iv + output, using: SymmetricKey(data: authenticationKey))
+        let fileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: false)
+        try (iv + output + hmac).write(to: fileUrl)
+        return fileUrl
+    }
+
+    @Test(arguments: [21, 31, 32])
+    func testPlaintextLengthGreaterThanPlaintextLength(plaintextLength: UInt64) throws {
+        let attachmentKey = AttachmentKey.generate()
+        let fileUrl = try writeSampleFile(attachmentKey: attachmentKey)
+        let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
+            at: fileUrl,
+            plaintextLength: plaintextLength,
+            attachmentKey: attachmentKey,
+        )
+        #expect(throws: CryptographyError.decryptedLengthLessThanPlaintextLength) {
+            _ = try fileHandle.read(upToCount: 128)
+        }
+    }
+
+    @Test(arguments: [33, 256])
+    func testPlaintextLengthGreaterThanCiphertextLength(plaintextLength: UInt64) throws {
+        let attachmentKey = AttachmentKey.generate()
+        let fileUrl = try writeSampleFile(attachmentKey: attachmentKey)
+        #expect(throws: CryptographyError.ciphertextLengthLessThanPlaintextLength) {
+            _ = try Cryptography.encryptedAttachmentFileHandle(
+                at: fileUrl,
+                plaintextLength: plaintextLength,
+                attachmentKey: attachmentKey,
+            )
+        }
     }
 }

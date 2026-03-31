@@ -136,6 +136,16 @@ public protocol EncryptedFileHandle {
     func read(upToCount: Int) throws -> Data
 }
 
+enum CryptographyError: Error {
+    /// The caller-provided plaintext length was longer than the encrypted
+    /// length.
+    case ciphertextLengthLessThanPlaintextLength
+
+    /// The caller-provided plaintext length was longer than the decrypted
+    /// length (i.e., the length after removing PKCS#7 padding).
+    case decryptedLengthLessThanPlaintextLength
+}
+
 public extension Cryptography {
     enum Constants {
         static let hmac256OutputLength = 32
@@ -854,6 +864,12 @@ public extension Cryptography {
 
             switch paddingDecryptionStrategy {
             case .customPadding(let plaintextLength):
+                // The plaintext length MUST be less than the ciphertext length. There will
+                // *always* be at least one padding byte in a well-formed encrypted file,
+                // so we can detect many length mismatches early.
+                guard plaintextLength <= self.ciphertextLength else {
+                    throw CryptographyError.ciphertextLengthLessThanPlaintextLength
+                }
                 // The sender gave us the expected length; easy option.
                 // We truncate everything after this length in the final output.
                 self.plaintextLength = plaintextLength
@@ -1087,6 +1103,11 @@ public extension Cryptography {
                             offsetInOutput: $1,
                             outputLength: expectedPlaintextLength,
                         )
+                    }
+                    // Make sure that the plaintextLength is no longer than the actual number
+                    // of plaintext bytes.
+                    guard remainingByteCount.partialValue <= (bytesWrittenToOutput + actualPlaintextLength) else {
+                        throw CryptographyError.decryptedLengthLessThanPlaintextLength
                     }
                 } else {
                     // Otherwise we aren't at the end of the file, read and update.
