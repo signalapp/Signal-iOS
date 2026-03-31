@@ -341,8 +341,10 @@ extension BackupArchive {
         /// We just drop these on export as they're meant to be impossible.
         case directStoryReplyInNoteToSelf
 
-        // TODO: remove when group terminate is in backups
-        case groupTerminate
+        /// It's possible for us to create a thread-merge event without an ACI
+        /// author; for example, if we have an old chat with an E164, then learn
+        /// that E164's PNI later. We don't need to back these up.
+        case threadMergeWithoutAciAuthor
     }
 
     enum ArchiveInteractionResult<Component> {
