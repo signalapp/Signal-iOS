@@ -52,10 +52,12 @@ jobs:
           path: 'Signal-iOS'
 
       - name: Fetch base commit
+        if: github.event_name == 'pull_request'
         working-directory: Signal-iOS
         run: git fetch origin --depth 1 ${{ github.base_ref }}
 
       - name: Install dependencies
+        if: github.event_name == 'pull_request'
         run: brew install clang-format
 
       - name: Cache SwiftFormat
@@ -78,9 +80,11 @@ jobs:
         run: swift build -c release --product swiftformat
 
       - name: Add binaries to PATH
+        if: github.event_name == 'pull_request'
         run: echo "$GITHUB_WORKSPACE/SwiftFormat/.build/release" >> "$GITHUB_PATH"
 
       - name: Run precommit on files changed in the PR
+        if: github.event_name == 'pull_request'
         working-directory: Signal-iOS
         run: |
           Scripts/precommit.py --ref origin/${{ github.base_ref }}
