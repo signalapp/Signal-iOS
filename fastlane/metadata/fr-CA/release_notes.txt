@@ -1,2 +1,2 @@
-• Here's a toast to some additional Liquid Glass enhancements, including redesigned toast notifications.
-• This update also introduces several accessibility improvements and better VoiceOver support for new Signal users within the Get Started section. Thanks, @meherkasam!
+• Cette nouvelle mise à jour inclut une interface Liquid Glass améliorée, dont des bulles de notifications relookées. Ça vaut bien un verre de bulles !
+• Et ce n'est pas tout : nous avons amélioré l'accessibilité de l'application, de même que la prise en charge de VoiceOver, afin d'aider les nouveaux utilisateurs à faire leurs premiers pas sur Signal. Merci, @meherkasam !
