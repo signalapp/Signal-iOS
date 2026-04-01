@@ -183,11 +183,11 @@ private class NewMemberCell: UICollectionViewCell {
             glassView.cornerConfiguration = .capsule()
             backgroundView = glassView
         } else {
-            contentView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
+            contentView.backgroundColor = UIColor.Signal.primaryFill
         }
 
         textLabel.font = NewMemberCell.nameFont
-        textLabel.textColor = Theme.primaryTextColor
+        textLabel.textColor = UIColor.Signal.label
         textLabel.numberOfLines = 1
         textLabel.lineBreakMode = .byTruncatingTail
 

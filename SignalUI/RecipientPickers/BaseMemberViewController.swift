@@ -125,6 +125,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
             ])
         } else {
             // topStackView is above the table
+            topStackView.backgroundColor = UIColor.Signal.groupedBackground
             NSLayoutConstraint.activate([
                 recipientPicker.view.topAnchor.constraint(equalTo: topStackView.bottomAnchor),
                 recipientPicker.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
