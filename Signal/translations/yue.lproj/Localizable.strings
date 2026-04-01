@@ -2309,7 +2309,7 @@
 "CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "所有媒體";
 
 /* Label for 'archive chat' action in conversation settings view. */
-"CONVERSATION_SETTINGS_ARCHIVE_CHAT" = "Archive Chat";
+"CONVERSATION_SETTINGS_ARCHIVE_CHAT" = "封存聊天";
 
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "揀選邊個可以編輯個谷名、相、描述、自動銷毀訊息計時器同埋置頂訊息。";
@@ -2345,7 +2345,7 @@
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "打出嘅語音通話";
 
 /* Label for 'delete chat' action in conversation settings view. */
-"CONVERSATION_SETTINGS_DELETE_CHAT" = "Delete Chat";
+"CONVERSATION_SETTINGS_DELETE_CHAT" = "刪除聊天";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "編輯個谷嘅資訊";
@@ -2489,7 +2489,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "只有話事人";
 
 /* Label for 'unarchive chat' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNARCHIVE_CHAT" = "Unarchive Chat";
+"CONVERSATION_SETTINGS_UNARCHIVE_CHAT" = "取消封存聊天";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "解除封鎖群組";
@@ -3433,29 +3433,29 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "通話失敗";
 
+/* Description for error sheet that says the user can no longer take this action because the group has ended. */
+"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group was ended.";
+"END_GROUP_BANNER_LABEL" = "This group has ended.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group was ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
 
 /* End group confirmation description */
-"END_GROUP_DESCRIPTION" = "Members will no longer be able to send messages or start calls in the group. They will be notified that you ended the group, and will still have access to message history.";
+"END_GROUP_DESCRIPTION" = "谷友冇得再喺呢個谷度傳送訊息或者開始通話。佢哋會收到通知，話佢知你已經解散咗呢個谷，不過仲可以睇返訊息紀錄。";
 
 /* Description for final confirmation screen when user tries to end a group */
-"END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "This will end the group permanently. Are you sure you want to proceed?";
+"END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "咁樣會永久解散呢個谷。你係咪確定要繼續？";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Ending the group failed. Check your connection and try again.";
-
-/* Description for error sheet that says the user can no longer invite friends or add members to a group. */
-"END_GROUP_INVITE_ERROR" = "You can no longer invite friends or add members to this group.";
+"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
 
 /* Label in conversation settings to end a group */
-"END_GROUP_LABEL" = "End Group";
+"END_GROUP_LABEL" = "解散個谷";
 
 /* End group confirmation title for a specific group. Embeds {{ group name }} */
-"END_GROUP_LABEL_SPECIFIC" = "End “%1$@”?";
+"END_GROUP_LABEL_SPECIFIC" = "係咪要解散「%1$@」？";
 
 /* Label explaining that an entered 'Recovery Key' is incorrect. */
 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "恢復金鑰錯咗";
@@ -3683,7 +3683,7 @@
 "GET_STARTED_CARD_CHAT_COLOR" = "聊天顏色";
 
 /* Accessibility label for the close button in each Get Started card. */
-"GET_STARTED_CARD_CLOSE_A11YLABEL" = "Remove suggestion";
+"GET_STARTED_CARD_CLOSE_A11YLABEL" = "移除建議";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "誠邀好友";
@@ -3785,7 +3785,7 @@
 "GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "個人檔案資訊";
 
 /* Context menu action to remove a call participant from the call. */
-"GROUP_CALL_CONTEXT_MENU_REMOVE_FROM_CALL" = "Remove from Call";
+"GROUP_CALL_CONTEXT_MENU_REMOVE_FROM_CALL" = "喺通話度移除";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "繼續通話";
@@ -3824,7 +3824,7 @@
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "通話中";
 
 /* Subtitle for a row representing a call member, when that member is presenting. */
-"GROUP_CALL_MEMBER_LIST_PRESENTING_SUBTITLE" = "Presenting";
+"GROUP_CALL_MEMBER_LIST_PRESENTING_SUBTITLE" = "開緊咪講嘢";
 
 /* Title for the section of the group call member list which displays the list of members with their hand raised. */
 "GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "舉咗手";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "加入唔到個谷";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Join by link failed, group has ended";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "呢條谷拎已經失效。";
@@ -4382,13 +4382,16 @@
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
 
 /* Message indicating that the group was terminated by the local user. */
-"GROUP_TERMINATED_BY_LOCAL_USER" = "You ended the group";
+"GROUP_TERMINATED_BY_LOCAL_USER" = "你解散咗個谷";
 
 /* Message indicating that the group was terminated by a remote user. Embeds {{ user who terminated the group }}. */
-"GROUP_TERMINATED_BY_OTHER_USER" = "%1$@ ended the group";
+"GROUP_TERMINATED_BY_OTHER_USER" = "%1$@解散咗個谷";
 
 /* Message indicating that the group was terminated by an unknown user. */
-"GROUP_TERMINATED_BY_UNKNOWN_USER" = "The group was ended";
+"GROUP_TERMINATED_BY_UNKNOWN_USER" = "個谷解散咗啦";
+
+/* Error indicating a send failure due to the group being terminated. */
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "呢個谷更新咗。";
@@ -9249,6 +9252,9 @@
 
 /* Title asking the user if they are sure they want to delete their story */
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "係咪要刪除呢個限時動態呀？系統會喺所有收到呢個限時動態嘅人嘅裝置度刪除埋佢㗎喎。";
+
+/* Title asking the user if they are sure they want to delete their story for themselves only. */
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "轉寄";

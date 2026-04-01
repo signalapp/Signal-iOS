@@ -2309,7 +2309,7 @@
 "CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Сви медији";
 
 /* Label for 'archive chat' action in conversation settings view. */
-"CONVERSATION_SETTINGS_ARCHIVE_CHAT" = "Archive Chat";
+"CONVERSATION_SETTINGS_ARCHIVE_CHAT" = "Архивирај ћаскање";
 
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Изаберите ко може да мења назив, слику и опис групе, као и трајање нестајућих порука и окачене поруке.";
@@ -2345,7 +2345,7 @@
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Одлазни гласовни позив";
 
 /* Label for 'delete chat' action in conversation settings view. */
-"CONVERSATION_SETTINGS_DELETE_CHAT" = "Delete Chat";
+"CONVERSATION_SETTINGS_DELETE_CHAT" = "Избриши ћаскање";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Уредите информације о групи";
@@ -2489,7 +2489,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Само администратори";
 
 /* Label for 'unarchive chat' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNARCHIVE_CHAT" = "Unarchive Chat";
+"CONVERSATION_SETTINGS_UNARCHIVE_CHAT" = "Врати ћаскање из архиве";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Одблокирај групу";
@@ -3433,29 +3433,29 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Позив није успео";
 
+/* Description for error sheet that says the user can no longer take this action because the group has ended. */
+"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group was ended.";
+"END_GROUP_BANNER_LABEL" = "This group has ended.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group was ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
 
 /* End group confirmation description */
-"END_GROUP_DESCRIPTION" = "Members will no longer be able to send messages or start calls in the group. They will be notified that you ended the group, and will still have access to message history.";
+"END_GROUP_DESCRIPTION" = "Чланови више неће моћи да шаљу поруке, нити да започињу позиве у овој групи. Биће обавештени да сте угасили групу и имаће и даље приступ историји порука.";
 
 /* Description for final confirmation screen when user tries to end a group */
-"END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "This will end the group permanently. Are you sure you want to proceed?";
+"END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "Ово ће трајно угасити групу. Да ли сте сигурни да желите да наставите?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Ending the group failed. Check your connection and try again.";
-
-/* Description for error sheet that says the user can no longer invite friends or add members to a group. */
-"END_GROUP_INVITE_ERROR" = "You can no longer invite friends or add members to this group.";
+"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
 
 /* Label in conversation settings to end a group */
-"END_GROUP_LABEL" = "End Group";
+"END_GROUP_LABEL" = "Угаси групу";
 
 /* End group confirmation title for a specific group. Embeds {{ group name }} */
-"END_GROUP_LABEL_SPECIFIC" = "End “%1$@”?";
+"END_GROUP_LABEL_SPECIFIC" = "Желите ли да угасите групу „%1$@“?";
 
 /* Label explaining that an entered 'Recovery Key' is incorrect. */
 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL" = "Погрешан кључ за опоравак";
@@ -3683,7 +3683,7 @@
 "GET_STARTED_CARD_CHAT_COLOR" = "Боја ћаскања";
 
 /* Accessibility label for the close button in each Get Started card. */
-"GET_STARTED_CARD_CLOSE_A11YLABEL" = "Remove suggestion";
+"GET_STARTED_CARD_CLOSE_A11YLABEL" = "Уклони препоруку";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Позовите пријатеље";
@@ -3785,7 +3785,7 @@
 "GROUP_CALL_CONTEXT_MENU_PROFILE_DETAILS" = "Детаљи профила";
 
 /* Context menu action to remove a call participant from the call. */
-"GROUP_CALL_CONTEXT_MENU_REMOVE_FROM_CALL" = "Remove from Call";
+"GROUP_CALL_CONTEXT_MENU_REMOVE_FROM_CALL" = "Уклони из позива";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Настави позив";
@@ -3824,7 +3824,7 @@
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "У позиву";
 
 /* Subtitle for a row representing a call member, when that member is presenting. */
-"GROUP_CALL_MEMBER_LIST_PRESENTING_SUBTITLE" = "Presenting";
+"GROUP_CALL_MEMBER_LIST_PRESENTING_SUBTITLE" = "Приказује";
 
 /* Title for the section of the group call member list which displays the list of members with their hand raised. */
 "GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Подигнутих руку";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Не можете да се придружите групи";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Join by link failed, group has ended";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Овај линк за групу више није важећи.";
@@ -4382,13 +4382,16 @@
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Ко може да види ову причу";
 
 /* Message indicating that the group was terminated by the local user. */
-"GROUP_TERMINATED_BY_LOCAL_USER" = "You ended the group";
+"GROUP_TERMINATED_BY_LOCAL_USER" = "Угастили сте ову групу";
 
 /* Message indicating that the group was terminated by a remote user. Embeds {{ user who terminated the group }}. */
-"GROUP_TERMINATED_BY_OTHER_USER" = "%1$@ ended the group";
+"GROUP_TERMINATED_BY_OTHER_USER" = "Члан %1$@ је угасио групу";
 
 /* Message indicating that the group was terminated by an unknown user. */
-"GROUP_TERMINATED_BY_UNKNOWN_USER" = "The group was ended";
+"GROUP_TERMINATED_BY_UNKNOWN_USER" = "Група је угашена";
+
+/* Error indicating a send failure due to the group being terminated. */
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Група је ажурирана.";
@@ -9249,6 +9252,9 @@
 
 /* Title asking the user if they are sure they want to delete their story */
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Желите ли да избришете ову причу? Биће избрисана свима који су је примили.";
+
+/* Title asking the user if they are sure they want to delete their story for themselves only. */
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Проследи";

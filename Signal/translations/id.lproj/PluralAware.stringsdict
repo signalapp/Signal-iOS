@@ -409,7 +409,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Former Members</string>
+			<string>%1$d Mantan Anggota</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -549,7 +549,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Berdering untuk %2$@, %3$@, dan %1$d lainnya…</string>
+			<string>Menelepon %2$@, %3$@, dan %1$d orang lain …</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_OTHERS_HERE</key>

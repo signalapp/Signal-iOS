@@ -583,13 +583,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Former Member</string>
+			<string>%1$d bývalý člen</string>
 			<key>few</key>
-			<string>%1$d Former Members</string>
+			<string>%1$d bývalí členové</string>
 			<key>many</key>
-			<string>%1$d Former Members</string>
+			<string>%1$d bývalých členů</string>
 			<key>other</key>
-			<string>%1$d Former Members</string>
+			<string>%1$d bývalých členů</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
