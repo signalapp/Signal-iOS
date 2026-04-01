@@ -7,11 +7,10 @@ import Foundation
 
 public class EncryptingStreamTransform: StreamTransform, FinalizableStreamTransform {
 
-    private let cipherContext: CipherContext
+    private var cipherContext: CipherContext?
     private let iv: Data
 
-    private var finalized = false
-    public var hasFinalized: Bool { finalized }
+    public var hasFinalized: Bool { cipherContext == nil }
     private var hasWrittenHeader = false
 
     init(iv: Data, encryptionKey: Data) throws {
@@ -33,18 +32,15 @@ public class EncryptingStreamTransform: StreamTransform, FinalizableStreamTransf
         }
 
         // Get the next block of ciphertext
-        ciphertextBlock.append(try cipherContext.update(data))
+        ciphertextBlock.append(try cipherContext?.update(data) ?? { throw OWSGenericError("already finalized") }())
         return ciphertextBlock
     }
 
     public func finalize() throws -> Data {
-        guard !finalized else { return Data() }
-        finalized = true
-
         // Finalize the encryption and write out the last block.
         // Every time we "update" the cipher context, it returns
         // the ciphertext for the previous block so there will
         // always be one block remaining when we "finalize".
-        return try cipherContext.finalize()
+        return try cipherContext.take()?.finalize() ?? Data()
     }
 }

@@ -18,9 +18,8 @@ public class DecryptingStreamTransform: StreamTransform, FinalizableStreamTransf
     private let encryptionKey: Data
     private var cipherContext: CipherContext?
 
-    private var finalized = false
-    public var hasFinalized: Bool { finalized }
     public var hasInitialized = false
+    public var hasFinalized: Bool { hasInitialized && self.cipherContext == nil }
 
     init(encryptionKey: Data) throws {
         self.encryptionKey = encryptionKey
@@ -32,8 +31,8 @@ public class DecryptingStreamTransform: StreamTransform, FinalizableStreamTransf
             guard inputBuffer.count > Constants.HeaderSize else { throw Error.initialBufferTooSmall }
 
             // read the IV
-            let iv = data.subdata(in: 0..<Constants.HeaderSize)
-            inputBuffer = inputBuffer.subdata(in: Constants.HeaderSize..<inputBuffer.count)
+            let iv = inputBuffer.prefix(Constants.HeaderSize)
+            inputBuffer.removeFirst(Constants.HeaderSize)
             self.cipherContext = try CipherContext(
                 operation: .decrypt,
                 algorithm: .aes,
@@ -43,14 +42,11 @@ public class DecryptingStreamTransform: StreamTransform, FinalizableStreamTransf
             )
             hasInitialized = true
         }
-        guard let cipherContext else { throw Error.notInitialized }
-        return try cipherContext.update(inputBuffer)
+        return try self.cipherContext?.update(inputBuffer) ?? { throw OWSGenericError("already finalized") }()
     }
 
     public func finalize() throws -> Data {
-        guard let cipherContext else { throw Error.notInitialized }
-        guard !finalized else { return Data() }
-        finalized = true
-        return try cipherContext.finalize()
+        guard hasInitialized else { throw Error.notInitialized }
+        return try self.cipherContext.take()?.finalize() ?? Data()
     }
 }

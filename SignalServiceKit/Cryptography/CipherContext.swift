@@ -6,7 +6,8 @@
 import CommonCrypto
 import Foundation
 
-public class CipherContext {
+@safe
+public struct CipherContext: ~Copyable {
     public enum Operation {
         case encrypt
         case decrypt
@@ -40,19 +41,25 @@ public class CipherContext {
         public static let ecbMode = Options(rawValue: kCCOptionECBMode)
     }
 
-    private var cryptor: CCCryptorRef?
+    private let cryptor: CCCryptorRef
 
     deinit {
-        if let cryptor {
-            CCCryptorRelease(cryptor)
-            self.cryptor = nil
-        }
+        unsafe CCCryptorRelease(cryptor)
     }
 
     public init(operation: Operation, algorithm: Algorithm, options: Options, key: Data, iv: Data) throws {
-        let result = key.withUnsafeBytes { keyBytes in
-            iv.withUnsafeBytes { ivBytes in
-                CCCryptorCreate(
+        guard key.count == 32 else {
+            // We (currently) always use 32 bytes.
+            throw OWSAssertionError("key must be 32 bytes")
+        }
+        guard iv.count == 16 else {
+            // The IV must be 16 bytes if the key is 32 bytes.
+            throw OWSAssertionError("iv must be 16 bytes")
+        }
+        var cryptor: CCCryptorRef?
+        let result = unsafe key.withUnsafeBytes { keyBytes in
+            unsafe iv.withUnsafeBytes { ivBytes in
+                unsafe CCCryptorCreate(
                     operation.ccValue,
                     algorithm.ccValue,
                     CCOptions(options.rawValue),
@@ -63,69 +70,43 @@ public class CipherContext {
                 )
             }
         }
-        guard result == CCStatus(kCCSuccess) else {
+        guard result == CCStatus(kCCSuccess), let cryptor = unsafe cryptor else {
             throw OWSAssertionError("Invalid arguments provided \(result)")
         }
+        unsafe self.cryptor = cryptor
     }
 
-    public func outputLength(forUpdateWithInputLength inputLength: Int) throws -> Int {
-        guard let cryptor else {
-            throw OWSAssertionError("Unexpectedly attempted to read a finalized cipher")
-        }
-
-        return CCCryptorGetOutputLength(cryptor, inputLength, false)
+    public func outputLength(forUpdateWithInputLength inputLength: Int) -> Int {
+        return unsafe CCCryptorGetOutputLength(cryptor, inputLength, false)
     }
 
-    public func outputLengthForFinalize() throws -> Int {
-        guard let cryptor else {
-            throw OWSAssertionError("Unexpectedly attempted to read a finalized cipher")
-        }
-
-        return CCCryptorGetOutputLength(cryptor, 0, true)
+    public func outputLengthForFinalize() -> Int {
+        return unsafe CCCryptorGetOutputLength(cryptor, 0, true)
     }
 
     public func update(_ data: Data) throws -> Data {
-        let outputLength = try outputLength(forUpdateWithInputLength: data.count)
+        let outputLength = outputLength(forUpdateWithInputLength: data.count)
         var outputBuffer = Data(repeating: 0, count: outputLength)
         let actualOutputLength = try self.update(input: data, output: &outputBuffer)
-        outputBuffer.count = actualOutputLength
-        return outputBuffer
+        return outputBuffer.prefix(actualOutputLength)
     }
 
     /// Update the cipher with provided input, writing decrypted output into the provided output buffer.
     ///
     /// - parameter input: The encrypted input to decrypt.
-    /// - parameter inputLength: If non-nil, only this many bytes of the input will be read.
-    ///     Otherwise the entire input will be read.
     /// - parameter output: The output buffer to write the decrypted bytes into.
-    /// - parameter offsetInOutput: Decrypted bytes will be written into the output buffer starting at
-    ///     this offset. Defaults to 0 (bytes written into the start of the output buffer)
-    /// - parameter outputLength: If non-nil, only this many bytes of output will be written to the output
-    ///     buffer. If nil, the length of the output buffer (minus `offsetInOutput`) will be used. NOTE: should
-    ///     not be larger than the length of the buffer minus `offsetInOutput`.
     ///
     /// - returns The actual number of bytes written to `output`.
-    public func update(
-        input: Data,
-        inputLength: Int? = nil,
-        output: inout Data,
-        offsetInOutput: Int = 0,
-        outputLength: Int? = nil,
-    ) throws -> Int {
-        guard let cryptor else {
-            throw OWSAssertionError("Unexpectedly attempted to update a finalized cipher")
-        }
-
-        let outputLength = outputLength ?? (output.count - offsetInOutput)
+    public func update(input: Data, output: inout Data) throws -> Int {
         var actualOutputLength = 0
-        let result = input.withUnsafeBytes { inputPointer in
-            output.withUnsafeMutableBytes { outputPointer in
-                return CCCryptorUpdate(
+        let result = unsafe input.withUnsafeBytes { inputBytes in
+            return unsafe output.withUnsafeMutableBytes { outputBytes in
+                return unsafe CCCryptorUpdate(
                     cryptor,
-                    inputPointer.baseAddress,
-                    inputLength ?? input.count,
-                    outputPointer.baseAddress.map { $0 + offsetInOutput },
-                    outputLength,
+                    inputBytes.baseAddress,
+                    inputBytes.count,
+                    outputBytes.baseAddress,
+                    outputBytes.count,
                     &actualOutputLength,
                 )
             }
@@ -136,45 +117,25 @@ public class CipherContext {
         return actualOutputLength
     }
 
-    public func finalize() throws -> Data {
-        let outputLength = try self.outputLengthForFinalize()
+    public consuming func finalize() throws -> Data {
+        let outputLength = self.outputLengthForFinalize()
         var outputBuffer = Data(repeating: 0, count: outputLength)
         let actualOutputLength = try finalize(output: &outputBuffer)
-        outputBuffer.count = actualOutputLength
-        return outputBuffer
+        return outputBuffer.prefix(actualOutputLength)
     }
 
     /// Finalize the cipher, writing decrypted output into the provided output buffer.
     ///
     /// - parameter output: The output buffer to write the decrypted bytes into.
-    /// - parameter offsetInOutput: Decrypted bytes will be written into the output buffer starting at
-    ///     this offset. Defaults to 0 (bytes written into the start of the output buffer)
-    /// - parameter outputLength: If non-nil, only this many bytes of output will be written to the output
-    ///     buffer. If nil, the length of the output buffer (minus `offsetInOutput`) will be used. NOTE: should
-    ///     not be larger than the length of the buffer minus `offsetInOutput`.
     ///
     /// - returns The actual number of bytes written to `output`.
-    public func finalize(
-        output: inout Data,
-        offsetInOutput: Int = 0,
-        outputLength: Int? = nil,
-    ) throws -> Int {
-        guard let cryptor else {
-            throw OWSAssertionError("Unexpectedly attempted to finalize a finalized cipher")
-        }
-
-        defer {
-            CCCryptorRelease(cryptor)
-            self.cryptor = nil
-        }
-
-        let outputLength = outputLength ?? (output.count - offsetInOutput)
+    public consuming func finalize(output: inout Data) throws -> Int {
         var actualOutputLength = 0
-        let result = output.withUnsafeMutableBytes { outputPointer in
-            return CCCryptorFinal(
+        let result = unsafe output.withUnsafeMutableBytes { outputBytes in
+            return unsafe CCCryptorFinal(
                 cryptor,
-                outputPointer.baseAddress.map { $0 + offsetInOutput },
-                outputLength,
+                outputBytes.baseAddress,
+                outputBytes.count,
                 &actualOutputLength,
             )
         }

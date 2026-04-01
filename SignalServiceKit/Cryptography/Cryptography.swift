@@ -825,7 +825,7 @@ public extension Cryptography {
 
         private var virtualOffset: UInt64 = 0
 
-        private var cipherContext: CipherContext
+        private var cipherContext: CipherContext?
         /// Buffers the output of the cipherContext if the last read requested fewer bytes than the cipherContext output.
         /// CCCryptor documentation says: "the output length is never larger than the input length plus the block size."
         /// To ensure we always have enough room in the buffer, we allocate two block lengths.
@@ -1060,9 +1060,13 @@ public extension Cryptography {
                 let expectedPlaintextLength: Int
                 if numCiphertextBytesToRead == 0 {
                     // If we are at the end of the file, we want to finalize.
-                    expectedPlaintextLength = try cipherContext.outputLengthForFinalize()
+                    expectedPlaintextLength = try self.cipherContext?.outputLengthForFinalize() ?? {
+                        throw OWSAssertionError("already finalized")
+                    }()
                 } else {
-                    expectedPlaintextLength = try cipherContext.outputLength(forUpdateWithInputLength: numCiphertextBytesToRead)
+                    expectedPlaintextLength = try self.cipherContext?.outputLength(forUpdateWithInputLength: numCiphertextBytesToRead) ?? {
+                        throw OWSAssertionError("already finalized")
+                    }()
                 }
 
                 // We need to reference either `outputBuffer` or a tmp buffer, depending
@@ -1098,11 +1102,9 @@ public extension Cryptography {
                     // If we are at the end of the file, finalize the cipher context
                     // instead of reading from disk and updating.
                     actualPlaintextLength = try writeToBuffer {
-                        return try cipherContext.finalize(
-                            output: &$0,
-                            offsetInOutput: $1,
-                            outputLength: expectedPlaintextLength,
-                        )
+                        return try cipherContext.take()?.finalize(
+                            output: &$0[($0.startIndex + $1)..<($0.startIndex + $1 + expectedPlaintextLength)],
+                        ) ?? { throw OWSAssertionError("already finalized") }()
                     }
                     // Make sure that the plaintextLength is no longer than the actual number
                     // of plaintext bytes.
@@ -1121,13 +1123,10 @@ public extension Cryptography {
                     }
                     try ciphertextHandler?(ciphertextBuffer.prefix(ciphertextLength))
                     actualPlaintextLength = try writeToBuffer {
-                        return try cipherContext.update(
-                            input: ciphertextBuffer,
-                            inputLength: ciphertextLength,
-                            output: &$0,
-                            offsetInOutput: $1,
-                            outputLength: expectedPlaintextLength,
-                        )
+                        return try cipherContext?.update(
+                            input: ciphertextBuffer.prefix(ciphertextLength),
+                            output: &$0[($0.startIndex + $1)..<($0.startIndex + $1 + expectedPlaintextLength)],
+                        ) ?? { throw OWSAssertionError("already finalized") }()
                     }
                 }
 

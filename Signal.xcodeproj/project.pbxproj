@@ -754,6 +754,7 @@
 		5073EACB2C4F3A16001FBB3E /* LinkPreviewFetcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5073EACA2C4F3A16001FBB3E /* LinkPreviewFetcherTest.swift */; };
 		5073EACD2C4F45F2001FBB3E /* CallLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C2D2BAC066A00815474 /* CallLink.swift */; };
 		5073EACF2C4F469A001FBB3E /* CallLinkFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5073EACE2C4F469A001FBB3E /* CallLinkFetcher.swift */; };
+		507529172F6494C2000F72F0 /* CipherContextTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507529162F6494C2000F72F0 /* CipherContextTest.swift */; };
 		5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */; };
 		5077B5B82BBC7FE600EF399E /* ContactTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5077B5B72BBC7FE600EF399E /* ContactTest.swift */; };
 		50791B1D2D037A9800D747F8 /* PhoneNumberCountryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50791B1C2D037A9800D747F8 /* PhoneNumberCountryTest.swift */; };
@@ -5014,6 +5015,7 @@
 		5073EAC82C4F323F001FBB3E /* LinkPreviewSettingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewSettingManager.swift; sourceTree = "<group>"; };
 		5073EACA2C4F3A16001FBB3E /* LinkPreviewFetcherTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewFetcherTest.swift; sourceTree = "<group>"; };
 		5073EACE2C4F469A001FBB3E /* CallLinkFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CallLinkFetcher.swift; path = SignalUI/Calls/CallLinkFetcher.swift; sourceTree = SOURCE_ROOT; };
+		507529162F6494C2000F72F0 /* CipherContextTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CipherContextTest.swift; sourceTree = "<group>"; };
 		5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMemberUpdaterTest.swift; sourceTree = "<group>"; };
 		5077B5B72BBC7FE600EF399E /* ContactTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactTest.swift; sourceTree = "<group>"; };
 		50791B1C2D037A9800D747F8 /* PhoneNumberCountryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberCountryTest.swift; sourceTree = "<group>"; };
@@ -9655,12 +9657,13 @@
 			path = ZeroKnowledge;
 			sourceTree = "<group>";
 		};
-		501AD1C22AF17A0B001B796A /* Curve25519 */ = {
+		501AD1C22AF17A0B001B796A /* Cryptography */ = {
 			isa = PBXGroup;
 			children = (
+				507529162F6494C2000F72F0 /* CipherContextTest.swift */,
 				501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */,
 			);
-			path = Curve25519;
+			path = Cryptography;
 			sourceTree = "<group>";
 		};
 		5033D46C29DCA8DE007FEADA /* URLs */ = {
@@ -14651,7 +14654,7 @@
 				D985D86229B91C2B0087C90C /* ChangePhoneNumber */,
 				50E0198E2CC2491A0063EA48 /* Concurrency */,
 				F9426205289B1B5500460798 /* Contacts */,
-				501AD1C22AF17A0B001B796A /* Curve25519 */,
+				501AD1C22AF17A0B001B796A /* Cryptography */,
 				5056B3BD2DEED70F00F55320 /* DateProvider */,
 				F94261C7289B1B5300460798 /* Devices */,
 				D98BC5342EE390B50052A81F /* Expiration */,
@@ -20113,6 +20116,7 @@
 				661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */,
 				D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */,
 				F9C9610B29A91026001E4A09 /* ChatServiceAuthTest.swift in Sources */,
+				507529172F6494C2000F72F0 /* CipherContextTest.swift in Sources */,
 				501E4DAE2D13439E00D883C7 /* CompletionSerializerTest.swift in Sources */,
 				50CF74192E0A0EB7002DCA93 /* ConcurrentTaskQueueTest.swift in Sources */,
 				509527FA2E26F02B00A03829 /* ConnectionLockTest.swift in Sources */,
