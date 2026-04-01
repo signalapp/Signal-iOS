@@ -500,7 +500,11 @@ extension StoryContextMenuGenerator {
             willDelete {
                 SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     if thread.isTerminatedGroup {
-                        message.anyRemove(transaction: transaction)
+                        // We can't send messages to terminated groups,
+                        // including a remote-delete. However, we want to
+                        // sync this delete across our devices. To that end,
+                        // "remotely delete" just for the local user.
+                        message.remotelyDeleteForJustLocalUser(transaction: transaction)
                     } else {
                         message.remotelyDelete(for: thread, transaction: transaction)
                     }

@@ -889,6 +889,22 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
     }
 
+    public func remotelyDeleteForJustLocalUser(transaction: DBWriteTransaction) {
+        let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction)!
+        let deleteMessage = OutgoingDeleteMessage(
+            thread: thread,
+            storyMessage: self,
+            skippedRecipients: [],
+            tx: transaction,
+        )
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: deleteMessage,
+        )
+        SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
+
+        anyRemove(transaction: transaction)
+    }
+
     public func failedRecipientAddresses(errorCode: Int) -> [SignalServiceAddress] {
         guard case .outgoing(let recipientStates) = manifest else { return [] }
 
