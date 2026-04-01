@@ -155,6 +155,7 @@ class NSECallMessageHandler: CallMessageHandler {
 
         externallyHandleCallMessage(
             envelope: envelope,
+            callerAci: caller.aci,
             plaintextData: plaintextData,
             wasReceivedByUD: wasReceivedByUD,
             serverDeliveryTimestamp: serverDeliveryTimestamp,
@@ -164,6 +165,7 @@ class NSECallMessageHandler: CallMessageHandler {
 
     private func externallyHandleCallMessage(
         envelope: SSKProtoEnvelope,
+        callerAci: Aci,
         plaintextData: Data,
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
@@ -172,6 +174,7 @@ class NSECallMessageHandler: CallMessageHandler {
         do {
             let payload = try CallMessageRelay.enqueueCallMessageForMainApp(
                 envelope: envelope,
+                callerAci: callerAci,
                 plaintextData: plaintextData,
                 wasReceivedByUD: wasReceivedByUD,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,

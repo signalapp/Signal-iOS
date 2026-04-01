@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public class CallMessagePushPayload: CustomStringConvertible {
     private static let identifierKey = "CallMessageRelayPayload"
@@ -80,6 +80,7 @@ public class CallMessageRelay {
 
     public static func enqueueCallMessageForMainApp(
         envelope: SSKProtoEnvelope,
+        callerAci: Aci,
         plaintextData: Data,
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
@@ -93,7 +94,7 @@ public class CallMessageRelay {
             enqueueTimestamp: Date(),
         )
 
-        try pendingCallMessageStore.setCodable(payload, key: "\(envelope.timestamp)", transaction: transaction)
+        try pendingCallMessageStore.setCodable(payload, key: "\(callerAci.serviceIdString);\(envelope.timestamp)", transaction: transaction)
         return CallMessagePushPayload()
     }
 
