@@ -10,7 +10,7 @@ extension UIColor {
         let red = CGFloat((value >> 16) & 0xff) / 255.0
         let green = CGFloat((value >> 8) & 0xff) / 255.0
         let blue = CGFloat((value >> 0) & 0xff) / 255.0
-        self.init(red: red, green: green, blue: blue, alpha: 1)
+        self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
 
     public var rgbHex: UInt32 {
