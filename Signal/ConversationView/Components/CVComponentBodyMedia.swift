@@ -441,7 +441,7 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 componentDelegate.didCancelDownload(message, attachmentId: pointer.attachment.id)
                 return true
             }
-        case .stream(let stream):
+        case .stream(let stream, isUploading: _):
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
             if let item = items.first(where: { $0.attachment.attachment.attachment.id == stream.attachment.id }), item.isBroken {
                 componentDelegate.didTapBrokenVideo()
@@ -602,7 +602,7 @@ extension CVComponentBodyMedia: CVAccessibilityComponent {
         }
 
         switch mediaItem.attachment {
-        case .stream(let referencedAttachmentStream):
+        case .stream(let referencedAttachmentStream, isUploading: _):
             switch referencedAttachmentStream.attachmentStream.contentType {
             case .invalid:
                 return genericMediaString

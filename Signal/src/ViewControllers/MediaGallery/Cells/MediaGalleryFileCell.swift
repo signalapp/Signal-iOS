@@ -42,7 +42,10 @@ class MediaGalleryFileCell: MediaTileListModeCell {
     private static var cellHeights: [UIContentSizeCategory: CGFloat] = [:]
 
     class func cellHeight(for item: MediaGalleryCellItem, maxWidth: CGFloat) -> CGFloat {
-        guard case let .otherFile(fileItem) = item else {
+        switch item {
+        case .otherFile:
+            break
+        case .photoVideo, .audio:
             owsFailDebug("Unexpected item type")
             return defaultCellHeight
         }
@@ -59,14 +62,13 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             return defaultCellHeight
         }
         let genericAttachment = CVComponentState.GenericAttachment(
-            attachment: .stream(attachment),
+            attachment: .stream(attachment, isUploading: false),
         )
 
         let genericAttachmentViewSize = CVComponentGenericAttachment.measure(
             maxWidth: maxWidth,
             measurementBuilder: CVCellMeasurement.Builder(),
             genericAttachment: genericAttachment,
-            interaction: fileItem.interaction,
         )
 
         let cellHeight = genericAttachmentViewSize.height + Self.contentInset.totalHeight + 2 * Self.contentCardVerticalInset
@@ -155,7 +157,10 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             itemViewState: itemViewState.build(),
             coreState: coreState,
         )
-        let genericAttachment = CVComponentState.GenericAttachment(attachment: .stream(fileItem.attachmentStream))
+        let genericAttachment = CVComponentState.GenericAttachment(attachment: .stream(
+            fileItem.attachmentStream,
+            isUploading: false,
+        ))
         let component = CVComponentGenericAttachment(
             itemModel: itemModel,
             genericAttachment: genericAttachment,
@@ -170,7 +175,6 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             maxWidth: contentView.bounds.width, // actual max width doesn't matter because there's no multiline text
             measurementBuilder: measurementBuilder,
             genericAttachment: genericAttachment,
-            interaction: fileItem.interaction,
         )
         let cellMeasurement = measurementBuilder.build()
         component.configureForRendering(componentView: view, cellMeasurement: cellMeasurement, componentDelegate: self)
@@ -222,7 +226,10 @@ class MediaGalleryFileCell: MediaTileListModeCell {
         }
         let genericAttachment = CVComponentGenericAttachment(
             itemModel: itemModel,
-            genericAttachment: .init(attachment: .stream(fileItem.attachmentStream)),
+            genericAttachment: .init(attachment: .stream(
+                fileItem.attachmentStream,
+                isUploading: false,
+            )),
         )
         if
             PKAddPassesViewController.canAddPasses(),

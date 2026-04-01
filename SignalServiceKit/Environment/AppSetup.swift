@@ -573,6 +573,16 @@ extension AppSetup.GlobalsContinuation {
             storyStore: storyStore,
         )
 
+        let attachmentBackfillManager = AttachmentBackfillManager(
+            attachmentStore: attachmentStore,
+            attachmentUploadManager: attachmentUploadManager,
+            db: db,
+            interactionStore: interactionStore,
+            recipientDatabaseTable: recipientDatabaseTable,
+            syncMessageSender: messageSenderJobQueue,
+            threadStore: threadStore,
+        )
+
         let backupAttachmentDownloadQueueStatusManager = BackupAttachmentDownloadQueueStatusManagerImpl(
             appContext: appContext,
             appReadiness: appReadiness,
@@ -1667,6 +1677,7 @@ extension AppSetup.GlobalsContinuation {
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
             attachmentThumbnailService: attachmentThumbnailService,
+            attachmentBackfillManager: attachmentBackfillManager,
             attachmentUploadManager: attachmentUploadManager,
             attachmentValidationBackfillMigrator: attachmentValidationBackfillMigrator,
             attachmentViewOnceManager: attachmentViewOnceManager,

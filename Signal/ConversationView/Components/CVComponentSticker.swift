@@ -49,7 +49,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         let stackView = componentView.stackView
 
         switch sticker {
-        case .available(_, let attachmentStream):
+        case .available(_, let attachmentStream, let isUploading):
             let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.attachment.id)
             let isAnimated = attachmentStream.attachmentStream.contentType.isAnimatedImage
             let reusableMediaView: ReusableMediaView
@@ -74,8 +74,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             )
 
             switch CVAttachmentProgressView.progressType(
-                forAttachment: .stream(attachmentStream),
-                interaction: interaction,
+                cvAttachment: .stream(attachmentStream, isUploading: isUploading),
             ) {
             case .none:
                 break
@@ -91,8 +90,6 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 break
             case .downloading:
                 break
-            case .unknown:
-                owsFailDebug("Unknown progress type.")
             }
         case .downloading(let attachmentPointer):
             configureForRendering(

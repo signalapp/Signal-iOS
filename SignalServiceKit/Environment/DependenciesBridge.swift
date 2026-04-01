@@ -57,6 +57,7 @@ public class DependenciesBridge {
     public let attachmentManager: AttachmentManager
     public let attachmentStore: AttachmentStore
     public let attachmentThumbnailService: AttachmentThumbnailService
+    public let attachmentBackfillManager: AttachmentBackfillManager
     public let attachmentUploadManager: AttachmentUploadManager
     public let attachmentValidationBackfillMigrator: AttachmentValidationBackfillMigrator
     public let attachmentViewOnceManager: AttachmentViewOnceManager
@@ -198,6 +199,7 @@ public class DependenciesBridge {
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentThumbnailService: AttachmentThumbnailService,
+        attachmentBackfillManager: AttachmentBackfillManager,
         attachmentUploadManager: AttachmentUploadManager,
         attachmentValidationBackfillMigrator: AttachmentValidationBackfillMigrator,
         attachmentViewOnceManager: AttachmentViewOnceManager,
@@ -338,6 +340,7 @@ public class DependenciesBridge {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.attachmentThumbnailService = attachmentThumbnailService
+        self.attachmentBackfillManager = attachmentBackfillManager
         self.attachmentUploadManager = attachmentUploadManager
         self.attachmentValidationBackfillMigrator = attachmentValidationBackfillMigrator
         self.attachmentViewOnceManager = attachmentViewOnceManager

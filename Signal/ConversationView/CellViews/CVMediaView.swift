@@ -99,7 +99,7 @@ class CVMediaView: ManualLayoutViewWithLayer {
             configureForBackupThumbnailMedia(thumbnail.attachmentBackupThumbnail)
         case .pointer(let pointer, _):
             return configureForUndownloadedMedia(pointer.attachment)
-        case .stream(let attachmentStream):
+        case .stream(let attachmentStream, isUploading: _):
             let attachmentStream = attachmentStream.attachmentStream
             switch attachmentStream.contentType {
             case .image:
@@ -137,8 +137,7 @@ class CVMediaView: ManualLayoutViewWithLayer {
     private func addProgressViewIfNeeded() -> Bool {
         let direction: CVAttachmentProgressView.Direction
         switch CVAttachmentProgressView.progressType(
-            forAttachment: attachment,
-            interaction: interaction,
+            cvAttachment: attachment,
         ) {
         case .none:
             return false
@@ -156,9 +155,6 @@ class CVMediaView: ManualLayoutViewWithLayer {
                 attachmentPointer: attachmentPointer,
                 downloadState: downloadState,
             )
-        case .unknown:
-            owsFailDebug("Unknown progress type.")
-            return false
         }
 
         let progressView = CVAttachmentProgressView(

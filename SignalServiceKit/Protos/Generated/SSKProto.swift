@@ -16211,6 +16211,785 @@ extension SSKProtoSyncMessageDeviceNameChangeBuilder {
 
 #endif
 
+// MARK: - SSKProtoSyncMessageAttachmentBackfillRequest
+
+@objc
+public class SSKProtoSyncMessageAttachmentBackfillRequest: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.AttachmentBackfillRequest
+
+    @objc
+    public let targetMessage: SSKProtoAddressableMessage?
+
+    @objc
+    public let targetConversation: SSKProtoConversationIdentifier?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.AttachmentBackfillRequest,
+                 targetMessage: SSKProtoAddressableMessage?,
+                 targetConversation: SSKProtoConversationIdentifier?) {
+        self.proto = proto
+        self.targetMessage = targetMessage
+        self.targetConversation = targetConversation
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.AttachmentBackfillRequest(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.AttachmentBackfillRequest) {
+        var targetMessage: SSKProtoAddressableMessage?
+        if proto.hasTargetMessage {
+            targetMessage = SSKProtoAddressableMessage(proto.targetMessage)
+        }
+
+        var targetConversation: SSKProtoConversationIdentifier?
+        if proto.hasTargetConversation {
+            targetConversation = SSKProtoConversationIdentifier(proto.targetConversation)
+        }
+
+        self.init(proto: proto,
+                  targetMessage: targetMessage,
+                  targetConversation: targetConversation)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoSyncMessageAttachmentBackfillRequest {
+    @objc
+    public static func builder() -> SSKProtoSyncMessageAttachmentBackfillRequestBuilder {
+        return SSKProtoSyncMessageAttachmentBackfillRequestBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageAttachmentBackfillRequestBuilder {
+        let builder = SSKProtoSyncMessageAttachmentBackfillRequestBuilder()
+        if let _value = targetMessage {
+            builder.setTargetMessage(_value)
+        }
+        if let _value = targetConversation {
+            builder.setTargetConversation(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoSyncMessageAttachmentBackfillRequestBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_SyncMessage.AttachmentBackfillRequest()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setTargetMessage(_ valueParam: SSKProtoAddressableMessage?) {
+        guard let valueParam = valueParam else { return }
+        proto.targetMessage = valueParam.proto
+    }
+
+    public func setTargetMessage(_ valueParam: SSKProtoAddressableMessage) {
+        proto.targetMessage = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setTargetConversation(_ valueParam: SSKProtoConversationIdentifier?) {
+        guard let valueParam = valueParam else { return }
+        proto.targetConversation = valueParam.proto
+    }
+
+    public func setTargetConversation(_ valueParam: SSKProtoConversationIdentifier) {
+        proto.targetConversation = valueParam.proto
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageAttachmentBackfillRequest {
+        return SSKProtoSyncMessageAttachmentBackfillRequest(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoSyncMessageAttachmentBackfillRequest(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoSyncMessageAttachmentBackfillRequest {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageAttachmentBackfillRequestBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageAttachmentBackfillRequest? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataStatus
+
+@objc
+public enum SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataStatus: Int32 {
+    case pending = 0
+    case terminalError = 1
+}
+
+private func SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataStatusWrap(_ value: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData.Status) -> SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataStatus {
+    switch value {
+    case .pending: return .pending
+    case .terminalError: return .terminalError
+    }
+}
+
+private func SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataStatusUnwrap(_ value: SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataStatus) -> SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData.Status {
+    switch value {
+    case .pending: return .pending
+    case .terminalError: return .terminalError
+    }
+}
+
+// MARK: - SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData
+
+@objc
+public class SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData
+
+    @objc
+    public let attachment: SSKProtoAttachmentPointer?
+
+    public var status: SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataStatus? {
+        guard hasStatus else {
+            return nil
+        }
+        return SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataStatusWrap(proto.status)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedStatus: SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataStatus {
+        if !hasStatus {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: AttachmentData.status.")
+        }
+        return SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataStatusWrap(proto.status)
+    }
+    @objc
+    public var hasStatus: Bool {
+        return proto.hasStatus
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData,
+                 attachment: SSKProtoAttachmentPointer?) {
+        self.proto = proto
+        self.attachment = attachment
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData) {
+        var attachment: SSKProtoAttachmentPointer?
+        if proto.hasAttachment {
+            attachment = SSKProtoAttachmentPointer(proto.attachment)
+        }
+
+        self.init(proto: proto,
+                  attachment: attachment)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData {
+    @objc
+    public static func builder() -> SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataBuilder {
+        return SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataBuilder {
+        let builder = SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataBuilder()
+        if let _value = attachment {
+            builder.setAttachment(_value)
+        }
+        if let _value = status {
+            builder.setStatus(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAttachment(_ valueParam: SSKProtoAttachmentPointer?) {
+        guard let valueParam = valueParam else { return }
+        proto.attachment = valueParam.proto
+    }
+
+    public func setAttachment(_ valueParam: SSKProtoAttachmentPointer) {
+        proto.attachment = valueParam.proto
+    }
+
+    @objc
+    public func setStatus(_ valueParam: SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataStatus) {
+        proto.status = SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataStatusUnwrap(valueParam)
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData {
+        return SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList
+
+@objc
+public class SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList
+
+    @objc
+    public let attachments: [SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData]
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList,
+                 attachments: [SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData]) {
+        self.proto = proto
+        self.attachments = attachments
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList) {
+        var attachments: [SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData] = []
+        attachments = proto.attachments.map { SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData($0) }
+
+        self.init(proto: proto,
+                  attachments: attachments)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList {
+    @objc
+    public static func builder() -> SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataListBuilder {
+        return SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataListBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataListBuilder {
+        let builder = SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataListBuilder()
+        builder.setAttachments(attachments)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataListBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    public func addAttachments(_ valueParam: SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData) {
+        proto.attachments.append(valueParam.proto)
+    }
+
+    @objc
+    public func setAttachments(_ wrappedItems: [SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData]) {
+        proto.attachments = wrappedItems.map { $0.proto }
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList {
+        return SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataListBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoSyncMessageAttachmentBackfillResponseError
+
+@objc
+public enum SSKProtoSyncMessageAttachmentBackfillResponseError: Int32 {
+    case messageNotFound = 0
+}
+
+private func SSKProtoSyncMessageAttachmentBackfillResponseErrorWrap(_ value: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.Error) -> SSKProtoSyncMessageAttachmentBackfillResponseError {
+    switch value {
+    case .messageNotFound: return .messageNotFound
+    }
+}
+
+private func SSKProtoSyncMessageAttachmentBackfillResponseErrorUnwrap(_ value: SSKProtoSyncMessageAttachmentBackfillResponseError) -> SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.Error {
+    switch value {
+    case .messageNotFound: return .messageNotFound
+    }
+}
+
+// MARK: - SSKProtoSyncMessageAttachmentBackfillResponse
+
+@objc
+public class SSKProtoSyncMessageAttachmentBackfillResponse: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse
+
+    @objc
+    public let targetMessage: SSKProtoAddressableMessage?
+
+    @objc
+    public let targetConversation: SSKProtoConversationIdentifier?
+
+    @objc
+    public let attachments: SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList?
+
+    public var error: SSKProtoSyncMessageAttachmentBackfillResponseError? {
+        guard hasError else {
+            return nil
+        }
+        return SSKProtoSyncMessageAttachmentBackfillResponseErrorWrap(proto.error)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedError: SSKProtoSyncMessageAttachmentBackfillResponseError {
+        if !hasError {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: AttachmentBackfillResponse.error.")
+        }
+        return SSKProtoSyncMessageAttachmentBackfillResponseErrorWrap(proto.error)
+    }
+    @objc
+    public var hasError: Bool {
+        return proto.hasError
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse,
+                 targetMessage: SSKProtoAddressableMessage?,
+                 targetConversation: SSKProtoConversationIdentifier?,
+                 attachments: SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList?) {
+        self.proto = proto
+        self.targetMessage = targetMessage
+        self.targetConversation = targetConversation
+        self.attachments = attachments
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.AttachmentBackfillResponse(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse) {
+        var targetMessage: SSKProtoAddressableMessage?
+        if proto.hasTargetMessage {
+            targetMessage = SSKProtoAddressableMessage(proto.targetMessage)
+        }
+
+        var targetConversation: SSKProtoConversationIdentifier?
+        if proto.hasTargetConversation {
+            targetConversation = SSKProtoConversationIdentifier(proto.targetConversation)
+        }
+
+        var attachments: SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList?
+        if proto.hasAttachments {
+            attachments = SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList(proto.attachments)
+        }
+
+        self.init(proto: proto,
+                  targetMessage: targetMessage,
+                  targetConversation: targetConversation,
+                  attachments: attachments)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoSyncMessageAttachmentBackfillResponse {
+    @objc
+    public static func builder() -> SSKProtoSyncMessageAttachmentBackfillResponseBuilder {
+        return SSKProtoSyncMessageAttachmentBackfillResponseBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageAttachmentBackfillResponseBuilder {
+        let builder = SSKProtoSyncMessageAttachmentBackfillResponseBuilder()
+        if let _value = targetMessage {
+            builder.setTargetMessage(_value)
+        }
+        if let _value = targetConversation {
+            builder.setTargetConversation(_value)
+        }
+        if let _value = attachments {
+            builder.setAttachments(_value)
+        }
+        if let _value = error {
+            builder.setError(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoSyncMessageAttachmentBackfillResponseBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_SyncMessage.AttachmentBackfillResponse()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setTargetMessage(_ valueParam: SSKProtoAddressableMessage?) {
+        guard let valueParam = valueParam else { return }
+        proto.targetMessage = valueParam.proto
+    }
+
+    public func setTargetMessage(_ valueParam: SSKProtoAddressableMessage) {
+        proto.targetMessage = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setTargetConversation(_ valueParam: SSKProtoConversationIdentifier?) {
+        guard let valueParam = valueParam else { return }
+        proto.targetConversation = valueParam.proto
+    }
+
+    public func setTargetConversation(_ valueParam: SSKProtoConversationIdentifier) {
+        proto.targetConversation = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAttachments(_ valueParam: SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList?) {
+        guard let valueParam = valueParam else { return }
+        proto.attachments = valueParam.proto
+    }
+
+    public func setAttachments(_ valueParam: SSKProtoSyncMessageAttachmentBackfillResponseAttachmentDataList) {
+        proto.attachments = valueParam.proto
+    }
+
+    @objc
+    public func setError(_ valueParam: SSKProtoSyncMessageAttachmentBackfillResponseError) {
+        proto.error = SSKProtoSyncMessageAttachmentBackfillResponseErrorUnwrap(valueParam)
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageAttachmentBackfillResponse {
+        return SSKProtoSyncMessageAttachmentBackfillResponse(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoSyncMessageAttachmentBackfillResponse(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoSyncMessageAttachmentBackfillResponse {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageAttachmentBackfillResponseBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageAttachmentBackfillResponse? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessage
 
 @objc
@@ -16279,6 +17058,12 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
     public let deviceNameChange: SSKProtoSyncMessageDeviceNameChange?
 
     @objc
+    public let attachmentBackfillRequest: SSKProtoSyncMessageAttachmentBackfillRequest?
+
+    @objc
+    public let attachmentBackfillResponse: SSKProtoSyncMessageAttachmentBackfillResponse?
+
+    @objc
     public var padding: Data? {
         guard hasPadding else {
             return nil
@@ -16318,7 +17103,9 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                  callLinkUpdate: SSKProtoSyncMessageCallLinkUpdate?,
                  callLogEvent: SSKProtoSyncMessageCallLogEvent?,
                  deleteForMe: SSKProtoSyncMessageDeleteForMe?,
-                 deviceNameChange: SSKProtoSyncMessageDeviceNameChange?) {
+                 deviceNameChange: SSKProtoSyncMessageDeviceNameChange?,
+                 attachmentBackfillRequest: SSKProtoSyncMessageAttachmentBackfillRequest?,
+                 attachmentBackfillResponse: SSKProtoSyncMessageAttachmentBackfillResponse?) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -16340,6 +17127,8 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
         self.callLogEvent = callLogEvent
         self.deleteForMe = deleteForMe
         self.deviceNameChange = deviceNameChange
+        self.attachmentBackfillRequest = attachmentBackfillRequest
+        self.attachmentBackfillResponse = attachmentBackfillResponse
     }
 
     @objc
@@ -16448,6 +17237,16 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
             deviceNameChange = SSKProtoSyncMessageDeviceNameChange(proto.deviceNameChange)
         }
 
+        var attachmentBackfillRequest: SSKProtoSyncMessageAttachmentBackfillRequest?
+        if proto.hasAttachmentBackfillRequest {
+            attachmentBackfillRequest = SSKProtoSyncMessageAttachmentBackfillRequest(proto.attachmentBackfillRequest)
+        }
+
+        var attachmentBackfillResponse: SSKProtoSyncMessageAttachmentBackfillResponse?
+        if proto.hasAttachmentBackfillResponse {
+            attachmentBackfillResponse = SSKProtoSyncMessageAttachmentBackfillResponse(proto.attachmentBackfillResponse)
+        }
+
         self.init(proto: proto,
                   sent: sent,
                   contacts: contacts,
@@ -16468,7 +17267,9 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                   callLinkUpdate: callLinkUpdate,
                   callLogEvent: callLogEvent,
                   deleteForMe: deleteForMe,
-                  deviceNameChange: deviceNameChange)
+                  deviceNameChange: deviceNameChange,
+                  attachmentBackfillRequest: attachmentBackfillRequest,
+                  attachmentBackfillResponse: attachmentBackfillResponse)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -16573,6 +17374,12 @@ extension SSKProtoSyncMessage {
         }
         if let _value = deviceNameChange {
             builder.setDeviceNameChange(_value)
+        }
+        if let _value = attachmentBackfillRequest {
+            builder.setAttachmentBackfillRequest(_value)
+        }
+        if let _value = attachmentBackfillResponse {
+            builder.setAttachmentBackfillResponse(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -16815,6 +17622,28 @@ public class SSKProtoSyncMessageBuilder: NSObject {
 
     public func setDeviceNameChange(_ valueParam: SSKProtoSyncMessageDeviceNameChange) {
         proto.deviceNameChange = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAttachmentBackfillRequest(_ valueParam: SSKProtoSyncMessageAttachmentBackfillRequest?) {
+        guard let valueParam = valueParam else { return }
+        proto.attachmentBackfillRequest = valueParam.proto
+    }
+
+    public func setAttachmentBackfillRequest(_ valueParam: SSKProtoSyncMessageAttachmentBackfillRequest) {
+        proto.attachmentBackfillRequest = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAttachmentBackfillResponse(_ valueParam: SSKProtoSyncMessageAttachmentBackfillResponse?) {
+        guard let valueParam = valueParam else { return }
+        proto.attachmentBackfillResponse = valueParam.proto
+    }
+
+    public func setAttachmentBackfillResponse(_ valueParam: SSKProtoSyncMessageAttachmentBackfillResponse) {
+        proto.attachmentBackfillResponse = valueParam.proto
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

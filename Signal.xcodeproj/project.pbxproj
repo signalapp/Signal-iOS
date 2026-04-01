@@ -2700,6 +2700,8 @@
 		D92CA9EF2F500EA500FDE32D /* LeaveGroupCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92CA9EE2F500EA500FDE32D /* LeaveGroupCoordinator.swift */; };
 		D92CB5562F030F8300537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */; };
 		D92EFDE92F68E9F60031D257 /* DeleteForMeOutgoingSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92EFDE82F68E9F60031D257 /* DeleteForMeOutgoingSyncMessageTest.swift */; };
+		D92EFDEC2F68EB7D0031D257 /* AttachmentBackfillManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92EFDEA2F68EB7D0031D257 /* AttachmentBackfillManager.swift */; };
+		D92EFDEF2F69B9D80031D257 /* AttachmentBackfillManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92EFDEE2F69B9D50031D257 /* AttachmentBackfillManagerTest.swift */; };
 		D93086272C616391008E3A27 /* TSOutgoingMessage+Builder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93086262C616391008E3A27 /* TSOutgoingMessage+Builder.swift */; };
 		D93086292C61672E008E3A27 /* TSErrorMessage+Builder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93086282C61672E008E3A27 /* TSErrorMessage+Builder.swift */; };
 		D93108042B30F7E3006A034E /* CallRecordQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93108032B30F7E3006A034E /* CallRecordQuerier.swift */; };
@@ -2905,6 +2907,9 @@
 		D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979DA152B8D1FDD000EEAB8 /* BadgeCountFetcher.swift */; };
 		D97C43962D7F74F300BA41E0 /* recipient_contacts_05.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D97C43952D7F74F300BA41E0 /* recipient_contacts_05.txtproto */; };
 		D97C43972D7F74F300BA41E0 /* recipient_contacts_05.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D97C43942D7F74F300BA41E0 /* recipient_contacts_05.binproto */; };
+		D9807D862F7C2C0A0069A5EF /* AttachmentBackfillInboundRequestRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9807D842F7C2BEF0069A5EF /* AttachmentBackfillInboundRequestRecord.swift */; };
+		D9807D882F7C2D020069A5EF /* AttachmentBackfillRequestSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9807D872F7C2CFD0069A5EF /* AttachmentBackfillRequestSyncMessage.swift */; };
+		D9807D8A2F7C2D310069A5EF /* AttachmentBackfillResponseSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9807D892F7C2D2D0069A5EF /* AttachmentBackfillResponseSyncMessage.swift */; };
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
 		D987C8CF2E1CBE00004072BC /* BackupTestFlightEntitlementManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D987C8CE2E1CBDFB004072BC /* BackupTestFlightEntitlementManager.swift */; };
 		D98ACAA72E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98ACAA62E0CA11F00FA497F /* BackupAttachmentUploadQueueStatusManager.swift */; };
@@ -6969,6 +6974,8 @@
 		D92CA9EE2F500EA500FDE32D /* LeaveGroupCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveGroupCoordinator.swift; sourceTree = "<group>"; };
 		D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionAlreadyRedeemedSheet.swift; sourceTree = "<group>"; };
 		D92EFDE82F68E9F60031D257 /* DeleteForMeOutgoingSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageTest.swift; sourceTree = "<group>"; };
+		D92EFDEA2F68EB7D0031D257 /* AttachmentBackfillManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentBackfillManager.swift; sourceTree = "<group>"; };
+		D92EFDEE2F69B9D50031D257 /* AttachmentBackfillManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentBackfillManagerTest.swift; sourceTree = "<group>"; };
 		D93086262C616391008E3A27 /* TSOutgoingMessage+Builder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSOutgoingMessage+Builder.swift"; sourceTree = "<group>"; };
 		D93086282C61672E008E3A27 /* TSErrorMessage+Builder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSErrorMessage+Builder.swift"; sourceTree = "<group>"; };
 		D93108032B30F7E3006A034E /* CallRecordQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordQuerier.swift; sourceTree = "<group>"; };
@@ -7184,6 +7191,9 @@
 		D97C43942D7F74F300BA41E0 /* recipient_contacts_05.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = recipient_contacts_05.binproto; sourceTree = "<group>"; };
 		D97C43952D7F74F300BA41E0 /* recipient_contacts_05.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = recipient_contacts_05.txtproto; sourceTree = "<group>"; };
 		D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupDisablingManager.swift; sourceTree = "<group>"; };
+		D9807D842F7C2BEF0069A5EF /* AttachmentBackfillInboundRequestRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentBackfillInboundRequestRecord.swift; sourceTree = "<group>"; };
+		D9807D872F7C2CFD0069A5EF /* AttachmentBackfillRequestSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentBackfillRequestSyncMessage.swift; sourceTree = "<group>"; };
+		D9807D892F7C2D2D0069A5EF /* AttachmentBackfillResponseSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentBackfillResponseSyncMessage.swift; sourceTree = "<group>"; };
 		D98300B12936E6C70018FDC2 /* SubscriptionConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionConfigManager.swift; sourceTree = "<group>"; };
 		D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerTest.swift; sourceTree = "<group>"; };
 		D987C8CE2E1CBDFB004072BC /* BackupTestFlightEntitlementManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupTestFlightEntitlementManager.swift; sourceTree = "<group>"; };
@@ -13433,6 +13443,25 @@
 			path = CallRecord;
 			sourceTree = "<group>";
 		};
+		D92EFDEB2F68EB7D0031D257 /* AttachmentBackfill */ = {
+			isa = PBXGroup;
+			children = (
+				D9807D842F7C2BEF0069A5EF /* AttachmentBackfillInboundRequestRecord.swift */,
+				D92EFDEA2F68EB7D0031D257 /* AttachmentBackfillManager.swift */,
+				D9807D872F7C2CFD0069A5EF /* AttachmentBackfillRequestSyncMessage.swift */,
+				D9807D892F7C2D2D0069A5EF /* AttachmentBackfillResponseSyncMessage.swift */,
+			);
+			path = AttachmentBackfill;
+			sourceTree = "<group>";
+		};
+		D92EFDED2F69B9D00031D257 /* AttachmentBackfill */ = {
+			isa = PBXGroup;
+			children = (
+				D92EFDEE2F69B9D50031D257 /* AttachmentBackfillManagerTest.swift */,
+			);
+			path = AttachmentBackfill;
+			sourceTree = "<group>";
+		};
 		D931080C2B338D00006A034E /* CallsTab */ = {
 			isa = PBXGroup;
 			children = (
@@ -14589,6 +14618,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C5C9BA289453B100548EEE /* Account */,
+				D92EFDEB2F68EB7D0031D257 /* AttachmentBackfill */,
 				7255A4C32B98D5A800E95368 /* Attachments */,
 				720547F12B9C8F5E00E2CF2F /* Avatars */,
 				665C0D5A2ADF537000539A37 /* Backups */,
@@ -14649,6 +14679,7 @@
 			isa = PBXGroup;
 			children = (
 				F94261FF289B1B5400460798 /* Account */,
+				D92EFDED2F69B9D00031D257 /* AttachmentBackfill */,
 				50ED28002F0EDAFB00E57C54 /* Attachments */,
 				F945FE4B298481D800C835C7 /* Calls */,
 				D985D86229B91C2B0087C90C /* ChangePhoneNumber */,
@@ -18903,6 +18934,10 @@
 				F9C5CDF7289453B400548EEE /* Atomics.swift in Sources */,
 				66D7B91D2B97C5330005C98B /* Attachment+ContentType.swift in Sources */,
 				66E1AD762B8FD0B700C56B7B /* Attachment.swift in Sources */,
+				D9807D862F7C2C0A0069A5EF /* AttachmentBackfillInboundRequestRecord.swift in Sources */,
+				D92EFDEC2F68EB7D0031D257 /* AttachmentBackfillManager.swift in Sources */,
+				D9807D882F7C2D020069A5EF /* AttachmentBackfillRequestSyncMessage.swift in Sources */,
+				D9807D8A2F7C2D310069A5EF /* AttachmentBackfillResponseSyncMessage.swift in Sources */,
 				66C38A3A2D4055DC004B6B15 /* AttachmentBackupPointer.swift in Sources */,
 				C1FE1F612C80CDC30031860B /* AttachmentBackupThumbnail.swift in Sources */,
 				661BFE002C07C5F30065435B /* AttachmentContentValidator.swift in Sources */,
@@ -20087,6 +20122,7 @@
 				F915A77229CB6F6F00EB6F68 /* AccountDataReportTest.swift in Sources */,
 				F908C67B29F08E4E00C3EFC4 /* AppExpiryTest.swift in Sources */,
 				66B1E2702CB48C53005F43AC /* Array+SSKTest.swift in Sources */,
+				D92EFDEF2F69B9D80031D257 /* AttachmentBackfillManagerTest.swift in Sources */,
 				669573082C1B9ECD0092B755 /* AttachmentDownloadQueueDBTests.swift in Sources */,
 				66BE13CC2C1D02700081A1ED /* AttachmentDownloadStoreTests.swift in Sources */,
 				664013302C00155E00F10FC4 /* AttachmentStoreTests.swift in Sources */,

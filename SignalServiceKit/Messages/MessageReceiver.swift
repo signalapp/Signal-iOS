@@ -829,6 +829,20 @@ public final class MessageReceiver {
                     _ = try await deviceService.refreshDevices()
                 }
             }
+        } else if let attachmentBackfillRequest = syncMessage.attachmentBackfillRequest {
+            let attachmentBackfillManager = DependenciesBridge.shared.attachmentBackfillManager
+            attachmentBackfillManager.enqueueInboundRequest(
+                attachmentBackfillRequestProto: attachmentBackfillRequest,
+                registeredState: registeredState,
+                tx: tx,
+            )
+        } else if let attachmentBackfillResponse = syncMessage.attachmentBackfillResponse {
+            let attachmentBackfillManager = DependenciesBridge.shared.attachmentBackfillManager
+            attachmentBackfillManager.enqueueInboundResponse(
+                attachmentBackfillResponseProto: attachmentBackfillResponse,
+                registeredState: registeredState,
+                tx: tx,
+            )
         } else {
             Logger.warn("Ignoring unsupported sync message.")
         }
@@ -2549,6 +2563,12 @@ extension SSKProtoSyncMessage {
         }
         if deviceNameChange != nil {
             parts.append("deviceNameChange")
+        }
+        if attachmentBackfillRequest != nil {
+            parts.append("attachmentBackfillRequest")
+        }
+        if attachmentBackfillResponse != nil {
+            parts.append("attachmentBackfillResponse")
         }
         if hasUnknownFields {
             parts.append("unknown fields")

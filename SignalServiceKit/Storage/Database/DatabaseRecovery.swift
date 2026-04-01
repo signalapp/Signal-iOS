@@ -343,6 +343,7 @@ public enum DatabaseRecovery {
             PinnedMessageRecord.databaseTableName,
             "KeyTransparency",
             AdminDeleteRecord.databaseTableName,
+            AttachmentBackfillInboundRequestRecord.databaseTableName,
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

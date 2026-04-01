@@ -57,6 +57,34 @@ extension AttachmentReference.ConstructionParams {
             sourceMediaSizePixels: sourceMediaSizePixels,
         )
     }
+
+    public static func mockMessageStickerReference(
+        messageRowId: Int64,
+        threadRowId: Int64,
+        receivedAtTimestamp: UInt64 = Date().ows_millisecondsSince1970,
+        contentType: Attachment.ContentTypeRaw? = .image,
+        isPastEditRevision: Bool = false,
+        stickerPackId: Data = Data(repeating: 0, count: 16),
+        stickerId: UInt32 = 0,
+        sourceFilename: String? = UUID().uuidString,
+        sourceUnencryptedByteCount: UInt32? = .random(in: 0...100),
+        sourceMediaSizePixels: CGSize? = CGSize(width: .random(in: 0...100), height: .random(in: 0...100)),
+    ) -> AttachmentReference.ConstructionParams {
+        return .mock(
+            owner: .message(.sticker(.init(
+                messageRowId: messageRowId,
+                receivedAtTimestamp: receivedAtTimestamp,
+                threadRowId: threadRowId,
+                contentType: contentType,
+                isPastEditRevision: isPastEditRevision,
+                stickerPackId: stickerPackId,
+                stickerId: stickerId,
+            ))),
+            sourceFilename: sourceFilename,
+            sourceUnencryptedByteCount: sourceUnencryptedByteCount,
+            sourceMediaSizePixels: sourceMediaSizePixels,
+        )
+    }
 }
 
 #endif

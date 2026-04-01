@@ -191,6 +191,7 @@ public class AppEnvironment: NSObject {
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             let accountEntropyPoolManager = DependenciesBridge.shared.accountEntropyPoolManager
+            let attachmentBackfillManager = DependenciesBridge.shared.attachmentBackfillManager
             let backupExportJobRunner = DependenciesBridge.shared.backupExportJobRunner
             let backupIdService = DependenciesBridge.shared.backupIdService
             let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
@@ -225,18 +226,12 @@ public class AppEnvironment: NSObject {
                 threadStore: threadStore,
             )
 
-            let (
-                isRegisteredPrimaryDevice,
-                localIdentifiers,
-            ) = db.read { tx in
-                (
-                    tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
-                    tsAccountManager.localIdentifiers(tx: tx),
-                )
+            let registeredState = db.read { tx in
+                return try? tsAccountManager.registeredState(tx: tx)
             }
 
-            // Things that should run on only the primary *or* linked devices.
-            if isRegisteredPrimaryDevice, let localIdentifiers {
+            // Things that should run on either the primary or linked devices.
+            if let registeredState, registeredState.isPrimary {
                 Task {
                     do {
                         try await avatarDefaultColorStorageServiceMigrator.performMigrationIfNecessary()
@@ -252,7 +247,7 @@ public class AppEnvironment: NSObject {
                 Task {
                     do {
                         try await backupIdService.registerBackupIDIfNecessary(
-                            localAci: localIdentifiers.aci,
+                            localAci: registeredState.localIdentifiers.aci,
                             auth: .implicit(),
                             logger: PrefixedLogger(prefix: "[Launch]"),
                         )
@@ -275,6 +270,11 @@ public class AppEnvironment: NSObject {
                     // between client and server around the registrationID
                     await self.registrationIdMismatchManager.validateRegistrationIds()
                 }
+
+                // Start any incomplete enqueued attachment backfill requests.
+                attachmentBackfillManager.processEnqueuedInboundRequests(
+                    registeredState: registeredState,
+                )
             } else {
                 Task {
                     await identityKeyMismatchManager.validateLocalPniIdentityKeyIfNecessary()

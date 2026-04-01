@@ -9,7 +9,7 @@ public import SignalServiceKit
 import SignalUI
 
 public enum CVAttachment: Equatable {
-    case stream(ReferencedAttachmentStream)
+    case stream(ReferencedAttachmentStream, isUploading: Bool)
     case pointer(ReferencedAttachmentPointer, downloadState: AttachmentDownloadState)
     case backupThumbnail(ReferencedAttachmentBackupThumbnail)
     /// The attachment has no stream and cannot be downloaded because there is no cdn info.
@@ -18,7 +18,7 @@ public enum CVAttachment: Equatable {
 
     public var attachment: ReferencedAttachment {
         switch self {
-        case .stream(let stream):
+        case .stream(let stream, _):
             return stream
         case .pointer(let pointer, _):
             return pointer
@@ -31,7 +31,7 @@ public enum CVAttachment: Equatable {
 
     public var attachmentStream: AttachmentStream? {
         switch self {
-        case .stream(let stream):
+        case .stream(let stream, _):
             return stream.attachmentStream
         case .pointer, .backupThumbnail:
             return nil
@@ -62,23 +62,54 @@ public enum CVAttachment: Equatable {
         }
     }
 
-    public static func from(_ attachment: ReferencedAttachment, tx: DBReadTransaction) -> CVAttachment {
-        if let stream = attachment.asReferencedStream {
-            return .stream(stream)
-        } else if let pointer = attachment.asReferencedAnyPointer {
+    public static func from(
+        referencedAttachment: ReferencedAttachment,
+        message: TSMessage,
+        tx: DBReadTransaction,
+    ) -> CVAttachment {
+        if let stream = referencedAttachment.asReferencedStream {
+            let attachmentBackfillManager = DependenciesBridge.shared.attachmentBackfillManager
+            var isUploading = false
+
+            // We can infer from the properties of an outgoing message whether
+            // it's got things being uploaded.
+            if
+                let outgoingMessage = message as? TSOutgoingMessage,
+                referencedAttachment.attachment.latestTransitTierInfo == nil,
+                referencedAttachment.attachment.mediaTierInfo == nil,
+                !outgoingMessage.wasNotCreatedLocally,
+                outgoingMessage.messageState != .failed
+            {
+                isUploading = true
+            }
+
+            // If we have an enqueued backfill for this message, assume this
+            // attachment is being reuploaded.
+            if
+                attachmentBackfillManager.hasEnqueuedInboundRequest(
+                    interactionRowId: message.sqliteRowId!,
+                    tx: tx,
+                )
+            {
+                isUploading = true
+            }
+
+            return .stream(stream, isUploading: isUploading)
+        } else if let pointer = referencedAttachment.asReferencedAnyPointer {
             return .pointer(pointer, downloadState: pointer.attachmentPointer.downloadState(tx: tx))
-        } else if let thumbnail = attachment.asReferencedBackupThumbnail {
+        } else if let thumbnail = referencedAttachment.asReferencedBackupThumbnail {
             return .backupThumbnail(thumbnail)
         } else {
-            return .undownloadable(attachment)
+            return .undownloadable(referencedAttachment)
         }
     }
 
     public static func ==(lhs: CVAttachment, rhs: CVAttachment) -> Bool {
         switch (lhs, rhs) {
-        case (.stream(let lhsStream), .stream(let rhsStream)):
+        case (.stream(let lhsStream, let lhsIsUploading), .stream(let rhsStream, let rhsIsUploading)):
             return lhsStream.attachment.id == rhsStream.attachment.id
                 && lhsStream.reference.hasSameOwner(as: rhsStream.reference)
+                && lhsIsUploading == rhsIsUploading
         case (.pointer(let lhsPointer, let lhsState), .pointer(let rhsPointer, let rhsState)):
             return lhsPointer.attachment.id == rhsPointer.attachment.id
                 && lhsPointer.reference.hasSameOwner(as: rhsPointer.reference)
@@ -255,6 +286,7 @@ public struct CVComponentState: Equatable {
         case available(
             stickerMetadata: any StickerMetadata,
             attachmentStream: ReferencedAttachmentStream,
+            isUploading: Bool,
         )
         case downloading(attachmentPointer: ReferencedAttachmentPointer)
         case failedOrPending(
@@ -264,7 +296,7 @@ public struct CVComponentState: Equatable {
 
         var stickerMetadata: (any StickerMetadata)? {
             switch self {
-            case .available(let stickerMetadata, _):
+            case .available(let stickerMetadata, attachmentStream: _, isUploading: _):
                 return stickerMetadata
             case .downloading, .failedOrPending:
                 return nil
@@ -273,7 +305,7 @@ public struct CVComponentState: Equatable {
 
         var attachmentStream: ReferencedAttachmentStream? {
             switch self {
-            case .available(_, let attachmentStream):
+            case .available(stickerMetadata: _, let attachmentStream, isUploading: _):
                 return attachmentStream
             case .downloading:
                 return nil
@@ -295,10 +327,11 @@ public struct CVComponentState: Equatable {
 
         static func ==(lhs: CVComponentState.Sticker, rhs: CVComponentState.Sticker) -> Bool {
             switch (lhs, rhs) {
-            case let (.available(lhsData, lhsStream), .available(rhsData, rhsStream)):
+            case let (.available(lhsData, lhsStream, lhsIsUploading), .available(rhsData, rhsStream, rhsIsUploading)):
                 return lhsData.stickerInfo.asKey() == rhsData.stickerInfo.asKey()
                     && lhsStream.attachment.id == rhsStream.attachment.id
                     && lhsStream.reference.hasSameOwner(as: rhsStream.reference)
+                    && lhsIsUploading == rhsIsUploading
             case let (.downloading(lhsPointer), .downloading(rhsPointer)):
                 return lhsPointer.attachment.id == rhsPointer.attachment.id
                     && lhsPointer.reference.hasSameOwner(as: rhsPointer.reference)
@@ -1316,7 +1349,10 @@ private extension CVComponentState.Builder {
             // Only media galleries should have more than one attachment.
             owsAssertDebug(bodyAttachments.count <= 1)
             if let bodyAttachment = bodyAttachments.first {
-                try buildNonMediaAttachment(bodyAttachment: bodyAttachment)
+                buildNonMediaAttachment(
+                    referencedAttachment: bodyAttachment,
+                    message: message,
+                )
             }
         }
 
@@ -1496,14 +1532,22 @@ private extension CVComponentState.Builder {
 
         guard
             let rowId = message.sqliteRowId,
-            let attachment = DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
+            let referencedAttachment = DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
                 for: .messageSticker(messageRowId: rowId),
                 tx: transaction,
             )
         else {
             throw OWSAssertionError("Missing sticker attachment.")
         }
-        if let referencedAttachmentStream = attachment.asReferencedStream {
+
+        let cvAttachment = CVAttachment.from(
+            referencedAttachment: referencedAttachment,
+            message: message,
+            tx: transaction,
+        )
+
+        switch cvAttachment {
+        case .stream(let referencedAttachmentStream, let isUploading):
             let stickerMetadata = EncryptedStickerMetadata(
                 stickerInfo: messageSticker.info,
                 stickerType: StickerManager.stickerType(forContentType: referencedAttachmentStream.attachment.mimeType),
@@ -1516,24 +1560,23 @@ private extension CVComponentState.Builder {
             self.sticker = .available(
                 stickerMetadata: stickerMetadata,
                 attachmentStream: referencedAttachmentStream,
+                isUploading: isUploading,
             )
-            return build()
-        } else if let attachmentPointer = attachment.asReferencedAnyPointer {
-            let downloadState = attachmentPointer.attachmentPointer.downloadState(tx: transaction)
+        case .pointer(let referencedAttachmentPointer, let downloadState):
             switch downloadState {
             case .enqueuedOrDownloading:
-                self.sticker = .downloading(attachmentPointer: attachmentPointer)
+                self.sticker = .downloading(attachmentPointer: referencedAttachmentPointer)
             case .failed, .none:
                 self.sticker = .failedOrPending(
-                    attachmentPointer: attachmentPointer,
+                    attachmentPointer: referencedAttachmentPointer,
                     downloadState: downloadState,
                 )
             }
-            return build()
-        } else {
+        case .backupThumbnail, .undownloadable:
             self.undownloadableAttachment = .sticker
-            return build()
         }
+
+        return build()
     }
 
     // TODO: Should we validate and throw errors?
@@ -1615,11 +1658,11 @@ private extension CVComponentState.Builder {
             ?? false
 
         var mediaAlbumItems = [CVMediaAlbumItem]()
-        for attachment in mediaAttachments {
+        for referencedAttachment in mediaAttachments {
             guard
                 // Use the validated content type and only fall back to the mime type.
-                attachment.attachment.asStream()?.contentType.isVisualMedia
-                ?? MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.attachment.mimeType)
+                referencedAttachment.attachment.asStream()?.contentType.isVisualMedia
+                ?? MimeTypeUtil.isSupportedVisualMediaMimeType(referencedAttachment.attachment.mimeType)
             else {
                 // Well behaving clients should not send a mix of visual media (like JPG) and non-visual media (like PDF's)
                 // Since we're not coped to handle a mix of media, return @[]
@@ -1627,9 +1670,13 @@ private extension CVComponentState.Builder {
                 return []
             }
 
-            let cvAttachment = CVAttachment.from(attachment, tx: transaction)
+            let cvAttachment = CVAttachment.from(
+                referencedAttachment: referencedAttachment,
+                message: message,
+                tx: transaction,
+            )
 
-            let caption = attachment.reference.legacyMessageCaption
+            let caption = referencedAttachment.reference.legacyMessageCaption
             let hasCaption = caption.map {
                 return CVComponentState.displayableCaption(
                     text: $0,
@@ -1640,7 +1687,7 @@ private extension CVComponentState.Builder {
             switch cvAttachment {
             case .pointer:
                 var mediaSize: CGSize = .zero
-                if let sourceMediaSizePixels = attachment.reference.sourceMediaSizePixels {
+                if let sourceMediaSizePixels = referencedAttachment.reference.sourceMediaSizePixels {
                     mediaSize = sourceMediaSizePixels
                 } else {
                     owsFailDebug("Invalid attachment.")
@@ -1654,7 +1701,7 @@ private extension CVComponentState.Builder {
                     threadHasPendingMessageRequest: threadHasPendingMessageRequest,
                 ))
                 continue
-            case .stream(let attachmentStream):
+            case .stream(let attachmentStream, isUploading: _):
                 let attachmentStream = attachmentStream.attachmentStream
                 guard attachmentStream.contentType.isVisualMedia else {
                     Logger.warn("Filtering invalid media.")
@@ -1737,28 +1784,26 @@ private extension CVComponentState.Builder {
         return mediaAlbumItems
     }
 
-    mutating func buildNonMediaAttachment(bodyAttachment: ReferencedAttachment?) throws {
-
-        guard let attachment = bodyAttachment else {
-            throw OWSAssertionError("Missing attachment.")
-        }
-
-        func buildGenericAttachment() {
-            let cvAttachment = CVAttachment.from(attachment, tx: transaction)
-            self.genericAttachment = .init(attachment: cvAttachment)
-        }
-
+    mutating func buildNonMediaAttachment(
+        referencedAttachment: ReferencedAttachment,
+        message: TSMessage,
+    ) {
         guard
             // Use the validated content type and only fall back to the mime type.
-            attachment.attachment.asStream()?.contentType.isAudio
-            ?? MimeTypeUtil.isSupportedAudioMimeType(attachment.attachment.mimeType)
+            referencedAttachment.attachment.asStream()?.contentType.isAudio
+            ?? MimeTypeUtil.isSupportedAudioMimeType(referencedAttachment.attachment.mimeType)
         else {
-            buildGenericAttachment()
+            let cvAttachment = CVAttachment.from(
+                referencedAttachment: referencedAttachment,
+                message: message,
+                tx: transaction,
+            )
+            self.genericAttachment = .init(attachment: cvAttachment)
             return
         }
 
         if
-            let attachmentStream = attachment.asReferencedStream,
+            let attachmentStream = referencedAttachment.asReferencedStream,
             let audioAttachment = AudioAttachment(
                 attachmentStream: attachmentStream,
                 owningMessage: interaction as? TSMessage,
@@ -1767,13 +1812,13 @@ private extension CVComponentState.Builder {
             )
         {
             self.audioAttachment = audioAttachment
-        } else if let attachmentPointer = attachment.asReferencedAnyPointer {
+        } else if let referencedAttachmentPointer = referencedAttachment.asReferencedAnyPointer {
             self.audioAttachment = AudioAttachment(
-                attachmentPointer: attachmentPointer,
+                attachmentPointer: referencedAttachmentPointer,
                 owningMessage: interaction as? TSMessage,
                 metadata: nil,
                 receivedAtDate: interaction.receivedAtDate,
-                downloadState: attachmentPointer.attachmentPointer.downloadState(tx: transaction),
+                downloadState: referencedAttachmentPointer.attachmentPointer.downloadState(tx: transaction),
             )
         } else {
             self.undownloadableAttachment = .audio

@@ -306,10 +306,8 @@ class CVAttachmentProgressView: ManualLayoutView {
 
     private func configureState() {
         switch direction {
-        case .upload(let attachmentStream):
+        case .upload:
             stateView.state = .uploadUnknownProgress
-
-            updateUploadProgress(attachmentStream: attachmentStream)
 
             NotificationCenter.default.addObserver(
                 self,
@@ -397,12 +395,8 @@ class CVAttachmentProgressView: ManualLayoutView {
         }
 
         switch direction {
-        case .upload(let attachmentStream):
-            if attachmentStream.attachment.latestTransitTierInfo != nil {
-                updateState(uploadProgress: 1)
-            } else {
-                updateState(uploadProgress: progress)
-            }
+        case .upload:
+            updateState(uploadProgress: progress)
         case .download:
             owsFailDebug("Invalid attachment.")
             stateView.state = .uploadUnknownProgress
@@ -425,51 +419,23 @@ class CVAttachmentProgressView: ManualLayoutView {
         }
     }
 
-    private func updateUploadProgress(attachmentStream: AttachmentStream) {
-        AssertIsOnMainThread()
-
-        if attachmentStream.attachment.latestTransitTierInfo != nil {
-            stateView.state = .uploadProgress(progress: 1)
-        } else {
-            stateView.state = .uploadUnknownProgress
-        }
-    }
-
     enum ProgressType {
         case none
         case uploading(attachmentStream: AttachmentStream)
         case pendingDownload(attachmentPointer: AttachmentPointer)
         case downloading(attachmentPointer: AttachmentPointer, downloadState: AttachmentDownloadState)
-        case unknown
     }
 
-    static func progressType(
-        forAttachment attachment: CVAttachment,
-        interaction: TSInteraction,
-    ) -> ProgressType {
-
-        switch attachment {
+    static func progressType(cvAttachment: CVAttachment) -> ProgressType {
+        switch cvAttachment {
         case .backupThumbnail:
             // TODO: [Backups]: Update download state based on the media tier attachment state
             return .none
-        case .stream(let attachmentStream):
-            if let outgoingMessage = interaction as? TSOutgoingMessage {
-                let hasSendFailed = outgoingMessage.messageState == .failed
-                let wasNotCreatedLocally = outgoingMessage.wasNotCreatedLocally
-                guard
-                    attachmentStream.attachment.latestTransitTierInfo == nil,
-                    attachmentStream.attachment.mediaTierInfo == nil,
-                    !wasNotCreatedLocally,
-                    !hasSendFailed
-                else {
-                    return .none
-                }
-                return .uploading(attachmentStream: attachmentStream.attachmentStream)
-            } else if interaction is TSIncomingMessage {
-                return .none
+        case .stream(let referencedAttachmentStream, let isUploading):
+            if isUploading {
+                return .uploading(attachmentStream: referencedAttachmentStream.attachmentStream)
             } else {
-                owsFailDebug("Unexpected interaction: \(type(of: interaction))")
-                return .unknown
+                return .none
             }
         case .pointer(let attachmentPointer, let downloadState):
             switch downloadState {

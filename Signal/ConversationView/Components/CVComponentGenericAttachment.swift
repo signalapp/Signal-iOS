@@ -249,8 +249,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
         let direction: CVAttachmentProgressView.Direction
         switch CVAttachmentProgressView.progressType(
-            forAttachment: genericAttachment.attachment,
-            interaction: interaction,
+            cvAttachment: genericAttachment.attachment,
         ) {
         case .none:
             return nil
@@ -267,9 +266,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                 attachmentPointer: attachmentPointer,
                 downloadState: downloadState,
             )
-        case .unknown:
-            owsFailDebug("Unknown progress type.")
-            return nil
         }
 
         return CVAttachmentProgressView(
@@ -282,11 +278,9 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     private static func hasProgressView(
         genericAttachment: CVComponentState.GenericAttachment,
-        interaction: TSInteraction,
     ) -> Bool {
         switch CVAttachmentProgressView.progressType(
-            forAttachment: genericAttachment.attachment,
-            interaction: interaction,
+            cvAttachment: genericAttachment.attachment,
         ) {
         case .none,
              .uploading:
@@ -295,9 +289,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         case .pendingDownload,
              .downloading:
             return true
-        case .unknown:
-            owsFailDebug("Unknown progress type.")
-            return false
         }
     }
 
@@ -314,7 +305,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             maxWidth: maxWidth,
             measurementBuilder: measurementBuilder,
             genericAttachment: genericAttachment,
-            interaction: interaction,
         )
     }
 
@@ -322,13 +312,11 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         maxWidth: CGFloat,
         measurementBuilder: CVCellMeasurement.Builder,
         genericAttachment: CVComponentState.GenericAttachment,
-        interaction: TSInteraction,
     ) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
         let hasProgressView = Self.hasProgressView(
             genericAttachment: genericAttachment,
-            interaction: interaction,
         )
         let leftViewSize: CGSize = (
             hasProgressView

@@ -90,6 +90,10 @@ public enum BuildFlags {
         public static let receive = true
         public static let send = build <= .internal
     }
+
+    public enum AttachmentBackfill {
+        public static let handleRequests = build <= .dev
+    }
 }
 
 // MARK: -

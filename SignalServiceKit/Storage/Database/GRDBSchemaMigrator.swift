@@ -322,6 +322,7 @@ public class GRDBSchemaMigrator {
         case addRecipientStatesToAdminDelete
         case modifyCallLinkRootKeyConstraint
         case addDevice
+        case addAttachmentBackfillRequestTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -445,7 +446,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 141
+    public static let grdbSchemaVersionLatest: UInt = 142
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5044,6 +5045,24 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.addDevice) { tx in
             try addDevice(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addAttachmentBackfillRequestTable) { tx in
+            try tx.database.create(
+                table: "AttachmentBackfillInboundRequest",
+            ) { table in
+                table.autoIncrementedPrimaryKey("id").notNull()
+                table.column("interactionId", .integer)
+                    .notNull()
+                    .unique()
+                    .references(
+                        "model_TSInteraction",
+                        column: "id",
+                        onDelete: .cascade,
+                        onUpdate: .cascade,
+                    )
+            }
             return .success(())
         }
 

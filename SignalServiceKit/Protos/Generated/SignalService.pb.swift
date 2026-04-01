@@ -2642,6 +2642,24 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
   /// Clears the value of `deviceNameChange`. Subsequent reads from it will return its default value.
   mutating func clearDeviceNameChange() {_uniqueStorage()._deviceNameChange = nil}
 
+  var attachmentBackfillRequest: SignalServiceProtos_SyncMessage.AttachmentBackfillRequest {
+    get {_storage._attachmentBackfillRequest ?? SignalServiceProtos_SyncMessage.AttachmentBackfillRequest()}
+    set {_uniqueStorage()._attachmentBackfillRequest = newValue}
+  }
+  /// Returns true if `attachmentBackfillRequest` has been explicitly set.
+  var hasAttachmentBackfillRequest: Bool {_storage._attachmentBackfillRequest != nil}
+  /// Clears the value of `attachmentBackfillRequest`. Subsequent reads from it will return its default value.
+  mutating func clearAttachmentBackfillRequest() {_uniqueStorage()._attachmentBackfillRequest = nil}
+
+  var attachmentBackfillResponse: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse {
+    get {_storage._attachmentBackfillResponse ?? SignalServiceProtos_SyncMessage.AttachmentBackfillResponse()}
+    set {_uniqueStorage()._attachmentBackfillResponse = newValue}
+  }
+  /// Returns true if `attachmentBackfillResponse` has been explicitly set.
+  var hasAttachmentBackfillResponse: Bool {_storage._attachmentBackfillResponse != nil}
+  /// Clears the value of `attachmentBackfillResponse`. Subsequent reads from it will return its default value.
+  mutating func clearAttachmentBackfillResponse() {_uniqueStorage()._attachmentBackfillResponse = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct Sent: Sendable {
@@ -3900,6 +3918,161 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     init() {}
 
     fileprivate var _deviceID: UInt32? = nil
+  }
+
+  struct AttachmentBackfillRequest: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var targetMessage: SignalServiceProtos_AddressableMessage {
+      get {_targetMessage ?? SignalServiceProtos_AddressableMessage()}
+      set {_targetMessage = newValue}
+    }
+    /// Returns true if `targetMessage` has been explicitly set.
+    var hasTargetMessage: Bool {self._targetMessage != nil}
+    /// Clears the value of `targetMessage`. Subsequent reads from it will return its default value.
+    mutating func clearTargetMessage() {self._targetMessage = nil}
+
+    var targetConversation: SignalServiceProtos_ConversationIdentifier {
+      get {_targetConversation ?? SignalServiceProtos_ConversationIdentifier()}
+      set {_targetConversation = newValue}
+    }
+    /// Returns true if `targetConversation` has been explicitly set.
+    var hasTargetConversation: Bool {self._targetConversation != nil}
+    /// Clears the value of `targetConversation`. Subsequent reads from it will return its default value.
+    mutating func clearTargetConversation() {self._targetConversation = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _targetMessage: SignalServiceProtos_AddressableMessage? = nil
+    fileprivate var _targetConversation: SignalServiceProtos_ConversationIdentifier? = nil
+  }
+
+  struct AttachmentBackfillResponse: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var targetMessage: SignalServiceProtos_AddressableMessage {
+      get {_targetMessage ?? SignalServiceProtos_AddressableMessage()}
+      set {_targetMessage = newValue}
+    }
+    /// Returns true if `targetMessage` has been explicitly set.
+    var hasTargetMessage: Bool {self._targetMessage != nil}
+    /// Clears the value of `targetMessage`. Subsequent reads from it will return its default value.
+    mutating func clearTargetMessage() {self._targetMessage = nil}
+
+    var targetConversation: SignalServiceProtos_ConversationIdentifier {
+      get {_targetConversation ?? SignalServiceProtos_ConversationIdentifier()}
+      set {_targetConversation = newValue}
+    }
+    /// Returns true if `targetConversation` has been explicitly set.
+    var hasTargetConversation: Bool {self._targetConversation != nil}
+    /// Clears the value of `targetConversation`. Subsequent reads from it will return its default value.
+    mutating func clearTargetConversation() {self._targetConversation = nil}
+
+    /// oneof commented out because swift generated
+    /// enum with associated values can't be converted
+    /// to objc representation
+    ///
+    /// oneof data {
+    var attachments: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList {
+      get {_attachments ?? SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList()}
+      set {_attachments = newValue}
+    }
+    /// Returns true if `attachments` has been explicitly set.
+    var hasAttachments: Bool {self._attachments != nil}
+    /// Clears the value of `attachments`. Subsequent reads from it will return its default value.
+    mutating func clearAttachments() {self._attachments = nil}
+
+    /// }
+    var error: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.Error {
+      get {_error ?? .messageNotFound}
+      set {_error = newValue}
+    }
+    /// Returns true if `error` has been explicitly set.
+    var hasError: Bool {self._error != nil}
+    /// Clears the value of `error`. Subsequent reads from it will return its default value.
+    mutating func clearError() {self._error = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum Error: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      case messageNotFound = 0
+
+      init() {
+        self = .messageNotFound
+      }
+
+    }
+
+    struct AttachmentData: @unchecked Sendable {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      /// oneof commented out because swift generated
+      /// enum with associated values can't be converted
+      /// to objc representation
+      ///
+      /// oneof data {
+      var attachment: SignalServiceProtos_AttachmentPointer {
+        get {_storage._attachment ?? SignalServiceProtos_AttachmentPointer()}
+        set {_uniqueStorage()._attachment = newValue}
+      }
+      /// Returns true if `attachment` has been explicitly set.
+      var hasAttachment: Bool {_storage._attachment != nil}
+      /// Clears the value of `attachment`. Subsequent reads from it will return its default value.
+      mutating func clearAttachment() {_uniqueStorage()._attachment = nil}
+
+      /// }
+      var status: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData.Status {
+        get {_storage._status ?? .pending}
+        set {_uniqueStorage()._status = newValue}
+      }
+      /// Returns true if `status` has been explicitly set.
+      var hasStatus: Bool {_storage._status != nil}
+      /// Clears the value of `status`. Subsequent reads from it will return its default value.
+      mutating func clearStatus() {_uniqueStorage()._status = nil}
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      enum Status: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+        case pending = 0
+        case terminalError = 1
+
+        init() {
+          self = .pending
+        }
+
+      }
+
+      init() {}
+
+      fileprivate var _storage = _StorageClass.defaultInstance
+    }
+
+    struct AttachmentDataList: Sendable {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      var attachments: [SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData] = []
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+    }
+
+    init() {}
+
+    fileprivate var _targetMessage: SignalServiceProtos_AddressableMessage? = nil
+    fileprivate var _targetConversation: SignalServiceProtos_ConversationIdentifier? = nil
+    fileprivate var _attachments: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList? = nil
+    fileprivate var _error: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.Error? = nil
   }
 
   init() {}
@@ -7328,7 +7501,7 @@ extension SignalServiceProtos_Verified.State: SwiftProtobuf._ProtoNameProviding 
 
 extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SyncMessage"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sent\0\u{1}contacts\0\u{2}\u{2}request\0\u{1}read\0\u{1}blocked\0\u{1}verified\0\u{1}padding\0\u{1}configuration\0\u{1}stickerPackOperation\0\u{1}viewOnceOpen\0\u{1}fetchLatest\0\u{1}keys\0\u{1}messageRequestResponse\0\u{1}outgoingPayment\0\u{1}viewed\0\u{2}\u{2}pniChangeNumber\0\u{1}callEvent\0\u{1}callLinkUpdate\0\u{1}callLogEvent\0\u{1}deleteForMe\0\u{1}deviceNameChange\0\u{c}\u{3}\u{1}\u{c}\u{11}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sent\0\u{1}contacts\0\u{2}\u{2}request\0\u{1}read\0\u{1}blocked\0\u{1}verified\0\u{1}padding\0\u{1}configuration\0\u{1}stickerPackOperation\0\u{1}viewOnceOpen\0\u{1}fetchLatest\0\u{1}keys\0\u{1}messageRequestResponse\0\u{1}outgoingPayment\0\u{1}viewed\0\u{2}\u{2}pniChangeNumber\0\u{1}callEvent\0\u{1}callLinkUpdate\0\u{1}callLogEvent\0\u{1}deleteForMe\0\u{1}deviceNameChange\0\u{1}attachmentBackfillRequest\0\u{1}attachmentBackfillResponse\0\u{c}\u{3}\u{1}\u{c}\u{11}\u{1}")
 
   fileprivate class _StorageClass {
     var _sent: SignalServiceProtos_SyncMessage.Sent? = nil
@@ -7352,6 +7525,8 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _callLogEvent: SignalServiceProtos_SyncMessage.CallLogEvent? = nil
     var _deleteForMe: SignalServiceProtos_SyncMessage.DeleteForMe? = nil
     var _deviceNameChange: SignalServiceProtos_SyncMessage.DeviceNameChange? = nil
+    var _attachmentBackfillRequest: SignalServiceProtos_SyncMessage.AttachmentBackfillRequest? = nil
+    var _attachmentBackfillResponse: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -7383,6 +7558,8 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _callLogEvent = source._callLogEvent
       _deleteForMe = source._deleteForMe
       _deviceNameChange = source._deviceNameChange
+      _attachmentBackfillRequest = source._attachmentBackfillRequest
+      _attachmentBackfillResponse = source._attachmentBackfillResponse
     }
   }
 
@@ -7422,6 +7599,8 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 21: try { try decoder.decodeSingularMessageField(value: &_storage._callLogEvent) }()
         case 22: try { try decoder.decodeSingularMessageField(value: &_storage._deleteForMe) }()
         case 23: try { try decoder.decodeSingularMessageField(value: &_storage._deviceNameChange) }()
+        case 24: try { try decoder.decodeSingularMessageField(value: &_storage._attachmentBackfillRequest) }()
+        case 25: try { try decoder.decodeSingularMessageField(value: &_storage._attachmentBackfillResponse) }()
         default: break
         }
       }
@@ -7497,6 +7676,12 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._deviceNameChange {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 23)
       } }()
+      try { if let v = _storage._attachmentBackfillRequest {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 24)
+      } }()
+      try { if let v = _storage._attachmentBackfillResponse {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 25)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7527,6 +7712,8 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._callLogEvent != rhs_storage._callLogEvent {return false}
         if _storage._deleteForMe != rhs_storage._deleteForMe {return false}
         if _storage._deviceNameChange != rhs_storage._deviceNameChange {return false}
+        if _storage._attachmentBackfillRequest != rhs_storage._attachmentBackfillRequest {return false}
+        if _storage._attachmentBackfillResponse != rhs_storage._attachmentBackfillResponse {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -8831,6 +9018,209 @@ extension SignalServiceProtos_SyncMessage.DeviceNameChange: SwiftProtobuf.Messag
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.DeviceNameChange, rhs: SignalServiceProtos_SyncMessage.DeviceNameChange) -> Bool {
     if lhs._deviceID != rhs._deviceID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.AttachmentBackfillRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".AttachmentBackfillRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetMessage\0\u{1}targetConversation\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._targetMessage) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._targetConversation) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._targetMessage {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._targetConversation {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.AttachmentBackfillRequest, rhs: SignalServiceProtos_SyncMessage.AttachmentBackfillRequest) -> Bool {
+    if lhs._targetMessage != rhs._targetMessage {return false}
+    if lhs._targetConversation != rhs._targetConversation {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".AttachmentBackfillResponse"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetMessage\0\u{1}targetConversation\0\u{1}attachments\0\u{1}error\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._targetMessage) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._targetConversation) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._attachments) }()
+      case 4: try { try decoder.decodeSingularEnumField(value: &self._error) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._targetMessage {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._targetConversation {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._attachments {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._error {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 4)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse, rhs: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse) -> Bool {
+    if lhs._targetMessage != rhs._targetMessage {return false}
+    if lhs._targetConversation != rhs._targetConversation {return false}
+    if lhs._attachments != rhs._attachments {return false}
+    if lhs._error != rhs._error {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.Error: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MESSAGE_NOT_FOUND\0")
+}
+
+extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.protoMessageName + ".AttachmentData"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}attachment\0\u{1}status\0")
+
+  fileprivate class _StorageClass {
+    var _attachment: SignalServiceProtos_AttachmentPointer? = nil
+    var _status: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData.Status? = nil
+
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _attachment = source._attachment
+      _status = source._status
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._attachment) }()
+        case 2: try { try decoder.decodeSingularEnumField(value: &_storage._status) }()
+        default: break
+        }
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      try { if let v = _storage._attachment {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      } }()
+      try { if let v = _storage._status {
+        try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
+      } }()
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData, rhs: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._attachment != rhs_storage._attachment {return false}
+        if _storage._status != rhs_storage._status {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData.Status: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PENDING\0\u{1}TERMINAL_ERROR\0")
+}
+
+extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.protoMessageName + ".AttachmentDataList"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}attachments\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.attachments) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.attachments.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.attachments, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList, rhs: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList) -> Bool {
+    if lhs.attachments != rhs.attachments {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

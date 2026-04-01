@@ -768,6 +768,49 @@ message SyncMessage {
     optional uint32 deviceId = 2;
   }
 
+  message AttachmentBackfillRequest {
+    optional AddressableMessage targetMessage = 1;
+    optional ConversationIdentifier targetConversation = 2;
+  }
+
+  message AttachmentBackfillResponse {
+    message AttachmentData {
+      enum Status {
+        PENDING = 0;
+        TERMINAL_ERROR = 1;
+      }
+
+      // oneof commented out because swift generated
+      // enum with associated values can't be converted
+      // to objc representation
+      //
+      // oneof data {
+        optional AttachmentPointer attachment = 1;
+        optional Status status = 2;
+      // }
+    }
+
+    enum Error {
+      MESSAGE_NOT_FOUND = 0;
+    }
+
+    message AttachmentDataList {
+      repeated AttachmentData attachments = 1;
+    }
+
+    optional AddressableMessage targetMessage = 1;
+    optional ConversationIdentifier targetConversation = 2;
+
+    // oneof commented out because swift generated
+    // enum with associated values can't be converted
+    // to objc representation
+    //
+    // oneof data {
+      optional AttachmentDataList attachments = 3;
+      optional Error error = 4;
+    // }
+  }
+
   optional Sent sent = 1;
   optional Contacts contacts = 2;
   reserved /*groups*/ 3;
@@ -791,6 +834,8 @@ message SyncMessage {
   optional CallLogEvent callLogEvent = 21;
   optional DeleteForMe deleteForMe = 22;
   optional DeviceNameChange deviceNameChange = 23;
+  optional AttachmentBackfillRequest attachmentBackfillRequest = 24;
+  optional AttachmentBackfillResponse attachmentBackfillResponse = 25;
 }
 
 message AttachmentPointer {
