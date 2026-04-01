@@ -392,6 +392,7 @@ public class OWSMessageDecrypter {
         _ validatedEnvelope: ValidatedIncomingEnvelope,
         cipherType: CiphertextMessage.MessageType,
         localIdentifiers: LocalIdentifiers,
+        localDeviceId: DeviceId,
         tx transaction: DBWriteTransaction,
     ) throws -> DecryptedIncomingEnvelope {
         // This method is only used for identified envelopes. If an unidentified
@@ -437,6 +438,7 @@ public class OWSMessageDecrypter {
                 plaintext = try signalDecryptPreKey(
                     message: message,
                     from: protocolAddress,
+                    localAddress: ProtocolAddress(validatedEnvelope.localServiceId, deviceId: localDeviceId),
                     sessionStore: signalProtocolStore.sessionStore,
                     identityStore: identityManager.libSignalStore(for: localIdentity, tx: transaction),
                     preKeyStore: preKeyStore,
@@ -562,7 +564,7 @@ public class OWSMessageDecrypter {
     func decryptUnidentifiedSenderEnvelope(
         _ validatedEnvelope: ValidatedIncomingEnvelope,
         localIdentifiers: LocalIdentifiers,
-        localDeviceId: LocalDeviceId,
+        localDeviceId: DeviceId,
         tx transaction: DBWriteTransaction,
     ) throws -> DecryptedIncomingEnvelope {
         let localIdentity = validatedEnvelope.localIdentity
@@ -590,6 +592,7 @@ public class OWSMessageDecrypter {
                 cipherTextData: encryptedData,
                 timestamp: validatedEnvelope.serverTimestamp,
                 localIdentifiers: localIdentifiers,
+                localServiceId: validatedEnvelope.localServiceId,
                 localDeviceId: localDeviceId,
                 protocolContext: transaction,
             )

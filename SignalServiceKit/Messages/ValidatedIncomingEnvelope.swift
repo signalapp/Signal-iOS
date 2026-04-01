@@ -24,6 +24,7 @@ class ValidatedIncomingEnvelope {
     let envelope: SSKProtoEnvelope
     let kind: Kind
     let localIdentity: OWSIdentity
+    let localServiceId: ServiceId
 
     init(_ envelope: SSKProtoEnvelope, localIdentifiers: LocalIdentifiers) throws {
         self.envelope = envelope
@@ -55,7 +56,14 @@ class ValidatedIncomingEnvelope {
         }
         self.kind = kind
 
-        self.localIdentity = try Self.localIdentity(for: envelope, localIdentifiers: localIdentifiers)
+        let localServiceId = try Self.localServiceId(for: envelope, localIdentifiers: localIdentifiers)
+        self.localServiceId = localServiceId
+        self.localIdentity = { () -> OWSIdentity in
+            switch localServiceId.kind {
+            case .aci: return .aci
+            case .pni: return .pni
+            }
+        }()
         try Self.validateEnvelopeKind(kind, for: localIdentity)
     }
 
@@ -100,10 +108,10 @@ class ValidatedIncomingEnvelope {
 
     // MARK: - Destination
 
-    private static func localIdentity(
+    private static func localServiceId(
         for envelope: SSKProtoEnvelope,
         localIdentifiers: LocalIdentifiers,
-    ) throws -> OWSIdentity {
+    ) throws -> ServiceId {
         let destinationServiceId: ServiceId
         if envelope.destinationServiceID?.nilIfEmpty != nil || envelope.hasDestinationServiceIDBinary {
             destinationServiceId = try ServiceId.parseFrom(
@@ -115,10 +123,8 @@ class ValidatedIncomingEnvelope {
             destinationServiceId = localIdentifiers.aci
         }
         switch destinationServiceId {
-        case localIdentifiers.aci:
-            return .aci
-        case localIdentifiers.pni:
-            return .pni
+        case localIdentifiers.aci, localIdentifiers.pni:
+            return destinationServiceId
         default:
             throw MessageProcessingError.wrongDestinationUuid
         }

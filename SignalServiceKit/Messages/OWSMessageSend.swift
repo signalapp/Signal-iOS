@@ -51,6 +51,7 @@ final class OWSMessageSend {
     let thread: TSThread
     let serviceId: ServiceId
     let localIdentifiers: LocalIdentifiers
+    let localDeviceId: DeviceId
 
     init(
         message: any SendableMessage,
@@ -59,6 +60,7 @@ final class OWSMessageSend {
         thread: TSThread,
         serviceId: ServiceId,
         localIdentifiers: LocalIdentifiers,
+        localDeviceId: DeviceId,
     ) {
         self.message = message
         self.plaintextContent = plaintextContent
@@ -66,6 +68,7 @@ final class OWSMessageSend {
         self.thread = thread
         self.serviceId = serviceId
         self.localIdentifiers = localIdentifiers
+        self.localDeviceId = localDeviceId
     }
 
     var isSelfSend: Bool {

@@ -89,9 +89,9 @@ protocol PniDistributionParamaterBuilder {
     ///   new identity. Note that this message contains private key data.
     func buildPniDistributionParameters(
         localAci: Aci,
-        localDeviceId: LocalDeviceId,
+        localDeviceId: DeviceId,
+        localNewPhoneNumber: E164,
         localPniIdentityKeyPair: ECKeyPair,
-        localE164: E164,
         localDevicePniSignedPreKey: LibSignalClient.SignedPreKeyRecord,
         localDevicePniPqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32,
@@ -120,20 +120,14 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
 
     func buildPniDistributionParameters(
         localAci: Aci,
-        localDeviceId: LocalDeviceId,
+        localDeviceId: DeviceId,
+        localNewPhoneNumber: E164,
         localPniIdentityKeyPair: ECKeyPair,
-        localE164: E164,
         localDevicePniSignedPreKey: LibSignalClient.SignedPreKeyRecord,
         localDevicePniPqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32,
     ) async throws -> PniDistribution.Parameters {
         var parameters = PniDistribution.Parameters(pniIdentityKey: localPniIdentityKeyPair.keyPair.identityKey)
-
-        guard let localDeviceId = localDeviceId.ifValid else {
-            let message = "Local device ID missing - can't build linked device params if the local device isn't registered."
-            logger.error(message)
-            throw OWSGenericError(message)
-        }
 
         // Include the signed pre key & registration ID for the current device.
         parameters.addLocalDevice(
@@ -146,8 +140,9 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         // Create a signed pre key & registration ID for linked devices.
         let linkedDeviceParamResults = try await buildLinkedDevicePniGenerationParams(
             localAci: localAci,
+            localDeviceId: localDeviceId,
+            newPhoneNumber: localNewPhoneNumber,
             pniIdentityKeyPair: localPniIdentityKeyPair,
-            e164: localE164,
         )
 
         for param in linkedDeviceParamResults {
@@ -176,8 +171,9 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     /// Build messages for our linked devices with new PNI key material.
     private func buildLinkedDevicePniGenerationParams(
         localAci: Aci,
+        localDeviceId: DeviceId,
+        newPhoneNumber: E164,
         pniIdentityKeyPair: ECKeyPair,
-        e164: E164,
     ) async throws -> [LinkedDevicePniGenerationParams] {
         var syncMessages = [DeviceId: PniDistributionSyncMessage]()
 
@@ -196,7 +192,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                     signedPreKey: signedPreKey,
                     pqLastResortPreKey: pqLastResortPreKey,
                     registrationId: registrationId,
-                    e164: e164,
+                    e164: newPhoneNumber,
                 )
 
                 syncMessages[deviceId] = syncMessage
@@ -205,6 +201,8 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
             },
             isTransient: false,
             sealedSenderParameters: nil, // Sync messages do not use UD
+            localAci: localAci,
+            localDeviceId: localDeviceId,
         )
 
         return deviceMessages.map {
@@ -242,6 +240,8 @@ protocol _PniDistributionParameterBuilder_MessageSender_Shim {
         buildPlaintextContent: (DeviceId, DBWriteTransaction) throws -> Data,
         isTransient: Bool,
         sealedSenderParameters: SealedSenderParameters?,
+        localAci: Aci,
+        localDeviceId: DeviceId,
     ) async throws -> [DeviceMessage]
 }
 
@@ -259,6 +259,8 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
         buildPlaintextContent: (DeviceId, DBWriteTransaction) throws -> Data,
         isTransient: Bool,
         sealedSenderParameters: SealedSenderParameters?,
+        localAci: Aci,
+        localDeviceId: DeviceId,
     ) async throws -> [DeviceMessage] {
         try await messageSender.buildDeviceMessages(
             serviceId: serviceId,
@@ -267,6 +269,8 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
             buildPlaintextContent: buildPlaintextContent,
             isTransient: isTransient,
             sealedSenderParameters: sealedSenderParameters,
+            localAci: localAci,
+            localDeviceId: localDeviceId,
         )
     }
 }

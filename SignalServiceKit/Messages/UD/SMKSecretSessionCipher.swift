@@ -104,19 +104,18 @@ public class SMKSecretSessionCipher: NSObject {
     // MARK: - Public
 
     public func encryptMessage(
-        for serviceId: ServiceId,
-        deviceId: DeviceId,
+        for recipientAddress: ProtocolAddress,
+        localAddress: ProtocolAddress,
         paddedPlaintext: Data,
         contentHint: UnidentifiedSenderMessageContent.ContentHint,
         groupId: Data?,
         senderCertificate: SenderCertificate,
         protocolContext: StoreContext,
     ) throws -> Data {
-        let recipientAddress = ProtocolAddress(serviceId, deviceId: deviceId)
-
         let ciphertextMessage = try signalEncrypt(
             message: paddedPlaintext,
             for: recipientAddress,
+            localAddress: localAddress,
             sessionStore: currentSessionStore,
             identityStore: currentIdentityStore,
             context: protocolContext,
@@ -183,7 +182,8 @@ public class SMKSecretSessionCipher: NSObject {
         cipherTextData: Data,
         timestamp: UInt64,
         localIdentifiers: LocalIdentifiers,
-        localDeviceId: LocalDeviceId,
+        localServiceId: ServiceId,
+        localDeviceId: DeviceId,
         protocolContext: StoreContext?,
     ) throws -> SMKDecryptResult {
         guard timestamp > 0 else {
@@ -208,7 +208,7 @@ public class SMKSecretSessionCipher: NSObject {
             throw SMKError.assertionError(description: "[\(type(of: self))] Invalid senderAci.")
         }
 
-        if localIdentifiers.aci == senderAci, localDeviceId.equals(deviceId) {
+        if localIdentifiers.aci == senderAci, localDeviceId == deviceId {
             Logger.warn("Discarding self-sent message")
             throw SMKSecretSessionCipherError.selfSentMessage
         }
@@ -219,7 +219,12 @@ public class SMKSecretSessionCipher: NSObject {
                 throw SMKSecretSessionCipherError.invalidCertificate
             }
 
-            let paddedMessagePlaintext = try decrypt(messageContent: messageContent, context: context)
+            let paddedMessagePlaintext = try decrypt(
+                messageContent: messageContent,
+                localServiceId: localServiceId,
+                localDeviceId: localDeviceId,
+                context: context,
+            )
 
             // return new Pair<>(new SignalProtocolAddress(content.getSenderCertificate().getSender(),
             //     content.getSenderCertificate().getSenderDeviceId()),
@@ -246,7 +251,12 @@ public class SMKSecretSessionCipher: NSObject {
     // private byte[] decrypt(UnidentifiedSenderMessageContent message)
     // throws InvalidVersionException, InvalidMessageException, InvalidKeyException, DuplicateMessageException,
     // InvalidKeyIdException, UntrustedIdentityException, LegacyMessageException, NoSessionException
-    private func decrypt(messageContent: UnidentifiedSenderMessageContent, context: StoreContext) throws -> Data {
+    private func decrypt(
+        messageContent: UnidentifiedSenderMessageContent,
+        localServiceId: ServiceId,
+        localDeviceId: DeviceId,
+        context: StoreContext,
+    ) throws -> Data {
 
         // SignalProtocolAddress sender = new SignalProtocolAddress(message.getSenderCertificate().getSender(),
         // message.getSenderCertificate().getSenderDeviceId());
@@ -279,6 +289,7 @@ public class SMKSecretSessionCipher: NSObject {
             plaintextData = try signalDecryptPreKey(
                 message: cipherMessage,
                 from: ProtocolAddress(from: sender),
+                localAddress: ProtocolAddress(localServiceId, deviceId: localDeviceId),
                 sessionStore: currentSessionStore,
                 identityStore: currentIdentityStore,
                 preKeyStore: currentPreKeyStore,

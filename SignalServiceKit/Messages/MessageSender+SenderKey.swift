@@ -60,6 +60,7 @@ extension MessageSender {
         udAccessMap: [Aci: OWSUDAccess],
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
+        localDeviceId: DeviceId,
         tx: DBWriteTransaction,
     ) throws(OWSAssertionError) -> (
         senderKeyRecipients: Set<ServiceId>,
@@ -184,6 +185,7 @@ extension MessageSender {
                 udAccessMap: udAccessMap,
                 senderCertificate: senderCertificate,
                 localIdentifiers: localIdentifiers,
+                localDeviceId: localDeviceId,
                 tx: tx,
             )
         } catch {
@@ -347,6 +349,7 @@ extension MessageSender {
         udAccessMap: [Aci: OWSUDAccess],
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
+        localDeviceId: DeviceId,
         tx writeTx: DBWriteTransaction,
     ) throws -> PrepareDistributionResult {
         let senderKeyStore = SSKEnvironment.shared.senderKeyStoreRef
@@ -394,6 +397,7 @@ extension MessageSender {
                 thread: contactThread,
                 serviceId: serviceId,
                 localIdentifiers: localIdentifiers,
+                localDeviceId: localDeviceId,
             )
 
             let sealedSenderParameters = SealedSenderParameters(

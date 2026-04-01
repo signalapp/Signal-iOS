@@ -133,6 +133,7 @@ struct TestProtocolRunner {
         _ = try signalDecryptPreKey(
             message: PreKeySignalMessage(bytes: aliceMessage.serialize()),
             from: senderClient.protocolAddress,
+            localAddress: recipientClient.protocolAddress,
             sessionStore: recipientClient.sessionStore,
             identityStore: recipientClient.identityKeyStore,
             preKeyStore: recipientClient.preKeyStore,
@@ -166,6 +167,7 @@ struct TestProtocolRunner {
         return try signalEncrypt(
             message: plaintext,
             for: recipient,
+            localAddress: senderClient.protocolAddress,
             sessionStore: senderClient.sessionStore,
             identityStore: senderClient.identityKeyStore,
             context: context,

@@ -149,6 +149,7 @@ class MessageDecryptionTest: SSKBaseTest {
             let envelope = try! envelopeBuilder.build()
 
             let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)!
+            let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: transaction).ifValid!
             let decryptedEnvelope: Result<DecryptedIncomingEnvelope, Error> = Result {
                 let validatedEnvelope = try ValidatedIncomingEnvelope(envelope, localIdentifiers: localIdentifiers)
                 switch validatedEnvelope.kind {
@@ -158,7 +159,7 @@ class MessageDecryptionTest: SSKBaseTest {
                     return try SSKEnvironment.shared.messageDecrypterRef.decryptUnidentifiedSenderEnvelope(
                         validatedEnvelope,
                         localIdentifiers: localIdentifiers,
-                        localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: transaction),
+                        localDeviceId: localDeviceId,
                         tx: transaction,
                     )
                 case .identifiedSender(let cipherType):
@@ -166,6 +167,7 @@ class MessageDecryptionTest: SSKBaseTest {
                         validatedEnvelope,
                         cipherType: cipherType,
                         localIdentifiers: localIdentifiers,
+                        localDeviceId: localDeviceId,
                         tx: transaction,
                     )
                 }

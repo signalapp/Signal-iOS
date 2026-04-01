@@ -123,9 +123,9 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
         return try await pniDistributionParameterBuilder.buildPniDistributionParameters(
             localAci: aci,
-            localDeviceId: .valid(localDeviceId),
+            localDeviceId: localDeviceId,
+            localNewPhoneNumber: e164,
             localPniIdentityKeyPair: localPniIdentityKeyPair,
-            localE164: e164,
             localDevicePniSignedPreKey: localDevicePniSignedPreKey,
             localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey,
             localDevicePniRegistrationId: localDevicePniRegistrationId,
@@ -153,6 +153,8 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
         buildPlaintextContent: (DeviceId, DBWriteTransaction) throws -> Data,
         isTransient: Bool,
         sealedSenderParameters: SealedSenderParameters?,
+        localAci: Aci,
+        localDeviceId: DeviceId,
     ) async throws -> [DeviceMessage] {
         let nextResult = deviceMessagesMocks.update { $0.removeFirst() }
         let result = try nextResult.get()

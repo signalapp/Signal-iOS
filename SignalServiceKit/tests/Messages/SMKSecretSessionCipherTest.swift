@@ -53,8 +53,8 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         // NOTE: The java tests don't bother padding the plaintext.
         let alicePlaintext = "smert za smert".data(using: .utf8)!
         let ciphertext = try! aliceCipher.encryptMessage(
-            for: bobMockClient.aci,
-            deviceId: bobMockClient.deviceId,
+            for: bobMockClient.protocolAddress,
+            localAddress: aliceMockClient.protocolAddress,
             paddedPlaintext: alicePlaintext,
             contentHint: .default,
             groupId: nil,
@@ -71,7 +71,8 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
             cipherTextData: ciphertext,
             timestamp: 31335,
             localIdentifiers: bobMockClient.localIdentifiers,
-            localDeviceId: .valid(bobMockClient.deviceId),
+            localServiceId: bobMockClient.aci,
+            localDeviceId: bobMockClient.deviceId,
             protocolContext: nil,
         )
 
@@ -115,8 +116,8 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         let aliceGroupId = Randomness.generateRandomBytes(6)
         let aliceContentHint = UnidentifiedSenderMessageContent.ContentHint.implicit
         let ciphertext = try! aliceCipher.encryptMessage(
-            for: bobMockClient.aci,
-            deviceId: bobMockClient.deviceId,
+            for: bobMockClient.protocolAddress,
+            localAddress: aliceMockClient.protocolAddress,
             paddedPlaintext: alicePlaintext,
             contentHint: aliceContentHint,
             groupId: aliceGroupId,
@@ -139,7 +140,8 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
                 cipherTextData: ciphertext,
                 timestamp: 31335,
                 localIdentifiers: bobMockClient.localIdentifiers,
-                localDeviceId: .valid(bobMockClient.deviceId),
+                localServiceId: bobMockClient.aci,
+                localDeviceId: bobMockClient.deviceId,
                 protocolContext: nil,
             )
             XCTFail("Decryption should have failed.")
@@ -196,8 +198,8 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         let aliceContentHint = UnidentifiedSenderMessageContent.ContentHint.resendable
 
         let ciphertext = try! aliceCipher.encryptMessage(
-            for: bobMockClient.aci,
-            deviceId: bobMockClient.deviceId,
+            for: bobMockClient.protocolAddress,
+            localAddress: aliceMockClient.protocolAddress,
             paddedPlaintext: alicePlaintext,
             contentHint: aliceContentHint,
             groupId: aliceGroupId,
@@ -220,7 +222,8 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
                 cipherTextData: ciphertext,
                 timestamp: 31338,
                 localIdentifiers: bobMockClient.localIdentifiers,
-                localDeviceId: .valid(bobMockClient.deviceId),
+                localServiceId: bobMockClient.aci,
+                localDeviceId: bobMockClient.deviceId,
                 protocolContext: nil,
             )
             XCTFail("Decryption should have failed.")
@@ -275,8 +278,8 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
         // NOTE: The java tests don't bother padding the plaintext.
         let alicePlaintext = "smert za smert".data(using: String.Encoding.utf8)!
         let ciphertext = try! aliceCipher.encryptMessage(
-            for: bobMockClient.aci,
-            deviceId: bobMockClient.deviceId,
+            for: bobMockClient.protocolAddress,
+            localAddress: aliceMockClient.protocolAddress,
             paddedPlaintext: alicePlaintext,
             contentHint: .default,
             groupId: nil,
@@ -298,7 +301,8 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
                 cipherTextData: ciphertext,
                 timestamp: 31335,
                 localIdentifiers: bobMockClient.localIdentifiers,
-                localDeviceId: .valid(bobMockClient.deviceId),
+                localServiceId: bobMockClient.aci,
+                localDeviceId: bobMockClient.deviceId,
                 protocolContext: nil,
             )
             XCTFail("Decryption should have failed.")
@@ -364,7 +368,8 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
             cipherTextData: singleRecipientCiphertext,
             timestamp: 31335,
             localIdentifiers: bobMockClient.localIdentifiers,
-            localDeviceId: .valid(bobMockClient.deviceId),
+            localServiceId: bobMockClient.aci,
+            localDeviceId: bobMockClient.deviceId,
             protocolContext: nil,
         )
 
@@ -422,7 +427,8 @@ class SMKSecretSessionCipherTest: SSKBaseTest {
                 cipherTextData: singleRecipientCiphertext,
                 timestamp: 31335,
                 localIdentifiers: bobMockClient.localIdentifiers,
-                localDeviceId: .valid(bobMockClient.deviceId),
+                localServiceId: bobMockClient.aci,
+                localDeviceId: bobMockClient.deviceId,
                 protocolContext: nil,
             )
             XCTFail("Decryption should have failed.")

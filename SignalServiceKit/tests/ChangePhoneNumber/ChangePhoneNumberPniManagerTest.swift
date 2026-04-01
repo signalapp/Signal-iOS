@@ -183,9 +183,9 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
 
     func buildPniDistributionParameters(
         localAci: Aci,
-        localDeviceId: LocalDeviceId,
+        localDeviceId: DeviceId,
+        localNewPhoneNumber: E164,
         localPniIdentityKeyPair: ECKeyPair,
-        localE164: E164,
         localDevicePniSignedPreKey: LibSignalClient.SignedPreKeyRecord,
         localDevicePniPqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32,
@@ -197,7 +197,7 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
         case .success:
             return PniDistribution.Parameters.mock(
                 pniIdentityKeyPair: localPniIdentityKeyPair,
-                localDeviceId: localDeviceId.ifValid!,
+                localDeviceId: localDeviceId,
                 localDevicePniSignedPreKey: localDevicePniSignedPreKey,
                 localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey,
                 localDevicePniRegistrationId: localDevicePniRegistrationId,

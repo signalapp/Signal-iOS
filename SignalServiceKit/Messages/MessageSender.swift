@@ -579,6 +579,9 @@ public class MessageSender {
         let udManager = SSKEnvironment.shared.udManagerRef
         let senderCertificates = try await udManager.fetchSenderCertificates()
         let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        guard let localDeviceId = tsAccountManager.storedDeviceIdWithMaybeTransaction.ifValid else {
+            throw OWSGenericError("missing local device id")
+        }
         // Send the message.
         let sendResult = await Result(catching: {
             return try await sendPreparedMessage(
@@ -586,6 +589,7 @@ public class MessageSender {
                 recoveryState: OuterRecoveryState(),
                 senderCertificates: senderCertificates,
                 localIdentifiers: registeredState.localIdentifiers,
+                localDeviceId: localDeviceId,
             )
         })
         // Send the sync message if it succeeded overall or for any recipient.
@@ -596,6 +600,7 @@ public class MessageSender {
                     message,
                     sendResult: sendResult,
                     localIdentifiers: registeredState.localIdentifiers,
+                    localDeviceId: localDeviceId,
                 )
             })
         } else {
@@ -633,6 +638,7 @@ public class MessageSender {
             let udAccess: [ServiceId: OWSUDAccess]
             let endorsements: GroupSendEndorsements?
             let localIdentifiers: LocalIdentifiers
+            let localDeviceId: DeviceId
         }
     }
 
@@ -665,6 +671,7 @@ public class MessageSender {
         recoveryState: OuterRecoveryState,
         senderCertificates: SenderCertificates,
         localIdentifiers: LocalIdentifiers,
+        localDeviceId: DeviceId,
     ) async throws -> SendMessageResult {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let nextAction = try await databaseStorage.awaitableWrite { tx -> SendMessageNextAction in
@@ -764,6 +771,7 @@ public class MessageSender {
                         udAccessMap: udAccessMap,
                         senderCertificate: senderCertificate,
                         localIdentifiers: localIdentifiers,
+                        localDeviceId: localDeviceId,
                         tx: tx,
                     )
                 } catch {
@@ -787,6 +795,7 @@ public class MessageSender {
                 udAccess: udAccessMap,
                 endorsements: endorsements,
                 localIdentifiers: localIdentifiers,
+                localDeviceId: localDeviceId,
             ))
         }
 
@@ -824,6 +833,7 @@ public class MessageSender {
                 udAccess: state.udAccess,
                 endorsements: state.endorsements,
                 localIdentifiers: state.localIdentifiers,
+                localDeviceId: state.localDeviceId,
             )
             let sendMessageFailure: SendMessageFailure?
             if perRecipientErrors.isEmpty {
@@ -853,6 +863,7 @@ public class MessageSender {
             recoveryState: retryRecoveryState,
             senderCertificates: senderCertificates,
             localIdentifiers: localIdentifiers,
+            localDeviceId: localDeviceId,
         )
     }
 
@@ -899,6 +910,7 @@ public class MessageSender {
         udAccess sendingAccessMap: [ServiceId: OWSUDAccess],
         endorsements: GroupSendEndorsements?,
         localIdentifiers: LocalIdentifiers,
+        localDeviceId: DeviceId,
     ) async -> [(ServiceId, any Error)] {
         // Both types are Arrays because Sender Key Tasks may return N errors when
         // sending to N participants. (Fanout Tasks always send to one recipient
@@ -920,6 +932,7 @@ public class MessageSender {
                     thread: thread,
                     serviceId: serviceId,
                     localIdentifiers: localIdentifiers,
+                    localDeviceId: localDeviceId,
                 )
                 var sealedSenderParameters = SealedSenderParameters(
                     message: message,
@@ -1117,6 +1130,7 @@ public class MessageSender {
         _ message: any SendableMessage,
         sendResult: Result<SendMessageResult, any Error>,
         localIdentifiers: LocalIdentifiers,
+        localDeviceId: DeviceId,
     ) async throws {
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             if
@@ -1134,7 +1148,7 @@ public class MessageSender {
 
         await completeViewOnceMessageIfNeeded(message)
 
-        try await sendSyncTranscriptIfNeeded(forMessage: message, localIdentifiers: localIdentifiers)
+        try await sendSyncTranscriptIfNeeded(forMessage: message, localIdentifiers: localIdentifiers, localDeviceId: localDeviceId)
 
         // Don't mark self-sent messages as read (or sent) until the sync
         // transcript is sent.
@@ -1170,11 +1184,12 @@ public class MessageSender {
     private func sendSyncTranscriptIfNeeded(
         forMessage message: any SendableMessage,
         localIdentifiers: LocalIdentifiers,
+        localDeviceId: DeviceId,
     ) async throws {
         guard message.shouldSyncTranscript() else {
             return
         }
-        try await sendSyncTranscript(forMessage: message, localIdentifiers: localIdentifiers)
+        try await sendSyncTranscript(forMessage: message, localIdentifiers: localIdentifiers, localDeviceId: localDeviceId)
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         await databaseStorage.awaitableWrite { tx in
             message.update(withHasSyncedTranscript: true, transaction: tx)
@@ -1184,6 +1199,7 @@ public class MessageSender {
     private func sendSyncTranscript(
         forMessage message: any SendableMessage,
         localIdentifiers: LocalIdentifiers,
+        localDeviceId: DeviceId,
     ) async throws {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let messageSend = try await databaseStorage.awaitableWrite { tx in
@@ -1200,6 +1216,7 @@ public class MessageSender {
                 thread: localThread,
                 serviceId: localIdentifiers.aci,
                 localIdentifiers: localIdentifiers,
+                localDeviceId: localDeviceId,
             )
         }
         try await performMessageSend(messageSend, sealedSenderParameters: nil)
@@ -1406,6 +1423,8 @@ public class MessageSender {
             buildPlaintextContent: { _, _ in messageSend.plaintextContent },
             isTransient: messageSend.message.isOnline || (messageSend.message as? OutgoingSenderKeyDistributionMessage)?.isSentOnBehalfOfOnlineMessage == true,
             sealedSenderParameters: sealedSenderParameters,
+            localAci: messageSend.localIdentifiers.aci,
+            localDeviceId: messageSend.localDeviceId,
         )
     }
 
@@ -1443,10 +1462,11 @@ public class MessageSender {
         buildPlaintextContent: (DeviceId, DBWriteTransaction) throws -> Data,
         isTransient: Bool,
         sealedSenderParameters: SealedSenderParameters?,
+        localAci: Aci,
+        localDeviceId: DeviceId,
     ) async throws -> [DeviceMessage] {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         var deviceMessages: [DeviceMessage]
         let missingSessionPlaintextContent: [DeviceId: Data]
@@ -1460,8 +1480,7 @@ public class MessageSender {
             var deviceIds = recipient.deviceIds
 
             if isSelfSend {
-                let localDeviceId = tsAccountManager.storedDeviceId(tx: tx)
-                deviceIds.removeAll(where: { localDeviceId.equals($0) })
+                deviceIds.removeAll(where: { localDeviceId == $0 })
             }
 
             var deviceMessages = [DeviceMessage]()
@@ -1475,6 +1494,8 @@ public class MessageSender {
                         encryptionStyle: encryptionStyle,
                         plaintextContent: plaintextContent,
                         sealedSenderParameters: sealedSenderParameters,
+                        localAci: localAci,
+                        localDeviceId: localDeviceId,
                         tx: tx,
                     ))
                 } catch SignalError.sessionNotFound(_) {
@@ -1542,8 +1563,7 @@ public class MessageSender {
                 // removed devices when fetching keys for a specific device.)
                 var deviceIds = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx)?.deviceIds ?? []
                 if isSelfSend {
-                    let localDeviceId = tsAccountManager.storedDeviceId(tx: tx)
-                    deviceIds.removeAll(where: { localDeviceId.equals($0) })
+                    deviceIds.removeAll(where: { localDeviceId == $0 })
                 }
 
                 let missingDeviceIds = Set(deviceIds).subtracting(deviceMessages.map(\.destinationDeviceId))
@@ -1556,6 +1576,8 @@ public class MessageSender {
                             encryptionStyle: encryptionStyle,
                             plaintextContent: missingSessionPlaintextContent[$0] ?? buildPlaintextContent($0, tx),
                             sealedSenderParameters: sealedSenderParameters,
+                            localAci: localAci,
+                            localDeviceId: localDeviceId,
                             tx: tx,
                         )
                     } catch SignalError.sessionNotFound(_) {
@@ -1580,6 +1602,8 @@ public class MessageSender {
         encryptionStyle: EncryptionStyle,
         plaintextContent: Data,
         sealedSenderParameters: SealedSenderParameters?,
+        localAci: Aci,
+        localDeviceId: DeviceId,
         tx: DBWriteTransaction,
     ) throws -> DeviceMessage {
         do {
@@ -1587,8 +1611,10 @@ public class MessageSender {
             case .whisper:
                 return try self.encryptMessage(
                     plaintextContent: plaintextContent,
-                    serviceId: serviceId,
-                    deviceId: deviceId,
+                    destinationServiceId: serviceId,
+                    destinationDeviceId: deviceId,
+                    localAci: localAci,
+                    localDeviceId: localDeviceId,
                     sealedSenderParameters: sealedSenderParameters,
                     transaction: tx,
                 )
@@ -1870,8 +1896,10 @@ public class MessageSender {
 
     private func encryptMessage(
         plaintextContent plainText: Data,
-        serviceId: ServiceId,
-        deviceId: DeviceId,
+        destinationServiceId: ServiceId,
+        destinationDeviceId: DeviceId,
+        localAci: Aci,
+        localDeviceId: DeviceId,
         sealedSenderParameters: SealedSenderParameters?,
         transaction: DBWriteTransaction,
     ) throws -> DeviceMessage {
@@ -1886,7 +1914,8 @@ public class MessageSender {
         let signalProtocolStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
         let signalProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let preKeyStore = signalProtocolStoreManager.preKeyStore.forIdentity(.aci)
-        let protocolAddress = ProtocolAddress(serviceId, deviceId: deviceId)
+        let protocolAddress = ProtocolAddress(destinationServiceId, deviceId: destinationDeviceId)
+        let localAddress = ProtocolAddress(localAci, deviceId: localDeviceId)
 
         if let sealedSenderParameters {
             let secretCipher = SMKSecretSessionCipher(
@@ -1899,8 +1928,8 @@ public class MessageSender {
             )
 
             serializedMessage = try secretCipher.encryptMessage(
-                for: serviceId,
-                deviceId: deviceId,
+                for: protocolAddress,
+                localAddress: localAddress,
                 paddedPlaintext: paddedPlaintext,
                 contentHint: sealedSenderParameters.contentHint.signalClientHint,
                 groupId: sealedSenderParameters.envelopeGroupId(tx: transaction),
@@ -1914,6 +1943,7 @@ public class MessageSender {
             let result = try signalEncrypt(
                 message: paddedPlaintext,
                 for: protocolAddress,
+                localAddress: localAddress,
                 sessionStore: signalProtocolStore.sessionStore,
                 identityStore: identityManager.libSignalStore(for: .aci, tx: transaction),
                 context: transaction,
@@ -1942,7 +1972,7 @@ public class MessageSender {
 
         return DeviceMessage(
             type: messageType,
-            destinationDeviceId: deviceId,
+            destinationDeviceId: destinationDeviceId,
             destinationRegistrationId: try session.remoteRegistrationId(),
             content: serializedMessage,
         )

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Foundation
 public import LibSignalClient
 
 // MARK: - ChangePhoneNumberPniManager protocol
@@ -152,9 +153,9 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         do {
             let parameters = try await self.pniDistributionParameterBuilder.buildPniDistributionParameters(
                 localAci: localAci,
-                localDeviceId: .valid(localDeviceId),
+                localDeviceId: localDeviceId,
+                localNewPhoneNumber: newE164,
                 localPniIdentityKeyPair: pniIdentityKeyPair,
-                localE164: newE164,
                 localDevicePniSignedPreKey: localDevicePniSignedPreKeyRecord,
                 localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKeyRecord,
                 localDevicePniRegistrationId: pendingState.localDevicePniRegistrationId,
