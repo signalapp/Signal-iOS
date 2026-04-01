@@ -39,20 +39,6 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
     /// If set to `true` background in `selected` state would have rounded corners.
     var useSidebarAppearance = false
 
-    private var cvViews: [CVView] {
-        [
-            nameLabel,
-            snippetLabel,
-            dateTimeLabel,
-            messageStatusIconView,
-            badgeView,
-            muteIconView,
-            unreadLabel,
-
-            bottomRowWrapper,
-        ]
-    }
-
     private struct ReuseToken {
         let hasVerifiedBadge: Bool
         let hasMuteIndicator: Bool
@@ -946,7 +932,16 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         nextUpdateTimestamp = nil
         isCellVisible = false
 
-        for cvView in cvViews {
+        for cvView in [
+            nameLabel,
+            snippetLabel,
+            dateTimeLabel,
+            messageStatusIconView,
+            badgeView,
+            muteIconView,
+            unreadLabel,
+            bottomRowWrapper,
+        ] as [CVView] {
             cvView.reset()
         }
         avatarView = nil
