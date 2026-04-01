@@ -49,7 +49,6 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             muteIconView,
             unreadLabel,
 
-            avatarStack,
             bottomRowWrapper,
         ]
     }
@@ -502,7 +501,8 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             hasMessageStatusToken: configuration.messageStatusToken != nil,
             hasUnreadBadge: measurements.unreadBadgeMeasurements != nil,
         )
-
+        
+        avatarStack.reset()
         avatarStack.configure(
             config: avatarStackConfig,
             measurement: avatarStackMeasurement,
