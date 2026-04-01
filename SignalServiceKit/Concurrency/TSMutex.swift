@@ -17,6 +17,7 @@ public typealias UnfairLock = TSMutex<Void>
 ///
 /// > Note: To be replaced with OSAllocatedUnfairLock once our underlying iOS version is ≥ 16.
 @available(iOS, obsoleted: 16.0, message: "Use OSAllocatedUnfairLock instead.")
+@safe
 public final class TSMutex<State: ~Copyable>: Sendable {
     @usableFromInline
     nonisolated(unsafe) let _lock: os_unfair_lock_t
@@ -25,19 +26,19 @@ public final class TSMutex<State: ~Copyable>: Sendable {
     nonisolated(unsafe) var _state: State
 
     public init(initialState state: consuming sending State) {
-        _lock = .allocate(capacity: 1)
-        _lock.initialize(to: os_unfair_lock_s())
+        unsafe _lock = .allocate(capacity: 1)
+        unsafe _lock.initialize(to: os_unfair_lock_s())
         _state = state
     }
 
     deinit {
-        _lock.deinitialize(count: 1).deallocate()
+        unsafe _lock.deinitialize(count: 1).deallocate()
     }
 
     @inlinable
     public func withLock<T: ~Copyable, E: Error>(_ body: (inout State) throws(E) -> sending T) throws(E) -> sending T {
-        os_unfair_lock_lock(_lock)
-        defer { os_unfair_lock_unlock(_lock) }
+        unsafe os_unfair_lock_lock(_lock)
+        defer { unsafe os_unfair_lock_unlock(_lock) }
         return try body(&_state)
     }
 }
@@ -55,30 +56,30 @@ extension TSMutex where State == Void {
     }
 
     /// Locks the lock. Blocks if the lock is held by another thread.
-    /// Forwards to os_unfair_lock_lock() defined in os/lock.h
+    /// Forwards to `os_unfair_lock_lock` defined in os/lock.h
     @inlinable
     public final func lock() {
-        os_unfair_lock_lock(_lock)
+        unsafe os_unfair_lock_lock(_lock)
     }
 
     /// Unlocks the lock. Fatal error if the lock is owned by another thread.
-    /// Forwards to os_unfair_lock_unlock() defined in os/lock.h
+    /// Forwards to `os_unfair_lock_unlock` defined in os/lock.h
     @inlinable
     public final func unlock() {
-        os_unfair_lock_unlock(_lock)
+        unsafe os_unfair_lock_unlock(_lock)
     }
 
     /// Fatal assert that the lock is owned by the current thread.
-    /// Forwards to os_unfair_lock_assert_owner defined in os/lock.h
+    /// Forwards to `os_unfair_lock_assert_owner` defined in os/lock.h
     @inlinable
     public final func assertOwner() {
-        os_unfair_lock_assert_owner(_lock)
+        unsafe os_unfair_lock_assert_owner(_lock)
     }
 
     /// Fatal assert that the lock is not owned by the current thread.
-    /// Forwards to os_unfair_lock_assert_not_owner defined in os/lock.h
+    /// Forwards to `os_unfair_lock_assert_not_owner` defined in os/lock.h
     @inlinable
     public final func assertNotOwner() {
-        os_unfair_lock_assert_not_owner(_lock)
+        unsafe os_unfair_lock_assert_not_owner(_lock)
     }
 }
