@@ -119,7 +119,11 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
         fatalError("Unimplemented for tests")
     }
 
-    func fetchBackupMediaAttachmentUploadForm(auth: BackupServiceAuth, logger: PrefixedLogger) async throws -> Upload.Form {
+    func fetchBackupMediaAttachmentUploadForm(
+        encryptedByteLength: UInt32,
+        auth: BackupServiceAuth,
+        logger: PrefixedLogger,
+    ) async throws -> Upload.Form {
         fatalError("Unimplemented for tests")
     }
 

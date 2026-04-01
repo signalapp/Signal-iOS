@@ -115,6 +115,7 @@ public protocol BackupRequestManager {
     ) async throws -> Upload.Form
 
     func fetchBackupMediaAttachmentUploadForm(
+        encryptedByteLength: UInt32,
         auth: BackupServiceAuth,
         logger: PrefixedLogger,
     ) async throws -> Upload.Form
@@ -273,6 +274,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
 
     /// CDN upload form for uploading backup media
     public func fetchBackupMediaAttachmentUploadForm(
+        encryptedByteLength: UInt32,
         auth: BackupServiceAuth,
         logger: PrefixedLogger,
     ) async throws -> Upload.Form {
@@ -281,6 +283,7 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
             auth: auth,
             requestFactory: { auth in
                 OWSRequestFactory.backupMediaUploadFormRequest(
+                    encryptedByteLength: encryptedByteLength,
                     auth: auth,
                     logger: logger,
                 )
@@ -628,6 +631,7 @@ public class BackupRequestManagerMock: BackupRequestManager {
     }
 
     public func fetchBackupMediaAttachmentUploadForm(
+        encryptedByteLength: UInt32,
         auth: SignalServiceKit.BackupServiceAuth,
         logger: PrefixedLogger,
     ) async throws -> SignalServiceKit.Upload.Form {
