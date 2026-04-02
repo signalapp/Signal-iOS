@@ -50,7 +50,7 @@ private class StickerPackActionButton: UIView {
 
 // MARK: -
 
-public class ManageStickersViewController: OWSTableViewController2 {
+public class ManageStickersViewController: OWSTableViewController2, UITableViewDragDelegate, UITableViewDropDelegate {
 
     typealias DatedStickerPackInfo = StickerManager.DatedStickerPackInfo
 
@@ -73,6 +73,10 @@ public class ManageStickersViewController: OWSTableViewController2 {
             name: StickerManager.packsDidChange,
             object: nil,
         )
+
+        tableView.dragDelegate = self
+        tableView.dropDelegate = self
+        tableView.dragInteractionEnabled = true
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + iconSize + iconSpacing
 
@@ -99,6 +103,8 @@ public class ManageStickersViewController: OWSTableViewController2 {
             }
         }
     }
+
+    private var suppressNextPacksDidChange = false
 
     private lazy var updateEvent: DebouncedEvent = {
         DebouncedEvents.build(
@@ -152,9 +158,9 @@ public class ManageStickersViewController: OWSTableViewController2 {
             let packsWithCovers = allPacks.filter {
                 StickerManager.isStickerInstalled(stickerInfo: $0.coverInfo, transaction: transaction)
             }
-            // Sort sticker packs by "date saved, descending" so that we feature
-            // packs that the user has just learned about.
-            installedStickerPacks = packsWithCovers.filter { $0.isInstalled }
+            installedStickerPacks = StickerManager.orderedInstalledStickerPacks(transaction: transaction).filter {
+                StickerManager.isStickerInstalled(stickerInfo: $0.coverInfo, transaction: transaction)
+            }
             availableBuiltInStickerPacks = packsWithCovers.filter {
                 !$0.isInstalled && StickerManager.isDefaultStickerPack(packId: $0.info.packId)
             }
@@ -183,9 +189,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
             return source
         }
 
-        self.installedStickerPackSources = installedStickerPacks.sorted {
-            $0.dateCreated > $1.dateCreated
-        }.map {
+        self.installedStickerPackSources = installedStickerPacks.map {
             installedSource($0.info)
         }
         self.availableBuiltInStickerPackSources = availableBuiltInStickerPacks.sorted {
@@ -307,6 +311,79 @@ public class ManageStickersViewController: OWSTableViewController2 {
 
         self.contents = contents
         needsTableUpdate = false
+    }
+
+    private var installedSectionIndex: Int { 0 }
+
+    private func isInstalledSection(_ indexPath: IndexPath) -> Bool {
+        indexPath.section == installedSectionIndex && !installedStickerPackSources.isEmpty
+    }
+
+    private func persistInstalledPackOrder() {
+        let orderedInfos = installedStickerPackSources.compactMap { $0.info }
+        suppressNextPacksDidChange = true
+        StickerManager.updateInstalledStickerPackOrder(orderedPackInfos: orderedInfos)
+    }
+
+    // MARK: - UITableViewDragDelegate
+
+    public func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        guard isInstalledSection(indexPath), indexPath.row < installedStickerPackSources.count else {
+            return []
+        }
+        guard let info = installedStickerPackSources[indexPath.row].info else {
+            return []
+        }
+
+        let provider = NSItemProvider(object: info.packId.hexadecimalString as NSString)
+        let item = UIDragItem(itemProvider: provider)
+        item.localObject = info
+        return [item]
+    }
+
+    // MARK: - UITableViewDropDelegate
+
+    public func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
+        guard session.localDragSession != nil else {
+            return UITableViewDropProposal(operation: .cancel)
+        }
+
+        let destination = destinationIndexPath ?? IndexPath(row: installedStickerPackSources.count, section: installedSectionIndex)
+        guard destination.section == installedSectionIndex else {
+            return UITableViewDropProposal(operation: .cancel)
+        }
+
+        return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+    }
+
+    public func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
+        guard let item = coordinator.items.first,
+              let sourceIndexPath = item.sourceIndexPath,
+              isInstalledSection(sourceIndexPath)
+        else {
+            return
+        }
+
+        let destinationIndexPath = coordinator.destinationIndexPath
+            ?? IndexPath(row: installedStickerPackSources.count - 1, section: installedSectionIndex)
+        guard destinationIndexPath.section == installedSectionIndex else {
+            return
+        }
+
+        var destinationRow = destinationIndexPath.row
+        destinationRow = min(max(destinationRow, 0), installedStickerPackSources.count - 1)
+
+        let moved = installedStickerPackSources.remove(at: sourceIndexPath.row)
+        installedStickerPackSources.insert(moved, at: destinationRow)
+        persistInstalledPackOrder()
+
+        tableView.performBatchUpdates({
+            tableView.moveRow(
+                at: sourceIndexPath,
+                to: IndexPath(row: destinationRow, section: installedSectionIndex),
+            )
+        })
+        coordinator.drop(item.dragItem, toRowAt: IndexPath(row: destinationRow, section: installedSectionIndex))
     }
 
     private func buildTableCell(installedStickerPack dataSource: StickerPackDataSource) -> UITableViewCell {
@@ -555,6 +632,10 @@ public class ManageStickersViewController: OWSTableViewController2 {
     func packsDidChange() {
         AssertIsOnMainThread()
 
+        if suppressNextPacksDidChange {
+            suppressNextPacksDidChange = false
+            return
+        }
         needsStateUpdate = true
     }
 }
