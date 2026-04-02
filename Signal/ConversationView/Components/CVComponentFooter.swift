@@ -133,24 +133,27 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         var innerViews = [UIView]()
 
         if isBorderless, conversationStyle.hasWallpaper {
+            let bubbleColor = itemModel.conversationStyle.bubbleChatColor(isIncoming: isIncoming)
+            let bubbleConfiguration = BubbleConfiguration(
+                corners: .capsule(),
+                stroke: itemModel.conversationStyle.bubbleStroke(isIncoming: isIncoming),
+            )
+
             let bubbleView: UIView
-            if conversationStyle.hasWallpaper {
+            if case .blur = bubbleColor {
                 let wallpaperBlurView = componentView.ensureWallpaperBlurView()
                 configureWallpaperBlurView(
                     wallpaperBlurView: wallpaperBlurView,
                     componentDelegate: componentDelegate,
-                    bubbleConfig: BubbleConfiguration(
-                        corners: .capsule(),
-                        stroke: ConversationStyle.bubbleStroke(isDarkThemeEnabled: isDarkThemeEnabled),
-                    ),
+                    bubbleConfig: bubbleConfiguration,
                 )
                 bubbleView = wallpaperBlurView
             } else {
                 let chatColorView = componentView.chatColorView
                 chatColorView.configure(
-                    value: conversationStyle.bubbleChatColorIncoming,
+                    value: bubbleColor,
                     referenceView: componentDelegate.view,
-                    bubbleConfig: BubbleConfiguration(corners: .capsule()),
+                    bubbleConfig: bubbleConfiguration,
                 )
                 bubbleView = chatColorView
             }
