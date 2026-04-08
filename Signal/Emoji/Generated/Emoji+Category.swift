@@ -128,6 +128,7 @@ extension Emoji {
                     .hushed,
                     .astonished,
                     .flushed,
+                    .distortedFace,
                     .pleadingFace,
                     .faceHoldingBackTears,
                     .frowning,
@@ -201,6 +202,7 @@ extension Emoji {
                     .kiss,
                     .oneHundred,
                     .anger,
+                    .fightCloud,
                     .boom,
                     .dizzy,
                     .sweatDrops,
@@ -445,6 +447,7 @@ extension Emoji {
                     .maleZombie,
                     .femaleZombie,
                     .troll,
+                    .hairyCreature,
                     .massage,
                     .manGettingMassage,
                     .womanGettingMassage,
@@ -490,6 +493,7 @@ extension Emoji {
                     .personRunningFacingRight,
                     .womanRunningFacingRight,
                     .manRunningFacingRight,
+                    .balletDancer,
                     .dancer,
                     .manDancing,
                     .manInBusinessSuitLevitating,
@@ -701,6 +705,7 @@ extension Emoji {
                     .whale,
                     .whale2,
                     .dolphin,
+                    .orca,
                     .seal,
                     .fish,
                     .tropicalFish,
@@ -994,6 +999,7 @@ extension Emoji {
                     .compass,
                     .snowCappedMountain,
                     .mountain,
+                    .landslide,
                     .volcano,
                     .mountFuji,
                     .camping,
@@ -1272,10 +1278,11 @@ extension Emoji {
                     .headphones,
                     .radio,
                     .saxophone,
+                    .trumpet,
+                    .trombone,
                     .accordion,
                     .guitar,
                     .musicalKeyboard,
-                    .trumpet,
                     .violin,
                     .banjo,
                     .drumWithDrumsticks,
@@ -1336,8 +1343,9 @@ extension Emoji {
                     .bookmarkTabs,
                     .bookmark,
                     .label,
-                    .moneybag,
                     .coin,
+                    .moneybag,
+                    .treasureChest,
                     .yen,
                     .dollar,
                     .euro,
@@ -2061,6 +2069,7 @@ extension Emoji {
         case .hushed: return .smileysAndPeople
         case .astonished: return .smileysAndPeople
         case .flushed: return .smileysAndPeople
+        case .distortedFace: return .smileysAndPeople
         case .pleadingFace: return .smileysAndPeople
         case .faceHoldingBackTears: return .smileysAndPeople
         case .frowning: return .smileysAndPeople
@@ -2134,6 +2143,7 @@ extension Emoji {
         case .kiss: return .smileysAndPeople
         case .oneHundred: return .smileysAndPeople
         case .anger: return .smileysAndPeople
+        case .fightCloud: return .smileysAndPeople
         case .boom: return .smileysAndPeople
         case .dizzy: return .smileysAndPeople
         case .sweatDrops: return .smileysAndPeople
@@ -2378,6 +2388,7 @@ extension Emoji {
         case .maleZombie: return .smileysAndPeople
         case .femaleZombie: return .smileysAndPeople
         case .troll: return .smileysAndPeople
+        case .hairyCreature: return .smileysAndPeople
         case .massage: return .smileysAndPeople
         case .manGettingMassage: return .smileysAndPeople
         case .womanGettingMassage: return .smileysAndPeople
@@ -2423,6 +2434,7 @@ extension Emoji {
         case .personRunningFacingRight: return .smileysAndPeople
         case .womanRunningFacingRight: return .smileysAndPeople
         case .manRunningFacingRight: return .smileysAndPeople
+        case .balletDancer: return .smileysAndPeople
         case .dancer: return .smileysAndPeople
         case .manDancing: return .smileysAndPeople
         case .manInBusinessSuitLevitating: return .smileysAndPeople
@@ -2631,6 +2643,7 @@ extension Emoji {
         case .whale: return .animals
         case .whale2: return .animals
         case .dolphin: return .animals
+        case .orca: return .animals
         case .seal: return .animals
         case .fish: return .animals
         case .tropicalFish: return .animals
@@ -2830,6 +2843,7 @@ extension Emoji {
         case .compass: return .travel
         case .snowCappedMountain: return .travel
         case .mountain: return .travel
+        case .landslide: return .travel
         case .volcano: return .travel
         case .mountFuji: return .travel
         case .camping: return .travel
@@ -3190,10 +3204,11 @@ extension Emoji {
         case .headphones: return .objects
         case .radio: return .objects
         case .saxophone: return .objects
+        case .trumpet: return .objects
+        case .trombone: return .objects
         case .accordion: return .objects
         case .guitar: return .objects
         case .musicalKeyboard: return .objects
-        case .trumpet: return .objects
         case .violin: return .objects
         case .banjo: return .objects
         case .drumWithDrumsticks: return .objects
@@ -3254,8 +3269,9 @@ extension Emoji {
         case .bookmarkTabs: return .objects
         case .bookmark: return .objects
         case .label: return .objects
-        case .moneybag: return .objects
         case .coin: return .objects
+        case .moneybag: return .objects
+        case .treasureChest: return .objects
         case .yen: return .objects
         case .dollar: return .objects
         case .euro: return .objects
