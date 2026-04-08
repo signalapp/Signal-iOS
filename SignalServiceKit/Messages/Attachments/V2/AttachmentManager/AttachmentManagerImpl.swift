@@ -857,6 +857,22 @@ public class AttachmentManagerImpl: AttachmentManager {
         }
 
         guard existingAttachment.asStream() == nil else {
+            // We're adding a new owner, who may have made this attachment
+            // eligible when it was previously not. Enqueue if needed.
+            if let newAttachmentOwner {
+                backupAttachmentUploadScheduler.enqueueIfNeededWithOwner(
+                    existingAttachment,
+                    owner: newAttachmentOwner,
+                    tx: tx,
+                )
+            } else {
+                backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                    existingAttachment,
+                    mode: .all,
+                    tx: tx,
+                )
+            }
+
             // If we already have a stream, we should leave it untouched,
             // and leave the orphan record around for the new pending
             // attachment so that its files get deleted.
