@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Hovor se nezdařil";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "Tuto akci nelze provést, protože skupina byla ukončena.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "Tato skupina byla ukončena.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "Zprávy nelze odesílat, protože tato skupina byla ukončena.";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "Členové už nebudou v této skupině moci posílat zprávy nebo zahajovat hovory. Budou informováni o tom, že jste skupinu ukončili, a nadále budou mít přístup k historii zpráv.";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "Tímto bude skupina trvale ukončena. Opravdu chcete pokračovat?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "Skupinu se nepodařilo ukončit. Zkontrolujte připojení a zkuste to znovu.";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "Ukončit skupinu";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Nelze přistoupit ke skupině";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "K této skupině se nelze připojit";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Tento odkaz skupiny již není platný.";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "Skupina byla ukončena";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "Zprávy nelze odesílat, protože skupina byla ukončena.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Skupina aktualizována.";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Smazat tento příběh? Smaže se také pro všechny, kdo jej obdrželi.";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Odstranit tento příběh? Odstraní se pouze u vás, protože skupina byla ukončena";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Přeposlat";

@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "કૉલ નિષ્ફળ ગયો";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "આ ક્રિયા ઉપલબ્ધ નથી કારણ કે ગ્રૂપ સમાપ્ત થઈ ગયું છે.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "આ ગ્રૂપ સમાપ્ત કરવામાં આવ્યું છે.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "તમે મેસેજ મોકલી શકતા નથી કારણ કે આ ગ્રૂપ સમાપ્ત કરવામાં આવ્યું છે.";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "સભ્યો હવે ગ્રૂપમાં મેસેજ મોકલી શકશે નહીં કે કૉલ શરૂ કરી શકશે નહીં. તેમને સૂચિત કરવામાં આવશે કે તમે ગ્રૂપ સમાપ્ત કર્યું છે, અને તેમની પાસે હજી પણ મેસેજ હિસ્ટ્રી પર ઍક્સેસ હશે.";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "આનાથી ગ્રૂપ કાયમી ધોરણે સમાપ્ત થઈ જશે. શું તમે ખરેખર આગળ વધવા માંગો છો?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "ગ્રૂપ સમાપ્ત કરી શક્યા નહીં. તમારું કનેક્શન તપાસો અને ફરીથી પ્રયત્ન કરો.";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "ગ્રૂપ સમાપ્ત કરો";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "ગ્રુપમાં જોડાઈ શકતા નથી";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "આ ગ્રૂપમાં જોડવામાં અસમર્થ";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "આ ગ્રુપ લિંક હવે માન્ય નથી.";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "ગ્રૂપ સમાપ્ત કરવામાં આવ્યું હતું";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "તમે મેસેજ મોકલી શકતા નથી કારણ કે ગ્રૂપ સમાપ્ત કરવામાં આવ્યું છે.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "ગ્રુપ અપડેટ કર્યું.";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "આ સ્ટોરી ડિલીટ કરવી છે? જેણે તે પ્રાપ્ત કરી હતી તે દરેક માટે પણ તે ડિલીટ થઈ જશે.";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "આ સ્ટોરી ડિલીટ કરવી છે? તેને ફક્ત તમારા માટે જ ડિલીટ કરવામાં આવશે કારણ કે ગ્રૂપ સમાપ્ત કરવામાં આવ્યું છે";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "ફોરવર્ડ";

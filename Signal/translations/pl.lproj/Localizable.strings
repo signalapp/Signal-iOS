@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Połączenie nieudane";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "Ta opcja jest niedostępna, ponieważ grupa została rozwiązana.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "Ta grupa została rozwiązana.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "Nie możesz wysyłać wiadomości, ponieważ ta grupa została rozwiązana.";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "Jeśli to zrobisz, w tej grupie nie będzie już można wysyłać nowych wiadomości ani rozpoczynać połączeń. Osoby z grupy zostaną powiadomione o jej rozwiązaniu i zachowają dostęp do historii wiadomości.";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "Grupa zostanie rozwiązana na stałe. Chcesz kontynuować?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "Nie udało się rozwiązać grupy. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "Rozwiąż grupę";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Nie możesz dołączyć do grupy";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Nie można dołączyć do tej grupy";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Link do grupy wygasł.";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "Grupa została rozwiązana";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "Nie możesz wysyłać wiadomości, ponieważ grupa została rozwiązana.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Zaktualizowano grupę.";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Usunąć tę relację? Zostanie usunięta również u wszystkich osób, które ją otrzymały.";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Usunąć tę relację? Zostanie usunięta tylko u Ciebie, ponieważ grupa została rozwiązana.";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Przekaż";

@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "چاقىرىق مەغلۇب بولدى";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "بۇ مەشغۇلاتنى قىلغىلى بولمايدۇ چۈنكى بۇ گۇرۇپپا تارقىلىپ كەتكەن.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "بۇ گۇرۇپپا تارقىلىپ كەتكەن.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "ئۇچۇرلارنى ئەۋەتەلمەيسىز، چۈنكى بۇ گۇرۇپپا تارقىلىپ كەتكەن.";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "ئەزالار بۇ گۇرۇپپىدا بۇنىڭدىن كىيىن ئۇچۇر يوللىيالمايدۇ ياكى چاقىرىق قىلالمايدۇ. ئۇلار سىزنىڭ بۇ گۇرۇپپىنى تارقىتىۋەتكىنىڭىزدىن مەلۇمات ئالىدۇ ھەمدە ئۇچۇرلىشىش تارىخىنى يەنىلا كۆرەلەيدۇ.";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "بۇنى جەزىملەشتۈرسىڭىز بۇ گۇرۇپپا مەڭگۈلۈك تارقىتىۋېتىلىدۇ. بۇنى داۋاملاشتۇرۇشنى جەزىملەشتۈرەمسىز؟";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "گۇرۇپپىنى تارقىتىۋەتكىلى بولمىدى. تور ئۇلىنىشىڭىزنى تەكشۈرۈپ قايتا سىناڭ.";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "گۇرۇپپىنى تارقىتىۋېتىش";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "گۇرۇپپىغا قوشۇلالمايدۇ";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "بۇ گۇرۇپپىغا قوشۇلالمىدىڭىز";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "بۇ گۇرۇپپا ئۇلانمىسىنى ئىشلەتكىلى بولمايدۇ.";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "بۇ گۇرۇپپا تارقىتىۋېتىلگەن";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "ئۇچۇرلارنى ئەۋەتەلمەيسىز، چۈنكى بۇ گۇرۇپپا تارقىلىپ كەتكەن.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "گۇرۇپپا يېڭىلاندى.";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "بۇ ھېكايىنى ئۆچۈرەمسىز؟ ئۇنى تاپشۇرۇۋالغان ھەممەيلەن ئۈچۈن ئۆچۈرۈلىدۇ.";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "بۇ ھېكايىنى ئۆچۈرەمسىز؟ بۇ سىز ئۈچۈنلا ئۆچۈرۈلىدۇ چۈنكى گۇپپا تارقىلىپ كەتكەن";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "ئۇلاپ يوللا";

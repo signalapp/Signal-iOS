@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "呼叫失败";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "此操作不可用，因为群组已解散。";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "此群组已解散。";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "您无法发送消息，因为此群组已解散。";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "群组成员将无法在此群组中发送消息或发起通话。他们会收到您解散群组的通知，并仍可以访问消息记录。";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "此操作将会永久解散该群组。您确定要继续吗？";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "无法解散群组。请检查您的网络连接并重试。";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "解散群组";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "无法加入群组";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "无法加入此群组";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "此群组链接已失效。";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "此群组已解散";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "您无法发送消息，因为此群组已解散。";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "群组更新完成。";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "要删除此动态吗？收到此动态的所有人也将看不到此动态。";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "要删除此动态吗？由于该群组已解散，此动态将仅对您删除";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "转发";

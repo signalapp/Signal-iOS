@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Званок не атрымаўся";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "Гэта дзеянне недаступнае, бо гэта група спынена.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "Гэта група была спынена.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "Вы не можаце адпраўляць паведамленні ў гэтую групу, таму што яна спынена.";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "Удзельнікі больш не змогуць адпраўляць паведамленні і рабіць званкі ў гэтай групе. Яны атрымаюць апавяшчэнне аб тым, што вы спынілі групу, але будуць мець доступ да гісторыі паведамленняў.";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "Гэта назаўсёды спыніць гэту групу. Вы ўпэўнены, што жадаеце працягнуць?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "Не атрымалася спыніць гэту групу. Праверце падключэнне і паўтарыце спробу.";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "Спыніць групу";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Немагчыма далучыцца да групы";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Немагчыма далучыцца да гэтай групы";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Гэта спасылка на групу больш не сапраўдная.";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "Гэта група была спынена";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "Вы не можаце адпраўляць паведамленні, таму што гэта група спынена.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Група абноўленая.";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Выдаліць гэту гісторыю? Яна будзе выдалена для вас і ўсіх, хто яе атрымаў.";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Выдаліць гэту гісторыю? Яна будзе выдалена толькі для вас, таму што група была спынена";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Пераслаць";

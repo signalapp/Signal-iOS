@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "تماس ناموفق";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "این اقدام در دسترس نیست، چون گروه پایان یافته است.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "این گروه پایان یافته است.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "نمی‌توانید پیام ارسال کنید زیرا این گروه پایان یافته است.";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "اعضا دیگر نمی‌توانند در گروه پیام ارسال کنند یا تماس برقرار کنند. به آن‌ها اطلاع داده می‌شود که شما گروه را پایان داده‌اید و همچنان به تاریخچه پیام‌ها دسترسی خواهند داشت.";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "این کار گروه را به‌طور دائمی پایان می‌دهد. مطمئن هستید که می‌خواهید ادامه دهید؟";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "گروه پایان نیافت. اتصال خود را بررسی و دوباره تلاش کنید.";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "پایان دادن به گروه";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "عضو شدن در گروه امکان پذیر نیست";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "امکان پیوستن به این گروه وجود ندارد";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "این پیوند گروه دیگر معتبر نیست.";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "گروه پایان یافته است";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "نمی‌توانید پیام ارسال کنید زیرا این گروه پایان یافته است.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "گروه ، به روز رسانی شده است.";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "این استوری پاک شود؟ این استوری برای تمام افرادی که آن را دریافت کرده‌اند نیز پاک خواهد شد.";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "این استوری حذف شود؟ فقط برای شما حذف خواهد شد زیرا گروه پایان یافته است";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "بازارسال";

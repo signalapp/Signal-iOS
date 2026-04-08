@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "ดำเนินการโทรไม่สำเร็จ";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "ไม่สามารถดำเนินการได้เนื่องจากกลุ่มนี้ถูกปิดแล้ว";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "กลุ่มนี้ถูกปิดแล้ว";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "คุณไม่สามารถส่งข้อความได้เนื่องจากกลุ่มนี้ถูกปิดแล้ว";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "สมาชิกจะไม่สามารถส่งข้อความหรือเริ่มการโทรในกลุ่มนี้ได้อีกต่อไป โดยสมาชิกจะได้รับการแจ้งเตือนว่าคุณปิดกลุ่มและจะยังสามารถเข้าถึงประวัติการส่งข้อความได้อยู่";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "กลุ่มนี้จะถูกปิดอย่างถาวร คุณแน่ใจใช่ไหมว่าต้องการดำเนินการต่อ";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "ไม่สามารถปิดกลุ่มได้ โปรดตรวจสอบการเชื่อมต่อของคุณแล้วลองอีกครั้ง";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "ปิดกลุ่ม";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "ไม่สามารถเข้าร่วมกลุ่ม";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "ไม่สามารถเข้าร่วมกลุ่มนี้ได้";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ลิงก์กลุ่มนี้ใช้ไม่ได้แล้ว";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "กลุ่มถูกปิดแล้ว";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "คุณไม่สามารถส่งข้อความได้เนื่องจากกลุ่มนี้ถูกปิดแล้ว";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "ปรับปรุงกลุ่มแล้ว";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "ต้องการลบสตอรี่นี้ใช่ไหม สตอรี่จะถูกลบสำหรับทุกคนที่ได้รับด้วยเช่นกัน";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "ลบสตอรี่นี้ใช่หรือไม่ สตอรี่จะถูกลบสำหรับคุณเท่านั้นเนื่องจากกลุ่มนี้ถูกปิดแล้ว";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "ส่งต่อ";

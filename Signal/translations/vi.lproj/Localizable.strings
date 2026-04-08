@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Không thể thực hiện cuộc gọi";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "Không thể thực hiện thao tác này vì nhóm đã kết thúc.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "Nhóm này đã kết thúc.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "Bạn không thể gửi tin nhắn vì nhóm này đã kết thúc.";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "Các thành viên sẽ không thể gửi tin nhắn hoặc bắt đầu cuộc gọi trong nhóm nữa. Họ sẽ được thông báo rằng bạn đã kết thúc nhóm, và vẫn có thể truy cập vào lịch sử tin nhắn.";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "Thao tác này sẽ kết thúc nhóm vĩnh viễn. Bạn có chắc muốn tiếp tục?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "Không thể kết thúc nhóm. Kiểm tra kết nối của bạn và thử lại.";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "Kết thúc nhóm";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Không thể Tham gia Nhóm";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Không thể tham gia nhóm này";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Đường dẫn nhóm không còn hiệu lực.";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "Đã kết thúc nhóm";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "Bạn không thể gửi tin nhắn vì nhóm đã kết thúc.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Nhóm được cập nhật.";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Xóa story này? Story cũng sẽ được xóa với tất cả những người đã nhận nó.";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Xóa story này? Story sẽ chỉ được xóa ở phía bạn vì nhóm đã kết thúc";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Chuyển tiếp";

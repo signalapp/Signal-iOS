@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "कॉल अयशस्वी झाला";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "गट बंद केल्यामुळे ही कृती अनुपलब्ध आहे.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "हा गट बंद झाला आहे.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "तुम्ही संदेश पाठवू शकत नाही कारण हा गट बंद झाला आहे.";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "सदस्यांना या गटामध्ये आता संदेश पाठवता किंवा कॉल लावता येणार नाहीत. त्यांना सूचना मिळेल की तुम्ही गट बंद केलात, आणि त्यांच्याकडे संदेश इतिहास उपलब्ध राहील.";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "यामुळे गट कायमस्वरूपी बंद होईल. तुम्हाला नक्की हे करायचे आहे का?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "गट बंद करता आला नाही. तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "गट बंद करा";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "गटात सामील होऊ शकत नाही";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "या गटात सामील होता येत नाही";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ही गट लिंक आता वैध नाही.";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "हा गट बंद करण्यात आला आहे";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "तुम्ही संदेश पाठवू शकत नाही कारण हा गट बंद झाला आहे.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "गट अद्यतनित.";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "ही स्टोरी हटवायची? ती ज्यांना प्राप्त झाली आहे अशा सर्वांसाठीही ती हटवली जाईल.";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "ही कथा हटवायची? ही फक्त तुमच्यासाठी हटवली जाईल कारण गट बंद झाला आहे";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "फॉर्वर्ड करा";

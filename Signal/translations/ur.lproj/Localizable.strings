@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "کال ناکام ہو گئی";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "یہ عمل دستیاب نہیں کیونکہ گروپ ختم کر دیا گیا ہے۔";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "گروپ ختم کر دیا گیا ہے۔";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "آپ میسجز نہیں بھیج سکتے کیونکہ یہ گروپ ختم کر دیا گیا ہے۔";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "ممبرز اب مزید گروپ میں میسجز بھیجنے یا کالز شروع کرنے کے قابل نہیں رہیں گے۔ انہیں اطلاع دی جائے گی کہ آپ نے گروپ ختم کر دیا ہے تاہم ان کی میسج ہسٹری تک رسائی برقرار رہے گی۔";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "اس عمل سے گروپ مستقل طور پر ختم ہو جائے گا۔ کیا آپ واقعی آگے بڑھنا چاہتے ہیں؟";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "گروپ کو ختم نہیں کیا جا سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "گروپ ختم کریں";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "گروپ میں شامل نہیں ہو سکتے";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "اس گروپ میں شامل ہونے سے قاصر۔";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "اب یہ گروپ لنک درست نہیں ہے۔";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "گروپ ختم کر دیا گیا تھا";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "آپ میسجز نہیں بھیج سکتے کیونکہ گروپ ختم کر دیا گیا ہے۔";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "گروپ کی تجدید ہوئی۔";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "یہ سٹوری ڈیلیٹ کریں؟ اسے اس کو وصول کرنے والے ہر فرد کے لیے بھی ڈیلیٹ کر دیا جائے گا۔";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "اس سٹوری کو حذف کرنا ہے؟ یہ صرف آپ کے لیے حذف کیا جائے گا کیونکہ گروپ ختم کر دیا گیا ہے۔";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "آگے";

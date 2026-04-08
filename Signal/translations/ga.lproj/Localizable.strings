@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Theip ar an nglao";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "Níl an gníomh sin ar fáil toisc gur cuireadh deireadh leis an ngrúpa.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "Tá deireadh curtha leis an ngrúpa seo.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "Ní féidir leat teachtaireachtaí a sheoladh toisc go bhfuil deireadh curtha leis an ngrúpa seo.";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "Ní bheidh na baill in ann teachtaireachtaí a sheoladh ná glaonna a thosú sa ghrúpa a thuilleadh. Cuirfear in iúl dóibh gur chuir tú deireadh leis an ngrúpa, agus beidh rochtain acu fós ar stair na dteachtaireachtaí.";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "Cuirfear deireadh leis an grúpa go buan leis seo. An bhfuil tú cinnte gur mian leat leanúint leis?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "Níorbh fhéidir deireadh a chur leis an ngrúpa. Seiceáil do nasc agus triail arís.";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "Cuir Deireadh leis an nGrúpa";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Ní féidir dul isteach sa ghrúpa";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Ní féidir dul isteach sa ghrúpa seo";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "Cuireadh deireadh leis an ngrúpa";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "Ní féidir leat teachtaireachtaí a sheoladh toisc go bhfuil deireadh curtha leis an ngrúpa.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Nuashonraíodh an grúpa.";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Scrios an scéal seo? Scriosfar do gach duine a fuair é freisin.";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Scrios an scéal seo? Ní scriosfar ach duitse é toisc go bhfuil deireadh curtha leis an ngrúpa";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Cuir ar aghaidh";

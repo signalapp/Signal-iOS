@@ -47,7 +47,7 @@
 "ACCOUNT_DATA_REPORT_ERROR_TITLE" = "보고서를 생성할 수 없습니다";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "컴퓨터에서 읽을 수 있는 파일";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "기계 가독형 파일";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode. */
 "ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "JSON으로 내보내기";
@@ -3233,7 +3233,7 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "후원하기";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "후원을 통해 Signal의 개인정보 보호 메시지 서비스를 지지하고, 독립적인 운영과 광고 없는 환경을 유지할 수 있도록 도와주세요.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "후원을 통해 Signal의 개인정보 보호 메시지 서비스를 지지하고, 독립적인 운영과 광고 없는 환경을 유지할 수 있도록 힘을 보태주세요.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "더 보기";
@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "통화 실패";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "그룹이 종료되어 해당 작업을 수행할 수 없습니다.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "이 그룹은 종료되었습니다.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "그룹이 종료되어 메시지를 보낼 수 없습니다.";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "그룹이 종료되면 멤버들이 더 이상 그룹에서 메시지를 보내거나 통화를 시작할 수 없습니다. 멤버에게 그룹이 종료되었다는 알림이 전송되며, 그룹이 종료되어도 멤버는 메시지 기록을 확인할 수 있습니다.";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "계속 진행하면 그룹이 영구 종료됩니다. 계속하시겠어요?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "그룹을 종료할 수 없습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "그룹 종료";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "그룹에 참가할 수 없음";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "이 그룹에 참여할 수 없습니다.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "그룹 링크가 더 이상 유효하지 않습니다.";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "활동이 종료된 그룹입니다";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "그룹이 종료되어 메시지를 보낼 수 없습니다.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "그룹 업데이트됨.";
@@ -6869,10 +6869,10 @@
 "PINNED_MESSAGE_BANNER_AX_LABEL" = "고정 메시지:";
 
 /* Shown when another user pins a message. Embeds {{ another user }}. */
-"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ 님이 메시지를 고정했습니다";
+"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ 님이 메시지를 고정했습니다.";
 
 /* Shown when the local user pins a message. */
-"PINNED_MESSAGE_CHAT_EVENT_SELF" = "메시지를 고정했습니다";
+"PINNED_MESSAGE_CHAT_EVENT_SELF" = "메시지를 고정했습니다.";
 
 /* Accessibility label for pin message button */
 "PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "고정 메시지 메뉴";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "이 스토리를 삭제할까요? 스토리를 받은 모든 사람에게서 해당 스토리가 삭제됩니다.";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "이 스토리를 삭제할까요? 그룹이 종료되어 본인의 기기에서만 삭제됩니다.";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "전달";

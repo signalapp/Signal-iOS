@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Η κλήση απέτυχε";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "Αυτή η ενέργεια δεν είναι διαθέσιμη γιατί η ομάδα διαγράφηκε.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "Αυτή η ομάδα έχει καταργηθεί.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "Δεν μπορείς να στείλεις μηνύματα, καθώς αυτή η ομάδα έχει καταργηθεί.";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "Τα μέλη δεν θα μπορούν πλέον να στέλνουν μηνύματα ή να ξεκινάνε κλήσεις στην ομάδα. Θα ενημερωθούν ότι διέγραψες την ομάδα, αλλά θα εξακολουθούν να έχουν πρόσβαση στο ιστορικό μηνυμάτων.";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "Αυτό θα διαγράψει την ομάδα μόνιμα. Θέλεις σίγουρα να συνεχίσεις;";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "Δεν ήταν δυνατή η κατάργηση της ομάδας. Έλεγξε τη σύνδεσή σου και δοκίμασε πάλι.";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "Διαγραφή ομάδας";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Δεν μπορείς να μπεις στην ομάδα";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Δεν ήταν δυνατή η συμμετοχή σε αυτήν την ομάδα";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Ο σύνδεσμος ομάδας δεν είναι πια έγκυρος";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "Η ομάδα διαγράφηκε";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "Δεν μπορείς να στείλεις μηνύματα, καθώς αυτή η ομάδα έχει καταργηθεί.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Η ομάδα ενημερώθηκε.";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Να διαγραφεί η ιστορία; Θα διαγραφεί και για όλα τα άτομα που την έχουν λάβει.";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Διαγραφή αυτής της ιστορίας; Θα διαγραφεί μόνο για εσένα επειδή η ομάδα έχει καταργηθεί";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Προώθηση";

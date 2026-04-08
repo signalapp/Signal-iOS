@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "কল ব্যর্থ হয়েছে";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "গ্রুপটি বন্ধ করার কারণে এই কার্যক্রমটি করা সম্ভব নয়।";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "গ্ৰুপটি বন্ধ হয়ে গিয়েছে।";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "আপনি এই গ্রুপে মেসেজ পাঠাতে পারবেন না, কারণ গ্রুপটি বন্ধ হয়ে গিয়েছে।";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "সদস্যরা গ্রুপে আর মেসেজ পাঠাতে বা কল শুরু করতে পারবেন না। আপনি যে গ্রুপটি বন্ধ করে দিয়েছেন, সে বিষয়ে তাদের জানানো হবে এবং তারা আগের মেসেজের ইতিহাস দেখতে পারবেন।";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "এর মাধ্যমে গ্রুপটি স্থায়ীভাবে বন্ধ হয়ে যাবে। আপনি কি এগিয়ে যাওয়ার ব্যাপারে নিশ্চিত?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "গ্রুপটি বন্ধ করা যায়নি। আপনার নেটওয়ার্ক সংযোগ ঠিক আছে কি না দেখুন এবং আবার চেষ্টা করুন।";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "গ্ৰুপ বন্ধ করুন";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "গ্রুপে যোগ দেওয়া যাবে না";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "এই গ্রুপে যোগ দেওয়া যাচ্ছে না";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "এই গ্রুপ লিঙ্কটি আর বৈধ নেই।";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "গ্ৰুপটি বন্ধ হয়েছে";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "আপনি এই গ্রুপে মেসেজ পাঠাতে পারবেন না, কারণ গ্রুপটি বন্ধ হয়ে গিয়েছে।";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "গ্রুপ আপডেট হয়েছে।";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "স্টোরিটি মুছে ফেলবেন? যারা এটি পেয়েছেন তাদের জন্যও এটি মুছে যাবে৷";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "এই স্টোরিটি মুছে ফেলবেন? গ্রুপটি বন্ধ হয়ে যাওয়ায় এটি শুধু আপনার জন্য মুছে যাবে";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "ফরওয়ার্ড";

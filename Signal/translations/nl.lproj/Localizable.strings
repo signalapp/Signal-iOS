@@ -3434,22 +3434,22 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Oproep mislukt";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "Deze optie is niet beschikbaar omdat de groep is beëindigd.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "De groep is beëindigd.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "Je kunt geen berichten sturen omdat deze groep is beëindigd.";
 
 /* End group confirmation description */
-"END_GROUP_DESCRIPTION" = "Leden kunnen in deze groep geen berichten meer verzenden of oproepen starten. Ze krijgen een melding dat je de groep hebt opgeheven en blijven toegang houden tot de chatgeschiedenis.";
+"END_GROUP_DESCRIPTION" = "Leden kunnen in deze groep geen berichten meer verzenden of oproepen starten. Ze krijgen een melding dat je de groep hebt beëindigd en blijven toegang houden tot de chatgeschiedenis.";
 
 /* Description for final confirmation screen when user tries to end a group */
-"END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "Hiermee wordt de groep definitief opgeheven. Weet je zeker dat je door wilt gaan?";
+"END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "Hiermee wordt de groep definitief beëindigd. Weet je zeker dat je door wilt gaan?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "De groep kon niet worden beëindigd. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "Groep opheffen";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Kan niet lid worden van de groep";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Je kunt niet meer deelnemen aan deze groep";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "De groepslink is niet langer geldig.";
@@ -4382,16 +4382,16 @@
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Wie kan dit verhaal bekijken";
 
 /* Message indicating that the group was terminated by the local user. */
-"GROUP_TERMINATED_BY_LOCAL_USER" = "Je hebt de groep opgeheven";
+"GROUP_TERMINATED_BY_LOCAL_USER" = "Je hebt de groep beëindigd";
 
 /* Message indicating that the group was terminated by a remote user. Embeds {{ user who terminated the group }}. */
-"GROUP_TERMINATED_BY_OTHER_USER" = "%1$@ heeft de groep opgeheven";
+"GROUP_TERMINATED_BY_OTHER_USER" = "%1$@ heeft de groep beëindigd";
 
 /* Message indicating that the group was terminated by an unknown user. */
-"GROUP_TERMINATED_BY_UNKNOWN_USER" = "De groep is opgeheven";
+"GROUP_TERMINATED_BY_UNKNOWN_USER" = "De groep is beëindigd";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "Je kunt geen berichten sturen omdat de groep is beëindigd.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Groep aangepast.";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Dit verhaal verwijderen? Het zal ook worden verwijderd voor iedereen die het al heeft ontvangen.";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Dit verhaal verwijderen? Het wordt alleen voor jou verwijderd omdat de groep is beëindigd.";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Doorsturen";

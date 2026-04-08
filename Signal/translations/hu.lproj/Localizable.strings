@@ -3434,13 +3434,13 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "A hívás sikertelen";
 
 /* Description for error sheet that says the user can no longer take this action because the group has ended. */
-"END_GROUP_ACTION_ERROR" = "This action is unavailable because the group has ended.";
+"END_GROUP_ACTION_ERROR" = "Ez a művelet nem érhető el, mert a csoport megszűnt.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "This group has ended.";
+"END_GROUP_BANNER_LABEL" = "Ez a csoport megszűnt.";
 
 /* Label for group chats that have been ended */
-"END_GROUP_BOTTOM_PANEL_LABEL" = "You can’t send messages because this group has ended.";
+"END_GROUP_BOTTOM_PANEL_LABEL" = "Nem tudsz üzenetet küldeni, mert ez a csoport megszűnt.";
 
 /* End group confirmation description */
 "END_GROUP_DESCRIPTION" = "A tagok a továbbiakban nem tudnak üzeneteket küldeni vagy hívásokat kezdeményezni a csoportban. Értesítést kapnak arról, hogy megszüntetted a csoportot, de továbbra is hozzáférhetnek az üzenetelőzményekhez.";
@@ -3449,7 +3449,7 @@
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "Ez véglegesen megszünteti a csoportot. Biztosan szeretnéd folytatni?";
 
 /* Body for error sheet shown if the group failed to end */
-"END_GROUP_ERROR_DESCRIPTION" = "Couldn't end the group. Check your connection and try again.";
+"END_GROUP_ERROR_DESCRIPTION" = "Nem sikerült megszüntetni a csoportot. Ellenőrizd az internetkapcsolatodat, és próbáld újra!";
 
 /* Label in conversation settings to end a group */
 "END_GROUP_LABEL" = "Csoport megszüntetése";
@@ -4064,7 +4064,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Csoport belépés sikertelen";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
-"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Unable to join this group";
+"GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "Nem sikerült csatlakozni ehhez a csoporthoz";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Ez a csoporthivatkozás már érvénytelen.";
@@ -4391,7 +4391,7 @@
 "GROUP_TERMINATED_BY_UNKNOWN_USER" = "A csoportot megszüntették";
 
 /* Error indicating a send failure due to the group being terminated. */
-"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+"GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "Nem tudsz üzenetet küldeni, mert ez a csoport megszűnt.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Csoport frissítve.";
@@ -9254,7 +9254,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Törlöd ezt a Történetet? Ha igen, a Történet az összes címzettnél törlésre kerül.";
 
 /* Title asking the user if they are sure they want to delete their story for themselves only. */
-"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Delete this story? It will only be deleted for you because the group has ended";
+"STORIES_DELETE_STORY_FOR_ME_ACTION_SHEET_TITLE" = "Törlöd ezt a történetet? Csak azért törlődik számodra, mert a csoport megszűnt";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Továbbítás";
