@@ -212,6 +212,7 @@ public class GroupsV2IncomingChanges {
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(aci)
+            groupMembershipBuilder.setMemberLabel(label: nil, aci: aci)
         }
 
         for action in changeActionsProto.modifyMemberRoles {
