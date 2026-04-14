@@ -368,13 +368,13 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Jakość multimediów";
 
 /* Notification body shown when media sync to a linked device is complete. */
-"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "Finished syncing with Signal on your linked device.";
+"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "Synchronizacja z aplikacją Signal na połączonym urządzeniu zakończona";
 
 /* Notification body shown when media sync to a linked device was interrupted. */
-"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "Open Signal to continue syncing with your linked device";
+"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "Otwórz Signal, aby kontynuować synchronizację z połączonym urządzeniem";
 
 /* Notification body shown while syncing media to a linked device. */
-"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "Syncing with Signal on your linked device";
+"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "Synchronizowanie z aplikacją Signal na połączonym urządzeniu";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Załącznik";
@@ -5903,7 +5903,7 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Działania obejmują „Oznacz jako odczytane”, „Odpowiedz” i „Oddzwoń”.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Bez imienia lub treści";
+"NOTIFICATIONS_NONE" = "Bez imienia ani treści";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Powiadamiaj z dźwiękiem, gdy aplikacja jest otwarta";
@@ -5918,7 +5918,7 @@
 "NOTIFICATIONS_SENDER_ONLY" = "Tylko imię";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SHOW" = "Pokaż";
+"NOTIFICATIONS_SHOW" = "Pokazuj";
 
 /* Label for the 'ok' button. */
 "OK" = "OK";
@@ -10070,7 +10070,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Dotknij tutaj, aby ta wiadomość znikła po wyświetleniu.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "View-once media is deleted after sending";
+"VIEW_ONCE_OUTGOING_TOAST" = "Multimedia jednorazowe są usuwane po wysłaniu";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Wyświetl zdjęcie";

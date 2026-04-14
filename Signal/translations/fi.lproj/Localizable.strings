@@ -368,13 +368,13 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Median laatu";
 
 /* Notification body shown when media sync to a linked device is complete. */
-"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "Finished syncing with Signal on your linked device.";
+"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "Synkronointi Signalin kanssa yhdistetyllä laitteellasi on valmis.";
 
 /* Notification body shown when media sync to a linked device was interrupted. */
-"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "Open Signal to continue syncing with your linked device";
+"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "Avaa Signal ja jatka synkronointia yhdistetyllä laitteellasi";
 
 /* Notification body shown while syncing media to a linked device. */
-"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "Syncing with Signal on your linked device";
+"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "Synkronoidaan Signalin kanssa yhdistetyllä laitteellasi";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Liitetiedosto";
@@ -10070,7 +10070,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Napauttamalla tätä viesti katoaa sen jälkeen, kun se on katsottu.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "View-once media is deleted after sending";
+"VIEW_ONCE_OUTGOING_TOAST" = "Kertaluontoinen media poistetaan lähettämisen jälkeen";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Näytä kuva";

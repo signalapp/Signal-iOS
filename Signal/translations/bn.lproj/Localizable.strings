@@ -368,13 +368,13 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "মিডিয়ার মান";
 
 /* Notification body shown when media sync to a linked device is complete. */
-"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "Finished syncing with Signal on your linked device.";
+"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "আপনার লিংক করা ডিভাইসে Signal-এর সাথে সিঙ্ক করা সম্পন্ন হয়েছে।";
 
 /* Notification body shown when media sync to a linked device was interrupted. */
-"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "Open Signal to continue syncing with your linked device";
+"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "আপনার লিংক করা ডিভাইসের সাথে সিঙ্ক করা চালিয়ে যেতে Signal খুলুন";
 
 /* Notification body shown while syncing media to a linked device. */
-"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "Syncing with Signal on your linked device";
+"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "আপনার লিংক করা ডিভাইসে Signal-এর সাথে সিঙ্ক করা হচ্ছে";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "সংযুক্তি";
@@ -10070,7 +10070,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "এই বার্তাটি দেখার পরে অদৃশ্য হয়ে যাওয়ার জন্য এখানে আলতো চাপুন।";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "View-once media is deleted after sending";
+"VIEW_ONCE_OUTGOING_TOAST" = "'শুধুমাত্র-একবার-দেখা-যাবে' এমন মিডিয়া ফাইল পাঠানোর পর মুছে ফেলা হয়";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "ছবি দেখুন";

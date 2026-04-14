@@ -368,13 +368,13 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Medienqualität";
 
 /* Notification body shown when media sync to a linked device is complete. */
-"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "Finished syncing with Signal on your linked device.";
+"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "Die Synchronisierung mit Signal auf deinem gekoppelten Gerät ist abgeschlossen";
 
 /* Notification body shown when media sync to a linked device was interrupted. */
-"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "Open Signal to continue syncing with your linked device";
+"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "Öffne Signal, um die Synchronisierung mit deinem gekoppelten Gerät fortzusetzen";
 
 /* Notification body shown while syncing media to a linked device. */
-"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "Syncing with Signal on your linked device";
+"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "Synchronisierung mit Signal auf deinem gekoppelten Gerät";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Anhang";
@@ -605,10 +605,10 @@
 "BACKUP_ONBOARDING_INTRO_BULLET_1" = "Ende-zu-Ende verschlüsselt";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_BULLET_2" = "Optional, immer";
+"BACKUP_ONBOARDING_INTRO_BULLET_2" = "Optional";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_BULLET_3" = "Backup jederzeit löschen";
+"BACKUP_ONBOARDING_INTRO_BULLET_3" = "Lösche dein Backup jederzeit";
 
 /* A toast shown when 'Not Now' is tapped from the Backups onboarding intro. */
 "BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "Du kannst Backups unter »Einstellungen« aktivieren.";
@@ -10070,7 +10070,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Hier antippen, um diese Nachricht nach dem Ansehen verschwinden zu lassen.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "View-once media is deleted after sending";
+"VIEW_ONCE_OUTGOING_TOAST" = "Medien zur Einmalansicht werden nach dem Senden gelöscht";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Foto anzeigen";

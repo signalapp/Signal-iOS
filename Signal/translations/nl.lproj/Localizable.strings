@@ -368,13 +368,13 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Mediakwaliteit";
 
 /* Notification body shown when media sync to a linked device is complete. */
-"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "Finished syncing with Signal on your linked device.";
+"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "Synchroniseren met Signal op je gekoppelde apparaat voltooid.";
 
 /* Notification body shown when media sync to a linked device was interrupted. */
-"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "Open Signal to continue syncing with your linked device";
+"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "Open Signal om door te gaan met synchroniseren met je gekoppelde apparaat";
 
 /* Notification body shown while syncing media to a linked device. */
-"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "Syncing with Signal on your linked device";
+"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "Aan het synchroniseren met Signal op je gekoppelde apparaat";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Bijlage";
@@ -566,7 +566,7 @@
 "BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "Verifiëren";
 
 /* Body for Recovery Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "We vragen je af en toe om je herstelsleutel te verifiëren om te bevestigen dat je die nog steeds weet";
+"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "We vragen je af en toe om je herstelsleutel in te voeren om te bevestigen dat je die nog steeds weet";
 
 /* Title for Recovery Key reminder megaphone */
 "BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "Verifieer je herstelsleutel";
@@ -605,7 +605,7 @@
 "BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end versleuteld";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_BULLET_2" = "Optioneel, altijd";
+"BACKUP_ONBOARDING_INTRO_BULLET_2" = "Optioneel";
 
 /* Bullet point on a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_BULLET_3" = "Verwijder je back-up wanneer je wilt";
@@ -3446,7 +3446,7 @@
 "END_GROUP_ACTION_ERROR" = "Deze optie is niet beschikbaar omdat de groep is beëindigd.";
 
 /* Label for a banner in group settings indicating that the group has been ended */
-"END_GROUP_BANNER_LABEL" = "De groep is beëindigd.";
+"END_GROUP_BANNER_LABEL" = "Deze groep is beëindigd.";
 
 /* Label for group chats that have been ended */
 "END_GROUP_BOTTOM_PANEL_LABEL" = "Je kunt geen berichten sturen omdat deze groep is beëindigd.";
@@ -6833,7 +6833,7 @@
 "PIN_REMINDER_MEGAPHONE_ACTION" = "Pincode bevestigen";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "We vragen je af en toe om je pincode te bevestigen, zodat je je pincode goed onthoudt.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "We vragen je af en toe om je pincode in te voeren, zodat je je pincode goed onthoudt.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_SUCCESSFUL_TOAST" = "Juiste pincode. We zullen het over een aantal dagen opnieuw vragen.";
@@ -10070,7 +10070,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Tik hier om ervoor te zorgen dat dit bericht wordt verwijderd nadat het is gezien.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "View-once media is deleted after sending";
+"VIEW_ONCE_OUTGOING_TOAST" = "Eenmaligeweergave-media worden verwijderd na verzenden";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Afbeelding bekijken";

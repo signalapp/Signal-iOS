@@ -368,13 +368,13 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "मीडिया की क्वालिटी";
 
 /* Notification body shown when media sync to a linked device is complete. */
-"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "Finished syncing with Signal on your linked device.";
+"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "आपके लिंक किए गए डिवाइस पर Signal को सिंक करने की प्रक्रिया पूरी हो गई है।";
 
 /* Notification body shown when media sync to a linked device was interrupted. */
-"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "Open Signal to continue syncing with your linked device";
+"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "अपने लिंक किए गए डिवाइस के साथ सिंक करना जारी रखने के लिए Signal खोलें";
 
 /* Notification body shown while syncing media to a linked device. */
-"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "Syncing with Signal on your linked device";
+"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "आपके लिंक किए गए डिवाइस पर Signal को सिंक किया जा रहा है";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "अटैचमेंट";
@@ -1049,7 +1049,7 @@
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "आपके बैकअप का सब्सक्रिप्शन रिन्यू नहीं हो पाया";
 
 /* Body for system notification when we detect an issue with Backup media. */
-"BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "आपके मीडिया बैकअप से जुड़ी कोई गड़बड़ी हुई है। इस समस्या को हल करने में हमारी मदद करने के लिए, कृपया डीबग लॉग सबमिट करें।";
+"BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "आपके मीडिया बैकअप में कोई अनचाही गड़बड़ी हुई है। इस समस्या को हल करने में हमारी मदद करने के लिए, कृपया डीबग लॉग सबमिट करें।";
 
 /* Title for system notification when we detect an issue with Backup media. */
 "BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "बैकअप मीडिया से जुड़ी गड़बड़ी";
@@ -1856,7 +1856,7 @@
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_MESSAGE" = "मोबाइल डेटा का इस्तेमाल करके अपने मीडिया का बैकअप लेने में डेटा शुल्क लग सकता है। आपके बैकअप को अपलोड होने में थोड़ा समय लग सकता है, इसलिए Signal खुला रखें, ताकि अपलोड करने में किसी तरह की रुकावट न आए।";
 
 /* Title for the action sheet shown when the user tries to resume backup using cellular data. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_TITLE" = "मोबाइल डेटा फिर से इस्तेमाल करना शुरू करें?";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_TITLE" = "मोबाइल डेटा की मदद से फिर से शुरू करना है?";
 
 /* Button shown in the backup progress view trailing accessory to resume uploading over Wi-Fi. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_WIFI_BUTTON" = "फिर से शुरू करें";
@@ -1865,10 +1865,10 @@
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOAD_PROGRESS_FORMAT" = "%2$@ में से %1$@";
 
 /* Title label shown in the chat list backup progress view while backup attachments are being uploaded. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOADING_BACKUP_TITLE" = "बैकअप अपलोड किया रहा है";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOADING_BACKUP_TITLE" = "बैकअप अपलोड हो रहा है";
 
 /* Title label shown in the chat list backup progress view when waiting for Wi-Fi. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_WAITING_FOR_WIFI_TITLE" = "वाई-फ़ाई का इंतज़ार है";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_WAITING_FOR_WIFI_TITLE" = "वाई-फ़ाई के लिए इंतज़ार करें";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
 "CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "अनरीड फ़िल्टर हटाएं";
@@ -4631,7 +4631,7 @@
 "IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "अपने डोनेशन की पुष्टि करें";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "नियत अवधि में दान सेटअप करने के लिए, अपने बैंक से %1$@ के शुल्क की पुष्टि करने के लिए 'जारी रखें' पर टैप करें। यह ऑटोमैटिक रूप से वापस कर दिया जाएगा और आपके %2$@/महीने के दान को आपके अकाउंट से काटा जा सकेगा।";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "रिकरिंग डोनेशन सेट करने के लिए, 'जारी रखें' पर टैप करें, ताकि आपके बैंक अकाउंट से %1$@ कटने की मंज़ूरी मिल सके। यह राशि अपने-आप रिफ़ंड हो जाएगी और आपके अकाउंट से %2$@/महीने का डोनेशन अपने-आप कटता रहेगा।";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "ब्लर करने के लिए कहीं भी ड्रॉ करें";
@@ -4691,10 +4691,10 @@
 "INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "अपना अकाउंट चालू रखने के लिए, अपने मुख्य डिवाइस पर Signal खोलें।";
 
 /* Title for a button in an in-app megaphone about a user's inactive primary device, temporarily dismissing the megaphone. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_GOT_IT_BUTTON" = "समझ गया";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_GOT_IT_BUTTON" = "ठीक है";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user wants to learn more. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_LEARN_MORE_BUTTON" = "अधिक जानें";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_LEARN_MORE_BUTTON" = "और जानें";
 
 /* Title for an in-app megaphone about a user's inactive primary device. */
 "INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE" = "अपने फ़ोन पर Signal खोलें";
@@ -4907,19 +4907,19 @@
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "नए ग्रुप क्या हैं?";
 
 /* subtitle for declining to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_SUBTITLE" = "कोई पुराना संदेश या मीडिया आपके लिंक्ड डिवाइस पर ट्रांसफ़र नहीं किया जाएगा";
+"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_SUBTITLE" = "लिंक किए गए डिवाइस पर आपके पुराने मैसेज या मीडिया ट्रांसफ़र नहीं होंगे";
 
 /* title for declining to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "ट्रांसफ़र न करें";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "लिंकिंग पूरी करें";
+"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "लिंक करने की प्रक्रिया पूरी करें";
 
 /* Subtitle for choosing to send message history when linking a new device, if you have the paid tier enabled. */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_PAID_PLAN_SUBTITLE" = "अपने टेक्स्ट मैसेज और सारा मीडिया ट्रांसफ़र करें";
 
 /* title for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "संदेश ट्रांसफ़र करने का इतिहास";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "पुराने मैसेज ट्रांसफ़र करें";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "यह QR कोड सही नहीं है। कृपया देख लें कि उसी डिवाइस का QR कोड स्कैन किया जा रहा है, जिसे आपको लिंक करना है।";
@@ -4937,13 +4937,13 @@
 "LINK_DEVICE_RESTART" = "दोबारा कोशिश करें";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "जिस डिवाइस को आप लिंक करना चाहते हैं उस पर प्रदर्शित QR कोड को स्कैन करने के लिए इस डिवाइस का उपयोग करें";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "जो डिवाइस लिंक करना है उस पर दिख रहे QR कोड को इस डिवाइस से स्कैन करें";
 
 /* Title for QR Scanning screen instructions sheet */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "QR कोड स्कैन करें";
 
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "'जारी रखें' पर टैप करें और पुष्टि करने के लिए अपने फ़ोन का लॉक दर्ज करें। अपना Signal पिन दर्ज न करें।";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "'जारी रखें' पर टैप करें और पुष्टि करने के लिए अपने फ़ोन का लॉक डालें। अपना Signal पिन न डालें।";
 
 /* Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
 "LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "लिंक करने से पहले, पुष्टि करें कि यह आप ही हैं";
@@ -4952,25 +4952,25 @@
 "LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "किसी डिवाइस को लिंक करने के लिए ऑथेंटिकेट करें";
 
 /* Body text for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Signal को अपने अन्य डिवाइस पर लिंक करना समाप्त करें।";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Signal को लिंक करने की प्रक्रिया अपने दूसरे डिवाइस पर पूरी करें।";
 
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "अपने दूसरे डिवाइस पर लिंक करना समाप्त करें";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "अपने दूसरे डिवाइस पर लिंक करने की प्रक्रिया पूरी करें";
 
 /* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "%2$@ में से %1$@ को डाउनलोड किया जा रहा है (%3$@)…";
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "%2$@ में से %1$@ (%3$@) डाउनलोड हुआ है…";
 
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
-"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "बिना ट्रांसफ़र किए जारी रखें";
+"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "ट्रांसफ़र किए बिना जारी रखें";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages. */
-"LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "आपका डिवाइस लिंक हो गया है, लेकिन आपके संदेश ट्रांसफ़र नहीं किए जा सके।";
+"LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "आपका डिवाइस लिंक हो गया है, लेकिन आपके मैसेज ट्रांसफ़र नहीं हो सके।";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "आपके संदेश आपके लिंक्ड डिवाइस पर ट्रांसफ़र नहीं किए जा सके। आप फिर से लिंक और ट्रांसफ़र करने की कोशिश कर सकते हैं या अपना संदेश इतिहास ट्रांसफ़र किए बिना आगे बढ़ सकते हैं।";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "आपके मैसेज, लिंक डिवाइस पर ट्रांसफ़र नहीं हो सके। दोबारा लिंक करके ट्रांसफ़र करने की कोशिश करें या फिर पिछले मैसेज ट्रांसफ़र किए बिना ही आगे जारी रखें।";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
-"LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "संदेश का सिंक नहीं हो पाया";
+"LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "मैसेज सिंक नहीं हो सका";
 
 /* On a progress modal */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "ऐप बंद न करें";
@@ -4979,13 +4979,13 @@
 "LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ पूरा हुआ";
 
 /* Title for a progress modal that would be indicating the sync progress while it's cancelling that sync */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "रद्द कर रहा है…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "कैंसिल किया जा रहा है…";
 
 /* Title for a progress modal indicating the sync progress */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "संदेश सिंक किए जा रहे हैं…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "मैसेज सिंक हो रहे हैं…";
 
 /* Title for a progress modal indicating the sync progress while it's preparing for upload */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "तैयार कर रहे हैं…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "तैयार हो रहा है…";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "नया डिवाइस लिंक करें";
@@ -4994,10 +4994,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "लिंक का प्रीव्यू";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "फोन संपर्कों को प्रबंधित करना अब iPad पर उपलब्ध नहीं है। अपने फोन संपर्कों में Signal कनेक्शन जोड़ने के लिए अपने फोन पर Signal खोलें।";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "फ़ोन कॉन्टैक्ट मैनेज करने की सुविधा अब iPad पर उपलब्ध नहीं है। अपने फ़ोन कॉन्टैक्ट में Signal कनेक्शन जोड़ने के लिए अपने फ़ोन पर Signal खोलें।";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "फोन संपर्कों को प्रबंधित करना अब iPad पर सपोर्टेड नहीं है। यह डिवाइस आपके फोन पर Signal से आपकी संपर्क सूची में किसी भी बदलाव को सिंक करना जारी रखेगी।";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "फ़ोन कॉन्टैक्ट मैनेज करने की सुविधा अब iPad पर उपलब्ध नहीं है। आपके फ़ोन पर Signal ऐप की कॉन्टैक्ट लिस्ट में होने वाले सभी बदलाव इस डिवाइस पर अपने आप सिंक होते रहेंगे।";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "और जानें";
@@ -5006,40 +5006,40 @@
 "LINKED_DEVICE_NOTIFICATION_BODY" = "%1$@ पर आपके अकाउंट से एक नया डिवाइस लिंक किया गया। देखने के लिए टैप करें।";
 
 /* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "%1$@ पर आपके अकाउंट से एक नया डिवाइस लिंक किया गया।";
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "आपके अकाउंट से %1$@ बजे एक नया डिवाइस लिंक किया गया है।";
 
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "आपने नया डिवाइस लिंक किया";
 
 /* Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL. */
-"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "इस Signal अकाउंट से डेस्कटॉप या iPad को लिंक करने के लिए, लिंक्ड डिवाइस पर जाएँ और \"नया डिवाइस लिंक करें\" पर टैप करके QR कोड को फिर से स्कैन करें। पक्का करें कि आप वही QR कोड स्कैन करें जो सीधा Signal से आता है।";
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "इस Signal अकाउंट से डेस्कटॉप या iPad को लिंक करने के लिए, 'लिंक किए गए डिवाइस' पर जाएं और 'नया डिवाइस लिंक करें' पर टैप करके QR कोड को फिर से स्कैन करें। वही QR कोड स्कैन करें जो सीधे Signal आपको भेजता है।";
 
 /* Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera. */
-"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "ऐसा लगता है कि आप Signal डिवाइस को लिंक करने की कोशिश कर रहे हैं। 'जारी रखें' पर टैप करें और फिर \"नया डिवाइस लिंक करें\" पर टैप करें और QR कोड को फिर से स्कैन करें।";
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "ऐसा लगता है कि आपको Signal डिवाइस लिंक करना है। 'जारी रखें' पर टैप करें और इसके बाद 'नया डिवाइस लिंक करें' पर टैप करें और QR कोड को फिर से स्कैन करें।";
 
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
-"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "अपने दूसरे डिवाइस पर, iPad ऐप इंस्टॉल करने के लिए %1$@ पर जाएँ या डेस्कटॉप ऐप इंस्टॉल करने के लिए %2$@ पर जाएँ।";
+"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "अपने दूसरे डिवाइस पर, iPad ऐप इंस्टॉल करने के लिए %1$@ पर जाएं या डेस्कटॉप ऐप इंस्टॉल करने के लिए %2$@ पर जाएं।";
 
 /* Bullet point about message sync on the linked devices education sheet */
-"LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "आपके मोबाइल फोन के लिंक होने के बाद Signal संदेशों को Signal के साथ सिंक्रनाइज़ किया जाता है।";
+"LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "लिंक होने के बाद, आपके मोबाइल फ़ोन के Signal के साथ मैसेज अपने आप सिंक हो जाएंगे।";
 
 /* Bullet point about privacy on the linked devices education sheet */
-"LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "लिंक किए गए डिवाइस पर सभी संदेश निजी हैं";
+"LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "लिंक किए गए डिवाइस पर सभी मैसेज गोपनीय होते हैं";
 
 /* Title for the linked device education sheet */
-"LINKED_DEVICES_EDUCATION_TITLE" = "डेस्कटॉप या आईपैड पर Signal";
+"LINKED_DEVICES_EDUCATION_TITLE" = "डेस्कटॉप या iPad पर Signal";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
-"LINKED_DEVICES_EMPTY_STATE" = "कोई लिंक किए गए डिवाइस नहीं";
+"LINKED_DEVICES_EMPTY_STATE" = "कोई डिवाइस लिंक नहीं है";
 
 /* Description for header of the linked devices list */
 "LINKED_DEVICES_HEADER_DESCRIPTION" = "डेस्कटॉप या iPad पर Signal का उपयोग करें।";
 
 /* Footer text below the list of currently-linked devices */
-"LINKED_DEVICES_LIST_FOOTER" = "सभी डिवाइस पर संदेश और चैट जानकारी शुरू से अंत तक एनक्रिप्शन से सुरक्षित हैं";
+"LINKED_DEVICES_LIST_FOOTER" = "मैसेज और चैट की जानकारी सभी डिवाइस पर एंड-टू-एंड एनक्रिप्शन तकनीक से सुरक्षित है";
 
 /* Title above the list of currently-linked devices */
-"LINKED_DEVICES_LIST_TITLE" = "लिंक की गईं डिवाइसें";
+"LINKED_DEVICES_LIST_TITLE" = "लिंक किए गए डिवाइस";
 
 /* Button title for renaming a linked device */
 "LINKED_DEVICES_RENAME_BUTTON" = "नाम बदलें";
@@ -5051,7 +5051,7 @@
 "LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "डिवाइस का नाम अपडेट किया गया";
 
 /* Title for the screen for renaming a linked device */
-"LINKED_DEVICES_RENAME_TITLE" = "डिवाइस का नाम संपादित करें";
+"LINKED_DEVICES_RENAME_TITLE" = "डिवाइस का नाम एडिट करें";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "लिंक किए गए डिवाइस";
@@ -5060,13 +5060,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "डिवाइस लिंक नहीं हो सका";
 
 /* Progress label when the message loading has nearly completed during the device linking process */
-"LINKING_SYNCING_FINALIZING" = "संदेश ट्रांसफ़र को पूरा किया जा रहा है…";
+"LINKING_SYNCING_FINALIZING" = "मैसेज ट्रांसफ़र की प्रक्रिया शुरू होने वाली है…";
 
 /* Footer text when loading messages during linking process. */
-"LINKING_SYNCING_FOOTER" = "संदेश और चैट जानकारी शुरू से अंत तक एनक्रिप्शन से सुरक्षित है, जिसमें सिंक करने की प्रोसेस शामिल है।";
+"LINKING_SYNCING_FOOTER" = "मैसेज और चैट की जानकारी एंड-टू-एंड एन्क्रिप्शन से सुरक्षित है। इसमें सिंक प्रक्रिया भी शामिल है।";
 
 /* Title shown when loading messages during linking process */
-"LINKING_SYNCING_MESSAGES_TITLE" = "संदेश सिंक किए जा रहे हैं";
+"LINKING_SYNCING_MESSAGES_TITLE" = "मैसेज सिंक हो रहे हैं";
 
 /* Progress label when the message loading has not yet started during the device linking process */
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "डाउनलोड की तैयारी हो रही है…";
@@ -5075,7 +5075,7 @@
 "LINKING_SYNCING_TIMING_INFO" = "इसमें कुछ मिनट लग सकते हैं";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
-"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Signal बंद न करें.";
+"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "ऐप बंद न करें।";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "नाम या जगह से खोजें";
@@ -5093,7 +5093,7 @@
 "LONG_TEXT_VIEW_TITLE" = "मैसेज";
 
 /* Title for error sheet shown when the max video length is recorded with the in-app camera */
-"MAX_VIDEO_RECORDING_LENGTH_ALERT" = "वीडियो की अधिकतम सीमा पार हो गई";
+"MAX_VIDEO_RECORDING_LENGTH_ALERT" = "इससे लंबा वीडिया रिकॉर्ड नहीं हो सकता";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "सभी मीडिया";
@@ -5123,13 +5123,13 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "सिर्फ़ एक बार देखे जा सकने वाला मीडिया";
 
 /* VoiceOver description for a generic audio file in All Media */
-"MEDIA_GALLERY_A11Y_AUDIO_FILE" = "ऑडियो फाइल";
+"MEDIA_GALLERY_A11Y_AUDIO_FILE" = "ऑडियो फ़ाइल";
 
 /* VoiceOver description for a generic non-audiovisual file in All Media */
 "MEDIA_GALLERY_A11Y_OTHER_FILE" = "फ़ाइल";
 
 /* VoiceOver description for a voice messages in All Media */
-"MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "ध्वनि संदेश";
+"MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "वॉइस मैसेज";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
 "MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "फ़िल्टर हटाएं";
@@ -5147,10 +5147,10 @@
 "MEDIA_GALLERY_NO_AUDIO_TITLE" = "कोई ऑडियो नहीं है";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - second line. */
-"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "आप जो फ़ाइलें भेजते और पाते हैं वे यहाँ दिखेंगी";
+"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "आपको मिलने वाली और आपकी ओर से भेजी जाने वाली फ़ाइल यहां दिखेंगी";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - first line. */
-"MEDIA_GALLERY_NO_FILES_TITLE" = "कोई फ़ाइल नहीं";
+"MEDIA_GALLERY_NO_FILES_TITLE" = "कोई फ़ाइल नहीं है";
 
 /* Displayed in All Media screen when there's no media - first line. */
 "MEDIA_GALLERY_NO_FILTER_RESULTS" = "कोई मीडिया नहीं है";
@@ -5171,7 +5171,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "डिलीट करें";
 
 /* Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video. */
-"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "संदेश पर जाएँ";
+"MEDIA_VIEWER_GO_TO_MESSAGE_ACTION" = "मैसेज पर जाएं";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
 "MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "सेव करें";
@@ -5354,7 +5354,7 @@
 "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "भेजने का समय कॉपी किया गया";
 
 /* Title for the 'edit history' section on the 'message details' view. */
-"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "संपादित इतिहास देखें";
+"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "पिछले एडिट देखें";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "इन्होंने भेजा";
@@ -5462,7 +5462,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "ग्रुप डिलीट करके इसे छोड़ना है?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "इस व्यक्ति का नाम अन्य संपर्क के समान ही है";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "इस व्यक्ति का नाम दूसरे कॉन्टैक्ट के जैसा ही है";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "अगर आपको पक्के तौर पर नहीं पता है कि अनुरोध किसने भेजा है, तो नीचे दिए गए कॉन्टैक्ट देखें और उसके बाद ऐक्शन लें।";
@@ -5474,16 +5474,16 @@
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "कॉन्टैक्ट अपडेट करें";
 
 /* Action sheet message to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal को सूचित किया जाएगा कि यह व्यक्ति स्पैम भेज सकता है। Signal किसी भी चैट की सामग्री नहीं देख सकता।";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "इससे Signal को पता चल जाएगा कि यह व्यक्ति स्पैम भेज सकता है। Signal किसी भी चैट का कॉन्टेंट नहीं देख सकता।";
 
 /* Action sheet title to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "स्पैम की रिपोर्ट करें?";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "स्पैम की रिपोर्ट करना है?";
 
 /* Action sheet action to confirm reporting a conversation as spam via a message request. */
 "MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "स्पैम की रिपोर्ट करें";
 
 /* String indicating that spam has been reported. */
-"MESSAGE_REQUEST_SPAM_REPORTED" = "स्पैम के रूप में रिपोर्ट किया गया।";
+"MESSAGE_REQUEST_SPAM_REPORTED" = "स्पैम के तौर पर रिपोर्ट की गई।";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "स्पैम की रिपोर्ट की गई और ब्लॉक किया गया।";
@@ -5525,7 +5525,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "इस ग्रुप में जुड़ना है? आपकी ओर से स्वीकार करने के बाद ही ग्रुप के सदस्यों को पता चल पाएगा कि आपने उनके मैसेज देखे हैं।";
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "%1$@ को आपको संदेश भेजने और अपना नाम और फ़ोटो उनके साथ साझा करने दें? आपने इस व्यक्ति को पहले हटाया है।";
+"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "क्या %1$@ को यह अनुमति देनी है कि वह आपको मैसेज भेज सकें और आपका नाम और फ़ोटो देख सकें? आपने पहले इस व्यक्ति को हटाया था।";
 
 /* incoming message request button text which reports a conversation as spam */
 "MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "रिपोर्ट करें…";
@@ -5549,7 +5549,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "डाउनलोड हो रहा है";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "संपादित है";
+"MESSAGE_STATUS_EDITED" = "एडिट किया गया";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "मैसेज नहीं भेजा जा सका।";
@@ -5600,25 +5600,25 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "नए मैसेज";
 
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
-"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "फोन सेटिंग्स में ब्लॉक्ड संपर्कों की मिस्ड कॉल";
+"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "फ़ोन सेटिंग में ब्लॉक किए गए कॉन्टैक्ट की मिस्ड कॉल";
 
 /* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Signal में भी संपर्क को ब्लॉक करें";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Signal में भी कॉन्टैक्ट को ब्लॉक करें";
 
 /* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "आपने उनकी कॉल मिस कर दी, क्योंकि वे आपके फोन सेटिंग्स में ब्लॉक हैं। इसे प्रबंधित करने के लिए सेटिंग्स > फोन पर जाएं और ‘ब्लॉक्ड संपर्कों’ पर टैप करें।";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "इस कॉन्टैक्ट की कॉल मिस हो गई, क्योंकि आपने उसे फ़ोन सेटिंग में ब्लॉक किया हुआ है। इसे मैनेज करने के लिए सेटिंग > 'फ़ोन' पर जाएं और ‘ब्लॉक किए गए कॉन्टैक्ट' पर टैप करें।";
 
 /* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ फोन सेटिंग्स में ब्लॉक्ड है";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ को फ़ोन सेटिंग में ब्लॉक किया गया है";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
 "MISSED_CALL_FOCUS_MODE" = "फ़ोकस मोड चालू रहने की वजह से कॉल मिस हो गई";
 
 /* info message text in conversation view */
-"MISSED_VIDEO_CALL" = "छूटी हुई वीडियो कॉल";
+"MISSED_VIDEO_CALL" = "मिस्ड वीडियो कॉल";
 
 /* info message text in conversation view */
-"MISSED_VOICE_CALL" = "छूटी हुई वॉयस कॉल";
+"MISSED_VOICE_CALL" = "मिस्ड वॉइस कॉल";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "आप iOS सेटिंग्स ऐप में कैमरा ऐक्सेस चालू कर सकते हैं।";
@@ -5645,7 +5645,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "आपके अकाउंट से लिंक होने वाले डिवाइसों की सीमा पूरी हो गई है। कृपया कोई डिवाइस हटाकर फिर से कोशिश करें।";
 
 /* Text for a toast confirming that the mic has been muted for a call. */
-"MUTE_CONFIRMATION_TOAST_LABEL" = "माइक बंद";
+"MUTE_CONFIRMATION_TOAST_LABEL" = "माइक बंद है";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "म्यूट किया गया";
@@ -5669,10 +5669,10 @@
 "MY_STORY_NAME" = "मेरी स्टोरी";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "चुनें कि आपकी स्टोरी कौन देख सकते हैं";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "तय करें कि आपकी स्टोरी कौन देख सकता है";
 
 /* Title for the my story settings sheet */
-"MY_STORY_SETTINGS_SHEET_TITLE" = "मेरी स्टोरी की निजता";
+"MY_STORY_SETTINGS_SHEET_TITLE" = "मेरी स्टोरी की प्राइवेसी";
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "मेरी स्टोरी";
@@ -5681,7 +5681,7 @@
 "MY_STORY_TAP_TO_ADD" = "जोड़ने के लिए टैप करें";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "हाल ही में %1$@ अपना प्रोफ़ाइल नाम %2$@ से %3$@ में बदला है";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ ने हाल ही में अपना प्रोफ़ाइल नेम %2$@ से बदलकर %3$@ कर लिया है";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "आगे बढ़ें";
@@ -5699,13 +5699,13 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "वाई-फ़ाई और मोबाइल नेटवर्क पर";
 
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
-"NEW_CALL_HINT" = "नई कॉल शुरू करने के लिए किसी संपर्क या समूह का चयन करें।";
+"NEW_CALL_HINT" = "नई कॉल शुरू करने के लिए कोई कॉन्टैक्ट या ग्रुप चुनें।";
 
 /* Accessibility label for the new call button on the Calls Tab */
 "NEW_CALL_LABEL" = "नई कॉल";
 
 /* Title for a long-press context menu action to message a given recipient or group, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_MESSAGE_ACTION_TITLE" = "मेसेज";
+"NEW_CALL_MESSAGE_ACTION_TITLE" = "मैसेज";
 
 /* Title for the contact picker that allows new calls to be started */
 "NEW_CALL_TITLE" = "नई कॉल";
@@ -5714,13 +5714,13 @@
 "NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "वीडियो कॉल";
 
 /* Title for a long-press context menu action to start a voice call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "वीडियो कॉल";
+"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "वॉइस कॉल";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "फ़ोन नंबर से खोजें";
 
 /* A label for the cell that lets you add a new member by their username */
-"NEW_CONVERSATION_FIND_BY_USERNAME" = "यूज़रनेम से ढूँढ़ें";
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "यूज़रनेम से ढूंढें";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "नया ग्रुप";
@@ -5756,7 +5756,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "सदस्य चुनें";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ %2$@ को · स्टोरी";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ की ओर से %2$@ को · स्टोरी";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "ग्रुप चुनें";
@@ -5765,25 +5765,25 @@
 "NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "डिवाइस देखें";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "फोन नंबर से खोजें";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "फ़ोन नंबर से खोजें";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "नाम वाली स्टोरी";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "स्टोरी को नाम दें";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "बनाएं";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "एक स्टोरी नाम चाहिए।";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "स्टोरी को नाम देना ज़रूरी है।";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "स्टोरी नाम नहीं है";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "स्टोरी में नाम नहीं है";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "केवल आप इस स्टोरी का नाम देख सकते हैं।";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "स्टोरी का नाम सिर्फ़ आपको दिखेगा।";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "स्टोरी नाम (आवश्यक)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "स्टोरी का नाम (ज़रूरी है)";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "व्यूअर चुनें";
@@ -5795,7 +5795,7 @@
 "NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "नया";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "केवल निश्चित लोगों को दिखेगी";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "चुनिंदा लोगों को ही दिखेगी";
 
 /* Title for create custom story row on the 'new story sheet' */
 "NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "नई कस्टम स्टोरी";
@@ -5807,37 +5807,37 @@
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "नई ग्रुप स्टोरी";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "स्टोरी का प्रकार चुनें";
+"NEW_STORY_SHEET_TITLE" = "स्टोरी का टाइप चुनें";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
-"NICKNAME_BUTTON_TITLE" = "उपनाम";
+"NICKNAME_BUTTON_TITLE" = "निकनेम";
 
 /* The message for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "यह इस उपनाम और नोट को स्थायी रूप से डिलीट कर देगा।";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "ऐसा करने से यह निकनेम और नोट हमेशा के लिए डिलीट हो जाएंगे।";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "उपनाम डिलीट करें?";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "निकनेम डिलीट करना है?";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "उपनाम & नोट्स Signal और एंड-टू-एंड एनक्रिप्टेड के साथ संग्रहीत किए जाते हैं। वे केवल आपको दिखाई देते हैं।";
+"NICKNAME_EDITOR_DESCRIPTION" = "निकनेम और नोट, Signal पर स्टोर किए जाते हैं और ये एंड-टू-एंड एनक्रिप्टेड होते हैं। ये सिर्फ़ आपको दिखाई देते हैं।";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
-"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "उपनाम";
+"NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "सरनेम";
 
 /* Placeholder text it the text field for the given name in the profile nickname editor. */
-"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "मूल नाम";
+"NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "नाम";
 
 /* Placeholder text it the text box for the note in the profile nickname editor. */
 "NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "नोट";
 
 /* The title for the profile nickname editor view. */
-"NICKNAME_EDITOR_TITLE" = "उपनाम";
+"NICKNAME_EDITOR_TITLE" = "निकनेम";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "फ़ोन नंबर से कॉन्टैक्ट खोजें";
 
 /* Label for a button that lets users search for contacts by username */
-"NO_CONTACTS_SEARCH_BY_USERNAME" = "यूज़रनेम के आधार पर संपर्क ढूंढें";
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "यूज़रनेम से कॉन्टैक्ट खोजें";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "कोई साझा ग्रुप मौजूद नहीं है";
@@ -5858,10 +5858,10 @@
 "NOT_REGISTERED_BOTTOM_REREGISTER" = "फिर से रजिस्टर करें";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "स्वयं को लिखें";
+"NOTE_TO_SELF" = "खुद के लिए नोट";
 
 /* Body for a notification representing a message request. */
-"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "बाच-चीत का निवेदन";
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "मैसेज का अनुरोध";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "हो सकता है कि जब आपका %1$@ रीस्टार्ट हो रहा था, तब आपको मैसेज मिले हों।";
@@ -5894,10 +5894,10 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "नोटिफ़िकेशन की सुविधा चालू करनी है?";
 
 /* Shown as the body of an alert when notifications can't be shown due to an error. */
-"NOTIFICATIONS_ERROR_MESSAGE" = "अगर आपको सिग्नल नोटिफ़िकेशन नहीं मिल रही हैं, तो अपने %1$@ को फिर से शुरू करें।";
+"NOTIFICATIONS_ERROR_MESSAGE" = "अगर आपको Signal से नोटिफ़िकेशन नहीं मिल रहे हैं, तो अपना %1$@ रीस्टार्ट करें।";
 
 /* Shown as the title of an alert when notifications can't be shown due to an error. */
-"NOTIFICATIONS_ERROR_TITLE" = "नोटिफ़िकेशन नहीं दिखा सका";
+"NOTIFICATIONS_ERROR_TITLE" = "नोटिफ़िकेशन दिखाने में कोई गड़बड़ी हुई";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "इसमें 'पढ़ा गया के तौर पर मार्क करें,' 'जवाब दें,' और 'कॉल बैक करें' जैसी सुविधाएं शामिल हैं।";
@@ -5909,7 +5909,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "ऐप के खुला रहने पर चलाएं";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "कस्टम साउंड जोड़ें…";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "अपनी पसंद का साउंड जोड़ें…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "नाम, कंटेंट, और ऐक्शन";
@@ -5939,10 +5939,10 @@
 "ONBOARDING_2FA_INVALID_PIN" = "पिन सही नहीं है";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "ग़लत पिन। 1 मौका बचा है।";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "पिन गलत है। आपके पास सिर्फ़ 1 कोशिश बाकी है।";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "स्किप करके नया पिन बनाएँ";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "आगे बढ़ें और नया पिन बनाएं";
 
 /* Label for action to use Recovery Key instead of PIN for registration. */
 "ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "'रिकवरी की' इस्तेमाल करें";
@@ -6089,7 +6089,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "पिन गलत है";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "आपका पिन अनुमान समाप्त हो गया है, लेकिन आप अभी भी अपना फोन नंबर सत्यापित करके अपने Signal अकाउंट तक पहुँचने का प्रयास कर सकते हैं। आपकी निजता और सुरक्षा के लिए आपका अकाउंट बिना किसी सहेजी गई प्रोफ़ाइल जानकारी या सेटिंग के पुनर्स्थापित कर दिया जाएगा।";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "आपको जितनी बार पिन डालने की अनुमति थी, आपने वह सीमा पूरी कर ली है। हालांकि, अपना फ़ोन नंबर वेरिफ़ाई करके Signal अकाउंट अब भी ऐक्सेस किया जा सकता है। आपका अकाउंट तो रीस्टोर हो जाएगा, लेकिन आपकी प्राइवेसी और सुरक्षा को ध्यान में रखते हुए इसमें सेव की गई प्रोफ़ाइल से जुड़ी जानकारी और सेटिंग मौजूद नहीं होंगी।";
 
 /* Explanation of 'do not have old device' flow for the 'Restore or Transfer' prompt */
 "ONBOARDING_SPLASH_DO_NOT_HAVE_OLD_DEVICE_BODY" = "या आप उसी डिवाइस पर Signal को फिर से इंस्टॉल कर रहे हैं";
@@ -6128,16 +6128,16 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "कोड प्रमाणित किया जा रहा है…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "सुनिश्चित करें कि आपके फ़ोन में आपका SMS या कॉल प्राप्त करने के लिए सेल्यूलर सिग्नल है";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "देख लें कि आपके फ़ोन में SMS या कॉल रिसीव करने के लिए मोबाइल नेटवर्क मौजूद है";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "पुष्टि करें कि आप नंबर पर एक फोन कॉल प्राप्त कर सकते हैं";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "पुष्टि करें कि दिए गए नंबर पर कॉल रिसीव की जा सकती है";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "जाँच करें कि आपने अपना फोन नंबर सही रूप से दर्ज किया है";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "देख लें कि आपने अपना फ़ोन नंबर सही से डाला है";
 
 /* Label for a button to get help entering a verification code when registering. */
-"ONBOARDING_VERIFICATION_HELP_LINK" = "पंजीकरण में परेशानी हो रही है?";
+"ONBOARDING_VERIFICATION_HELP_LINK" = "रजिस्ट्रेशन में परेशानी हो रही है?";
 
 /* Label for button to resend SMS verification code. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "कोड फिर से भेजें";
@@ -6158,19 +6158,19 @@
 "OPEN_SETTINGS_BUTTON" = "सेटिंग";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. */
-"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal अब इस डिवाइस पर काम नहीं करता। Signal दोबारा इस्तेमाल करने के लिए, अपनी डिवाइस को iOS के नए संस्करण पर अपडेट करें।";
+"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal अब इस डिवाइस पर काम नहीं करता। Signal दोबारा इस्तेमाल करने के लिए, अपने डिवाइस पर iOS का नया वर्ज़न डाउनलोड करें।";
 
 /* Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems. */
-"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal अब इस डिवाइस पर काम नहीं करता। Signal दोबारा इस्तेमाल करने के लिए, नई डिवाइस पर स्विच करें।";
+"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal अब इस डिवाइस पर काम नहीं करता। Signal इस्तेमाल करने के लिए, अपना डिवाइस बदलें।";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions. */
 "OS_SOON_TO_EXPIRE_ACTION_TITLE" = "अभी अपडेट करें";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're an old version that will soon lose support. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Signal द्वारा अब आपके डिवाइस के iOS वर्ज़न का सपोर्ट जल्द ही हटा लिया जाएगा। Signal इस्तेमाल करना जारी रखने के लिए, %1$@ तक अपनी डिवाइस को iOS के नए संस्करण पर अपडेट करें।";
+"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "जल्द ही आपके डिवाइस पर मौजूद iOS वर्ज़न पर Signal काम करना बंद कर देगा। Signal का इस्तेमाल जारी रखने के लिए, %1$@ तक अपने डिवाइस पर iOS का नया वर्ज़न डाउनलोड करें।";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version that will soon lose support. This is the text on that warning when users can't upgrade iOS without getting a new device. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Signal द्वारा अब आपके डिवाइस के iOS वर्ज़न का सपोर्ट जल्द ही हटा लिया जाएगा। Signal इस्तेमाल करना जारी रखने के लिए, %1$@ तक नई डिवाइस पर स्विच करें।";
+"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "जल्द ही आपके डिवाइस पर मौजूद iOS वर्ज़न पर Signal काम करना बंद कर देगा। Signal का इस्तेमाल जारी रखने के लिए, %1$@ तक अपना डिवाइस बदलें।";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ ने मैसेज गायब होने की सुविधा बंद कर दी है।";
@@ -6185,7 +6185,7 @@
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "अभी अपडेट करें";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "भुगतानों का इस्तेमाल जारी रखने के लिए Signal को अपडेट करें। हो सकता है आपकी शेषराषि अप-टू-डेट न हो।";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "पेमेंट सुविधा का इस्तेमाल जारी रखने के लिए Signal अपडेट करें। हो सकता है आपका बैलेंस अप-टू-डेट न हो।";
 
 /* Body of prompt notifying restore was cancelled. */
 "OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_BODY" = "रीस्टोर करने की प्रक्रिया रद्द की गई। कृपया फिर से कोशिश करें।";
@@ -6257,7 +6257,7 @@
 "OUTGOING_DEVICE_TRANSFER_COMPLETE_TITLE" = "ट्रांसफ़र पूरा हुआ";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_VIDEO_CALL" = "अनुत्तरित वीडियो कॉल";
+"OUTGOING_MISSED_VIDEO_CALL" = "वीडियो कॉल का जवाब नहीं मिला";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VOICE_CALL" = "अनुत्तरित वॉयस कॉल";
@@ -6266,7 +6266,7 @@
 "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Signal से बाहर निकलें";
 
 /* Message for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal अब इस डिवाइस से बाहर निकल जाएगा";
+"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal, अब इस डिवाइस पर काम नहीं करेगा";
 
 /* Title for action sheet shown when device transfer completes */
 "OUTGOING_TRANSFER_COMPLETE_TITLE" = "ट्रांसफ़र पूरा हुआ!";
@@ -6284,7 +6284,7 @@
 "OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE" = "पूरा संदेश उपलब्ध नहीं है";
 
 /* Header title for bank payment details screen */
-"PAYMENT_DETAILS_BANK_TITLE" = "बैंक ट्रांसफर";
+"PAYMENT_DETAILS_BANK_TITLE" = "बैंक ट्रांसफ़र";
 
 /* Header title for card payment details screen */
 "PAYMENT_DETAILS_CARD_TITLE" = "डेबिट या क्रेडिट कार्ड";
@@ -6320,73 +6320,73 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "अमान्य है";
 
 /* Payments in-chat message shown if a payment fails to send, bottom half. */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "अधिक जानकारी के लिए टैप करें";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "ज़्यादा जानकारी के लिए टैप करें";
 
 /* Payments in-chat message shown if a payment fails to send, top part. Embeds {{ number, amount of MOB coin not sent }} */
 "PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB नहीं भेजा गया";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "अनुपलब्ध";
+"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "उपलब्ध नहीं है";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "प्रमाणीकरण में कुछ गलती हो रही है।";
+"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "ऑथेंटिकेशन में कोई गड़बड़ी हुई।";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "प्रमाणीकरण असफल।";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "ऑथेंटिकेशन नहीं हो पाया।";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "बहुत सारी असफल प्रमाणीकरण की कोशिशें हुई हैं। कृपया थोङी देर बाद कोशिश करें।";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "आपने ऑथेंटिकेशनन के लिए कई बार कोशिश कर ली है। कृपया थोड़ी देर बाद फिर से कोशिश करें।";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "भुगतान लॉक इस्तेमाल करने के लिये अपने iOS सेटिंग्स से पासकोड की अनुमति दें।";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "पेमेंट लॉक का इस्तेमाल करने के लिए अपने iOS सेटिंग में जाकर पासकोड चालू करें।";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "भुगतान लॉक इस्तेमाल करने के लिये अपने iOS सेटिंग्स से पासकोड की अनुमति दें।";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "पेमेंट लॉक का इस्तेमाल करने के लिए अपने iOS सेटिंग में जाकर पासकोड चालू करें।";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "भुगतान लॉक इस्तेमाल करने के लिये अपने iOS सेटिंग्स से पासकोड की अनुमति दें।";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "पेमेंट लॉक का इस्तेमाल करने के लिए अपने iOS सेटिंग में जाकर पासकोड चालू करें।";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "सुरक्षा की एक अतिरिक्त परत जोड़ें और पैसा भेजने के लिए अपने पासकोड या टच ID को आवश्यक बनाएं";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "लेन-देन को सुरक्षित बनाने के लिए, पैसे भेजते समय पासकोड या टच ID की पुष्टि अनिवार्य करें।";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "सुरक्षा की एक अतिरिक्त परत जोड़ें और पैसा भेजने के लिए फेस ID को आवश्यक बनाएं।";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "लेन-देन को सुरक्षित बनाने के लिए, पैसे भेजते समय पासकोड या फ़ेस ID की पुष्टि अनिवार्य करें।";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "सुरक्षा की एक और लेयर जोड़ें और पैसा भेजने के लिए फ़ेस ID को ज़रूरी बनाएँ।";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "सुरक्षा की एक अतिरिक्त परत जोड़ें और पैसा भेजने के लिए पासकोड को आवश्यक बनाएं।";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "लेन-देन को सुरक्षित बनाने के लिए, पैसे भेजते समय पासकोड की पुष्टि अनिवार्य करें।";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "सुरक्षा की एक अतिरिक्त परत जोड़ें और पैसा भेजने के लिए टच ID को आवश्यक बनाएं।";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "लेन-देन को सुरक्षित बनाने के लिए, पैसे भेजते समय पासकोड या टच ID की पुष्टि अनिवार्य करें।";
 
 /* First time payments suggest payments lock title */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "भविष्य में भेजे जानेवाले भुगतानों पर भुगतान लॉक लगाना है क्या?";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "भविष्य में फ़ंड भेजने के लिए पेमेंट लॉक की सुविधा चालू करनी है?";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "भेजने के लिए आपका पासकोड या टच ID ज़रूरी है";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "इसे भेजने के लिए आपके पास पासकोड या टच ID होना ज़रूरी है";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "भेजने के लिए फेस ID को आवश्यक बनाएं";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "इसे भेजने के लिए आपके पास फ़ेस ID होना ज़रूरी है";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "भेजने के लिए Optic ID की ज़रूरत है";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "भेजने के लिए आपके फोन का पासकोड ज़रूरी है";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "इसे भेजने के लिए आपके पास फ़ोन में पासकोड होना ज़रूरी है";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "भेजने के लिए टच ID को आवश्यक बनाएं";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "इसे भेजने के लिए आपके पास टच ID होना ज़रूरी है";
 
 /* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "प्रमाणीकरण सफल नहीं हुआ। सुनिश्चित करें कि आपकी डिवाइस पर बायोमेट्रिक्स सक्षम है और पासकोड सेट है।";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "ऑथेंटिकेशन नहीं हो पाया। देख लें कि आपके डिवाइस में बायोमेट्रिक लॉक चालू हो और पासकोड सेट हो।";
 
 /* Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "बायोमेट्रिक प्रमाणीकरण विफल";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "बायोमेट्रिक ऑथेंटिकेशन नहीं हो पाया";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
-"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "भुगतान की पुष्टि करने के लिए प्रमाणित करें।";
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "पेमेंट की पुष्टि के लिए ऑथेंटिकेट करें।";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "नोट जोड़ें";
@@ -6422,10 +6422,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "पेमेंट अभी तक वेरिफ़ाई नहीं हुआ है";
 
 /* Indicates that a payment failed because the payments lock attempt was cancelled. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "भुगतान लॉक प्रमाणीकरण रद्द कर दिया गया।";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "पेमेंट लॉक का ऑथेंटिकेशन कैंसिल किया गया।";
 
 /* Indicates that a payment failed because the payments lock failed to authenticate. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "भुगतान लॉक प्रमाणीकरण विफल।";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "पेमेंट लॉक के ऑथेंटिकेशन में कोई गड़बड़ी हुई।";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "पेमेंट नहीं हो सका। अपना इंटरनेट कनेक्शन देखें और दोबारा कोशिश करें।";
@@ -10070,7 +10070,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "देखे जाने के बाद इस मैसेज को गायब करने के लिए यहां टैप करें।";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "View-once media is deleted after sending";
+"VIEW_ONCE_OUTGOING_TOAST" = "भेजने के बाद सिर्फ़ एक बार देखे जा सकने वाला मीडिया डिलीट किया गया";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "फ़ोटो देखें";

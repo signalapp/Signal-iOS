@@ -368,13 +368,13 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "คุณภาพสื่อ";
 
 /* Notification body shown when media sync to a linked device is complete. */
-"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "Finished syncing with Signal on your linked device.";
+"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "ซิงค์กับ Signal บนอุปกรณ์ที่เชื่อมโยงอยู่ของคุณเสร็จสิ้นแล้ว";
 
 /* Notification body shown when media sync to a linked device was interrupted. */
-"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "Open Signal to continue syncing with your linked device";
+"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "เปิด Signal เพื่อซิงค์กับอุปกรณ์ที่เชื่อมโยงอยู่ของคุณต่อให้เสร็จสิ้น";
 
 /* Notification body shown while syncing media to a linked device. */
-"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "Syncing with Signal on your linked device";
+"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "กำลังซิงค์กับ Signal บนอุปกรณ์ที่เชื่อมโยงอยู่ของคุณ";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "แฟ้มแนบ";
@@ -10070,7 +10070,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "แตะที่นี่เพื่อทำให้ข้อความหายไปหลังจากเห็นข้อความ";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "View-once media is deleted after sending";
+"VIEW_ONCE_OUTGOING_TOAST" = "ไฟล์สื่อแบบที่ดูได้ครั้งเดียวจะถูกลบหลังการส่ง";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "ดูรูปภาพ";
