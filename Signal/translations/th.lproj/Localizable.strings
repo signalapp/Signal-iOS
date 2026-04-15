@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "แฟ้มแนบ";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "มีข้อความใหม่!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "มีข้อความใหม่";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "เริ่มต้นใช้งาน";

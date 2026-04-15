@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Прикачен файл";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Ново съобщение!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Ново съобщение";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Да започваме";

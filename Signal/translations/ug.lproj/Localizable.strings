@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "قوشۇمچە";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "يېڭى ئۇچۇر!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "يېڭى ئۇچۇر";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "ئىشلىتىشكە باشلاش";

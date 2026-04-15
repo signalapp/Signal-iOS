@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Atașament";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Mesaj nou!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Mesaj nou";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Începe";

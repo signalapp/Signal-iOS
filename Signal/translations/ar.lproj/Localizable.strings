@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "ملف مُرفَق";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "رسالة جديدة!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "رسالة جديدة";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "ابدأ";

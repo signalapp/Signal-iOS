@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Tập tin đính kèm";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Tin Nhắn Mới!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Tin Nhắn Mới";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Bắt đầu";

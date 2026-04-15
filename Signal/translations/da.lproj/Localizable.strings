@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Vedhæftning";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Ny besked!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Ny besked";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Kom i gang";

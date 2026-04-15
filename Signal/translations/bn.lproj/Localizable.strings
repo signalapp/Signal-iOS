@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "সংযুক্তি";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "নতুন বার্তা!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "নতুন বার্তা";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "শুরু করা যাক";

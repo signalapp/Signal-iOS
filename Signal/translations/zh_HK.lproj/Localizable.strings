@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "附件";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "新訊息！";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "新訊息";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "開始";

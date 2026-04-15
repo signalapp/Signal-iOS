@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Příloha";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Nová zpráva!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Nová zpráva";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Začněte";

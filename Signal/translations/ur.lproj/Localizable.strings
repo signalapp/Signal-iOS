@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "منسلک مواد";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "نیا پیغام!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "نیا پیغام";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "شروع کریں";

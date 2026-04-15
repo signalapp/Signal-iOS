@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Anhang";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Neue Nachricht!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Neue Nachricht";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Leg los";

@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "צרופה";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "הודעה חדשה!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "הודעה חדשה";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "להתחיל";

@@ -3680,7 +3680,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Lampiran";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Pesan Baru!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Pesan Baru";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Mulai";
