@@ -590,7 +590,7 @@ class PlayerProgressView: UIView {
             positionLabel.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
             positionLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
 
-            slider.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
+            slider.topAnchor.constraint(equalTo: topAnchor),
             slider.centerYAnchor.constraint(equalTo: centerYAnchor),
             slider.leadingAnchor.constraint(equalTo: positionLabel.trailingAnchor, constant: 12),
             slider.trailingAnchor.constraint(equalTo: remainingLabel.leadingAnchor, constant: -12),
