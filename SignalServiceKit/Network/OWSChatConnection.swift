@@ -828,7 +828,7 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
     ) async throws -> Output {
         try await waitUntilReadyAndPerformRequest {
             guard let service = await getOpenConnectionAfterHavingWaited() else {
-                throw SignalError.chatServiceInactive("no connection to chat server")
+                throw OWSHTTPError.networkFailure(.genericFailure)
             }
             try Task.checkCancellation()
             do {
