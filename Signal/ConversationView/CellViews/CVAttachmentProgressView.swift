@@ -62,7 +62,6 @@ class CVAttachmentProgressView: ManualLayoutView {
         case tapToDownload
         case unknownProgress
         case progress(progress: Float)
-        case downloadFailed
 
         var debugDescription: String {
             switch self {
@@ -74,8 +73,6 @@ class CVAttachmentProgressView: ManualLayoutView {
                 "unknownProgress"
             case .progress(let progress):
                 "progress: \(progress)"
-            case .downloadFailed:
-                "downloadFailed"
             }
         }
     }
@@ -153,10 +150,8 @@ class CVAttachmentProgressView: ManualLayoutView {
 
         case .download(_, let downloadState):
             switch downloadState {
-            case .none:
+            case .none, .failed:
                 applyState(.tapToDownload, animated: animateStateChange)
-            case .failed:
-                applyState(.downloadFailed, animated: animateStateChange)
             case .enqueuedOrDownloading:
                 applyState(.unknownProgress, animated: animateStateChange)
 
@@ -184,10 +179,6 @@ class CVAttachmentProgressView: ManualLayoutView {
         case .tapToDownload:
             hideProgressView()
             presentIcon(Theme.iconImage(.arrowDown))
-
-        case .downloadFailed:
-            hideProgressView()
-            presentIcon(Theme.iconImage(.refresh))
 
         case .progress(let progress):
             switch oldState {
