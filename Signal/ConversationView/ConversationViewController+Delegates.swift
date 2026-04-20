@@ -70,6 +70,10 @@ extension ConversationViewController: AttachmentApprovalViewControllerDataSource
         return [displayName]
     }
 
+    public var attachmentApprovalSendButtonTintColor: UIColor? {
+        viewState.conversationStyle.bubbleChatColorOutgoing.asChatUIElementTintColor()
+    }
+
     public func attachmentApprovalMentionableAcis(tx: DBReadTransaction) -> [Aci] {
         supportsMentions ? thread.recipientAddresses(with: tx).compactMap(\.aci) : []
     }

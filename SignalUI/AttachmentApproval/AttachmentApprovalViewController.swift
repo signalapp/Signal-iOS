@@ -62,9 +62,15 @@ public protocol AttachmentApprovalViewControllerDataSource: AnyObject {
 
     var attachmentApprovalRecipientNames: [String] { get }
 
+    var attachmentApprovalSendButtonTintColor: UIColor? { get }
+
     func attachmentApprovalMentionableAcis(tx: DBReadTransaction) -> [Aci]
 
     func attachmentApprovalMentionCacheInvalidationKey() -> String
+}
+
+public extension AttachmentApprovalViewControllerDataSource {
+    var attachmentApprovalSendButtonTintColor: UIColor? { nil }
 }
 
 // MARK: -
@@ -459,6 +465,7 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
             canChangeMediaQuality: options.contains(.canChangeQualityLevel),
             canSaveMedia: currentPageViewController.canSaveMedia,
             doneButtonIcon: isScreenNotFinal ? .next : .send,
+            doneButtonTintColor: approvalDataSource?.attachmentApprovalSendButtonTintColor,
         )
         bottomToolView.update(
             currentAttachmentItem: currentPageViewController.attachmentApprovalItem,
