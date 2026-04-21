@@ -461,7 +461,7 @@
 "ATTACHMENT_LABEL" = "Vedlegg";
 
 /* Displayed in a full screen modal when app is processing media that was pasted into message compose field. */
-"ATTACHMENT_PASTING" = "Pasting…";
+"ATTACHMENT_PASTING" = "Limer inn …";
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Kunne ikke velge dokument.";
@@ -1322,7 +1322,7 @@
 "CALL_LINK_CREATE" = "Opprett samtalelenke";
 
 /* Displayed in a full screen modal view when creating a Call Link */
-"CALL_LINK_CREATING_MODAL" = "Creating…";
+"CALL_LINK_CREATING_MODAL" = "Oppretter …";
 
 /* Description of sheet presented when call link creation fails. */
 "CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Anropslenken kunne ikke opprettes. Sjekk internettilkoblingen og prøv igjen.";
@@ -1958,13 +1958,13 @@
 "CHOOSE_BACKUP_PLAN_TITLE" = "Velg abonnement";
 
 /* VoiceOver hint for an expanded collapse set button. */
-"COLLAPSE_SET_ACCESSIBILITY_HINT_COLLAPSE" = "Hide updates";
+"COLLAPSE_SET_ACCESSIBILITY_HINT_COLLAPSE" = "Skjul oppdateringer";
 
 /* VoiceOver hint for a collapsed collapse set button. */
-"COLLAPSE_SET_ACCESSIBILITY_HINT_EXPAND" = "Show updates";
+"COLLAPSE_SET_ACCESSIBILITY_HINT_EXPAND" = "Vis oppdateringer";
 
 /* Short label shown in a collapsed timer-changes set indicating the timer is now disabled. */
-"COLLAPSE_SET_TIMER_DISABLED" = "Disabled";
+"COLLAPSE_SET_TIMER_DISABLED" = "Deaktivert";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Samtalefarge og -bakgrunn";
@@ -3881,7 +3881,7 @@
 "GROUP_CALL_NO_ONE_HERE" = "Ingen andre er her";
 
 /* Text indicating you can't take this action because you're not a member of the group */
-"GROUP_CALL_NOT_A_MEMBER" = "This action is unavailable because you’re no longer a member of this group.";
+"GROUP_CALL_NOT_A_MEMBER" = "Du kan ikke gjøre dette, fordi du ikke lenger er medlem av gruppen.";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ ble med i samtalen";
@@ -3983,7 +3983,7 @@
 "GROUP_CREATED_BY_UNKNOWN_USER" = "Gruppen ble opprettet.";
 
 /* Displayed in a full screen modal when creating a new group. */
-"GROUP_CREATING" = "Creating…";
+"GROUP_CREATING" = "Oppretter …";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Ikke alle medlemmene kunne legges til gruppen. Trykk for å forsøke på nytt.";
@@ -4031,7 +4031,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ slo på gruppelenken med administrativ godkjenning avslått.";
 
 /* Displayed in a full screen modal when joining a group via an invite link */
-"GROUP_INVITE_LINK_JOINING" = "Joining…";
+"GROUP_INVITE_LINK_JOINING" = "Blir med …";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = " Gruppelenken ble resatt.";
@@ -4277,13 +4277,13 @@
 "GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Vær på vakt mot grupper som utgir seg for å være organisasjoner og bedrifter";
 
 /* Second bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Signal can't verify names and photos";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Signal kan ikke bekrefte navn og bilder";
 
 /* Third bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Signal will never contact you for your registration code, PIN, or recovery key";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Signal kommer aldri til å be deg om å sende registreringskoden, PIN-koden eller sikkerhetskoden din.";
 
 /* Fourth bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_4" = "Don’t share personal information with people you don’t know";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_4" = "Ikke send personopplysninger til folk du ikke kjenner";
 
 /* Header for the explainer sheet for group names */
 "GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Gruppenavn</bold> velges av gruppemedlemmene.";
@@ -4736,10 +4736,10 @@
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "Du godtok meldingsforespørselen.";
 
 /* An info message inserted into the chat when you accept a message request in a group chat. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_GROUP" = "You accepted the group request.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_GROUP" = "Du godtok gruppeforespørselen.";
 
 /* An info message inserted into the chat when you accept a message request in a 1:1. {{ Embeds name of your chat partner }}. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_ONE_ON_ONE" = "You accepted %1$@'s message request.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_ONE_ON_ONE" = "Du godtok meldingsforespørselen fra %1$@.";
 
 /* Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}. */
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "Du godtok meldingsforespørselen fra %1$@. Dersom dette skjedde ved en feil, kan du velge en av handlingene nedenfor.";
@@ -4748,7 +4748,7 @@
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "Du godtok en meldingsforespørsel fra denne gruppen. Dersom dette skjedde ved en feil, kan du velge en av handlingene nedenfor.";
 
 /* Title for a button shown alongside an info message indicating you accepted a message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Block or Report…";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Blokkér eller rapportér";
 
 /* An info message inserted into a group chat when you block the group. */
 "INFO_MESSAGE_BLOCKED_GROUP" = "Du har blokkert denne gruppen.";
@@ -5468,13 +5468,13 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Blokkere og forlate %1$@?";
 
 /* Message for an action sheet asking the user to confirm if they want to accept a message request. {{ Embeds 'Signal will never' in bolded text }} */
-"MESSAGE_REQUEST_CONFIRM_ACCEPT_MESSAGE" = "Only accept requests from people you trust. %1$@ message you for a registration code, PIN, or recovery key.";
+"MESSAGE_REQUEST_CONFIRM_ACCEPT_MESSAGE" = "Godta kun forespørsler fra personer du stoler på. %1$@ til å be deg om å sende registreringskoden, PIN-koden eller sikkerhetskoden din.";
 
 /* Embedded text in the message for an action sheet asking the user to confirm if they want to accept a message request. */
-"MESSAGE_REQUEST_CONFIRM_ACCEPT_MESSAGE_EMBEDDED_BOLD_TEXT" = "Signal will never";
+"MESSAGE_REQUEST_CONFIRM_ACCEPT_MESSAGE_EMBEDDED_BOLD_TEXT" = "Signal kommer aldri";
 
 /* Title for an action sheet asking the user to confirm if they want to accept a message request */
-"MESSAGE_REQUEST_CONFIRM_ACCEPT_TITLE" = "Accept Request?";
+"MESSAGE_REQUEST_CONFIRM_ACCEPT_TITLE" = "Vil du godta forespørselen?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Slett";
@@ -5549,7 +5549,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Fortsett denne samtalen med denne gruppen og del ditt navn og bilde med gruppens medlemmer?";
 
 /* A prompt asking if the user wants to accept a conversation invite. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT" = "Let this person message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT" = "Vil du la denne personen sende deg meldinger og se navnet og profilbildet ditt? Hen kan ikke se at du har lest meldingen før du godkjenner.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Bli medlem i denne gruppen samt dele navn og bilde med medlemmene? De vil ikke vite at du har sett meldingene før du aksepterer.";
@@ -5672,16 +5672,16 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal trenger tilgang til bildene dine for denne funksjonen.";
 
 /* Text on a blocking progress screen that indicates that there's a deletion in progress. */
-"MODAL_DELETING" = "Deleting…";
+"MODAL_DELETING" = "Sletter …";
 
 /* Text on a blocking progress screen that indicates that there's a preparation in progress. */
-"MODAL_PREPARING" = "Preparing…";
+"MODAL_PREPARING" = "Gjør alt klart …";
 
 /* Text on a blocking progress screen that indicates that there's a search in progress. */
-"MODAL_SEARCHING" = "Searching…";
+"MODAL_SEARCHING" = "Søker …";
 
 /* Text on a blocking progress screen that indicates that there's an update in progress. */
-"MODAL_UPDATING" = "Updating…";
+"MODAL_UPDATING" = "Oppdaterer …";
 
 /* An error shown as the title of an alert when try to link a new device & the user is already at the limit. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Du kan ikke koble til flere enheter.";
@@ -7190,16 +7190,16 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ byttet profilnavnet sitt til %2$@.";
 
 /* First bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Signal can't verify names and photos";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Signal kan ikke bekrefte navn og bilder";
 
 /* Second bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Signal will never contact you for your registration code, PIN, or recovery key";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Signal kommer aldri til å be deg om å sende registreringskoden, PIN-koden eller sikkerhetskoden din.";
 
 /* Third bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Be cautious of accounts that impersonate others";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Vær på vakt mot svindlere som utgir seg for å være andre";
 
 /* Fourth bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_4" = "Don’t share personal information with people you don’t know";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_4" = "Ikke send personopplysninger til folk du ikke kjenner";
 
 /* Header for the explainer sheet for profile names */
 "PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profilnavn</bold> på Signal velges av kontoinnehaveren.";
@@ -7925,40 +7925,40 @@
 "SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Vær forsiktig hvis du blir kontaktet av virksomheter eller offentlige etater. Meldinger som omhandler skattebetalinger, forsendelser og lignende er ofte søppelpost.";
 
 /* Message title describing the safety tip about unknown or fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Fake businesses";
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Falske bedrifter";
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "Sikkerhetstips";
 
 /* Message body describing the scams safety tip. */
-"SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "Avoid vague messages that try to get you to reply. Be aware of financial tips and suspicious web links.";
+"SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "Unngå vage meldinger som forsøker å få deg til å svare. Vær forsiktig med økonomiske tips og mistenkelige lenker.";
 
 /* Message title describing the scams safety tip. */
-"SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_TITLE" = "Look out for scams";
+"SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_TITLE" = "Vær på vakt mot svindel";
 
 /* Message contents for the unknown links in messages safety tip. */
 "SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Vær forsiktig med meldinger fra folk du ikke kjenner, som har lenker til nettsteder. Du bør aldri trykke på lenker fra personer du ikke kjenner eller stoler på.";
 
 /* Message title describing the safety tip about unknown links in messages. */
-"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Messages with web links";
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Meldinger med lenker";
 
 /* Message body describing the review names safety tip. */
-"SAFETY_TIPS_REVIEW_NAMES_BODY" = "Look out for the “Name not verified” notice. Everyone sets their own profile name in Signal.";
+"SAFETY_TIPS_REVIEW_NAMES_BODY" = "Vær forsiktig dersom det står «Navn ikke bekreftet». Alle kan velge profilnavn selv på Signal.";
 
 /* Message body describing the review names safety tip in the 'view more' flow. */
-"SAFETY_TIPS_REVIEW_NAMES_BODY_VIEW_MORE" = "Look out for the “Name not verified” notice. Everyone sets their own profile name and photo in Signal. If you’re unsure who a new request is from, it’s safer to ignore it.";
+"SAFETY_TIPS_REVIEW_NAMES_BODY_VIEW_MORE" = "Vær forsiktig dersom det står «Navn ikke bekreftet». Alle kan velge profilnavn og -bilde selv på Signal. Hvis du ikke er sikker på hvem meldingen kommer fra, bør du ignorere den.";
 
 /* Message title describing the review names safety tip. */
-"SAFETY_TIPS_REVIEW_NAMES_TITLE" = "Review names and photos";
+"SAFETY_TIPS_REVIEW_NAMES_TITLE" = "Se gjennom navn og bilder";
 
 /* Message body describing the signal chats tip. */
-"SAFETY_TIPS_SIGNAL_CHATS_BODY" = "Signal will never message you for your registration code, PIN, or recovery key. Never respond to a chat pretending to be Signal.";
+"SAFETY_TIPS_SIGNAL_CHATS_BODY" = "Signal kommer aldri til å be deg om å sende registreringskoden, PIN-koden eller sikkerhetskoden din. Ikke svar på meldinger fra kontoer som utgir seg for å være Signal.";
 
 /* Message body describing the signal chats tip in the 'view more' flow. */
-"SAFETY_TIPS_SIGNAL_CHATS_BODY_VIEW_MORE" = "Signal will never message you for your registration code, PIN, or recovery key. Don’t reply to chats pretending to be Signal or Signal Support. Bad actors set up fake names to try to take over your account.";
+"SAFETY_TIPS_SIGNAL_CHATS_BODY_VIEW_MORE" = "Signal kommer aldri til å be deg om å sende registreringskoden, PIN-koden eller sikkerhetskoden din. Ikke svar på meldinger som tilsynelatende kommer fra Signal eller Signals brukerstøtte. Svindlere kan lage falske navn for å hacke kontoen din.";
 
 /* Message title describing the signal chats tip. */
-"SAFETY_TIPS_SIGNAL_CHATS_TITLE" = "Don’t respond to chats from Signal";
+"SAFETY_TIPS_SIGNAL_CHATS_TITLE" = "Ikke svar på meldinger fra Signal";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Svindlere starter ofte samtalen med enkle meldinger, som «Hei». Hvis du svarer på meldingen, går de ofte videre for å lure deg.";
@@ -9686,7 +9686,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Utløpstiden for meldinger blir satt til %1$@ når du melder dem.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review requests carefully";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Gjennomgå forespørsler nøye";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Trykk for å erstatte en emoji";
@@ -9737,7 +9737,7 @@
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Medlem av %1$@";
 
 /* Label displayed below profiles */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Name not verified";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Navn ikke bekreftet";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Vis";
@@ -10109,7 +10109,7 @@
 "VIEW_CONTACT_BUTTON" = "Åpne kontakt";
 
 /* Label for the 'view more' button */
-"VIEW_MORE_BUTTON" = "View More";
+"VIEW_MORE_BUTTON" = "Se mer";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Du har allerede sett denne meldingen.";

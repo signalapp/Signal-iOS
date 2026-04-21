@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld call</string>
+			<string>%1$ld Anruf</string>
 			<key>other</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld Anrufe</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_CHAT_UPDATES_%d</key>
@@ -408,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld chat update</string>
+			<string>%1$ld Chat-Update</string>
 			<key>other</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld Chat-Updates</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_GROUP_UPDATES_%d</key>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld group update</string>
+			<string>%1$ld Gruppen-Update</string>
 			<key>other</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld Gruppen-Updates</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_TIMER_CHANGES_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld disappearing message timer change</string>
+			<string>%1$ld Timer-Änderung für verschwindende Nachrichten</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld Timer-Änderungen für verschwindende Nachrichten</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -675,9 +675,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Für diesen Anruf wurde die maximale Anzahl von %1$d Teilnehmer erreicht. Bitte versuche es später erneut.</string>
+			<string>Für diesen Anruf wurde die maximale Anzahl von %1$d Teilnehmenden erreicht. Bitte versuche es später erneut.</string>
 			<key>other</key>
-			<string>Für diesen Anruf wurde die maximale Anzahl von %1$d Teilnehmern erreicht. Bitte versuche es später erneut.</string>
+			<string>Für diesen Anruf wurde die maximale Anzahl von %1$d Teilnehmenden erreicht. Bitte versuche es später erneut.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>

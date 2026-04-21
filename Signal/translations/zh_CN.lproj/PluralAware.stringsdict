@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld 个通话</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_CHAT_UPDATES_%d</key>
@@ -358,7 +358,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld chat updates</string>
+			<string>聊天有 %1$ld 项更新</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_GROUP_UPDATES_%d</key>
@@ -372,7 +372,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld group updates</string>
+			<string>群组有 %1$ld 项更新</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_TIMER_CHANGES_%d</key>
@@ -386,7 +386,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld 个限时消息定时器更改</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>

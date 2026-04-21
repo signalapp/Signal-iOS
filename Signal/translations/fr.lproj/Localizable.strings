@@ -461,7 +461,7 @@
 "ATTACHMENT_LABEL" = "Pièce jointe";
 
 /* Displayed in a full screen modal when app is processing media that was pasted into message compose field. */
-"ATTACHMENT_PASTING" = "Pasting…";
+"ATTACHMENT_PASTING" = "Collage...";
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Impossible de sélectionner le document.";
@@ -1322,7 +1322,7 @@
 "CALL_LINK_CREATE" = "Créer un lien d'appel";
 
 /* Displayed in a full screen modal view when creating a Call Link */
-"CALL_LINK_CREATING_MODAL" = "Creating…";
+"CALL_LINK_CREATING_MODAL" = "Création du lien...";
 
 /* Description of sheet presented when call link creation fails. */
 "CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Impossible de créer le lien d'appel. Vérifiez votre connexion Internet et réessayez.";
@@ -1958,13 +1958,13 @@
 "CHOOSE_BACKUP_PLAN_TITLE" = "Choisir un forfait de sauvegarde";
 
 /* VoiceOver hint for an expanded collapse set button. */
-"COLLAPSE_SET_ACCESSIBILITY_HINT_COLLAPSE" = "Hide updates";
+"COLLAPSE_SET_ACCESSIBILITY_HINT_COLLAPSE" = "Masquer les mises à jour";
 
 /* VoiceOver hint for a collapsed collapse set button. */
-"COLLAPSE_SET_ACCESSIBILITY_HINT_EXPAND" = "Show updates";
+"COLLAPSE_SET_ACCESSIBILITY_HINT_EXPAND" = "Afficher les mises à jour";
 
 /* Short label shown in a collapsed timer-changes set indicating the timer is now disabled. */
-"COLLAPSE_SET_TIMER_DISABLED" = "Disabled";
+"COLLAPSE_SET_TIMER_DISABLED" = "Désactivé";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Couleur des bulles et fond d'écran";
@@ -3881,7 +3881,7 @@
 "GROUP_CALL_NO_ONE_HERE" = "Aucun autre participant";
 
 /* Text indicating you can't take this action because you're not a member of the group */
-"GROUP_CALL_NOT_A_MEMBER" = "This action is unavailable because you’re no longer a member of this group.";
+"GROUP_CALL_NOT_A_MEMBER" = "Impossible d'effectuer cette action, car vous n'êtes plus membre de ce groupe.";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ a rejoint l’appel";
@@ -3983,7 +3983,7 @@
 "GROUP_CREATED_BY_UNKNOWN_USER" = "Création du groupe.";
 
 /* Displayed in a full screen modal when creating a new group. */
-"GROUP_CREATING" = "Creating…";
+"GROUP_CREATING" = "Création du groupe...";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Certains membres n'ont pas été ajoutés au groupe. Touchez pour réessayer.";
@@ -4031,7 +4031,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ a activé le lien du groupe sans exiger l'approbation des nouveaux membres par un admin.";
 
 /* Displayed in a full screen modal when joining a group via an invite link */
-"GROUP_INVITE_LINK_JOINING" = "Joining…";
+"GROUP_INVITE_LINK_JOINING" = "Connexion…";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = " Le lien du groupe a été réinitialisé.";
@@ -4277,13 +4277,13 @@
 "GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Attention aux groupes qui se font passer pour des organisations ou des entreprises";
 
 /* Second bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Signal can't verify names and photos";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Signal ne peut pas vérifier les noms et photos de profil";
 
 /* Third bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Signal will never contact you for your registration code, PIN, or recovery key";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Signal ne vous demande jamais de communiquer votre PIN, code d'inscription ni clé de récupération";
 
 /* Fourth bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_4" = "Don’t share personal information with people you don’t know";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_4" = "Ne communiquez pas vos informations personnelles à des inconnus";
 
 /* Header for the explainer sheet for group names */
 "GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "Les <bold>noms de groupe</bold> sont choisis par les membres ou les admins.";
@@ -4736,10 +4736,10 @@
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "Vous avez accepté l'invitation par message.";
 
 /* An info message inserted into the chat when you accept a message request in a group chat. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_GROUP" = "You accepted the group request.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_GROUP" = "Vous avez accepté l'invitation à rejoindre le groupe.";
 
 /* An info message inserted into the chat when you accept a message request in a 1:1. {{ Embeds name of your chat partner }}. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_ONE_ON_ONE" = "You accepted %1$@'s message request.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_ONE_ON_ONE" = "Vous avez accepté l'invitation par message de %1$@.";
 
 /* Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}. */
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "Vous avez accepté l'invitation par message de %1$@. S'il s'agit d'une erreur, vous pouvez choisir l'une des actions suivantes.";
@@ -4748,7 +4748,7 @@
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "Vous avez accepté l'invitation par message de ce groupe. S'il s'agit d'une erreur, vous pouvez choisir l'une des actions suivantes.";
 
 /* Title for a button shown alongside an info message indicating you accepted a message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Block or Report…";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Bloquer ou signaler...";
 
 /* An info message inserted into a group chat when you block the group. */
 "INFO_MESSAGE_BLOCKED_GROUP" = "Vous avez bloqué ce groupe.";
@@ -5468,13 +5468,13 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Bloquer et quitter %1$@ ?";
 
 /* Message for an action sheet asking the user to confirm if they want to accept a message request. {{ Embeds 'Signal will never' in bolded text }} */
-"MESSAGE_REQUEST_CONFIRM_ACCEPT_MESSAGE" = "Only accept requests from people you trust. %1$@ message you for a registration code, PIN, or recovery key.";
+"MESSAGE_REQUEST_CONFIRM_ACCEPT_MESSAGE" = "N'acceptez que les invitations des personnes en qui vous avez confiance. %1$@ de communiquer votre PIN, code d'inscription ni clé de récupération.";
 
 /* Embedded text in the message for an action sheet asking the user to confirm if they want to accept a message request. */
-"MESSAGE_REQUEST_CONFIRM_ACCEPT_MESSAGE_EMBEDDED_BOLD_TEXT" = "Signal will never";
+"MESSAGE_REQUEST_CONFIRM_ACCEPT_MESSAGE_EMBEDDED_BOLD_TEXT" = "Signal ne vous demande jamais";
 
 /* Title for an action sheet asking the user to confirm if they want to accept a message request */
-"MESSAGE_REQUEST_CONFIRM_ACCEPT_TITLE" = "Accept Request?";
+"MESSAGE_REQUEST_CONFIRM_ACCEPT_TITLE" = "Accepter la demande ?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Supprimer";
@@ -5549,7 +5549,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Poursuivre votre conversation avec ce groupe et partager votre nom et votre photo avec ses membres ?";
 
 /* A prompt asking if the user wants to accept a conversation invite. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT" = "Let this person message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT" = "Partager votre nom et votre photo avec cet utilisateur et l'autoriser à échanger des messages avec vous ? Il ne saura pas que vous avez vu ses messages tant que vous n'aurez pas accepté.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Rejoindre ce groupe et partager vos nom et photo avec ses membres ? Ce contact ne saura que vous avez vu son invitation que si vous l’acceptez.";
@@ -5672,16 +5672,16 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Pour utiliser cette fonctionnalité, Signal doit accéder à vos photos.";
 
 /* Text on a blocking progress screen that indicates that there's a deletion in progress. */
-"MODAL_DELETING" = "Deleting…";
+"MODAL_DELETING" = "Suppression…";
 
 /* Text on a blocking progress screen that indicates that there's a preparation in progress. */
-"MODAL_PREPARING" = "Preparing…";
+"MODAL_PREPARING" = "Préparation…";
 
 /* Text on a blocking progress screen that indicates that there's a search in progress. */
-"MODAL_SEARCHING" = "Searching…";
+"MODAL_SEARCHING" = "Recherche...";
 
 /* Text on a blocking progress screen that indicates that there's an update in progress. */
-"MODAL_UPDATING" = "Updating…";
+"MODAL_UPDATING" = "Mise à jour...";
 
 /* An error shown as the title of an alert when try to link a new device & the user is already at the limit. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Impossible d’associer d’autres appareils.";
@@ -7190,16 +7190,16 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ a remplacé son nom de profil par %2$@.";
 
 /* First bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Signal can't verify names and photos";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Signal ne peut pas vérifier les noms et photos de profil";
 
 /* Second bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Signal will never contact you for your registration code, PIN, or recovery key";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Signal ne vous demande jamais de communiquer votre PIN, code d'inscription ni clé de récupération";
 
 /* Third bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Be cautious of accounts that impersonate others";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Certains utilisateurs peuvent se faire passer pour d'autres : faites attention";
 
 /* Fourth bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_4" = "Don’t share personal information with people you don’t know";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_4" = "Ne communiquez pas vos informations personnelles à des inconnus";
 
 /* Header for the explainer sheet for profile names */
 "PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "Sur Signal, les <bold>noms de profil</bold> sont librement choisis par les utilisateurs.";
@@ -7925,40 +7925,40 @@
 "SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Soyez prudent lorsque des entreprises ou des organismes publics vous contactent. Les messages qui affirment provenir de transporteurs ou de services fiscaux, par exemple, peuvent être des spams.";
 
 /* Message title describing the safety tip about unknown or fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Fake businesses";
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Fausses entreprises";
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "Conseils de sécurité";
 
 /* Message body describing the scams safety tip. */
-"SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "Avoid vague messages that try to get you to reply. Be aware of financial tips and suspicious web links.";
+"SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "Ignorez les utilisateurs qui vous envoient des messages vagues pour tenter d'engager la conversation. Méfiez-vous des conseils financiers et ne cliquez pas sur des liens suspects.";
 
 /* Message title describing the scams safety tip. */
-"SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_TITLE" = "Look out for scams";
+"SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_TITLE" = "Attention aux arnaques";
 
 /* Message contents for the unknown links in messages safety tip. */
 "SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Soyez vigilant lorsque des inconnus vous envoient des messages contenant des liens vers des sites web. Ne consultez jamais les liens envoyés par des personnes en qui vous n’avez pas confiance.";
 
 /* Message title describing the safety tip about unknown links in messages. */
-"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Messages with web links";
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Messages contenant des liens";
 
 /* Message body describing the review names safety tip. */
-"SAFETY_TIPS_REVIEW_NAMES_BODY" = "Look out for the “Name not verified” notice. Everyone sets their own profile name in Signal.";
+"SAFETY_TIPS_REVIEW_NAMES_BODY" = "Soyez vigilant si vous voyez la mention \"Contact non confirmé\". Sur Signal, les utilisateurs choisissent librement leur nom de profil.";
 
 /* Message body describing the review names safety tip in the 'view more' flow. */
-"SAFETY_TIPS_REVIEW_NAMES_BODY_VIEW_MORE" = "Look out for the “Name not verified” notice. Everyone sets their own profile name and photo in Signal. If you’re unsure who a new request is from, it’s safer to ignore it.";
+"SAFETY_TIPS_REVIEW_NAMES_BODY_VIEW_MORE" = "Soyez vigilant si vous voyez la mention \"Contact non confirmé\". Sur Signal, les utilisateurs choisissent librement leur nom et photo de profil. Si vous avez des doutes sur l'identité d'un utilisateur, il vaut mieux ignorer sa demande.";
 
 /* Message title describing the review names safety tip. */
-"SAFETY_TIPS_REVIEW_NAMES_TITLE" = "Review names and photos";
+"SAFETY_TIPS_REVIEW_NAMES_TITLE" = "Vérifiez le nom et la photo";
 
 /* Message body describing the signal chats tip. */
-"SAFETY_TIPS_SIGNAL_CHATS_BODY" = "Signal will never message you for your registration code, PIN, or recovery key. Never respond to a chat pretending to be Signal.";
+"SAFETY_TIPS_SIGNAL_CHATS_BODY" = "Signal ne vous demande jamais de communiquer votre PIN, code d'inscription ni clé de récupération. Ne répondez jamais à une personne se faisant passer pour Signal.";
 
 /* Message body describing the signal chats tip in the 'view more' flow. */
-"SAFETY_TIPS_SIGNAL_CHATS_BODY_VIEW_MORE" = "Signal will never message you for your registration code, PIN, or recovery key. Don’t reply to chats pretending to be Signal or Signal Support. Bad actors set up fake names to try to take over your account.";
+"SAFETY_TIPS_SIGNAL_CHATS_BODY_VIEW_MORE" = "Signal ne vous demande jamais de communiquer votre PIN, code d'inscription ni clé de récupération. Ne répondez jamais à une personne se faisant passer pour Signal ou pour un membre de l'équipe d'assistance. Des escrocs peuvent créer de fausses identités pour s'emparer de votre compte.";
 
 /* Message title describing the signal chats tip. */
-"SAFETY_TIPS_SIGNAL_CHATS_TITLE" = "Don’t respond to chats from Signal";
+"SAFETY_TIPS_SIGNAL_CHATS_TITLE" = "Ne répondez à aucun message de Signal";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Pour attirer votre attention, les spammeurs commencent souvent par un simple \"Salut\" par exemple. Si vous répondez, ils risquent de poursuivre la conversation.";
@@ -9686,7 +9686,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Lorsque vous enverrez des messages à ce contact, le délai avant disparition des messages éphémères sera défini sur %1$@.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review requests carefully";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Examinez attentivement les demandes";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Toucher pour remplacer un émoji";
@@ -9737,7 +9737,7 @@
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Membre de %1$@";
 
 /* Label displayed below profiles */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Name not verified";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Contact non confirmé";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Afficher";
@@ -10109,7 +10109,7 @@
 "VIEW_CONTACT_BUTTON" = "Afficher le contact";
 
 /* Label for the 'view more' button */
-"VIEW_MORE_BUTTON" = "View More";
+"VIEW_MORE_BUTTON" = "Plus";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Vous avez déjà lu ce message";

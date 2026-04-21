@@ -461,7 +461,7 @@
 "ATTACHMENT_LABEL" = "צרופה";
 
 /* Displayed in a full screen modal when app is processing media that was pasted into message compose field. */
-"ATTACHMENT_PASTING" = "Pasting…";
+"ATTACHMENT_PASTING" = "בהדבקה…";
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "נכשל בבחירת מסמך.";
@@ -1322,7 +1322,7 @@
 "CALL_LINK_CREATE" = "יצירת לינק לשיחה";
 
 /* Displayed in a full screen modal view when creating a Call Link */
-"CALL_LINK_CREATING_MODAL" = "Creating…";
+"CALL_LINK_CREATING_MODAL" = "ביצירה…";
 
 /* Description of sheet presented when call link creation fails. */
 "CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "לא היה ניתן ליצור לינק שיחה. יש לבדוק את חיבור האינטרנט שלך ולנסות שוב.";
@@ -1958,13 +1958,13 @@
 "CHOOSE_BACKUP_PLAN_TITLE" = "בחירת תכנית גיבוי";
 
 /* VoiceOver hint for an expanded collapse set button. */
-"COLLAPSE_SET_ACCESSIBILITY_HINT_COLLAPSE" = "Hide updates";
+"COLLAPSE_SET_ACCESSIBILITY_HINT_COLLAPSE" = "הסתרת עדכונים";
 
 /* VoiceOver hint for a collapsed collapse set button. */
-"COLLAPSE_SET_ACCESSIBILITY_HINT_EXPAND" = "Show updates";
+"COLLAPSE_SET_ACCESSIBILITY_HINT_EXPAND" = "הצגת עדכונים";
 
 /* Short label shown in a collapsed timer-changes set indicating the timer is now disabled. */
-"COLLAPSE_SET_TIMER_DISABLED" = "Disabled";
+"COLLAPSE_SET_TIMER_DISABLED" = "מושבת";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "צבע צ׳אט ורקע";
@@ -3881,7 +3881,7 @@
 "GROUP_CALL_NO_ONE_HERE" = "אף אחד אחר לא כאן";
 
 /* Text indicating you can't take this action because you're not a member of the group */
-"GROUP_CALL_NOT_A_MEMBER" = "This action is unavailable because you’re no longer a member of this group.";
+"GROUP_CALL_NOT_A_MEMBER" = "הפעולה הזו לא זמינה בגלל שאינך חלק מהקבוצה הזו יותר.";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ הצטרף/ה אל השיחה";
@@ -3983,7 +3983,7 @@
 "GROUP_CREATED_BY_UNKNOWN_USER" = "קבוצה נוצרה.";
 
 /* Displayed in a full screen modal when creating a new group. */
-"GROUP_CREATING" = "Creating…";
+"GROUP_CREATING" = "ביצירה…";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "לא כל חברי הקבוצה צורפו אל הקבוצה. הקש כדי לנסות מחדש.";
@@ -4031,7 +4031,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ הפעיל/ה את קישור הקבוצה עם אישור מנהלן כבוי.";
 
 /* Displayed in a full screen modal when joining a group via an invite link */
-"GROUP_INVITE_LINK_JOINING" = "Joining…";
+"GROUP_INVITE_LINK_JOINING" = "מצטרף…";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = " קישור הקבוצה אופס.";
@@ -4277,13 +4277,13 @@
 "GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "יש להיזהר מקבוצות שמתחזות לארגונים ועסקים";
 
 /* Second bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Signal can't verify names and photos";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Signal לא יכולה לאמת שמות ותמונות";
 
 /* Third bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Signal will never contact you for your registration code, PIN, or recovery key";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Signal לעולם לא תשלח לך הודעה כדי לבקש את קוד הרישום, ה–PIN, או מפתח השחזור שלך.";
 
 /* Fourth bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_4" = "Don’t share personal information with people you don’t know";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_4" = "אין לשתף מידע אישי עם אנשים שלא מוכרים לך";
 
 /* Header for the explainer sheet for group names */
 "GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>שמות קבוצות</bold> נבחרים על ידי חברי הקבוצה.";
@@ -4736,10 +4736,10 @@
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "אישרת את בקשת ההודעה.";
 
 /* An info message inserted into the chat when you accept a message request in a group chat. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_GROUP" = "You accepted the group request.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_GROUP" = "אישרת את בקשת הקבוצה.";
 
 /* An info message inserted into the chat when you accept a message request in a 1:1. {{ Embeds name of your chat partner }}. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_ONE_ON_ONE" = "You accepted %1$@'s message request.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_ONE_ON_ONE" = "אישרת את בקשת ההודעה של %1$@.";
 
 /* Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}. */
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "אישרת בקשת הודעה מ%1$@. אם זו הייתה טעות, אפשר לבחור פעולה למטה.";
@@ -4748,7 +4748,7 @@
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "אישרת בקשת הודעה מהקבוצה הזו. אם זו הייתה טעות, אפשר לבחור פעולה למטה.";
 
 /* Title for a button shown alongside an info message indicating you accepted a message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Block or Report…";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "חסימה או דיווח…";
 
 /* An info message inserted into a group chat when you block the group. */
 "INFO_MESSAGE_BLOCKED_GROUP" = "חסמת את הקבוצה הזו.";
@@ -5468,13 +5468,13 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "לחסום ולעזוב את %1$@?";
 
 /* Message for an action sheet asking the user to confirm if they want to accept a message request. {{ Embeds 'Signal will never' in bolded text }} */
-"MESSAGE_REQUEST_CONFIRM_ACCEPT_MESSAGE" = "Only accept requests from people you trust. %1$@ message you for a registration code, PIN, or recovery key.";
+"MESSAGE_REQUEST_CONFIRM_ACCEPT_MESSAGE" = "יש לאשר בקשות רק מאנשים שסומכים עליהם. %1$@ תשלח לך הודעה כדי לבקש את קוד הרישום, ה–PIN, או מפתח השחזור שלך.";
 
 /* Embedded text in the message for an action sheet asking the user to confirm if they want to accept a message request. */
-"MESSAGE_REQUEST_CONFIRM_ACCEPT_MESSAGE_EMBEDDED_BOLD_TEXT" = "Signal will never";
+"MESSAGE_REQUEST_CONFIRM_ACCEPT_MESSAGE_EMBEDDED_BOLD_TEXT" = "Signal לעולם לא";
 
 /* Title for an action sheet asking the user to confirm if they want to accept a message request */
-"MESSAGE_REQUEST_CONFIRM_ACCEPT_TITLE" = "Accept Request?";
+"MESSAGE_REQUEST_CONFIRM_ACCEPT_TITLE" = "לאשר את הבקשה?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "מחיקה";
@@ -5549,7 +5549,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "להמשיך צ׳אט זה עם קבוצה זו ולשתף את השם והתמונה שלך עם חברי הקבוצה?";
 
 /* A prompt asking if the user wants to accept a conversation invite. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT" = "Let this person message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT" = "לאפשר לאדם הזה לשלוח לך הודעות ולשתף את השם והתמונה שלך איתו או איתה? הוא או היא לא ידעו שראית את ההודעה עד לאישור שלך.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "להצטרף אל קבוצה זו ולשתף את השם והתמונה שלך עם חבריה? חברי הקבוצה לא יידעו שקראת את הודעותיהם עד שלא תאשר.";
@@ -5672,16 +5672,16 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal דורש גישה אל התמונות שלך עבור מאפיין זה.";
 
 /* Text on a blocking progress screen that indicates that there's a deletion in progress. */
-"MODAL_DELETING" = "Deleting…";
+"MODAL_DELETING" = "מוחקים…";
 
 /* Text on a blocking progress screen that indicates that there's a preparation in progress. */
-"MODAL_PREPARING" = "Preparing…";
+"MODAL_PREPARING" = "בהכנה…";
 
 /* Text on a blocking progress screen that indicates that there's a search in progress. */
-"MODAL_SEARCHING" = "Searching…";
+"MODAL_SEARCHING" = "בחיפוש…";
 
 /* Text on a blocking progress screen that indicates that there's an update in progress. */
-"MODAL_UPDATING" = "Updating…";
+"MODAL_UPDATING" = "בעדכון…";
 
 /* An error shown as the title of an alert when try to link a new device & the user is already at the limit. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "אינך יכול לקשר עוד מכשירים כלשהם.";
@@ -7190,16 +7190,16 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ שינה/שינתה את שם הפרופיל שלו/שלה אל %2$@.";
 
 /* First bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Signal can't verify names and photos";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Signal לא יכולה לאמת שמות ותמונות";
 
 /* Second bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Signal will never contact you for your registration code, PIN, or recovery key";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Signal לעולם לא תשלח לך הודעה כדי לבקש את קוד הרישום, ה–PIN, או מפתח השחזור שלך.";
 
 /* Third bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Be cautious of accounts that impersonate others";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "יש להיזהר מחשבונות שמתחזים לאחרים";
 
 /* Fourth bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_4" = "Don’t share personal information with people you don’t know";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_4" = "אין לשתף מידע אישי עם אנשים שלא מוכרים לך";
 
 /* Header for the explainer sheet for profile names */
 "PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>שמות פרופילים</bold> ב–Signal נבחרים על ידי בעל/ת החשבון.";
@@ -7925,40 +7925,40 @@
 "SAFETY_TIPS_FAKE_BUSINESS_BODY" = "חשוב להיזהר מעסקים או סוכנויות ממשלתיות שיוצרים איתך קשר. הודעות הקשורות בסוכנויות מס, שליחויות ועוד עלולות להיות ספאם.";
 
 /* Message title describing the safety tip about unknown or fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Fake businesses";
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "עסקים מזויפים";
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "טיפים לבטיחות";
 
 /* Message body describing the scams safety tip. */
-"SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "Avoid vague messages that try to get you to reply. Be aware of financial tips and suspicious web links.";
+"SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "חשוב להימנע מהודעות עמומות שמנסות לגרום לך להשיב. יש לגלות מודעות לטיפים בנושא פיננסים וללינקים חשודים.";
 
 /* Message title describing the scams safety tip. */
-"SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_TITLE" = "Look out for scams";
+"SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_TITLE" = "יש להיזהר מהונאות";
 
 /* Message contents for the unknown links in messages safety tip. */
 "SAFETY_TIPS_MESSAGE_LINKS_BODY" = "חשוב להיזהר מהודעות מאנשים שלא מכירים שמכילות לינקים לאתרי אינטרנט. אף פעם לא ללחוץ על לינקים מאנשים שלא סומכים עליהם.";
 
 /* Message title describing the safety tip about unknown links in messages. */
-"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Messages with web links";
+"SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "הודעות עם לינקים";
 
 /* Message body describing the review names safety tip. */
-"SAFETY_TIPS_REVIEW_NAMES_BODY" = "Look out for the “Name not verified” notice. Everyone sets their own profile name in Signal.";
+"SAFETY_TIPS_REVIEW_NAMES_BODY" = "יש לשים לב להתראת ״שם לא אומת״. כולם ב–Signal מגדירים את שם הפרופיל של עצמם.";
 
 /* Message body describing the review names safety tip in the 'view more' flow. */
-"SAFETY_TIPS_REVIEW_NAMES_BODY_VIEW_MORE" = "Look out for the “Name not verified” notice. Everyone sets their own profile name and photo in Signal. If you’re unsure who a new request is from, it’s safer to ignore it.";
+"SAFETY_TIPS_REVIEW_NAMES_BODY_VIEW_MORE" = "יש לשים לב להתראת ״שם לא אומת״. כולם ב–Signal מגדירים את שם הפרופיל והתמונה של עצמם. אם לא בטוחים ממי הגיעה בקשה חדשה, הכי בטוח להתעלם ממנה.";
 
 /* Message title describing the review names safety tip. */
-"SAFETY_TIPS_REVIEW_NAMES_TITLE" = "Review names and photos";
+"SAFETY_TIPS_REVIEW_NAMES_TITLE" = "יש לבדוק שמות ותמונות";
 
 /* Message body describing the signal chats tip. */
-"SAFETY_TIPS_SIGNAL_CHATS_BODY" = "Signal will never message you for your registration code, PIN, or recovery key. Never respond to a chat pretending to be Signal.";
+"SAFETY_TIPS_SIGNAL_CHATS_BODY" = "Signal לעולם לא תשלח לך הודעה כדי לבקש את קוד הרישום, ה–PIN, או מפתח השחזור שלך. אף פעם אין להשיב לצ׳אט ממישהו שמתחזה ל–Signal.";
 
 /* Message body describing the signal chats tip in the 'view more' flow. */
-"SAFETY_TIPS_SIGNAL_CHATS_BODY_VIEW_MORE" = "Signal will never message you for your registration code, PIN, or recovery key. Don’t reply to chats pretending to be Signal or Signal Support. Bad actors set up fake names to try to take over your account.";
+"SAFETY_TIPS_SIGNAL_CHATS_BODY_VIEW_MORE" = "Signal לעולם לא תשלח לך הודעה כדי לבקש את קוד הרישום, ה–PIN, או מפתח השחזור שלך. אין להשיב לצ׳אטים ממישהו שמתחזה ל–Signal או לתמיכה של Signal. עבריינים מגדירים לעצמם שמות מזויפים כדי לנסות להשתלט על החשבון שלך.";
 
 /* Message title describing the signal chats tip. */
-"SAFETY_TIPS_SIGNAL_CHATS_TITLE" = "Don’t respond to chats from Signal";
+"SAFETY_TIPS_SIGNAL_CHATS_TITLE" = "אין להשיב לצ׳אטים מ–Signal";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "שולחי ספאם לרוב מתחילים עם הודעה פשוטה כמו ״היי״ כדי למשוך אותך פנימה. אם מגיבים, הם עשויים לנסות להעמיק את התקשורת.";
@@ -9686,7 +9686,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "הזמן של ההודעות הנעלמות יוגדר אל %1$@ כאשר אתה מתכתב עם הצד השני.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review requests carefully";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "סקור בקשות בזהירות";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "הקש כדי להחליף אימוג'י";
@@ -9737,7 +9737,7 @@
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "חבר קבוצה של %1$@";
 
 /* Label displayed below profiles */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Name not verified";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "שם לא אומת";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "הצג";
@@ -10109,7 +10109,7 @@
 "VIEW_CONTACT_BUTTON" = "צפייה באיש קשר";
 
 /* Label for the 'view more' button */
-"VIEW_MORE_BUTTON" = "View More";
+"VIEW_MORE_BUTTON" = "הצג עוד";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "צפית כבר בהודעה זו.";

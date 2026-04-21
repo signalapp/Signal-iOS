@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld call</string>
+			<string>%1$ld κλήση</string>
 			<key>other</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld κλήσεις</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_CHAT_UPDATES_%d</key>
@@ -408,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld chat update</string>
+			<string>%1$ld ενημέρωση συνομιλίας</string>
 			<key>other</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld ενημερώσεις συνομιλίας</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_GROUP_UPDATES_%d</key>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld group update</string>
+			<string>%1$ld ενημέρωση ομάδας</string>
 			<key>other</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld ενημερώσεις ομάδας</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_TIMER_CHANGES_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld disappearing message timer change</string>
+			<string>%1$ld αλλαγή στον χρόνο εξαφάνισης μηνυμάτων</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld αλλαγές στον χρόνο εξαφάνισης μηνυμάτων</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>

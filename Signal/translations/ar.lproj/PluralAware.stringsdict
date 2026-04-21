@@ -584,17 +584,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld مكالمات</string>
 			<key>one</key>
-			<string>%1$ld call</string>
+			<string>%1$ld مكالمة</string>
 			<key>two</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld مكالمتين</string>
 			<key>few</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld مكالمات</string>
 			<key>many</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld مكالمة</string>
 			<key>other</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld مكالمةٍ</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_CHAT_UPDATES_%d</key>
@@ -608,17 +608,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld تحديثات للدردشة</string>
 			<key>one</key>
-			<string>%1$ld chat update</string>
+			<string>%1$ld تحديث للدردشة</string>
 			<key>two</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld تحديثان للدردشة</string>
 			<key>few</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld تحديثات للدردشة</string>
 			<key>many</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld تحديثًا للدردشة</string>
 			<key>other</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld تحديثٍ للدردشة</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_GROUP_UPDATES_%d</key>
@@ -632,17 +632,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld تحديثات للمجموعة</string>
 			<key>one</key>
-			<string>%1$ld group update</string>
+			<string>%1$ld تحديث للمجموعة</string>
 			<key>two</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld تحديثان للمجموعة</string>
 			<key>few</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld تحديثات للمجموعة</string>
 			<key>many</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld تحديثًا للمجموعة</string>
 			<key>other</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld تحديثٍ للمجموعة</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_TIMER_CHANGES_%d</key>
@@ -656,17 +656,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld تغييرات في مُؤقِّت الرسائل المؤقَّتة</string>
 			<key>one</key>
-			<string>%1$ld disappearing message timer change</string>
+			<string>%1$ld تغيير في مُؤقِّت الرسائل المؤقَّتة</string>
 			<key>two</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld تغييران في مُؤقِّت الرسائل المؤقَّتة</string>
 			<key>few</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld تغييرات في مُؤقِّت الرسائل المؤقَّتة</string>
 			<key>many</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld تغييرًا في مُؤقِّت الرسائل المؤقَّتة</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld تغيير في مُؤقِّت الرسائل المؤقَّتة</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>

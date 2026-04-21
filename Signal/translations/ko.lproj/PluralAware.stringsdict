@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld calls</string>
+			<string>통화 %1$ld건</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_CHAT_UPDATES_%d</key>
@@ -358,7 +358,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld chat updates</string>
+			<string>대화 업데이트 %1$ld개</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_GROUP_UPDATES_%d</key>
@@ -372,7 +372,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld group updates</string>
+			<string>그룹 업데이트 %1$ld개</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_TIMER_CHANGES_%d</key>
@@ -386,7 +386,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>자동 삭제 메시지 시간 변경 %1$ld건</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>

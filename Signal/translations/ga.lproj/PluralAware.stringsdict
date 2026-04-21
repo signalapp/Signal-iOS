@@ -536,15 +536,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld call</string>
+			<string>%1$ld ghlao</string>
 			<key>two</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld ghlao</string>
 			<key>few</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld ghlao</string>
 			<key>many</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld nglao</string>
 			<key>other</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld glao</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_CHAT_UPDATES_%d</key>
@@ -558,15 +558,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld chat update</string>
+			<string>%1$ld nuashonrú comhrá</string>
 			<key>two</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld nuashonrú comhrá</string>
 			<key>few</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld nuashonrú comhrá</string>
 			<key>many</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld nuashonrú comhrá</string>
 			<key>other</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld nuashonrú comhrá</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_GROUP_UPDATES_%d</key>
@@ -580,15 +580,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld group update</string>
+			<string>%1$ld nuashonrú grúpa</string>
 			<key>two</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld nuashonrú grúpa</string>
 			<key>few</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld nuashonrú grúpa</string>
 			<key>many</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld nuashonrú grúpa</string>
 			<key>other</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld nuashonrú grúpa</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_TIMER_CHANGES_%d</key>
@@ -602,15 +602,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld disappearing message timer change</string>
+			<string>%1$ld athrú ar amadóir na dteachtaireachtaí sealadacha</string>
 			<key>two</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld athrú ar amadóir na dteachtaireachtaí sealadacha</string>
 			<key>few</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld athrú ar amadóir na dteachtaireachtaí sealadacha</string>
 			<key>many</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld n-athrú ar amadóir na dteachtaireachtaí sealadacha</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld athrú ar amadóir na dteachtaireachtaí sealadacha</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>

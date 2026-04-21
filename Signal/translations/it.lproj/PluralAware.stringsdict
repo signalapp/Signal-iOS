@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld call</string>
+			<string>%1$ld chiamata</string>
 			<key>other</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld chiamate</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_CHAT_UPDATES_%d</key>
@@ -408,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld chat update</string>
+			<string>%1$ld novità dalle chat</string>
 			<key>other</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld novità dalle chat</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_GROUP_UPDATES_%d</key>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld group update</string>
+			<string>%1$ld novità dai gruppi</string>
 			<key>other</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld novità dai gruppi</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_TIMER_CHANGES_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld disappearing message timer change</string>
+			<string>%1$ld modifica alla durata dei messaggi temporanei</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld modifiche alla durata dei messaggi temporanei</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>

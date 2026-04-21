@@ -488,13 +488,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld call</string>
+			<string>%1$ld звонок</string>
 			<key>few</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld звонка</string>
 			<key>many</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld звонков</string>
 			<key>other</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld звонка</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_CHAT_UPDATES_%d</key>
@@ -508,13 +508,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld chat update</string>
+			<string>%1$ld обновление в чате</string>
 			<key>few</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld обновления в чате</string>
 			<key>many</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld обновлений в чате</string>
 			<key>other</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld обновления в чате</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_GROUP_UPDATES_%d</key>
@@ -528,13 +528,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld group update</string>
+			<string>%1$ld обновление в группе</string>
 			<key>few</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld обновления в группе</string>
 			<key>many</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld обновлений в группе</string>
 			<key>other</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld обновления в группе</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_TIMER_CHANGES_%d</key>
@@ -548,13 +548,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld disappearing message timer change</string>
+			<string>%1$ld изменение таймера исчезающего сообщения</string>
 			<key>few</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld изменения таймера исчезающего сообщения</string>
 			<key>many</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld изменений таймера исчезающего сообщения</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld изменения таймера исчезающего сообщения</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>

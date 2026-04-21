@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld call</string>
+			<string>%1$ld कॉल</string>
 			<key>other</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld कॉल</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_CHAT_UPDATES_%d</key>
@@ -408,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld chat update</string>
+			<string>%1$ld चैट अपडेट</string>
 			<key>other</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld चैट अपडेट</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_GROUP_UPDATES_%d</key>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld group update</string>
+			<string>%1$ld ग्रुप अपडेट</string>
 			<key>other</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld ग्रुप अपडेट</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_TIMER_CHANGES_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld disappearing message timer change</string>
+			<string>मैसेज गायब होने के टाइमर में %1$ld बदलाव</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>मैसेज गायब होने के टाइमर में %1$ld बदलाव</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>

@@ -1,1 +1,1 @@
-• The freshly spun emoji in Unicode 17.0 have now pirouetted into place in Signal. Send a message with the new Ballet Dancer emoji to perform your own digital version of a pas de chat.
+• Unicode 17.0 वाले ताज़ा इमोजी अब Signal में इस्तेमाल के लिए उपलब्ध हैं। डिजिटल दुनिया में अपने खास डांस स्टेप की झलक दिखाने के लिए मैसेज पर नए 'बैले डांसर' इमोजी वाला रिएक्शन दें।

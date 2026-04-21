@@ -440,11 +440,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld call</string>
+			<string>%1$ld apel</string>
 			<key>few</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld apeluri</string>
 			<key>other</key>
-			<string>%1$ld calls</string>
+			<string>%1$ld de apeluri</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_CHAT_UPDATES_%d</key>
@@ -458,11 +458,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld chat update</string>
+			<string>%1$ld actualizare a conversației</string>
 			<key>few</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld actualizări ale conversației</string>
 			<key>other</key>
-			<string>%1$ld chat updates</string>
+			<string>%1$ld de actualizări ale conversației</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_GROUP_UPDATES_%d</key>
@@ -476,11 +476,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld group update</string>
+			<string>%1$ld actualizare a grupului</string>
 			<key>few</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld actualizări ale grupului</string>
 			<key>other</key>
-			<string>%1$ld group updates</string>
+			<string>%1$ld de actualizări ale grupului</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_TIMER_CHANGES_%d</key>
@@ -494,11 +494,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld disappearing message timer change</string>
+			<string>%1$ld schimbare a temporizatorului pentru mesaje temporare</string>
 			<key>few</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld schimbări ale temporizatorului pentru mesaje temporare</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes</string>
+			<string>%1$ld de schimbări ale temporizatorului pentru mesaje temporare</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
