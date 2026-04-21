@@ -177,6 +177,9 @@ public class CVLoader: NSObject {
                     localAci: localAci,
                     cachedModels: nil,
                 )
+
+                let initialLoadCount = ungroupedItemModels.count
+
                 var groupedModels = Self.applyCollapseGroups(
                     to: ungroupedItemModels,
                     loadContext: loadContext,
@@ -188,7 +191,7 @@ public class CVLoader: NSObject {
                     let maxExtraLoads = 5
                     var extraLoads = 0
                     while
-                        groupedModels.count < messageLoader.initialLoadCount,
+                        groupedModels.count < initialLoadCount,
                         messageLoader.canLoadOlder,
                         extraLoads < maxExtraLoads
                     {

@@ -54,6 +54,7 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
         }
 
         let isReusing = componentView.rootView.superview != nil
+            && componentView.button.superview != nil
 
         if !isReusing {
             componentView.reset()
@@ -76,12 +77,20 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
             componentView.button.layer.cornerRadius = buttonSize.height / 2
         }
 
-        componentView.outerStack.configure(
-            config: outerStackConfig,
-            cellMeasurement: cellMeasurement,
-            measurementKey: Self.measurementKey_outerStack,
-            subviews: [componentView.button],
-        )
+        if isReusing {
+            componentView.outerStack.configureForReuse(
+                config: outerStackConfig,
+                cellMeasurement: cellMeasurement,
+                measurementKey: Self.measurementKey_outerStack,
+            )
+        } else {
+            componentView.outerStack.configure(
+                config: outerStackConfig,
+                cellMeasurement: cellMeasurement,
+                measurementKey: Self.measurementKey_outerStack,
+                subviews: [componentView.button],
+            )
+        }
 
         componentView.outerStack.isAccessibilityElement = true
         componentView.outerStack.accessibilityLabel = buttonTitleString
@@ -127,7 +136,7 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
             config: outerStackConfig,
             measurementBuilder: measurementBuilder,
             measurementKey: Self.measurementKey_outerStack,
-            subviewInfos: [buttonSize.asManualSubviewInfo(hasFixedSize: true)],
+            subviewInfos: [buttonSize.asManualSubviewInfo(hasFixedWidth: true)],
         )
         return outerMeasurement.measuredSize
     }

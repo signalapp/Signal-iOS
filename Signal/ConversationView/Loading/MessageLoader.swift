@@ -70,7 +70,7 @@ class MessageLoader {
     // fast for most conversations, at the expense of a second fetch for
     // conversations with pathologically small messages (e.g. a bunch of 1-line
     // texts in a row from the same sender and timestamp)
-    lazy var initialLoadCount: Int = {
+    private lazy var initialLoadCount: Int = {
         let avgMessageHeight: CGFloat = 35
         var deviceFrame = CGRect.zero
         DispatchSyncMainThreadSafe {
