@@ -57,10 +57,15 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                 "PAYMENT_DETAILS_CARD_TITLE",
                 comment: "Header title for card payment details screen",
             )
-        case .sepa, .ideal:
+        case .sepa:
             title = OWSLocalizedString(
                 "PAYMENT_DETAILS_BANK_TITLE",
                 comment: "Header title for bank payment details screen",
+            )
+        case .ideal:
+            title = OWSLocalizedString(
+                "PAYMENT_DETAILS_IDEAL_BANK_TITLE",
+                comment: "Header title for iDEAL|Wero bank payment details screen",
             )
         }
     }
