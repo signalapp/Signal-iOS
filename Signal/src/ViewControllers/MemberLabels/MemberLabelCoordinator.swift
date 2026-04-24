@@ -153,9 +153,11 @@ public final class MemberLabelCoordinator {
     }
 
     func updateLabelForLocalUser(memberLabel: MemberLabel?) {
+        Logger.info("")
         guard let presenter else { return }
         let changeLabelBlock: () -> Void = {
             Task { @MainActor in
+                Logger.info("")
                 let localUserBio = self.db.read(block: { tx -> String? in
                     return self.profileManager.userProfile(for: SignalServiceAddress(self.localIdentifiers.aci), tx: tx)?.bioForDisplay
                 })
