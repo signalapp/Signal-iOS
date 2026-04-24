@@ -290,7 +290,7 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
 
     private func createIDEALButton() -> UIButton {
         createPaymentMethodButton(
-            title: LocalizationNotNeeded("iDEAL"),
+            title: "", // The iDEAL|Wero text is embedded in the image
             image: UIImage(named: "logo_ideal"),
         ) { [weak self] in
             guard let self else { return }
