@@ -49,35 +49,7 @@ class LocalVideoView: UIView {
 
     @objc
     private func updateLocalVideoOrientation() {
-        defer {
-            localVideoCapturePreview.frame = bounds
-        }
-
-        // iPad supports rotating this view controller directly,
-        // so we don't need to do anything here.
-        guard !UIDevice.current.isIPad else { return }
-
-        // We lock this view to portrait only on phones, but the
-        // local video capture will rotate with the device's
-        // orientation (so the remote party will render your video
-        // in the correct orientation). As such, we need to rotate
-        // the local video preview layer so it *looks* like we're
-        // also always capturing in portrait.
-
-        switch UIDevice.current.orientation {
-        case .portrait:
-            localVideoCapturePreview.transform = .identity
-        case .portraitUpsideDown:
-            localVideoCapturePreview.transform = .init(rotationAngle: .pi)
-        case .landscapeLeft:
-            localVideoCapturePreview.transform = .init(rotationAngle: .halfPi)
-        case .landscapeRight:
-            localVideoCapturePreview.transform = .init(rotationAngle: .pi + .halfPi)
-        case .faceUp, .faceDown, .unknown:
-            break
-        @unknown default:
-            break
-        }
+        localVideoCapturePreview.frame = bounds
     }
 }
 

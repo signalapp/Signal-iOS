@@ -1494,12 +1494,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             return .portrait
         }
 
-        // The call-banner window is only suitable for portrait display on iPhone
-        if appReadiness.isAppReady, AppEnvironment.shared.callService.callServiceState.currentCall != nil, !UIDevice.current.isIPad {
-            return .portrait
-        }
-
-        guard let rootViewController = self.window?.rootViewController else {
+        guard let rootViewController = window?.rootViewController else {
             return UIDevice.current.defaultSupportedOrientations
         }
 

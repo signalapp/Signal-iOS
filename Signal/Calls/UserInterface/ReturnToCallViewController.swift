@@ -26,17 +26,16 @@ public class ReturnToCallViewController: UIViewController {
 
     public static var inherentPipSize: CGSize {
         let nineBySixteen = CGSize(width: 90, height: 160)
+        let sixteenByNine = CGSize(width: 160, height: 90)
         let fourByThree = CGSize(width: 272, height: 204)
         let threeByFour = CGSize(width: 204, height: 272)
 
+        let isLandscape = CurrentAppContext().frame.size.width > CurrentAppContext().frame.size.height
+
         if UIDevice.current.isIPad, UIDevice.current.isFullScreen {
-            if CurrentAppContext().frame.size.width > CurrentAppContext().frame.size.height {
-                return fourByThree
-            } else {
-                return threeByFour
-            }
+            return isLandscape ? fourByThree : threeByFour
         } else {
-            return nineBySixteen
+            return isLandscape ? sixteenByNine : nineBySixteen
         }
     }
 
@@ -111,6 +110,17 @@ public class ReturnToCallViewController: UIViewController {
             name: UIWindow.keyboardWillChangeFrameNotification,
             object: nil,
         )
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(deviceOrientationDidChange),
+            name: UIDevice.orientationDidChangeNotification,
+            object: nil,
+        )
+    }
+
+    @objc
+    private func deviceOrientationDidChange() {
+        updatePipLayout()
     }
 
     override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -333,7 +343,7 @@ public class ReturnToCallViewController: UIViewController {
     // MARK: Orientation
 
     override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return UIDevice.current.isIPad ? .all : .portrait
+        return UIDevice.current.defaultSupportedOrientations
     }
 
 }
