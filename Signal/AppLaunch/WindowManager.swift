@@ -279,12 +279,6 @@ class WindowManager {
 
         shouldShowCallView = true
 
-        // CallViewController only supports portrait for iPhones, but if we're _already_ landscape it won't
-        // automatically switch.
-        if !UIDevice.current.isIPad {
-            UIDevice.current.ows_setOrientation(.portrait)
-        }
-
         ensureWindowState()
     }
 

@@ -81,13 +81,6 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         return nil
     }
 
-    func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
-        /// TODO: Add support for rotating other elements too.
-        self.muteIndicatorCircleView.transform = CGAffineTransform(rotationAngle: rotationAngle)
-        updateFlipCameraButton()
-        updateLayoutGuideConstraints()
-    }
-
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,

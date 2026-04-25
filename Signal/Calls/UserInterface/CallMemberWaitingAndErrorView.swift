@@ -196,10 +196,6 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
         return (title, message)
     }
 
-    func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
-        /// TODO: Add support for rotating.
-    }
-
     func updateDimensions() {
         /// TODO: Add support for updating dimensions.
     }

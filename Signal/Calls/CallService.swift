@@ -155,14 +155,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             MainActor.assumeIsolated { self?.configureDataMode() }
         })
 
-        // We don't support a rotating call screen on phones,
-        // but we do still want to rotate the various icons.
-        if !UIDevice.current.isIPad {
-            notificationObservers.append(NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
-                MainActor.assumeIsolated { self?.phoneOrientationDidChange() }
-            })
-        }
-
         appReadiness.runNowOrWhenAppWillBecomeReady {
             if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
                 self.callManager.setSelfUuid(localAci.rawUUID)
@@ -794,68 +786,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
             callManager.setSelfUuid(localAci.rawUUID)
         }
-    }
-
-    /// The object is the rotation angle necessary to match the new orientation.
-    static var phoneOrientationDidChange = Notification.Name("CallService.phoneOrientationDidChange")
-
-    private func phoneOrientationDidChange() {
-        guard callServiceState.currentCall != nil else {
-            return
-        }
-        sendPhoneOrientationNotification()
-    }
-
-    private func shouldReorientUI(for call: SignalCall) -> Bool {
-        owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
-
-        switch call.mode {
-        case .individual(let individualCall):
-            // If we're in an audio-only 1:1 call, the user isn't going to be looking at the screen.
-            // Don't distract them with rotating icons.
-            return individualCall.hasLocalVideo || individualCall.isRemoteVideoEnabled
-        case .groupThread, .callLink:
-            // If we're in a group call, we don't want to use rotating icons because we
-            // don't rotate user video at the same time, and that's very obvious for
-            // grid view or any non-speaker tile in speaker view.
-            return false
-        }
-    }
-
-    private func sendPhoneOrientationNotification() {
-        owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
-
-        let rotationAngle: CGFloat
-        if let call = callServiceState.currentCall, !shouldReorientUI(for: call) {
-            // We still send the notification in case we *previously* rotated the UI and now we need to revert back.
-            // Example:
-            // 1. In a 1:1 call, either the user or their contact (but not both) has video on
-            // 2. the user has the phone in landscape
-            // 3. whoever had video turns it off (but the icons are still landscape-oriented)
-            // 4. the user rotates back to portrait
-            rotationAngle = 0
-        } else {
-            switch UIDevice.current.orientation {
-            case .landscapeLeft:
-                rotationAngle = .halfPi
-            case .landscapeRight:
-                rotationAngle = -.halfPi
-            case .portrait, .portraitUpsideDown, .faceDown, .faceUp, .unknown:
-                fallthrough
-            @unknown default:
-                rotationAngle = 0
-            }
-        }
-
-        NotificationCenter.default.post(name: Self.phoneOrientationDidChange, object: rotationAngle)
-    }
-
-    /// Pretend the phone just changed orientations so that the call UI will autorotate.
-    func sendInitialPhoneOrientationNotification() {
-        guard !UIDevice.current.isIPad else {
-            return
-        }
-        sendPhoneOrientationNotification()
     }
 
     // MARK: -

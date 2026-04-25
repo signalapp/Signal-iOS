@@ -130,8 +130,6 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
         }
     }
 
-    func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {}
-
     func updateDimensions() {}
 
     func clearConfiguration() {

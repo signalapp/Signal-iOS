@@ -231,9 +231,6 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         super.viewWillAppear(animated)
 
         updateCallUI()
-        if call.offerMediaType == .video {
-            callService.sendInitialPhoneOrientationNotification()
-        }
     }
 
     override func loadView() {

@@ -23,7 +23,6 @@ protocol CallMemberComposableView: UIView {
         isFullScreen: Bool,
         remoteGroupMemberDeviceState: RemoteDeviceState?,
     )
-    func rotateForPhoneOrientation(_ rotationAngle: CGFloat)
     func updateDimensions()
     func clearConfiguration()
 }
@@ -93,13 +92,6 @@ class CallMemberView: UIView {
         }
 
         self.composableViews = orderedComposableViews + [self._associatedCallMemberVideoView]
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(updateOrientationForPhone),
-            name: CallService.phoneOrientationDidChange,
-            object: nil,
-        )
     }
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
@@ -121,23 +113,6 @@ class CallMemberView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         updateDimensions()
-    }
-
-    @objc
-    private func updateOrientationForPhone(_ notification: Notification) {
-        let rotationAngle = notification.object as! CGFloat
-
-        if window == nil {
-            self.composableViews.forEach { view in
-                view.rotateForPhoneOrientation(rotationAngle)
-            }
-        } else {
-            UIView.animate(withDuration: 0.3) {
-                self.composableViews.forEach { view in
-                    view.rotateForPhoneOrientation(rotationAngle)
-                }
-            }
-        }
     }
 
     enum MemberType {

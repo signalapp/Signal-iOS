@@ -157,11 +157,6 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
         }
     }
 
-    func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
-        /// TODO: Add support for rotating other elements too.
-        self.avatarView?.transform = CGAffineTransform(rotationAngle: rotationAngle)
-    }
-
     func clearConfiguration() {
         self.backgroundColor = .ows_black
         self.blurredAvatarBackgroundView.clear()

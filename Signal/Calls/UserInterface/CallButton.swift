@@ -105,13 +105,6 @@ class CallButton: UIButton {
 
         updateAppearance()
         updateSizing()
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(updateOrientationForPhone),
-            name: CallService.phoneOrientationDidChange,
-            object: nil,
-        )
     }
 
     private func updateAppearance() {
@@ -158,19 +151,6 @@ class CallButton: UIButton {
         } else {
             dropdownIconView?.removeFromSuperview()
             dropdownIconView = nil
-        }
-    }
-
-    @objc
-    private func updateOrientationForPhone(_ notification: Notification) {
-        let rotationAngle = notification.object as! CGFloat
-
-        if window == nil {
-            self.circleView.transform = CGAffineTransform(rotationAngle: rotationAngle)
-        } else {
-            UIView.animate(withDuration: 0.3, delay: 0, options: .allowUserInteraction) {
-                self.circleView.transform = CGAffineTransform(rotationAngle: rotationAngle)
-            }
         }
     }
 
