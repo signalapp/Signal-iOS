@@ -1279,9 +1279,6 @@ public final class MessageReceiver {
             return nil
         }
 
-        // TODO: ideally, messages with bodies >OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes
-        // but <=OWSMediaUtils.kMaxOversizeTextMessageReceiveSizeBytes would be truncated inline and transformed
-        // into oversized text attachments.
         guard dataMessage.body?.utf8.count ?? 0 <= OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes else {
             Logger.error("Dropping message with too large body: \(dataMessage.body?.utf8.count ?? 0)")
             return nil
