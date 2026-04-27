@@ -5,8 +5,8 @@ import argparse
 import re
 import sys
 
-COPYRIGHT_LINE_RE = re.compile(r"^// Copyright 2\d\d\d Signal Messenger, LLC\n$")
-SPDX_LINE = "// SPDX-License-Identifier: AGPL-3.0-only\n"
+COPYRIGHT_LINE_RE = re.compile(r"^(//| \*) Copyright 2\d\d\d Signal Messenger, LLC\n$")
+SPDX_LINE_RE = re.compile(r"^(//| \*) SPDX-License-Identifier: AGPL-3.0-only\n$")
 
 
 def has_shebang(line: str) -> bool:
@@ -26,8 +26,10 @@ def has_valid_license_header(path: Path) -> bool:
             if COPYRIGHT_LINE_RE.match(line) is not None:
                 copyright_len += 1
                 continue
-            if line == SPDX_LINE:
+            if SPDX_LINE_RE.match(line) is not None:
                 license_len += 1
+                continue
+            if line.startswith("/*"):
                 continue
             if line.startswith("//"):
                 continue
