@@ -59,8 +59,6 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
 
         let conversationStyle = self.conversationStyle
-        let tintColor = Theme.primaryTextColor
-        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
 
         let albumView = componentView.albumView
         albumView.configure(
@@ -157,9 +155,16 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
 
         if bodyMedia.mediaAlbumHasSkippedAttachment {
-            let iconView = CVImageView()
-            iconView.setTemplateImageName(Theme.iconName(.arrowDown), tintColor: tintColor)
+            // Media size label and download icon should both use the same color that CVAttachmentProgressView uses.
+            let backgroundCircleConfiguration = CVAttachmentProgressView.Configuration.forMediaOverlay()
+
+            let iconViewSize = CGSize.square(24)
+            let iconView = CVImageView(image: Theme.iconImage(.arrowDown))
+            iconView.tintColor = backgroundCircleConfiguration.foregroundColor
+
             if albumView.itemViews.count > 1 {
+                // Download icon and number of media displayed over pill-shaped blur background.
+
                 let downloadStackConfig = ManualStackView.Config(
                     axis: .horizontal,
                     alignment: .center,
@@ -170,14 +175,11 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 downloadStack.apply(config: downloadStackConfig)
                 var subviewInfos = [ManualStackSubviewInfo]()
 
-                let pillView = ManualLayoutViewWithLayer.pillView(name: "pillView")
-                pillView.clipsToBounds = true
-                let blurView = UIVisualEffectView(effect: blurEffect)
-                pillView.addSubviewToFillSuperviewEdges(blurView)
-                downloadStack.addSubviewToFillSuperviewEdges(pillView)
+                let pillBackgroundView = CVAttachmentProgressView.circularBackgroundView(configuration: backgroundCircleConfiguration)
+                downloadStack.addSubviewToFillSuperviewEdges(pillBackgroundView)
 
                 downloadStack.addArrangedSubview(iconView)
-                subviewInfos.append(CGSize.square(24).asManualSubviewInfo(hasFixedSize: true))
+                subviewInfos.append(iconViewSize.asManualSubviewInfo(hasFixedSize: true))
 
                 let downloadLabel = CVLabel()
                 let downloadFormat = (
@@ -196,9 +198,12 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 downloadStack.addArrangedSubview(downloadLabel)
                 let downloadLabelConfig = CVLabelConfig(
                     text: .text(String.localizedStringWithFormat(downloadFormat, items.count)),
-                    displayConfig: .forUnstyledText(font: .dynamicTypeSubheadline, textColor: tintColor),
+                    displayConfig: .forUnstyledText(
+                        font: .dynamicTypeSubheadline,
+                        textColor: backgroundCircleConfiguration.foregroundColor,
+                    ),
                     font: .dynamicTypeSubheadline,
-                    textColor: tintColor,
+                    textColor: backgroundCircleConfiguration.foregroundColor,
                 )
                 downloadLabelConfig.applyForRendering(label: downloadLabel)
                 let downloadLabelSize = CVText.measureLabel(
@@ -217,13 +222,11 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     size: downloadStackMeasurement.measuredSize,
                 )
             } else {
-                let circleSize: CGFloat = 44
-                let circleView = ManualLayoutViewWithLayer.circleView(name: "circleView")
-                circleView.clipsToBounds = true
-                let blurView = UIVisualEffectView(effect: blurEffect)
-                circleView.addSubviewToFillSuperviewEdges(blurView)
-                stackView.addSubviewToCenterOnSuperview(circleView, size: .square(circleSize))
-                stackView.addSubviewToCenterOnSuperview(iconView, size: .square(24))
+                // Just an icon over circular blur background.
+                let circleSize = CGSize.square(44)
+                let circleView = CVAttachmentProgressView.circularBackgroundView(configuration: backgroundCircleConfiguration)
+                stackView.addSubviewToCenterOnSuperview(circleView, size: circleSize)
+                stackView.addSubviewToCenterOnSuperview(iconView, size: iconViewSize)
             }
 
             if bodyMedia.mediaAlbumHasSkippedAttachment {
@@ -255,6 +258,7 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     $0.attachment.asAnyPointer()?.unencryptedByteCount ?? 0
                 }.reduce(0, +)
 
+                // Total size of undownloaded media displayed over the blur pill-shaped background.
                 if totalSize > 0 {
                     var downloadSizeText = [OWSFormat.localizedFileSizeString(from: Int64(totalSize))]
                     if
@@ -276,16 +280,18 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
                     let downloadSizeView = ManualLayoutViewWithLayer.pillView(name: "downloadSizeView")
                     downloadSizeView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 4)
-                    downloadSizeView.clipsToBounds = true
 
-                    let blurView = UIVisualEffectView(effect: blurEffect)
-                    downloadSizeView.addSubviewToFillSuperviewEdges(blurView)
+                    let pillBackgroundView = CVAttachmentProgressView.circularBackgroundView(configuration: backgroundCircleConfiguration)
+                    downloadSizeView.addSubviewToFillSuperviewEdges(pillBackgroundView)
 
                     let downloadSizeLabelConfig = CVLabelConfig(
                         text: .text(downloadSizeText.joined(separator: " • ")),
-                        displayConfig: .forUnstyledText(font: .dynamicTypeCaption1, textColor: tintColor),
+                        displayConfig: .forUnstyledText(
+                            font: .dynamicTypeCaption1,
+                            textColor: backgroundCircleConfiguration.foregroundColor,
+                        ),
                         font: .dynamicTypeCaption1,
-                        textColor: tintColor,
+                        textColor: backgroundCircleConfiguration.foregroundColor,
                     )
                     let downloadSizeLabel = CVLabel()
                     downloadSizeLabelConfig.applyForRendering(label: downloadSizeLabel)

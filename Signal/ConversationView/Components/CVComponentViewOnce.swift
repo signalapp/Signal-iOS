@@ -138,7 +138,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
                     attachmentPointer: attachmentPointer,
                     downloadState: .enqueuedOrDownloading,
                 ),
-                colorConfiguration: .init(conversationStyle: conversationStyle, isIncoming: isIncoming),
+                configuration: .init(conversationStyle: conversationStyle, isIncoming: isIncoming),
             )
             subviews.append(progressView)
         default:

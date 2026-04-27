@@ -270,7 +270,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
         return CVAttachmentProgressView(
             direction: direction,
-            colorConfiguration: .init(conversationStyle: conversationStyle, isIncoming: isIncoming),
+            configuration: .init(conversationStyle: conversationStyle, isIncoming: isIncoming),
         )
     }
 

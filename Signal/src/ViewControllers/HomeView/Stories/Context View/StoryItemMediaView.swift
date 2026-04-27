@@ -1032,7 +1032,7 @@ class StoryItemMediaView: UIView {
                 attachmentPointer: pointer,
                 downloadState: downloadState,
             ),
-            colorConfiguration: .forMediaOverlay(),
+            configuration: .forMediaOverlay(),
         )
 
         let manualLayoutView = OWSLayerView(frame: .zero) { layerView in

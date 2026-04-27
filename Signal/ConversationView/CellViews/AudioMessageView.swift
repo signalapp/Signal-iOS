@@ -160,7 +160,7 @@ class AudioMessageView: ManualStackView {
                     attachmentPointer: attachmentPointer.attachmentPointer,
                     downloadState: downloadState,
                 ),
-                colorConfiguration: .init(conversationStyle: conversationStyle, isIncoming: isIncoming),
+                configuration: .init(conversationStyle: conversationStyle, isIncoming: isIncoming),
             )
         }
 

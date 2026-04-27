@@ -178,7 +178,7 @@ class CVMediaView: ManualLayoutViewWithLayer {
         }
         let progressView = CVAttachmentProgressView(
             direction: direction,
-            colorConfiguration: .forMediaOverlay(),
+            configuration: .forMediaOverlay(),
         )
         self.progressView = progressView
         return progressView

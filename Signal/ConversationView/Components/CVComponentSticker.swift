@@ -82,7 +82,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             case .uploading:
                 let progressView = CVAttachmentProgressView(
                     direction: .upload(attachmentStream: attachmentStream.attachmentStream),
-                    colorConfiguration: .init(conversationStyle: conversationStyle, isIncoming: isIncoming),
+                    configuration: .forMediaOverlay(),
                 )
                 stackView.addSubview(progressView)
                 stackView.centerSubviewOnSuperview(progressView, size: Self.progressViewSize)
@@ -115,7 +115,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         cellMeasurement: CVCellMeasurement,
     ) {
         let placeholderView = UIView()
-        placeholderView.backgroundColor = Theme.secondaryBackgroundColor
+        placeholderView.backgroundColor = Theme.washColor
         placeholderView.layer.cornerRadius = 18
 
         stackView.reset()
@@ -131,7 +131,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 attachmentPointer: attachmentPointer.attachmentPointer,
                 downloadState: downloadState,
             ),
-            colorConfiguration: .init(conversationStyle: conversationStyle, isIncoming: isIncoming),
+            configuration: .forMediaOverlay(),
         )
         stackView.addSubview(progressView)
         stackView.centerSubviewOnSuperview(progressView, size: Self.progressViewSize)

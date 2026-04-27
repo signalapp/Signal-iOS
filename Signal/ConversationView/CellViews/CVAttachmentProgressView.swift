@@ -23,7 +23,7 @@ class CVAttachmentProgressView: ManualLayoutView {
         }
     }
 
-    struct ColorConfiguration {
+    struct Configuration {
         enum BackgroundStyle {
             case solidColor(UIColor)
             case blur(UIBlurEffect)
@@ -48,8 +48,8 @@ class CVAttachmentProgressView: ManualLayoutView {
         }
 
         /// Creates a configuration with fixed colors to be displayed on top of media thumbnail.
-        static func forMediaOverlay() -> ColorConfiguration {
-            return ColorConfiguration(
+        static func forMediaOverlay() -> Configuration {
+            return Configuration(
                 foregroundColor: .Signal.label,
                 backgroundStyle: .blur(.init(style: .systemThinMaterial)),
             )
@@ -94,26 +94,17 @@ class CVAttachmentProgressView: ManualLayoutView {
 
     init(
         direction: Direction,
-        colorConfiguration: ColorConfiguration,
+        configuration: Configuration,
     ) {
         self.direction = direction
 
         super.init(name: "CVAttachmentProgressView")
 
-        tintColor = colorConfiguration.foregroundColor
+        tintColor = configuration.foregroundColor
         layoutMargins = .init(margin: 4)
 
-        // Circular background.
-        let circleView = ManualLayoutView.circleView(name: "circleView")
-        switch colorConfiguration.backgroundStyle {
-        case .solidColor(let backgroundColor):
-            circleView.backgroundColor = backgroundColor
-        case .blur(let blurEffect):
-            circleView.clipsToBounds = true
-            let blurView = UIVisualEffectView(effect: blurEffect)
-            circleView.addSubviewToFillSuperviewEdges(blurView)
-        }
-        addSubviewToFillSuperviewEdges(circleView)
+        let backgroundView = Self.circularBackgroundView(configuration: configuration)
+        addSubviewToFillSuperviewEdges(backgroundView)
 
         addSubviewToFillSuperviewMargins(contentView)
 
@@ -123,6 +114,51 @@ class CVAttachmentProgressView: ManualLayoutView {
                 view.loadInitialStateIfNeeded()
             }
         }
+    }
+
+    // MARK: Placeholder View
+
+    /// - returns Pre-configured pill-shaped background for media download/upload progress indicator.
+    ///
+    /// View returned is has a specific border and shadow and is also used outside of CVAttachmentProgressView
+    /// as a background for album media size label.
+    class func circularBackgroundView(configuration: Configuration) -> ManualLayoutView {
+        let view = ManualLayoutView(name: "backgroundView")
+
+        let circleView = ManualLayoutView.circleView(name: "circleView")
+        switch configuration.backgroundStyle {
+        case .solidColor(let backgroundColor):
+            circleView.backgroundColor = backgroundColor
+        case .blur(let blurEffect):
+            circleView.clipsToBounds = true
+
+            // Border and shadow.
+            // A separate layer must be used because `circleView` sets `clipsToBounds` to `true`
+            // and that is not compatible with an external shadow.
+            let borderAndShadowLayer = CAShapeLayer()
+            borderAndShadowLayer.fillColor = UIColor.clear.cgColor
+            borderAndShadowLayer.strokeColor = configuration.foregroundColor.withAlphaComponent(0.1).cgColor
+            borderAndShadowLayer.lineWidth = 1
+            borderAndShadowLayer.shadowColor = UIColor.black.cgColor
+            borderAndShadowLayer.shadowOpacity = Theme.isDarkThemeEnabled ? 0.32 : 0.12
+            borderAndShadowLayer.shadowRadius = 48
+            borderAndShadowLayer.shadowOffset = .zero
+            view.layer.addSublayer(borderAndShadowLayer)
+            view.addLayoutBlock { view in
+                guard let shapeLayer = view.layer.sublayers?.first(where: { $0 is CAShapeLayer }) as? CAShapeLayer else { return }
+                let cornerRadius = view.layer.bounds.size.smallerAxis / 2
+                let path = UIBezierPath(roundedRect: view.layer.bounds, cornerRadius: cornerRadius)
+                shapeLayer.frame = view.layer.bounds
+                shapeLayer.path = path.cgPath
+                shapeLayer.shadowPath = path.cgPath
+            }
+
+            let blurView = UIVisualEffectView(effect: blurEffect)
+            circleView.addSubviewToFillSuperviewEdges(blurView)
+        }
+        view.addSubviewToFillSuperviewEdges(circleView)
+
+        return view
     }
 
     // MARK: State
