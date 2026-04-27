@@ -18,9 +18,8 @@ provisioning_protos: Specifications/Provisioning.proto
 	$(PROTOC) --swift_out=Generated Provisioning.proto
 	$(WRAPPER_SCRIPT) --dst-dir=Generated --wrapper-prefix=ProvisioningProto --proto-prefix=ProvisioningProtos --proto-file=Provisioning.proto
 
-fingerprint_protos: Specifications/Fingerprint.proto
-	$(PROTOC) --swift_out=Generated Fingerprint.proto
-	$(WRAPPER_SCRIPT) --dst-dir=Generated --wrapper-prefix=FingerprintProto --proto-prefix=FingerprintProtos --proto-file=Fingerprint.proto
+fingerprint_protos: Specifications/FingerprintProtocol.proto
+	$(PROTOC) --swift_out=Generated FingerprintProtocol.proto
 
 websocket_protos: Specifications/WebSocketResources.proto
 	$(PROTOC) --swift_out=Generated WebSocketResources.proto

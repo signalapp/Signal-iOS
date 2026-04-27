@@ -68,31 +68,31 @@ public class OWSFingerprint {
     public func matchesLogicalFingerprintsData(_ otherData: Data) -> MatchResult {
         owsAssertDebug(otherData.isEmpty.negated)
 
-        let logicalFingerprints: FingerprintProtoLogicalFingerprints
+        let combinedFingerprints: Textsecure_CombinedFingerprints
         do {
-            logicalFingerprints = try FingerprintProtoLogicalFingerprints(serializedData: otherData)
+            combinedFingerprints = try Textsecure_CombinedFingerprints(serializedBytes: otherData)
         } catch {
             owsFailDebug("fingerprint failure: \(error)")
             let description = OWSLocalizedString("PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE", comment: "alert body")
             return .noMatch(localizedErrorDescription: description)
         }
 
-        if logicalFingerprints.version < self.scannableFingerprintVersion {
+        if combinedFingerprints.version < self.scannableFingerprintVersion {
             Logger.warn("Verification failed. They're running an old version.")
             let description = OWSLocalizedString("PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION", comment: "alert body")
             return .theyHaveOldVersion(localizedErrorDescription: description)
         }
 
-        if logicalFingerprints.version > self.scannableFingerprintVersion {
+        if combinedFingerprints.version > self.scannableFingerprintVersion {
             Logger.warn("Verification failed. We're running an old version.")
             let description = OWSLocalizedString("PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION", comment: "alert body")
             return .weHaveOldVersion(localizedErrorDescription: description)
         }
 
         // Their local is *our* remote.
-        let localFingerprint = logicalFingerprints.remoteFingerprint
-        let remoteFingerprint = logicalFingerprints.localFingerprint
-        if remoteFingerprint.identityData != Self.scannableData(from: self.theirFingerprintData) {
+        let localFingerprint = combinedFingerprints.remoteFingerprint
+        let remoteFingerprint = combinedFingerprints.localFingerprint
+        if remoteFingerprint.content != Self.scannableData(from: self.theirFingerprintData) {
             Logger.warn("Verification failed. We have the wrong fingerprint for them")
             let descriptionFormat = OWSLocalizedString(
                 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM",
@@ -101,7 +101,7 @@ public class OWSFingerprint {
             let description = String.nonPluralLocalizedStringWithFormat(descriptionFormat, self.theirName)
             return .noMatch(localizedErrorDescription: description)
         }
-        if localFingerprint.identityData != Self.scannableData(from: self.myFingerprintData) {
+        if localFingerprint.content != Self.scannableData(from: self.myFingerprintData) {
             Logger.warn("Verification failed. They have the wrong fingerprint for us")
             let descriptionFormat = OWSLocalizedString(
                 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME",
@@ -149,32 +149,15 @@ public class OWSFingerprint {
     // MARK: - Image Representation
 
     private func generateImage() -> UIImage? {
-        let remoteFingerprintBuilder = FingerprintProtoLogicalFingerprint.builder(
-            identityData: Self.scannableData(from: self.theirFingerprintData),
-        )
-        let localFingerprintBuilder = FingerprintProtoLogicalFingerprint.builder(
-            identityData: Self.scannableData(from: self.myFingerprintData),
-        )
-        let remoteFingerprint: FingerprintProtoLogicalFingerprint
-        let localFingerprint: FingerprintProtoLogicalFingerprint
-        do {
-            remoteFingerprint = try remoteFingerprintBuilder.build()
-            localFingerprint = try localFingerprintBuilder.build()
-        } catch {
-            owsFailDebug("could not build proto \(error)")
-            return nil
-        }
-
-        let logicalFingerprintsBuilder = FingerprintProtoLogicalFingerprints.builder(
-            version: self.scannableFingerprintVersion,
-            localFingerprint: localFingerprint,
-            remoteFingerprint: remoteFingerprint,
-        )
+        var combinedFingerprints = Textsecure_CombinedFingerprints()
+        combinedFingerprints.version = self.scannableFingerprintVersion
+        combinedFingerprints.localFingerprint.content = Self.scannableData(from: self.myFingerprintData)
+        combinedFingerprints.remoteFingerprint.content = Self.scannableData(from: self.theirFingerprintData)
 
         let fingerprintData: Data
         do {
             // Build ByteMode QR (Latin-1 encodable data)
-            fingerprintData = try logicalFingerprintsBuilder.buildSerializedData()
+            fingerprintData = try combinedFingerprints.serializedData()
         } catch {
             owsFailDebug("could not serialize proto \(error)")
             return nil
