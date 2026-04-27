@@ -19,7 +19,6 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     ) {
         struct FingerprintResult {
             let theirAci: Aci
-            let theirRecipientIdentity: OWSRecipientIdentity
             let theirVerificationState: VerificationState
             let fingerprint: OWSFingerprint
         }
@@ -67,7 +66,6 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             return (
                 FingerprintResult(
                     theirAci: theirAci,
-                    theirRecipientIdentity: theirRecipientIdentity,
                     theirVerificationState: theirVerificationState,
                     fingerprint: OWSFingerprint(
                         myAci: localIdentifiers.aci,
@@ -106,7 +104,6 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
         let fingerprintViewController = FingerprintViewController(
             recipientAci: fingerprintResult.theirAci,
-            recipientIdentity: fingerprintResult.theirRecipientIdentity,
             recipientVerificationState: fingerprintResult.theirVerificationState,
             fingerprint: fingerprintResult.fingerprint,
             keyTransparencyState: keyTransparencyState,
@@ -147,7 +144,6 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     }
 
     private let recipientAci: Aci
-    private let recipientIdentity: OWSRecipientIdentity
     private let recipientVerificationState: VerificationState
     private let fingerprint: OWSFingerprint
     private let keyTransparencyState: KeyTransparencyState
@@ -157,7 +153,6 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
     fileprivate init(
         recipientAci: Aci,
-        recipientIdentity: OWSRecipientIdentity,
         recipientVerificationState: VerificationState,
         fingerprint: OWSFingerprint,
         keyTransparencyState: KeyTransparencyState,
@@ -168,7 +163,6 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         // changing while this view is presented. (E.g., you verified them on
         // another device; you learned their identity key changed; etc.)
         self.recipientAci = recipientAci
-        self.recipientIdentity = recipientIdentity
         self.recipientVerificationState = recipientVerificationState
         self.fingerprint = fingerprint
         self.keyTransparencyState = keyTransparencyState
@@ -739,8 +733,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
     fileprivate func didTapToScan() {
         let viewController = FingerprintScanViewController(
-            recipientAci: recipientAci,
-            recipientIdentity: recipientIdentity,
+            recipientAci: self.recipientAci,
             fingerprint: self.fingerprint,
         )
         navigationController?.pushViewController(viewController, animated: true)
@@ -909,13 +902,6 @@ private final class FingerprintPreviewViewController: UINavigationController {
 
         let fingerprintViewController = FingerprintViewController(
             recipientAci: recipientAci,
-            recipientIdentity: OWSRecipientIdentity(
-                uniqueId: UUID().uuidString,
-                identityKey: recipientIdentityKey.publicKey.keyBytes,
-                isFirstKnownKey: true,
-                createdAt: Date().addingTimeInterval(-.week),
-                verificationState: .default,
-            ),
             recipientVerificationState: theirVerificationState,
             fingerprint: OWSFingerprint(
                 myAci: .randomForTesting(),

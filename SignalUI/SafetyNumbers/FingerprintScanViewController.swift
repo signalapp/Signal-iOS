@@ -10,7 +10,6 @@ import UIKit
 class FingerprintScanViewController: OWSViewController, OWSNavigationChildController {
 
     private let recipientAci: Aci
-    private let recipientIdentity: OWSRecipientIdentity
     private let contactName: String
     private let fingerprint: OWSFingerprint
 
@@ -18,11 +17,9 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
 
     init(
         recipientAci: Aci,
-        recipientIdentity: OWSRecipientIdentity,
         fingerprint: OWSFingerprint,
     ) {
         self.recipientAci = recipientAci
-        self.recipientIdentity = recipientIdentity
 
         self.fingerprint = fingerprint
         self.contactName = SSKEnvironment.shared.databaseStorageRef.read { tx in
