@@ -186,12 +186,12 @@ public enum AppNotificationCategory: String, CaseIterable {
             .incomingGroupStoryReply,
             .failedStorySend,
             .transferRelaunch,
-            .deregistration,
             .pollEndNotification,
             .pollVoteNotification,
             .attachmentBackfill:
             return true
         case
+            .deregistration,
             .newDeviceLinked,
             .backupsEnabled,
             .backupsMediaTierQuotaConsumed,
