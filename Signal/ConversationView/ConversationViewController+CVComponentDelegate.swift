@@ -844,12 +844,6 @@ extension ConversationViewController: CVComponentDelegate {
         }
     }
 
-    public func didTapShowFingerprint(_ address: SignalServiceAddress) {
-        AssertIsOnMainThread()
-
-        showFingerprint(address: address)
-    }
-
     // MARK: -
 
     public func didTapIndividualCall(_ call: TSCall) {

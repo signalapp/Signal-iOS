@@ -483,8 +483,6 @@ extension MockConversationView: CVComponentDelegate {
 
     func didTapResendGroupUpdateForErrorMessage(_ errorMessage: TSErrorMessage) {}
 
-    func didTapShowFingerprint(_ address: SignalServiceAddress) {}
-
     func didTapIndividualCall(_ call: TSCall) {}
 
     func didTapLearnMoreMissedCallFromBlockedContact(_ call: TSCall) {}

@@ -216,8 +216,6 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
     // See: resendGroupUpdate
     func didTapResendGroupUpdateForErrorMessage(_ errorMessage: TSErrorMessage)
 
-    func didTapShowFingerprint(_ address: SignalServiceAddress)
-
     func didTapIndividualCall(_ call: TSCall)
 
     func didTapLearnMoreMissedCallFromBlockedContact(_ call: TSCall)

@@ -1266,9 +1266,6 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapResendGroupUpdateForErrorMessage(_ errorMessage: TSErrorMessage) {}
 
     // TODO:
-    func didTapShowFingerprint(_ address: SignalServiceAddress) {}
-
-    // TODO:
     func didTapIndividualCall(_ call: TSCall) {}
 
     // TODO:
