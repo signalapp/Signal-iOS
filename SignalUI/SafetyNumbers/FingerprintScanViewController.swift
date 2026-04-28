@@ -17,14 +17,13 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
 
     init(
         recipientAci: Aci,
+        recipientName: String,
         fingerprint: OWSFingerprint,
     ) {
         self.recipientAci = recipientAci
 
         self.fingerprint = fingerprint
-        self.contactName = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(recipientAci), tx: tx).resolvedValue()
-        }
+        self.contactName = recipientName
 
         super.init()
 
@@ -101,12 +100,39 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
             )
         }
 
-        switch fingerprint.matchesLogicalFingerprintsData(combinedFingerprintData) {
-        case .match:
+        let combinedFingerprints: Textsecure_CombinedFingerprints
+        do {
+            combinedFingerprints = try Textsecure_CombinedFingerprints(serializedBytes: combinedFingerprintData)
+        } catch {
+            Logger.warn("fingerprint failure: \(error)")
+            showFailure(localizedErrorDescription: OWSLocalizedString("PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE", comment: "alert body"))
+            return
+        }
+        do throws(OWSFingerprint.MatchError) {
+            try fingerprint.checkAgainst(combinedFingerprints: combinedFingerprints)
             showSuccess()
-        case .noMatch(let localizedErrorDescription), .weHaveOldVersion(let localizedErrorDescription), .theyHaveOldVersion(let localizedErrorDescription):
-            // We reached the end, show the error for the last one.
-            showFailure(localizedErrorDescription: localizedErrorDescription)
+        } catch {
+            Logger.warn("verification failure: \(error)")
+            let message: String
+            switch error {
+            case .theyHaveOldVersion:
+                message = OWSLocalizedString("PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION", comment: "alert body")
+            case .weHaveOldVersion:
+                message = OWSLocalizedString("PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION", comment: "alert body")
+            case .theyHaveWrongKeyForUs:
+                let descriptionFormat = OWSLocalizedString(
+                    "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME",
+                    comment: "Alert body when verifying with {{contact name}}",
+                )
+                message = String.nonPluralLocalizedStringWithFormat(descriptionFormat, self.contactName)
+            case .weHaveWrongKeyForThem:
+                let descriptionFormat = OWSLocalizedString(
+                    "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM",
+                    comment: "Alert body when verifying with {{contact name}}",
+                )
+                message = String.nonPluralLocalizedStringWithFormat(descriptionFormat, self.contactName)
+            }
+            showFailure(localizedErrorDescription: message)
         }
     }
 

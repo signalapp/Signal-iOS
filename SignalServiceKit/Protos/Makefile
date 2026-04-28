@@ -19,7 +19,7 @@ provisioning_protos: Specifications/Provisioning.proto
 	$(WRAPPER_SCRIPT) --dst-dir=Generated --wrapper-prefix=ProvisioningProto --proto-prefix=ProvisioningProtos --proto-file=Provisioning.proto
 
 fingerprint_protos: Specifications/FingerprintProtocol.proto
-	$(PROTOC) --swift_out=Generated FingerprintProtocol.proto
+	$(PROTOC) --swift_out=Generated --swift_opt=Visibility=public --swift_opt=UseAccessLevelOnImports=true FingerprintProtocol.proto
 
 websocket_protos: Specifications/WebSocketResources.proto
 	$(PROTOC) --swift_out=Generated WebSocketResources.proto

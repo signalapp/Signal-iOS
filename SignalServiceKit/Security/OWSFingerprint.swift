@@ -17,7 +17,6 @@ public class OWSFingerprint {
     private let theirFingerprintData: Data
 
     private let hashIterations: UInt32
-    public let theirName: String
 
     /**
      * Formats numeric fingerprint, 3 lines in groups of 5 digits.
@@ -35,7 +34,6 @@ public class OWSFingerprint {
         theirAci: Aci,
         myAciIdentityKey: IdentityKey,
         theirAciIdentityKey: IdentityKey,
-        theirName: String,
         hashIterations: UInt32 = Constants.defaultHashIterations,
     ) {
         self.myAci = myAci
@@ -43,7 +41,6 @@ public class OWSFingerprint {
         self.myAciIdentityKey = myAciIdentityKey
         self.theirAciIdentityKey = theirAciIdentityKey
         self.hashIterations = hashIterations
-        self.theirName = theirName
 
         let (myStableSourceData, theirStableSourceData) = Self.stableData(myAci: myAci, theirAci: theirAci)
         self.myFingerprintData = Self.dataForStableAddress(
@@ -58,61 +55,31 @@ public class OWSFingerprint {
         )
     }
 
-    public enum MatchResult {
-        case match
-        case theyHaveOldVersion(localizedErrorDescription: String)
-        case weHaveOldVersion(localizedErrorDescription: String)
-        case noMatch(localizedErrorDescription: String)
+    public enum MatchError: Error {
+        case theyHaveOldVersion
+        case weHaveOldVersion
+        case theyHaveWrongKeyForUs
+        case weHaveWrongKeyForThem
     }
 
-    public func matchesLogicalFingerprintsData(_ otherData: Data) -> MatchResult {
-        owsAssertDebug(otherData.isEmpty.negated)
-
-        let combinedFingerprints: Textsecure_CombinedFingerprints
-        do {
-            combinedFingerprints = try Textsecure_CombinedFingerprints(serializedBytes: otherData)
-        } catch {
-            owsFailDebug("fingerprint failure: \(error)")
-            let description = OWSLocalizedString("PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE", comment: "alert body")
-            return .noMatch(localizedErrorDescription: description)
-        }
-
+    public func checkAgainst(combinedFingerprints: Textsecure_CombinedFingerprints) throws(MatchError) {
         if combinedFingerprints.version < self.scannableFingerprintVersion {
-            Logger.warn("Verification failed. They're running an old version.")
-            let description = OWSLocalizedString("PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION", comment: "alert body")
-            return .theyHaveOldVersion(localizedErrorDescription: description)
+            throw .theyHaveOldVersion
         }
 
         if combinedFingerprints.version > self.scannableFingerprintVersion {
-            Logger.warn("Verification failed. We're running an old version.")
-            let description = OWSLocalizedString("PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION", comment: "alert body")
-            return .weHaveOldVersion(localizedErrorDescription: description)
+            throw .weHaveOldVersion
         }
 
         // Their local is *our* remote.
         let localFingerprint = combinedFingerprints.remoteFingerprint
         let remoteFingerprint = combinedFingerprints.localFingerprint
         if remoteFingerprint.content != Self.scannableData(from: self.theirFingerprintData) {
-            Logger.warn("Verification failed. We have the wrong fingerprint for them")
-            let descriptionFormat = OWSLocalizedString(
-                "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM",
-                comment: "Alert body when verifying with {{contact name}}",
-            )
-            let description = String.nonPluralLocalizedStringWithFormat(descriptionFormat, self.theirName)
-            return .noMatch(localizedErrorDescription: description)
+            throw .weHaveWrongKeyForThem
         }
         if localFingerprint.content != Self.scannableData(from: self.myFingerprintData) {
-            Logger.warn("Verification failed. They have the wrong fingerprint for us")
-            let descriptionFormat = OWSLocalizedString(
-                "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME",
-                comment: "Alert body when verifying with {{contact name}}",
-            )
-            let description = String.nonPluralLocalizedStringWithFormat(descriptionFormat, self.theirName)
-            return .noMatch(localizedErrorDescription: description)
+            throw .theyHaveWrongKeyForUs
         }
-
-        Logger.warn("Verification Succeeded.")
-        return .match
     }
 
     // MARK: - Text Representation
