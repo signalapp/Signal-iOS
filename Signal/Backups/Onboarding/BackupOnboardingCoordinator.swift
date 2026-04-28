@@ -142,7 +142,7 @@ class BackupOnboardingCoordinator {
 
         let confirmKeyViewController = BackupConfirmKeyViewController(
             aep: aep,
-            onContinue: { [self] confirmKeyViewController in
+            onConfirmed: { [self] confirmKeyViewController in
                 Task {
                     do throws(SheetDisplayableError) {
                         try await showChooseBackupPlan()

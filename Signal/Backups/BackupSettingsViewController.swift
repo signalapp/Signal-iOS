@@ -481,23 +481,91 @@ class BackupSettingsViewController:
     // MARK: - BackupSettingsViewModel.ActionsDelegate
 
     fileprivate func enableBackups(
-        planSelection: BackupSettingsViewModel.EnableBackupsPlanSelection,
-        shouldShowWelcomeToBackupsSheet: Bool,
+        currentBackupPlan: BackupPlan,
+        planSelectionOption: BackupSettingsViewModel.EnableBackupsPlanSelectionOption,
     ) {
+        let areBackupsDisabled = switch currentBackupPlan {
+        case .disabling, .disabled: true
+        case .free, .paid, .paidExpiringSoon, .paidAsTester: false
+        }
+
         Task {
-            switch planSelection {
-            case .required(let planSelection):
-                await _enableBackups(
-                    fromViewController: self,
-                    planSelection: planSelection,
-                    shouldShowWelcomeToBackupsSheet: shouldShowWelcomeToBackupsSheet,
+            if areBackupsDisabled {
+                guard
+                    let aep = db.read(block: { accountKeyStore.getAccountEntropyPool(tx: $0) }),
+                    let authSuccess = await LocalDeviceAuthentication().performBiometricAuth()
+                else {
+                    return
+                }
+
+                _showRecordAndConfirmExistingRecoveryKey(
+                    aep: aep,
+                    authSuccess: authSuccess,
+                    onConfirmed: { [weak self] in
+                        Task {
+                            await self?._enableBackups(
+                                planSelectionOption: planSelectionOption,
+                                shouldShowWelcomeToBackupsSheet: true,
+                            )
+                        }
+                    },
                 )
-            case .userChoice(let initialSelection):
-                await _showChooseBackupPlan(
-                    initialPlanSelection: initialSelection,
-                    shouldShowWelcomeToBackupsSheet: shouldShowWelcomeToBackupsSheet,
+            } else {
+                await _enableBackups(
+                    planSelectionOption: planSelectionOption,
+                    shouldShowWelcomeToBackupsSheet: false,
                 )
             }
+        }
+    }
+
+    @MainActor
+    private func _showRecordAndConfirmExistingRecoveryKey(
+        aep: AccountEntropyPool,
+        authSuccess: LocalDeviceAuthentication.AuthSuccess,
+        onConfirmed: @escaping () -> Void,
+    ) {
+        let recordRecoveryKeyViewController = BackupRecordKeyViewController(
+            aepMode: .current(aep, authSuccess),
+            options: [.showContinueButton],
+            onContinuePressed: { [weak self] _ in
+                guard let self else { return }
+
+                let confirmRecoveryKeyViewController = BackupConfirmKeyViewController(
+                    aep: aep,
+                    onConfirmed: { _ in
+                        onConfirmed()
+                    },
+                    onSeeKeyAgain: { [weak self] in
+                        guard let self else { return }
+                        navigationController?.popViewController(animated: true)
+                    },
+                )
+
+                navigationController?.pushViewController(confirmRecoveryKeyViewController, animated: true)
+            },
+        )
+
+        navigationController?.pushViewController(recordRecoveryKeyViewController, animated: true)
+    }
+
+    @MainActor
+    private func _enableBackups(
+        planSelectionOption: BackupSettingsViewModel.EnableBackupsPlanSelectionOption,
+        shouldShowWelcomeToBackupsSheet: Bool,
+    ) async {
+        switch planSelectionOption {
+        case .required(let planSelection):
+            await _enableBackups(
+                fromViewController: self,
+                planSelection: planSelection,
+                shouldShowWelcomeToBackupsSheet: shouldShowWelcomeToBackupsSheet,
+            )
+        case .userChoice(let initialSelection):
+            await _showChooseBackupPlan(
+                initialPlanSelection: initialSelection,
+                shouldShowWelcomeToBackupsSheet: shouldShowWelcomeToBackupsSheet,
+            )
         }
     }
 
@@ -1289,7 +1357,7 @@ class BackupSettingsViewController:
     private func showConfirmNewRecoveryKey(newCandidateAEP: AccountEntropyPool) {
         let confirmKeyViewController = BackupConfirmKeyViewController(
             aep: newCandidateAEP,
-            onContinue: { [weak self] _ in
+            onConfirmed: { [weak self] _ in
                 guard let self else { return }
 
                 self.finalizeNewRecoveryKey(newCandidateAEP: newCandidateAEP)
@@ -1396,13 +1464,13 @@ class BackupSettingsViewController:
 // MARK: -
 
 private class BackupSettingsViewModel: ObservableObject {
-    enum EnableBackupsPlanSelection {
+    enum EnableBackupsPlanSelectionOption {
         case required(ChooseBackupPlanViewController.PlanSelection)
         case userChoice(initialSelection: ChooseBackupPlanViewController.PlanSelection?)
     }
 
     protocol ActionsDelegate: AnyObject {
-        func enableBackups(planSelection: EnableBackupsPlanSelection, shouldShowWelcomeToBackupsSheet: Bool)
+        func enableBackups(currentBackupPlan: BackupPlan, planSelectionOption: EnableBackupsPlanSelectionOption)
         func disableBackups()
 
         func loadBackupSubscription()
@@ -1510,10 +1578,10 @@ private class BackupSettingsViewModel: ObservableObject {
 
     // MARK: -
 
-    func enableBackups(planSelection: EnableBackupsPlanSelection, shouldShowWelcomeToBackupsSheet: Bool) {
+    func enableBackups(planSelectionOption: EnableBackupsPlanSelectionOption) {
         actionsDelegate?.enableBackups(
-            planSelection: planSelection,
-            shouldShowWelcomeToBackupsSheet: shouldShowWelcomeToBackupsSheet,
+            currentBackupPlan: backupPlan,
+            planSelectionOption: planSelectionOption,
         )
     }
 
@@ -2022,7 +2090,7 @@ private struct ReenableBackupsButton: View {
     let backupSubscriptionLoadingState: BackupSettingsViewModel.BackupSubscriptionLoadingState
     let viewModel: BackupSettingsViewModel
 
-    private var enableBackupsPlanSelection: BackupSettingsViewModel.EnableBackupsPlanSelection? {
+    private var enableBackupsPlanSelectionOption: BackupSettingsViewModel.EnableBackupsPlanSelectionOption? {
         switch backupSubscriptionLoadingState {
         case .loading, .networkError:
             // Don't let them reenable until we know more.
@@ -2043,11 +2111,10 @@ private struct ReenableBackupsButton: View {
     }
 
     var body: some View {
-        if let enableBackupsPlanSelection {
+        if let enableBackupsPlanSelectionOption {
             Button {
                 viewModel.enableBackups(
-                    planSelection: enableBackupsPlanSelection,
-                    shouldShowWelcomeToBackupsSheet: true,
+                    planSelectionOption: enableBackupsPlanSelectionOption,
                 )
             } label: {
                 Text(OWSLocalizedString(
@@ -2806,8 +2873,7 @@ private struct BackupSubscriptionLoadedView: View {
                 ),
                 action: {
                     viewModel.enableBackups(
-                        planSelection: .userChoice(initialSelection: .free),
-                        shouldShowWelcomeToBackupsSheet: false,
+                        planSelectionOption: .userChoice(initialSelection: .free),
                     )
                 },
             )
@@ -2822,8 +2888,7 @@ private struct BackupSubscriptionLoadedView: View {
                 ),
                 action: {
                     viewModel.enableBackups(
-                        planSelection: .userChoice(initialSelection: .paid),
-                        shouldShowWelcomeToBackupsSheet: false,
+                        planSelectionOption: .userChoice(initialSelection: .paid),
                     )
                 },
             )
@@ -2867,8 +2932,7 @@ private struct BackupSubscriptionLoadedView: View {
                     expandWidth: true,
                     action: {
                         viewModel.enableBackups(
-                            planSelection: .userChoice(initialSelection: nil),
-                            shouldShowWelcomeToBackupsSheet: false,
+                            planSelectionOption: .userChoice(initialSelection: nil),
                         )
                     },
                 )
@@ -3046,7 +3110,7 @@ private extension BackupSettingsViewModel {
         isBackgroundAppRefreshDisabled: Bool = false,
     ) -> BackupSettingsViewModel {
         class PreviewActionsDelegate: ActionsDelegate {
-            func enableBackups(planSelection: EnableBackupsPlanSelection, shouldShowWelcomeToBackupsSheet: Bool) { print("Enabling! planSelection: \(planSelection)") }
+            func enableBackups(currentBackupPlan: BackupPlan, planSelectionOption: EnableBackupsPlanSelectionOption) { print("Enabling! planSelectionOption: \(planSelectionOption)") }
             func disableBackups() { print("Disabling!") }
 
             func loadBackupSubscription() { print("Loading BackupSubscription!") }
