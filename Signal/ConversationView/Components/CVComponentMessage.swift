@@ -180,28 +180,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private var isBubbleTransparent: Bool {
         if wasRemotelyDeleted {
             return false
-        } else if componentState.shouldRenderAsSticker {
-            return true
-        } else if isBorderlessViewOnceMessage {
-            return false
-        } else {
-            return isBorderless
         }
-    }
-
-    private var isBorderlessViewOnceMessage: Bool {
-        guard let viewOnce = componentState.viewOnce else {
-            return false
-        }
-        switch viewOnce.viewOnceState {
-        case .unknown:
-            owsFailDebug("Invalid value.")
+        if componentState.shouldRenderAsSticker {
             return true
-        case .incomingExpired, .incomingInvalidContent:
-            return true
-        default:
-            return false
         }
+        return isBorderless
     }
 
     private var tapForMoreState: CVComponentFooter.TapForMoreState {
@@ -1537,7 +1520,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     /// Examples: remotely deleted message, sticker message etc.
     /// For messages that are not a special case value from `ConversationStyle` will be returned.
     private var bubbleChatColor: ColorOrGradientValue {
-        if !conversationStyle.hasWallpaper, wasRemotelyDeleted || isBorderlessViewOnceMessage {
+        if conversationStyle.hasWallpaper == false, wasRemotelyDeleted {
             return .solidColor(color: Theme.backgroundColor)
         }
         if isBubbleTransparent {
@@ -1551,7 +1534,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     /// This method checks for all the special cases when stroke styling for current message's bubble should have non-default styling.
     /// For messages that are not a special case value from `ConversationStyle` will be returned.
     private var bubbleStroke: BubbleConfiguration.Stroke? {
-        if !conversationStyle.hasWallpaper, wasRemotelyDeleted || isBorderlessViewOnceMessage {
+        if conversationStyle.hasWallpaper == false, wasRemotelyDeleted {
             return BubbleConfiguration.Stroke(color: UIColor.Signal.transparentSeparator, width: 1)
         }
         if isBubbleTransparent {

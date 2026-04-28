@@ -31,13 +31,15 @@ class CVAttachmentProgressView: ManualLayoutView {
 
         let foregroundColor: UIColor
         let backgroundStyle: BackgroundStyle
+        let margin: CGFloat
 
-        private init(foregroundColor: UIColor, backgroundStyle: BackgroundStyle) {
+        private init(foregroundColor: UIColor, backgroundStyle: BackgroundStyle, margin: CGFloat) {
             self.foregroundColor = foregroundColor
             self.backgroundStyle = backgroundStyle
+            self.margin = margin
         }
 
-        init(conversationStyle: ConversationStyle, isIncoming: Bool) {
+        init(conversationStyle: ConversationStyle, isIncoming: Bool, margin: CGFloat = 4) {
             foregroundColor = conversationStyle.bubbleTextColor(isIncoming: isIncoming)
             let backgroundColor = switch (conversationStyle.hasWallpaper, isIncoming) {
             case (true, true): UIColor.Signal.MaterialBase.button
@@ -45,6 +47,7 @@ class CVAttachmentProgressView: ManualLayoutView {
             case (_, false): UIColor.Signal.ColorBase.button
             }
             backgroundStyle = .solidColor(backgroundColor)
+            self.margin = margin
         }
 
         /// Creates a configuration with fixed colors to be displayed on top of media thumbnail.
@@ -52,6 +55,7 @@ class CVAttachmentProgressView: ManualLayoutView {
             return Configuration(
                 foregroundColor: .Signal.label,
                 backgroundStyle: .blur(.init(style: .systemThinMaterial)),
+                margin: 4,
             )
         }
     }

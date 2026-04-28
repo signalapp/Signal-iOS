@@ -90,7 +90,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         return nil
     }
 
-    private var shouldShowIcon: Bool {
+    private var shouldShowStateIcon: Bool {
         switch viewOnceState {
         case .incomingInvalidContent, .incomingDownloading:
             return false
@@ -99,7 +99,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         }
     }
 
-    private var shouldShowProgress: Bool {
+    private var shouldShowProgressView: Bool {
         switch viewOnceState {
         case .incomingDownloading:
             return true
@@ -131,6 +131,12 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
 
         var subviews = [UIView]()
 
+        let configuration = CVAttachmentProgressView.Configuration(
+            conversationStyle: conversationStyle,
+            isIncoming: isIncoming,
+            margin: 3,
+        )
+
         switch viewOnceState {
         case .incomingDownloading(let attachmentPointer, _):
             let progressView = CVAttachmentProgressView(
@@ -138,14 +144,19 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
                     attachmentPointer: attachmentPointer,
                     downloadState: .enqueuedOrDownloading,
                 ),
-                configuration: .init(conversationStyle: conversationStyle, isIncoming: isIncoming),
+                configuration: configuration,
             )
             subviews.append(progressView)
         default:
-            if shouldShowIcon, let iconName {
+            if shouldShowStateIcon, let iconName {
+                let backgroundCirleView = CVAttachmentProgressView.circularBackgroundView(
+                    configuration: configuration,
+                )
                 let iconView = componentView.iconView
-                iconView.setTemplateImageName(iconName, tintColor: iconColor)
-                subviews.append(iconView)
+                iconView.contentMode = .center
+                iconView.setTemplateImageName(iconName, tintColor: configuration.foregroundColor)
+                backgroundCirleView.addSubviewToFillSuperviewEdges(iconView)
+                subviews.append(backgroundCirleView)
             }
         }
 
@@ -163,7 +174,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         )
     }
 
-    private let iconSize: CGFloat = 24
+    private let stateViewSize = CGSize(square: 40)
 
     private var stackViewConfig: CVStackViewConfig {
         CVStackViewConfig(
@@ -181,13 +192,12 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
 
         var subviewInfos = [ManualStackSubviewInfo]()
 
-        let hasIcon = shouldShowIcon && iconName != nil
-        let hasIconOrProgress = hasIcon || shouldShowProgress
+        let showStateIcon = shouldShowStateIcon && iconName != nil
 
         var availableWidth = maxWidth
-        if hasIconOrProgress {
-            availableWidth = max(0, availableWidth - (iconSize + stackViewConfig.spacing))
-            subviewInfos.append(CGSize.square(iconSize).asManualSubviewInfo(hasFixedSize: true))
+        if showStateIcon || shouldShowProgressView {
+            availableWidth = max(0, availableWidth - (stateViewSize.width + stackViewConfig.spacing))
+            subviewInfos.append(stateViewSize.asManualSubviewInfo(hasFixedSize: true))
         }
         let textSize = CVText.measureLabel(config: labelConfig, maxWidth: availableWidth)
         subviewInfos.append(textSize.asManualSubviewInfo)
@@ -284,7 +294,7 @@ private extension CVComponentViewOnce {
             owsFailDebug("Unexpected state.")
             return nil
         case .incomingFailed, .incomingPending:
-            return "arrow-circle-down"
+            return Theme.iconName(.arrowDown)
         case .incomingAvailable:
             return "view_once"
         case .outgoingFailed:
@@ -312,31 +322,6 @@ private extension CVComponentViewOnce {
             return conversationStyle.bubbleTextColorIncoming
         case .outgoingFailed,
              .outgoingSending,
-             .outgoingSentExpired:
-            return conversationStyle.bubbleTextColorOutgoing
-        case .incomingInvalidContent:
-            return Theme.secondaryTextAndIconColor
-        }
-    }
-
-    var iconColor: UIColor {
-        let pendingColor: UIColor = (Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray75)
-
-        switch viewOnceState {
-        case .unknown:
-            owsFailDebug("Invalid value.")
-            return conversationStyle.bubbleTextColorIncoming
-        case .incomingExpired, .incomingUndownloadable:
-            return conversationStyle.bubbleTextColorIncoming
-        case .incomingDownloading,
-             .incomingFailed,
-             .incomingPending:
-            return pendingColor
-        case .incomingAvailable:
-            return conversationStyle.bubbleTextColorIncoming
-        case .outgoingFailed:
-            return pendingColor
-        case .outgoingSending,
              .outgoingSentExpired:
             return conversationStyle.bubbleTextColorOutgoing
         case .incomingInvalidContent:
