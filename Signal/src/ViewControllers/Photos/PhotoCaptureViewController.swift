@@ -1340,8 +1340,13 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
         _shouldProcessQRCodes.get()
     }
 
-    func qrCodeFound(string qrCodeString: String?, data qrCodeData: Data?) {
-        guard let qrCodeString else {
+    @MainActor
+    func qrCodeSampleBufferScanner(
+        _ sampleBufferScanner: QRCodeSampleBufferScanner,
+        didFindStringValue stringValue: String?,
+        dataValue: Data?,
+    ) {
+        guard let qrCodeString = stringValue else {
             return
         }
 
@@ -1419,7 +1424,8 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
         }
     }
 
-    func scanFailed(error: Error) {
+    @MainActor
+    func qrCodeSampleBufferScanner(_ sampleBufferScanner: QRCodeSampleBufferScanner, didFailWithError error: any Error) {
         self.showFailureUI(error: error)
     }
 

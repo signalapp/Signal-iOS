@@ -12,13 +12,22 @@ public protocol QRCodeSampleBufferScannerDelegate: AnyObject {
     /// A boolean indicating if the scanner should attempt to process QR codes.
     /// This property will be accessed off the main thread.
     var shouldProcessQRCodes: Bool { get }
+
     /// Informs the delegate that a QR code has been found.
-    /// This function will be called on the main thread.
-    func qrCodeFound(string qrCodeString: String?, data qrCodeData: Data?)
+    @MainActor
+    func qrCodeSampleBufferScanner(
+        _ sampleBufferScanner: QRCodeSampleBufferScanner,
+        didFindStringValue stringValue: String?,
+        dataValue: Data?,
+    )
+
     /// Informs the delegate that there was an error in the
     /// `VNDetectBarcodesRequest`.
-    /// This function will be called on the main thread.
-    func scanFailed(error: any Error)
+    @MainActor
+    func qrCodeSampleBufferScanner(
+        _ sampleBufferScanner: QRCodeSampleBufferScanner,
+        didFailWithError error: any Error,
+    )
 }
 
 public class QRCodeSampleBufferScanner: NSObject {
@@ -30,14 +39,14 @@ public class QRCodeSampleBufferScanner: NSObject {
 
     private lazy var detectQRCodeRequest: VNDetectBarcodesRequest = {
         let request = VNDetectBarcodesRequest { [weak self] request, error in
-            guard let self else { return }
             if let error {
                 DispatchQueue.main.async {
-                    self.delegate?.scanFailed(error: error)
+                    guard let self else { return }
+                    self.delegate?.qrCodeSampleBufferScanner(self, didFailWithError: error)
                 }
                 return
             }
-            self.processClassification(request: request)
+            self?.processClassification(request: request)
         }
 
         request.symbologies = [.qr]
@@ -46,7 +55,9 @@ public class QRCodeSampleBufferScanner: NSObject {
     }()
 
     private func processClassification(request: VNRequest) {
-        guard let delegate, delegate.shouldProcessQRCodes else { return }
+        guard delegate?.shouldProcessQRCodes == true else {
+            return
+        }
 
         typealias QRCode = (string: String?, data: Data?)
         let qrCode: QRCode? = (request.results ?? [])
@@ -78,12 +89,14 @@ public class QRCodeSampleBufferScanner: NSObject {
             }
             .first
 
-        guard let qrCode else { return }
+        guard let qrCode else {
+            return
+        }
 
         Logger.info("Scanned QR Code.")
 
         DispatchQueue.main.async {
-            delegate.qrCodeFound(string: qrCode.string, data: qrCode.data)
+            self.delegate?.qrCodeSampleBufferScanner(self, didFindStringValue: qrCode.string, dataValue: qrCode.data)
         }
     }
 }
@@ -183,11 +196,7 @@ public class QRCodeScanViewController: OWSViewController {
 
     public weak var delegate: QRCodeScanDelegate?
 
-    private let delegateHasAcceptedScanResults = AtomicBool(false, lock: .init())
-
     private var scanner: QRCodeScanner?
-
-    private lazy var sampleBufferScanner = QRCodeSampleBufferScanner(delegate: self)
 
     public var prefersFrontFacingCamera = false {
         didSet {
@@ -395,17 +404,14 @@ public class QRCodeScanViewController: OWSViewController {
     private func startScanning() {
         AssertIsOnMainThread()
 
-        guard
-            scanner == nil,
-            !delegateHasAcceptedScanResults.get()
-        else {
-            Logger.info("Early return. Scanner is not nil or delegate has already accepted scan results")
+        guard scanner == nil else {
+            owsFailDebug("already scanning")
             return
         }
 
         let scanner = QRCodeScanner(
             prefersFrontFacingCamera: self.prefersFrontFacingCamera,
-            sampleBufferDelegate: self.sampleBufferScanner,
+            scannerDelegate: self,
         )
         self.scanner = scanner
 
@@ -687,36 +693,39 @@ private class QRCodeBitStream {
 // MARK: -
 
 extension QRCodeScanViewController: QRCodeSampleBufferScannerDelegate {
-    public var shouldProcessQRCodes: Bool {
-        !delegateHasAcceptedScanResults.get()
-    }
 
-    public func qrCodeFound(string qrCodeString: String?, data qrCodeData: Data?) {
-        guard
-            let delegate = self.delegate,
-            !delegateHasAcceptedScanResults.get()
-        else {
-            Logger.info("Early return, delegate has already accepted scan results")
+    public var shouldProcessQRCodes: Bool { true }
+
+    @MainActor
+    public func qrCodeSampleBufferScanner(
+        _ sampleBufferScanner: QRCodeSampleBufferScanner,
+        didFindStringValue qrCodeString: String?,
+        dataValue qrCodeData: Data?,
+    ) {
+        guard self.scanner?.owns(sampleBufferScanner: sampleBufferScanner) == true else {
+            Logger.warn("ignoring scan result from old scanner")
             return
         }
 
-        let outcome = delegate.qrCodeScanViewScanned(
+        let outcome = self.delegate?.qrCodeScanViewScanned(
             qrCodeData: qrCodeData,
             qrCodeString: qrCodeString,
         )
 
         switch outcome {
         case .stopScanning:
-            self.delegateHasAcceptedScanResults.set(true)
             self.stopScanning()
-
             ImpactHapticFeedback.impactOccurred(style: .medium)
+        case nil:
+            Logger.warn("ignoring scan result because there's no delegate")
+            fallthrough
         case .continueScanning:
             break
         }
     }
 
-    public func scanFailed(error: Error) {
+    @MainActor
+    public func qrCodeSampleBufferScanner(_ sampleBufferScanner: QRCodeSampleBufferScanner, didFailWithError error: any Error) {
         showFailureUI(error: error)
     }
 }
@@ -753,10 +762,10 @@ private class QRCodeScanner {
 
     init(
         prefersFrontFacingCamera: Bool,
-        sampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate,
+        scannerDelegate: any QRCodeSampleBufferScannerDelegate,
     ) {
         self.prefersFrontFacingCamera = prefersFrontFacingCamera
-        output = QRCodeScanOutput(sampleBufferDelegate: sampleBufferDelegate)
+        self.output = QRCodeScanOutput(scannerDelegate: scannerDelegate)
 
         if #available(iOS 16.0, *) {
             if session.isMultitaskingCameraAccessSupported {
@@ -773,6 +782,10 @@ private class QRCodeScanner {
         }.catch { error in
             owsFailDebug("Error: \(error)")
         }
+    }
+
+    func owns(sampleBufferScanner: QRCodeSampleBufferScanner) -> Bool {
+        return (self.output.sampleBufferScanner as QRCodeSampleBufferScanner) === sampleBufferScanner
     }
 
     // MARK: - Public
@@ -1020,14 +1033,15 @@ private class QRCodeScanPreviewView: UIView {
 private class QRCodeScanOutput {
 
     let videoDataOutput = AVCaptureVideoDataOutput()
+    let sampleBufferScanner: QRCodeSampleBufferScanner
 
     // MARK: - Init
 
-    init(sampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate) {
-        videoDataOutput.videoSettings =
-            [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)]
+    init(scannerDelegate: any QRCodeSampleBufferScannerDelegate) {
+        self.sampleBufferScanner = QRCodeSampleBufferScanner(delegate: scannerDelegate)
+        videoDataOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)]
         videoDataOutput.setSampleBufferDelegate(
-            sampleBufferDelegate,
+            self.sampleBufferScanner,
             queue: DispatchQueue(label: "qr-code-scan-output", qos: .default),
         )
     }
