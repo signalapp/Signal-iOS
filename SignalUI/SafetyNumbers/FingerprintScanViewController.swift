@@ -220,7 +220,13 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
             ))
         }
 
-        actionSheet.addAction(OWSActionSheets.cancelAction)
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.cancelButton,
+            style: .cancel,
+            handler: { _ in
+                cancel?()
+            },
+        ))
 
         viewController.presentActionSheet(actionSheet)
 
