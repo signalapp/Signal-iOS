@@ -99,15 +99,15 @@ public final class KeyTransparencyManager {
         localIdentifiers: LocalIdentifiers,
         tx: DBReadTransaction,
     ) -> CheckParams? {
-        owsPrecondition(
-            !localIdentifiers.contains(serviceId: aci),
-            "External callers shouldn't be self-checking.",
-        )
-
         let logger = logger.suffixed(with: "[\(aci)]")
         logger.info("")
 
-        guard keyTransparencyStore.isEnabled(tx: tx) else {
+        if localIdentifiers.contains(serviceId: aci) {
+            logger.warn("ACI is local user.")
+            return nil
+        }
+
+        if !keyTransparencyStore.isEnabled(tx: tx) {
             logger.warn("Is opted out.")
             return nil
         }
