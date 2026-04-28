@@ -1028,7 +1028,7 @@ private class QRCodeScanOutput {
             [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)]
         videoDataOutput.setSampleBufferDelegate(
             sampleBufferDelegate,
-            queue: DispatchQueue.global(qos: DispatchQoS.QoSClass.default),
+            queue: DispatchQueue(label: "qr-code-scan-output", qos: .default),
         )
     }
 }
