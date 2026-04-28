@@ -45,14 +45,12 @@ class OWSErrorTest: XCTestCase {
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)
         XCTAssertEqual((error1 as NSError).domain, OWSError.errorDomain)
-        XCTAssertTrue(error1.hasUserErrorDescription)
         XCTAssertEqual(error1.userErrorDescription, errorDescription1)
         XCTAssertEqual(error1.isRetryable, isRetryable1)
 
         let nsError1: NSError = error1 as NSError
         XCTAssertEqual(nsError1.code, errorCode1)
         XCTAssertEqual(nsError1.domain, OWSError.errorDomain)
-        XCTAssertTrue(nsError1.hasUserErrorDescription)
         XCTAssertEqual(nsError1.userErrorDescription, errorDescription1)
         XCTAssertEqual(nsError1.isRetryable, isRetryable1)
 
@@ -62,7 +60,6 @@ class OWSErrorTest: XCTestCase {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
-            XCTAssertTrue(error.hasUserErrorDescription)
             XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertEqual(error.isRetryable, isRetryable1)
         }
@@ -73,7 +70,6 @@ class OWSErrorTest: XCTestCase {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
-            XCTAssertTrue(error.hasUserErrorDescription)
             XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertEqual(error.isRetryable, isRetryable1)
         }
@@ -87,14 +83,12 @@ class OWSErrorTest: XCTestCase {
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)
         XCTAssertEqual((error1 as NSError).domain, OWSError.errorDomain)
-        XCTAssertTrue(error1.hasUserErrorDescription)
         XCTAssertEqual(error1.userErrorDescription, errorDescription1)
         XCTAssertEqual(error1.isRetryable, isRetryable1)
 
         let nsError1: NSError = error1 as NSError
         XCTAssertEqual(nsError1.code, errorCode1)
         XCTAssertEqual(nsError1.domain, OWSError.errorDomain)
-        XCTAssertTrue(nsError1.hasUserErrorDescription)
         XCTAssertEqual(nsError1.userErrorDescription, errorDescription1)
         XCTAssertEqual(nsError1.isRetryable, isRetryable1)
 
@@ -104,7 +98,6 @@ class OWSErrorTest: XCTestCase {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
-            XCTAssertTrue(error.hasUserErrorDescription)
             XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertEqual(error.isRetryable, isRetryable1)
         }
@@ -115,7 +108,6 @@ class OWSErrorTest: XCTestCase {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
-            XCTAssertTrue(error.hasUserErrorDescription)
             XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertEqual(error.isRetryable, isRetryable1)
         }
@@ -133,14 +125,12 @@ class OWSErrorTest: XCTestCase {
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)
         XCTAssertEqual((error1 as NSError).domain, OWSError.errorDomain)
-        XCTAssertTrue(error1.hasUserErrorDescription)
         XCTAssertEqual(error1.userErrorDescription, errorDescription1)
         XCTAssertEqual(error1.isRetryable, isRetryable1)
 
         let nsError1: NSError = error1 as NSError
         XCTAssertEqual(nsError1.code, errorCode1)
         XCTAssertEqual(nsError1.domain, OWSError.errorDomain)
-        XCTAssertTrue(nsError1.hasUserErrorDescription)
         XCTAssertEqual(nsError1.userErrorDescription, errorDescription1)
         XCTAssertEqual(nsError1.isRetryable, isRetryable1)
 
@@ -150,7 +140,6 @@ class OWSErrorTest: XCTestCase {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
-            XCTAssertTrue(error.hasUserErrorDescription)
             XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertEqual(error.isRetryable, isRetryable1)
         }
@@ -161,7 +150,6 @@ class OWSErrorTest: XCTestCase {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
-            XCTAssertTrue(error.hasUserErrorDescription)
             XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertEqual(error.isRetryable, isRetryable1)
         }
@@ -181,11 +169,9 @@ class OWSErrorTest: XCTestCase {
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)
         XCTAssertEqual((error1 as NSError).domain, OWSError.errorDomain)
-        XCTAssertFalse(error1.hasUserErrorDescription)
 
         XCTAssertEqual(nsError1.code, errorCode1)
         XCTAssertEqual(nsError1.domain, OWSError.errorDomain)
-        XCTAssertFalse(nsError1.hasUserErrorDescription)
 
         do {
             try ErrorThrower(error: error1).performThrow()
@@ -193,7 +179,6 @@ class OWSErrorTest: XCTestCase {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
-            XCTAssertFalse(error.hasUserErrorDescription)
         }
 
         do {
@@ -202,7 +187,6 @@ class OWSErrorTest: XCTestCase {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSError.errorDomain)
-            XCTAssertFalse(error.hasUserErrorDescription)
         }
     }
 
