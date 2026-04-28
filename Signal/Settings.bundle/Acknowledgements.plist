@@ -11543,7 +11543,7 @@ third-party/chromium/LICENSE.
 			<key>License</key>
 			<string>ISC License</string>
 			<key>Title</key>
-			<string>rustls-webpki 0.103.12</string>
+			<string>rustls-webpki 0.103.13</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>

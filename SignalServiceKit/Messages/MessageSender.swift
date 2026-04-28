@@ -49,8 +49,10 @@ public class MessageSender {
 
     /// Establishes a session with the recipient if one doesn't already exist.
     private func createSession(
-        serviceId: ServiceId,
+        forServiceId serviceId: ServiceId,
         deviceId: PreKeyDevice,
+        localServiceId: ServiceId,
+        localDeviceId: DeviceId,
         sealedSenderParameters: SealedSenderParameters?,
     ) async throws {
         var preKeyBundle = try await makePreKeyRequest(
@@ -74,7 +76,13 @@ public class MessageSender {
                     throw OWSAssertionError("The server didn't return a bundle for the device we requested.")
                 }
             }
-            try self._createSessions(for: preKeyBundle, serviceId: serviceId, tx: tx)
+            try self._createSessions(
+                for: preKeyBundle,
+                serviceId: serviceId,
+                localServiceId: localServiceId,
+                localDeviceId: localDeviceId,
+                tx: tx,
+            )
         }
     }
 
@@ -144,12 +152,21 @@ public class MessageSender {
     private func _createSessions(
         for preKeyBundle: SignalServiceKit.PreKeyBundle,
         serviceId: ServiceId,
+        localServiceId: ServiceId,
+        localDeviceId: DeviceId,
         tx: DBWriteTransaction,
     ) throws {
         assert(!Thread.isMainThread)
 
         for deviceBundle in preKeyBundle.devices {
-            try _createSession(for: deviceBundle, serviceId: serviceId, identityKey: preKeyBundle.identityKey, tx: tx)
+            try _createSession(
+                for: deviceBundle,
+                serviceId: serviceId,
+                identityKey: preKeyBundle.identityKey,
+                localServiceId: localServiceId,
+                localDeviceId: localDeviceId,
+                tx: tx,
+            )
         }
     }
 
@@ -157,6 +174,8 @@ public class MessageSender {
         for deviceBundle: SignalServiceKit.PreKeyBundle.PreKeyDeviceBundle,
         serviceId: ServiceId,
         identityKey: IdentityKey,
+        localServiceId: ServiceId,
+        localDeviceId: DeviceId,
         tx transaction: DBWriteTransaction,
     ) throws {
         let deviceId = deviceBundle.deviceId
@@ -203,6 +222,7 @@ public class MessageSender {
             try processPreKeyBundle(
                 bundle,
                 for: protocolAddress,
+                ourAddress: ProtocolAddress(localServiceId, deviceId: localDeviceId),
                 sessionStore: DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore,
                 identityStore: identityManager.libSignalStore(for: .aci, tx: transaction),
                 context: transaction,
@@ -1521,8 +1541,10 @@ public class MessageSender {
             if deviceMessages.isEmpty {
                 do {
                     try await createSession(
-                        serviceId: serviceId,
+                        forServiceId: serviceId,
                         deviceId: .all,
+                        localServiceId: localAci,
+                        localDeviceId: localDeviceId,
                         sealedSenderParameters: sealedSenderParameters,
                     )
                 } catch where error.httpStatusCode == 404 {
@@ -1534,8 +1556,10 @@ public class MessageSender {
                         taskGroup.addTask {
                             do {
                                 try await self.createSession(
-                                    serviceId: serviceId,
+                                    forServiceId: serviceId,
                                     deviceId: .specific(deviceId),
+                                    localServiceId: localAci,
+                                    localDeviceId: localDeviceId,
                                     sealedSenderParameters: sealedSenderParameters,
                                 )
                             } catch where error.httpStatusCode == 404 {

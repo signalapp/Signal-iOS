@@ -82,6 +82,24 @@ struct MockAuthMessageService: AuthMessagesService {
     func getUploadForm(uploadSize: UInt64) async throws -> UploadForm {
         try performRequestBlock()
     }
+
+    func sendMessage(
+        to recipient: ServiceId,
+        timestamp: UInt64,
+        contents: [SingleOutboundUnsealedMessage],
+        onlineOnly: Bool,
+        urgent: Bool,
+    ) async throws {
+        owsFail("not implemented")
+    }
+
+    func sendSyncMessage(
+        timestamp: UInt64,
+        contents: [SingleOutboundUnsealedMessage],
+        urgent: Bool,
+    ) async throws {
+        owsFail("not implemented")
+    }
 }
 
 class _AttachmentUploadManager_ChatConnectionManagerMock: ChatConnectionManagerMock {

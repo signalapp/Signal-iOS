@@ -280,6 +280,7 @@ public class SMKSecretSessionCipher: NSObject {
             plaintextData = try signalDecrypt(
                 message: cipherMessage,
                 from: ProtocolAddress(from: sender),
+                to: ProtocolAddress(localServiceId, deviceId: localDeviceId),
                 sessionStore: currentSessionStore,
                 identityStore: currentIdentityStore,
                 context: context,

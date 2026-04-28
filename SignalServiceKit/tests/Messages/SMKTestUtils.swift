@@ -143,6 +143,7 @@ class MockClient {
         try! processPreKeyBundle(
             bobBundle,
             for: bobProtocolAddress,
+            ourAddress: protocolAddress,
             sessionStore: sessionStore,
             identityStore: identityStore,
             context: NullContext(),

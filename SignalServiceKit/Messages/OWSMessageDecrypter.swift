@@ -423,6 +423,7 @@ public class OWSMessageDecrypter {
                 plaintext = try signalDecrypt(
                     message: message,
                     from: protocolAddress,
+                    to: ProtocolAddress(validatedEnvelope.localServiceId, deviceId: localDeviceId),
                     sessionStore: signalProtocolStore.sessionStore,
                     identityStore: identityManager.libSignalStore(for: localIdentity, tx: transaction),
                     context: transaction,
