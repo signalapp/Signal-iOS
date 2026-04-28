@@ -299,7 +299,14 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             .foregroundColor: textColor,
         ])
 
-        if threadDetails.shouldShowVerifiedBadge {
+        if threadDetails.shouldShowContactIcon {
+            let contactIcon = SignalSymbol.personCircle.attributedString(
+                dynamicTypeBaseSize: 20,
+                weight: .bold,
+                leadingCharacter: .space,
+            )
+            attributedString.append(contactIcon)
+        } else if threadDetails.shouldShowVerifiedBadge {
             attributedString.append(" ")
             let verifiedBadgeImage = Theme.iconImage(.official)
             let verifiedBadgeAttachment = NSAttributedString.with(
@@ -448,6 +455,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 isAvatarBeingDownloaded: false,
                 titleText: TSGroupThread.defaultGroupName,
                 shouldShowVerifiedBadge: false,
+                shouldShowContactIcon: false,
                 safetySection: nil,
                 groupDescriptionText: nil,
             )
@@ -495,12 +503,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             tx: transaction,
         )
 
+        let isSystemContact = SSKEnvironment.shared.contactManagerRef.fetchSignalAccount(for: contactThread.contactAddress, transaction: transaction) != nil
+
         return CVComponentState.ThreadDetails(
             avatarDataSource: avatarDataSource,
             isAvatarBlurred: isAvatarBlurred,
             isAvatarBeingDownloaded: isAvatarBeingDownloaded,
             titleText: titleText,
             shouldShowVerifiedBadge: shouldShowVerifiedBadge,
+            shouldShowContactIcon: isSystemContact,
             safetySection: safetySection,
             groupDescriptionText: nil,
         )
@@ -543,6 +554,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             isAvatarBeingDownloaded: isAvatarBeingDownloaded,
             titleText: titleText,
             shouldShowVerifiedBadge: false,
+            shouldShowContactIcon: false,
             safetySection: safetySection,
             groupDescriptionText: descriptionText,
         )
@@ -554,12 +566,10 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     private let vSpacingSafetySectionDefault: CGFloat = 8
 
     private let safetyButtonContentInsets = NSDirectionalEdgeInsets(hMargin: 12, vMargin: 5)
-    private let hPaddingSafetySection: CGFloat = 30
+    private let hPaddingGroupDetails: CGFloat = 25
 
     private let vPaddingNotVerifiedButton: CGFloat = 2
     private let hPaddingNotVerifiedButton: CGFloat = 12
-
-    private let hPaddingGroupDetails: CGFloat = 40
 
     private let vOffsetThreadDetailsOutline: CGFloat = 16
 
@@ -570,7 +580,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             axis: .vertical,
             alignment: .fill,
             spacing: 0,
-            layoutMargins: UIEdgeInsets(top: 8, left: 32, bottom: 16, right: 32),
+            layoutMargins: UIEdgeInsets(top: 8, left: 0, bottom: 16, right: 0),
         )
     }
 
@@ -591,10 +601,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         var innerSubviewInfos = [ManualStackSubviewInfo]()
 
-        let maxContentWidth = maxWidth - (
-            outerStackConfig.layoutMargins.totalWidth +
-                innerStackConfig.layoutMargins.totalWidth + (hPaddingSafetySection * 2)
-        )
+        let maxContentWidth = min(maxWidth, 276) - (hPaddingGroupDetails * 2)
 
         innerSubviewInfos.append(avatarSizeClass.size.asManualSubviewInfo)
         innerSubviewInfos.append(CGSize(square: vSpacingTitle).asManualSubviewInfo)
