@@ -293,6 +293,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     func reloadThreadAndUpdateContent() {
+        var groupNameColors: GroupNameColors?
         let didUpdate = SSKEnvironment.shared.databaseStorageRef.read { tx -> Bool in
             guard let newThread = TSThread.fetchViaCache(uniqueId: self.thread.uniqueId, transaction: tx) else {
                 return false
@@ -306,19 +307,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                 let address = contactThread.contactAddress
                 return SSKEnvironment.shared.contactManagerRef.fetchSignalAccount(for: address, transaction: tx) != nil
             }()
-
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            if
-                let groupModelV2 = currentGroupModel as? TSGroupModelV2,
-                let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
-            {
-                let groupNameColors = GroupNameColors.forThread(newThread)
-                self.memberLabelCoordinator = MemberLabelCoordinator(
-                    groupModel: groupModelV2,
-                    groupNameColors: groupNameColors,
-                    localIdentifiers: localIdentifiers,
-                )
-            }
+            groupNameColors = GroupNameColors.forThread(newThread)
 
             self.groupViewHelper = GroupViewHelper(threadViewModel: newThreadViewModel, memberLabelCoordinator: memberLabelCoordinator)
             self.groupViewHelper.delegate = self
@@ -336,6 +325,16 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
         updateTableContents()
         updateNavigationBar()
+
+        if
+            let groupModelV2 = currentGroupModel as? TSGroupModelV2,
+            let groupNameColors
+        {
+            self.memberLabelCoordinator?.updateWithNewThreadInfo(
+                groupModel: groupModelV2,
+                groupNameColors: groupNameColors,
+            )
+        }
     }
 
     // MARK: -

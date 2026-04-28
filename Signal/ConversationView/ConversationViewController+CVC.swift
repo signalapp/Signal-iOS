@@ -229,20 +229,12 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             ensureBannerState()
         }
 
-        let db = DependenciesBridge.shared.db
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let groupNameColors = GroupNameColors.forThread(thread)
         if let groupModelV2 = newGroupModel as? TSGroupModelV2 {
-            db.read { tx in
-                guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
-                    return
-                }
-                self.memberLabelCoordinator = MemberLabelCoordinator(
-                    groupModel: groupModelV2,
-                    groupNameColors: groupNameColors,
-                    localIdentifiers: localIdentifiers,
-                )
-            }
+            self.memberLabelCoordinator?.updateWithNewThreadInfo(
+                groupModel: groupModelV2,
+                groupNameColors: groupNameColors,
+            )
         }
 
         // If the message has been deleted / disappeared, we need to dismiss

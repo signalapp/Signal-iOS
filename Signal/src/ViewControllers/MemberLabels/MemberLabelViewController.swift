@@ -19,16 +19,24 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
     private let textField = UITextField()
     private var characterCountLabel = UILabel()
     private var clearButton = UIButton(type: .system)
+
+    // Views that may be updated when thread info changes
+    private var contactListStackView: UIStackView?
+    private var noOtherMembersLabelContainer: UIView?
+
     private var groupNameColors: GroupNameColors
-    private let groupMemberLabelsWithoutLocalUser: [SignalServiceAddress: MemberLabelForRendering]
-    private let groupModel: TSGroupModelV2
+    private var groupMemberLabelsWithoutLocalUser: [SignalServiceAddress: MemberLabelForRendering]
+    private var groupModel: TSGroupModelV2
     private let db: DB
     private let contactManager: OWSContactsManager
+    private let localIdentifiers: LocalIdentifiers
 
-    var updateDelegate: MemberLabelCoordinator?
+    weak var updateDelegate: MemberLabelCoordinator?
 
     private static let maxCharCount = 24
     private static let showCharacterCountMax = 9
+
+    private var onDismiss: () -> Void
 
     init(
         memberLabel: String? = nil,
@@ -38,6 +46,8 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         groupModel: TSGroupModelV2,
         db: DB,
         contactManager: OWSContactsManager,
+        localIdentifiers: LocalIdentifiers,
+        onDismiss: @escaping () -> Void,
     ) {
         self.initialMemberLabel = memberLabel
         self.initialEmoji = emoji
@@ -49,6 +59,8 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         self.groupMemberLabelsWithoutLocalUser = groupMemberLabelsWithoutLocalUser
         self.db = db
         self.contactManager = contactManager
+        self.localIdentifiers = localIdentifiers
+        self.onDismiss = onDismiss
 
         super.init()
 
@@ -62,10 +74,33 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
                 guard let self else { return false }
                 return updatedMemberLabel != initialMemberLabel || updatedEmoji != initialEmoji
             },
+            completion: {
+                onDismiss()
+            },
         )
 
         navigationItem.rightBarButtonItem?.tintColor = UIColor.Signal.ultramarine
         navigationItem.rightBarButtonItem?.isEnabled = false
+    }
+
+    func updateWithNewThreadInfo(
+        groupNameColors: GroupNameColors,
+        groupMemberLabelsWithoutLocalUser: [SignalServiceAddress: MemberLabelForRendering],
+        groupModel: TSGroupModelV2,
+    ) {
+        self.groupNameColors = groupNameColors
+        self.groupModel = groupModel
+        self.groupMemberLabelsWithoutLocalUser = groupMemberLabelsWithoutLocalUser
+
+        addNavigationTitleView(groupName: groupModel.groupNameOrDefault)
+        reloadMessagePreview()
+
+        // The group member labels section is the only thing that needs updating if the thread is reloaded.
+        noOtherMembersLabelContainer?.removeFromSuperview()
+        contactListStackView?.removeFromSuperview()
+        contactListStackView = nil
+        noOtherMembersLabelContainer = nil
+        buildGroupMembershipSection()
     }
 
     func addNavigationTitleView(groupName: String) {
@@ -117,6 +152,16 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
             stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -32),
         ])
         scrollView.keyboardDismissMode = .onDrag
+
+        // Group Section label
+        let sectionLabel = UILabel()
+        sectionLabel.text = OWSLocalizedString(
+            "MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE",
+            comment: "Section header for a list of group member labels",
+        )
+        sectionLabel.font = .dynamicTypeBodyClamped.semibold()
+        stackView.addArrangedSubview(sectionLabel)
+        stackView.setCustomSpacing(8, after: sectionLabel)
 
         buildGroupMembershipSection()
 
@@ -215,10 +260,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
     }
 
     private func buildMockConversationItem() -> CVRenderItem? {
-        let db = DependenciesBridge.shared.db
         let attachmentContentValidator = DependenciesBridge.shared.attachmentContentValidator
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-
         let messageBody = db.write { tx in
             attachmentContentValidator.truncatedMessageBodyForInlining(
                 MessageBody(text: OWSLocalizedString(
@@ -230,9 +272,6 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         }
 
         guard
-            let localAci = db.read(block: { tx in
-                tsAccountManager.localIdentifiers(tx: tx)?.aci
-            }),
             let secretParams = try? GroupSecretParams.generate()
         else {
             return nil
@@ -241,7 +280,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         var groupModelBuilder = TSGroupModelBuilder(secretParams: secretParams)
         var groupMembershipBuilder = groupModelBuilder.groupMembership.asBuilder
         if let updatedMemberLabel {
-            groupMembershipBuilder.setMemberLabel(label: MemberLabel(label: updatedMemberLabel, labelEmoji: updatedEmoji), aci: localAci)
+            groupMembershipBuilder.setMemberLabel(label: MemberLabel(label: updatedMemberLabel, labelEmoji: updatedEmoji), aci: localIdentifiers.aci)
         }
         groupModelBuilder.groupMembership = groupMembershipBuilder.build()
 
@@ -250,7 +289,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         }
 
         let mockGroupThread = MockGroupThread(groupModel: groupModel)
-        let mockMessage = MockIncomingMessage(messageBody: messageBody, thread: mockGroupThread, authorAci: localAci)
+        let mockMessage = MockIncomingMessage(messageBody: messageBody, thread: mockGroupThread, authorAci: localIdentifiers.aci)
 
         let renderItem = db.read { tx in
             let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: mockGroupThread, ignoreMissing: true, transaction: tx)
@@ -333,6 +372,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         dismiss(animated: true, completion: {
             owsAssertDebug(self.updateDelegate != nil)
             self.updateDelegate?.updateLabelForLocalUser(memberLabel: memberLabel)
+            self.onDismiss()
         })
     }
 
@@ -448,13 +488,6 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
     }
 
     private func buildGroupMembershipSection() {
-        let sectionLabel = UILabel()
-        sectionLabel.text = OWSLocalizedString(
-            "MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE",
-            comment: "Section header for a list of group member labels",
-        )
-        sectionLabel.font = .dynamicTypeBodyClamped.semibold()
-
         let contactListStackView = UIStackView()
         contactListStackView.spacing = 5
         contactListStackView.axis = .vertical
@@ -496,9 +529,6 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
             }
         }
 
-        stackView.addArrangedSubview(sectionLabel)
-        stackView.setCustomSpacing(8, after: sectionLabel)
-
         if cellCount > 0 {
             contactListStackView.translatesAutoresizingMaskIntoConstraints = false
             stackView.addArrangedSubview(contactListStackView)
@@ -506,6 +536,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
                 contactListStackView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
                 contactListStackView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
             ])
+            self.contactListStackView = contactListStackView
         } else {
             let cellContainer = UIView()
             cellContainer.layer.cornerRadius = 27
@@ -531,6 +562,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
                 cellContainer.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
                 cellContainer.heightAnchor.constraint(greaterThanOrEqualToConstant: 96),
             ])
+            self.noOtherMembersLabelContainer = cellContainer
         }
     }
 

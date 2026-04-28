@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
+public import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
@@ -14,13 +14,14 @@ protocol MemberLabelViewControllerPresenter: UIViewController {
 /// Responsible for flows related to setting or editing a group member label.
 /// Since users can only set/edit their own member label, this is local-user specific.
 /// See also `MemberLabelViewController` which allows a user to set/edit their own member label.
-public final class MemberLabelCoordinator {
+public final class MemberLabelCoordinator: NSObject, UIAdaptivePresentationControllerDelegate {
     weak var presenter: MemberLabelViewControllerPresenter?
+    var memberLabelViewController: MemberLabelViewController?
 
     var groupModel: TSGroupModelV2
-    private let memberLabel: MemberLabel?
+    private var memberLabel: MemberLabel?
     private let kvStore: NewKeyValueStore
-    private let groupNameColors: GroupNameColors
+    private var groupNameColors: GroupNameColors
     private let localIdentifiers: LocalIdentifiers
     private let db: DB
     private let profileManager: ProfileManager
@@ -98,8 +99,23 @@ public final class MemberLabelCoordinator {
         return memberLabels
     }
 
+    func updateWithNewThreadInfo(
+        groupModel: TSGroupModelV2,
+        groupNameColors: GroupNameColors,
+    ) {
+        self.groupModel = groupModel
+        self.groupNameColors = groupNameColors
+        self.memberLabel = groupModel.groupMembership.localUserMemberLabel
+
+        memberLabelViewController?.updateWithNewThreadInfo(
+            groupNameColors: groupNameColors,
+            groupMemberLabelsWithoutLocalUser: buildGroupMemberLabelsWithoutLocalUser(),
+            groupModel: groupModel,
+        )
+    }
+
     func present() {
-        let memberLabelViewController = MemberLabelViewController(
+        memberLabelViewController = MemberLabelViewController(
             memberLabel: memberLabel?.label,
             emoji: memberLabel?.labelEmoji,
             groupNameColors: groupNameColors,
@@ -107,10 +123,17 @@ public final class MemberLabelCoordinator {
             groupModel: groupModel,
             db: db,
             contactManager: SSKEnvironment.shared.contactManagerImplRef,
+            localIdentifiers: localIdentifiers,
+            onDismiss: { [weak self] in
+                self?.memberLabelViewController = nil
+            },
         )
-        memberLabelViewController.updateDelegate = self
+        memberLabelViewController!.updateDelegate = self
 
-        presenter?.present(OWSNavigationController(rootViewController: memberLabelViewController), animated: true)
+        let navController = OWSNavigationController(rootViewController: memberLabelViewController!)
+        presenter?.present(navController, animated: true) {
+            navController.presentationController?.delegate = self
+        }
     }
 
     private func showOverrideAboutWarningIfNeeded(localUserBio: String?) {
@@ -192,5 +215,11 @@ public final class MemberLabelCoordinator {
             return
         }
         changeLabelBlock()
+    }
+
+    // MARK: - UIAdaptivePresentationControllerDelegate
+
+    public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        memberLabelViewController = nil
     }
 }
