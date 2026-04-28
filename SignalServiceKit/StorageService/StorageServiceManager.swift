@@ -1106,6 +1106,10 @@ class StorageServiceOperation {
                 chatServiceAuth: authedAccount.chatServiceAuth,
             )
         } catch StorageService.StorageError.conflictingManifest(let conflictingManifest) {
+            guard conflictingManifest.version >= state.manifestVersion else {
+                throw OWSAssertionError("Received conflicting manifest with unexpected version! Conflicting: \(conflictingManifest.version); proposed: \(state.manifestVersion)")
+            }
+
             // Throw away all our work, resolve conflicts, and try again.
             try await self.mergeLocalManifest(
                 withRemoteManifest: conflictingManifest,
