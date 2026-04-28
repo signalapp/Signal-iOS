@@ -12,140 +12,178 @@ class ViewOnceMessageViewController: OWSViewController {
 
     typealias Content = ViewOnceContent
 
+    private enum AttachmentLoadingError: LocalizedError {
+        case invalidImageSize
+
+        var errorDescription: String? {
+            switch self {
+            case .invalidImageSize:
+                return "Attachment has invalid size."
+            }
+        }
+    }
+
     // MARK: - Properties
 
     private let content: Content
 
     private var mediaView: UIView!
+    private var accessoryView: UIView?
     private var scrollView: ZoomableMediaView!
 
     // MARK: - Initializers
 
-    init(content: Content) {
+    init?(interaction: TSInteraction) {
+        guard
+            let message = interaction as? TSMessage,
+            let content = DependenciesBridge.shared.attachmentViewOnceManager.prepareViewOnceContentForDisplay(message)
+        else {
+            return nil
+        }
+
         self.content = content
 
         super.init()
+
+        do {
+            try buildMediaView()
+        } catch {
+            owsFailDebug("Could not present interaction")
+            return nil
+        }
     }
 
     // MARK: -
 
-    class func tryToPresent(
-        interaction: TSInteraction,
-        from fromViewController: UIViewController,
-    ) {
-        AssertIsOnMainThread()
-
+    @MainActor
+    class func tryToPresent(interaction: TSInteraction, from fromViewController: UIViewController) {
         ModalActivityIndicatorViewController.present(
             fromViewController: fromViewController,
             canCancel: false,
         ) { modal in
             DispatchQueue.main.async {
-                let content: Content? = loadContentForPresentation(interaction: interaction)
+                let viewController = ViewOnceMessageViewController(interaction: interaction)
 
-                modal.dismiss(completion: {
-                    guard let content else {
-                        owsFailDebug("Could not present interaction")
+                modal.dismiss {
+                    guard let viewController else {
                         // TODO: Show an alert.
                         return
                     }
-
-                    let view = ViewOnceMessageViewController(content: content)
-                    fromViewController.presentFullScreen(view, animated: true)
-                })
+                    fromViewController.presentFullScreen(viewController, animated: true)
+                }
             }
         }
     }
 
-    private class func loadContentForPresentation(interaction: TSInteraction) -> Content? {
-        guard let message = interaction as? TSMessage else {
-            return nil
-        }
-        return DependenciesBridge.shared.attachmentViewOnceManager.prepareViewOnceContentForDisplay(message)
-    }
-
     // MARK: - View Lifecycle
 
-    override func loadView() {
-        self.view = UIView()
-        view.backgroundColor = UIColor.ows_black
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-        let defaultMediaView = UIView()
-        defaultMediaView.backgroundColor = Theme.darkThemeWashColor
+        view.backgroundColor = .Signal.background
 
-        let accessoryView: UIView?
-        if let (mediaView, _accessoryView) = buildMediaView() {
-            self.mediaView = mediaView
-            accessoryView = _accessoryView
-        } else {
-            self.mediaView = defaultMediaView
-            accessoryView = nil
+        if #unavailable(iOS 26) {
+            overrideUserInterfaceStyle = .dark
         }
 
-        self.scrollView = ZoomableMediaView(mediaView: mediaView)
+        // Scroll view.
+        scrollView = ZoomableMediaView(mediaView: mediaView)
         scrollView.delegate = self
         view.addSubview(scrollView)
-        scrollView.autoPinEdgesToSuperviewEdges()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
 
+        // Toolbar at the top.
+        let cancelButtonItem = UIBarButtonItem(
+            image: Theme.iconImage(.buttonX),
+            primaryAction: UIAction { [weak self] _ in
+                self?.dismissButtonPressed()
+            },
+        )
+        let toolbar = if #available(iOS 26, *) { UIToolbar() } else { UIToolbar.clear() }
+        toolbar.items = [cancelButtonItem, .flexibleSpace()]
+        if #unavailable(iOS 26) {
+            toolbar.tintColor = Theme.darkThemeLegacyPrimaryIconColor
+        }
+        view.addSubview(toolbar)
+        toolbar.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            toolbar.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            toolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            toolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+
+        // Video playback timestamp in the toolbar.
         if let accessoryView {
-            view.addSubview(accessoryView)
-            accessoryView.autoPinEdge(toSuperviewMargin: .trailing, withInset: 16)
-            accessoryView.autoPinEdge(toSuperviewMargin: .top, withInset: 30)
+            let accessoryViewContainer = UIView()
+            accessoryViewContainer.addSubview(accessoryView)
+            accessoryView.translatesAutoresizingMaskIntoConstraints = false
+            accessoryViewContainer.addConstraints([
+                accessoryView.topAnchor.constraint(equalTo: accessoryViewContainer.topAnchor),
+                accessoryView.leadingAnchor.constraint(
+                    equalToSystemSpacingAfter: accessoryViewContainer.leadingAnchor,
+                    multiplier: 1,
+                ),
+                accessoryViewContainer.trailingAnchor.constraint(
+                    equalToSystemSpacingAfter: accessoryView.trailingAnchor,
+                    multiplier: 1,
+                ),
+                accessoryView.bottomAnchor.constraint(equalTo: accessoryViewContainer.bottomAnchor),
+            ])
+            toolbar.items?.append(UIBarButtonItem(customView: accessoryViewContainer))
         }
 
-        let dismissButton = OWSButton(imageName: Theme.iconName(.buttonX), tintColor: Theme.darkThemePrimaryColor) { [weak self] in
-            self?.dismissButtonPressed()
+        if #available(iOS 26, *) {
+            let interaction = UIScrollEdgeElementContainerInteraction()
+            interaction.edge = .top
+            interaction.scrollView = scrollView
+            toolbar.addInteraction(interaction)
         }
-        dismissButton.layer.shadowColor = Theme.darkThemeBackgroundColor.cgColor
-        dismissButton.layer.shadowOffset = .zero
-        dismissButton.layer.shadowOpacity = 0.7
-        dismissButton.layer.shadowRadius = 3.0
-        dismissButton.setShadow(opacity: 0.66)
-        view.addSubview(dismissButton)
-        dismissButton.autoPinEdge(toSuperviewMargin: .leading, withInset: 16)
-        dismissButton.autoPinEdge(toSuperviewMargin: .top, withInset: 30)
 
         setupDatabaseObservation()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
         scrollView.updateZoomScaleForLayout()
         scrollView.zoomScale = scrollView.minimumZoomScale
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        videoPlayer?.play()
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+
         scrollView.updateZoomScaleForLayout()
     }
 
     // MARK: -
 
-    private func buildMediaView() -> (
-        UIView,
-        accessoryView: UIView?,
-    )? {
+    private func buildMediaView() throws {
         switch content.type {
         case .loopingVideo:
-            guard let asset = try? content.loadAVAsset() else {
-                owsFailDebug("Could not load attachment.")
-                return nil
-            }
+            let asset = try content.loadAVAsset()
             let video = LoopingVideo(asset: asset)
             let view = LoopingVideoView()
             view.contentMode = .scaleAspectFit
             view.video = video
-            return (view, accessoryView: nil)
+
+            mediaView = view
+
         case .animatedImage:
-            guard let image = try? content.loadYYImage() else {
-                owsFailDebug("Could not load attachment.")
-                return nil
-            }
-            guard
-                image.size.width > 0,
-                image.size.height > 0
-            else {
-                owsFailDebug("Attachment has invalid size.")
-                return nil
+            let image = try content.loadYYImage()
+            guard image.size.isNonEmpty else {
+                throw AttachmentLoadingError.invalidImageSize
             }
             let animatedImageView = SDAnimatedImageView()
             // We need to specify a contentMode since the size of the image
@@ -157,18 +195,13 @@ class ViewOnceMessageViewController: OWSViewController {
             animatedImageView.layer.magnificationFilter = .trilinear
             animatedImageView.layer.allowsEdgeAntialiasing = true
             animatedImageView.image = image
-            return (animatedImageView, accessoryView: nil)
+
+            mediaView = animatedImageView
+
         case .stillImage:
-            guard let image = try? content.loadImage() else {
-                owsFailDebug("Could not load attachment.")
-                return nil
-            }
-            guard
-                image.size.width > 0,
-                image.size.height > 0
-            else {
-                owsFailDebug("Attachment has invalid size.")
-                return nil
+            let image = try content.loadImage()
+            guard image.size.isNonEmpty else {
+                throw AttachmentLoadingError.invalidImageSize
             }
 
             let imageView = UIImageView()
@@ -181,23 +214,21 @@ class ViewOnceMessageViewController: OWSViewController {
             imageView.layer.magnificationFilter = .trilinear
             imageView.layer.allowsEdgeAntialiasing = true
             imageView.image = image
-            return (imageView, accessoryView: nil)
+
+            mediaView = imageView
+
         case .video:
-            guard let asset = try? content.loadAVAsset() else {
-                owsFailDebug("Could not load attachment.")
-                return nil
-            }
+            let asset = try content.loadAVAsset()
+
             let player = VideoPlayer(avPlayer: .init(playerItem: .init(asset: asset)), shouldLoop: true)
             self.videoPlayer = player
-            player.delegate = self
 
             let playerView = VideoPlayerView()
             playerView.player = player.avPlayer
 
             let label = UILabel()
-            label.textColor = Theme.darkThemePrimaryColor
+            label.textColor = .Signal.label
             label.font = UIFont.dynamicTypeBody.monospaced()
-            label.setShadow()
 
             let formatter = DateComponentsFormatter()
             formatter.unitsStyle = .positional
@@ -205,8 +236,10 @@ class ViewOnceMessageViewController: OWSViewController {
             formatter.zeroFormattingBehavior = [.pad]
 
             let avPlayer = player.avPlayer
-            self.videoPlayerProgressObserver = avPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.1, preferredTimescale: 100), queue: nil) { _ in
-
+            self.videoPlayerProgressObserver = avPlayer.addPeriodicTimeObserver(
+                forInterval: CMTime(seconds: 0.1, preferredTimescale: 100),
+                queue: nil,
+            ) { _ in
                 guard let item = avPlayer.currentItem else {
                     owsFailDebug("item was unexpectedly nil")
                     label.text = "0:00"
@@ -221,13 +254,16 @@ class ViewOnceMessageViewController: OWSViewController {
                 guard let remainingString = formatter.string(from: remainingSeconds) else {
                     owsFailDebug("unable to format time remaining")
                     label.text = "0:00"
+                    label.sizeToFit()
                     return
                 }
 
                 label.text = remainingString
+                label.sizeToFit()
             }
 
-            return (playerView, accessoryView: label)
+            mediaView = playerView
+            accessoryView = label
         }
     }
 
@@ -247,18 +283,6 @@ class ViewOnceMessageViewController: OWSViewController {
         )
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        self.videoPlayer?.play()
-    }
-
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-
-    // MARK: - Video
-
     // Once open, this view only dismisses if the message is deleted
     // (e.g. by per-conversation expiration).
     private func dismissIfRemoved() {
@@ -273,7 +297,7 @@ class ViewOnceMessageViewController: OWSViewController {
         }
 
         if shouldDismiss {
-            self.dismiss(animated: true)
+            dismiss(animated: true)
         }
     }
 
@@ -281,22 +305,14 @@ class ViewOnceMessageViewController: OWSViewController {
 
     @objc
     private func applicationWillEnterForeground() throws {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
         dismissIfRemoved()
     }
 
     @objc
     private func dismissButtonPressed() {
-        AssertIsOnMainThread()
-
         dismiss(animated: true)
     }
 }
-
-// MARK: -
 
 extension ViewOnceMessageViewController: DatabaseChangeDelegate {
 
@@ -313,15 +329,8 @@ extension ViewOnceMessageViewController: DatabaseChangeDelegate {
     }
 }
 
-extension ViewOnceMessageViewController: VideoPlayerDelegate {
-    func videoPlayerDidPlayToCompletion(_ videoPlayer: VideoPlayer) {
-        // no-op
-    }
-}
-
-// MARK: -
-
 extension ViewOnceMessageViewController: UIScrollViewDelegate {
+
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return mediaView
     }
