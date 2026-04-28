@@ -17,6 +17,8 @@ public protocol SafetyTipsViewControllerDelegate: AnyObject {
 }
 
 public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollViewDelegate {
+    override public var placeOnGlassIfAvailable: Bool { true }
+
     private enum SafetyTips: CaseIterable {
         case chatsFromSignal
         case reviewNames
@@ -199,6 +201,8 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
 }
 
 public class MoreSafetyTipsViewController: InteractiveSheetViewController, UIScrollViewDelegate {
+    override public var placeOnGlassIfAvailable: Bool { true }
+
     let contentScrollView = UIScrollView()
     override public var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
     override public var sheetBackgroundColor: UIColor { Theme.tableView2PresentedBackgroundColor }
@@ -547,19 +551,23 @@ extension MoreSafetyTipsViewController {
 
             stackView.addArrangedSubview(imageView)
 
+            NSLayoutConstraint.activate([
+                imageView.heightAnchor.constraint(lessThanOrEqualToConstant: 160),
+            ])
+
             let titleLabel = UILabel()
             titleLabel.text = safetyTip.title
             titleLabel.numberOfLines = 0
-            titleLabel.textAlignment = .center
+            titleLabel.textAlignment = .left
             titleLabel.lineBreakMode = .byWordWrapping
-            titleLabel.font = .dynamicTypeBody.bold()
+            titleLabel.font = .dynamicTypeBody.semibold()
             titleLabel.textColor = Theme.primaryTextColor
             stackView.addArrangedSubview(titleLabel)
 
             let messageLabel = UILabel()
             messageLabel.text = safetyTip.body
             messageLabel.numberOfLines = 0
-            messageLabel.textAlignment = .center
+            messageLabel.textAlignment = .left
             messageLabel.lineBreakMode = .byWordWrapping
             messageLabel.font = .dynamicTypeBodyClamped
             messageLabel.textColor = Theme.secondaryTextAndIconColor
