@@ -714,17 +714,11 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
         } catch {
             switch error {
             case SignalError.connectionTimeoutError(_), SignalError.requestTimeoutError:
-                throw handleRequestTimeout(usingChatService: chatService)
-            case SignalError.webSocketError(_), SignalError.possibleCaptiveNetwork(_), SignalError.connectionFailed(_), SignalError.chatServiceInactive:
-                throw OWSHTTPError.networkFailure(.genericFailure)
-            case SignalError.connectionInvalidated:
-                throw OWSHTTPError.networkFailure(.wrappedFailure(error))
-            case is CancellationError:
-                throw error
+                handleRequestTimeout(usingChatService: chatService)
             default:
-                owsFailDebug("[\(requestId)] failed with an unexpected error: \(error)", logger: request.logger)
-                throw OWSHTTPError.networkFailure(.genericFailure)
+                break
             }
+            throw error
         }
 
         if DebugFlags.internalLogging {
@@ -746,7 +740,7 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
         )
     }
 
-    private func handleRequestTimeout(usingChatService chatService: Connection) -> OWSHTTPError {
+    private func handleRequestTimeout(usingChatService chatService: Connection) {
         // cycleSocket(), but only if the chatService we just used is the one that's still connected.
         self.serialQueue.async { [weak chatService] in
             if let chatService, self.connection.isActive(chatService) {
@@ -754,7 +748,6 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
             }
         }
         applyDesiredSocketState()
-        return OWSHTTPError.networkFailure(.genericTimeout)
     }
 
     func connectionWasInterrupted(_ service: Connection, error: Error?) {
@@ -831,7 +824,8 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
                     return try await callback(service)
                 }
             } catch is CooperativeTimeoutError {
-                throw self.handleRequestTimeout(usingChatService: service)
+                self.handleRequestTimeout(usingChatService: service)
+                throw SignalError.requestTimeoutError("the request timed out")
             }
         }
     }

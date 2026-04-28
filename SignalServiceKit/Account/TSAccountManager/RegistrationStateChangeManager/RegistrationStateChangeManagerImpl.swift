@@ -299,7 +299,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
         do {
             _ = try await networkManager.asyncRequest(request)
-        } catch OWSHTTPError.networkFailure(.wrappedFailure(SignalError.connectionInvalidated)) {
+        } catch SignalError.connectionInvalidated {
             Logger.warn("Connection was invalidated -- we this device (or account) was probably deleted.")
             // The server closed the connection before we got a response. This almost
             // certainly happened because this device is no longer registered, but

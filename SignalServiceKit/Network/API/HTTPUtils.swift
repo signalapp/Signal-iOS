@@ -204,8 +204,11 @@ public extension Error {
         case URLError.badURL: return true
         case POSIXError.EPROTO: return true
         case let httpError as OWSHTTPError: return httpError.isNetworkFailureImpl
+        case SignalError.chatServiceInactive: return true
         case SignalError.connectionFailed: return true
+        case SignalError.connectionInvalidated: return true
         case SignalError.ioError: return true
+        case SignalError.possibleCaptiveNetwork: return true
         case SignalError.webSocketError: return true
         case Upload.Error.networkError: return true
         default: return false
@@ -222,6 +225,7 @@ public extension Error {
         case GroupsV2Error.timeout: return true
         case PaymentsError.timeout: return true
         case SignalError.connectionTimeoutError: return true
+        case SignalError.requestTimeoutError: return true
         case Upload.Error.networkTimeout: return true
         default: return false
         }
