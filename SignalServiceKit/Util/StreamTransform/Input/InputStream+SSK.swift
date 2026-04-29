@@ -12,6 +12,9 @@ extension InputStream {
         }
         var buffer = Data(count: len)
         let bytesRead = buffer.withUnsafeMutableBytes { self.read($0.baseAddress!, maxLength: len) }
+        guard bytesRead >= 0 else {
+            throw OWSGenericError("couldn't read from input stream")
+        }
         return buffer.prefix(bytesRead)
     }
 }
