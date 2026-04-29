@@ -17,11 +17,13 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         for theirAci: Aci?,
         from viewController: UIViewController,
     ) {
-        struct FingerprintResult {
+        struct DatabaseResult {
             let theirAci: Aci
             let theirName: String
             let theirVerificationState: VerificationState
             let fingerprint: CombinedFingerprints
+            let keyTransparencyState: KeyTransparencyState
+            let shouldShowKeyTransparencyEducation: Bool
         }
 
         let contactManager = SSKEnvironment.shared.contactManagerRef
@@ -31,16 +33,9 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         let keyTransparencyStore = KeyTransparencyStore()
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        let fingerprintResult: FingerprintResult?
-        let keyTransparencyState: KeyTransparencyState?
-        let keyTransparencyShouldShowEducation: Bool
-        (
-            fingerprintResult,
-            keyTransparencyState,
-            keyTransparencyShouldShowEducation,
-        ) = db.read { tx in
+        let databaseResult = db.read { tx -> DatabaseResult? in
             guard let theirAci else {
-                return (nil, nil, false)
+                return nil
             }
 
             let theirAddress = SignalServiceAddress(theirAci)
@@ -53,7 +48,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
                 let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
                 let myAciIdentityKey = identityManager.identityKeyPair(for: .aci, tx: tx)?.keyPair.identityKey
             else {
-                return (nil, nil, false)
+                return nil
             }
 
             let keyTransparencyIsEnabled = keyTransparencyManager.isEnabled(tx: tx)
@@ -64,26 +59,24 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             )
             let keyTransparencyShouldShowEducation = keyTransparencyStore.shouldShowFirstTimeEducation(tx: tx)
 
-            return (
-                FingerprintResult(
-                    theirAci: theirAci,
-                    theirName: theirName,
-                    theirVerificationState: theirVerificationState,
-                    fingerprint: CombinedFingerprints(
-                        local: .derive(forAci: localIdentifiers.aci, identityKey: myAciIdentityKey),
-                        remote: .derive(forAci: theirAci, identityKey: theirAciIdentityKey),
-                    ),
+            return DatabaseResult(
+                theirAci: theirAci,
+                theirName: theirName,
+                theirVerificationState: theirVerificationState,
+                fingerprint: CombinedFingerprints(
+                    local: .derive(forAci: localIdentifiers.aci, identityKey: myAciIdentityKey),
+                    remote: .derive(forAci: theirAci, identityKey: theirAciIdentityKey),
                 ),
-                KeyTransparencyState(
+                keyTransparencyState: KeyTransparencyState(
                     isEnabled: keyTransparencyIsEnabled,
                     checkParams: keyTransparencyCheckParams,
                     viewInitialState: keyTransparencyCheckParams == nil ? .unableToVerify : .readyToVerify,
                 ),
-                keyTransparencyShouldShowEducation,
+                shouldShowKeyTransparencyEducation: keyTransparencyShouldShowEducation,
             )
         }
 
-        guard let fingerprintResult, let keyTransparencyState else {
+        guard let databaseResult else {
             let actionSheet = ActionSheetController(message: OWSLocalizedString(
                 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES",
                 comment: "Alert shown when the user needs to exchange messages to see the safety number.",
@@ -102,11 +95,11 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         }
 
         let fingerprintViewController = FingerprintViewController(
-            recipientAci: fingerprintResult.theirAci,
-            recipientName: fingerprintResult.theirName,
-            recipientVerificationState: fingerprintResult.theirVerificationState,
-            fingerprint: fingerprintResult.fingerprint,
-            keyTransparencyState: keyTransparencyState,
+            recipientAci: databaseResult.theirAci,
+            recipientName: databaseResult.theirName,
+            recipientVerificationState: databaseResult.theirVerificationState,
+            fingerprint: databaseResult.fingerprint,
+            keyTransparencyState: databaseResult.keyTransparencyState,
             deps: FingerprintViewController.Deps(
                 db: db,
                 identityManager: identityManager,
@@ -115,7 +108,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         )
         let navigationController = OWSNavigationController(rootViewController: fingerprintViewController)
 
-        if keyTransparencyShouldShowEducation {
+        if databaseResult.shouldShowKeyTransparencyEducation {
             let educationSheet = KeyTransparencyFirstTimeEducationHeroSheet {
                 db.write { tx in
                     keyTransparencyStore.setShouldShowFirstTimeEducation(false, tx: tx)
