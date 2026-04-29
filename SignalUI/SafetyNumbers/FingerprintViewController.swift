@@ -21,7 +21,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             let theirAci: Aci
             let theirName: String
             let theirVerificationState: VerificationState
-            let fingerprint: OWSFingerprint
+            let fingerprint: CombinedFingerprints
         }
 
         let contactManager = SSKEnvironment.shared.contactManagerRef
@@ -69,11 +69,9 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
                     theirAci: theirAci,
                     theirName: theirName,
                     theirVerificationState: theirVerificationState,
-                    fingerprint: OWSFingerprint(
-                        myAci: localIdentifiers.aci,
-                        theirAci: theirAci,
-                        myAciIdentityKey: myAciIdentityKey,
-                        theirAciIdentityKey: theirAciIdentityKey,
+                    fingerprint: CombinedFingerprints(
+                        local: .derive(forAci: localIdentifiers.aci, identityKey: myAciIdentityKey),
+                        remote: .derive(forAci: theirAci, identityKey: theirAciIdentityKey),
                     ),
                 ),
                 KeyTransparencyState(
@@ -148,7 +146,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     private let recipientAci: Aci
     private let recipientName: String
     private let recipientVerificationState: VerificationState
-    private let fingerprint: OWSFingerprint
+    private let fingerprint: CombinedFingerprints
     private let keyTransparencyState: KeyTransparencyState
 
     private let deps: Deps?
@@ -158,7 +156,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         recipientAci: Aci,
         recipientName: String,
         recipientVerificationState: VerificationState,
-        fingerprint: OWSFingerprint,
+        fingerprint: CombinedFingerprints,
         keyTransparencyState: KeyTransparencyState,
         deps: Deps?,
     ) {
@@ -286,12 +284,12 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     // MARK: - Fingerprint Card
 
     private final class FingerprintCard: UIView {
-        private let fingerprint: OWSFingerprint
+        private let fingerprint: CombinedFingerprints
         private let theirVerificationState: VerificationState
         private weak var controller: FingerprintViewController?
 
         init(
-            fingerprint: OWSFingerprint,
+            fingerprint: CombinedFingerprints,
             theirVerificationState: VerificationState,
             controller: FingerprintViewController,
         ) {
@@ -358,7 +356,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             containerView.layer.masksToBounds = true
 
             let fingerprintImageView = UIImageView()
-            fingerprintImageView.image = fingerprint.image
+            fingerprintImageView.image = fingerprint.image()
             // Don't antialias QR Codes.
             fingerprintImageView.layer.magnificationFilter = .nearest
             fingerprintImageView.layer.minificationFilter = .nearest
@@ -385,7 +383,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
         private lazy var safetyNumberLabel: UILabel = {
             let label = UILabel()
-            label.text = fingerprint.displayableText
+            label.text = fingerprint.displayableText()
             label.font = UIFont(name: "Menlo-Regular", size: 23)
             label.textAlignment = .center
             label.textColor = .white
@@ -682,7 +680,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         guard let deps else { return }
 
         deps.db.write { tx in
-            let identityKey = fingerprint.theirAciIdentityKey
+            let identityKey = fingerprint.remote.identityKey
 
             let newVerificationState: VerificationState
             switch recipientVerificationState {
@@ -712,7 +710,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             "SAFETY_NUMBER_SHARE_FORMAT",
             comment: "Snippet to share {{safety number}} with a friend. sent e.g. via SMS",
         )
-        let shareString = String.nonPluralLocalizedStringWithFormat(shareFormat, fingerprint.displayableText)
+        let shareString = String.nonPluralLocalizedStringWithFormat(shareFormat, fingerprint.displayableText())
 
         let activityController = UIActivityViewController(
             activityItems: [shareString],
@@ -783,7 +781,7 @@ extension FingerprintViewController: CompareSafetyNumbersActivityDelegate {
     func compareSafetyNumbersActivitySucceeded(activity: CompareSafetyNumbersActivity) {
         FingerprintScanViewController.showVerificationSucceeded(
             from: self,
-            identityKey: fingerprint.theirAciIdentityKey,
+            identityKey: fingerprint.remote.identityKey,
             recipientAci: recipientAci,
             contactName: recipientName,
             tag: "[\(type(of: self))]",
@@ -910,11 +908,9 @@ private final class FingerprintPreviewViewController: UINavigationController {
             recipientAci: recipientAci,
             recipientName: "Boba Fett",
             recipientVerificationState: theirVerificationState,
-            fingerprint: OWSFingerprint(
-                myAci: .randomForTesting(),
-                theirAci: recipientAci,
-                myAciIdentityKey: .forPreview(),
-                theirAciIdentityKey: recipientIdentityKey,
+            fingerprint: CombinedFingerprints(
+                local: .derive(forAci: .randomForTesting(), identityKey: .forPreview()),
+                remote: .derive(forAci: recipientAci, identityKey: recipientIdentityKey),
             ),
             keyTransparencyState: FingerprintViewController.KeyTransparencyState(
                 isEnabled: keyTransparencyIsEnabled,

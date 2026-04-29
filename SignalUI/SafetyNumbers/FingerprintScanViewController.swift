@@ -11,14 +11,14 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
 
     private let recipientAci: Aci
     private let contactName: String
-    private let fingerprint: OWSFingerprint
+    private let fingerprint: CombinedFingerprints
 
     private lazy var qrCodeScanViewController = QRCodeScanViewController(appearance: .framed)
 
     init(
         recipientAci: Aci,
         recipientName: String,
-        fingerprint: OWSFingerprint,
+        fingerprint: CombinedFingerprints,
     ) {
         self.recipientAci = recipientAci
 
@@ -82,7 +82,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
         func showSuccess() {
             FingerprintScanViewController.showVerificationSucceeded(
                 from: self,
-                identityKey: fingerprint.theirAciIdentityKey,
+                identityKey: fingerprint.remote.identityKey,
                 recipientAci: recipientAci,
                 contactName: contactName,
                 tag: "[\(type(of: self))]",
@@ -108,7 +108,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
             showFailure(localizedErrorDescription: OWSLocalizedString("PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE", comment: "alert body"))
             return
         }
-        do throws(OWSFingerprint.MatchError) {
+        do throws(CombinedFingerprints.MatchError) {
             try fingerprint.checkAgainst(combinedFingerprints: combinedFingerprints)
             showSuccess()
         } catch {

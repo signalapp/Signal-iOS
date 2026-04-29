@@ -784,6 +784,7 @@
 		509A8DC22E25817E0024BF14 /* ConnectionLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509A8DC12E25817E0024BF14 /* ConnectionLock.swift */; };
 		509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */; };
 		509DC8DA2BCED88600375E86 /* RemoteMegaphoneFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */; };
+		50A156C72FA11AA8008FE086 /* Fingerprint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A156C62FA11AA8008FE086 /* Fingerprint.swift */; };
 		50A1CE3A2A00931900730C40 /* DebugLogger+MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */; };
 		50A40ED32B88005A0060C5A5 /* DisplayName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A40ED22B88005A0060C5A5 /* DisplayName.swift */; };
 		50A4AC622C111FAE00D89C8E /* CallLinkAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A4AC612C111FAE00D89C8E /* CallLinkAuthCredential.swift */; };
@@ -1087,7 +1088,7 @@
 		6674807E2E344EE9004DA6E9 /* OWSOutgoingPaymentMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6674807D2E344EE9004DA6E9 /* OWSOutgoingPaymentMessage.swift */; };
 		6675F64F29261C39007A311E /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64E29261C39007A311E /* SyncPushTokensJob.swift */; };
 		6675F65129261E0C007A311E /* APNSRotationStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F65029261E0C007A311E /* APNSRotationStoreTest.swift */; };
-		667664362A43BBCD00716B84 /* OWSFingerprint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667664352A43BBCD00716B84 /* OWSFingerprint.swift */; };
+		667664362A43BBCD00716B84 /* CombinedFingerprints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667664352A43BBCD00716B84 /* CombinedFingerprints.swift */; };
 		6676A40A2BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6676A4092BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift */; };
 		667AF9DA2B48A3F3008AEE5D /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9D92B48A3F3008AEE5D /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift */; };
 		667AF9DE2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */; };
@@ -3657,7 +3658,7 @@
 		F9A335CC282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */; };
 		F9A392B9297F2ED5007964E5 /* SpamReportingTokenRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A392B8297F2ED5007964E5 /* SpamReportingTokenRecordTest.swift */; };
 		F9A8ACC7280A175E00AFC6A7 /* DonationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A8ACC6280A175E00AFC6A7 /* DonationSettingsViewController.swift */; };
-		F9AE695328F046E40012E9C9 /* OWSFingerprintTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9AE695228F046E40012E9C9 /* OWSFingerprintTest.swift */; };
+		F9AE695328F046E40012E9C9 /* CombinedFingerprintsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9AE695228F046E40012E9C9 /* CombinedFingerprintsTest.swift */; };
 		F9B0DC5328948656004E07B7 /* isrgrootx1.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4128948656004E07B7 /* isrgrootx1.crt */; };
 		F9B0DC5528948656004E07B7 /* GSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4328948656004E07B7 /* GSR2.crt */; };
 		F9B0DC5728948656004E07B7 /* GSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4528948656004E07B7 /* GSR4.crt */; };
@@ -5063,6 +5064,7 @@
 		509913BD2913274100F34F8E /* RecipientPickerViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerViewControllerTest.swift; sourceTree = "<group>"; };
 		509A8DC12E25817E0024BF14 /* ConnectionLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionLock.swift; sourceTree = "<group>"; };
 		509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+SSKTest.swift"; sourceTree = "<group>"; };
+		50A156C62FA11AA8008FE086 /* Fingerprint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fingerprint.swift; sourceTree = "<group>"; };
 		50A1CE372A00894C00730C40 /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
 		50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebugLogger+MainApp.swift"; sourceTree = "<group>"; };
 		50A40ED22B88005A0060C5A5 /* DisplayName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayName.swift; sourceTree = "<group>"; };
@@ -5365,7 +5367,7 @@
 		6675F64C2925C012007A311E /* APNSRotationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSRotationStore.swift; sourceTree = "<group>"; };
 		6675F64E29261C39007A311E /* SyncPushTokensJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncPushTokensJob.swift; sourceTree = "<group>"; };
 		6675F65029261E0C007A311E /* APNSRotationStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSRotationStoreTest.swift; sourceTree = "<group>"; };
-		667664352A43BBCD00716B84 /* OWSFingerprint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFingerprint.swift; sourceTree = "<group>"; };
+		667664352A43BBCD00716B84 /* CombinedFingerprints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombinedFingerprints.swift; sourceTree = "<group>"; };
 		6676A4092BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnedAttachmentPointerProto.swift; sourceTree = "<group>"; };
 		667AF9D92B48A3F3008AEE5D /* TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdates+PersistableGroupUpdateItemUpdater.swift"; sourceTree = "<group>"; };
 		667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift"; sourceTree = "<group>"; };
@@ -7977,7 +7979,7 @@
 		F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseRecipientViewController.swift; sourceTree = "<group>"; };
 		F9A392B8297F2ED5007964E5 /* SpamReportingTokenRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingTokenRecordTest.swift; sourceTree = "<group>"; };
 		F9A8ACC6280A175E00AFC6A7 /* DonationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationSettingsViewController.swift; sourceTree = "<group>"; };
-		F9AE695228F046E40012E9C9 /* OWSFingerprintTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFingerprintTest.swift; sourceTree = "<group>"; };
+		F9AE695228F046E40012E9C9 /* CombinedFingerprintsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombinedFingerprintsTest.swift; sourceTree = "<group>"; };
 		F9B0DC4128948656004E07B7 /* isrgrootx1.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = isrgrootx1.crt; sourceTree = "<group>"; };
 		F9B0DC4328948656004E07B7 /* GSR2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GSR2.crt; sourceTree = "<group>"; };
 		F9B0DC4528948656004E07B7 /* GSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GSR4.crt; sourceTree = "<group>"; };
@@ -14282,7 +14284,7 @@
 		F94261CB289B1B5300460798 /* Security */ = {
 			isa = PBXGroup;
 			children = (
-				F9AE695228F046E40012E9C9 /* OWSFingerprintTest.swift */,
+				F9AE695228F046E40012E9C9 /* CombinedFingerprintsTest.swift */,
 			);
 			name = Security;
 			path = SignalServiceKit/tests/Security;
@@ -15583,8 +15585,9 @@
 			isa = PBXGroup;
 			children = (
 				727328062CA6CF530080E2C7 /* Certificates.swift */,
+				667664352A43BBCD00716B84 /* CombinedFingerprints.swift */,
+				50A156C62FA11AA8008FE086 /* Fingerprint.swift */,
 				727328042CA6619A0080E2C7 /* HttpSecurityPolicy.swift */,
-				667664352A43BBCD00716B84 /* OWSFingerprint.swift */,
 				F9C5CB9F289453B200548EEE /* OWSRecipientIdentity.swift */,
 				F9C5CB99289453B200548EEE /* OWSVerificationState.h */,
 			);
@@ -19185,6 +19188,7 @@
 				F9C5CDFC289453B400548EEE /* Collection+OWS.swift in Sources */,
 				0512145B2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift in Sources */,
 				66F6D6A52C7D0E0000EFAF75 /* ColorOrGradient.swift in Sources */,
+				667664362A43BBCD00716B84 /* CombinedFingerprints.swift in Sources */,
 				72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */,
 				501E4DAB2D133F4400D883C7 /* CompletionSerializer.swift in Sources */,
 				50C0203C2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift in Sources */,
@@ -19315,6 +19319,7 @@
 				F9C5CE54289453B400548EEE /* FakeStorageServiceManager.swift in Sources */,
 				7254651B2BA00F8D00EABFD2 /* FetchedSystemContacts.swift in Sources */,
 				F97121EA2903244700C0F5F2 /* FiatMoney.swift in Sources */,
+				50A156C72FA11AA8008FE086 /* Fingerprint.swift in Sources */,
 				F9C5CC91289453B300548EEE /* FingerprintProtocol.pb.swift in Sources */,
 				668A012C2C2B6088007B8808 /* firstly.swift in Sources */,
 				F9C5CD59289453B300548EEE /* FullTextSearchIndexer.swift in Sources */,
@@ -19610,7 +19615,6 @@
 				F937EDA429746DA20003AF3F /* OWSFail.swift in Sources */,
 				503BD28B2B44DA64009624FC /* OWSFakeProfileManager.swift in Sources */,
 				F9C5CDD7289453B400548EEE /* OWSFileSystem.swift in Sources */,
-				667664362A43BBCD00716B84 /* OWSFingerprint.swift in Sources */,
 				F9C5CE1A289453B400548EEE /* OWSFormat.swift in Sources */,
 				F9C5CBF9289453B300548EEE /* OWSGiftBadge.swift in Sources */,
 				F9C5CC46289453B300548EEE /* OWSGroupCallMessage+SDS.swift in Sources */,
@@ -20165,6 +20169,7 @@
 				D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */,
 				F9C9610B29A91026001E4A09 /* ChatServiceAuthTest.swift in Sources */,
 				507529172F6494C2000F72F0 /* CipherContextTest.swift in Sources */,
+				F9AE695328F046E40012E9C9 /* CombinedFingerprintsTest.swift in Sources */,
 				501E4DAE2D13439E00D883C7 /* CompletionSerializerTest.swift in Sources */,
 				50CF74192E0A0EB7002DCA93 /* ConcurrentTaskQueueTest.swift in Sources */,
 				509527FA2E26F02B00A03829 /* ConnectionLockTest.swift in Sources */,
@@ -20256,7 +20261,6 @@
 				F9426263289B1B5500460798 /* OWSDeviceNamesTest.swift in Sources */,
 				F9426253289B1B5500460798 /* OWSErrorTest.swift in Sources */,
 				F97217F628DC9A5000113D9F /* OWSFileSystemTest.swift in Sources */,
-				F9AE695328F046E40012E9C9 /* OWSFingerprintTest.swift in Sources */,
 				F942625B289B1B5500460798 /* OWSFormatTest.swift in Sources */,
 				F9426248289B1B5500460798 /* OWSIdentityManagerTests.swift in Sources */,
 				669FAE1B2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift in Sources */,
