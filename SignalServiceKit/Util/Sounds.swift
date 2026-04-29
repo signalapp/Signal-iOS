@@ -17,10 +17,10 @@ public enum Sound: Equatable {
 
 public extension Sound {
 
-    var id: UInt {
+    var id: UInt64 {
         switch self {
         case .standard(let standardSound):
-            return standardSound.rawValue
+            return UInt64(safeCast: standardSound.rawValue)
         case .custom(let customSound):
             return customSound.id
         }
@@ -68,7 +68,8 @@ public extension Sound {
     }
 }
 
-public enum StandardSound: UInt {
+// Limited to 16 bits to avoid colliding with CustomSound.id
+public enum StandardSound: UInt16 {
     case `default` = 0
 
     // Notification Sounds
@@ -207,7 +208,7 @@ public extension StandardSound {
 
 public struct CustomSound {
 
-    let id: UInt
+    let id: UInt64
     let filename: String
 
     init(filename: String) {
@@ -246,14 +247,12 @@ public struct CustomSound {
 
     // MARK: -
 
-    private static let customSoundShift: UInt = 16
+    // To avoid colliding with StandardSound.rawValue
+    private static let customSoundShift: Int = 16
 
-    private static func idFromFilename(_ filename: String) -> UInt {
-        let filenameData = Data(filename.utf8)
-        let hashValue = SHA256.hash(data: filenameData).withUnsafeBytes {
-            $0.loadUnaligned(as: UInt.self)
-        }
-        return hashValue << customSoundShift
+    static func idFromFilename(_ filename: String) -> UInt64 {
+        let hashValue = SHA256.hash(data: Data(filename.utf8))
+        return UInt64(littleEndianData: Data(hashValue))! << customSoundShift
     }
 }
 
@@ -332,7 +331,7 @@ public class Sounds {
     }
 
     public static func systemSoundIDForSound(_ sound: Sound, quiet: Bool) -> SystemSoundID? {
-        let cacheKey = String(format: "%lu:%d", sound.id, quiet)
+        let cacheKey = "\(sound.id):\(quiet)"
         if let cachedSound = cachedSystemSounds.get(key: cacheKey) {
             return cachedSound.id
         }
@@ -374,8 +373,11 @@ public class Sounds {
 
     public static var defaultNotificationSound: Sound { .standard(.note) }
 
-    private static func soundForId(_ soundId: UInt) -> Sound {
-        if let standardSound = StandardSound(rawValue: soundId) {
+    private static func soundForId(_ soundId: UInt64) -> Sound {
+        if
+            let soundId = UInt16(exactly: soundId),
+            let standardSound = StandardSound(rawValue: soundId)
+        {
             return .standard(standardSound)
         }
         if let customSound = CustomSound.all.first(where: { $0.id == soundId }) {
@@ -386,7 +388,7 @@ public class Sounds {
 
     public static var globalNotificationSound: Sound {
         let soundId = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return keyValueStore.getUInt(soundsStorageGlobalNotificationKey, transaction: transaction)
+            return keyValueStore.getUInt64(soundsStorageGlobalNotificationKey, transaction: transaction)
         }
         guard let soundId else { return defaultNotificationSound }
         return soundForId(soundId)
@@ -432,12 +434,12 @@ public class Sounds {
         // user hasn't authenticated after power-cycling their device.
         OWSFileSystem.protectFileOrFolder(atPath: defaultSoundUrl.path, fileProtectionType: .none)
 
-        keyValueStore.setUInt(sound.id, key: soundsStorageGlobalNotificationKey, transaction: transaction)
+        keyValueStore.setUInt64(sound.id, key: soundsStorageGlobalNotificationKey, transaction: transaction)
     }
 
     public static func notificationSoundWithSneakyTransaction(forThreadUniqueId threadUniqueId: String) -> Sound {
         let soundId = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return keyValueStore.getUInt(threadUniqueId, transaction: transaction)
+            return keyValueStore.getUInt64(threadUniqueId, transaction: transaction)
         }
         guard let soundId else { return globalNotificationSound }
         return soundForId(soundId)
@@ -445,7 +447,7 @@ public class Sounds {
 
     public static func setNotificationSound(_ sound: Sound, forThread thread: TSThread) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            keyValueStore.setUInt(sound.id, key: thread.uniqueId, transaction: transaction)
+            keyValueStore.setUInt64(sound.id, key: thread.uniqueId, transaction: transaction)
         }
     }
 
@@ -496,7 +498,7 @@ public class Sounds {
 
         let allInUseSoundIds = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return Set(keyValueStore.allKeys(transaction: transaction).compactMap {
-                return keyValueStore.getUInt($0, transaction: transaction)
+                return keyValueStore.getUInt64($0, transaction: transaction)
             })
         }
 
