@@ -108,7 +108,7 @@ public class ProxiedContentAssetSegment: NSObject {
             owsFailDebug("merging data in invalid state: \(state)")
             return false
         }
-        guard UInt(segmentData.count) == segmentLength else {
+        guard segmentData.count == segmentLength else {
             owsFailDebug("segment data length: \(segmentData.count) doesn't match expected length: \(segmentLength)")
             return false
         }
@@ -116,13 +116,7 @@ public class ProxiedContentAssetSegment: NSObject {
         // In some cases the last two segments will overlap.
         // In that case, we only want to append the non-overlapping
         // tail of the segment data.
-        let bytesToIgnore = Int(redundantLength)
-        if bytesToIgnore > 0 {
-            let subdata = segmentData.subdata(in: bytesToIgnore..<Int(segmentLength))
-            assetData.append(subdata)
-        } else {
-            assetData.append(segmentData)
-        }
+        assetData.append(segmentData.dropFirst(Int(redundantLength)))
         return true
     }
 }
