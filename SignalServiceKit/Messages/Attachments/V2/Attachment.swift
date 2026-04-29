@@ -486,6 +486,9 @@ private extension Attachment.TransitTierInfo {
             let encryptionKey,
             let integrityCheck
         else {
+            // Don't include encryptionKey/sha256ContentHash here; they're provided
+            // sometimes. Do include unencryptedByteCount here because it's optional
+            // but should never be present when the required fields are missing.
             owsAssertDebug(
                 cdnNumber == nil
                     && cdnKey == nil
