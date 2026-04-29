@@ -94,7 +94,7 @@ extension Attachment.Record {
     public static func mockPointer(
         blurHash: String? = UUID().uuidString,
         mimeType: String = MimeType.imageJpeg.rawValue,
-        encryptionKey: Data = UUID().data,
+        encryptionKey: Data = Randomness.generateRandomBytes(64),
         transitTierInfo: Attachment.TransitTierInfo = .mock(),
     ) -> Attachment.Record {
         return .forInsertingPointer(
@@ -108,7 +108,7 @@ extension Attachment.Record {
     public static func mockStream(
         blurHash: String? = UUID().uuidString,
         mimeType: String = MimeType.imageJpeg.rawValue,
-        encryptionKey: Data = UUID().data,
+        encryptionKey: Data = Randomness.generateRandomBytes(64),
         sha256ContentHash: Data? = nil,
         mediaName: String? = nil,
         streamInfo: Attachment.StreamInfo = .mock(),
