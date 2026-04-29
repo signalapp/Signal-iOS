@@ -325,12 +325,12 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         }
     }
 
-    enum ScrollFocusMode {
+    public enum ScrollFocusMode {
         case keepCentered
         case keepWithinBounds
     }
 
-    var scrollFocusMode: ScrollFocusMode = .keepCentered {
+    public var scrollFocusMode: ScrollFocusMode = .keepCentered {
         didSet {
             if oldValue != scrollFocusMode {
                 setNeedsUpdateScrollViewContentInsets()
@@ -380,11 +380,19 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
     private func scrollToFocusedCell(animated: Bool) {
         guard let focusedCell = cellViews.first(where: { $0.isCellFocused }) else { return }
-        // Scroll view's "viewport" area size doesn't consider extra padding focused cell might have.
-        // Adjust content offset accordingly.
         let cellFrame = focusedCell.convert(focusedCell.bounds, to: scrollView)
-        let extraPadding = focusedCell.configuration.focusedItemExtraPadding
-        let contentOffsetX = cellFrame.minX + extraPadding - scrollView.contentInset.left
-        scrollView.setContentOffset(.init(x: contentOffsetX, y: 0), animated: animated)
+        switch scrollFocusMode {
+        case .keepCentered:
+            // Scroll view's "viewport" area is very narrow - a width of a single item, centered.
+            // But that width doesn't take into account an extra padding focused cell might have,
+            // which is why we have to add it to the content offset.
+            let extraPadding = focusedCell.configuration.focusedItemExtraPadding
+            let contentOffsetX = cellFrame.minX + extraPadding - scrollView.contentInset.left
+            scrollView.setContentOffset(.init(x: contentOffsetX, y: 0), animated: animated)
+
+        case .keepWithinBounds:
+            // Let scroll view handle the position.
+            scrollView.scrollRectToVisible(cellFrame, animated: animated)
+        }
     }
 }
