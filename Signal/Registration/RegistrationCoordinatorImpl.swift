@@ -1831,7 +1831,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     mode: .quickRestore,
                     tier: registrationMessage.tier ?? .free,
                     lastBackupDate: registrationMessage.backupTimestamp.map(Date.init(millisecondsSince1970:)),
-                    lastBackupSizeBytes: registrationMessage.backupSizeBytes.map(UInt.init),
+                    lastBackupSizeBytes: registrationMessage.backupSizeBytes,
                 ),
             )
         case .declined:

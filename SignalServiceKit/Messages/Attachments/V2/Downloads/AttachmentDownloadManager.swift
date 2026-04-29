@@ -115,10 +115,10 @@ public enum AttachmentDownloads {
     }
 
     public struct CdnInfo {
-        public let contentLength: UInt
+        public let contentLength: UInt64
         public let lastModified: Date
 
-        public init(contentLength: UInt, lastModified: Date) {
+        public init(contentLength: UInt64, lastModified: Date) {
             self.contentLength = contentLength
             self.lastModified = lastModified
         }
@@ -126,7 +126,7 @@ public enum AttachmentDownloads {
         init(_ headers: HttpHeaders) throws {
             guard
                 let contentLengthRaw = headers["Content-Length"],
-                let contentLengthBytes = UInt(contentLengthRaw)
+                let contentLengthBytes = UInt64(contentLengthRaw)
             else {
                 throw OWSGenericError("Missing content length from cdn")
             }

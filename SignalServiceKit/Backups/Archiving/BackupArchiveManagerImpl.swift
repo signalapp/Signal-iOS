@@ -227,10 +227,10 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             let backupMediaSizeBytes: UInt64
             switch backupSettingsStore.backupPlan(tx: tx) {
             case .paid, .paidExpiringSoon, .paidAsTester:
-                backupFileSizeBytes = UInt64(metadata.encryptedDataLength)
+                backupFileSizeBytes = UInt64(safeCast: metadata.encryptedDataLength)
                 backupMediaSizeBytes = metadata.attachmentByteSize
             case .free:
-                backupFileSizeBytes = UInt64(metadata.encryptedDataLength)
+                backupFileSizeBytes = UInt64(safeCast: metadata.encryptedDataLength)
                 backupMediaSizeBytes = 0
             case .disabled, .disabling:
                 owsFailDebug("Shouldn't generate backup when backups is disabled", logger: logger)

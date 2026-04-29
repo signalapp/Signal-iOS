@@ -32,9 +32,9 @@ public class RegistrationRestoreFromBackupConfirmationState: ObservableObject, E
     let mode: Mode
     let tier: RegistrationProvisioningMessage.BackupTier
     let lastBackupDate: Date?
-    let lastBackupSizeBytes: UInt?
+    let lastBackupSizeBytes: UInt64?
 
-    init(mode: Mode, tier: RegistrationProvisioningMessage.BackupTier, lastBackupDate: Date?, lastBackupSizeBytes: UInt?) {
+    init(mode: Mode, tier: RegistrationProvisioningMessage.BackupTier, lastBackupDate: Date?, lastBackupSizeBytes: UInt64?) {
         self.mode = mode
         self.tier = tier
         self.lastBackupDate = lastBackupDate
@@ -222,7 +222,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
                 let formattedDate = DateUtil.dateFormatter.string(for: date),
                 let formattedTime = DateUtil.timeFormatter.string(for: date)
             {
-                formattedString = String.nonPluralLocalizedStringWithFormat(formattedString, formattedDate, formattedTime, OWSByteCountFormatStyle().format(UInt64(safeCast: size)))
+                formattedString = String.nonPluralLocalizedStringWithFormat(formattedString, formattedDate, formattedTime, OWSByteCountFormatStyle().format(size))
                 return Text(formattedString)
             } else {
                 return Text("")
