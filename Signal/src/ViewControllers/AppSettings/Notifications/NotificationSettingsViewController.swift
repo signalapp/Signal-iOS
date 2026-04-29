@@ -49,15 +49,23 @@ class NotificationSettingsViewController: OWSTableViewController2 {
             target: self,
             selector: #selector(didToggleSoundNotificationsSwitch),
         ))
-        soundsSection.add(.switch(
-            withText: OWSLocalizedString(
-                "SETTINGS_MESSAGE_SENT_SOUND",
-                comment: "Setting for enabling & disabling the sound effect played when a message is sent.",
-            ),
-            isOn: { SSKEnvironment.shared.preferencesRef.isMessageSentSoundEnabled },
-            target: self,
-            selector: #selector(didToggleMessageSentSoundSwitch),
-        ))
+        let messageSentSoundEnabled = SSKEnvironment.shared.preferencesRef.soundInForeground
+        soundsSection.add(OWSTableItem(customCellBlock: { [weak self] in
+            let cell = OWSTableItem.buildCell(
+                itemName: OWSLocalizedString(
+                    "SETTINGS_MESSAGE_SENT_SOUND",
+                    comment: "Setting for enabling & disabling the sound effect played when a message is sent.",
+                ),
+                textColor: messageSentSoundEnabled ? nil : Theme.secondaryTextAndIconColor,
+            )
+            let cellSwitch = UISwitch()
+            cellSwitch.isOn = messageSentSoundEnabled && SSKEnvironment.shared.preferencesRef.isMessageSentSoundEnabled
+            cellSwitch.isEnabled = messageSentSoundEnabled
+            cellSwitch.addTarget(self, action: #selector(NotificationSettingsViewController.didToggleMessageSentSoundSwitch), for: .valueChanged)
+            cell.accessoryView = cellSwitch
+            cell.selectionStyle = .none
+            return cell
+        }))
         contents.add(soundsSection)
 
         let notificationContentSection = OWSTableSection()
@@ -132,6 +140,8 @@ class NotificationSettingsViewController: OWSTableViewController2 {
     @objc
     private func didToggleSoundNotificationsSwitch(_ sender: UISwitch) {
         SSKEnvironment.shared.preferencesRef.setSoundInForeground(sender.isOn)
+        // Reload table, since the value of this setting affects others (i.e., message sent sound).
+        updateTableContents()
     }
 
     @objc
