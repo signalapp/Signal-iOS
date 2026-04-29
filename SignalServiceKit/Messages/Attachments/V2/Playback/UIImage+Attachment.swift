@@ -94,16 +94,6 @@ extension UIImage {
 }
 
 extension CGDataProvider {
-
-    // Class-bound wrapper around EncryptedFileHandle
-    class EncryptedFileHandleWrapper {
-        let fileHandle: SignalServiceKit.EncryptedFileHandle
-
-        init(_ fileHandle: SignalServiceKit.EncryptedFileHandle) {
-            self.fileHandle = fileHandle
-        }
-    }
-
     /// If no plaintext length is provided, the file is assumed to only use pkcs7 padding.
     fileprivate static func loadFromEncryptedFile<T>(
         at fileURL: URL,
@@ -124,57 +114,11 @@ extension CGDataProvider {
                 attachmentKey: attachmentKey,
             )
         }
-        let dataProvider = try CGDataProvider.from(fileHandle: fileHandle)
-        return try block(dataProvider)
-    }
-
-    public static func from(fileHandle: EncryptedFileHandle) throws -> CGDataProvider {
-        let fileHandle = EncryptedFileHandleWrapper(fileHandle)
-
-        var callbacks = CGDataProviderDirectCallbacks(
-            version: 0,
-            getBytePointer: nil,
-            releaseBytePointer: nil,
-            getBytesAtPosition: { info, buffer, offset, byteCount in
-                guard let info else {
-                    return 0
-                }
-                let unmanagedFileHandle = Unmanaged<EncryptedFileHandleWrapper>.fromOpaque(info)
-                let fileHandle = unmanagedFileHandle.takeUnretainedValue().fileHandle
-                do {
-                    if offset != fileHandle.offset() {
-                        try fileHandle.seek(toOffset: UInt64(offset))
-                    }
-                    let data = try fileHandle.read(upToCount: byteCount)
-                    data.withUnsafeBytes { bytes in
-                        buffer.copyMemory(from: bytes.baseAddress!, byteCount: bytes.count)
-                    }
-                    return data.count
-                } catch {
-                    return 0
-                }
-            },
-            releaseInfo: { info in
-                guard let info else {
-                    return
-                }
-                let unmanagedFileHandle = Unmanaged<EncryptedFileHandleWrapper>.fromOpaque(info)
-                unmanagedFileHandle.release()
-            },
-        )
-
-        let unmanagedFileHandle = Unmanaged.passRetained(fileHandle)
-
-        guard
-            let dataProvider = CGDataProvider(
-                directInfo: unmanagedFileHandle.toOpaque(),
-                size: Int64(fileHandle.fileHandle.plaintextLength),
-                callbacks: &callbacks,
-            )
-        else {
-            throw OWSAssertionError("Failed to create data provider")
+        let dataProvider = CGDataProvider.from(fileHandle: fileHandle, fileSize: Int64(fileHandle.plaintextLength))
+        guard let dataProvider else {
+            throw OWSAssertionError("couldn't initialize encrypted data provider")
         }
-        return dataProvider
+        return try block(dataProvider)
     }
 }
 

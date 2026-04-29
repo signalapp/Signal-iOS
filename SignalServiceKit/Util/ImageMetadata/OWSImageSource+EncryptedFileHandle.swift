@@ -46,7 +46,10 @@ struct EncryptedFileHandleImageSource: OWSImageSource {
     }
 
     func cgImageSource() throws -> CGImageSource? {
-        let dataProvider = try CGDataProvider.from(fileHandle: fileHandle)
+        let dataProvider = CGDataProvider.from(fileHandle: fileHandle, fileSize: Int64(fileHandle.plaintextLength))
+        guard let dataProvider else {
+            throw OWSAssertionError("couldn't initialize encrypted data provider")
+        }
         return CGImageSourceCreateWithDataProvider(dataProvider, nil)
     }
 }

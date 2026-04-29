@@ -29,66 +29,10 @@ public struct FileHandleImageSource: OWSImageSource {
         return try fileHandle.read(upToCount: byteLength) ?? Data()
     }
 
-    // Class-bound wrapper around FileHandle
-    class FileHandleWrapper {
-        let fileHandle: FileHandle
-
-        init(_ fileHandle: FileHandle) {
-            self.fileHandle = fileHandle
-        }
-    }
-
     public func cgImageSource() throws -> CGImageSource? {
-        let fileHandle = FileHandleWrapper(fileHandle)
-
-        var callbacks = CGDataProviderDirectCallbacks(
-            version: 0,
-            getBytePointer: nil,
-            releaseBytePointer: nil,
-            getBytesAtPosition: { info, buffer, offset, byteCount in
-                guard
-                    let unmanagedFileHandle = info?.assumingMemoryBound(
-                        to: Unmanaged<FileHandleWrapper>.self,
-                    ).pointee
-                else {
-                    return 0
-                }
-                let fileHandle = unmanagedFileHandle.takeUnretainedValue().fileHandle
-                do {
-                    if offset != (try fileHandle.offset()) {
-                        try fileHandle.seek(toOffset: UInt64(offset))
-                    }
-                    let data = try fileHandle.read(upToCount: byteCount) ?? Data()
-                    data.withUnsafeBytes { bytes in
-                        buffer.copyMemory(from: bytes.baseAddress!, byteCount: bytes.count)
-                    }
-                    return data.count
-                } catch {
-                    return 0
-                }
-            },
-            releaseInfo: { info in
-                guard
-                    let unmanagedFileHandle = info?.assumingMemoryBound(
-                        to: Unmanaged<FileHandleWrapper>.self,
-                    ).pointee
-                else {
-                    return
-                }
-                unmanagedFileHandle.release()
-            },
-        )
-
-        var unmanagedFileHandle = Unmanaged.passRetained(fileHandle)
-
-        guard
-            let dataProvider = CGDataProvider(
-                directInfo: &unmanagedFileHandle,
-                size: Int64(byteLength),
-                callbacks: &callbacks,
-            )
-        else {
-            throw OWSAssertionError("Failed to create data provider")
+        let dataProvider = CGDataProvider.from(fileHandle: self.fileHandle, fileSize: Int64(self.byteLength))
+        guard let dataProvider else {
+            throw OWSAssertionError("couldn't create data provider")
         }
         return CGImageSourceCreateWithDataProvider(dataProvider, nil)
     }

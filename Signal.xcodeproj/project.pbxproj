@@ -771,6 +771,7 @@
 		508622AD2D026F5200931BF9 /* CanonicalPhoneNumberTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508622AC2D026F5200931BF9 /* CanonicalPhoneNumberTest.swift */; };
 		508C72242C2DFCB2000811F3 /* OWSOutgoingResendResponseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508C72232C2DFCB2000811F3 /* OWSOutgoingResendResponseTest.swift */; };
 		508F0346296F72F4001D88D0 /* CustomCellBackgroundColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */; };
+		508F05A52FA28308004B96E5 /* CGDataProvider+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508F05A42FA28308004B96E5 /* CGDataProvider+SSK.swift */; };
 		509085B82C498C3F00409B85 /* HTMLMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CABC289453B200548EEE /* HTMLMetadata.swift */; };
 		509085BA2C498C4400409B85 /* HTMLMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D4289B1B5400460798 /* HTMLMetadataTests.swift */; };
 		509085BC2C498D3600409B85 /* LinkPreviewFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509085BB2C498D3500409B85 /* LinkPreviewFetcher.swift */; };
@@ -5050,6 +5051,7 @@
 		508622AC2D026F5200931BF9 /* CanonicalPhoneNumberTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanonicalPhoneNumberTest.swift; sourceTree = "<group>"; };
 		508C72232C2DFCB2000811F3 /* OWSOutgoingResendResponseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingResendResponseTest.swift; sourceTree = "<group>"; };
 		508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCellBackgroundColor.swift; sourceTree = "<group>"; };
+		508F05A42FA28308004B96E5 /* CGDataProvider+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGDataProvider+SSK.swift"; sourceTree = "<group>"; };
 		509085BB2C498D3500409B85 /* LinkPreviewFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewFetcher.swift; sourceTree = "<group>"; };
 		509085BD2C49C29400409B85 /* PaddingBucket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingBucket.swift; sourceTree = "<group>"; };
 		509085BF2C49C2A500409B85 /* PaddingBucketTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingBucketTest.swift; sourceTree = "<group>"; };
@@ -15456,6 +15458,7 @@
 				E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */,
 				88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */,
 				76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */,
+				508F05A42FA28308004B96E5 /* CGDataProvider+SSK.swift */,
 				F9C5CB2A289453B200548EEE /* Collection+OWS.swift */,
 				0512145A2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift */,
 				34A955AB271B521500B05242 /* CommonStrings.swift */,
@@ -19174,6 +19177,7 @@
 				668A012A2C2B6088007B8808 /* Catchable.swift in Sources */,
 				F9C5CC0C289453B300548EEE /* CDNDownloadOperation.swift in Sources */,
 				727328072CA6CF570080E2C7 /* Certificates.swift in Sources */,
+				508F05A52FA28308004B96E5 /* CGDataProvider+SSK.swift in Sources */,
 				661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */,
 				50E5E4B32993352C00E15A1C /* ChangePhoneNumberPniManager.swift in Sources */,
 				6603AC2D29C220F30079BC82 /* ChangePhoneNumberPniManagerMock.swift in Sources */,

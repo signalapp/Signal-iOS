@@ -119,7 +119,7 @@ public struct DecryptionMetadata {
 /// A read-only file handle to a file that is encrypted on disk but reads out plaintext bytes.
 ///
 /// Functionally behaves like a FileHandle to a virtual plaintext file.
-public protocol EncryptedFileHandle {
+public protocol EncryptedFileHandle: CGDataProviderFileHandle {
 
     /// Length, in bytes, of the decrypted plaintext.
     /// Comes from the sender; otherwise we don't know where content ends and custom padding begins.
@@ -134,6 +134,12 @@ public protocol EncryptedFileHandle {
     /// Reads plaintext data synchronously, starting at the current offset, up to the specified number of bytes.
     /// Returns empty data when the end of file is reached.
     func read(upToCount: Int) throws -> Data
+}
+
+extension EncryptedFileHandle {
+    public func readNonOptional(upToCount count: Int) throws -> Data {
+        return try self.read(upToCount: count)
+    }
 }
 
 enum CryptographyError: Error {
