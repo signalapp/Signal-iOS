@@ -39,9 +39,20 @@ class AttachmentKeyboard: CustomKeyboard {
 
     private lazy var limitedPhotoPermissionsView = LimitedPhotoPermissionsView()
 
-    private var topInset: CGFloat {
+    private var topMargin: CGFloat {
         guard #available(iOS 26, *) else { return 12 }
+        // There's barely visible border taking space at the top
+        // so make the inset 1 dp larger than needed to make Settings button
+        // concentric with keyboard panel's corner.
+        guard limitedPhotoPermissionsView.isHiddenInStackView else { return 17 }
         return traitCollection.verticalSizeClass == .compact ? 20 : 36
+    }
+
+    private var stackViewTopAnchorConstraint: NSLayoutConstraint?
+
+    private func updateStackViewTopMargin() {
+        guard let stackViewTopAnchorConstraint else { return }
+        stackViewTopAnchorConstraint.constant = topMargin
     }
 
     // MARK: -
@@ -59,11 +70,11 @@ class AttachmentKeyboard: CustomKeyboard {
             attachmentFormatPickerView,
         ])
         stackView.axis = .vertical
-        stackView.setCustomSpacing(12, after: limitedPhotoPermissionsView)
+        stackView.setCustomSpacing(16, after: limitedPhotoPermissionsView)
         limitedPhotoPermissionsView.isHiddenInStackView = true
         contentView.addSubview(stackView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        let topEdgeConstraint = stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: topInset)
+        let topEdgeConstraint = stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: topMargin)
         NSLayoutConstraint.activate([
             topEdgeConstraint,
             stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -73,8 +84,9 @@ class AttachmentKeyboard: CustomKeyboard {
 
         // Variable top inset on iOS 26.
         if #available(iOS 26, *) {
+            stackViewTopAnchorConstraint = topEdgeConstraint
             registerForTraitChanges([UITraitVerticalSizeClass.self]) { (self: Self, _) in
-                topEdgeConstraint.constant = self.topInset
+                self.updateStackViewTopMargin()
             }
         }
     }
@@ -111,6 +123,7 @@ class AttachmentKeyboard: CustomKeyboard {
             }
             self.attachmentFormatPickerView.shouldLeaveSpaceForPermissions = isLimited
             self.limitedPhotoPermissionsView.isHiddenInStackView = !isLimited
+            self.updateStackViewTopMargin()
         }
         let authorizationStatus: PHAuthorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         guard authorizationStatus != .notDetermined else {

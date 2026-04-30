@@ -41,7 +41,7 @@ class LimitedPhotoPermissionsView: UIView {
 
     init() {
         super.init(frame: .zero)
-        self.layoutMargins = .init(top: 0, leading: 20, bottom: 0, trailing: 15)
+        self.layoutMargins = .init(top: 0, leading: 20, bottom: 0, trailing: 16)
 
         let label = UILabel()
         label.textColor = UIColor.Signal.secondaryLabel
