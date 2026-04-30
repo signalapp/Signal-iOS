@@ -421,8 +421,6 @@ public class MoreSafetyTipsViewController: InteractiveSheetViewController, UIScr
 
         let container = UIView()
         container.addSubview(stackView)
-        container.backgroundColor = sheetBackgroundColor
-        container.tintColor = sheetBackgroundColor
 
         stackView.axis = .horizontal
         stackView.spacing = Constants.footerSpacing
@@ -543,13 +541,21 @@ extension MoreSafetyTipsViewController {
             let stackView = UIStackView()
             stackView.axis = .vertical
             self.addSubview(stackView)
-            stackView.spacing = 12.0
-            stackView.autoPinEdgesToSuperviewMargins()
+            stackView.spacing = 8.0
+
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                stackView.topAnchor.constraint(equalTo: self.topAnchor, constant: 16),
+                stackView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+                stackView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+                stackView.bottomAnchor.constraint(lessThanOrEqualTo: self.bottomAnchor),
+            ])
 
             let imageView = UIImageView(image: safetyTip.image)
             imageView.contentMode = .scaleAspectFit
 
             stackView.addArrangedSubview(imageView)
+            stackView.addArrangedSubview(SpacerView(preferredHeight: 10.0))
 
             NSLayoutConstraint.activate([
                 imageView.heightAnchor.constraint(lessThanOrEqualToConstant: 160),
