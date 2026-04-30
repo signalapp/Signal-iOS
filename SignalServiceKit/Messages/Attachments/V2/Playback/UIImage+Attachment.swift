@@ -15,7 +15,7 @@ extension UIImage {
         return try .fromEncryptedFile(
             at: attachment.fileURL,
             attachmentKey: AttachmentKey(combinedKey: attachment.attachment.encryptionKey),
-            plaintextLength: attachment.info.unencryptedByteCount,
+            plaintextLength: attachment.unencryptedByteCount,
             mimeType: attachment.mimeType,
         )
     }

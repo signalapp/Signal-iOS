@@ -1608,7 +1608,7 @@ private extension CVComponentState.Builder {
                 emojiString: messageSticker.emoji,
                 encryptedStickerDataUrl: referencedAttachmentStream.attachmentStream.fileURL,
                 encryptionKey: referencedAttachmentStream.attachmentStream.attachment.encryptionKey,
-                plaintextLength: referencedAttachmentStream.attachmentStream.info.unencryptedByteCount,
+                plaintextLength: referencedAttachmentStream.attachmentStream.unencryptedByteCount,
             )
 
             self.sticker = .available(
@@ -1757,31 +1757,10 @@ private extension CVComponentState.Builder {
                     threadHasPendingMessageRequest: threadHasPendingMessageRequest,
                 ))
                 continue
-            case .stream(let attachmentStream, isUploading: _):
-                let attachmentStream = attachmentStream.attachmentStream
-                guard attachmentStream.contentType.isVisualMedia else {
-                    Logger.warn("Filtering invalid media.")
-                    mediaAlbumItems.append(CVMediaAlbumItem(
-                        attachment: cvAttachment,
-                        attachmentStream: nil,
-                        hasCaption: hasCaption,
-                        mediaSize: .zero,
-                        isBroken: true,
-                        threadHasPendingMessageRequest: threadHasPendingMessageRequest,
-                    ))
-                    continue
-                }
-                let mediaSizePixels: CGSize
-                switch attachmentStream.contentType {
-                case .image(let pixelSize?),
-                     .animatedImage(let pixelSize?),
-                     .video(_, let pixelSize?, _):
-                    guard pixelSize.isNonEmpty else {
-                        fallthrough
-                    }
-                    mediaSizePixels = pixelSize
-                case .image, .animatedImage, .video, .audio, .file, .invalid:
-                    Logger.warn("Filtering media with invalid size.")
+            case .stream(let referencedAttachmentStream, isUploading: _):
+                let attachmentStream = referencedAttachmentStream.attachmentStream
+                guard let mediaSizePixels = attachmentStream.cachedMediaSizePixels else {
+                    Logger.warn("Filtering media without pixel size.")
                     mediaAlbumItems.append(CVMediaAlbumItem(
                         attachment: cvAttachment,
                         attachmentStream: nil,

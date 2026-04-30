@@ -235,34 +235,30 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
         // "Ancillary" files (e.g. video still frame) are regenerated on revalidation.
         // Whatever old ancillary files existed before must be orphaned.
         let oldAncillaryFilesOrphanRecord: OrphanedAttachmentRecord.InsertableRecord? = {
-            switch attachment.streamInfo?.contentType {
-            case nil, .invalid, .file, .image, .animatedImage:
+            guard let streamInfo = attachment.streamInfo else {
                 return nil
-            case .video(_, _, let stillFrameRelativeFilePath):
-                return .init(
-                    isPendingAttachment: false,
-                    localRelativeFilePath: nil,
-                    localRelativeFilePathThumbnail: nil,
-                    localRelativeFilePathAudioWaveform: nil,
-                    localRelativeFilePathVideoStillFrame: stillFrameRelativeFilePath,
-                )
-            case .audio(_, let waveformRelativeFilePath):
-                return .init(
-                    isPendingAttachment: false,
-                    localRelativeFilePath: nil,
-                    localRelativeFilePathThumbnail: nil,
-                    localRelativeFilePathAudioWaveform: waveformRelativeFilePath,
-                    localRelativeFilePathVideoStillFrame: nil,
-                )
             }
+
+            return OrphanedAttachmentRecord.InsertableRecord(
+                isPendingAttachment: false,
+                localRelativeFilePath: nil,
+                localRelativeFilePathThumbnail: nil,
+                localRelativeFilePathAudioWaveform: streamInfo.cachedAudioWaveformRelativeFilePath,
+                localRelativeFilePathVideoStillFrame: streamInfo.cachedVideoStillFrameRelativeFilePath,
+            )
         }()
 
         // Update the attachment
         attachmentStore.updateAttachment(
             attachment,
-            revalidatedContentType: revalidatedAttachment.validatedContentType,
             mimeType: revalidatedAttachment.mimeType,
+            contentType: revalidatedAttachment.contentType,
             blurHash: revalidatedAttachment.blurHash,
+            mediaPixelSize: revalidatedAttachment.mediaPixelSize,
+            videoDuration: revalidatedAttachment.videoDuration,
+            videoStillFrameRelativeFilePath: revalidatedAttachment.videoStillFrameRelativeFilePath,
+            audioDuration: revalidatedAttachment.audioDuration,
+            audioWaveformRelativeFilePath: revalidatedAttachment.audioWaveformRelativeFilePath,
             tx: tx,
         )
         // Clear out the orphan record for the _new_ ancillary files.

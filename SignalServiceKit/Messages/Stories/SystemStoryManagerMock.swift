@@ -134,7 +134,6 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
         mimeType: String,
     ) async throws -> AttachmentDataSource {
         let pendingAttachment = PendingAttachment(
-            blurHash: nil,
             sha256ContentHash: Data(),
             encryptedByteCount: 100,
             unencryptedByteCount: 100,
@@ -144,8 +143,14 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
             localRelativeFilePath: "",
             renderingFlag: .default,
             sourceFilename: dataSource.sourceFilename,
-            validatedContentType: .file,
             orphanRecordId: 1,
+            contentType: .file,
+            blurHash: nil,
+            mediaPixelSize: nil,
+            videoDuration: nil,
+            videoStillFrameRelativeFilePath: nil,
+            audioDuration: nil,
+            audioWaveformRelativeFilePath: nil,
         )
         return AttachmentDataSource.pendingAttachment(pendingAttachment)
     }

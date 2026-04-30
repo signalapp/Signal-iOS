@@ -590,7 +590,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             let owner: AttachmentReference.Owner = ownedDataSource.owner.build(
                 knownIdInOwner: .none,
                 renderingFlag: existingAttachmentMetadata.renderingFlag,
-                contentType: existingAttachment.streamInfo?.contentType.raw,
+                contentType: existingAttachment.streamInfo?.contentType,
             )
             let referenceParams = AttachmentReference.ConstructionParams(
                 owner: owner,
@@ -609,41 +609,22 @@ public class AttachmentManagerImpl: AttachmentManager {
             let owner: AttachmentReference.Owner = ownedDataSource.owner.build(
                 knownIdInOwner: .none,
                 renderingFlag: pendingAttachment.renderingFlag,
-                contentType: pendingAttachment.validatedContentType.raw,
+                contentType: pendingAttachment.contentType,
             )
-            let mediaSizePixels: CGSize?
-            switch pendingAttachment.validatedContentType {
-            case .invalid, .file, .audio:
-                mediaSizePixels = nil
-            case .image(let pixelSize), .video(_, let pixelSize, _), .animatedImage(let pixelSize):
-                mediaSizePixels = pixelSize
-            }
             let referenceParams = AttachmentReference.ConstructionParams(
                 owner: owner,
                 sourceFilename: pendingAttachment.sourceFilename,
                 sourceUnencryptedByteCount: pendingAttachment.unencryptedByteCount,
-                sourceMediaSizePixels: mediaSizePixels,
+                sourceMediaSizePixels: pendingAttachment.mediaPixelSize,
             )
-            let mediaName = Attachment.mediaName(
-                sha256ContentHash: pendingAttachment.sha256ContentHash,
-                encryptionKey: pendingAttachment.encryptionKey,
-            )
-            let streamInfo = Attachment.StreamInfo(
-                sha256ContentHash: pendingAttachment.sha256ContentHash,
-                mediaName: mediaName,
-                encryptedByteCount: pendingAttachment.encryptedByteCount,
-                unencryptedByteCount: pendingAttachment.unencryptedByteCount,
-                contentType: pendingAttachment.validatedContentType,
-                digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
-                localRelativeFilePath: pendingAttachment.localRelativeFilePath,
-            )
+            let streamInfo = Attachment.StreamInfo(pendingAttachment: pendingAttachment)
             var attachmentRecord = Attachment.Record.forInsertingStream(
                 blurHash: pendingAttachment.blurHash,
                 mimeType: pendingAttachment.mimeType,
                 encryptionKey: pendingAttachment.encryptionKey,
                 streamInfo: streamInfo,
                 sha256ContentHash: pendingAttachment.sha256ContentHash,
-                mediaName: mediaName,
+                mediaName: pendingAttachment.mediaName,
             )
 
             let hasOrphanRecord = orphanedAttachmentStore.orphanAttachmentExists(
@@ -689,7 +670,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 }
 
                 orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
-                    withMediaName: mediaName,
+                    withMediaName: pendingAttachment.mediaName,
                     tx: tx,
                 )
 
@@ -740,20 +721,6 @@ public class AttachmentManagerImpl: AttachmentManager {
         pendingAttachment: PendingAttachment,
         tx: DBWriteTransaction,
     ) {
-        let mediaName = Attachment.mediaName(
-            sha256ContentHash: pendingAttachment.sha256ContentHash,
-            encryptionKey: pendingAttachment.encryptionKey,
-        )
-        let streamInfo = Attachment.StreamInfo(
-            sha256ContentHash: pendingAttachment.sha256ContentHash,
-            mediaName: mediaName,
-            encryptedByteCount: pendingAttachment.encryptedByteCount,
-            unencryptedByteCount: pendingAttachment.unencryptedByteCount,
-            contentType: pendingAttachment.validatedContentType,
-            digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
-            localRelativeFilePath: pendingAttachment.localRelativeFilePath,
-        )
-
         do throws(AttachmentInsertError) {
             // Update the placeholder attachment we previously created with the stream info
             try self.attachmentStore.updateAttachmentAsDownloaded(
@@ -762,7 +729,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 sourceType: .mediaTierFullsize,
                 priority: .backupRestore,
                 validatedMimeType: pendingAttachment.mimeType,
-                streamInfo: streamInfo,
+                streamInfo: Attachment.StreamInfo(pendingAttachment: pendingAttachment),
                 // This is used for "last viewed" state which isn't used
                 // for oversize text so it doesn't really matter but give
                 // a real date anyway.
@@ -807,7 +774,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                     tx: tx,
                 )
                 let newOwnerParams = AttachmentReference.ConstructionParams(
-                    owner: reference.owner.forReassignmentWithContentType(pendingAttachment.validatedContentType.raw),
+                    owner: reference.owner.forReassignmentWithContentType(pendingAttachment.contentType),
                     sourceFilename: reference.sourceFilename,
                     sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
                     sourceMediaSizePixels: reference.sourceMediaSizePixels,

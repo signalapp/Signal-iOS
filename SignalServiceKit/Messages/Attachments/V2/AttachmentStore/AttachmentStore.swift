@@ -792,7 +792,7 @@ public struct AttachmentStore {
         if transitTierInfo.encryptionKey == attachmentStream.attachment.encryptionKey {
             switch transitTierInfo.integrityCheck {
             case .digestSHA256Ciphertext(let digest):
-                if digest == attachmentStream.encryptedFileSha256Digest {
+                if digest == attachmentStream.digestSHA256Ciphertext {
                     originalTransitTierInfo = transitTierInfo
                 } else {
                     owsFailDebug("How are we reusing encryption key but have a different digest?")
@@ -895,15 +895,26 @@ public struct AttachmentStore {
     /// Update an attachment after revalidating.
     public func updateAttachment(
         _ attachment: Attachment,
-        revalidatedContentType contentType: Attachment.ContentType,
         mimeType: String,
+        contentType: Attachment.ContentTypeRaw,
         blurHash: String?,
+        mediaPixelSize: CGSize?,
+        videoDuration: TimeInterval?,
+        videoStillFrameRelativeFilePath: String?,
+        audioDuration: TimeInterval?,
+        audioWaveformRelativeFilePath: String?,
         tx: DBWriteTransaction,
     ) {
-        attachment.blurHash = blurHash
         attachment.mimeType = mimeType
+        attachment.blurHash = blurHash
         if var streamInfo = attachment.streamInfo {
             streamInfo.contentType = contentType
+            streamInfo.cachedMediaSizePixels = mediaPixelSize
+            streamInfo.cachedVideoDuration = videoDuration
+            streamInfo.cachedVideoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
+            streamInfo.cachedAudioDuration = audioDuration
+            streamInfo.cachedAudioWaveformRelativeFilePath = audioWaveformRelativeFilePath
+
             attachment.streamInfo = streamInfo
         }
 

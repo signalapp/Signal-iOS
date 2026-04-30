@@ -66,11 +66,11 @@ public class AttachmentBackupThumbnail {
         switch stream.contentType {
         case .invalid, .file, .audio:
             return false
-        case .image(let pixelSize):
+        case .image:
             // If the image itself is small enough to fit the thumbnail
             // size, and is already the right format (webP) no need for a thumbnail.
             if
-                let pixelSize,
+                let pixelSize = stream.cachedMediaSizePixels,
                 attachment.mimeType == MimeType.imageWebp.rawValue,
                 pixelSize.largerAxis <= AttachmentThumbnailQuality.backupThumbnailDimensionPixels
             {

@@ -60,7 +60,7 @@ extension AttachmentReference {
         public func build(
             knownIdInOwner: KnownIdInOwner,
             renderingFlag: AttachmentReference.RenderingFlag,
-            contentType: AttachmentReference.ContentType?,
+            contentType: Attachment.ContentTypeRaw?,
             caption: String? = nil,
         ) -> AttachmentReference.Owner {
             switch self {

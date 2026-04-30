@@ -236,20 +236,9 @@ extension ReferencedAttachment {
 
         let unencryptedByteCount: UInt32?
         let pixelSize: CGSize?
-        if let stream = pointer.attachment.asStream() {
-            unencryptedByteCount = stream.unencryptedByteCount
-
-            switch stream.contentType {
-            case .image(let _pixelSize?), .animatedImage(let _pixelSize?), .video(_, let _pixelSize?, _):
-                pixelSize = _pixelSize
-            case .image(pixelSize: nil),
-                 .animatedImage(pixelSize: nil),
-                 .video(_, pixelSize: nil, _),
-                 .file,
-                 .invalid,
-                 .audio:
-                pixelSize = nil
-            }
+        if let streamInfo = pointer.attachment.streamInfo {
+            unencryptedByteCount = streamInfo.unencryptedByteCount
+            pixelSize = streamInfo.cachedMediaSizePixels
         } else {
             unencryptedByteCount = reference.sourceUnencryptedByteCount
             pixelSize = reference.sourceMediaSizePixels

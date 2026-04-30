@@ -268,7 +268,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         messageRowId: Int64,
         threadRowId: Int64,
         receivedAtTimestamp: UInt64,
-        contentType: AttachmentReference.ContentType,
+        contentType: Attachment.ContentTypeRaw,
         caption: String? = nil,
         renderingFlag: AttachmentReference.RenderingFlag = .default,
         isViewOnce: Bool = false,
@@ -278,22 +278,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
     ) throws -> Attachment.IDType {
         let attachmentParams = Attachment.Record.mockStream(
             streamInfo: .mock(
-                contentType: {
-                    switch contentType {
-                    case .invalid:
-                        return .invalid
-                    case .animatedImage:
-                        return .animatedImage(pixelSize: .square(100))
-                    case .audio:
-                        return .audio(duration: 1, waveformRelativeFilePath: nil)
-                    case .file:
-                        return .file
-                    case .image:
-                        return .image(pixelSize: .square(100))
-                    case .video:
-                        return .video(duration: 1, pixelSize: .square(100), stillFrameRelativeFilePath: nil)
-                    }
-                }(),
+                contentType: contentType,
             ),
         )
         let referenceParams = AttachmentReference.ConstructionParams.mock(

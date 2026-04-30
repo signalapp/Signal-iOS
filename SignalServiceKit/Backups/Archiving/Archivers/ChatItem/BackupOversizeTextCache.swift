@@ -436,7 +436,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
             guard let stream = attachmentStore.fetch(id: attachmentId, tx: tx)?.asStream() else {
                 continue
             }
-            owsAssertDebug(stream.contentType.raw == .file)
+            owsAssertDebug(stream.contentType == .file)
             owsAssertDebug(stream.mimeType == MimeType.textXSignalPlain.rawValue)
 
             // If the attachment fails to decrypt, skip this record.

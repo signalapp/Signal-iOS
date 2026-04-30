@@ -2054,19 +2054,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     return .stream(stream)
                 }
 
-                let mediaName = Attachment.mediaName(
-                    sha256ContentHash: pendingAttachment.sha256ContentHash,
-                    encryptionKey: pendingAttachment.encryptionKey,
-                )
-                let streamInfo = Attachment.StreamInfo(
-                    sha256ContentHash: pendingAttachment.sha256ContentHash,
-                    mediaName: mediaName,
-                    encryptedByteCount: pendingAttachment.encryptedByteCount,
-                    unencryptedByteCount: pendingAttachment.unencryptedByteCount,
-                    contentType: pendingAttachment.validatedContentType,
-                    digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
-                    localRelativeFilePath: pendingAttachment.localRelativeFilePath,
-                )
+                let streamInfo = Attachment.StreamInfo(pendingAttachment: pendingAttachment)
 
                 // Try and update the attachment.
                 do throws(AttachmentInsertError) {
@@ -2083,7 +2071,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
 
                     self.orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
-                        withMediaName: mediaName,
+                        withMediaName: pendingAttachment.mediaName,
                         tx: tx,
                     )
                 } catch {
@@ -2122,7 +2110,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             tx: tx,
                         )
                         let newOwnerParams = AttachmentReference.ConstructionParams(
-                            owner: reference.owner.forReassignmentWithContentType(pendingAttachment.validatedContentType.raw),
+                            owner: reference.owner.forReassignmentWithContentType(pendingAttachment.contentType),
                             sourceFilename: reference.sourceFilename,
                             sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
                             sourceMediaSizePixels: reference.sourceMediaSizePixels,
@@ -2214,19 +2202,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     tx: tx,
                 )
 
-                let mediaName = Attachment.mediaName(
-                    sha256ContentHash: pendingAttachment.sha256ContentHash,
-                    encryptionKey: pendingAttachment.encryptionKey,
-                )
-                let streamInfo = Attachment.StreamInfo(
-                    sha256ContentHash: pendingAttachment.sha256ContentHash,
-                    mediaName: mediaName,
-                    encryptedByteCount: pendingAttachment.encryptedByteCount,
-                    unencryptedByteCount: pendingAttachment.unencryptedByteCount,
-                    contentType: pendingAttachment.validatedContentType,
-                    digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
-                    localRelativeFilePath: pendingAttachment.localRelativeFilePath,
-                )
+                let streamInfo = Attachment.StreamInfo(pendingAttachment: pendingAttachment)
 
                 let alreadyAssignedFirstReference: Bool
 
@@ -2236,18 +2212,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         throw OWSAssertionError("Attachment file deleted before creation")
                     }
 
-                    let mediaSizePixels: CGSize?
-                    switch pendingAttachment.validatedContentType {
-                    case .invalid, .file, .audio:
-                        mediaSizePixels = nil
-                    case .image(let pixelSize), .video(_, let pixelSize, _), .animatedImage(let pixelSize):
-                        mediaSizePixels = pixelSize
-                    }
                     let referenceParams = AttachmentReference.ConstructionParams(
                         owner: firstReference.owner,
                         sourceFilename: firstReference.sourceFilename,
                         sourceUnencryptedByteCount: pendingAttachment.unencryptedByteCount,
-                        sourceMediaSizePixels: mediaSizePixels,
+                        sourceMediaSizePixels: pendingAttachment.mediaPixelSize,
                     )
                     var attachmentRecord = Attachment.Record.forInsertingStream(
                         blurHash: pendingAttachment.blurHash,
@@ -2255,7 +2224,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         encryptionKey: pendingAttachment.encryptionKey,
                         streamInfo: streamInfo,
                         sha256ContentHash: pendingAttachment.sha256ContentHash,
-                        mediaName: mediaName,
+                        mediaName: pendingAttachment.mediaName,
                     )
 
                     let attachment = try self.attachmentStore.insert(
@@ -2265,7 +2234,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
 
                     self.orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
-                        withMediaName: mediaName,
+                        withMediaName: pendingAttachment.mediaName,
                         tx: tx,
                     )
 
@@ -2338,7 +2307,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
                     let newOwnerParams = AttachmentReference.ConstructionParams(
                         owner: reference.owner.forReassignmentWithContentType(
-                            newAttachmentStream.contentType.raw,
+                            newAttachmentStream.contentType,
                         ),
                         sourceFilename: reference.sourceFilename,
                         sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
@@ -2405,19 +2374,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     tx: tx,
                 )
 
-                let mediaName = Attachment.mediaName(
-                    sha256ContentHash: pendingThumbnailAttachment.sha256ContentHash,
-                    encryptionKey: pendingThumbnailAttachment.encryptionKey,
-                )
-                let streamInfo = Attachment.StreamInfo(
-                    sha256ContentHash: pendingThumbnailAttachment.sha256ContentHash,
-                    mediaName: mediaName,
-                    encryptedByteCount: pendingThumbnailAttachment.encryptedByteCount,
-                    unencryptedByteCount: pendingThumbnailAttachment.unencryptedByteCount,
-                    contentType: pendingThumbnailAttachment.validatedContentType,
-                    digestSHA256Ciphertext: pendingThumbnailAttachment.digestSHA256Ciphertext,
-                    localRelativeFilePath: pendingThumbnailAttachment.localRelativeFilePath,
-                )
+                let streamInfo = Attachment.StreamInfo(pendingAttachment: pendingThumbnailAttachment)
 
                 let thumbnailAttachmentId: Attachment.IDType
                 do {
@@ -2425,18 +2382,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         throw OWSAssertionError("Attachment file deleted before creation")
                     }
 
-                    let mediaSizePixels: CGSize?
-                    switch pendingThumbnailAttachment.validatedContentType {
-                    case .invalid, .file, .audio:
-                        mediaSizePixels = nil
-                    case .image(let pixelSize), .video(_, let pixelSize, _), .animatedImage(let pixelSize):
-                        mediaSizePixels = pixelSize
-                    }
                     let referenceParams = AttachmentReference.ConstructionParams(
                         owner: firstReference.owner,
                         sourceFilename: firstReference.sourceFilename,
                         sourceUnencryptedByteCount: pendingThumbnailAttachment.unencryptedByteCount,
-                        sourceMediaSizePixels: mediaSizePixels,
+                        sourceMediaSizePixels: pendingThumbnailAttachment.mediaPixelSize,
                     )
                     var attachmentRecord = Attachment.Record.forInsertingStream(
                         blurHash: pendingThumbnailAttachment.blurHash,
@@ -2444,7 +2394,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         encryptionKey: pendingThumbnailAttachment.encryptionKey,
                         streamInfo: streamInfo,
                         sha256ContentHash: pendingThumbnailAttachment.sha256ContentHash,
-                        mediaName: mediaName,
+                        mediaName: pendingThumbnailAttachment.mediaName,
                     )
 
                     let newAttachment = try self.attachmentStore.insert(
@@ -2454,7 +2404,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
 
                     self.orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
-                        withMediaName: mediaName,
+                        withMediaName: pendingThumbnailAttachment.mediaName,
                         tx: tx,
                     )
 
@@ -2521,7 +2471,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         tx: tx,
                     )
                     let newOwnerParams = AttachmentReference.ConstructionParams(
-                        owner: reference.owner.forReassignmentWithContentType(pendingThumbnailAttachment.validatedContentType.raw),
+                        owner: reference.owner.forReassignmentWithContentType(pendingThumbnailAttachment.contentType),
                         sourceFilename: reference.sourceFilename,
                         sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
                         sourceMediaSizePixels: reference.sourceMediaSizePixels,

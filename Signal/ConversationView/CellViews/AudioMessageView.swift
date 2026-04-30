@@ -409,8 +409,8 @@ class AudioMessageView: ManualStackView {
 
         visibleProgressRatio = audioProgressRatio
 
-        if let waveformTask = presentation.audioWaveform(attachmentStream: attachmentStream) {
-            waveformProgress.audioWaveformTask = waveformTask
+        if let attachmentStream {
+            waveformProgress.audioWaveformTask = presentation.audioWaveform(attachmentStream: attachmentStream)
             waveformProgress.isHidden = false
             progressSlider.isHidden = true
         } else {

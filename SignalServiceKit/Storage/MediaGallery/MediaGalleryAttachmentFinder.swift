@@ -295,7 +295,7 @@ public struct MediaGalleryAttachmentFinder {
             query = query.filter(literal: "isVisualMediaContentType = \(true)")
         case .allAudioCategory:
             query = query
-                .filter(contentTypeColumn == AttachmentReference.ContentType.audio.rawValue)
+                .filter(contentTypeColumn == Attachment.ContentTypeRaw.audio.rawValue)
         case .otherFiles:
             query = query.filter(literal: "isInvalidOrFileContentType = \(true)")
         case .gifs:
@@ -304,26 +304,26 @@ public struct MediaGalleryAttachmentFinder {
             // as it will use two indexes to filter to only gifs/looping videos within the thread.
             query = query
                 .filter(
-                    contentTypeColumn == AttachmentReference.ContentType.animatedImage.rawValue
+                    contentTypeColumn == Attachment.ContentTypeRaw.animatedImage.rawValue
                         || (
-                            contentTypeColumn == AttachmentReference.ContentType.video.rawValue
+                            contentTypeColumn == Attachment.ContentTypeRaw.video.rawValue
                                 && renderingFlagColumn == AttachmentReference.RenderingFlag.shouldLoop.rawValue
                         ),
                 )
         case .videos:
             query = query
-                .filter(contentTypeColumn == AttachmentReference.ContentType.video.rawValue)
+                .filter(contentTypeColumn == Attachment.ContentTypeRaw.video.rawValue)
         case .photos:
             query = query
-                .filter(contentTypeColumn == AttachmentReference.ContentType.image.rawValue)
+                .filter(contentTypeColumn == Attachment.ContentTypeRaw.image.rawValue)
         case .voiceMessages:
             query = query
-                .filter(contentTypeColumn == AttachmentReference.ContentType.audio.rawValue)
+                .filter(contentTypeColumn == Attachment.ContentTypeRaw.audio.rawValue)
                 // Whether an audio attachment is a "voice message" is encoded in the rendering flag.
                 .filter(renderingFlagColumn == AttachmentReference.RenderingFlag.voiceMessage.rawValue)
         case .audioFiles:
             query = query
-                .filter(contentTypeColumn == AttachmentReference.ContentType.audio.rawValue)
+                .filter(contentTypeColumn == Attachment.ContentTypeRaw.audio.rawValue)
                 // Whether an audio attachment is a "voice message" is encoded in the rendering flag.
                 .filter(renderingFlagColumn != AttachmentReference.RenderingFlag.voiceMessage.rawValue)
         }

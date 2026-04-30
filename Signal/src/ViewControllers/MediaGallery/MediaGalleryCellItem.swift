@@ -104,15 +104,9 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
 
     var type: PhotoGridItemType {
         if galleryItem.isVideo {
-            let duration: TimeInterval?
-            switch galleryItem.attachmentStream.attachmentStream.contentType {
-            case .file, .invalid, .image, .animatedImage, .audio:
-                duration = nil
-            case .video(let _duration, _, _):
-                duration = _duration
-            }
-
-            return .video(duration: duration)
+            return .video(
+                duration: galleryItem.attachmentStream.attachmentStream.cachedVideoDuration,
+            )
         } else if galleryItem.isAnimated {
             return .animated
         } else {

@@ -24,7 +24,6 @@ public enum AttachmentIntegrityCheck: Equatable {
 }
 
 public struct PendingAttachment {
-    let blurHash: String?
     let sha256ContentHash: Data
     let encryptedByteCount: UInt32
     let unencryptedByteCount: UInt32
@@ -34,8 +33,22 @@ public struct PendingAttachment {
     let localRelativeFilePath: String
     private(set) var renderingFlag: AttachmentReference.RenderingFlag
     let sourceFilename: String?
-    let validatedContentType: Attachment.ContentType
     let orphanRecordId: OrphanedAttachmentRecord.RowId
+
+    let contentType: Attachment.ContentTypeRaw
+    let blurHash: String?
+    let mediaPixelSize: CGSize?
+    let videoDuration: TimeInterval?
+    let videoStillFrameRelativeFilePath: String?
+    let audioDuration: TimeInterval?
+    let audioWaveformRelativeFilePath: String?
+
+    var mediaName: String {
+        Attachment.mediaName(
+            sha256ContentHash: sha256ContentHash,
+            encryptionKey: encryptionKey,
+        )
+    }
 
     mutating func removeBorderlessRenderingFlagIfPresent() {
         switch renderingFlag {
@@ -48,12 +61,18 @@ public struct PendingAttachment {
 }
 
 public struct RevalidatedAttachment {
-    let validatedContentType: Attachment.ContentType
     /// Revalidation might _change_ the mimeType we report.
     let mimeType: String
-    let blurHash: String?
     /// Orphan record for any created ancillary files, such as the audio waveform.
     let orphanRecordId: OrphanedAttachmentRecord.RowId
+
+    let contentType: Attachment.ContentTypeRaw
+    let blurHash: String?
+    let mediaPixelSize: CGSize?
+    let videoDuration: TimeInterval?
+    let videoStillFrameRelativeFilePath: String?
+    let audioDuration: TimeInterval?
+    let audioWaveformRelativeFilePath: String?
 }
 
 public protocol ValidatedInlineMessageBody {

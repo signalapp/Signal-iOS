@@ -347,26 +347,20 @@ public class LinkPreviewSent: LinkPreviewState {
     }
 
     public var imagePixelSize: CGSize {
-        switch imageState {
-        case .none, .invalid:
-            owsFailDebug("Unexpected image state")
+        if
+            let attachmentStream = imageAttachment?.attachment.asStream(),
+            let pixelSize = attachmentStream.cachedMediaSizePixels
+        {
+            return pixelSize
+        } else if
+            let attachmentReference = imageAttachment?.reference,
+            let pixelSize = attachmentReference.sourceMediaSizePixels
+        {
+            return pixelSize
+        } else if imageAttachment?.attachment.blurHash != nil {
+            return CGSize(width: 400, height: 236)
+        } else {
             return .zero
-        case let .loading(blurHash), let .failed(blurHash):
-            guard blurHash != nil else { return .zero }
-            return imageAttachment?.reference.sourceMediaSizePixels
-                // Fall back to default size to render the blurhash in.
-                ?? CGSize(width: 400, height: 236)
-        case .loaded:
-            guard let attachmentStream = imageAttachment?.attachment.asStream() else {
-                return CGSize.zero
-            }
-
-            switch attachmentStream.contentType {
-            case .image(let pixelSize?), .animatedImage(let pixelSize?):
-                return pixelSize
-            case .image(pixelSize: nil), .animatedImage(pixelSize: nil), .audio, .video, .file, .invalid:
-                return .zero
-            }
         }
     }
 

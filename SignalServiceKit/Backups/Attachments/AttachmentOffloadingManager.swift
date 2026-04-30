@@ -235,24 +235,10 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                     OrphanedAttachmentRecord.InsertableRecord(
                         isPendingAttachment: false,
                         localRelativeFilePath: attachment.streamInfo?.localRelativeFilePath,
-                        // Don't delete the thumbnail
+                        // Don't delete the thumbnail.
                         localRelativeFilePathThumbnail: nil,
-                        localRelativeFilePathAudioWaveform: {
-                            switch attachment.streamInfo?.contentType {
-                            case .audio(_, let waveformRelativeFilePath):
-                                return waveformRelativeFilePath
-                            default:
-                                return nil
-                            }
-                        }(),
-                        localRelativeFilePathVideoStillFrame: {
-                            switch attachment.streamInfo?.contentType {
-                            case .video(_, _, let stillFrameRelativeFilePath):
-                                return stillFrameRelativeFilePath
-                            default:
-                                return nil
-                            }
-                        }(),
+                        localRelativeFilePathAudioWaveform: attachment.streamInfo?.cachedAudioWaveformRelativeFilePath,
+                        localRelativeFilePathVideoStillFrame: attachment.streamInfo?.cachedVideoStillFrameRelativeFilePath,
                     ),
                     tx: tx,
                 )

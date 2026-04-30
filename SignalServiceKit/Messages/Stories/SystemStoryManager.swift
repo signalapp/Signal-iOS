@@ -53,7 +53,7 @@ public class OnboardingStoryManagerStoryMessageFactory {
             renderingFlag: .default,
             sourceFilename: nil,
         )
-        guard case .image = pendingAttachment.validatedContentType else {
+        guard case .image = pendingAttachment.contentType else {
             throw OWSAssertionError("onboarding story isn't valid")
         }
         return .pendingAttachment(pendingAttachment)

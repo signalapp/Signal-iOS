@@ -11,22 +11,27 @@ import Foundation
 
 extension Attachment.StreamInfo {
     public static func mock(
-        sha256ContentHash: Data? = nil,
-        mediaName: String? = nil,
-        encryptedByteCount: UInt32? = nil,
-        unencryptedByteCount: UInt32? = nil,
-        contentType: Attachment.ContentType? = nil,
-        digestSHA256Ciphertext: Data? = nil,
-        localRelativeFilePath: String? = nil,
+        sha256ContentHash: Data = Randomness.generateRandomBytes(32),
+        mediaName: String = UUID().uuidString,
+        encryptedByteCount: UInt32 = .random(in: 0..<95_000_000),
+        unencryptedByteCount: UInt32 = .random(in: 0..<95_000_000),
+        contentType: Attachment.ContentTypeRaw = .file,
+        digestSHA256Ciphertext: Data = Randomness.generateRandomBytes(32),
+        localRelativeFilePath: String = UUID().uuidString,
     ) -> Attachment.StreamInfo {
         return Attachment.StreamInfo(
-            sha256ContentHash: sha256ContentHash ?? Randomness.generateRandomBytes(32),
-            mediaName: mediaName ?? UUID().uuidString,
-            encryptedByteCount: encryptedByteCount ?? UInt32.random(in: 0..<95_000_000),
-            unencryptedByteCount: unencryptedByteCount ?? UInt32.random(in: 0..<95_000_000),
-            contentType: contentType ?? .file,
-            digestSHA256Ciphertext: digestSHA256Ciphertext ?? Randomness.generateRandomBytes(32),
-            localRelativeFilePath: localRelativeFilePath ?? UUID().uuidString,
+            sha256ContentHash: sha256ContentHash,
+            mediaName: mediaName,
+            encryptedByteCount: encryptedByteCount,
+            unencryptedByteCount: unencryptedByteCount,
+            contentType: contentType,
+            cachedMediaSizePixels: nil,
+            cachedVideoDuration: nil,
+            cachedVideoStillFrameRelativeFilePath: nil,
+            cachedAudioDuration: nil,
+            cachedAudioWaveformRelativeFilePath: nil,
+            digestSHA256Ciphertext: digestSHA256Ciphertext,
+            localRelativeFilePath: localRelativeFilePath,
         )
     }
 }

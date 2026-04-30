@@ -62,24 +62,25 @@ public class AudioAttachment {
     public let isDownloading: Bool
 
     public init?(
-        attachmentStream: ReferencedAttachmentStream,
+        attachmentStream referencedAttachmentStream: ReferencedAttachmentStream,
         owningMessage: TSMessage?,
         metadata: MediaMetadata?,
         receivedAtDate: Date,
     ) {
-        let audioDurationSeconds: TimeInterval?
-        switch attachmentStream.attachmentStream.contentType {
-        case .audio(let duration, _):
-            if let duration, duration < 0 {
-                return nil
-            }
-
-            audioDurationSeconds = duration
+        switch referencedAttachmentStream.attachmentStream.contentType {
+        case .audio:
+            break
         default:
             return nil
         }
+
+        let audioDurationSeconds = referencedAttachmentStream.attachmentStream.cachedAudioDuration
+        if let audioDurationSeconds, audioDurationSeconds < 0 {
+            return nil
+        }
+
         self.state = .attachmentStream(
-            attachmentStream: attachmentStream,
+            attachmentStream: referencedAttachmentStream,
             audioDurationSeconds: audioDurationSeconds,
         )
         self.isDownloading = false

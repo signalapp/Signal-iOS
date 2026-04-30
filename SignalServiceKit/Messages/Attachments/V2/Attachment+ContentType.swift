@@ -14,7 +14,7 @@ extension Attachment {
     /// These indexes rely on the generated virtual columns isVisualMediaContentType and
     /// isInvalidOrFileContentType respectively. These columns must be redefined if the raw
     /// values of this enum change, and might need to be redefined if new cases are added.
-    public enum ContentTypeRaw: Int {
+    public enum ContentTypeRaw: UInt32 {
         /// MIME type indicated it should be some other non-file type but validation failed.
         /// Inspect ``Attachment/mimeType`` to determine what type it tried to be.
         case invalid = 0
@@ -24,16 +24,6 @@ extension Attachment {
         case video = 3
         case animatedImage = 4
         case audio = 5
-
-        public init(rawValue: UInt32) throws {
-            guard
-                let rawValue = Int(exactly: rawValue),
-                let value = ContentTypeRaw(rawValue: rawValue)
-            else {
-                throw OWSAssertionError("Invalid raw content type")
-            }
-            self = value
-        }
 
         init(mimeType: String) {
             if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
@@ -48,84 +38,6 @@ extension Attachment {
                 self = .animatedImage
             } else {
                 self = .file
-            }
-        }
-    }
-
-    public enum ContentType {
-        /// MIME type indicated it should be some other non-file type but validation failed.
-        /// Inspect ``Attachment/mimeType`` to determine what type it tried to be.
-        case invalid
-
-        /// Some arbitrary file. Used when no other case applies.
-        case file
-
-        case image(pixelSize: CGSize?)
-
-        /// `stillFrameRelativeFilePath` points at an image file encrypted with the ``Attachment``'s `encryptionKey`.
-        /// If nil, no still frame is available and no attempt should be made to generate a new one.
-        case video(
-            duration: TimeInterval?,
-            pixelSize: CGSize?,
-            stillFrameRelativeFilePath: String?,
-        )
-
-        case animatedImage(pixelSize: CGSize?)
-
-        /// `waveformRelativeFilePath` points at the ``AudioWaveform`` file encrypted
-        /// with the ``Attachment``'s `encryptionKey`. If nil, no waveform is available
-        /// and no attempt should be made to generate a new one.
-        case audio(
-            duration: TimeInterval?,
-            waveformRelativeFilePath: String?,
-        )
-
-        public init?(
-            raw: UInt32?,
-            cachedAudioDurationSeconds: Double?,
-            cachedMediaHeightPixels: UInt32?,
-            cachedMediaWidthPixels: UInt32?,
-            cachedVideoDurationSeconds: Double?,
-            audioWaveformRelativeFilePath: String?,
-            videoStillFrameRelativeFilePath: String?,
-        ) throws {
-            guard let raw else {
-                return nil
-            }
-            let rawEnum = try ContentTypeRaw(rawValue: raw)
-
-            let pixelSize: CGSize? = {
-                guard
-                    let cachedMediaWidthPixels,
-                    let cachedMediaWidthPixels = Int(exactly: cachedMediaWidthPixels),
-                    let cachedMediaHeightPixels,
-                    let cachedMediaHeightPixels = Int(exactly: cachedMediaHeightPixels)
-                else {
-                    return nil
-                }
-                return CGSize(width: cachedMediaWidthPixels, height: cachedMediaHeightPixels)
-            }()
-
-            switch rawEnum {
-            case .invalid:
-                self = .invalid
-            case .file:
-                self = .file
-            case .image:
-                self = .image(pixelSize: pixelSize)
-            case .video:
-                self = .video(
-                    duration: cachedVideoDurationSeconds,
-                    pixelSize: pixelSize,
-                    stillFrameRelativeFilePath: videoStillFrameRelativeFilePath,
-                )
-            case .animatedImage:
-                self = .animatedImage(pixelSize: pixelSize)
-            case .audio:
-                self = .audio(
-                    duration: cachedAudioDurationSeconds,
-                    waveformRelativeFilePath: audioWaveformRelativeFilePath,
-                )
             }
         }
     }
@@ -176,30 +88,4 @@ extension Attachment.ContentTypeRaw {
             return false
         }
     }
-}
-
-extension Attachment.ContentType {
-
-    public var raw: Attachment.ContentTypeRaw {
-        switch self {
-        case .invalid:
-            return .invalid
-        case .file:
-            return .file
-        case .image:
-            return .image
-        case .video:
-            return .video
-        case .animatedImage:
-            return .animatedImage
-        case .audio:
-            return .audio
-        }
-    }
-
-    public var isImage: Bool { raw.isImage }
-    public var isVideo: Bool { raw.isVideo }
-    public var isAnimatedImage: Bool { raw.isAnimatedImage }
-    public var isVisualMedia: Bool { raw.isVisualMedia }
-    public var isAudio: Bool { raw.isAudio }
 }

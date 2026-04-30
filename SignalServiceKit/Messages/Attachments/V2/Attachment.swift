@@ -112,8 +112,22 @@ public class Attachment {
         ///  Byte count of the decrypted fullsize resource
         public let unencryptedByteCount: UInt32
 
-        /// For downloaded attachments, the validated type of content in the actual file.
-        public var contentType: ContentType
+        public var contentType: ContentTypeRaw
+
+        /// A cached pixel size for this attachment, if it is visual media.
+        public var cachedMediaSizePixels: CGSize?
+
+        /// A cached duration for this attachment, if it is video.
+        public var cachedVideoDuration: TimeInterval?
+        /// A file path to a cached image file encrypted with this attachment's
+        /// `encryptionKey`, if it is video.
+        public var cachedVideoStillFrameRelativeFilePath: String?
+
+        /// A cached duration for this attachment, if it is audio.
+        public var cachedAudioDuration: TimeInterval?
+        /// A file path to a cached ``AudioWaveform`` file encrypted with this
+        /// attachment's `encryptionKey`, if it is audio.
+        public var cachedAudioWaveformRelativeFilePath: String?
 
         /// File digest info.
         ///
@@ -127,6 +141,51 @@ public class Attachment {
 
         /// Filepath to the encrypted fullsize media file on local disk.
         public let localRelativeFilePath: String
+
+        init(pendingAttachment: PendingAttachment) {
+            self.init(
+                sha256ContentHash: pendingAttachment.sha256ContentHash,
+                mediaName: pendingAttachment.mediaName,
+                encryptedByteCount: pendingAttachment.encryptedByteCount,
+                unencryptedByteCount: pendingAttachment.unencryptedByteCount,
+                contentType: pendingAttachment.contentType,
+                cachedMediaSizePixels: pendingAttachment.mediaPixelSize,
+                cachedVideoDuration: pendingAttachment.videoDuration,
+                cachedVideoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath,
+                cachedAudioDuration: pendingAttachment.audioDuration,
+                cachedAudioWaveformRelativeFilePath: pendingAttachment.audioWaveformRelativeFilePath,
+                digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
+                localRelativeFilePath: pendingAttachment.localRelativeFilePath,
+            )
+        }
+
+        init(
+            sha256ContentHash: Data,
+            mediaName: String,
+            encryptedByteCount: UInt32,
+            unencryptedByteCount: UInt32,
+            contentType: ContentTypeRaw,
+            cachedMediaSizePixels: CGSize?,
+            cachedVideoDuration: TimeInterval?,
+            cachedVideoStillFrameRelativeFilePath: String?,
+            cachedAudioDuration: TimeInterval?,
+            cachedAudioWaveformRelativeFilePath: String?,
+            digestSHA256Ciphertext: Data,
+            localRelativeFilePath: String,
+        ) {
+            self.sha256ContentHash = sha256ContentHash
+            self.mediaName = mediaName
+            self.encryptedByteCount = encryptedByteCount
+            self.unencryptedByteCount = unencryptedByteCount
+            self.contentType = contentType
+            self.cachedMediaSizePixels = cachedMediaSizePixels
+            self.cachedVideoDuration = cachedVideoDuration
+            self.cachedVideoStillFrameRelativeFilePath = cachedVideoStillFrameRelativeFilePath
+            self.cachedAudioDuration = cachedAudioDuration
+            self.cachedAudioWaveformRelativeFilePath = cachedAudioWaveformRelativeFilePath
+            self.digestSHA256Ciphertext = digestSHA256Ciphertext
+            self.localRelativeFilePath = localRelativeFilePath
+        }
     }
 
     public struct TransitTierInfo: Equatable {
@@ -215,16 +274,6 @@ public class Attachment {
             throw OWSAssertionError("Attachment is only for inserted records")
         }
 
-        let contentType = try ContentType(
-            raw: record.contentType,
-            cachedAudioDurationSeconds: record.cachedAudioDurationSeconds,
-            cachedMediaHeightPixels: record.cachedMediaHeightPixels,
-            cachedMediaWidthPixels: record.cachedMediaWidthPixels,
-            cachedVideoDurationSeconds: record.cachedVideoDurationSeconds,
-            audioWaveformRelativeFilePath: record.audioWaveformRelativeFilePath,
-            videoStillFrameRelativeFilePath: record.videoStillFrameRelativeFilePath,
-        )
-
         self.id = id
         self.blurHash = record.blurHash
         self.mimeType = record.mimeType
@@ -235,15 +284,46 @@ public class Attachment {
         self.localRelativeFilePathThumbnail = record.localRelativeFilePathThumbnail
         self.lastFullscreenViewTimestamp = record.lastFullscreenViewTimestamp
 
-        self.streamInfo = StreamInfo(
-            sha256ContentHash: record.sha256ContentHash,
-            mediaName: record.mediaName,
-            encryptedByteCount: record.encryptedByteCount,
-            unencryptedByteCount: record.unencryptedByteCount,
-            contentType: contentType,
-            digestSHA256Ciphertext: record.digestSHA256Ciphertext,
-            localRelativeFilePath: record.localRelativeFilePath,
-        )
+        if
+            let sha256ContentHash = record.sha256ContentHash,
+            let mediaName = record.mediaName,
+            let encryptedByteCount = record.encryptedByteCount,
+            let unencryptedByteCount = record.unencryptedByteCount,
+            let contentType = record.contentType,
+            let digestSHA256Ciphertext = record.digestSHA256Ciphertext,
+            let localRelativeFilePath = record.localRelativeFilePath
+        {
+            guard let contentType = ContentTypeRaw(rawValue: contentType) else {
+                throw OWSAssertionError("Unexpected raw content type! \(contentType)")
+            }
+
+            self.streamInfo = StreamInfo(
+                sha256ContentHash: sha256ContentHash,
+                mediaName: mediaName,
+                encryptedByteCount: encryptedByteCount,
+                unencryptedByteCount: unencryptedByteCount,
+                contentType: contentType,
+                cachedMediaSizePixels: {
+                    if
+                        let width = record.cachedMediaWidthPixels.map({ Int($0) }),
+                        let height = record.cachedMediaHeightPixels.map({ Int($0) })
+                    {
+                        return CGSize(width: width, height: height)
+                    } else {
+                        return nil
+                    }
+                }(),
+                cachedVideoDuration: record.cachedVideoDurationSeconds,
+                cachedVideoStillFrameRelativeFilePath: record.videoStillFrameRelativeFilePath,
+                cachedAudioDuration: record.cachedAudioDurationSeconds,
+                cachedAudioWaveformRelativeFilePath: record.audioWaveformRelativeFilePath,
+                digestSHA256Ciphertext: digestSHA256Ciphertext,
+                localRelativeFilePath: localRelativeFilePath,
+            )
+        } else {
+            self.streamInfo = nil
+        }
+
         let latestTransitTierInfo = TransitTierInfo(
             cdnNumber: record.latestTransitCdnNumber,
             cdnKey: record.latestTransitCdnKey,
@@ -361,9 +441,9 @@ public class Attachment {
         let metadata = Upload.LocalUploadMetadata(
             fileUrl: stream.fileURL,
             key: encryptionKey,
-            digest: stream.info.digestSHA256Ciphertext,
-            encryptedDataLength: stream.info.encryptedByteCount,
-            plaintextDataLength: stream.info.unencryptedByteCount,
+            digest: stream.digestSHA256Ciphertext,
+            encryptedDataLength: stream.encryptedByteCount,
+            plaintextDataLength: stream.unencryptedByteCount,
         )
 
         if
@@ -410,47 +490,6 @@ public class Attachment {
 }
 
 // MARK: -
-
-private extension Attachment.StreamInfo {
-    init?(
-        sha256ContentHash: Data?,
-        mediaName: String?,
-        encryptedByteCount: UInt32?,
-        unencryptedByteCount: UInt32?,
-        contentType: Attachment.ContentType?,
-        digestSHA256Ciphertext: Data?,
-        localRelativeFilePath: String?,
-    ) {
-        guard
-            let sha256ContentHash,
-            let mediaName,
-            let encryptedByteCount,
-            let unencryptedByteCount,
-            let contentType,
-            let digestSHA256Ciphertext,
-            let localRelativeFilePath
-        else {
-            // sha256ContentHash and mediaName might still be set
-            // if we don't have a stream. The other columns must either
-            // all be set or none set.
-            owsAssertDebug(
-                encryptedByteCount == nil
-                    && unencryptedByteCount == nil
-                    && contentType == nil
-                    && localRelativeFilePath == nil,
-                "Have partial stream info!",
-            )
-            return nil
-        }
-        self.sha256ContentHash = sha256ContentHash
-        self.mediaName = mediaName
-        self.encryptedByteCount = encryptedByteCount
-        self.unencryptedByteCount = unencryptedByteCount
-        self.contentType = contentType
-        self.digestSHA256Ciphertext = digestSHA256Ciphertext
-        self.localRelativeFilePath = localRelativeFilePath
-    }
-}
 
 private extension Attachment.TransitTierInfo {
     init?(

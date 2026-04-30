@@ -426,22 +426,15 @@ extension ReferencedAttachment {
             proto.blurHash = blurHash
         }
 
-        switch attachment.streamInfo?.contentType {
-        case .image(let pixelSize?),
-             .animatedImage(let pixelSize?),
-             .video(_, let pixelSize?, _):
+        // Prefer the pixel size we inferred from the downloaded attachment, if
+        // available. Otherwise, use the pixel size from wherever we got this
+        // attachment, if available.
+        if let pixelSize = attachment.streamInfo?.cachedMediaSizePixels {
             proto.width = UInt32(pixelSize.width)
             proto.height = UInt32(pixelSize.height)
-        case nil,
-             .image(pixelSize: nil),
-             .animatedImage(pixelSize: nil),
-             .video(_, pixelSize: nil, _):
-            if let mediaSize = reference.sourceMediaSizePixels {
-                proto.width = UInt32(mediaSize.width)
-                proto.height = UInt32(mediaSize.height)
-            }
-        case .audio, .file, .invalid:
-            break
+        } else if let pixelSize = reference.sourceMediaSizePixels {
+            proto.width = UInt32(pixelSize.width)
+            proto.height = UInt32(pixelSize.height)
         }
 
         proto.locatorInfo = self.asBackupFilePointerLocatorInfo(context: context)

@@ -175,7 +175,7 @@ extension Attachment {
             self.mimeType = mimeType
             self.encryptionKey = encryptionKey
             self.digestSHA256Ciphertext = streamInfo?.digestSHA256Ciphertext
-            self.contentType = (streamInfo?.contentType.raw.rawValue).map { UInt32($0) }
+            self.contentType = streamInfo?.contentType.rawValue
             self.latestTransitCdnNumber = latestTransitTierInfo?.cdnNumber
             self.latestTransitCdnKey = latestTransitTierInfo?.cdnKey
             self._latestTransitUploadTimestamp = DBUInt64Optional(wrappedValue: latestTransitTierInfo?.uploadTimestamp)
@@ -219,51 +219,12 @@ extension Attachment {
             self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
             self._lastFullscreenViewTimestamp = DBUInt64Optional(wrappedValue: lastFullscreenViewTimestamp)
 
-            let cachedAudioDurationSeconds: TimeInterval?
-            let cachedMediaSizePixels: CGSize?
-            let cachedVideoDurationSeconds: TimeInterval?
-            let audioWaveformRelativeFilePath: String?
-            let videoStillFrameRelativeFilePath: String?
-
-            switch streamInfo?.contentType {
-            case .invalid, .file, nil:
-                cachedAudioDurationSeconds = nil
-                cachedMediaSizePixels = nil
-                cachedVideoDurationSeconds = nil
-                audioWaveformRelativeFilePath = nil
-                videoStillFrameRelativeFilePath = nil
-            case .image(let pixelSize):
-                cachedAudioDurationSeconds = nil
-                cachedMediaSizePixels = pixelSize
-                cachedVideoDurationSeconds = nil
-                audioWaveformRelativeFilePath = nil
-                videoStillFrameRelativeFilePath = nil
-            case .video(let duration, let pixelSize, let stillFrameRelativeFilePath):
-                cachedAudioDurationSeconds = nil
-                cachedMediaSizePixels = pixelSize
-                cachedVideoDurationSeconds = duration
-                audioWaveformRelativeFilePath = nil
-                videoStillFrameRelativeFilePath = stillFrameRelativeFilePath
-            case .animatedImage(let pixelSize):
-                cachedAudioDurationSeconds = nil
-                cachedMediaSizePixels = pixelSize
-                cachedVideoDurationSeconds = nil
-                audioWaveformRelativeFilePath = nil
-                videoStillFrameRelativeFilePath = nil
-            case .audio(let duration, let waveformRelativeFilePath):
-                cachedAudioDurationSeconds = duration
-                cachedMediaSizePixels = nil
-                cachedVideoDurationSeconds = nil
-                audioWaveformRelativeFilePath = waveformRelativeFilePath
-                videoStillFrameRelativeFilePath = nil
-            }
-
-            self.cachedAudioDurationSeconds = cachedAudioDurationSeconds
-            self.cachedMediaHeightPixels = cachedMediaSizePixels.map { UInt32(exactly: $0.height.rounded()) } ?? nil
-            self.cachedMediaWidthPixels = cachedMediaSizePixels.map { UInt32(exactly: $0.width.rounded()) } ?? nil
-            self.cachedVideoDurationSeconds = cachedVideoDurationSeconds
-            self.audioWaveformRelativeFilePath = audioWaveformRelativeFilePath
-            self.videoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
+            self.cachedAudioDurationSeconds = streamInfo?.cachedAudioDuration
+            self.cachedMediaHeightPixels = streamInfo?.cachedMediaSizePixels.flatMap { UInt32(exactly: $0.height.rounded()) }
+            self.cachedMediaWidthPixels = streamInfo?.cachedMediaSizePixels.flatMap { UInt32(exactly: $0.width.rounded()) }
+            self.cachedVideoDurationSeconds = streamInfo?.cachedVideoDuration
+            self.audioWaveformRelativeFilePath = streamInfo?.cachedAudioWaveformRelativeFilePath
+            self.videoStillFrameRelativeFilePath = streamInfo?.cachedVideoStillFrameRelativeFilePath
         }
 
         // MARK: -

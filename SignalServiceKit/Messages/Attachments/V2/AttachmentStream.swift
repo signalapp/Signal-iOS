@@ -11,22 +11,23 @@ public import SDWebImage
 public class AttachmentStream {
 
     public let attachment: Attachment
-
     public let info: Attachment.StreamInfo
-
-    /// Filepath to the encrypted fullsize media file on local disk.
-    public let localRelativeFilePath: String
-
-    // MARK: - Convenience
 
     public var id: Attachment.IDType { attachment.id }
     public var mimeType: String { attachment.mimeType }
-    public var contentHash: Data { info.sha256ContentHash }
-    public var encryptedFileSha256Digest: Data { info.digestSHA256Ciphertext }
+
+    public var digestSHA256Ciphertext: Data { info.digestSHA256Ciphertext }
     public var sha256ContentHash: Data { info.sha256ContentHash }
+    public var mediaName: String { info.mediaName }
     public var encryptedByteCount: UInt32 { info.encryptedByteCount }
     public var unencryptedByteCount: UInt32 { info.unencryptedByteCount }
-    public var contentType: Attachment.ContentType { info.contentType }
+    public var contentType: Attachment.ContentTypeRaw { info.contentType }
+    public var cachedMediaSizePixels: CGSize? { info.cachedMediaSizePixels }
+    public var cachedVideoDuration: TimeInterval? { info.cachedVideoDuration }
+    public var cachedVideoStillFrameRelativeFilePath: String? { info.cachedVideoStillFrameRelativeFilePath }
+    public var cachedAudioDuration: TimeInterval? { info.cachedAudioDuration }
+    public var cachedAudioWaveformRelativeFilePath: String? { info.cachedAudioWaveformRelativeFilePath }
+    public var localRelativeFilePath: String { info.localRelativeFilePath }
 
     // MARK: - Init
 
@@ -36,7 +37,6 @@ public class AttachmentStream {
     ) {
         self.attachment = attachment
         self.info = info
-        self.localRelativeFilePath = info.localRelativeFilePath
     }
 
     public convenience init?(attachment: Attachment) {
@@ -50,6 +50,8 @@ public class AttachmentStream {
             info: info,
         )
     }
+
+    // MARK: -
 
     /// Generate a new (random) relative file path for an attachment file.
     /// Can be used for the primary file, thumbnail, audio waveform, etc.
@@ -78,6 +80,8 @@ public class AttachmentStream {
     public static func deleteAllAttachmentFiles() {
         OWSFileSystem.deleteContents(ofDirectory: attachmentsDirectory().path)
     }
+
+    // MARK: -
 
     public var fileURL: URL {
         return Self.absoluteAttachmentFileURL(relativeFilePath: self.localRelativeFilePath)
@@ -146,8 +150,6 @@ public class AttachmentStream {
         return tmpURL
     }
 
-    // MARK: - Accessing file data
-
     public func decryptedRawData() throws -> Data {
         // hmac and digest are validated at download time; no need to revalidate every read.
         return try Cryptography.decryptFileWithoutValidating(
@@ -187,8 +189,8 @@ public class AttachmentStream {
                 throw OWSAssertionError("Failed to load image")
             }
             return image
-        case .video(_, _, let stillImageRelativeFilePath):
-            guard let stillImageRelativeFilePath else {
+        case .video:
+            guard let stillImageRelativeFilePath = info.cachedVideoStillFrameRelativeFilePath else {
                 throw OWSAssertionError("Still image unavailable for video")
             }
             return try UIImage.fromEncryptedFile(
@@ -228,15 +230,5 @@ public class AttachmentStream {
     public func thumbnailImageSync(quality: AttachmentThumbnailQuality) -> UIImage? {
         return DependenciesBridge.shared.attachmentThumbnailService
             .thumbnailImageSync(for: self, quality: quality)
-    }
-
-    // MARK: - Audio Waveform
-
-    public func audioWaveform() -> Task<AudioWaveform, Error> {
-        DependenciesBridge.shared.audioWaveformManager.audioWaveform(forAttachment: self, highPriority: false)
-    }
-
-    public func highPriorityAudioWaveform() -> Task<AudioWaveform, Error> {
-        DependenciesBridge.shared.audioWaveformManager.audioWaveform(forAttachment: self, highPriority: true)
     }
 }

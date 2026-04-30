@@ -9,13 +9,13 @@ import Foundation
 extension AVAsset {
 
     public static func from(
-        _ attachment: AttachmentStream,
+        _ attachmentStream: AttachmentStream,
     ) throws -> AVAsset {
         return try .fromEncryptedFile(
-            at: attachment.fileURL,
-            attachmentKey: AttachmentKey(combinedKey: attachment.attachment.encryptionKey),
-            plaintextLength: attachment.info.unencryptedByteCount,
-            mimeType: attachment.mimeType,
+            at: attachmentStream.fileURL,
+            attachmentKey: AttachmentKey(combinedKey: attachmentStream.attachment.encryptionKey),
+            plaintextLength: attachmentStream.unencryptedByteCount,
+            mimeType: attachmentStream.mimeType,
         )
     }
 

@@ -424,30 +424,42 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     private struct ContentTypeResult {
         let input: Input
-        let contentType: Attachment.ContentType
+        let contentType: Attachment.ContentTypeRaw
         let blurHash: String?
-        let audioWaveformFile: PendingFile?
-        let videoStillFrameFile: PendingFile?
+        let mediaPixelSize: CGSize?
+        let videoDuration: TimeInterval?
+        let videoStillFramePendingFile: PendingFile?
+        let audioDuration: TimeInterval?
+        let audioWaveformPendingFile: PendingFile?
     }
 
     private func validateContentType(
         input: Input,
     ) throws -> ContentTypeResult {
-        let contentType: Attachment.ContentType
+        let contentType: Attachment.ContentTypeRaw
         let blurHash: String?
-        let audioWaveformFile: PendingFile?
-        let videoStillFrameFile: PendingFile?
+        let mediaPixelSize: CGSize?
+        let videoDuration: TimeInterval?
+        let videoStillFramePendingFile: PendingFile?
+        let audioDuration: TimeInterval?
+        let audioWaveformPendingFile: PendingFile?
         switch Attachment.ContentTypeRaw(mimeType: input.mimeType) {
         case .invalid:
             contentType = .invalid
             blurHash = nil
-            audioWaveformFile = nil
-            videoStillFrameFile = nil
+            mediaPixelSize = nil
+            videoDuration = nil
+            videoStillFramePendingFile = nil
+            audioDuration = nil
+            audioWaveformPendingFile = nil
         case .file:
             contentType = .file
             blurHash = nil
-            audioWaveformFile = nil
-            videoStillFrameFile = nil
+            mediaPixelSize = nil
+            videoDuration = nil
+            videoStillFramePendingFile = nil
+            audioDuration = nil
+            audioWaveformPendingFile = nil
             if
                 input.mimeType == MimeType.textXSignalPlain.rawValue,
                 input.byteSize > OWSMediaUtils.kMaxOversizeTextMessageReceiveSizeBytes
@@ -456,28 +468,43 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             }
         case .image, .animatedImage:
             var mimeType = input.mimeType
-            (contentType, blurHash) = try validateImageContentType(input, mimeType: &mimeType)
+            (contentType, blurHash, mediaPixelSize) = try validateImageContentType(input, mimeType: &mimeType)
             input.mimeType = mimeType
-            audioWaveformFile = nil
-            videoStillFrameFile = nil
+            videoDuration = nil
+            videoStillFramePendingFile = nil
+            audioDuration = nil
+            audioWaveformPendingFile = nil
         case .video:
-            (contentType, videoStillFrameFile, blurHash) = try validateVideoContentType(
-                input,
-            )
-            audioWaveformFile = nil
+            (
+                contentType,
+                blurHash,
+                mediaPixelSize,
+                videoDuration,
+                videoStillFramePendingFile,
+            ) = try validateVideoContentType(input)
+            audioDuration = nil
+            audioWaveformPendingFile = nil
         case .audio:
-            (contentType, audioWaveformFile) = try validateAudioContentType(
-                input,
-            )
+            (
+                contentType,
+                audioDuration,
+                audioWaveformPendingFile,
+            ) = try validateAudioContentType(input)
             blurHash = nil
-            videoStillFrameFile = nil
+            mediaPixelSize = nil
+            videoDuration = nil
+            videoStillFramePendingFile = nil
         }
+
         return ContentTypeResult(
             input: input,
             contentType: contentType,
             blurHash: blurHash,
-            audioWaveformFile: audioWaveformFile,
-            videoStillFrameFile: videoStillFrameFile,
+            mediaPixelSize: mediaPixelSize,
+            videoDuration: videoDuration,
+            videoStillFramePendingFile: videoStillFramePendingFile,
+            audioDuration: audioDuration,
+            audioWaveformPendingFile: audioWaveformPendingFile,
         )
     }
 
@@ -487,7 +514,11 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     private func validateImageContentType(
         _ input: Input,
         mimeType: inout String,
-    ) throws -> (Attachment.ContentType, blurHash: String?) {
+    ) throws -> (
+        contentType: Attachment.ContentTypeRaw,
+        blurHash: String?,
+        pixelSize: CGSize?,
+    ) {
         let imageSource: OWSImageSource = try {
             switch input.type {
             case .inMemory(let data):
@@ -505,7 +536,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
         let imageMetadata = imageSource.imageMetadata()
         guard let imageMetadata else {
-            return (.invalid, nil)
+            return (.invalid, nil, nil)
         }
 
         if !imageMetadata.imageFormat.isValid(mimeType: mimeType) {
@@ -546,9 +577,9 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         }()
 
         if imageMetadata.isAnimated {
-            return (.animatedImage(pixelSize: pixelSize), blurHash)
+            return (.animatedImage, blurHash, pixelSize)
         } else {
-            return (.image(pixelSize: pixelSize), blurHash)
+            return (.image, blurHash, pixelSize)
         }
     }
 
@@ -556,7 +587,13 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     private func validateVideoContentType(
         _ input: Input,
-    ) throws -> (Attachment.ContentType, stillFrame: PendingFile?, blurHash: String?) {
+    ) throws -> (
+        contentType: Attachment.ContentTypeRaw,
+        blurHash: String?,
+        pixelSize: CGSize?,
+        duration: TimeInterval?,
+        stillFramePendingFile: PendingFile?,
+    ) {
         let asset: AVAsset = try {
             switch input.type {
             case .inMemory(let data):
@@ -580,7 +617,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         }()
 
         guard asset.isReadable else {
-            return (.invalid, nil, nil)
+            return (.invalid, nil, nil, nil, nil)
         }
 
         let thumbnailImage: UIImage
@@ -591,13 +628,13 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             )
         } catch {
             Logger.warn("couldn't generate thumbnail: \(error)")
-            return (.invalid, nil, nil)
+            return (.invalid, nil, nil, nil, nil)
         }
         owsAssertDebug(
             OWSMediaUtils.videoStillFrameMimeType == MimeType.imageJpeg,
             "Saving thumbnail as jpeg, which is not expected mime type",
         )
-        let stillFrameFile: PendingFile? = try thumbnailImage
+        let stillFramePendingFile: PendingFile? = try thumbnailImage
             // Don't compress; we already size-limited this thumbnail, it already has whatever
             // compression applied to the source video, and we want a high fidelity still frame.
             .jpegData(compressionQuality: 1)
@@ -619,13 +656,11 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let pixelSize = thumbnailImage.pixelSize
 
         return (
-            .video(
-                duration: duration,
-                pixelSize: pixelSize,
-                stillFrameRelativeFilePath: stillFrameFile?.reservedRelativeFilePath,
-            ),
-            stillFrameFile,
+            .video,
             blurHash,
+            pixelSize,
+            duration,
+            stillFramePendingFile,
         )
     }
 
@@ -633,7 +668,11 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     private func validateAudioContentType(
         _ input: Input,
-    ) throws -> (Attachment.ContentType, waveform: PendingFile?) {
+    ) throws -> (
+        contentType: Attachment.ContentTypeRaw,
+        duration: TimeInterval?,
+        waveformPendingFile: PendingFile?,
+    ) {
         let duration: TimeInterval
         do {
             duration = try computeAudioDuration(input, mimeType: input.mimeType)
@@ -644,25 +683,26 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             {
                 // These say the audio file is invalid.
                 // Eat them and return invalid instead of throwing
-                return (.invalid, nil)
+                return (.invalid, nil, nil)
             } else if error is UnreadableAudioFileError {
                 // Treat this as an invalid audio file
-                return (.invalid, nil)
+                return (.invalid, nil, nil)
             } else {
                 throw error
             }
         }
 
         // Don't require the waveform file.
-        let waveformFile = try? self.createAudioWaveform(
+        let waveformPendingFile = try? self.createAudioWaveform(
             input,
             mimeType: input.mimeType,
             attachmentKey: input.attachmentKey,
         )
 
         return (
-            .audio(duration: duration, waveformRelativeFilePath: waveformFile?.reservedRelativeFilePath),
-            waveformFile,
+            .audio,
+            duration,
+            waveformPendingFile,
         )
     }
 
@@ -760,8 +800,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let primaryFile: PrimaryFile?
 
         var input: Input { contentResult.input }
-        var audioWaveformFile: PendingFile? { contentResult.audioWaveformFile }
-        var videoStillFrameFile: PendingFile? { contentResult.videoStillFrameFile }
+        var audioWaveformFile: PendingFile? { contentResult.audioWaveformPendingFile }
+        var videoStillFrameFile: PendingFile? { contentResult.videoStillFramePendingFile }
     }
 
     private func prepareAttachmentFiles<Key: Hashable>(
@@ -797,16 +837,16 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         )
 
         var pendingAttachments = [Key: PendingAttachment]()
-        for (key, contentResult) in preparedContentResults {
-            guard let primaryFile = contentResult.primaryFile else {
+        for (key, preparedContentResult) in preparedContentResults {
+            guard let primaryFile = preparedContentResult.primaryFile else {
                 throw OWSAssertionError("Missing primary file!")
             }
             guard let orphanRecordId = orphanRecordIds[key] else {
                 throw OWSAssertionError("Missing orphan record!")
             }
-            let input = contentResult.contentResult.input
+            let input = preparedContentResult.contentResult.input
+            let contentResult = preparedContentResult.contentResult
             pendingAttachments[key] = PendingAttachment(
-                blurHash: contentResult.contentResult.blurHash,
                 sha256ContentHash: input.primaryFilePlaintextHash,
                 encryptedByteCount: primaryFile.encryptedLength,
                 unencryptedByteCount: primaryFile.plaintextLength,
@@ -816,8 +856,14 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 localRelativeFilePath: primaryFile.pendingFile.reservedRelativeFilePath,
                 renderingFlag: input.renderingFlag,
                 sourceFilename: input.sourceFilename,
-                validatedContentType: contentResult.contentResult.contentType,
                 orphanRecordId: orphanRecordId,
+                contentType: contentResult.contentType,
+                blurHash: contentResult.blurHash,
+                mediaPixelSize: contentResult.mediaPixelSize,
+                videoDuration: contentResult.videoDuration,
+                videoStillFrameRelativeFilePath: contentResult.videoStillFramePendingFile?.reservedRelativeFilePath,
+                audioDuration: contentResult.audioDuration,
+                audioWaveformRelativeFilePath: contentResult.audioWaveformPendingFile?.reservedRelativeFilePath,
             )
         }
         return pendingAttachments
@@ -841,10 +887,15 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 throw OWSAssertionError("Missing orphan record!")
             }
             results[key] = RevalidatedAttachment(
-                validatedContentType: contentResult.contentType,
                 mimeType: contentResult.input.mimeType,
-                blurHash: contentResult.blurHash,
                 orphanRecordId: orphanRecordId,
+                contentType: contentResult.contentType,
+                blurHash: contentResult.blurHash,
+                mediaPixelSize: contentResult.mediaPixelSize,
+                videoDuration: contentResult.videoDuration,
+                videoStillFrameRelativeFilePath: contentResult.videoStillFramePendingFile?.reservedRelativeFilePath,
+                audioDuration: contentResult.audioDuration,
+                audioWaveformRelativeFilePath: contentResult.audioWaveformPendingFile?.reservedRelativeFilePath,
             )
         }
         return results

@@ -108,7 +108,7 @@ extension AttachmentReference {
                 /// Note: if you want to know if an attachment is, say, a video,
                 /// even if you are ok using the mimeType for that if undownloaded,
                 /// you must fetch the full attachment object and use its mimeType.
-                public let contentType: ContentType?
+                public let contentType: Attachment.ContentTypeRaw?
 
                 /// True if the owning message's ``TSEditState`` is `pastRevision`.
                 public let isPastEditRevision: Bool
@@ -117,7 +117,7 @@ extension AttachmentReference {
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
-                    contentType: ContentType?,
+                    contentType: Attachment.ContentTypeRaw?,
                     isPastEditRevision: Bool,
                 ) {
                     self.messageRowId = messageRowId
@@ -149,7 +149,7 @@ extension AttachmentReference {
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
-                    contentType: ContentType?,
+                    contentType: Attachment.ContentTypeRaw?,
                     isPastEditRevision: Bool,
                     caption: String?,
                     renderingFlag: RenderingFlag,
@@ -180,7 +180,7 @@ extension AttachmentReference {
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
-                    contentType: ContentType?,
+                    contentType: Attachment.ContentTypeRaw?,
                     isPastEditRevision: Bool,
                     renderingFlag: RenderingFlag,
                 ) {
@@ -204,7 +204,7 @@ extension AttachmentReference {
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
-                    contentType: ContentType?,
+                    contentType: Attachment.ContentTypeRaw?,
                     isPastEditRevision: Bool,
                     stickerPackId: Data,
                     stickerId: UInt32,
@@ -361,7 +361,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: try record.contentType.map { try .init(rawValue: $0) },
+                contentType: record.contentType.flatMap { Attachment.ContentTypeRaw(rawValue: $0) },
                 isPastEditRevision: record.ownerIsPastEditRevision,
                 caption: record.caption,
                 renderingFlag: try .init(rawValue: record.renderingFlag),
@@ -374,7 +374,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: try record.contentType.map { try .init(rawValue: $0) },
+                contentType: record.contentType.flatMap { Attachment.ContentTypeRaw(rawValue: $0) },
                 isPastEditRevision: record.ownerIsPastEditRevision,
             )))
         case .linkPreview:
@@ -382,7 +382,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: try record.contentType.map { try .init(rawValue: $0) },
+                contentType: record.contentType.flatMap { Attachment.ContentTypeRaw(rawValue: $0) },
                 isPastEditRevision: record.ownerIsPastEditRevision,
             )))
         case .quotedReplyAttachment:
@@ -390,7 +390,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: try record.contentType.map { try .init(rawValue: $0) },
+                contentType: record.contentType.flatMap { Attachment.ContentTypeRaw(rawValue: $0) },
                 isPastEditRevision: record.ownerIsPastEditRevision,
                 renderingFlag: try .init(rawValue: record.renderingFlag),
             )))
@@ -405,7 +405,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: try record.contentType.map { try .init(rawValue: $0) },
+                contentType: record.contentType.flatMap { Attachment.ContentTypeRaw(rawValue: $0) },
                 isPastEditRevision: record.ownerIsPastEditRevision,
                 stickerPackId: stickerPackId,
                 stickerId: stickerId,
@@ -415,7 +415,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: try record.contentType.map { try .init(rawValue: $0) },
+                contentType: record.contentType.flatMap { Attachment.ContentTypeRaw(rawValue: $0) },
                 isPastEditRevision: record.ownerIsPastEditRevision,
             )))
         }
@@ -463,7 +463,7 @@ extension AttachmentReference.Owner {
     /// When we go from a pointer to a stream (e.g. by downloading) and find another attachment with the same plaintext hash,
     /// we instead reassign the pointer's references to that existing attachment. When we do so, we need to update their contentType
     /// to match the new/old attachment (theyre the same plaintext hash so same content type).
-    public func forReassignmentWithContentType(_ contentType: AttachmentReference.ContentType) -> Self {
+    public func forReassignmentWithContentType(_ contentType: Attachment.ContentTypeRaw) -> Self {
         switch self {
         case .message(let messageSource):
             return .message({

@@ -442,7 +442,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             attachmentStore.saveMediaTierInfo(
                 attachment: attachmentStream.attachment,
                 mediaTierInfo: mediaTierInfo,
-                mediaName: attachmentStream.info.mediaName,
+                mediaName: attachmentStream.mediaName,
                 tx: tx,
             )
 
@@ -576,7 +576,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             attachmentStore.saveMediaTierThumbnailInfo(
                 attachment: attachmentStream.attachment,
                 thumbnailMediaTierInfo: thumbnailInfo,
-                mediaName: attachmentStream.info.mediaName,
+                mediaName: attachmentStream.mediaName,
                 tx: tx,
             )
 
@@ -931,7 +931,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     cdnKey: transitTierInfo.cdnKey,
                     cdnNumber: transitTierInfo.cdnNumber,
                     key: attachment.encryptionKey,
-                    digest: stream.encryptedFileSha256Digest,
+                    digest: stream.digestSHA256Ciphertext,
                     plaintextDataLength: stream.unencryptedByteCount,
                     // This is the length from the stream, not the transit tier,
                     // but the length is the same regardless of the key used.
@@ -946,9 +946,9 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 let metadata = Upload.LocalUploadMetadata(
                     fileUrl: stream.fileURL,
                     key: attachment.encryptionKey,
-                    digest: stream.info.digestSHA256Ciphertext,
-                    encryptedDataLength: stream.info.encryptedByteCount,
-                    plaintextDataLength: stream.info.unencryptedByteCount,
+                    digest: stream.digestSHA256Ciphertext,
+                    encryptedDataLength: stream.encryptedByteCount,
+                    plaintextDataLength: stream.unencryptedByteCount,
                 )
                 return .reuse(metadata)
             }
@@ -1153,7 +1153,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             key: try AttachmentKey(combinedKey: attachmentStream.attachment.encryptionKey),
             // No need to validate for an already-validated stream
             integrityCheck: .sha256ContentHash(attachmentStream.sha256ContentHash),
-            plaintextLength: UInt64(safeCast: attachmentStream.info.unencryptedByteCount),
+            plaintextLength: UInt64(safeCast: attachmentStream.unencryptedByteCount),
         )
         try attachmentEncrypter.decryptAttachment(at: attachmentStream.fileURL, metadata: decryptionMedatata, output: tmpDecryptedFile)
 

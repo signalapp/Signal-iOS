@@ -166,8 +166,11 @@ class AudioMessagePresenter: AudioPresenter {
         )
     }
 
-    func audioWaveform(attachmentStream: SignalServiceKit.AttachmentStream?) -> Task<AudioWaveform, Error>? {
-        return attachmentStream?.audioWaveform()
+    func audioWaveform(attachmentStream: AttachmentStream) -> Task<AudioWaveform, Error> {
+        DependenciesBridge.shared.audioWaveformManager.audioWaveform(
+            attachmentStream: attachmentStream,
+            highPriority: false,
+        )
     }
 }
 

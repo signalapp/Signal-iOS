@@ -133,7 +133,7 @@ public class AttachmentViewOnceManagerImpl: AttachmentViewOnceManager {
             type: viewOnceType,
             fileUrl: tempFileUrl,
             encryptionKey: attachmentStream.attachmentStream.attachment.encryptionKey,
-            plaintextLength: attachmentStream.attachmentStream.info.unencryptedByteCount,
+            plaintextLength: attachmentStream.attachmentStream.unencryptedByteCount,
             mimeType: attachmentStream.attachmentStream.mimeType,
         )
     }

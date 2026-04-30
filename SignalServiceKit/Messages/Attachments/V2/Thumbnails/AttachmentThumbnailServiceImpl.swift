@@ -164,10 +164,11 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
                 return .cannotGenerate
             }
 
-        case .image(pixelSize: nil), .animatedImage(pixelSize: nil):
-            return .cannotGenerate
+        case .image, .animatedImage:
+            guard let pixelSize = attachmentStream.cachedMediaSizePixels else {
+                return .cannotGenerate
+            }
 
-        case .image(let pixelSize?), .animatedImage(let pixelSize?):
             let pointSize = AttachmentThumbnailQuality.pointSize(pixelSize: pixelSize)
             let targetSize = quality.thumbnailDimensionPoints()
 

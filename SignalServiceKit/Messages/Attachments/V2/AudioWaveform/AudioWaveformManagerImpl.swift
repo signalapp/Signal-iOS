@@ -20,33 +20,38 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
     public init() {}
 
     public func audioWaveform(
-        forAttachment attachment: AttachmentStream,
+        attachmentStream: AttachmentStream,
         highPriority: Bool,
     ) -> Task<AudioWaveform, Error> {
-        switch attachment.info.contentType {
-        case .file, .invalid, .image, .video, .animatedImage:
+        switch attachmentStream.contentType {
+        case .invalid, .file, .image, .video, .animatedImage:
             return Task {
-                throw OWSAssertionError("Invalid attachment type!")
+                throw OWSAssertionError("Unexpected contentType for audio waveform! \(attachmentStream.contentType)")
             }
-        case .audio(_, let relativeWaveformFilePath):
-            guard let relativeWaveformFilePath else {
-                return Task {
-                    // We could not generate a waveform at write time; don't retry now.
-                    throw AudioWaveformError.invalidAudioFile
-                }
-            }
-            let encryptionKey = attachment.attachment.encryptionKey
+        case .audio:
+            break
+        }
+
+        // We failed to generate a waveform file when we downloaded the attachment,
+        // so don't try again now.
+        guard let audioWaveformRelativeFilePath = attachmentStream.cachedAudioWaveformRelativeFilePath else {
             return Task {
-                let fileURL = AttachmentStream.absoluteAttachmentFileURL(
-                    relativeFilePath: relativeWaveformFilePath,
-                )
-                // waveform is validated at creation time; no need to revalidate every read.
-                let data = try Cryptography.decryptFileWithoutValidating(
-                    at: fileURL,
-                    metadata: DecryptionMetadata(key: AttachmentKey(combinedKey: encryptionKey)),
-                )
-                return try AudioWaveform(archivedData: data)
+                throw AudioWaveformError.invalidAudioFile
             }
+        }
+
+        return Task {
+            let fileURL = AttachmentStream.absoluteAttachmentFileURL(
+                relativeFilePath: audioWaveformRelativeFilePath,
+            )
+            // waveform is validated at creation time; no need to revalidate every read.
+            let data = try Cryptography.decryptFileWithoutValidating(
+                at: fileURL,
+                metadata: DecryptionMetadata(key: AttachmentKey(
+                    combinedKey: attachmentStream.attachment.encryptionKey,
+                )),
+            )
+            return try AudioWaveform(archivedData: data)
         }
     }
 
