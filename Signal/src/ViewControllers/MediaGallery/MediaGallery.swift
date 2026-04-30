@@ -114,18 +114,6 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         }
     }
 
-    var imageSizePoints: CGSize {
-        switch attachmentStream.attachmentStream.contentType {
-        case .file, .invalid, .audio, .video:
-            return .zero
-        case .image(let pixelSize), .animatedImage(let pixelSize):
-            return CGSize(
-                width: pixelSize.width / UIScreen.main.scale,
-                height: pixelSize.height / UIScreen.main.scale,
-            )
-        }
-    }
-
     var attachmentId: AttachmentReferenceId { attachmentStream.reference.referenceId }
 
     typealias AsyncThumbnailBlock = @MainActor (UIImage) -> Void

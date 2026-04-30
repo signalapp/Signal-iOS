@@ -70,6 +70,7 @@ public class AttachmentBackupThumbnail {
             // If the image itself is small enough to fit the thumbnail
             // size, and is already the right format (webP) no need for a thumbnail.
             if
+                let pixelSize,
                 attachment.mimeType == MimeType.imageWebp.rawValue,
                 pixelSize.largerAxis <= AttachmentThumbnailQuality.backupThumbnailDimensionPixels
             {

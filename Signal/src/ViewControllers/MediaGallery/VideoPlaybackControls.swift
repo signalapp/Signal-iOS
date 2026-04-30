@@ -175,15 +175,17 @@ class VideoPlaybackControlView: UIView {
     func updateWithMediaItem(_ mediaItem: MediaGalleryItem) {
         switch mediaItem.attachmentStream.attachmentStream.contentType {
         case .video(let videoDuration, _, _):
-            updateDuration(videoDuration)
+            if
+                let videoDuration,
+                videoDuration > 30
+            {
+                showRewindAndFastForward = true
+            } else {
+                showRewindAndFastForward = false
+            }
         case .file, .invalid, .image, .animatedImage, .audio:
             break
         }
-    }
-
-    private func updateDuration(_ duration: TimeInterval) {
-        let durationThreshold: TimeInterval = 30
-        showRewindAndFastForward = duration >= durationThreshold
     }
 
     private var isVideoPlaying = false

@@ -427,19 +427,21 @@ extension ReferencedAttachment {
         }
 
         switch attachment.streamInfo?.contentType {
-        case
-            .animatedImage(let pixelSize),
-            .image(let pixelSize),
-            .video(_, let pixelSize, _):
+        case .image(let pixelSize?),
+             .animatedImage(let pixelSize?),
+             .video(_, let pixelSize?, _):
             proto.width = UInt32(pixelSize.width)
             proto.height = UInt32(pixelSize.height)
-        case .audio, .file, .invalid:
-            break
-        case nil:
+        case nil,
+             .image(pixelSize: nil),
+             .animatedImage(pixelSize: nil),
+             .video(_, pixelSize: nil, _):
             if let mediaSize = reference.sourceMediaSizePixels {
                 proto.width = UInt32(mediaSize.width)
                 proto.height = UInt32(mediaSize.height)
             }
+        case .audio, .file, .invalid:
+            break
         }
 
         proto.locatorInfo = self.asBackupFilePointerLocatorInfo(context: context)

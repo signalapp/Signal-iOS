@@ -82,7 +82,7 @@ extension AudioPresenter {
     static func playbackTimeLabelConfig_forMeasurement(audioAttachment: AudioAttachment, maxWidth: CGFloat) -> CVLabelConfig {
         // playbackTimeLabel uses a monospace font, so we measure the
         // worst-case width using the full duration of the audio.
-        let text = OWSFormat.localizedDurationString(from: audioAttachment.durationSeconds)
+        let text = OWSFormat.localizedDurationString(from: audioAttachment.durationSeconds ?? 0)
         let fullDurationConfig = playbackTimeLabelConfig(text: text)
         // Never let it get shorter than "0:00" duration.
         let minimumWidthText = OWSFormat.localizedDurationString(from: 0)

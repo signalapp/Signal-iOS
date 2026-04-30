@@ -25,12 +25,12 @@ class PhotoPickerAssetItem {
         self.photoCollectionContents = photoCollectionContents
         self.thumbnailSize = thumbnailSize
 
-        self.type = if asset.mediaType == .video {
-            .video(Promise.value(asset.duration))
+        if asset.mediaType == .video {
+            self.type = .video(duration: asset.duration)
         } else if asset.playbackStyle == .imageAnimated {
-            .animated
+            self.type = .animated
         } else {
-            .photo
+            self.type = .photo
         }
     }
 

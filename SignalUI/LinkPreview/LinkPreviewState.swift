@@ -362,11 +362,9 @@ public class LinkPreviewSent: LinkPreviewState {
             }
 
             switch attachmentStream.contentType {
-            case .image(let pixelSize):
+            case .image(let pixelSize?), .animatedImage(let pixelSize?):
                 return pixelSize
-            case .animatedImage(let pixelSize):
-                return pixelSize
-            case .audio, .video, .file, .invalid:
+            case .image(pixelSize: nil), .animatedImage(pixelSize: nil), .audio, .video, .file, .invalid:
                 return .zero
             }
         }

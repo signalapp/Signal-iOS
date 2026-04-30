@@ -10,7 +10,7 @@ import UIKit
 enum PhotoGridItemType {
     case photo
     case animated
-    case video(Promise<TimeInterval>)
+    case video(duration: TimeInterval?)
 
     var localizedString: String {
         switch self {
@@ -18,12 +18,11 @@ enum PhotoGridItemType {
             return CommonStrings.attachmentTypePhoto
         case .animated:
             return CommonStrings.attachmentTypeAnimated
-        case .video(let promise):
-            switch promise.result {
-            case .failure, .none:
+        case .video(let duration):
+            if let duration {
+                return "\(CommonStrings.attachmentTypeVideo) \(OWSFormat.localizedDurationString(from: duration))"
+            } else {
                 return "\(CommonStrings.attachmentTypeVideo)"
-            case .success(let value):
-                return "\(CommonStrings.attachmentTypeVideo) \(OWSFormat.localizedDurationString(from: value))"
             }
         }
     }
@@ -164,33 +163,18 @@ class PhotoGridViewCell: UICollectionViewCell {
     }
 
     private func setMedia(itemType: PhotoGridItemType) {
-        hideVideoDuration()
+        let caption: String
         switch itemType {
-        case .video(let promisedDuration):
-            updateVideoDurationWhenPromiseFulfilled(promisedDuration)
+        case .video(.some(let duration)):
+            caption = OWSFormat.localizedDurationString(from: duration)
         case .animated:
-            setCaption(itemType.formattedType)
-        case .photo:
-            break
+            caption = itemType.formattedType
+        case .video(duration: nil), .photo:
+            durationLabel?.isHidden = true
+            durationLabelBackground?.isHidden = true
+            return
         }
-    }
 
-    private func updateVideoDurationWhenPromiseFulfilled(_ promisedDuration: Promise<TimeInterval>) {
-        let originalItem = photoGridItem
-        promisedDuration.observe { [weak self] result in
-            guard let self, self.photoGridItem === originalItem, case .success(let duration) = result else {
-                return
-            }
-            self.setCaption(OWSFormat.localizedDurationString(from: duration))
-        }
-    }
-
-    private func hideVideoDuration() {
-        durationLabel?.isHidden = true
-        durationLabelBackground?.isHidden = true
-    }
-
-    private func setCaption(_ caption: String) {
         if durationLabel == nil {
             let durationLabel = UILabel()
             durationLabel.textColor = .white

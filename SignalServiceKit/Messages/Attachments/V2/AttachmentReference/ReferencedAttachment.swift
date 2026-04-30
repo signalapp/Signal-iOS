@@ -234,25 +234,33 @@ extension ReferencedAttachment {
             builder.setFlags(0)
         }
 
-        func setMediaSizePixels(_ pixelSize: CGSize) {
-            builder.setWidth(UInt32(pixelSize.width.rounded()))
-            builder.setHeight(UInt32(pixelSize.height.rounded()))
-        }
-
+        let unencryptedByteCount: UInt32?
+        let pixelSize: CGSize?
         if let stream = pointer.attachment.asStream() {
-            // If we have it downloaded and have the validated values, use them.
-            builder.setSize(stream.unencryptedByteCount)
+            unencryptedByteCount = stream.unencryptedByteCount
 
             switch stream.contentType {
-            case .file, .invalid, .audio:
-                break
-            case .image(let pixelSize), .animatedImage(let pixelSize), .video(_, let pixelSize, _):
-                setMediaSizePixels(_: pixelSize)
+            case .image(let _pixelSize?), .animatedImage(let _pixelSize?), .video(_, let _pixelSize?, _):
+                pixelSize = _pixelSize
+            case .image(pixelSize: nil),
+                 .animatedImage(pixelSize: nil),
+                 .video(_, pixelSize: nil, _),
+                 .file,
+                 .invalid,
+                 .audio:
+                pixelSize = nil
             }
         } else {
-            // Otherwise fall back to values from the sender.
-            reference.sourceUnencryptedByteCount.map(builder.setSize(_:))
-            reference.sourceMediaSizePixels.map(setMediaSizePixels(_:))
+            unencryptedByteCount = reference.sourceUnencryptedByteCount
+            pixelSize = reference.sourceMediaSizePixels
+        }
+
+        if let unencryptedByteCount {
+            builder.setSize(unencryptedByteCount)
+        }
+        if let pixelSize {
+            builder.setWidth(UInt32(pixelSize.width.rounded()))
+            builder.setHeight(UInt32(pixelSize.height.rounded()))
         }
         builder.setKey(pointer.info.encryptionKey)
         builder.setDigest(digestSHA256Ciphertext)

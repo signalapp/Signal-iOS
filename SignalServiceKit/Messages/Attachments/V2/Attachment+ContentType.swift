@@ -60,15 +60,25 @@ extension Attachment {
         /// Some arbitrary file. Used when no other case applies.
         case file
 
-        case image(pixelSize: CGSize)
+        case image(pixelSize: CGSize?)
+
         /// `stillFrameRelativeFilePath` points at an image file encrypted with the ``Attachment``'s `encryptionKey`.
         /// If nil, no still frame is available and no attempt should be made to generate a new one.
-        case video(duration: TimeInterval, pixelSize: CGSize, stillFrameRelativeFilePath: String?)
-        case animatedImage(pixelSize: CGSize)
+        case video(
+            duration: TimeInterval?,
+            pixelSize: CGSize?,
+            stillFrameRelativeFilePath: String?,
+        )
+
+        case animatedImage(pixelSize: CGSize?)
+
         /// `waveformRelativeFilePath` points at the ``AudioWaveform`` file encrypted
         /// with the ``Attachment``'s `encryptionKey`. If nil, no waveform is available
         /// and no attempt should be made to generate a new one.
-        case audio(duration: TimeInterval, waveformRelativeFilePath: String?)
+        case audio(
+            duration: TimeInterval?,
+            waveformRelativeFilePath: String?,
+        )
 
         public init?(
             raw: UInt32?,
@@ -84,17 +94,17 @@ extension Attachment {
             }
             let rawEnum = try ContentTypeRaw(rawValue: raw)
 
-            func requirePixelSize() throws -> CGSize {
+            let pixelSize: CGSize? = {
                 guard
                     let cachedMediaWidthPixels,
                     let cachedMediaWidthPixels = Int(exactly: cachedMediaWidthPixels),
                     let cachedMediaHeightPixels,
                     let cachedMediaHeightPixels = Int(exactly: cachedMediaHeightPixels)
                 else {
-                    throw OWSAssertionError("Missing pixel size")
+                    return nil
                 }
                 return CGSize(width: cachedMediaWidthPixels, height: cachedMediaHeightPixels)
-            }
+            }()
 
             switch rawEnum {
             case .invalid:
@@ -102,28 +112,16 @@ extension Attachment {
             case .file:
                 self = .file
             case .image:
-                self = .image(pixelSize: try requirePixelSize())
+                self = .image(pixelSize: pixelSize)
             case .video:
-                guard
-                    let cachedVideoDurationSeconds,
-                    let cachedVideoDurationSeconds = Double(exactly: cachedVideoDurationSeconds)
-                else {
-                    throw OWSAssertionError("Missing video duration")
-                }
                 self = .video(
                     duration: cachedVideoDurationSeconds,
-                    pixelSize: try requirePixelSize(),
+                    pixelSize: pixelSize,
                     stillFrameRelativeFilePath: videoStillFrameRelativeFilePath,
                 )
             case .animatedImage:
-                self = .animatedImage(pixelSize: try requirePixelSize())
+                self = .animatedImage(pixelSize: pixelSize)
             case .audio:
-                guard
-                    let cachedAudioDurationSeconds,
-                    let cachedAudioDurationSeconds = Double(exactly: cachedAudioDurationSeconds)
-                else {
-                    throw OWSAssertionError("Missing audio duration")
-                }
                 self = .audio(
                     duration: cachedAudioDurationSeconds,
                     waveformRelativeFilePath: audioWaveformRelativeFilePath,

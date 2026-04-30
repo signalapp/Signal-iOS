@@ -427,7 +427,11 @@ private class RecentPhotoCell: UICollectionViewCell {
     }
 
     private func setMedia(itemType: PhotoGridItemType) {
-        guard case .video(let promisedDuration) = itemType, let duration = promisedDuration.value else {
+        let duration: TimeInterval
+        switch itemType {
+        case .video(let _duration?):
+            duration = _duration
+        case .video(duration: nil), .animated, .photo:
             durationLabel?.isHidden = true
             durationLabelBackground?.isHidden = true
             return

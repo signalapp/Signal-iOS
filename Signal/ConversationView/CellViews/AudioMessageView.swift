@@ -19,7 +19,7 @@ class AudioMessageView: ManualStackView {
 
     private var attachment: Attachment { presentation.audioAttachment.attachment }
     private var attachmentStream: AttachmentStream? { presentation.audioAttachment.attachmentStream?.attachmentStream }
-    private var durationSeconds: TimeInterval { presentation.audioAttachment.durationSeconds }
+    private var durationSeconds: TimeInterval? { presentation.audioAttachment.durationSeconds }
 
     private var isIncoming: Bool {
         presentation.isIncoming
@@ -319,10 +319,10 @@ class AudioMessageView: ManualStackView {
     }
 
     func scrubToLocation(_ point: CGPoint) -> TimeInterval {
+        guard let durationSeconds else { return 0 }
+
         let newRatio = progressForLocation(point)
-
         visibleProgressRatio = newRatio
-
         return TimeInterval(newRatio) * durationSeconds
     }
 
@@ -347,7 +347,7 @@ class AudioMessageView: ManualStackView {
         if let overrideProgress = self.overrideProgress {
             return overrideProgress.clamp01()
         }
-        guard durationSeconds > 0 else { return 0 }
+        guard let durationSeconds, durationSeconds > 0 else { return 0 }
         return CGFloat(elapsedSeconds / durationSeconds)
     }
 
@@ -358,7 +358,13 @@ class AudioMessageView: ManualStackView {
         set {
             waveformProgress.value = newValue
             progressSlider.value = Float(newValue)
-            updateElapsedTime(durationSeconds * TimeInterval(newValue))
+            if let durationSeconds {
+                let elapsedSeconds = durationSeconds * TimeInterval(newValue)
+                let timeRemaining = max(0, durationSeconds - elapsedSeconds)
+                presentation.playbackTimeLabel.text = OWSFormat.localizedDurationString(from: timeRemaining)
+            } else {
+                presentation.playbackTimeLabel.text = OWSFormat.localizedDurationString(from: 0)
+            }
         }
     }
 
@@ -398,11 +404,6 @@ class AudioMessageView: ManualStackView {
         }
     }
 
-    private func updateElapsedTime(_ elapsedSeconds: TimeInterval) {
-        let timeRemaining = max(0, durationSeconds - elapsedSeconds)
-        presentation.playbackTimeLabel.text = OWSFormat.localizedDurationString(from: timeRemaining)
-    }
-
     private func updateAudioProgress() {
         guard !isScrubbing else { return }
 
@@ -416,14 +417,7 @@ class AudioMessageView: ManualStackView {
             waveformProgress.isHidden = true
             progressSlider.isHidden = false
         }
-        waveformProgress.cachedAudioDuration = {
-            switch attachmentStream?.contentType {
-            case .audio(let duration, _):
-                return duration
-            default:
-                return nil
-            }
-        }()
+        waveformProgress.cachedAudioDuration = presentation.audioAttachment.durationSeconds
     }
 
     func setOverrideProgress(_ value: CGFloat, animated: Bool) {

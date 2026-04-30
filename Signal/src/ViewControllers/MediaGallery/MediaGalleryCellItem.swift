@@ -59,19 +59,6 @@ struct MediaGalleryCellItemAudio {
     var mediaCache: CVMediaCache
     var metadata: MediaMetadata
 
-    var size: UInt {
-        UInt(attachmentStream.attachmentStream.unencryptedByteCount)
-    }
-
-    var duration: TimeInterval {
-        switch attachmentStream.attachmentStream.contentType {
-        case .audio(let duration, _):
-            return duration
-        default:
-            return 0
-        }
-    }
-
     var localizedString: String {
         if isVoiceMessage {
             return OWSLocalizedString(
@@ -83,7 +70,6 @@ struct MediaGalleryCellItemAudio {
                 "MEDIA_GALLERY_A11Y_AUDIO_FILE",
                 comment: "VoiceOver description for a generic audio file in All Media",
             )
-
         }
     }
 }
@@ -118,7 +104,15 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
 
     var type: PhotoGridItemType {
         if galleryItem.isVideo {
-            return .video(videoDurationPromise)
+            let duration: TimeInterval?
+            switch galleryItem.attachmentStream.attachmentStream.contentType {
+            case .file, .invalid, .image, .animatedImage, .audio:
+                duration = nil
+            case .video(let _duration, _, _):
+                duration = _duration
+            }
+
+            return .video(duration: duration)
         } else if galleryItem.isAnimated {
             return .animated
         } else {
@@ -128,18 +122,6 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
 
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) {
         galleryItem.thumbnailImage(completion: completion)
-    }
-
-    private var videoDurationPromise: Promise<TimeInterval> {
-        owsPrecondition(galleryItem.isVideo)
-        let attachment = galleryItem.attachmentStream.attachmentStream
-        switch attachment.contentType {
-        case .file, .invalid, .image, .animatedImage, .audio:
-            owsFailDebug("Non video type!")
-            return .value(0)
-        case .video(let duration, _, _):
-            return .value(duration)
-        }
     }
 
     var mediaMetadata: MediaMetadata? {

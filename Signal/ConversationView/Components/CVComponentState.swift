@@ -1773,13 +1773,14 @@ private extension CVComponentState.Builder {
                 }
                 let mediaSizePixels: CGSize
                 switch attachmentStream.contentType {
-                case let .image(pixelSize), let .video(_, pixelSize, _), let .animatedImage(pixelSize):
+                case .image(let pixelSize?),
+                     .animatedImage(let pixelSize?),
+                     .video(_, let pixelSize?, _):
                     guard pixelSize.isNonEmpty else {
-                        Logger.warn("Filtering media with invalid size.")
                         fallthrough
                     }
                     mediaSizePixels = pixelSize
-                case .audio, .file, .invalid:
+                case .image, .animatedImage, .video, .audio, .file, .invalid:
                     Logger.warn("Filtering media with invalid size.")
                     mediaAlbumItems.append(CVMediaAlbumItem(
                         attachment: cvAttachment,

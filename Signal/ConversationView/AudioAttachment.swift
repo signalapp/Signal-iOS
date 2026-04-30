@@ -12,7 +12,7 @@ public class AudioAttachment {
     public enum State: Equatable {
         case attachmentStream(
             attachmentStream: ReferencedAttachmentStream,
-            audioDurationSeconds: TimeInterval,
+            audioDurationSeconds: TimeInterval?,
         )
         case attachmentPointer(
             attachmentPointer: ReferencedAttachmentPointer,
@@ -67,12 +67,13 @@ public class AudioAttachment {
         metadata: MediaMetadata?,
         receivedAtDate: Date,
     ) {
-        let audioDurationSeconds: TimeInterval
+        let audioDurationSeconds: TimeInterval?
         switch attachmentStream.attachmentStream.contentType {
         case .audio(let duration, _):
-            if duration <= 0 {
-                fallthrough
+            if let duration, duration < 0 {
+                return nil
             }
+
             audioDurationSeconds = duration
         default:
             return nil
@@ -139,12 +140,12 @@ extension AudioAttachment {
         }
     }
 
-    public var durationSeconds: TimeInterval {
+    public var durationSeconds: TimeInterval? {
         switch state {
         case .attachmentStream(_, let audioDurationSeconds):
             return audioDurationSeconds
         case .attachmentPointer:
-            return 0
+            return nil
         }
     }
 
