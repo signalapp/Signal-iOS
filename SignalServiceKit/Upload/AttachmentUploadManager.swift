@@ -971,16 +971,21 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
                 type: .transitTierThumbnail,
             )
-            guard
+
+            let thumbnailData: Data
+            if let data = try AttachmentBackupThumbnail(attachment: attachment)?.decryptedRawData() {
+                thumbnailData = data
+            } else if
                 let thumbnailImage = await attachmentThumbnailService.thumbnailImage(
                     for: stream,
                     quality: .backupThumbnail,
                 )
-            else {
+            {
+                thumbnailData = try attachmentThumbnailService.backupThumbnailData(image: thumbnailImage)
+            } else {
                 throw OWSGenericError("Unable to generate thumbnail; may not be visual media?")
             }
 
-            let thumbnailData = try attachmentThumbnailService.backupThumbnailData(image: thumbnailImage)
             let attachmentKey = try encryptionKey.attachmentKey()
 
             let (encryptedThumbnailData, encryptedThumbnailMetadata) = try Cryptography.encrypt(
