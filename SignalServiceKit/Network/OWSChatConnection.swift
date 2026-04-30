@@ -725,12 +725,6 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
             request.logger.info("received response for requestId: \(requestId), message: \(response.message), route: \(connectionInfo)")
         }
 
-#if TESTABLE_BUILD
-        if response.status / 100 != 2 {
-            HTTPUtils.logCurl(for: request)
-        }
-#endif
-
         let headers = HttpHeaders(httpHeaders: response.headers, overwriteOnConflict: false)
         return try await handleRequestResponse(
             requestUrl: request.url,

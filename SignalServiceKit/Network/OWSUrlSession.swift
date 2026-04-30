@@ -309,12 +309,6 @@ public class OWSURLSession: OWSURLSessionProtocol {
             return .networkFailure(.wrappedFailure(error))
         }
 
-#if TESTABLE_BUILD
-        if let originalRequest {
-            HTTPUtils.logCurl(for: originalRequest)
-        }
-#endif
-
         return .wrappedFailure(error)
     }
 
@@ -330,12 +324,6 @@ public class OWSURLSession: OWSURLSessionProtocol {
         if requestConfig.require2xxOr3xx {
             let statusCode = httpUrlResponse.statusCode
             guard statusCode >= 200, statusCode < 400 else {
-#if TESTABLE_BUILD
-                if let originalRequest {
-                    HTTPUtils.logCurl(for: originalRequest)
-                }
-#endif
-
                 if statusCode > 0 {
                     let requestUrl = requestConfig.requestUrl
                     let responseHeaders = HttpHeaders(response: httpUrlResponse)
