@@ -1642,19 +1642,20 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 switch currentFilterMode {
                 case .all:
                     return [
-                        Strings.noRecentCallsLabel,
+                        Strings.noCallsTitleLabel.styled(with: .font(.dynamicTypeTitle3.semibold())),
                         "\n",
-                        Strings.noRecentCallsSuggestionLabel
-                            .styled(with: .font(.dynamicTypeSubheadline)),
+                        Strings.noCallsSubtitleLabel.styled(with: .font(.dynamicTypeBody)),
                     ]
                 case .missed:
                     return [
-                        Strings.noMissedCallsLabel,
+                        Strings.noMissedCallsTitleLabel.styled(with: .font(.dynamicTypeTitle3.semibold())),
+                        "\n",
+                        Strings.noMissedCallsSubtitleLabel.styled(with: .font(.dynamicTypeBody)),
                     ]
                 }
             }())
                 .styled(
-                    with: .font(.dynamicTypeSubheadline.semibold()),
+                    with: .color(.Signal.secondaryLabel),
                 )
             noSearchResultsView.alpha = 0
             emptyStateMessageView.alpha = 1

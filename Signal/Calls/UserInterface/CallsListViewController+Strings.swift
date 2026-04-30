@@ -57,19 +57,24 @@ extension CallsListViewController {
             comment: "Label for a view explaining that no search results were found in the Calls Tab. Embeds {{ the search term }}.",
         ) }
 
-        static var noRecentCallsLabel: String { OWSLocalizedString(
-            "CALLS_TAB_NO_RECENT_CALLS_LABEL",
-            comment: "Label explaining that the user has no recent calls, so their Calls Tab is empty.",
+        static var noCallsTitleLabel: String { OWSLocalizedString(
+            "CALLS_TAB_NO_CALLS_TITLE",
+            comment: "Top line of text shown in All Calls when the list is empty.",
         ) }
 
-        static var noRecentCallsSuggestionLabel: String { OWSLocalizedString(
-            "CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL",
-            comment: "Label suggesting that the user start a call, shown when their Calls Tab is empty.",
+        static var noCallsSubtitleLabel: String { OWSLocalizedString(
+            "CALLS_TAB_NO_CALLS_SUBTITLE",
+            comment: "Second line of text shown in All Calls when the list is empty.",
         ) }
 
-        static var noMissedCallsLabel: String { OWSLocalizedString(
-            "CALLS_TAB_NO_MISSED_CALLS_LABEL",
-            comment: "Label explaining that the user has no missed calls, so their Calls Tab is empty.",
+        static var noMissedCallsTitleLabel: String { OWSLocalizedString(
+            "CALLS_TAB_NO_MISSED_CALLS_TITLE",
+            comment: "Top line of text shown in Missed Calls when the list is empty.",
+        ) }
+
+        static var noMissedCallsSubtitleLabel: String { OWSLocalizedString(
+            "CALLS_TAB_NO_MISSED_CALLS_SUBTITLE",
+            comment: "Second line of text shown in Missed Calls when the list is empty.",
         ) }
 
         static var goToChatActionTitle: String { OWSLocalizedString(
