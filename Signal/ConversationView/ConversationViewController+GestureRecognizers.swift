@@ -349,53 +349,53 @@ public struct CVLongPressHandler {
             return
         }
 
-        let shouldAllowReply = delegate.shouldAllowReplyForItem(itemViewModel)
+        let shouldAllowMessageSendActions = delegate.shouldAllowMessageSendActionsForItem(itemViewModel)
 
         switch gestureLocation {
         case .`default`:
             delegate.didLongPressTextViewItem(
                 cell,
                 itemViewModel: itemViewModel,
-                shouldAllowReply: shouldAllowReply,
+                shouldAllowMessageSendActions: shouldAllowMessageSendActions,
             )
         case .media:
             delegate.didLongPressMediaViewItem(
                 cell,
                 itemViewModel: itemViewModel,
-                shouldAllowReply: shouldAllowReply,
+                shouldAllowMessageSendActions: shouldAllowMessageSendActions,
             )
         case .sticker:
             delegate.didLongPressSticker(
                 cell,
                 itemViewModel: itemViewModel,
-                shouldAllowReply: shouldAllowReply,
+                shouldAllowMessageSendActions: shouldAllowMessageSendActions,
             )
         case .quotedReply:
             delegate.didLongPressQuote(
                 cell,
                 itemViewModel: itemViewModel,
-                shouldAllowReply: shouldAllowReply,
+                shouldAllowMessageSendActions: shouldAllowMessageSendActions,
             )
         case .systemMessage:
             delegate.didLongPressSystemMessage(cell, itemViewModel: itemViewModel)
         case .paymentMessage:
-            delegate.didLongPressPaymentMessage(cell, itemViewModel: itemViewModel, shouldAllowReply: shouldAllowReply)
+            delegate.didLongPressPaymentMessage(cell, itemViewModel: itemViewModel, shouldAllowMessageSendActions: shouldAllowMessageSendActions)
         case .poll:
-            delegate.didLongPressPoll(cell, itemViewModel: itemViewModel, shouldAllowReply: shouldAllowReply)
+            delegate.didLongPressPoll(cell, itemViewModel: itemViewModel, shouldAllowMessageSendActions: shouldAllowMessageSendActions)
         case .bodyText:
             break
         case .associatedSubcomponent:
             // Bottom buttons, labels, and footers are considered separate subcomponents,
             // but may be associated with another subcomponent type.
             if let message = itemViewModel.interaction as? TSMessage, message.isPoll {
-                delegate.didLongPressPoll(cell, itemViewModel: itemViewModel, shouldAllowReply: shouldAllowReply)
+                delegate.didLongPressPoll(cell, itemViewModel: itemViewModel, shouldAllowMessageSendActions: shouldAllowMessageSendActions)
                 return
             }
             // Default
             delegate.didLongPressTextViewItem(
                 cell,
                 itemViewModel: itemViewModel,
-                shouldAllowReply: shouldAllowReply,
+                shouldAllowMessageSendActions: shouldAllowMessageSendActions,
             )
         }
     }

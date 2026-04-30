@@ -52,13 +52,13 @@ extension ConversationViewController: CVComponentDelegate {
     public func didLongPressTextViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {
         AssertIsOnMainThread()
 
         let messageActions = MessageActions.textActions(
             itemViewModel: itemViewModel,
-            shouldAllowReply: shouldAllowReply,
+            shouldAllowMessageSendActions: shouldAllowMessageSendActions,
             delegate: self,
         )
         self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
@@ -67,13 +67,13 @@ extension ConversationViewController: CVComponentDelegate {
     public func didLongPressMediaViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {
         AssertIsOnMainThread()
 
         let messageActions = MessageActions.mediaActions(
             itemViewModel: itemViewModel,
-            shouldAllowReply: shouldAllowReply,
+            shouldAllowMessageSendActions: shouldAllowMessageSendActions,
             delegate: self,
         )
         self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
@@ -82,13 +82,13 @@ extension ConversationViewController: CVComponentDelegate {
     public func didLongPressQuote(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {
         AssertIsOnMainThread()
 
         let messageActions = MessageActions.quotedMessageActions(
             itemViewModel: itemViewModel,
-            shouldAllowReply: shouldAllowReply,
+            shouldAllowMessageSendActions: shouldAllowMessageSendActions,
             delegate: self,
         )
         self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
@@ -110,13 +110,13 @@ extension ConversationViewController: CVComponentDelegate {
     public func didLongPressSticker(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {
         AssertIsOnMainThread()
 
         let messageActions = MessageActions.mediaActions(
             itemViewModel: itemViewModel,
-            shouldAllowReply: shouldAllowReply,
+            shouldAllowMessageSendActions: shouldAllowMessageSendActions,
             delegate: self,
         )
         self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
@@ -125,11 +125,11 @@ extension ConversationViewController: CVComponentDelegate {
     public func didLongPressPaymentMessage(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {
         let messageActions = MessageActions.paymentActions(
             itemViewModel: itemViewModel,
-            shouldAllowReply: shouldAllowReply,
+            shouldAllowMessageSendActions: shouldAllowMessageSendActions,
             delegate: self,
         )
         self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
@@ -138,11 +138,11 @@ extension ConversationViewController: CVComponentDelegate {
     public func didLongPressPoll(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {
         let messageActions = MessageActions.pollActions(
             itemViewModel: itemViewModel,
-            shouldAllowReply: shouldAllowReply,
+            shouldAllowMessageSendActions: shouldAllowMessageSendActions,
             delegate: self,
         )
         self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
@@ -280,7 +280,7 @@ extension ConversationViewController: CVComponentDelegate {
         showMemberActionSheet(forAddress: incomingMessage.authorAddress, withHapticFeedback: false)
     }
 
-    public func shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool {
+    public func shouldAllowMessageSendActionsForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool {
         AssertIsOnMainThread()
 
         if thread.isGroupThread, !thread.isLocalUserFullMemberOfThread {
@@ -291,6 +291,11 @@ extension ConversationViewController: CVComponentDelegate {
         }
         if self.threadViewModel.hasPendingMessageRequest {
             return false
+        }
+        if let groupModelV2 = currentGroupModel as? TSGroupModelV2 {
+            if groupModelV2.isAnnouncementsOnly, !groupModelV2.groupMembership.isLocalUserFullMemberAndAdministrator {
+                return false
+            }
         }
         if itemViewModel.wasRemotelyDeleted {
             return false

@@ -341,19 +341,19 @@ extension MockConversationView: CVComponentDelegate {
     func didLongPressTextViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {}
 
     func didLongPressMediaViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {}
 
     func didLongPressQuote(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {}
 
     func didLongPressSystemMessage(
@@ -364,13 +364,13 @@ extension MockConversationView: CVComponentDelegate {
     func didLongPressSticker(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {}
 
     func didLongPressPoll(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {}
 
     func didChangeLongPress(_ itemViewModel: CVItemViewModelImpl) {}
@@ -393,7 +393,7 @@ extension MockConversationView: CVComponentDelegate {
 
     func didTapSenderAvatar(_ interaction: TSInteraction) {}
 
-    func shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool { false }
+    func shouldAllowMessageSendActionsForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool { false }
 
     func didTapReactions(
         reactionState: InteractionReactionState,
@@ -533,7 +533,7 @@ extension MockConversationView: CVComponentDelegate {
     func didLongPressPaymentMessage(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) { }
 
     func didTapPayment(_ payment: PaymentsHistoryItem) {}

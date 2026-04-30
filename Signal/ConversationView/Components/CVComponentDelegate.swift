@@ -47,19 +47,19 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
     func didLongPressTextViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     )
 
     func didLongPressMediaViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     )
 
     func didLongPressQuote(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     )
 
     func didLongPressSystemMessage(
@@ -70,19 +70,19 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
     func didLongPressSticker(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     )
 
     func didLongPressPaymentMessage(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     )
 
     func didLongPressPoll(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     )
 
     func didChangeLongPress(_ itemViewModel: CVItemViewModelImpl)
@@ -105,7 +105,7 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
 
     func didTapSenderAvatar(_ interaction: TSInteraction)
 
-    func shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool
+    func shouldAllowMessageSendActionsForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool
 
     func didTapReactions(
         reactionState: InteractionReactionState,

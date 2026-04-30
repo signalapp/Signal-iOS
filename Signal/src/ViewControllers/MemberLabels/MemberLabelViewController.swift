@@ -598,19 +598,19 @@ extension MemberLabelViewController: CVComponentDelegate {
     func didLongPressTextViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {}
 
     func didLongPressMediaViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {}
 
     func didLongPressQuote(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {}
 
     func didLongPressSystemMessage(
@@ -621,19 +621,19 @@ extension MemberLabelViewController: CVComponentDelegate {
     func didLongPressSticker(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {}
 
     func didLongPressPaymentMessage(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {}
 
     func didLongPressPoll(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
     ) {}
 
     func didTapPayment(_ payment: PaymentsHistoryItem) {}
@@ -658,7 +658,7 @@ extension MemberLabelViewController: CVComponentDelegate {
 
     func didTapSenderAvatar(_ interaction: TSInteraction) {}
 
-    func shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool { false }
+    func shouldAllowMessageSendActionsForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool { false }
 
     func didTapReactions(
         reactionState: InteractionReactionState,

@@ -248,7 +248,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             return nil
         }
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        guard componentDelegate.shouldAllowReplyForItem(itemViewModel) else {
+        guard componentDelegate.shouldAllowMessageSendActionsForItem(itemViewModel) else {
             return nil
         }
         guard nil != attachmentStream else {

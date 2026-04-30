@@ -112,7 +112,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         }
 
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        let shouldAllowReply = shouldAllowReplyForItem(itemViewModel)
+        let shouldAllowMessageSendActions = shouldAllowMessageSendActionsForItem(itemViewModel)
         let messageActions: [MessageAction]
         if itemViewModel.messageCellType == .systemMessage {
             messageActions = MessageActions.infoMessageActions(
@@ -122,13 +122,13 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         } else if itemViewModel.messageCellType == .stickerMessage || itemViewModel.messageCellType == .genericAttachment {
             messageActions = MessageActions.mediaActions(
                 itemViewModel: itemViewModel,
-                shouldAllowReply: shouldAllowReply,
+                shouldAllowMessageSendActions: shouldAllowMessageSendActions,
                 delegate: self,
             )
         } else {
             messageActions = MessageActions.textActions(
                 itemViewModel: itemViewModel,
-                shouldAllowReply: shouldAllowReply,
+                shouldAllowMessageSendActions: shouldAllowMessageSendActions,
                 delegate: self,
             )
         }

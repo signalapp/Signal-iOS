@@ -201,31 +201,9 @@ enum MessageActionBuilder {
 
     static func changePinStatus(
         itemViewModel: CVItemViewModelImpl,
+        footerState: CVComponentFooter.State,
         delegate: MessageActionsDelegate,
-    ) -> MessageAction? {
-        let db = DependenciesBridge.shared.db
-
-        guard
-            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci,
-            db.read(block: { tx in itemViewModel.thread.canUserEditPinnedMessages(aci: localAci, tx: tx) })
-        else {
-            return nil
-        }
-
-        guard
-            !itemViewModel.wasRemotelyDeleted,
-            itemViewModel.componentState.giftBadge == nil
-        else {
-            return nil
-        }
-
-        if itemViewModel.thread.isTerminatedGroup {
-            return nil
-        }
-
-        guard let footerState = itemViewModel.renderItem.itemViewState.footerState else {
-            return nil
-        }
+    ) -> MessageAction {
 
         if footerState.isPinnedMessage {
             return MessageAction(
@@ -253,8 +231,19 @@ enum MessageActionBuilder {
 }
 
 class MessageActions: NSObject {
+    private class func canLocalUserEditGroupAttributes(itemViewModel: CVItemViewModelImpl) -> Bool {
+        guard let groupModel = itemViewModel.thread.groupModelIfGroupThread as? TSGroupModelV2 else {
+            return true
+        }
 
-    class func textActions(itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
+        if groupModel.groupMembership.isLocalUserFullMemberAndAdministrator {
+            return true
+        }
+
+        return groupModel.access.attributes != .administrator && !groupModel.isAnnouncementsOnly
+    }
+
+    class func textActions(itemViewModel: CVItemViewModelImpl, shouldAllowMessageSendActions: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
         var actions: [MessageAction] = []
 
         let showDetailsAction = MessageActionBuilder.showDetails(itemViewModel: itemViewModel, delegate: delegate)
@@ -268,7 +257,7 @@ class MessageActions: NSObject {
             actions.append(copyTextAction)
         }
 
-        if shouldAllowReply {
+        if shouldAllowMessageSendActions {
             let replyAction = MessageActionBuilder.reply(itemViewModel: itemViewModel, delegate: delegate)
             actions.append(replyAction)
         }
@@ -280,7 +269,7 @@ class MessageActions: NSObject {
         let selectAction = MessageActionBuilder.selectMessage(itemViewModel: itemViewModel, delegate: delegate)
         actions.append(selectAction)
 
-        if itemViewModel.canEditMessage {
+        if itemViewModel.canEditMessage, shouldAllowMessageSendActions {
             let editAction = MessageActionBuilder.editMessage(itemViewModel: itemViewModel, delegate: delegate)
             actions.append(editAction)
         }
@@ -297,14 +286,25 @@ class MessageActions: NSObject {
             }
         }
 
-        if let pinAction = MessageActionBuilder.changePinStatus(itemViewModel: itemViewModel, delegate: delegate) {
+        if
+            shouldAllowMessageSendActions,
+            itemViewModel.componentState.giftBadge == nil,
+            let footerState = itemViewModel.renderItem.itemViewState.footerState,
+            canLocalUserEditGroupAttributes(itemViewModel: itemViewModel)
+        {
+            // Check can change pin
+            let pinAction = MessageActionBuilder.changePinStatus(
+                itemViewModel: itemViewModel,
+                footerState: footerState,
+                delegate: delegate,
+            )
             actions.append(pinAction)
         }
 
         return actions
     }
 
-    class func mediaActions(itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
+    class func mediaActions(itemViewModel: CVItemViewModelImpl, shouldAllowMessageSendActions: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
         var actions: [MessageAction] = []
 
         let showDetailsAction = MessageActionBuilder.showDetails(itemViewModel: itemViewModel, delegate: delegate)
@@ -323,7 +323,7 @@ class MessageActions: NSObject {
             actions.append(saveMediaAction)
         }
 
-        if shouldAllowReply {
+        if shouldAllowMessageSendActions {
             let replyAction = MessageActionBuilder.reply(itemViewModel: itemViewModel, delegate: delegate)
             actions.append(replyAction)
         }
@@ -332,7 +332,7 @@ class MessageActions: NSObject {
             actions.append(MessageActionBuilder.forwardMessage(itemViewModel: itemViewModel, delegate: delegate))
         }
 
-        if itemViewModel.canEditMessage {
+        if itemViewModel.canEditMessage, shouldAllowMessageSendActions {
             let editAction = MessageActionBuilder.editMessage(itemViewModel: itemViewModel, delegate: delegate)
             actions.append(editAction)
         }
@@ -340,14 +340,24 @@ class MessageActions: NSObject {
         let selectAction = MessageActionBuilder.selectMessage(itemViewModel: itemViewModel, delegate: delegate)
         actions.append(selectAction)
 
-        if let pinAction = MessageActionBuilder.changePinStatus(itemViewModel: itemViewModel, delegate: delegate) {
+        if
+            shouldAllowMessageSendActions,
+            itemViewModel.componentState.giftBadge == nil,
+            let footerState = itemViewModel.renderItem.itemViewState.footerState,
+            canLocalUserEditGroupAttributes(itemViewModel: itemViewModel)
+        {
+            let pinAction = MessageActionBuilder.changePinStatus(
+                itemViewModel: itemViewModel,
+                footerState: footerState,
+                delegate: delegate,
+            )
             actions.append(pinAction)
         }
 
         return actions
     }
 
-    class func quotedMessageActions(itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
+    class func quotedMessageActions(itemViewModel: CVItemViewModelImpl, shouldAllowMessageSendActions: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
         var actions: [MessageAction] = []
 
         let showDetailsAction = MessageActionBuilder.showDetails(itemViewModel: itemViewModel, delegate: delegate)
@@ -356,7 +366,7 @@ class MessageActions: NSObject {
         let deleteAction = MessageActionBuilder.deleteMessage(itemViewModel: itemViewModel, delegate: delegate)
         actions.append(deleteAction)
 
-        if shouldAllowReply {
+        if shouldAllowMessageSendActions {
             let replyAction = MessageActionBuilder.reply(itemViewModel: itemViewModel, delegate: delegate)
             actions.append(replyAction)
         }
@@ -365,7 +375,7 @@ class MessageActions: NSObject {
             actions.append(MessageActionBuilder.forwardMessage(itemViewModel: itemViewModel, delegate: delegate))
         }
 
-        if itemViewModel.canEditMessage {
+        if itemViewModel.canEditMessage, shouldAllowMessageSendActions {
             let editAction = MessageActionBuilder.editMessage(itemViewModel: itemViewModel, delegate: delegate)
             actions.append(editAction)
         }
@@ -373,7 +383,17 @@ class MessageActions: NSObject {
         let selectAction = MessageActionBuilder.selectMessage(itemViewModel: itemViewModel, delegate: delegate)
         actions.append(selectAction)
 
-        if let pinAction = MessageActionBuilder.changePinStatus(itemViewModel: itemViewModel, delegate: delegate) {
+        if
+            shouldAllowMessageSendActions,
+            itemViewModel.componentState.giftBadge == nil,
+            let footerState = itemViewModel.renderItem.itemViewState.footerState,
+            canLocalUserEditGroupAttributes(itemViewModel: itemViewModel)
+        {
+            let pinAction = MessageActionBuilder.changePinStatus(
+                itemViewModel: itemViewModel,
+                footerState: footerState,
+                delegate: delegate,
+            )
             actions.append(pinAction)
         }
 
@@ -382,7 +402,7 @@ class MessageActions: NSObject {
 
     class func paymentActions(
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
         delegate: MessageActionsDelegate,
     ) -> [MessageAction] {
         var actions: [MessageAction] = []
@@ -405,7 +425,7 @@ class MessageActions: NSObject {
         )
         actions.append(showPaymentDetailsAction)
 
-        if shouldAllowReply {
+        if shouldAllowMessageSendActions {
             let replyAction = MessageActionBuilder.reply(
                 itemViewModel: itemViewModel,
                 delegate: delegate,
@@ -419,16 +439,25 @@ class MessageActions: NSObject {
         )
         actions.append(selectAction)
 
-        if let pinAction = MessageActionBuilder.changePinStatus(itemViewModel: itemViewModel, delegate: delegate) {
+        if
+            shouldAllowMessageSendActions,
+            itemViewModel.componentState.giftBadge == nil,
+            let footerState = itemViewModel.renderItem.itemViewState.footerState,
+            canLocalUserEditGroupAttributes(itemViewModel: itemViewModel)
+        {
+            let pinAction = MessageActionBuilder.changePinStatus(
+                itemViewModel: itemViewModel,
+                footerState: footerState,
+                delegate: delegate,
+            )
             actions.append(pinAction)
         }
-
         return actions
     }
 
     class func pollActions(
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool,
+        shouldAllowMessageSendActions: Bool,
         delegate: MessageActionsDelegate,
     ) -> [MessageAction] {
         var actions: [MessageAction] = []
@@ -445,7 +474,7 @@ class MessageActions: NSObject {
         )
         actions.append(deleteAction)
 
-        if shouldAllowReply {
+        if shouldAllowMessageSendActions {
             let replyAction = MessageActionBuilder.reply(itemViewModel: itemViewModel, delegate: delegate)
             actions.append(replyAction)
         }
@@ -460,7 +489,7 @@ class MessageActions: NSObject {
             let poll = itemViewModel.componentState.poll?.state.poll,
             poll.ownerIsLocalUser,
             !poll.isEnded,
-            !itemViewModel.thread.isTerminatedGroup
+            shouldAllowMessageSendActions
         {
             let endPollAction = MessageActionBuilder.endPoll(
                 itemViewModel: itemViewModel,
@@ -469,7 +498,17 @@ class MessageActions: NSObject {
             actions.append(endPollAction)
         }
 
-        if let pinAction = MessageActionBuilder.changePinStatus(itemViewModel: itemViewModel, delegate: delegate) {
+        if
+            shouldAllowMessageSendActions,
+            itemViewModel.componentState.giftBadge == nil,
+            let footerState = itemViewModel.renderItem.itemViewState.footerState,
+            canLocalUserEditGroupAttributes(itemViewModel: itemViewModel)
+        {
+            let pinAction = MessageActionBuilder.changePinStatus(
+                itemViewModel: itemViewModel,
+                footerState: footerState,
+                delegate: delegate,
+            )
             actions.append(pinAction)
         }
 

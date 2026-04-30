@@ -2774,7 +2774,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             // only become active if this message allows
             // swipe-to-reply.
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-            if componentDelegate.shouldAllowReplyForItem(itemViewModel) {
+            if componentDelegate.shouldAllowMessageSendActionsForItem(itemViewModel) {
                 activeDirection = .right
             } else {
                 activeDirection = .none
