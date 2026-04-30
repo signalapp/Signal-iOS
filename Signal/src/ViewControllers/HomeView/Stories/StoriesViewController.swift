@@ -14,17 +14,35 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
 
     private lazy var searchController = UISearchController()
 
-    private lazy var emptyStateLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .Signal.secondaryLabel
-        label.font = .dynamicTypeBody
-        label.numberOfLines = 0
-        label.textAlignment = .center
-        label.text = OWSLocalizedString("STORIES_NO_RECENT_MESSAGES", comment: "Indicates that there are no recent stories to render")
-        label.isHidden = true
-        label.isUserInteractionEnabled = false
-        tableView.backgroundView = label
-        return label
+    private lazy var emptyStateView: UIView = {
+        let titleLabel = UILabel.explanationTextLabel(text: NSLocalizedString(
+            "STORIES_NO_STORIES_TITLE",
+            comment: "Message shown in the Stories tab when the list is empty.",
+        ))
+        titleLabel.font = .dynamicTypeTitle3.semibold()
+        titleLabel.adjustsFontForContentSizeCategory = true
+
+        let subtitleLabel = UILabel.explanationTextLabel(text: NSLocalizedString(
+            "STORIES_NO_STORIES_SUBTITLE",
+            comment: "Message shown in the Stories tab when the list is empty.",
+        ))
+        subtitleLabel.adjustsFontForContentSizeCategory = true
+
+        let textStack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
+        textStack.axis = .vertical
+        textStack.spacing = 4
+
+        let containerView = UIView.container()
+        containerView.preservesSuperviewLayoutMargins = true
+        containerView.addSubview(textStack)
+        textStack.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            textStack.topAnchor.constraint(greaterThanOrEqualTo: containerView.layoutMarginsGuide.topAnchor),
+            textStack.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+            textStack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            textStack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+        ])
+        return containerView
     }()
 
     private lazy var dataSource = StoryListDataSource(delegate: self, spoilerState: spoilerState)
@@ -58,6 +76,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
 
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.backgroundView = emptyStateView
         view.addSubview(tableView)
         tableView.autoPinHeight(toHeightOf: view)
         tableViewHorizontalEdgeConstraints = [
@@ -314,7 +333,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
     private var scrollTarget: ScrollTarget?
 
     func tableViewDidUpdate() {
-        emptyStateLabel.isHidden = !dataSource.isEmpty
+        emptyStateView.isHidden = !dataSource.isEmpty
         tableView.isScrollEnabled = !dataSource.isEmpty
         // Because scrolling is disabled when data is empty, disable
         // collapsing to ensure the search bar stays visible.

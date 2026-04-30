@@ -9355,14 +9355,17 @@
 /* Context menu action to view metadata about the story */
 "STORIES_INFO_ACTION" = "Info";
 
-/* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.";
-
 /* The subtitle when this story has no replies */
 "STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "No replies yet";
+
+/* Message shown in the Stories tab when the list is empty. */
+"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+
+/* Message shown in the Stories tab when the list is empty. */
+"STORIES_NO_STORIES_TITLE" = "No Stories";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "No views yet";
