@@ -12,6 +12,7 @@
 		<string>applinks:signal.me</string>
 		<string>applinks:signaldonations.org</string>
 		<string>applinks:signal.link</string>
+		<string>webcredentials:signal.org</string>
 	</array>
 	<key>com.apple.developer.default-data-protection</key>
 	<string>NSFileProtectionComplete</string>

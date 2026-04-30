@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AuthenticationServices
 import SignalServiceKit
 import SignalUI
 import SwiftUI
@@ -107,43 +108,55 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
         let aepTextView = AccountEntropyPoolTextView(mode: .display(aep: aep))
         aepTextView.backgroundColor = .Signal.secondaryGroupedBackground
 
-        let copyToClipboardButton = UIButton(
-            configuration: .smallSecondary(title: OWSLocalizedString(
-                "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE",
-                comment: "Title for a button allowing users to copy their 'Recovery Key' to the clipboard.",
-            )),
-            primaryAction: UIAction { [weak self] _ in
-                self?.copyToClipboard()
-            },
-        )
-        copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
-        let copyButtonContainer = UIView.container()
-        copyButtonContainer.addSubview(copyToClipboardButton)
-        copyButtonContainer.addConstraints([
-            copyToClipboardButton.topAnchor.constraint(equalTo: copyButtonContainer.topAnchor),
-            copyToClipboardButton.leadingAnchor.constraint(greaterThanOrEqualTo: copyToClipboardButton.leadingAnchor),
-            copyToClipboardButton.centerXAnchor.constraint(equalTo: copyButtonContainer.centerXAnchor),
-            copyToClipboardButton.bottomAnchor.constraint(equalTo: copyButtonContainer.bottomAnchor),
-        ])
+        var topButtons: [UIButton] = [
+            UIButton(
+                configuration: .smallSecondary(title: OWSLocalizedString(
+                    "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE",
+                    comment: "Title for a button allowing users to copy their 'Recovery Key' to the clipboard.",
+                )),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.copyToClipboard()
+                },
+            ),
+        ]
+        if #available(iOS 26.2, *), DebugFlags.internalLogging {
+            let saveToPasswordManagerButton = UIButton(
+                configuration: .smallSecondary(title: "Save to Password Manager"),
+                primaryAction: UIAction { [weak self] _ in
+                    Task {
+                        await self?.saveToPasswordManager()
+                    }
+                },
+            )
+            topButtons.append(saveToPasswordManagerButton)
+        }
 
-        let createNewKeyButton = UIButton(
-            configuration: .largeSecondary(title: OWSLocalizedString(
-                "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE",
-                comment: "Title for a button allowing users to create a new 'Recovery Key'.",
-            )),
-            primaryAction: UIAction { [weak self] _ in
-                guard let self else { return }
-                onCreateNewKeyPressedBlock(self)
-            },
-        )
+        var bottomButtons = [UIButton]()
+        if options.contains(.showCreateNewKeyButton) {
+            let createNewKeyButton = UIButton(
+                configuration: .largeSecondary(title: OWSLocalizedString(
+                    "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE",
+                    comment: "Title for a button allowing users to create a new 'Recovery Key'.",
+                )),
+                primaryAction: UIAction { [weak self] _ in
+                    guard let self else { return }
+                    onCreateNewKeyPressedBlock(self)
+                },
+            )
 
-        let continueButton = UIButton(
-            configuration: .largePrimary(title: CommonStrings.continueButton),
-            primaryAction: UIAction { [weak self] _ in
-                guard let self else { return }
-                onContinuePressedBlock(self)
-            },
-        )
+            bottomButtons.append(createNewKeyButton)
+        }
+        if options.contains(.showContinueButton) {
+            let continueButton = UIButton(
+                configuration: .largePrimary(title: CommonStrings.continueButton),
+                primaryAction: UIAction { [weak self] _ in
+                    guard let self else { return }
+                    onContinuePressedBlock(self)
+                },
+            )
+
+            bottomButtons.append(continueButton)
+        }
 
         let stackView = addStaticContentStackView(
             arrangedSubviews: [
@@ -151,24 +164,14 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
                 headlineLabel,
                 subheadlineLabel,
                 aepTextView,
-                copyButtonContainer,
+                topButtons.enclosedInVerticalStackView(isFullWidthButtons: false),
                 .vStretchingSpacer(),
+                bottomButtons.enclosedInVerticalStackView(isFullWidthButtons: options.contains(.showContinueButton)),
             ],
             isScrollable: true,
         )
         stackView.spacing = 24
         stackView.setCustomSpacing(32, after: aepTextView)
-
-        var bottomButtons = [UIButton]()
-        if options.contains(.showCreateNewKeyButton) {
-            bottomButtons.append(createNewKeyButton)
-        }
-        if options.contains(.showContinueButton) {
-            bottomButtons.append(continueButton)
-        }
-        if !bottomButtons.isEmpty {
-            stackView.addArrangedSubview(bottomButtons.enclosedInVerticalStackView(isFullWidthButtons: options.contains(.showContinueButton)))
-        }
     }
 
     private func copyToClipboard() {
@@ -185,6 +188,35 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
             image: .copy,
         )
         toast.presentToastView(from: .bottom, of: view, inset: view.safeAreaInsets.bottom + 8)
+    }
+
+    @available(iOS 26.2, *)
+    private func saveToPasswordManager() async {
+        guard let window = view.window else {
+            owsFailDebug("Missing window!")
+            return
+        }
+
+        do {
+            let credentialDataManager = ASCredentialDataManager()
+            let password = ASPasswordCredential(
+                user: "Signal Recovery Key",
+                password: aep.displayString,
+            )
+            let scope = ASAutoFillURLScope(host: "signal.org")
+
+            try await credentialDataManager.save(
+                password: password,
+                for: scope,
+                title: "Signal Recovery Key",
+                anchor: window,
+            )
+
+            presentToast(text: "Done. Check your password manager to verify.")
+        } catch {
+            Logger.warn("Failed to save to password manager! \(error)")
+            presentToast(text: "Something went wrong.")
+        }
     }
 }
 
