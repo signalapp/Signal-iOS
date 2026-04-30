@@ -25,7 +25,7 @@ public enum VerificationState: Equatable {
     case noLongerVerified
     case implicit(isAcknowledged: Bool)
 
-    init(_ verificationState: OWSVerificationState) {
+    public init(_ verificationState: OWSVerificationState) {
         switch verificationState {
         case .default:
             self = .implicit(isAcknowledged: false)

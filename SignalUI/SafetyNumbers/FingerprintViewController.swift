@@ -138,12 +138,16 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
     private let recipientAci: Aci
     private let recipientName: String
-    private let recipientVerificationState: VerificationState
+    private var recipientVerificationState: VerificationState {
+        didSet {
+            self.fingerprintCard.theirVerificationState = recipientVerificationState
+        }
+    }
+
     private let fingerprint: CombinedFingerprints
     private let keyTransparencyState: KeyTransparencyState
 
     private let deps: Deps?
-    private var identityStateChangeObserver: AnyObject?
 
     fileprivate init(
         recipientAci: Aci,
@@ -170,19 +174,12 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         title = NSLocalizedString("PRIVACY_VERIFICATION_TITLE", comment: "Navbar title")
         navigationItem.rightBarButtonItem = .doneButton(dismissingFrom: self)
 
-        identityStateChangeObserver = NotificationCenter.default.addObserver(
-            forName: .identityStateDidChange,
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.identityStateDidChange(_:)),
+            name: .identityStateDidChange,
             object: nil,
-            queue: .main,
-        ) { [weak self] _ in
-            self?.dismiss(animated: true)
-        }
-    }
-
-    deinit {
-        if let identityStateChangeObserver {
-            NotificationCenter.default.removeObserver(identityStateChangeObserver)
-        }
+        )
     }
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle {
@@ -197,6 +194,31 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         super.viewDidLoad()
         view.backgroundColor = .Signal.groupedBackground
         configureUI()
+    }
+
+    @objc
+    private func identityStateDidChange(_ notification: Notification) {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let identityManager = DependenciesBridge.shared.identityManager
+
+        let recipientIdentity = databaseStorage.read { tx in
+            return identityManager.recipientIdentity(for: SignalServiceAddress(recipientAci), tx: tx)
+        }
+
+        // Ensure the identity key hasn't changed (this influences the Safety
+        // Number). If it changes, we want to dismiss the view so that we can
+        // present it again with the new Safety Number.
+        guard
+            let recipientIdentity,
+            (try? recipientIdentity.identityKeyObject) == fingerprint.remote.identityKey
+        else {
+            self.dismiss(animated: true)
+            return
+        }
+
+        // The verification state may change (e.g., after scanning a QR code). We
+        // want the UI to reflect the latest value.
+        self.recipientVerificationState = VerificationState(recipientIdentity.verificationState)
     }
 
     // MARK: UI
@@ -278,7 +300,12 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
     private final class FingerprintCard: UIView {
         private let fingerprint: CombinedFingerprints
-        private let theirVerificationState: VerificationState
+        var theirVerificationState: VerificationState {
+            didSet {
+                updateVerifyUnverifyButtonTitle()
+            }
+        }
+
         private weak var controller: FingerprintViewController?
 
         init(
@@ -299,6 +326,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             addSubview(qrCodeView)
             addSubview(safetyNumberLabel)
             addSubview(verifyUnverifyButton)
+            updateVerifyUnverifyButtonTitle()
 
             shareButton.autoPinEdge(.top, to: .top, of: self, withOffset: 16)
             shareButton.autoPinEdge(.trailing, to: .trailing, of: self, withOffset: -16)
@@ -399,19 +427,6 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             configuration.contentInsets = NSDirectionalEdgeInsets(hMargin: 16, vMargin: 12)
             configuration.cornerStyle = .capsule
 
-            switch theirVerificationState {
-            case .verified:
-                configuration.title = OWSLocalizedString(
-                    "PRIVACY_UNVERIFY_BUTTON",
-                    comment: "Button that lets user mark another user's identity as unverified.",
-                )
-            case .noLongerVerified, .implicit:
-                configuration.title = OWSLocalizedString(
-                    "PRIVACY_VERIFY_BUTTON",
-                    comment: "Button that lets user mark another user's identity as verified.",
-                )
-            }
-
             return UIButton(
                 configuration: configuration,
                 primaryAction: UIAction { [weak self] _ in
@@ -419,6 +434,23 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
                 },
             )
         }()
+
+        private func updateVerifyUnverifyButtonTitle() {
+            var configuration = self.verifyUnverifyButton.configuration
+            switch theirVerificationState {
+            case .verified:
+                configuration?.title = OWSLocalizedString(
+                    "PRIVACY_UNVERIFY_BUTTON",
+                    comment: "Button that lets user mark another user's identity as unverified.",
+                )
+            case .noLongerVerified, .implicit:
+                configuration?.title = OWSLocalizedString(
+                    "PRIVACY_VERIFY_BUTTON",
+                    comment: "Button that lets user mark another user's identity as verified.",
+                )
+            }
+            self.verifyUnverifyButton.configuration = configuration
+        }
 
         @objc
         func didTapToScan() {
