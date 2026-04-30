@@ -209,6 +209,7 @@ public class OWSTableItem {
     public static func `switch`(
         withText text: String,
         accessibilityIdentifier: String? = nil,
+        textColor: UIColor? = nil,
         isOn: @escaping (() -> Bool),
         isEnabled: @escaping (() -> Bool) = { true },
         target: AnyObject,
@@ -217,6 +218,7 @@ public class OWSTableItem {
         return OWSTableItem(customCellBlock: { [weak target] in
             let cell = OWSTableItem.buildCell(
                 itemName: text,
+                textColor: textColor,
                 accessibilityIdentifier: accessibilityIdentifier,
             )
 

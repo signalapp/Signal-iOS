@@ -50,22 +50,17 @@ class NotificationSettingsViewController: OWSTableViewController2 {
             selector: #selector(didToggleSoundNotificationsSwitch),
         ))
         let messageSentSoundEnabled = SSKEnvironment.shared.preferencesRef.soundInForeground
-        soundsSection.add(OWSTableItem(customCellBlock: { [weak self] in
-            let cell = OWSTableItem.buildCell(
-                itemName: OWSLocalizedString(
-                    "SETTINGS_MESSAGE_SENT_SOUND",
-                    comment: "Setting for enabling & disabling the sound effect played when a message is sent.",
-                ),
-                textColor: messageSentSoundEnabled ? nil : Theme.secondaryTextAndIconColor,
-            )
-            let cellSwitch = UISwitch()
-            cellSwitch.isOn = messageSentSoundEnabled && SSKEnvironment.shared.preferencesRef.isMessageSentSoundEnabled
-            cellSwitch.isEnabled = messageSentSoundEnabled
-            cellSwitch.addTarget(self, action: #selector(NotificationSettingsViewController.didToggleMessageSentSoundSwitch), for: .valueChanged)
-            cell.accessoryView = cellSwitch
-            cell.selectionStyle = .none
-            return cell
-        }))
+        soundsSection.add(.switch(
+            withText: OWSLocalizedString(
+                "SETTINGS_MESSAGE_SENT_SOUND",
+                comment: "Setting for enabling & disabling the sound effect played when a message is sent.",
+            ),
+            textColor: messageSentSoundEnabled ? nil : Theme.secondaryTextAndIconColor,
+            isOn: { messageSentSoundEnabled && SSKEnvironment.shared.preferencesRef.isMessageSentSoundEnabled },
+            isEnabled: { messageSentSoundEnabled },
+            target: self,
+            selector: #selector(didToggleMessageSentSoundSwitch),
+        ))
         contents.add(soundsSection)
 
         let notificationContentSection = OWSTableSection()
