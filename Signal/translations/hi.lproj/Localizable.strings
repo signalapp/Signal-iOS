@@ -3023,10 +3023,10 @@
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "डोनेशन पेंडिंग है";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "आपका iDEAL डोनेशन अभी प्रोसेस हो रहा है। दूसरा डोनेशन शुरू करने से पहले, पेमेंट को मंज़ूरी देने के लिए अपना बैंकिंग ऐप देखें।";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "आपका iDEAL डोनेशन अभी प्रोसेस हो रहा है। दूसरा डोनेशन शुरू करने से पहले, पेमेंट को मंज़ूरी देने के लिए अपना बैंकिंग ऐप देखें।";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "बैंक ट्रांसफ़र को प्रोसेस होने में 1 से 14 कामकाजी दिन लग सकते हैं। दूसरा डोनेशन शुरू करने से पहले, इस डोनेशन के पूरा होने का इंतज़ार करें।";
@@ -3275,7 +3275,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "दोबारा कोशिश करें";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "आपके iDEAL डोनेशन की पुष्टि नहीं हो पाई। अपने डोनेशन को मंज़ूरी देने के लिए बैंकिंग ऐप देखें या दोबारा कोशिश करें।";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL | Wero donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "आपका बैंक ट्रांसफ़र पेंडिंग है। बैंक ट्रांसफ़र को प्रोसेस होने में 1 से 14 कामकाजी दिन लग सकते हैं।";
@@ -3293,16 +3293,16 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "डोनेशन की पुष्टि नहीं हो पाई";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "आपका एकमुश्त iDEAL डोनेशन प्रोसेस नहीं हो पाया। कृपया कोई और पेमेंट मेथड आज़माएं या फिर ज़्यादा जानकारी के लिए अपने बैंक से संपर्क करें।";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL | Wero one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "आपके %1$@ के एकमुश्त iDEAL डोनेशन की पुष्टि नहीं हो पाई। अपना iDEAL डोनेशन को मंज़ूरी देने के लिए बैंकिंग ऐप देखें।";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your one-time %1$@ iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "आपका रिकरिंग मासिक iDEAL डोनेशन प्रोसेस नहीं हो सका। कृपया कोई और पेमेंट मेथड आज़माएं या फिर ज़्यादा जानकारी के लिए अपने बैंक से संपर्क करें।";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information..";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "आपके %1$@ के रिकरिंग iDEAL डोनेशन की पुष्टि नहीं हो पाई। अपना iDEAL डोनेशन को मंज़ूरी देने के लिए बैंकिंग ऐप देखें।";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your recurring %1$@ monthly iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "आपका रिकरिंग मासिक डोनेशन खत्म हो गया है। %1$@";
@@ -3779,7 +3779,7 @@
 "GROUP_ADMIN_ONLY_WARNING" = "इस विकल्प को सिर्फ़ ऐडमिन बदल सकता है।";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "आपको उनके ऑडियो और वीडियो नहीं मिलेंगे और उनको आपके।";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "आपको उनके ऑडियो और वीडियो नहीं मिलेंगे और उन्हें आपके।";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ को ब्लॉक किया गया";
@@ -4886,16 +4886,16 @@
 "KEY_COMMAND_UNARCHIVE" = "चैट को अनआर्काइव करें";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "डीबग लॉग की मदद से हम समस्या का पता लगाकर उसे ठीक करने में मदद मिलती है। इनमें आपकी पहचान ज़ाहिर करने वाली कोई जानकारी शामिल नहीं होती।";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Please contact support to help us fix the issue.";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "सबमिट करें";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Contact Support";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
 "KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "नहीं, रहने दें";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "फ़िलहाल आपके डिवाइस पर 'ऑटोमैटिक की वेरिफ़िकेशन' की सुविधा उपलब्ध नहीं है। डीबग लॉग सबमिट करना है?";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device.";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "और जानें";
@@ -5081,7 +5081,7 @@
 "LINKING_SYNCING_FINALIZING" = "मैसेज ट्रांसफ़र की प्रक्रिया शुरू होने वाली है…";
 
 /* Footer text when loading messages during linking process. */
-"LINKING_SYNCING_FOOTER" = "मैसेज और चैट की जानकारी एंड-टू-एंड एन्क्रिप्शन से सुरक्षित है। इसमें सिंक प्रक्रिया भी शामिल है।";
+"LINKING_SYNCING_FOOTER" = "मैसेज और चैट का डेटा एंड-टू-एंड एन्क्रिप्शन से सुरक्षित है। इसमें सिंक प्रक्रिया भी शामिल है";
 
 /* Title shown when loading messages during linking process */
 "LINKING_SYNCING_MESSAGES_TITLE" = "मैसेज सिंक हो रहे हैं";
@@ -6327,6 +6327,9 @@
 
 /* Header title for card payment details screen */
 "PAYMENT_DETAILS_CARD_TITLE" = "डेबिट या क्रेडिट कार्ड";
+
+/* Header title for iDEAL|Wero bank payment details screen */
+"PAYMENT_DETAILS_IDEAL_BANK_TITLE" = "iDEAL | Wero";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ से %2$@";
@@ -9119,7 +9122,7 @@
 "SETTINGS_SECURITY_TITLE" = "ऐप की सुरक्षा";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "हाई क्वालिटी मीडिया भेजने के लिए ज़्यादा डेटा खर्च होगा।";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "हाई क्वालिटी मीडिया भेजने में ज़्यादा डेटा खर्च होगा।";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "फ़ोटो और वीडियो";
@@ -9758,7 +9761,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%1$@ और %2$@ के सदस्य";
 
 /* A string indicating there are no mutual groups the user shares with this contact */
-"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "कोई साझा ग्रुप नहीं";
+"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "आपके बीच कोई कॉमन ग्रुप नहीं है";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "%1$@ को मैसेज भेजने के बाद आपको पता चला कि यह नंबर %2$@ का है। उनका नंबर प्राइवेट है।\n\nदोनों चैट के लिए आपके पुराने मैसेज यहां मर्ज कर दिए गए हैं।";
@@ -9833,7 +9836,7 @@
 "UNARCHIVE_ACTION" = "आर्काइव नहीं करें";
 
 /* Toast shown when tapping older media that can no longer be downloaded */
-"UNAVAILABLE_MEDIA_TAP_TOAST" = "अब यह मीडिया उपलब्ध नहीं है";
+"UNAVAILABLE_MEDIA_TAP_TOAST" = "यह मीडिया अब उपलब्ध नहीं है";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "यूज़र आपके कॉन्टैक्ट लिस्ट में नहीं है। क्या इस यूज़र को ब्लॉक करना है?";
@@ -10025,28 +10028,28 @@
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "यूज़र नहीं मिला";
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
-"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Signal पर मुझसे चैट करने के लिए इस QR कोड को अपने फोन से स्कैन करें।";
+"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Signal पर मुझसे चैट करने के लिए इस QR कोड को अपने फ़ोन से स्कैन करें।";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
-"USERNAME_RESET_SUCCESSFUL_TOAST" = "आपका QR कोड और लिंक फिर से स्थापित कर दिया गया है और आपका यूज़रनेम %1$@ है";
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "आपका QR कोड और लिंक रीसेट हो गया है और आपका यूज़रनेम %1$@ है";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "यूज़रनेम एक संख्या से शुरू नहीं हो सकते हैं";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "यूज़रनेम किसी संख्या से शुरू नहीं हो सकता";
 
 /* A message explaining the side effects of changing your username. */
 "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "यूज़रनेम बदलने पर आपका मौजूदा QR कोड और लिंक रीसेट हो जाएगा। क्या आपको वाकई ऐसा करना है?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "यूज़रनेम हमेशा संख्याओं के एक समूह के साथ जोड़े जाते हैं। %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "यूज़रनेम के साथ हमेशा नंबर का एक सेट होता है। %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
 "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "अपना यूज़रनेम चुनें";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "उपयोगकर्ता नाम में केवल a-z, 0-9, और _ आ सकते हैं";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "यूज़रनेम में सिर्फ़ a-z, 0-9, और _ शामिल हो सकते हैं";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
-"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "अमान्य यूज़रनेम, न्यूनतम 2 अंक दर्ज करें";
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "यूज़रनेम सही नहीं है, कम से कम 2 डिजिट डालें";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "इन अंकों से आपको अपना यूज़रनेम प्राइवेट बनाए रखने में मदद मिलती है, ताकि अनचाहे मैसेज से बचा जा सके। अपना यूज़रनेम सिर्फ़ उन्हीं लोगों और ग्रुप के साथ शेयर करें, जिनसे आपको चैट करनी है। यूज़रनेम बदलने पर आपको नए अंक मिलेंगे।";
@@ -10058,7 +10061,7 @@
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "यह यूज़रनेम उपलब्ध नहीं है।";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "बहुत अधिक प्रयास किए गए, कृपया बाद में पुनः प्रयास करें";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "आपने कई बार कोशिश कर ली है, कृपया बाद में कोशिश करें";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "यूज़रनेम";
@@ -10067,7 +10070,7 @@
 "USERNAME_SELECTION_TITLE" = "यूज़रनेम";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "यह संख्या 00 नहीं हो सकती। 1-9 के बीच का कोई अंक दर्ज करें";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "यह संख्या 00 नहीं हो सकती। 1–9 के बीच का कोई अंक डालें";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "यूज़रनेम तभी अपडेट हो सकता है जब आप इंटरनेट से जुड़े हों।";
@@ -10124,7 +10127,7 @@
 "VIEW_STORY" = "स्टोरी देखें";
 
 /* Accessibility label for placing a voice call */
-"VOICE_CALL_LABEL" = "वीडियो कॉल";
+"VOICE_CALL_LABEL" = "वॉइस कॉल";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "रद्द करने के लिए स्लाइड करें";

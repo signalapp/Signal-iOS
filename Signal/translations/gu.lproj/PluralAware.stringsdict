@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld ગ્રૂપ અપડેટ</string>
+			<string>%1$ld ગ્રૂપ નોટિફિકેશન</string>
 			<key>other</key>
-			<string>%1$ld ગ્રૂપ અપડેટ</string>
+			<string>%1$ld ગ્રૂપ નોટિફિકેશન</string>
 		</dict>
 	</dict>
 	<key>COLLAPSE_SET_TIMER_CHANGES_%d</key>

@@ -3023,10 +3023,10 @@
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Laukiama paramos";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Tavo iDEAL parama vis dar apdorojama. Prieš skiriant kitą paramą prašome patikrinti savo banko programėlę ir patvirtinti mokėjimą.";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Tavo iDEAL parama vis dar apdorojama. Prieš skiriant kitą paramą prašome patikrinti savo banko programėlę ir patvirtinti mokėjimą.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Bankiniai pavedimai apdorojami per 1–14 darbo dienų. Prieš skiriant kitą paramą prašome palaukti, kol ši parama bus užbaigta.";
@@ -3275,7 +3275,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Bandykite dar kartą";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Nepavyko patvirtinti jūsų „iDEAL“ paramos. Patikrinkite savo banko programėlę ir patvirtinkite paramą arba bandykite dar kartą.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL | Wero donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Laukiama jūsų bankinio pavedimo. Bankiniai pavedimai apdorojami per 1–14 darbo dienų.";
@@ -3293,16 +3293,16 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Nepavyko patvirtinti paramos";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Nepavyko apdoroti jūsų vienkartinės „iDEAL“ paramos. Bandykite kitą mokėjimo būdą arba kreipkitės į savo banką, jei reikia daugiau informacijos.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL | Wero one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Nepavyko patvirtinti jūsų vienkartinės %1$@ „iDEAL“ paramos. Patikrinkite banko programėlę ir patvirtinkite „iDEAL“ paramą.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your one-time %1$@ iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Nepavyko apdoroti jūsų kas mėnesį skiriamos „iDEAL“ paramos. Bandykite kitą mokėjimo būdą arba kreipkitės į savo banką, jei reikia daugiau informacijos.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information..";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Nepavyko patvirtinti jūsų %1$@ kas mėnesį skiriamos „iDEAL“ paramos. Patikrinkite banko programėlę ir patvirtinkite „iDEAL“ paramą.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your recurring %1$@ monthly iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Jūsų kas mėnesį skiriama parama baigėsi. %1$@";
@@ -4886,16 +4886,16 @@
 "KEY_COMMAND_UNARCHIVE" = "Išarchyvuoti pokalbį";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Derinimo žurnalai padeda mums diagnozuoti ir išspręsti problemą, juose nėra identifikavimo informacijos.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Please contact support to help us fix the issue.";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Pateikti";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Contact Support";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
 "KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "Ne, ačiū";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatinis rakto patvirtinimas jūsų įrenginyje šiuo metu negalimas. Pateikti derinimo žurnalą?";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device.";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Sužinoti daugiau";
@@ -6327,6 +6327,9 @@
 
 /* Header title for card payment details screen */
 "PAYMENT_DETAILS_CARD_TITLE" = "Kredito arba debeto kortelė";
+
+/* Header title for iDEAL|Wero bank payment details screen */
+"PAYMENT_DETAILS_IDEAL_BANK_TITLE" = "iDEAL | Wero";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@, %2$@";

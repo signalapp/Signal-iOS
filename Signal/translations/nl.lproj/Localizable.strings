@@ -3023,10 +3023,10 @@
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Donatie is in behandeling";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Je donatie via iDEAL is nog in behandeling. Ga naar je bankapp om je betaling goed te keuren voordat je opnieuw een donatie doet.";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Je donatie via iDEAL is nog in behandeling. Ga naar je bankapp om je betaling goed te keuren voordat je opnieuw een donatie doet.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Het kan 1 tot 14 werkdagen duren voordat een bankoverschrijving is verwerkt. Wacht tot deze betaling is voltooid voordat je nog een donatie doet.";
@@ -3275,7 +3275,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Opnieuw proberen";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Je iDEAL-donatie kan niet worden bevestigd. Controleer je bankapp om je donatie goed te keuren of probeer het opnieuw.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL | Wero donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Je bankoverschrijving is in behandeling. Het kan 1 tot 14 werkdagen duren voordat een bankoverschrijving is verwerkt.";
@@ -3293,16 +3293,16 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Kan donatie niet bevestigen";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Je eenmalige donatie via iDEAL kan niet worden verwerkt. Probeer het via een andere betaalmethode of neem contact op met je bank voor meer informatie.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL | Wero one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Je eenmalige donatie van %1$@ via iDEAL kan niet worden bevestigd. Ga naar je bankapp om je donatie via iDEAL goed te keuren.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your one-time %1$@ iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Je maandelijkse donatie via iDEAL kan niet worden verwerkt. Probeer het via een andere betaalmethode of neem contact op met je bank voor meer informatie.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information..";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Je maandelijkse donatie van %1$@ via iDEAL kan niet worden bevestigd. Ga naar je bankapp om je donatie via iDEAL goed te keuren.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your recurring %1$@ monthly iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Je maandelijkse donatie is beëindigd. %1$@";
@@ -4886,16 +4886,16 @@
 "KEY_COMMAND_UNARCHIVE" = "Chat dearchiveren";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Foutopsporingslogs helpen ons het probleem op te sporen en op te lossen en bevatten geen identificeerbare informatie.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Please contact support to help us fix the issue.";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Indienen";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Contact Support";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
 "KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "Nee bedankt";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatische sleutelverificatie is momenteel niet beschikbaar voor jouw apparaat. Foutopsporingslog indienen?";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device.";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Meer lezen";
@@ -6327,6 +6327,9 @@
 
 /* Header title for card payment details screen */
 "PAYMENT_DETAILS_CARD_TITLE" = "Creditcard of betaalkaart";
+
+/* Header title for iDEAL|Wero bank payment details screen */
+"PAYMENT_DETAILS_IDEAL_BANK_TITLE" = "iDEAL | Wero";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ om %2$@";
@@ -9071,7 +9074,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "Je moet een pincode aanmaken om registratievergrendeling te gebruiken.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Als je je pincode bent vergeten wanneer je Signal opnieuw wilt registreren, dan zul je voor 7 dagen Signal niet kunnen gebruiken met dit telefoonnummer.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Als je je pincode bent vergeten wanneer je Signal opnieuw wilt registreren, dan zul je gedurende 7 dagen Signal niet kunnen gebruiken met dit telefoonnummer.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Registratievergrendeling inschakelen?";
