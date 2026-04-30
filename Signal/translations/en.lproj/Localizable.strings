@@ -1885,6 +1885,12 @@
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtered by Unread";
 
+/* Message shown in the chat list when the chat list is empty. */
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+
+/* Message shown in the chat list when the chat list is empty. */
+"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
+
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Chats";
 
@@ -4716,9 +4722,6 @@
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
-
-/* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
 
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "Incoming video call";

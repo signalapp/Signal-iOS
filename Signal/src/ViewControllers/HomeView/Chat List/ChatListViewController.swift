@@ -71,9 +71,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
 
         // Empty Inbox
-        view.addSubview(emptyInboxView)
-        emptyInboxView.autoPinWidthToSuperviewMargins()
-        emptyInboxView.autoAlignAxis(.horizontal, toSameAxisOf: view, withMultiplier: 0.85)
+        view.addSubview(emptyChatListView)
+        emptyChatListView.autoPinWidthToSuperviewMargins()
+        emptyChatListView.autoAlignAxis(.horizontal, toSameAxisOf: view, withMultiplier: 0.85)
 
         // First Conversation Cue
         view.addSubview(firstConversationCueView)
@@ -390,20 +390,24 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     // MARK: UI Components
 
-    private lazy var emptyInboxView: UIView = {
-        let emptyInboxLabel = UILabel()
-        emptyInboxLabel.text = NSLocalizedString(
-            "INBOX_VIEW_EMPTY_INBOX",
-            comment: "Message shown in the conversation list when the inbox is empty.",
-        )
-        emptyInboxLabel.font = .dynamicTypeSubheadlineClamped
-        emptyInboxLabel.textColor
-            = Theme.isDarkThemeEnabled ? Theme.darkThemeSecondaryTextAndIconColor : UIColor.ows_gray45
-        emptyInboxLabel.textAlignment = .center
-        emptyInboxLabel.numberOfLines = 0
-        emptyInboxLabel.lineBreakMode = .byWordWrapping
-        emptyInboxLabel.accessibilityIdentifier = "ChatListViewController.emptyInboxView"
-        return emptyInboxLabel
+    private lazy var emptyChatListView: UIView = {
+        let titleLabel = UILabel.explanationTextLabel(text: NSLocalizedString(
+            "CHAT_LIST_NO_CHATS_TITLE",
+            comment: "Message shown in the chat list when the chat list is empty.",
+        ))
+        titleLabel.font = .dynamicTypeTitle3.semibold()
+        titleLabel.adjustsFontForContentSizeCategory = true
+
+        let subtitleLabel = UILabel.explanationTextLabel(text: NSLocalizedString(
+            "CHAT_LIST_NO_CHATS_SUBTITLE",
+            comment: "Message shown in the chat list when the chat list is empty.",
+        ))
+        subtitleLabel.adjustsFontForContentSizeCategory = true
+
+        let textStack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
+        textStack.axis = .vertical
+        textStack.spacing = 4
+        return textStack
     }()
 
     private lazy var firstConversationLabel: UILabel = {
@@ -926,7 +930,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     func updateViewState() {
         if shouldShowEmptyInboxView {
             tableView.isHidden = true
-            emptyInboxView.isHidden = false
+            emptyChatListView.isHidden = false
             if shouldShowFirstConversationCue() {
                 firstConversationCueView.isHidden = false
                 updateFirstConversationLabel()
@@ -935,7 +939,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             }
         } else {
             tableView.isHidden = false
-            emptyInboxView.isHidden = true
+            emptyChatListView.isHidden = true
             firstConversationCueView.isHidden = true
         }
     }
