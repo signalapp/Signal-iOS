@@ -3195,7 +3195,7 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
         contentSize.height += textView.textContainerInset.bottom
 
         let newHeight = CGFloat.clamp(
-            contentSize.height.rounded(),
+            contentSize.height.rounded(.up),
             min: LayoutMetrics.minTextViewHeight,
             max: UIDevice.current.isIPad ? LayoutMetrics.maxTextViewHeightIpad : LayoutMetrics.maxTextViewHeight,
         )
