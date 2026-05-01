@@ -1455,7 +1455,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
     }
 
-    private class DownloadState {
+    private struct DownloadState: Equatable, Hashable {
         let startDate = Date()
         let type: DownloadType
 
@@ -1478,6 +1478,26 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         func isExpired() -> Bool {
             return type.isExpired()
         }
+
+        private var identifier: String {
+            switch type {
+            case .backup(_, let uuid):
+                uuid.uuidString
+            case .transientAttachment(_, let uuid):
+                uuid.uuidString
+            case .attachment(_, let id):
+                String(id)
+            }
+        }
+
+        static func ==(lhs: Self, rhs: Self) -> Bool {
+            lhs.identifier == rhs.identifier
+        }
+
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(identifier)
+        }
+
     }
 
     private final class ProgressStates: Sendable {
@@ -1503,6 +1523,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private actor DownloadQueue {
         private let progressStates: ProgressStates
         private nonisolated let signalService: OWSSignalServiceProtocol
+        private let resumeDataCache: LRUCache<DownloadState, Data> = LRUCache(maxSize: 5)
 
         init(
             progressStates: ProgressStates,
@@ -1708,12 +1729,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 ))
             }
 
-            var resumeData: Data?
             return try await Retry.performRepeatedly {
                 if downloadState.isExpired() {
                     throw AttachmentDownloads.Error.expiredCredentials
                 }
 
+                let resumeData = await resumeDataCache.object(forKey: downloadState)
                 let urlSession = await self.signalService.sharedUrlSessionForCdn(
                     cdnNumber: downloadState.cdnNumber(),
                     maxResponseSize: maxDownloadSizeBytes,
@@ -1797,6 +1818,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             } onError: { error, attemptCount in
                 Logger.warn("Error: \(error)")
 
+                if let resumeData = ((error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data)?.nilIfEmpty {
+                    await resumeDataCache.set(key: downloadState, value: resumeData)
+                }
+
                 if case URLError.cancelled = error {
                     throw error
                 }
@@ -1808,8 +1833,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                 // Wait briefly before retrying.
                 try await Task.sleep(nanoseconds: 250 * NSEC_PER_MSEC)
-
-                resumeData = ((error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data)?.nilIfEmpty
             }
         }
 

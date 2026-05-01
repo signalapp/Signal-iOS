@@ -188,6 +188,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
             task,
             taskState: { DataTaskState(progress: $0, completion: $1) },
             progressBlock: { _, _ in },
+            cancelBlock: { $0.cancel() },
         )
 
         return try await handleDataResult(
@@ -459,6 +460,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
                 task,
                 taskState: { DataTaskState(progress: $0, completion: $1) },
                 progressBlock: progressBlock,
+                cancelBlock: { $0.cancel() },
             )
         } catch {
             throw handleError(error, originalRequest: task.originalRequest, requestConfig: requestConfig)
@@ -488,6 +490,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
             task,
             taskState: { DownloadTaskState(progress: $0, completion: $1) },
             progressBlock: progressBlock,
+            cancelBlock: { $0.cancel(byProducingResumeData: { _ in }) },
         )
 
         return try await handleDownloadResult(
@@ -498,10 +501,11 @@ public class OWSURLSession: OWSURLSessionProtocol {
         )
     }
 
-    private func runTask<T>(
-        _ task: URLSessionTask,
+    private func runTask<T, U: URLSessionTask>(
+        _ task: U,
         taskState: (TaskState.ProgressContinuation, DeferredContinuation<T>) -> some TaskState,
         progressBlock: ProgressBlock,
+        cancelBlock: ((U) -> Void),
     ) async throws -> T {
         // It's possible for operation and onCancel to race one another, so we use
         // a counter to ensure that cancellation happens after addTask is invoked.
@@ -528,7 +532,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
             onCancel: {
                 // If the task was already added, cancel it now.
                 if cancelState.increment() == 2 {
-                    task.cancel()
+                    cancelBlock(task)
                 }
             },
         )
