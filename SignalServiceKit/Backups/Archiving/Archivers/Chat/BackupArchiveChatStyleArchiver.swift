@@ -69,9 +69,13 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
                 }
                 gradient.angle = UInt32(round(angleRadians * 180 / .pi))
 
-                /// iOS only supports 2 "positions"; hardcode them.
+                // These appear to be unused, but since we have two colors,
+                // hardcode two positions.
                 gradient.positions = [0, 1]
-                gradient.colors = [gradientColor1.asARGBHex(), gradientColor2.asARGBHex()]
+
+                // The convention we use to store color1 and color2 is inverse
+                // of what's expected for Backup files, so swap them.
+                gradient.colors = [gradientColor2.asARGBHex(), gradientColor1.asARGBHex()]
 
                 protoColor = .gradient(gradient)
             }
@@ -138,9 +142,11 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
                 }
                 // Angle is in degrees; convert to radians.
                 let angleRadians = CGFloat(gradient.angle) * .pi / 180
+                // The color-ordering convention in Backups is inverse of what
+                // we use locally, so swap them.
                 colorOrGradientSetting = .gradient(
-                    gradientColor1: OWSColor.fromARGBHex(firstColorARGBHex),
-                    gradientColor2: OWSColor.fromARGBHex(lastColorARGBHex),
+                    gradientColor1: OWSColor.fromARGBHex(lastColorARGBHex),
+                    gradientColor2: OWSColor.fromARGBHex(firstColorARGBHex),
                     angleRadians: angleRadians,
                 )
             }
