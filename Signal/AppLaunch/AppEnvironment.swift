@@ -106,6 +106,7 @@ public class AppEnvironment: NSObject {
         self.backupEnablingManager = BackupEnablingManager(
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupDisablingManager: self.backupDisablingManager,
+            backupIdService: DependenciesBridge.shared.backupIdService,
             backupKeyService: DependenciesBridge.shared.backupKeyService,
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             backupSettingsStore: backupSettingsStore,
@@ -260,7 +261,7 @@ public class AppEnvironment: NSObject {
                         )
                     } catch {
                         // Do nothing, we'll try again on the next app launch.
-                        owsFailDebug("Error registering backup ID \(error)")
+                        Logger.warn("Error registering backup ID \(error)")
                     }
                 }
 

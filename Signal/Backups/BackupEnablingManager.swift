@@ -11,6 +11,7 @@ import UIKit
 final class BackupEnablingManager {
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupDisablingManager: BackupDisablingManager
+    private let backupIdService: BackupIdService
     private let backupKeyService: BackupKeyService
     private let backupPlanManager: BackupPlanManager
     private let backupSettingsStore: BackupSettingsStore
@@ -25,6 +26,7 @@ final class BackupEnablingManager {
     init(
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupDisablingManager: BackupDisablingManager,
+        backupIdService: BackupIdService,
         backupKeyService: BackupKeyService,
         backupPlanManager: BackupPlanManager,
         backupSettingsStore: BackupSettingsStore,
@@ -37,6 +39,7 @@ final class BackupEnablingManager {
     ) {
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupDisablingManager = backupDisablingManager
+        self.backupIdService = backupIdService
         self.backupKeyService = backupKeyService
         self.backupPlanManager = backupPlanManager
         self.backupSettingsStore = backupSettingsStore
@@ -101,16 +104,52 @@ final class BackupEnablingManager {
     ) async throws(SheetDisplayableError) {
         logger.info("")
 
-        // First, reserve a Backup ID. We'll need this regardless of which plan
-        // the user chose, and we want to be sure it's succeeded before we
-        // attempt a potential purchase. (Redeeming a Backups subscription
-        // without this step will fail!)
-        do {
-            // This is a no-op unless we're also actively *disabling* Backups
-            // remotely. If we are, we don't wanna race, so we'll wait for
-            // it to finish.
-            await self.backupDisablingManager.disableRemotelyIfNecessary()
+        // This is a no-op unless we're also actively *disabling* Backups
+        // remotely. If we are, we don't wanna race, so we'll wait for
+        // it to finish.
+        await self.backupDisablingManager.disableRemotelyIfNecessary()
 
+        // First, register our Backup ID. This has likely already been done by
+        // other machinery (e.g., on launch), but may need to be done again; for
+        // example, if we rotated our AEP and are re-enabling.
+        do {
+            try await self.backupIdService.registerBackupIDIfNecessary(
+                localAci: localIdentifiers.aci,
+                auth: .implicit(),
+                logger: logger,
+            )
+        } catch let error as OWSHTTPError where error.responseStatusCode == 429 {
+            logger.warn("Rate limited when Registering Backup ID. \(error)")
+
+            guard let retryAfterTimeInterval = error.responseHeaders?.retryAfterTimeInterval else {
+                throw .genericError
+            }
+
+            let title = OWSLocalizedString(
+                "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED_TITLE",
+                comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. {{ Embeds 1 & 2: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }}",
+            )
+            let message = OWSLocalizedString(
+                "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED",
+                comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again.",
+            )
+            let nextRetryString = DateUtil.formatDuration(
+                seconds: UInt32(retryAfterTimeInterval),
+                useShortFormat: false,
+            )
+            throw ActionSheetDisplayableError(
+                localizedTitle: title,
+                localizedMessage: String.nonPluralLocalizedStringWithFormat(message, nextRetryString),
+            )
+        } catch where error.isNetworkFailureOrTimeout {
+            throw .networkError
+        } catch {
+            owsFailDebug("Unexpectedly failed to register Backup ID! \(error)", logger: logger)
+            throw .genericError
+        }
+
+        // Now register our Backup Key, which will let us actually upload Backups.
+        do {
             _ = try await self.backupKeyService.registerBackupKey(
                 localIdentifiers: localIdentifiers,
                 auth: .implicit(),
@@ -118,30 +157,8 @@ final class BackupEnablingManager {
             )
         } catch where error.isNetworkFailureOrTimeout {
             throw .networkError
-        } catch let error as OWSHTTPError where error.responseStatusCode == 429 {
-            logger.error("Rate limited when Registering Backup ID! \(error)")
-            if let retryAfterTimeInterval = error.responseHeaders?.retryAfterTimeInterval {
-                let title = OWSLocalizedString(
-                    "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED_TITLE",
-                    comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. {{ Embeds 1 & 2: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }}",
-                )
-                let message = OWSLocalizedString(
-                    "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED",
-                    comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again.",
-                )
-                let nextRetryString = DateUtil.formatDuration(
-                    seconds: UInt32(retryAfterTimeInterval),
-                    useShortFormat: false,
-                )
-                throw ActionSheetDisplayableError(
-                    localizedTitle: title,
-                    localizedMessage: String.nonPluralLocalizedStringWithFormat(message, nextRetryString),
-                )
-            } else {
-                throw .genericError
-            }
         } catch {
-            owsFailDebug("Unexpectedly failed to register Backup ID! \(error)", logger: logger)
+            owsFailDebug("Unexpectedly failed to register Backup Key! \(error)", logger: logger)
             throw .genericError
         }
 
