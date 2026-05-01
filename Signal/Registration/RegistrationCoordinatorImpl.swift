@@ -2061,7 +2061,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 inMemoryState.accountEntropyPool != nil
             {
                 let result = await self.deps.registrationBackupErrorPresenter.presentError(
-                    error: .incorrectRecoveryKey,
+                    error: .recoveryKeyRegistrationFailed,
                     isQuickRestore: restoreMode == .quickRestore,
                 )
                 switch result {
@@ -2718,8 +2718,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return await nextStep()
         case .reglockFailure(let reglockFailure):
             let reglockExpirationDate = self.deps.dateProvider().addingTimeInterval(TimeInterval(reglockFailure.timeRemainingMs / 1000))
-            guard persistedState.hasGivenUpTryingToRestoreWithSVR.negated else {
-                // If we have already exhausted our SVR backup attempts, we are stuck.
+            guard
+                (
+                    inMemoryState.accountEntropyPool != nil ||
+                        persistedState.hasGivenUpTryingToRestoreWithSVR.negated
+                )
+            else {
+                // If we haven't set an AEP, and have already exhausted our SVR backup attempts, we are stuck.
                 db.write { tx in
                     // May as well store credentials, anyway.
                     deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(
@@ -2738,7 +2743,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // We need the user to enter their PIN so we can get through reglock.
             // So we set up the state we need (the SVR credential)
             // and go to the next step which should look at the state and take us to the right place.
-            if reglockTokenUsedInRequest != nil {
+            if let reglockTokenUsedInRequest {
+                // if we have a an AEP, and it matches we sent previously, we need to ask
+                // the user to re-enter the AEP.
+                if
+                    let masterKey = inMemoryState.accountEntropyPool?.getMasterKey(),
+                    reglockTokenUsedInRequest == masterKey.data(for: .registrationLock).canonicalStringRepresentation
+                {
+                    return .enterRecoveryKey(RegistrationEnterAccountEntropyPoolState(
+                        canShowBackButton: false,
+                        canShowNoKeyHelpButton: false,
+                    ))
+                }
+
                 // We were already trying reglock, and the token was wrong.
                 // that means the whole thing is stuck. wait out the reglock.
                 db.write { tx in

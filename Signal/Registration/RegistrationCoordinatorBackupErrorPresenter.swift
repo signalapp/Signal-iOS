@@ -12,6 +12,7 @@ public enum RegistrationBackupRestoreError {
     case generic
     case backupNotFound
     case incorrectRecoveryKey
+    case recoveryKeyRegistrationFailed
     case versionMismatch
     case retryableSVRBError
     case unretryableSVRBError
@@ -324,6 +325,31 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
             })
             actions.append(ActionSheetAction(title: skipRestoreString) { _ in
                 continuation.resume(returning: .skipRestore)
+            })
+        case .recoveryKeyRegistrationFailed:
+            title = OWSLocalizedString(
+                "REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE",
+                comment: "Title for a sheet warning users about an incorrect recovery key used for registration.",
+            )
+            message = OWSLocalizedString(
+                "REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY",
+                comment: "Short description for a sheet warning users about an incorrect recovery key used for registration.",
+            )
+            actions.append(ActionSheetAction(title: tryAgainString) { _ in
+                continuation.resume(returning: .tryAgain)
+            })
+            actions.append(ActionSheetAction(title: CommonStrings.help) { _ in
+                self.presentSupportArticle(
+                    url: URL.Support.backups,
+                    presenter: presenter,
+                ) {
+                    self.presentError(
+                        error: error,
+                        isQuickRestore: isQuickRestore,
+                        from: presenter,
+                        continuation: continuation,
+                    )
+                }
             })
         }
 
