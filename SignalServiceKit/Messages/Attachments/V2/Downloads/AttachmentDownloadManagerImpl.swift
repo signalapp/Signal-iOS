@@ -569,10 +569,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             } else {
                 let attachment = attachmentStore.fetch(id: record.attachmentId, tx: tx)
 
+                let wasCancelled = if case URLError.cancelled = error { true } else { false }
+
                 // If we tried to download as media tier, and failed, and we have
                 // a transit tier fallback available, try downloading from that.
                 let shouldReEnqueueAsTransitTier =
-                    record.sourceType == .mediaTierFullsize
+                    !wasCancelled
+                        && record.sourceType == .mediaTierFullsize
                         && attachment?.latestTransitTierInfo != nil
                         // Backup restore download queue does its own fallbacks
                         && record.priority != .backupRestore
@@ -642,6 +645,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             record: QueuedAttachmentDownloadRecord,
             attachmentBeforeDownloadAttempt: Attachment,
         ) -> TaskRecordResult {
+
+            if case URLError.cancelled = error {
+                return .unretryableError(error)
+            }
 
             // Check if we should mark the transit tier download as
             // "expired" (meaning we wipe the transit tier info).
@@ -1789,6 +1796,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return tmpFile
             } onError: { error, attemptCount in
                 Logger.warn("Error: \(error)")
+
+                if case URLError.cancelled = error {
+                    throw error
+                }
 
                 let maxAttemptCount = 16
                 guard attemptCount < maxAttemptCount, error.isNetworkFailureOrTimeout else {
