@@ -158,11 +158,11 @@ class AttachmentStoreTests: XCTestCase {
     }
 
     func testInsertSamePlaintextHash() throws {
-        let sha256ContentHash = UUID().data
+        let plaintextHash = UUID().data
 
         switch testAttachmentInsertError(
-            attachmentParams1: Attachment.Record.mockStream(streamInfo: .mock(sha256ContentHash: sha256ContentHash)),
-            attachmentParams2: Attachment.Record.mockStream(streamInfo: .mock(sha256ContentHash: sha256ContentHash)),
+            attachmentParams1: Attachment.Record.mockStream(streamInfo: .mock(plaintextHash: plaintextHash)),
+            attachmentParams2: Attachment.Record.mockStream(streamInfo: .mock(plaintextHash: plaintextHash)),
         ) {
         case .duplicatePlaintextHash:
             break

@@ -13,7 +13,7 @@ extension Attachment {
 
         var sqliteId: IDType?
         let blurHash: String?
-        let sha256ContentHash: Data?
+        let plaintextHash: Data?
         let encryptedByteCount: UInt32?
         let unencryptedByteCount: UInt32?
         let mimeType: String
@@ -78,7 +78,7 @@ extension Attachment {
             case sqliteId = "id"
             case blurHash
             case mimeType
-            case sha256ContentHash
+            case plaintextHash = "sha256ContentHash"
             case encryptedByteCount
             case unencryptedByteCount
             case contentType
@@ -138,7 +138,7 @@ extension Attachment {
                 blurHash: attachment.blurHash,
                 mimeType: attachment.mimeType,
                 encryptionKey: attachment.encryptionKey,
-                sha256ContentHash: attachment.sha256ContentHash,
+                plaintextHash: attachment.plaintextHash,
                 mediaName: attachment.mediaName,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
                 streamInfo: attachment.streamInfo,
@@ -156,7 +156,7 @@ extension Attachment {
             blurHash: String?,
             mimeType: String,
             encryptionKey: Data,
-            sha256ContentHash: Data?,
+            plaintextHash: Data?,
             mediaName: String?,
             localRelativeFilePathThumbnail: String?,
             streamInfo: Attachment.StreamInfo?,
@@ -169,7 +169,7 @@ extension Attachment {
         ) {
             self.sqliteId = sqliteId
             self.blurHash = blurHash
-            self.sha256ContentHash = sha256ContentHash
+            self.plaintextHash = plaintextHash
             self.encryptedByteCount = streamInfo?.encryptedByteCount
             self.unencryptedByteCount = streamInfo?.unencryptedByteCount
             self.mimeType = mimeType
@@ -184,7 +184,7 @@ extension Attachment {
             switch latestTransitTierInfo?.integrityCheck {
             case .digestSHA256Ciphertext(let data):
                 self.latestTransitDigestSHA256Ciphertext = data
-            case nil, .sha256ContentHash:
+            case nil, .plaintextHash:
                 self.latestTransitDigestSHA256Ciphertext = nil
             }
             self.latestTransitTierIncrementalMac = latestTransitTierInfo?.incrementalMacInfo?.mac
@@ -198,7 +198,7 @@ extension Attachment {
             switch originalTransitTierInfo?.integrityCheck {
             case .digestSHA256Ciphertext(let data):
                 self.originalTransitDigestSHA256Ciphertext = data
-            case nil, .sha256ContentHash:
+            case nil, .plaintextHash:
                 self.originalTransitDigestSHA256Ciphertext = nil
             }
             self.originalTransitTierIncrementalMac = originalTransitTierInfo?.incrementalMacInfo?.mac
@@ -240,7 +240,7 @@ extension Attachment {
                 blurHash: blurHash,
                 mimeType: mimeType,
                 encryptionKey: encryptionKey,
-                sha256ContentHash: nil,
+                plaintextHash: nil,
                 mediaName: nil,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
@@ -259,7 +259,7 @@ extension Attachment {
             mimeType: String,
             encryptionKey: Data,
             streamInfo: Attachment.StreamInfo,
-            sha256ContentHash: Data,
+            plaintextHash: Data,
             mediaName: String,
         ) -> Record {
             return Record(
@@ -267,7 +267,7 @@ extension Attachment {
                 blurHash: blurHash,
                 mimeType: mimeType,
                 encryptionKey: encryptionKey,
-                sha256ContentHash: sha256ContentHash,
+                plaintextHash: plaintextHash,
                 mediaName: mediaName,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: streamInfo,
@@ -285,7 +285,7 @@ extension Attachment {
             mimeType: String,
             encryptionKey: Data,
             latestTransitTierInfo: Attachment.TransitTierInfo?,
-            sha256ContentHashAndMediaName: (hash: Data, mediaName: String)?,
+            plaintextHash: Data?,
             mediaTierInfo: Attachment.MediaTierInfo?,
             thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
         ) -> Record {
@@ -294,8 +294,10 @@ extension Attachment {
                 blurHash: blurHash,
                 mimeType: mimeType,
                 encryptionKey: encryptionKey,
-                sha256ContentHash: sha256ContentHashAndMediaName?.hash,
-                mediaName: sha256ContentHashAndMediaName?.mediaName,
+                plaintextHash: plaintextHash,
+                mediaName: plaintextHash.map {
+                    return Attachment.mediaName(plaintextHash: $0, encryptionKey: encryptionKey)
+                },
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
                 latestTransitTierInfo: latestTransitTierInfo,
@@ -319,7 +321,7 @@ extension Attachment {
                 // We don't have any cdn info from which to download, so what
                 // encryption key we use is irrelevant. Just generate a new one.
                 encryptionKey: AttachmentKey.generate().combinedKey,
-                sha256ContentHash: nil,
+                plaintextHash: nil,
                 mediaName: nil,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
@@ -344,7 +346,7 @@ extension Attachment {
                 blurHash: thumbnailBlurHash,
                 mimeType: thumbnailMimeType,
                 encryptionKey: thumbnailEncryptionKey,
-                sha256ContentHash: nil,
+                plaintextHash: nil,
                 mediaName: nil,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,

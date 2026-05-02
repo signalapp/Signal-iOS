@@ -158,7 +158,7 @@ public extension DeleteForMeOutgoingSyncMessageManager {
                 return Outgoing.AttachmentIdentifier(
                     clientUuid: attachment.reference.knownIdInOwningMessage,
                     encryptedDigest: attachment.attachment.asStream()?.digestSHA256Ciphertext,
-                    plaintextHash: attachment.attachment.asStream()?.sha256ContentHash,
+                    plaintextHash: attachment.attachment.asStream()?.plaintextHash,
                 )
             }
 

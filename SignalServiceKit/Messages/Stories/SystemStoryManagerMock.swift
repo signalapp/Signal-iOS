@@ -134,7 +134,7 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
         mimeType: String,
     ) async throws -> AttachmentDataSource {
         let pendingAttachment = PendingAttachment(
-            sha256ContentHash: Data(),
+            plaintextHash: Data(),
             encryptedByteCount: 100,
             unencryptedByteCount: 100,
             mimeType: mimeType,

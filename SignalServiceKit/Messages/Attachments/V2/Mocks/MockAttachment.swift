@@ -11,7 +11,7 @@ import Foundation
 
 extension Attachment.StreamInfo {
     public static func mock(
-        sha256ContentHash: Data = Randomness.generateRandomBytes(32),
+        plaintextHash: Data = Randomness.generateRandomBytes(32),
         mediaName: String = UUID().uuidString,
         encryptedByteCount: UInt32 = .random(in: 0..<95_000_000),
         unencryptedByteCount: UInt32 = .random(in: 0..<95_000_000),
@@ -20,7 +20,7 @@ extension Attachment.StreamInfo {
         localRelativeFilePath: String = UUID().uuidString,
     ) -> Attachment.StreamInfo {
         return Attachment.StreamInfo(
-            sha256ContentHash: sha256ContentHash,
+            plaintextHash: plaintextHash,
             mediaName: mediaName,
             encryptedByteCount: encryptedByteCount,
             unencryptedByteCount: unencryptedByteCount,
@@ -64,7 +64,7 @@ extension Attachment.MediaTierInfo {
     public static func mock(
         cdnNumber: UInt32? = nil,
         unencryptedByteCount: UInt32? = nil,
-        sha256ContentHash: Data? = nil,
+        plaintextHash: Data? = nil,
         incrementalMacInfo: Attachment.IncrementalMacInfo? = nil,
         uploadEra: String? = nil,
         lastDownloadAttemptTimestamp: UInt64? = nil,
@@ -72,7 +72,7 @@ extension Attachment.MediaTierInfo {
         return Attachment.MediaTierInfo(
             cdnNumber: cdnNumber ?? 3,
             unencryptedByteCount: unencryptedByteCount ?? 16,
-            sha256ContentHash: sha256ContentHash ?? Randomness.generateRandomBytes(32),
+            plaintextHash: plaintextHash ?? Randomness.generateRandomBytes(32),
             incrementalMacInfo: incrementalMacInfo,
             uploadEra: uploadEra ?? "1",
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp,
@@ -114,7 +114,7 @@ extension Attachment.Record {
         blurHash: String? = UUID().uuidString,
         mimeType: String = MimeType.imageJpeg.rawValue,
         encryptionKey: Data = Randomness.generateRandomBytes(64),
-        sha256ContentHash: Data? = nil,
+        plaintextHash: Data? = nil,
         mediaName: String? = nil,
         streamInfo: Attachment.StreamInfo = .mock(),
     ) -> Attachment.Record {
@@ -123,7 +123,7 @@ extension Attachment.Record {
             mimeType: mimeType,
             encryptionKey: encryptionKey,
             streamInfo: streamInfo,
-            sha256ContentHash: sha256ContentHash ?? streamInfo.sha256ContentHash,
+            plaintextHash: plaintextHash ?? streamInfo.plaintextHash,
             mediaName: mediaName ?? streamInfo.mediaName,
         )
     }
@@ -135,7 +135,7 @@ extension Attachment {
         blurHash: String? = nil,
         mimeType: String? = nil,
         encryptionKey: Data? = nil,
-        sha256ContentHash: Data? = nil,
+        plaintextHash: Data? = nil,
         mediaName: String? = nil,
         streamInfo: Attachment.StreamInfo? = nil,
         transitTierInfo: Attachment.TransitTierInfo? = nil,
@@ -150,7 +150,7 @@ extension Attachment {
             blurHash: blurHash,
             mimeType: mimeType ?? MimeType.applicationOctetStream.rawValue,
             encryptionKey: encryptionKey ?? Randomness.generateRandomBytes(64),
-            sha256ContentHash: sha256ContentHash ?? streamInfo?.sha256ContentHash ?? UUID().data,
+            plaintextHash: plaintextHash ?? streamInfo?.plaintextHash ?? UUID().data,
             mediaName: mediaName ?? streamInfo?.mediaName ?? UUID().uuidString,
             localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,
             streamInfo: streamInfo,

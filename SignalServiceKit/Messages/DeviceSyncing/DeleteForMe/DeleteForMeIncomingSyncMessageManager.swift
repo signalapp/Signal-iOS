@@ -20,7 +20,7 @@ public enum DeleteForMeSyncMessage {
             /// - SeeAlso ``Attachment/StreamInfo/digestSHA256Ciphertext``
             let encryptedDigest: Data?
             /// The SHA256 hash of the plaintext of the attachment.
-            /// - SeeAlso ``Attachment/StreamInfo/sha256ContentHash``
+            /// - SeeAlso ``Attachment/StreamInfo/plaintextHash``
             let plaintextHash: Data?
         }
     }
@@ -205,7 +205,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
                 return encryptedDigestMatch
             } else if
                 let plaintextHash = attachmentIdentifier.plaintextHash,
-                let plaintextHashMatch = targetAttachmentCandidates.first(where: { $0.attachment.asStream()?.sha256ContentHash == plaintextHash })
+                let plaintextHashMatch = targetAttachmentCandidates.first(where: { $0.attachment.asStream()?.plaintextHash == plaintextHash })
             {
                 return plaintextHashMatch
             }

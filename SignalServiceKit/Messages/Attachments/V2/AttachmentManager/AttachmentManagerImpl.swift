@@ -358,8 +358,8 @@ public class AttachmentManagerImpl: AttachmentManager {
             }
 
             switch proto.locatorInfo.integrityCheck {
-            case .plaintextHash(let sha256ContentHash):
-                if sha256ContentHash.isEmpty {
+            case .plaintextHash(let plaintextHash):
+                if plaintextHash.isEmpty {
                     fallthrough
                 }
                 let mediaTierCdnNumber = proto.locatorInfo.hasMediaTierCdnNumber ? proto.locatorInfo.mediaTierCdnNumber : nil
@@ -368,17 +368,11 @@ public class AttachmentManagerImpl: AttachmentManager {
                     mimeType: mimeType,
                     encryptionKey: encryptionKey,
                     latestTransitTierInfo: transitTierInfo,
-                    sha256ContentHashAndMediaName: (
-                        sha256ContentHash,
-                        Attachment.mediaName(
-                            sha256ContentHash: sha256ContentHash,
-                            encryptionKey: encryptionKey,
-                        ),
-                    ),
+                    plaintextHash: plaintextHash,
                     mediaTierInfo: .init(
                         cdnNumber: mediaTierCdnNumber,
                         unencryptedByteCount: proto.locatorInfo.size,
-                        sha256ContentHash: sha256ContentHash,
+                        plaintextHash: plaintextHash,
                         incrementalMacInfo: incrementalMacInfo,
                         uploadEra: uploadEra,
                         lastDownloadAttemptTimestamp: nil,
@@ -399,7 +393,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                         mimeType: mimeType,
                         encryptionKey: encryptionKey,
                         latestTransitTierInfo: transitTierInfo,
-                        sha256ContentHashAndMediaName: nil,
+                        plaintextHash: nil,
                         mediaTierInfo: nil,
                         thumbnailMediaTierInfo: nil,
                     )
@@ -531,7 +525,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             guard !data.isEmpty else {
                 return nil
             }
-            integrityCheck = .sha256ContentHash(data)
+            integrityCheck = .plaintextHash(data)
         case .encryptedDigest(let data):
             guard !data.isEmpty else {
                 return nil
@@ -623,7 +617,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 mimeType: pendingAttachment.mimeType,
                 encryptionKey: pendingAttachment.encryptionKey,
                 streamInfo: streamInfo,
-                sha256ContentHash: pendingAttachment.sha256ContentHash,
+                plaintextHash: pendingAttachment.plaintextHash,
                 mediaName: pendingAttachment.mediaName,
             )
 
@@ -636,7 +630,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 let hasExistingAttachmentWithSameFile: Bool
                 if
                     let existingAttachmentRecord = attachmentStore.fetchAttachmentRecord(
-                        sha256ContentHash: pendingAttachment.sha256ContentHash,
+                        plaintextHash: pendingAttachment.plaintextHash,
                         tx: tx,
                     ),
                     let existingAttachment = try? Attachment(record: existingAttachmentRecord),
@@ -921,7 +915,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 continue
             }
             switch candidateOriginalTransitTierInfo.integrityCheck {
-            case .sha256ContentHash:
+            case .plaintextHash:
                 // Can't verify the digest (and iv) match, so we can't use this one.
                 continue
             case .digestSHA256Ciphertext(let infoDigest):

@@ -847,7 +847,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             let input = preparedContentResult.contentResult.input
             let contentResult = preparedContentResult.contentResult
             pendingAttachments[key] = PendingAttachment(
-                sha256ContentHash: input.primaryFilePlaintextHash,
+                plaintextHash: input.primaryFilePlaintextHash,
                 encryptedByteCount: primaryFile.encryptedLength,
                 unencryptedByteCount: primaryFile.plaintextLength,
                 mimeType: input.mimeType,
@@ -1040,7 +1040,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 case .digestSHA256Ciphertext(let digestParam):
                     // We separately verify the digest from the integrity check, so use it here.
                     digest = digestParam
-                case nil, .sha256ContentHash:
+                case nil, .plaintextHash:
                     // Compute the digest over the entire encrypted file.
                     digest = try Cryptography.computeSHA256DigestOfFile(at: fileUrl)
                 }
@@ -1093,7 +1093,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     private func attachmentKeyToUse(primaryFilePlaintextHash: Data, inputAttachmentKey: AttachmentKey?) throws -> AttachmentKey {
         let existingAttachmentEncryptionKey = db.read { tx in
             return attachmentStore.fetchAttachmentRecord(
-                sha256ContentHash: primaryFilePlaintextHash,
+                plaintextHash: primaryFilePlaintextHash,
                 tx: tx,
             )?.encryptionKey
         }

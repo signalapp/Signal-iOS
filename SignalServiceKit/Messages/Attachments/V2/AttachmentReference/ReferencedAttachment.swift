@@ -198,7 +198,7 @@ extension ReferencedAttachment {
         switch pointer.info.integrityCheck {
         case .digestSHA256Ciphertext(let data):
             digestSHA256Ciphertext = data
-        case .sha256ContentHash:
+        case .plaintextHash:
             return nil
         }
 

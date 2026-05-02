@@ -11,20 +11,20 @@ import Foundation
 /// if we are the sender).
 public enum AttachmentIntegrityCheck: Equatable {
     case digestSHA256Ciphertext(Data)
-    case sha256ContentHash(Data)
+    case plaintextHash(Data)
 
     var isEmpty: Bool {
         switch self {
         case .digestSHA256Ciphertext(let data):
             return data.isEmpty
-        case .sha256ContentHash(let data):
+        case .plaintextHash(let data):
             return data.isEmpty
         }
     }
 }
 
 public struct PendingAttachment {
-    let sha256ContentHash: Data
+    let plaintextHash: Data
     let encryptedByteCount: UInt32
     let unencryptedByteCount: UInt32
     let mimeType: String
@@ -45,7 +45,7 @@ public struct PendingAttachment {
 
     var mediaName: String {
         Attachment.mediaName(
-            sha256ContentHash: sha256ContentHash,
+            plaintextHash: plaintextHash,
             encryptionKey: encryptionKey,
         )
     }

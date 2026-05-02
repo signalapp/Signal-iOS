@@ -192,11 +192,11 @@ public struct AttachmentStore {
     /// Fetch an existing Attachment record with the given plaintext hash. There
     /// will be at most one.
     public func fetchAttachmentRecord(
-        sha256ContentHash: Data,
+        plaintextHash: Data,
         tx: DBReadTransaction,
     ) -> Attachment.Record? {
         let query = Attachment.Record
-            .filter(Column(Attachment.Record.CodingKeys.sha256ContentHash) == sha256ContentHash)
+            .filter(Column(Attachment.Record.CodingKeys.plaintextHash) == plaintextHash)
 
         return failIfThrows {
             try query.fetchOne(tx.database)
@@ -611,7 +611,7 @@ public struct AttachmentStore {
         // Find if there is already an attachment with the same plaintext hash.
         if
             let existingAttachmentId = fetchAttachmentRecord(
-                sha256ContentHash: streamInfo.sha256ContentHash,
+                plaintextHash: streamInfo.plaintextHash,
                 tx: tx,
             )?.sqliteId,
             existingAttachmentId != attachment.id
@@ -623,7 +623,7 @@ public struct AttachmentStore {
         if
             let existingAttachmentId = fetchAttachmentRecord(
                 mediaName: Attachment.mediaName(
-                    sha256ContentHash: streamInfo.sha256ContentHash,
+                    plaintextHash: streamInfo.plaintextHash,
                     encryptionKey: attachment.encryptionKey,
                 ),
                 tx: tx,
@@ -671,14 +671,14 @@ public struct AttachmentStore {
         case .transitTier:
             attachment.mimeType = validatedMimeType
             attachment.streamInfo = streamInfo
-            attachment.sha256ContentHash = streamInfo.sha256ContentHash
+            attachment.plaintextHash = streamInfo.plaintextHash
             attachment.latestTransitTierInfo = latestTransitTierInfo
             attachment.mediaName = streamInfo.mediaName
             attachment.lastFullscreenViewTimestamp = lastFullscreenViewTimestamp ?? attachment.lastFullscreenViewTimestamp
         case .mediaTierFullsize:
             attachment.mimeType = validatedMimeType
             attachment.streamInfo = streamInfo
-            attachment.sha256ContentHash = streamInfo.sha256ContentHash
+            attachment.plaintextHash = streamInfo.plaintextHash
             attachment.latestTransitTierInfo = latestTransitTierInfo
             attachment.mediaName = streamInfo.mediaName
             if var mediaTierInfo = attachment.mediaTierInfo {
@@ -728,7 +728,7 @@ public struct AttachmentStore {
         attachment.streamInfo = streamInfo
         attachment.latestTransitTierInfo = latestTransitTierInfo
         attachment.originalTransitTierInfo = originalTransitTierInfo
-        attachment.sha256ContentHash = streamInfo.sha256ContentHash
+        attachment.plaintextHash = streamInfo.plaintextHash
         attachment.mediaName = streamInfo.mediaName
         attachment.mediaTierInfo = mediaTierInfo
         attachment.thumbnailMediaTierInfo = thumbnailMediaTierInfo
@@ -798,7 +798,7 @@ public struct AttachmentStore {
                     owsFailDebug("How are we reusing encryption key but have a different digest?")
                     originalTransitTierInfo = attachmentStream.attachment.originalTransitTierInfo
                 }
-            case .sha256ContentHash:
+            case .plaintextHash:
                 owsFailDebug("Using plaintext hash for just-uploaded attachment integrity check; unable to verify digest")
                 originalTransitTierInfo = attachmentStream.attachment.originalTransitTierInfo
             }
@@ -1072,9 +1072,9 @@ public struct AttachmentStore {
     ) throws(AttachmentInsertError) -> Attachment {
         // Find if there is already an attachment with the same plaintext hash.
         if
-            let sha256ContentHash = attachmentRecord.sha256ContentHash,
+            let plaintextHash = attachmentRecord.plaintextHash,
             let existingAttachmentId = fetchAttachmentRecord(
-                sha256ContentHash: sha256ContentHash,
+                plaintextHash: plaintextHash,
                 tx: tx,
             )?.sqliteId
         {
@@ -1162,7 +1162,7 @@ public struct AttachmentStore {
         localRelativeFilePathThumbnail: String?,
         tx: DBWriteTransaction,
     ) {
-        // Wipe streamInfo, but keep the plaintext sha256ContentHash and mediaName
+        // Wipe streamInfo, but keep the plaintextHash and mediaName
         // so we can redownload eventually.
         attachment.streamInfo = nil
         attachment.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail ?? attachment.localRelativeFilePathThumbnail

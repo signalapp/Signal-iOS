@@ -502,7 +502,7 @@ extension ReferencedAttachment {
         if let mediaTierInfo = attachment.mediaTierInfo {
             locatorInfo.key = attachment.encryptionKey
             locatorInfo.size = mediaTierInfo.unencryptedByteCount
-            locatorInfo.integrityCheck = .plaintextHash(mediaTierInfo.sha256ContentHash)
+            locatorInfo.integrityCheck = .plaintextHash(mediaTierInfo.plaintextHash)
 
             if let cdnNumber = mediaTierInfo.cdnNumber {
                 locatorInfo.mediaTierCdnNumber = cdnNumber
@@ -510,7 +510,7 @@ extension ReferencedAttachment {
         } else if let streamInfo = attachment.streamInfo {
             locatorInfo.key = attachment.encryptionKey
             locatorInfo.size = streamInfo.unencryptedByteCount
-            locatorInfo.integrityCheck = .plaintextHash(streamInfo.sha256ContentHash)
+            locatorInfo.integrityCheck = .plaintextHash(streamInfo.plaintextHash)
         } else if let transitTierInfoToExport {
             locatorInfo.key = attachment.encryptionKey
             locatorInfo.size = transitTierInfoToExport.unencryptedByteCount ?? 0
@@ -519,11 +519,11 @@ extension ReferencedAttachment {
             // the encrypted digest even if both are present. (See comment in
             // that type's init.) So, manually check for the plaintext hash
             // here, falling back to the encrypted digest otherwise.
-            if let plaintextHash = attachment.sha256ContentHash {
+            if let plaintextHash = attachment.plaintextHash {
                 locatorInfo.integrityCheck = .plaintextHash(plaintextHash)
             } else {
                 switch transitTierInfoToExport.integrityCheck {
-                case .sha256ContentHash(let plaintextHash):
+                case .plaintextHash(let plaintextHash):
                     owsFailDebug("Missing Attachment plaintext hash, but had one on TransitTierInfo!")
                     locatorInfo.integrityCheck = .plaintextHash(plaintextHash)
                 case .digestSHA256Ciphertext(let encryptedDigest):

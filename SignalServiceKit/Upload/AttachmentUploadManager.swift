@@ -432,7 +432,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             let mediaTierInfo = Attachment.MediaTierInfo(
                 cdnNumber: cdnNumber,
                 unencryptedByteCount: uploadResult.localUploadMetadata.plaintextDataLength,
-                sha256ContentHash: attachmentStream.sha256ContentHash,
+                plaintextHash: attachmentStream.plaintextHash,
                 // TODO: [Attachment Streaming] support incremental mac
                 incrementalMacInfo: nil,
                 uploadEra: uploadEra,
@@ -1152,7 +1152,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         let decryptionMedatata = DecryptionMetadata(
             key: try AttachmentKey(combinedKey: attachmentStream.attachment.encryptionKey),
             // No need to validate for an already-validated stream
-            integrityCheck: .sha256ContentHash(attachmentStream.sha256ContentHash),
+            integrityCheck: .plaintextHash(attachmentStream.plaintextHash),
             plaintextLength: UInt64(safeCast: attachmentStream.unencryptedByteCount),
         )
         try attachmentEncrypter.decryptAttachment(at: attachmentStream.fileURL, metadata: decryptionMedatata, output: tmpDecryptedFile)

@@ -96,7 +96,7 @@ public class BackupListMediaManagerTests {
                     mediaTierInfo: .init(
                         cdnNumber: 1,
                         unencryptedByteCount: 100,
-                        sha256ContentHash: UUID().data,
+                        plaintextHash: UUID().data,
                         incrementalMacInfo: nil,
                         uploadEra: localUploadEra,
                         lastDownloadAttemptTimestamp: nil,
@@ -161,7 +161,7 @@ public class BackupListMediaManagerTests {
                     mediaTierInfo: .init(
                         cdnNumber: matchingCdnNumber,
                         unencryptedByteCount: 100,
-                        sha256ContentHash: UUID().data,
+                        plaintextHash: UUID().data,
                         incrementalMacInfo: nil,
                         uploadEra: localUploadEra,
                         lastDownloadAttemptTimestamp: nil,
@@ -194,7 +194,7 @@ public class BackupListMediaManagerTests {
                     mediaTierInfo: .init(
                         cdnNumber: matchingCdnNumber,
                         unencryptedByteCount: 100,
-                        sha256ContentHash: UUID().data,
+                        plaintextHash: UUID().data,
                         incrementalMacInfo: nil,
                         uploadEra: localUploadEra,
                         lastDownloadAttemptTimestamp: nil,

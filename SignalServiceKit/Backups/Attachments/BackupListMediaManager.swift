@@ -1043,12 +1043,12 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         // we matched against the media name/id we pulled off the backup proto).
         let fullsizeUnencryptedByteCount = attachment.mediaTierInfo?.unencryptedByteCount
             ?? attachment.streamInfo?.unencryptedByteCount
-        let fullsizeSHA256ContentHash = attachment.mediaTierInfo?.sha256ContentHash
-            ?? attachment.streamInfo?.sha256ContentHash
-            ?? attachment.sha256ContentHash
+        let fullsizePlaintextHash = attachment.mediaTierInfo?.plaintextHash
+            ?? attachment.streamInfo?.plaintextHash
+            ?? attachment.plaintextHash
         guard
             let fullsizeUnencryptedByteCount,
-            let fullsizeSHA256ContentHash
+            let fullsizePlaintextHash
         else {
             // We have a matching local attachment but we don't have
             // sufficient metadata from either a backup or local stream
@@ -1068,7 +1068,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
             mediaTierInfo: Attachment.MediaTierInfo(
                 cdnNumber: listedMedia.cdnNumber,
                 unencryptedByteCount: fullsizeUnencryptedByteCount,
-                sha256ContentHash: fullsizeSHA256ContentHash,
+                plaintextHash: fullsizePlaintextHash,
                 incrementalMacInfo: attachment.mediaTierInfo?.incrementalMacInfo,
                 uploadEra: uploadEraAtStartOfListMedia,
                 lastDownloadAttemptTimestamp: nil,

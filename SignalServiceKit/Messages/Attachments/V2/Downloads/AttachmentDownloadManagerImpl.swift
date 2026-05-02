@@ -824,7 +824,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 else {
                     return .unretryableError(OWSAssertionError("Attempting to download an attachment without cdn info"))
                 }
-                let integrityCheck = AttachmentIntegrityCheck.sha256ContentHash(mediaTierInfo.sha256ContentHash)
+                let integrityCheck = AttachmentIntegrityCheck.plaintextHash(mediaTierInfo.plaintextHash)
                 downloadMetadata = .init(
                     mimeType: attachment.mimeType,
                     cdnNumber: cdnNumber,
@@ -2257,7 +2257,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         mimeType: pendingAttachment.mimeType,
                         encryptionKey: pendingAttachment.encryptionKey,
                         streamInfo: streamInfo,
-                        sha256ContentHash: pendingAttachment.sha256ContentHash,
+                        plaintextHash: pendingAttachment.plaintextHash,
                         mediaName: pendingAttachment.mediaName,
                     )
 
@@ -2427,7 +2427,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         mimeType: pendingThumbnailAttachment.mimeType,
                         encryptionKey: pendingThumbnailAttachment.encryptionKey,
                         streamInfo: streamInfo,
-                        sha256ContentHash: pendingThumbnailAttachment.sha256ContentHash,
+                        plaintextHash: pendingThumbnailAttachment.plaintextHash,
                         mediaName: pendingThumbnailAttachment.mediaName,
                     )
 

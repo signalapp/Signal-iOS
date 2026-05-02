@@ -686,7 +686,7 @@ public extension Cryptography {
 
         var hmac: HMAC<SHA256>?
         var ciphertextSha256: SHA256?
-        var plaintextSha256: SHA256?
+        var plaintextHasher: SHA256?
         if validateHmacAndIntegrityCheck {
             // The metadata "key" is actually a concatentation of the
             // encryption key and the hmac key.
@@ -696,8 +696,8 @@ public extension Cryptography {
             switch metadata.integrityCheck {
             case nil:
                 break
-            case .sha256ContentHash:
-                plaintextSha256 = SHA256()
+            case .plaintextHash:
+                plaintextHasher = SHA256()
             case .digestSHA256Ciphertext:
                 ciphertextSha256 = SHA256()
             }
@@ -726,7 +726,7 @@ public extension Cryptography {
             } else {
                 output(plaintextDataBlock)
                 totalPlaintextLength += plaintextDataBlock.count
-                plaintextSha256?.update(data: plaintextDataBlock)
+                plaintextHasher?.update(data: plaintextDataBlock)
             }
         } while
             !gotEmptyBlock
@@ -769,12 +769,12 @@ public extension Cryptography {
             switch metadata.integrityCheck {
             case nil:
                 break
-            case .sha256ContentHash(let theirPlaintextHash):
+            case .plaintextHash(let theirPlaintextHash):
                 // Verify their plaintext hash matches our locally calculated one.
-                guard let plaintextSha256 else {
+                guard let plaintextHasher else {
                     throw OWSAssertionError("Missing plaintext hash context")
                 }
-                let plaintextHash = Data(plaintextSha256.finalize())
+                let plaintextHash = Data(plaintextHasher.finalize())
                 guard plaintextHash.ows_constantTimeIsEqual(to: theirPlaintextHash) else {
                     throw OWSAssertionError("Bad plaintext hash")
                 }

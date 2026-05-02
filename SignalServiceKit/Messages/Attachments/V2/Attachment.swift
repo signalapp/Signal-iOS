@@ -51,7 +51,7 @@ public class Attachment {
 
     /// Validated Sha256 hash of the plaintext of the media content. Used to deduplicate incoming media.
     /// Nonnull if downloaded OR possibly if restored from a backup (which we trust to have validated).
-    public var sha256ContentHash: Data?
+    public var plaintextHash: Data?
 
     /// MediaName used for backups (but assigned even if backups disabled).
     /// Nonnull if downloaded OR if restored from a backup.
@@ -102,7 +102,7 @@ public class Attachment {
     /// Information for the "stream" (the attachment downloaded and locally available).
     public struct StreamInfo {
         /// Sha256 hash of the plaintext of the media content. Used to deduplicate incoming media.
-        public let sha256ContentHash: Data
+        public let plaintextHash: Data
 
         /// MediaName used for backups (but assigned even if backups disabled).
         public let mediaName: String
@@ -144,7 +144,7 @@ public class Attachment {
 
         init(pendingAttachment: PendingAttachment) {
             self.init(
-                sha256ContentHash: pendingAttachment.sha256ContentHash,
+                plaintextHash: pendingAttachment.plaintextHash,
                 mediaName: pendingAttachment.mediaName,
                 encryptedByteCount: pendingAttachment.encryptedByteCount,
                 unencryptedByteCount: pendingAttachment.unencryptedByteCount,
@@ -160,7 +160,7 @@ public class Attachment {
         }
 
         init(
-            sha256ContentHash: Data,
+            plaintextHash: Data,
             mediaName: String,
             encryptedByteCount: UInt32,
             unencryptedByteCount: UInt32,
@@ -173,7 +173,7 @@ public class Attachment {
             digestSHA256Ciphertext: Data,
             localRelativeFilePath: String,
         ) {
-            self.sha256ContentHash = sha256ContentHash
+            self.plaintextHash = plaintextHash
             self.mediaName = mediaName
             self.encryptedByteCount = encryptedByteCount
             self.unencryptedByteCount = unencryptedByteCount
@@ -233,9 +233,9 @@ public class Attachment {
 
         /// Sha256 hash of the plaintext of the media content.
         ///
-        /// Equivalent to `StreamInfo.sha256ContentHash`, but may be available
+        /// Equivalent to `StreamInfo.plaintextHash`, but may be available
         /// if the rest of `StreamInfo` is unavailable (e.g. after a restore).
-        public let sha256ContentHash: Data
+        public let plaintextHash: Data
 
         /// Incremental mac info used for streaming, if available. Only set for streamable mime types.
         public let incrementalMacInfo: IncrementalMacInfo?
@@ -279,13 +279,13 @@ public class Attachment {
         self.mimeType = record.mimeType
         self.encryptionKey = record.encryptionKey
         self.originalAttachmentIdForQuotedReply = record.originalAttachmentIdForQuotedReply
-        self.sha256ContentHash = record.sha256ContentHash
+        self.plaintextHash = record.plaintextHash
         self.mediaName = record.mediaName
         self.localRelativeFilePathThumbnail = record.localRelativeFilePathThumbnail
         self.lastFullscreenViewTimestamp = record.lastFullscreenViewTimestamp
 
         if
-            let sha256ContentHash = record.sha256ContentHash,
+            let plaintextHash = record.plaintextHash,
             let mediaName = record.mediaName,
             let encryptedByteCount = record.encryptedByteCount,
             let unencryptedByteCount = record.unencryptedByteCount,
@@ -298,7 +298,7 @@ public class Attachment {
             }
 
             self.streamInfo = StreamInfo(
-                sha256ContentHash: sha256ContentHash,
+                plaintextHash: plaintextHash,
                 mediaName: mediaName,
                 encryptedByteCount: encryptedByteCount,
                 unencryptedByteCount: unencryptedByteCount,
@@ -331,7 +331,7 @@ public class Attachment {
             encryptionKey: record.latestTransitEncryptionKey,
             unencryptedByteCount: record.latestTransitUnencryptedByteCount,
             digestSHA256Ciphertext: record.latestTransitDigestSHA256Ciphertext,
-            sha256ContentHash: record.sha256ContentHash,
+            plaintextHash: record.plaintextHash,
             lastDownloadAttemptTimestamp: record.latestTransitLastDownloadAttemptTimestamp,
             incrementalMac: record.latestTransitTierIncrementalMac,
             incrementalMacChunkSize: record.latestTransitTierIncrementalMacChunkSize,
@@ -364,7 +364,7 @@ public class Attachment {
                 encryptionKey: record.encryptionKey,
                 unencryptedByteCount: record.originalTransitUnencryptedByteCount,
                 digestSHA256Ciphertext: record.originalTransitDigestSHA256Ciphertext,
-                sha256ContentHash: record.sha256ContentHash,
+                plaintextHash: record.plaintextHash,
                 lastDownloadAttemptTimestamp: nil,
                 incrementalMac: record.originalTransitTierIncrementalMac,
                 incrementalMacChunkSize: record.originalTransitTierIncrementalMacChunkSize,
@@ -373,7 +373,7 @@ public class Attachment {
         self.mediaTierInfo = MediaTierInfo(
             cdnNumber: record.mediaTierCdnNumber,
             unencryptedByteCount: record.mediaTierUnencryptedByteCount ?? record.unencryptedByteCount,
-            sha256ContentHash: record.sha256ContentHash,
+            plaintextHash: record.plaintextHash,
             uploadEra: record.mediaTierUploadEra,
             lastDownloadAttemptTimestamp: record.lastMediaTierDownloadAttemptTimestamp,
             incrementalMac: record.mediaTierIncrementalMac,
@@ -406,12 +406,12 @@ public class Attachment {
         return AttachmentBackupThumbnail(attachment: self)
     }
 
-    public static func mediaName(sha256ContentHash: Data, encryptionKey: Data) -> String {
+    public static func mediaName(plaintextHash: Data, encryptionKey: Data) -> String {
         // We use the hexadecimal-encoded [plaintext hash | encryptionKey] as the media name.
         // This ensures media name collisions occur only between the
         // same attachment contents encrypted with the same key.
         var mediaName = Data()
-        mediaName.append(sha256ContentHash)
+        mediaName.append(plaintextHash)
         mediaName.append(encryptionKey)
         return mediaName.hexadecimalString
     }
@@ -499,7 +499,7 @@ private extension Attachment.TransitTierInfo {
         encryptionKey: Data?,
         unencryptedByteCount: UInt32?,
         digestSHA256Ciphertext: Data?,
-        sha256ContentHash: Data?,
+        plaintextHash: Data?,
         lastDownloadAttemptTimestamp: UInt64?,
         incrementalMac: Data?,
         incrementalMacChunkSize: UInt32?,
@@ -513,8 +513,8 @@ private extension Attachment.TransitTierInfo {
             // digest, so we just have to ensure we _read_ that digest here
             // instead of the plaintext hash.
             integrityCheck = .digestSHA256Ciphertext(digestSHA256Ciphertext)
-        } else if let sha256ContentHash {
-            integrityCheck = .sha256ContentHash(sha256ContentHash)
+        } else if let plaintextHash {
+            integrityCheck = .plaintextHash(plaintextHash)
         } else {
             integrityCheck = nil
         }
@@ -525,7 +525,7 @@ private extension Attachment.TransitTierInfo {
             let encryptionKey,
             let integrityCheck
         else {
-            // Don't include encryptionKey/sha256ContentHash here; they're provided
+            // Don't include encryptionKey/plaintextHash here; they're provided
             // sometimes. Do include unencryptedByteCount here because it's optional
             // but should never be present when the required fields are missing.
             owsAssertDebug(
@@ -561,7 +561,7 @@ private extension Attachment.MediaTierInfo {
     init?(
         cdnNumber: UInt32?,
         unencryptedByteCount: UInt32?,
-        sha256ContentHash: Data?,
+        plaintextHash: Data?,
         uploadEra: String?,
         lastDownloadAttemptTimestamp: UInt64?,
         incrementalMac: Data?,
@@ -570,13 +570,13 @@ private extension Attachment.MediaTierInfo {
         guard
             let uploadEra,
             let unencryptedByteCount,
-            let sha256ContentHash
+            let plaintextHash
         else {
             return nil
         }
         self.cdnNumber = cdnNumber
         self.unencryptedByteCount = unencryptedByteCount
-        self.sha256ContentHash = sha256ContentHash
+        self.plaintextHash = plaintextHash
         self.uploadEra = uploadEra
         self.lastDownloadAttemptTimestamp = lastDownloadAttemptTimestamp
         if let incrementalMac, let incrementalMacChunkSize {

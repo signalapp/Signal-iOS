@@ -17,7 +17,7 @@ public class AttachmentStream {
     public var mimeType: String { attachment.mimeType }
 
     public var digestSHA256Ciphertext: Data { info.digestSHA256Ciphertext }
-    public var sha256ContentHash: Data { info.sha256ContentHash }
+    public var plaintextHash: Data { info.plaintextHash }
     public var mediaName: String { info.mediaName }
     public var encryptedByteCount: UInt32 { info.encryptedByteCount }
     public var unencryptedByteCount: UInt32 { info.unencryptedByteCount }
