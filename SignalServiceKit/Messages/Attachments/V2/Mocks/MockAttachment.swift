@@ -16,7 +16,7 @@ extension Attachment.StreamInfo {
         encryptedByteCount: UInt32 = .random(in: 0..<95_000_000),
         unencryptedByteCount: UInt32 = .random(in: 0..<95_000_000),
         contentType: Attachment.ContentTypeRaw = .file,
-        digestSHA256Ciphertext: Data = Randomness.generateRandomBytes(32),
+        ciphertextDigest: Data = Randomness.generateRandomBytes(32),
         localRelativeFilePath: String = UUID().uuidString,
     ) -> Attachment.StreamInfo {
         return Attachment.StreamInfo(
@@ -30,7 +30,7 @@ extension Attachment.StreamInfo {
             cachedVideoStillFrameRelativeFilePath: nil,
             cachedAudioDuration: nil,
             cachedAudioWaveformRelativeFilePath: nil,
-            digestSHA256Ciphertext: digestSHA256Ciphertext,
+            ciphertextDigest: ciphertextDigest,
             localRelativeFilePath: localRelativeFilePath,
         )
     }
@@ -53,7 +53,7 @@ extension Attachment.TransitTierInfo {
             uploadTimestamp: uploadTimestamp ?? Date().ows_millisecondsSince1970,
             encryptionKey: encryptionKey ?? Randomness.generateRandomBytes(64),
             unencryptedByteCount: unencryptedByteCount ?? UInt32.random(in: 0..<95_000_000),
-            integrityCheck: integrityCheck ?? .digestSHA256Ciphertext(Randomness.generateRandomBytes(32)),
+            integrityCheck: integrityCheck ?? .ciphertextDigest(Randomness.generateRandomBytes(32)),
             incrementalMacInfo: incrementalMacInfo,
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp,
         )

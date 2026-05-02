@@ -274,7 +274,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         guard let encryptionKey = proto.key?.nilIfEmpty else {
             throw OWSAssertionError("Invalid encryption key")
         }
-        guard let digestSHA256Ciphertext = proto.digest?.nilIfEmpty else {
+        guard let ciphertextDigest = proto.digest?.nilIfEmpty else {
             throw OWSAssertionError("Missing digest")
         }
 
@@ -284,7 +284,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             uploadTimestamp: proto.uploadTimestamp,
             encryptionKey: encryptionKey,
             unencryptedByteCount: proto.size,
-            integrityCheck: .digestSHA256Ciphertext(digestSHA256Ciphertext),
+            integrityCheck: .ciphertextDigest(ciphertextDigest),
             // TODO: [Attachment Streaming] Extract incremental MAC info from the attachment pointer.
             incrementalMacInfo: nil,
             lastDownloadAttemptTimestamp: nil,
@@ -530,7 +530,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             guard !data.isEmpty else {
                 return nil
             }
-            integrityCheck = .digestSHA256Ciphertext(data)
+            integrityCheck = .ciphertextDigest(data)
         case .none:
             return nil
         }
@@ -918,9 +918,9 @@ public class AttachmentManagerImpl: AttachmentManager {
             case .plaintextHash:
                 // Can't verify the digest (and iv) match, so we can't use this one.
                 continue
-            case .digestSHA256Ciphertext(let infoDigest):
+            case .ciphertextDigest(let ciphertextDigest):
                 if
-                    infoDigest == pendingAttachmentStreamInfo.digestSHA256Ciphertext,
+                    ciphertextDigest == pendingAttachmentStreamInfo.ciphertextDigest,
                     originalTransitTierInfo == nil
                     || originalTransitTierInfo!.uploadTimestamp
                     < candidateOriginalTransitTierInfo.uploadTimestamp

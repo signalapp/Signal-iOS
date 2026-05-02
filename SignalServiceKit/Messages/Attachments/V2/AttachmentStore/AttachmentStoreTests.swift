@@ -621,7 +621,7 @@ class AttachmentStoreTests: XCTestCase {
             uploadTimestamp: Date().ows_millisecondsSince1970,
             encryptionKey: UUID().data,
             unencryptedByteCount: 100,
-            integrityCheck: .digestSHA256Ciphertext(UUID().data),
+            integrityCheck: .ciphertextDigest(UUID().data),
             incrementalMacInfo: nil,
             lastDownloadAttemptTimestamp: nil,
         )

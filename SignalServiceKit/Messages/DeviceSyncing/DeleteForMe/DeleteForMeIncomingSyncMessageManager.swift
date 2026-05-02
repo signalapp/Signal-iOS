@@ -15,10 +15,10 @@ public enum DeleteForMeSyncMessage {
             /// message. Preferred if available.
             /// - SeeAlso ``AttachmentReference/knownIdInOwningMessage``
             let clientUuid: UUID?
-            /// The SHA256 hash of the encrypted (IV | ciphertext | HMAC) blob
-            /// for this attachment on the CDN.
-            /// - SeeAlso ``Attachment/StreamInfo/digestSHA256Ciphertext``
-            let encryptedDigest: Data?
+            /// The SHA256 hash of the (IV | ciphertext | HMAC) blob for this attachment
+            /// on the CDN.
+            /// - SeeAlso ``Attachment/StreamInfo/ciphertextDigest``
+            let ciphertextDigest: Data?
             /// The SHA256 hash of the plaintext of the attachment.
             /// - SeeAlso ``Attachment/StreamInfo/plaintextHash``
             let plaintextHash: Data?
@@ -181,7 +181,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
 
         /// Look for a "match" among all our candidates, first by comparing the
         /// `clientUuid` (added recently for attachments going forward), then
-        /// by the `encryptedDigest` (which should identify most legacy
+        /// by the `ciphertextDigest` (which should identify most legacy
         /// attachments) and finally by the `plaintextHash` (a last-ditch option
         /// for if somehow the encrypted digest is missing).
         let targetAttachment: ReferencedAttachment? = {
@@ -191,18 +191,18 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
             {
                 return clientUuidMatch
             } else if
-                let encryptedDigest = attachmentIdentifier.encryptedDigest,
-                let encryptedDigestMatch = targetAttachmentCandidates.first(where: {
-                    if let digest = $0.attachment.streamInfo?.digestSHA256Ciphertext {
-                        return encryptedDigest == digest
-                    } else if case let .digestSHA256Ciphertext(digest) = $0.attachment.latestTransitTierInfo?.integrityCheck {
-                        return encryptedDigest == digest
+                let ciphertextDigest = attachmentIdentifier.ciphertextDigest,
+                let ciphertextDigestMatch = targetAttachmentCandidates.first(where: {
+                    if let digest = $0.attachment.streamInfo?.ciphertextDigest {
+                        return ciphertextDigest == digest
+                    } else if case let .ciphertextDigest(digest) = $0.attachment.latestTransitTierInfo?.integrityCheck {
+                        return ciphertextDigest == digest
                     } else {
                         return false
                     }
                 })
             {
-                return encryptedDigestMatch
+                return ciphertextDigestMatch
             } else if
                 let plaintextHash = attachmentIdentifier.plaintextHash,
                 let plaintextHashMatch = targetAttachmentCandidates.first(where: { $0.attachment.asStream()?.plaintextHash == plaintextHash })

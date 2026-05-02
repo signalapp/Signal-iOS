@@ -685,7 +685,7 @@ public extension Cryptography {
         )
 
         var hmac: HMAC<SHA256>?
-        var ciphertextSha256: SHA256?
+        var ciphertextDigestHasher: SHA256?
         var plaintextHasher: SHA256?
         if validateHmacAndIntegrityCheck {
             // The metadata "key" is actually a concatentation of the
@@ -698,15 +698,15 @@ public extension Cryptography {
                 break
             case .plaintextHash:
                 plaintextHasher = SHA256()
-            case .digestSHA256Ciphertext:
-                ciphertextSha256 = SHA256()
+            case .ciphertextDigest:
+                ciphertextDigestHasher = SHA256()
             }
 
             // Matching encryption, we must start our hmac
             // and digest with the IV, since the encrypted
             // file starts with the IV
             hmac?.update(data: inputFile.iv)
-            ciphertextSha256?.update(data: inputFile.iv)
+            ciphertextDigestHasher?.update(data: inputFile.iv)
         }
 
         var totalPlaintextLength = 0
@@ -719,7 +719,7 @@ public extension Cryptography {
                 upToCount: outputBlockSize ?? Int(inputFile.plaintextLength),
             ) { ciphertext in
                 hmac?.update(data: ciphertext)
-                ciphertextSha256?.update(data: ciphertext)
+                ciphertextDigestHasher?.update(data: ciphertext)
             }
             if plaintextDataBlock.isEmpty {
                 gotEmptyBlock = true
@@ -749,7 +749,7 @@ public extension Cryptography {
                 let lengthToRead = min(remainingPaddingLength, 1024 * 16)
                 let paddingCiphertext = try inputFile.file.readData(ofLength: Int(lengthToRead))
                 hmac.update(data: paddingCiphertext)
-                ciphertextSha256?.update(data: paddingCiphertext)
+                ciphertextDigestHasher?.update(data: paddingCiphertext)
                 remainingPaddingLength -= lengthToRead
             }
             // Verify their HMAC matches our locally calculated HMAC
@@ -778,14 +778,14 @@ public extension Cryptography {
                 guard plaintextHash.ows_constantTimeIsEqual(to: theirPlaintextHash) else {
                     throw OWSAssertionError("Bad plaintext hash")
                 }
-            case .digestSHA256Ciphertext(let theirDigest):
+            case .ciphertextDigest(let theirDigest):
                 // Verify their digest matches our locally calculated digest
                 // digest of: iv || encrypted data || hmac
-                guard var ciphertextSha256 else {
+                guard var ciphertextDigestHasher else {
                     throw OWSAssertionError("Missing digest context")
                 }
-                ciphertextSha256.update(data: hmacResult)
-                let digest = Data(ciphertextSha256.finalize())
+                ciphertextDigestHasher.update(data: hmacResult)
+                let digest = Data(ciphertextDigestHasher.finalize())
                 guard digest.ows_constantTimeIsEqual(to: theirDigest) else {
                     Logger.debug("Bad digest. Their digest: \(theirDigest.hexadecimalString), our digest: \(digest.hexadecimalString)")
                     throw OWSAssertionError("Bad digest")

@@ -74,7 +74,7 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
 
             let attachmentIdentifier = AttachmentIdentifier(
                 clientUuid: attachmentDelete.clientUuid.flatMap { UUID(data: $0) },
-                encryptedDigest: attachmentDelete.fallbackDigest,
+                ciphertextDigest: attachmentDelete.fallbackDigest,
                 plaintextHash: attachmentDelete.fallbackPlaintextHash,
             )
 

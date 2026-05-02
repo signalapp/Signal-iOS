@@ -34,7 +34,7 @@ public final class IncomingContactSyncJobRecord: JobRecord {
                 encryptionKey: encryptionKey,
                 source: .transitTier(
                     cdnKey: cdnKey,
-                    integrityCheck: .digestSHA256Ciphertext(digest),
+                    integrityCheck: .ciphertextDigest(digest),
                     plaintextLength: plaintextLength,
                 ),
             ))

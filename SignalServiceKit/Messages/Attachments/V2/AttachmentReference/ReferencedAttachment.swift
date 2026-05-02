@@ -194,10 +194,10 @@ extension ReferencedAttachment {
             return nil
         }
 
-        let digestSHA256Ciphertext: Data
+        let ciphertextDigest: Data
         switch pointer.info.integrityCheck {
-        case .digestSHA256Ciphertext(let data):
-            digestSHA256Ciphertext = data
+        case .ciphertextDigest(let data):
+            ciphertextDigest = data
         case .plaintextHash:
             return nil
         }
@@ -252,7 +252,7 @@ extension ReferencedAttachment {
             builder.setHeight(UInt32(pixelSize.height.rounded()))
         }
         builder.setKey(pointer.info.encryptionKey)
-        builder.setDigest(digestSHA256Ciphertext)
+        builder.setDigest(ciphertextDigest)
         builder.setUploadTimestamp(pointer.uploadTimestamp)
 
         pointer.attachment.blurHash.map(builder.setBlurHash(_:))

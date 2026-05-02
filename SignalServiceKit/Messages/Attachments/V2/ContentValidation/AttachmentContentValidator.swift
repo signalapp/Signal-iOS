@@ -10,12 +10,12 @@ import Foundation
 /// the file we download is the same as the one the sender intended (or ourselves,
 /// if we are the sender).
 public enum AttachmentIntegrityCheck: Equatable {
-    case digestSHA256Ciphertext(Data)
+    case ciphertextDigest(Data)
     case plaintextHash(Data)
 
     var isEmpty: Bool {
         switch self {
-        case .digestSHA256Ciphertext(let data):
+        case .ciphertextDigest(let data):
             return data.isEmpty
         case .plaintextHash(let data):
             return data.isEmpty
@@ -29,7 +29,7 @@ public struct PendingAttachment {
     let unencryptedByteCount: UInt32
     let mimeType: String
     let encryptionKey: Data
-    let digestSHA256Ciphertext: Data
+    let ciphertextDigest: Data
     let localRelativeFilePath: String
     private(set) var renderingFlag: AttachmentReference.RenderingFlag
     let sourceFilename: String?

@@ -526,8 +526,8 @@ extension ReferencedAttachment {
                 case .plaintextHash(let plaintextHash):
                     owsFailDebug("Missing Attachment plaintext hash, but had one on TransitTierInfo!")
                     locatorInfo.integrityCheck = .plaintextHash(plaintextHash)
-                case .digestSHA256Ciphertext(let encryptedDigest):
-                    locatorInfo.integrityCheck = .encryptedDigest(encryptedDigest)
+                case .ciphertextDigest(let ciphertextDigest):
+                    locatorInfo.integrityCheck = .encryptedDigest(ciphertextDigest)
                 }
             }
         } else {

@@ -89,7 +89,7 @@ class CryptographyTestsSwift: XCTestCase {
         let encryptionMetadata = try Cryptography.encryptAttachment(at: plaintextFile, output: encryptedFile)
         let decryptionMetadata = DecryptionMetadata(
             key: encryptionMetadata.key,
-            integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
+            integrityCheck: .ciphertextDigest(encryptionMetadata.digest),
             plaintextLength: encryptionMetadata.plaintextLength,
         )
 
@@ -124,7 +124,7 @@ class CryptographyTestsSwift: XCTestCase {
         // Attempt with the digest and plaintext length; that should work too.
         let decryptionMetadata = DecryptionMetadata(
             key: encryptionMetadata.key,
-            integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
+            integrityCheck: .ciphertextDigest(encryptionMetadata.digest),
             plaintextLength: encryptionMetadata.plaintextLength,
         )
         decryptedData = try Cryptography.decryptAttachment(
@@ -148,7 +148,7 @@ class CryptographyTestsSwift: XCTestCase {
         try Randomness.generateRandomBytes(1024).write(to: plaintextFile)
         let decryptionMetadata = DecryptionMetadata(
             key: encryptionMetadata.key,
-            integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
+            integrityCheck: .ciphertextDigest(encryptionMetadata.digest),
             plaintextLength: encryptionMetadata.plaintextLength,
         )
         try Cryptography.decryptAttachment(
@@ -172,7 +172,7 @@ class CryptographyTestsSwift: XCTestCase {
 
         let invalidMetadata = DecryptionMetadata(
             key: encryptionMetadata.key,
-            integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
+            integrityCheck: .ciphertextDigest(encryptionMetadata.digest),
             plaintextLength: encryptionMetadata.encryptedLength + 1,
         )
 
@@ -200,7 +200,7 @@ class CryptographyTestsSwift: XCTestCase {
 
         let invalidMetadata = DecryptionMetadata(
             key: .generate(),
-            integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
+            integrityCheck: .ciphertextDigest(encryptionMetadata.digest),
             plaintextLength: encryptionMetadata.plaintextLength,
         )
 
@@ -283,7 +283,7 @@ class CryptographyTestsSwift: XCTestCase {
         try FileManager.default.removeItem(at: plaintextFile)
         let decryptionMetadata = DecryptionMetadata(
             key: encryptionMetadata.key,
-            integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
+            integrityCheck: .ciphertextDigest(encryptionMetadata.digest),
             plaintextLength: encryptionMetadata.plaintextLength,
         )
         let decryptedData = try Cryptography.decryptAttachment(
@@ -322,7 +322,7 @@ class CryptographyTestsSwift: XCTestCase {
                 at: encryptedFile,
                 metadata: .init(
                     key: encryptionMetadata.key,
-                    integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
+                    integrityCheck: .ciphertextDigest(encryptionMetadata.digest),
                     plaintextLength: UInt64(safeCast: plaintextLength),
                 ),
             )
@@ -366,7 +366,7 @@ class CryptographyTestsSwift: XCTestCase {
                 at: encryptedFile,
                 metadata: .init(
                     key: encryptionMetadata.key,
-                    integrityCheck: .digestSHA256Ciphertext(encryptionMetadata.digest),
+                    integrityCheck: .ciphertextDigest(encryptionMetadata.digest),
                     plaintextLength: nil,
                 ),
             )

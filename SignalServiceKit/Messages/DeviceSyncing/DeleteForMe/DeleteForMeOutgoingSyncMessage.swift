@@ -218,20 +218,28 @@ extension DeleteForMeSyncMessage.Outgoing {
         let conversationIdentifier: CodableConversationIdentifier
         let targetMessage: CodableAddressableMessage
         let clientUuid: UUID?
-        let encryptedDigest: Data?
+        let ciphertextDigest: Data?
         let plaintextHash: Data?
+
+        enum CodingKeys: String, CodingKey {
+            case conversationIdentifier
+            case targetMessage
+            case clientUuid
+            case ciphertextDigest = "encryptedDigest"
+            case plaintextHash
+        }
 
         init(
             conversationIdentifier: ConversationIdentifier,
             targetMessage: AddressableMessage,
             clientUuid: UUID?,
-            encryptedDigest: Data?,
+            ciphertextDigest: Data?,
             plaintextHash: Data?,
         ) {
             self.conversationIdentifier = CodableConversationIdentifier(conversationIdentifier)
             self.targetMessage = CodableAddressableMessage(targetMessage)
             self.clientUuid = clientUuid
-            self.encryptedDigest = encryptedDigest
+            self.ciphertextDigest = ciphertextDigest
             self.plaintextHash = plaintextHash
         }
 
@@ -242,8 +250,8 @@ extension DeleteForMeSyncMessage.Outgoing {
             if let clientUuid {
                 protoBuilder.setClientUuid(clientUuid.data)
             }
-            if let encryptedDigest {
-                protoBuilder.setFallbackDigest(encryptedDigest)
+            if let ciphertextDigest {
+                protoBuilder.setFallbackDigest(ciphertextDigest)
             }
             if let plaintextHash {
                 protoBuilder.setFallbackPlaintextHash(plaintextHash)

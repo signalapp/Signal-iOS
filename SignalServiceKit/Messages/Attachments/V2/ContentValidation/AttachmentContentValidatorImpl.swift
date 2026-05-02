@@ -852,7 +852,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 unencryptedByteCount: primaryFile.plaintextLength,
                 mimeType: input.mimeType,
                 encryptionKey: input.attachmentKey.combinedKey,
-                digestSHA256Ciphertext: primaryFile.digest,
+                ciphertextDigest: primaryFile.digest,
                 localRelativeFilePath: primaryFile.pendingFile.reservedRelativeFilePath,
                 renderingFlag: input.renderingFlag,
                 sourceFilename: input.sourceFilename,
@@ -1037,7 +1037,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 let encryptedLength = try OWSFileSystem.fileSize(of: fileUrl)
                 let digest: Data
                 switch integrityCheckParam {
-                case .digestSHA256Ciphertext(let digestParam):
+                case .ciphertextDigest(let digestParam):
                     // We separately verify the digest from the integrity check, so use it here.
                     digest = digestParam
                 case nil, .plaintextHash:

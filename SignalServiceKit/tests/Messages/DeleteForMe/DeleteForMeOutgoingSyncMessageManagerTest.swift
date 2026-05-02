@@ -59,7 +59,7 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
         let thread = TSContactThread(contactAddress: .isolatedRandomForTesting())
 
         let attachmentsToDelete = (0..<1501).map { _ -> DeleteForMeSyncMessage.Outgoing.AttachmentIdentifier in
-            return .init(clientUuid: UUID(), encryptedDigest: nil, plaintextHash: nil)
+            return .init(clientUuid: UUID(), ciphertextDigest: nil, plaintextHash: nil)
         }
 
         var expectedAttachmentBatches: [Int] = [500, 500, 500, 1]

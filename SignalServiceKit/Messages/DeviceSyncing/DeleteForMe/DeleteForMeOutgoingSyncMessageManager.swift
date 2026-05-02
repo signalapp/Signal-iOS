@@ -157,7 +157,7 @@ public extension DeleteForMeOutgoingSyncMessageManager {
             let attachmentIdentifiers: [Outgoing.AttachmentIdentifier] = attachments.map { attachment in
                 return Outgoing.AttachmentIdentifier(
                     clientUuid: attachment.reference.knownIdInOwningMessage,
-                    encryptedDigest: attachment.attachment.asStream()?.digestSHA256Ciphertext,
+                    ciphertextDigest: attachment.attachment.asStream()?.ciphertextDigest,
                     plaintextHash: attachment.attachment.asStream()?.plaintextHash,
                 )
             }
@@ -258,7 +258,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
                         conversationIdentifier: conversationIdentifier,
                         targetMessage: targetMessage,
                         clientUuid: attachmentIdentifier.clientUuid,
-                        encryptedDigest: attachmentIdentifier.encryptedDigest,
+                        ciphertextDigest: attachmentIdentifier.ciphertextDigest,
                         plaintextHash: attachmentIdentifier.plaintextHash,
                     )
                 }

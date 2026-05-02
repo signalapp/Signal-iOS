@@ -139,7 +139,7 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
             unencryptedByteCount: 100,
             mimeType: mimeType,
             encryptionKey: Data(),
-            digestSHA256Ciphertext: Data(),
+            ciphertextDigest: Data(),
             localRelativeFilePath: "",
             renderingFlag: .default,
             sourceFilename: dataSource.sourceFilename,

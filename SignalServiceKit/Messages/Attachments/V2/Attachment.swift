@@ -137,7 +137,7 @@ public class Attachment {
         ///
         /// Generated locally for outgoing attachments.
         /// Validated for downloaded attachments.
-        public let digestSHA256Ciphertext: Data
+        public let ciphertextDigest: Data
 
         /// Filepath to the encrypted fullsize media file on local disk.
         public let localRelativeFilePath: String
@@ -154,7 +154,7 @@ public class Attachment {
                 cachedVideoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath,
                 cachedAudioDuration: pendingAttachment.audioDuration,
                 cachedAudioWaveformRelativeFilePath: pendingAttachment.audioWaveformRelativeFilePath,
-                digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
+                ciphertextDigest: pendingAttachment.ciphertextDigest,
                 localRelativeFilePath: pendingAttachment.localRelativeFilePath,
             )
         }
@@ -170,7 +170,7 @@ public class Attachment {
             cachedVideoStillFrameRelativeFilePath: String?,
             cachedAudioDuration: TimeInterval?,
             cachedAudioWaveformRelativeFilePath: String?,
-            digestSHA256Ciphertext: Data,
+            ciphertextDigest: Data,
             localRelativeFilePath: String,
         ) {
             self.plaintextHash = plaintextHash
@@ -183,7 +183,7 @@ public class Attachment {
             self.cachedVideoStillFrameRelativeFilePath = cachedVideoStillFrameRelativeFilePath
             self.cachedAudioDuration = cachedAudioDuration
             self.cachedAudioWaveformRelativeFilePath = cachedAudioWaveformRelativeFilePath
-            self.digestSHA256Ciphertext = digestSHA256Ciphertext
+            self.ciphertextDigest = ciphertextDigest
             self.localRelativeFilePath = localRelativeFilePath
         }
     }
@@ -290,7 +290,7 @@ public class Attachment {
             let encryptedByteCount = record.encryptedByteCount,
             let unencryptedByteCount = record.unencryptedByteCount,
             let contentType = record.contentType,
-            let digestSHA256Ciphertext = record.digestSHA256Ciphertext,
+            let ciphertextDigest = record.ciphertextDigest,
             let localRelativeFilePath = record.localRelativeFilePath
         {
             guard let contentType = ContentTypeRaw(rawValue: contentType) else {
@@ -317,7 +317,7 @@ public class Attachment {
                 cachedVideoStillFrameRelativeFilePath: record.videoStillFrameRelativeFilePath,
                 cachedAudioDuration: record.cachedAudioDurationSeconds,
                 cachedAudioWaveformRelativeFilePath: record.audioWaveformRelativeFilePath,
-                digestSHA256Ciphertext: digestSHA256Ciphertext,
+                ciphertextDigest: ciphertextDigest,
                 localRelativeFilePath: localRelativeFilePath,
             )
         } else {
@@ -330,7 +330,7 @@ public class Attachment {
             uploadTimestamp: record.latestTransitUploadTimestamp,
             encryptionKey: record.latestTransitEncryptionKey,
             unencryptedByteCount: record.latestTransitUnencryptedByteCount,
-            digestSHA256Ciphertext: record.latestTransitDigestSHA256Ciphertext,
+            ciphertextDigest: record.latestTransitCiphertextDigest,
             plaintextHash: record.plaintextHash,
             lastDownloadAttemptTimestamp: record.latestTransitLastDownloadAttemptTimestamp,
             incrementalMac: record.latestTransitTierIncrementalMac,
@@ -350,9 +350,9 @@ public class Attachment {
             // transit download as the file when its done, or we have
             // only plaintext integrity check which means it always matches.)
 
-            record.latestTransitDigestSHA256Ciphertext == record.digestSHA256Ciphertext
-            || record.digestSHA256Ciphertext == nil
-            || record.latestTransitDigestSHA256Ciphertext == nil
+            record.latestTransitCiphertextDigest == record.ciphertextDigest
+            || record.ciphertextDigest == nil
+            || record.latestTransitCiphertextDigest == nil
 
         {
             self.originalTransitTierInfo = latestTransitTierInfo
@@ -363,7 +363,7 @@ public class Attachment {
                 uploadTimestamp: record.originalTransitUploadTimestamp,
                 encryptionKey: record.encryptionKey,
                 unencryptedByteCount: record.originalTransitUnencryptedByteCount,
-                digestSHA256Ciphertext: record.originalTransitDigestSHA256Ciphertext,
+                ciphertextDigest: record.originalTransitCiphertextDigest,
                 plaintextHash: record.plaintextHash,
                 lastDownloadAttemptTimestamp: nil,
                 incrementalMac: record.originalTransitTierIncrementalMac,
@@ -441,7 +441,7 @@ public class Attachment {
         let metadata = Upload.LocalUploadMetadata(
             fileUrl: stream.fileURL,
             key: encryptionKey,
-            digest: stream.digestSHA256Ciphertext,
+            digest: stream.ciphertextDigest,
             encryptedDataLength: stream.encryptedByteCount,
             plaintextDataLength: stream.unencryptedByteCount,
         )
@@ -452,7 +452,7 @@ public class Attachment {
             // That upload includes a digest (if we restore from a backup
             // with no digest, we can't forward that transit tier info
             // even though we know about it and its maybe recent).
-            case .digestSHA256Ciphertext(let digest) = latestTransitTierInfo.integrityCheck,
+            case .ciphertextDigest(let digest) = latestTransitTierInfo.integrityCheck,
             // And we are still in the window to reuse it
             dateProvider().timeIntervalSince(
                 Date(millisecondsSince1970: latestTransitTierInfo.uploadTimestamp),
@@ -498,21 +498,21 @@ private extension Attachment.TransitTierInfo {
         uploadTimestamp: UInt64?,
         encryptionKey: Data?,
         unencryptedByteCount: UInt32?,
-        digestSHA256Ciphertext: Data?,
+        ciphertextDigest: Data?,
         plaintextHash: Data?,
         lastDownloadAttemptTimestamp: UInt64?,
         incrementalMac: Data?,
         incrementalMacChunkSize: UInt32?,
     ) {
         let integrityCheck: AttachmentIntegrityCheck?
-        if let digestSHA256Ciphertext {
+        if let ciphertextDigest {
             // This is slightly load-bearing but we want to use digest if we
             // have it because we can only _send_ attachments with digests.
             // Other mechanisms will ensure we never get to the send flow
             // without first doing a transit tier upload that sets the
             // digest, so we just have to ensure we _read_ that digest here
             // instead of the plaintext hash.
-            integrityCheck = .digestSHA256Ciphertext(digestSHA256Ciphertext)
+            integrityCheck = .ciphertextDigest(ciphertextDigest)
         } else if let plaintextHash {
             integrityCheck = .plaintextHash(plaintextHash)
         } else {
@@ -533,7 +533,7 @@ private extension Attachment.TransitTierInfo {
                     && cdnKey == nil
                     && uploadTimestamp == nil
                     && unencryptedByteCount == nil
-                    && digestSHA256Ciphertext == nil,
+                    && ciphertextDigest == nil,
                 "Have partial transit cdn info!",
             )
             return nil

@@ -653,14 +653,14 @@ public struct AttachmentStore {
             // forwarding if it doesn't have a digest, as digest is
             // required on the outgoing proto. So to allow forwarding
             // (where otherwise applicable) set the digest here.
-            existingTransitTierInfo.integrityCheck = .digestSHA256Ciphertext(streamInfo.digestSHA256Ciphertext)
+            existingTransitTierInfo.integrityCheck = .ciphertextDigest(streamInfo.ciphertextDigest)
             // Wipe the last download attempt time; its now succeeded.
             existingTransitTierInfo.lastDownloadAttemptTimestamp = nil
 
             latestTransitTierInfo = existingTransitTierInfo
         } else if
             let existingTransitTierInfo = attachment.latestTransitTierInfo,
-            case .digestSHA256Ciphertext = existingTransitTierInfo.integrityCheck
+            case .ciphertextDigest = existingTransitTierInfo.integrityCheck
         {
             latestTransitTierInfo = existingTransitTierInfo
         } else {
@@ -791,8 +791,8 @@ public struct AttachmentStore {
         let originalTransitTierInfo: Attachment.TransitTierInfo?
         if transitTierInfo.encryptionKey == attachmentStream.attachment.encryptionKey {
             switch transitTierInfo.integrityCheck {
-            case .digestSHA256Ciphertext(let digest):
-                if digest == attachmentStream.digestSHA256Ciphertext {
+            case .ciphertextDigest(let digest):
+                if digest == attachmentStream.ciphertextDigest {
                     originalTransitTierInfo = transitTierInfo
                 } else {
                     owsFailDebug("How are we reusing encryption key but have a different digest?")

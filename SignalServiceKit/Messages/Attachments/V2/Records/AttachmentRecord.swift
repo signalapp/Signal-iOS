@@ -18,7 +18,7 @@ extension Attachment {
         let unencryptedByteCount: UInt32?
         let mimeType: String
         let encryptionKey: Data
-        let digestSHA256Ciphertext: Data?
+        let ciphertextDigest: Data?
         let contentType: UInt32?
         let latestTransitCdnNumber: UInt32?
         let latestTransitCdnKey: String?
@@ -26,7 +26,7 @@ extension Attachment {
         var latestTransitUploadTimestamp: UInt64?
         let latestTransitEncryptionKey: Data?
         let latestTransitUnencryptedByteCount: UInt32?
-        let latestTransitDigestSHA256Ciphertext: Data?
+        let latestTransitCiphertextDigest: Data?
         @DBUInt64Optional
         var latestTransitLastDownloadAttemptTimestamp: UInt64?
         let mediaName: String?
@@ -59,7 +59,7 @@ extension Attachment {
         @DBUInt64Optional
         var originalTransitUploadTimestamp: UInt64?
         let originalTransitUnencryptedByteCount: UInt32?
-        let originalTransitDigestSHA256Ciphertext: Data?
+        let originalTransitCiphertextDigest: Data?
         let originalTransitTierIncrementalMac: Data?
         let originalTransitTierIncrementalMacChunkSize: UInt32?
 
@@ -83,13 +83,13 @@ extension Attachment {
             case unencryptedByteCount
             case contentType
             case encryptionKey
-            case digestSHA256Ciphertext
+            case ciphertextDigest = "digestSHA256Ciphertext"
             case latestTransitCdnNumber = "transitCdnNumber"
             case latestTransitCdnKey = "transitCdnKey"
             case latestTransitUploadTimestamp = "transitUploadTimestamp"
             case latestTransitEncryptionKey = "transitEncryptionKey"
             case latestTransitUnencryptedByteCount = "transitUnencryptedByteCount"
-            case latestTransitDigestSHA256Ciphertext = "transitDigestSHA256Ciphertext"
+            case latestTransitCiphertextDigest = "transitDigestSHA256Ciphertext"
             case latestTransitLastDownloadAttemptTimestamp = "lastTransitDownloadAttemptTimestamp"
             case mediaName
             case mediaTierCdnNumber
@@ -117,7 +117,7 @@ extension Attachment {
             case originalTransitCdnKey
             case originalTransitUploadTimestamp
             case originalTransitUnencryptedByteCount
-            case originalTransitDigestSHA256Ciphertext
+            case originalTransitCiphertextDigest = "originalTransitDigestSHA256Ciphertext"
             case originalTransitTierIncrementalMac
             case originalTransitTierIncrementalMacChunkSize
         }
@@ -174,7 +174,7 @@ extension Attachment {
             self.unencryptedByteCount = streamInfo?.unencryptedByteCount
             self.mimeType = mimeType
             self.encryptionKey = encryptionKey
-            self.digestSHA256Ciphertext = streamInfo?.digestSHA256Ciphertext
+            self.ciphertextDigest = streamInfo?.ciphertextDigest
             self.contentType = streamInfo?.contentType.rawValue
             self.latestTransitCdnNumber = latestTransitTierInfo?.cdnNumber
             self.latestTransitCdnKey = latestTransitTierInfo?.cdnKey
@@ -182,10 +182,10 @@ extension Attachment {
             self.latestTransitEncryptionKey = latestTransitTierInfo?.encryptionKey
             self.latestTransitUnencryptedByteCount = latestTransitTierInfo?.unencryptedByteCount
             switch latestTransitTierInfo?.integrityCheck {
-            case .digestSHA256Ciphertext(let data):
-                self.latestTransitDigestSHA256Ciphertext = data
+            case .ciphertextDigest(let data):
+                self.latestTransitCiphertextDigest = data
             case nil, .plaintextHash:
-                self.latestTransitDigestSHA256Ciphertext = nil
+                self.latestTransitCiphertextDigest = nil
             }
             self.latestTransitTierIncrementalMac = latestTransitTierInfo?.incrementalMacInfo?.mac
             self.latestTransitTierIncrementalMacChunkSize = latestTransitTierInfo?.incrementalMacInfo?.chunkSize
@@ -196,10 +196,10 @@ extension Attachment {
             self._originalTransitUploadTimestamp = DBUInt64Optional(wrappedValue: originalTransitTierInfo?.uploadTimestamp)
             self.originalTransitUnencryptedByteCount = originalTransitTierInfo?.unencryptedByteCount
             switch originalTransitTierInfo?.integrityCheck {
-            case .digestSHA256Ciphertext(let data):
-                self.originalTransitDigestSHA256Ciphertext = data
+            case .ciphertextDigest(let data):
+                self.originalTransitCiphertextDigest = data
             case nil, .plaintextHash:
-                self.originalTransitDigestSHA256Ciphertext = nil
+                self.originalTransitCiphertextDigest = nil
             }
             self.originalTransitTierIncrementalMac = originalTransitTierInfo?.incrementalMacInfo?.mac
             self.originalTransitTierIncrementalMacChunkSize = originalTransitTierInfo?.incrementalMacInfo?.chunkSize

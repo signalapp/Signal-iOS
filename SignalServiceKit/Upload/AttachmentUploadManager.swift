@@ -489,7 +489,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     // we only allow sending using a digest integrity check not a plaintext hash
                     // so prefer digest if we have both. If we don't, this attachment we just
                     // uploaded will fail to send.
-                    integrityCheck: .digestSHA256Ciphertext(uploadResult.localUploadMetadata.digest),
+                    integrityCheck: .ciphertextDigest(uploadResult.localUploadMetadata.digest),
                     // TODO: [Attachment Streaming] support incremental mac
                     incrementalMacInfo: nil,
                     lastDownloadAttemptTimestamp: nil,
@@ -931,7 +931,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     cdnKey: transitTierInfo.cdnKey,
                     cdnNumber: transitTierInfo.cdnNumber,
                     key: attachment.encryptionKey,
-                    digest: stream.digestSHA256Ciphertext,
+                    digest: stream.ciphertextDigest,
                     plaintextDataLength: stream.unencryptedByteCount,
                     // This is the length from the stream, not the transit tier,
                     // but the length is the same regardless of the key used.
@@ -946,7 +946,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 let metadata = Upload.LocalUploadMetadata(
                     fileUrl: stream.fileURL,
                     key: attachment.encryptionKey,
-                    digest: stream.digestSHA256Ciphertext,
+                    digest: stream.ciphertextDigest,
                     encryptedDataLength: stream.encryptedByteCount,
                     plaintextDataLength: stream.unencryptedByteCount,
                 )
@@ -1072,7 +1072,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             // we only allow sending using a digest integrity check not a plaintext hash
             // so prefer digest if we have both. If we don't, this attachment we just
             // uploaded to be able to send will fail to send.
-            integrityCheck: .digestSHA256Ciphertext(result.localUploadMetadata.digest),
+            integrityCheck: .ciphertextDigest(result.localUploadMetadata.digest),
             // TODO: [Attachment Streaming] support incremental mac
             incrementalMacInfo: nil,
             lastDownloadAttemptTimestamp: nil,
