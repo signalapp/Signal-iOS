@@ -65,9 +65,11 @@ public class Cron {
     /// local builds, but it's true for all TestFlight/App Store builds.)
     public enum UniqueKey: String {
         case checkUsername
+        case cleanUpCallingAssets
         case cleanUpMessageSendLog
         case cleanUpOrphanedData
         case cleanUpViewOnceMessages
+        case fetchCallingAssets
         case fetchDevices
         case fetchEmojiSearch
         case fetchLocalProfile

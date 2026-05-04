@@ -44,6 +44,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     let callLinkManager: CallLinkManagerImpl
     let callLinkFetcher: CallLinkFetcherImpl
     let callLinkStateUpdater: CallLinkStateUpdater
+    private let callingAssetsFetcher: CallingAssetsFetcher
+    private var callingAssetsRegistrationLog: Set<CallingAssetManifestEntry> = []
 
     private var adHocCallStateObserver: AdHocCallStateObserver?
 
@@ -93,11 +95,14 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         callRecordDeleteManager: any CallRecordDeleteManager,
         callRecordStore: any CallRecordStore,
         callServiceSettingsStore: CallServiceSettingsStore,
+        cron: Cron,
+        databaseChangeObserver: DatabaseChangeObserver,
         db: any DB,
         deviceSleepManager: DeviceSleepManagerImpl,
         mutableCurrentCall: AtomicValue<SignalCall?>,
         networkManager: NetworkManager,
         remoteConfig: RemoteConfig,
+        signalService: OWSSignalServiceProtocol,
         tsAccountManager: any TSAccountManager,
     ) {
         self.appReadiness = appReadiness
@@ -134,6 +139,9 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             callRecordStore: callRecordStore,
             db: db,
             tsAccountManager: tsAccountManager,
+        )
+        self.callingAssetsFetcher = CallingAssetsFetcher(
+            signalService: signalService,
         )
         self.db = db
         self.deviceSleepManager = deviceSleepManager
@@ -173,11 +181,48 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
+            databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
             self.callServiceState.addObserver(self.groupCallAccessoryMessageDelegate, syncStateImmediately: true)
             self.callServiceState.addObserver(self.groupCallRemoteVideoManager, syncStateImmediately: true)
         }
+
+        cron.schedulePeriodically(
+            uniqueKey: .fetchCallingAssets,
+            approximateInterval: .day,
+            mustBeRegistered: false,
+            mustBeConnected: true,
+            operation: { [weak self] in
+                guard let self else { return }
+
+                var fetchErrors: [Error] = []
+                for fetchResult in await callingAssetsFetcher.fetchMissingRemoteAssets() {
+                    switch fetchResult {
+                    case .success:
+                        break
+                    case .failure(let error):
+                        fetchErrors.append(error)
+                    }
+                }
+
+                if let retryableFetchError = fetchErrors.first(where: { $0.isRetryable }) {
+                    throw retryableFetchError
+                } else if let firstFetchError = fetchErrors.first {
+                    throw firstFetchError
+                }
+            },
+        )
+
+        cron.schedulePeriodically(
+            uniqueKey: .cleanUpCallingAssets,
+            approximateInterval: .week,
+            mustBeRegistered: false,
+            mustBeConnected: false,
+            operation: { [weak self] in
+                guard let self else { return }
+                try self.callingAssetsFetcher.cleanupStaleAssets()
+            },
+        )
     }
 
     deinit {
@@ -305,6 +350,20 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             }
         case .callLink:
             break
+        }
+    }
+
+    private func registerLocalAssets() {
+        for (manifestEntry, content) in callingAssetsFetcher.fetchLocalAssets(ignore: self.callingAssetsRegistrationLog) {
+            do {
+                try callManager.addAsset(
+                    assetGroup: manifestEntry.assetGroup,
+                    content: content,
+                )
+                self.callingAssetsRegistrationLog.insert(manifestEntry)
+            } catch {
+                Logger.warn("Failed to add asset '\(manifestEntry.name)' to CallManager: \(error)")
+            }
         }
     }
 
@@ -678,6 +737,9 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             owsFailDebug("Can't join a group call if we can't connect()")
             return
         }
+
+        // Must register calling assets before invoking GroupCall::join()
+        self.registerLocalAssets()
 
         // If we're not yet joined, join now. In general, it's unexpected that
         // this method would be called when you're already joined, but it is
@@ -1284,6 +1346,9 @@ extension CallService: CallManagerDelegate {
 
         // The call to be started is provided by the event.
         callServiceState.setCurrentCall(call)
+
+        // Must register calling assets before CallManager::proceed()
+        self.registerLocalAssets()
 
         individualCallService.callManager(
             callManager,

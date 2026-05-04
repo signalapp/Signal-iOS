@@ -2701,6 +2701,7 @@
 		D925F561298D8F9400158EE4 /* Usernames+ParsedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */; };
 		D925F563298D8F9400158EE4 /* Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BE297A04EB00F7ED6D /* Usernames.swift */; };
 		D927372D2CD2DD1800E15D95 /* StorageServiceRecordIkmMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D927372C2CD2DD0D00E15D95 /* StorageServiceRecordIkmMigrator.swift */; };
+		D92812DC2FA545E200667DCF /* CallingAssetsFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F588CA982FA088B700693838 /* CallingAssetsFetcher.swift */; };
 		D92A1CDA2E314BD400C91E21 /* DebugUIPrompts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92A1CD92E314BD000C91E21 /* DebugUIPrompts.swift */; };
 		D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */; };
 		D92C57552A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */; };
@@ -7822,6 +7823,7 @@
 		F0C124B626D4788A0031C96F /* NSE-Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "NSE-Images.xcassets"; sourceTree = "<group>"; };
 		F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuReactionBarAccessory.swift; sourceTree = "<group>"; };
 		F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuController.swift; sourceTree = "<group>"; };
+		F588CA982FA088B700693838 /* CallingAssetsFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallingAssetsFetcher.swift; sourceTree = "<group>"; };
 		F5C80FA12BE3F29F0028F76D /* RTCIceServerFetcherTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTCIceServerFetcherTest.swift; sourceTree = "<group>"; };
 		F70CAD4E12CCE311EC60A2C9 /* Pods-SignalServiceKitTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKitTests.profiling.xcconfig"; path = "Target Support Files/Pods-SignalServiceKitTests/Pods-SignalServiceKitTests.profiling.xcconfig"; sourceTree = "<group>"; };
 		F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptViewController.swift; sourceTree = "<group>"; };
@@ -14109,6 +14111,7 @@
 				D9E43BC42CC194140001536E /* AudioSession+WebRTC.swift */,
 				D9E43BC52CC194140001536E /* AudioSource.swift */,
 				D9E43BC62CC194140001536E /* CallAudioService.swift */,
+				F588CA982FA088B700693838 /* CallingAssetsFetcher.swift */,
 				D9E43BC72CC194140001536E /* CallKitCallManager.swift */,
 				D9E43BC82CC194140001536E /* CallKitIdStore.swift */,
 				D9E43BC92CC194140001536E /* CallLinkAdminManager.swift */,
@@ -18172,6 +18175,7 @@
 				D9E43BE62CC194140001536E /* CallDrawerSheet.swift in Sources */,
 				D9E43BE72CC194140001536E /* CallDrawerSheetDataSource.swift in Sources */,
 				D9E43BE82CC194140001536E /* CallHeader.swift in Sources */,
+				D92812DC2FA545E200667DCF /* CallingAssetsFetcher.swift in Sources */,
 				D9E43C152CC194140001536E /* CallKitCallManager.swift in Sources */,
 				D9E43BE92CC194140001536E /* CallKitCallUIAdaptee.swift in Sources */,
 				D9E43C162CC194140001536E /* CallKitIdStore.swift in Sources */,
