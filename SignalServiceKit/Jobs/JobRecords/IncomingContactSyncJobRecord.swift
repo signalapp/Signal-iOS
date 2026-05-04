@@ -17,37 +17,42 @@ public final class IncomingContactSyncJobRecord: JobRecord {
 
     public enum DownloadInfo {
         case invalid
-        case transient(AttachmentDownloads.DownloadMetadata)
+        case transient(downloadMetadata: AttachmentDownloads.DownloadMetadata, decryptionMetadata: DecryptionMetadata)
     }
 
     public var downloadInfo: DownloadInfo {
-        if
+        guard
             let cdnKey,
             let cdnNumber,
             let encryptionKey,
             let digest,
             let plaintextLength
-        {
-            return .transient(.init(
-                mimeType: MimeType.applicationOctetStream.rawValue,
-                cdnNumber: cdnNumber,
-                encryptionKey: encryptionKey,
-                source: .transitTier(
-                    cdnKey: cdnKey,
-                    integrityCheck: .ciphertextDigest(digest),
-                    plaintextLength: plaintextLength,
-                ),
-            ))
+        else {
+            owsAssertDebug(
+                cdnKey == nil
+                    && cdnNumber == nil
+                    && encryptionKey == nil
+                    && digest == nil
+                    && plaintextLength == nil,
+                "Either all fields should be set or none!",
+            )
+            return .invalid
         }
-        owsAssertDebug(
-            cdnKey == nil
-                && cdnNumber == nil
-                && encryptionKey == nil
-                && digest == nil
-                && plaintextLength == nil,
-            "Either all fields should be set or none!",
+        guard let attachmentKey = try? AttachmentKey(combinedKey: encryptionKey) else {
+            owsFailDebug("couldn't parse contact sync attachment key")
+            return .invalid
+        }
+        return .transient(
+            downloadMetadata: AttachmentDownloads.DownloadMetadata(
+                cdnNumber: cdnNumber,
+                source: .transitTier(cdnKey: cdnKey),
+            ),
+            decryptionMetadata: DecryptionMetadata(
+                key: attachmentKey,
+                integrityCheck: .ciphertextDigest(digest),
+                plaintextLength: UInt64(safeCast: plaintextLength),
+            ),
         )
-        return .invalid
     }
 
     public let isCompleteContactSync: Bool
@@ -55,7 +60,7 @@ public final class IncomingContactSyncJobRecord: JobRecord {
     public init(
         cdnNumber: UInt32,
         cdnKey: String,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         digest: Data,
         plaintextLength: UInt32?,
         isCompleteContactSync: Bool,
@@ -66,7 +71,7 @@ public final class IncomingContactSyncJobRecord: JobRecord {
 
         self.cdnNumber = cdnNumber
         self.cdnKey = cdnKey
-        self.encryptionKey = encryptionKey
+        self.encryptionKey = attachmentKey.combinedKey
         self.digest = digest
         self.plaintextLength = plaintextLength
 

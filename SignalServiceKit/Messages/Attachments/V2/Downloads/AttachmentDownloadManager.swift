@@ -25,83 +25,35 @@ public enum AttachmentDownloads {
     public static var attachmentDownloadAttachmentIDKey: String { "attachmentDownloadAttachmentIDKey" }
 
     public struct DownloadMetadata {
-        public let mimeType: String
         public let cdnNumber: UInt32
-        public let encryptionKey: Data
         public let source: Source
 
         public enum Source {
-            case transitTier(cdnKey: String, integrityCheck: AttachmentIntegrityCheck, plaintextLength: UInt32?)
-            case mediaTierFullsize(
-                cdnReadCredential: MediaTierReadCredential,
-                outerEncryptionMetadata: MediaTierEncryptionMetadata,
-                integrityCheck: AttachmentIntegrityCheck,
-                plaintextLength: UInt32?,
-            )
-            case mediaTierThumbnail(
-                cdnReadCredential: MediaTierReadCredential,
-                outerEncyptionMetadata: MediaTierEncryptionMetadata,
-                innerEncryptionMetadata: MediaTierEncryptionMetadata,
-            )
-            case linkNSyncBackup(cdnKey: String)
+            case transitTier(cdnKey: String)
+            case mediaTier(type: MediaTierType, cdnReadCredential: MediaTierReadCredential, mediaId: Data)
+
+            public enum MediaTierType {
+                case fullsize
+                case thumbnail
+            }
 
             var asQueuedDownloadSource: QueuedAttachmentDownloadRecord.SourceType {
                 switch self {
                 case .transitTier:
                     return .transitTier
-                case .mediaTierFullsize:
+                case .mediaTier(type: .fullsize, _, _):
                     return .mediaTierFullsize
-                case .mediaTierThumbnail:
+                case .mediaTier(type: .thumbnail, _, _):
                     return .mediaTierThumbnail
-                case .linkNSyncBackup:
-                    return .transitTier
                 }
             }
         }
 
-        public var integrityCheck: AttachmentIntegrityCheck? {
-            switch source {
-            case .transitTier(_, let integrityCheck, _):
-                return integrityCheck
-            case .mediaTierFullsize(_, _, let integrityCheck, _):
-                return integrityCheck
-            case .mediaTierThumbnail:
-                // No integrityCheck for media tier thumbnails; they come from the local user.
-                return nil
-            case .linkNSyncBackup:
-                // No integrityCheck for link'n'sync backups; they come from the local user.
-                return nil
-            }
-        }
-
-        public var plaintextLength: UInt32? {
-            switch source {
-            case .transitTier(_, _, let plaintextLength):
-                return plaintextLength
-            case .mediaTierFullsize(_, _, _, let plaintextLength):
-                return plaintextLength
-            case .mediaTierThumbnail:
-                // Thumbnails don't include a length out of band.
-                // They may be padded with 0s to hit bucket sizes, but
-                // we take advantage of the fact that jpegs support
-                // no-op trailing 0s (and all thumbnails are jpegs).
-                return nil
-            case .linkNSyncBackup:
-                // Link'n'sync backups don't include a length out
-                // of band because gzip ignores padding.
-                return nil
-            }
-        }
-
         public init(
-            mimeType: String,
             cdnNumber: UInt32,
-            encryptionKey: Data,
             source: Source,
         ) {
-            self.mimeType = mimeType
             self.cdnNumber = cdnNumber
-            self.encryptionKey = encryptionKey
             self.source = source
         }
     }
@@ -155,12 +107,15 @@ public protocol AttachmentDownloadManager {
     ) async throws -> URL
 
     func downloadEncryptedTransientAttachment(
-        metadata: AttachmentDownloads.DownloadMetadata,
+        downloadMetadata: AttachmentDownloads.DownloadMetadata,
+        expectedDownloadSize: UInt64?,
         progress: OWSProgressSink?,
     ) async throws -> URL
 
     func downloadTransientAttachment(
-        metadata: AttachmentDownloads.DownloadMetadata,
+        downloadMetadata: AttachmentDownloads.DownloadMetadata,
+        decryptionMetadata: DecryptionMetadata,
+        expectedDownloadSize: UInt64?,
         progress: OWSProgressSink?,
     ) async throws -> URL
 

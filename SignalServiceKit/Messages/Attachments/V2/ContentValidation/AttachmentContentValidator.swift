@@ -138,29 +138,39 @@ public protocol AttachmentContentValidator {
         mimeType: String,
     ) async throws -> RevalidatedAttachment
 
-    /// Validate and prepare a backup media file's contents, based on the provided mimetype.
-    /// Returns a PendingAttachment with validated contents, ready to be inserted.
-    /// Note the content type may be `invalid`; we can still create an Attachment from these.
-    /// Errors are thrown if data reading/parsing/decryption fails.
+    /// Validate and prepare a backup media file's contents, based on the
+    /// provided mimetype. Returns a PendingAttachment with validated contents,
+    /// ready to be inserted. Note the content type may be `invalid`; we can
+    /// still create an Attachment from these. Errors are thrown if data
+    /// reading/parsing/decryption fails.
     ///
-    /// Unlike attachments from the live service, integrityCheck is not required; we can guarantee
-    /// correctness for backup media files since they come from the local user.
+    /// Unlike attachments from the live service, integrityCheck is not
+    /// required; we can guarantee correctness for backup media files since they
+    /// come from the local user.
     ///
-    /// Unlike transit tier attachments, backup attachments are encrypted twice: once when uploaded
-    /// to the transit tier, and again when copied to the media tier.  This means validating media tier
-    /// attachments required decrypting the file twice to allow validating the actual contents of the attachment.
+    /// Unlike transit tier attachments, backup attachments are encrypted twice:
+    /// once when uploaded to the transit tier, and again when copied to the
+    /// media tier. This means validating media tier attachments requires
+    /// "decrypting" the file twice to allow validating the actual contents of
+    /// the attachment.
     ///
-    /// Strictly speaking we don't usually need content type validation either, but the set of valid
-    /// contents can change over time so it is best to re-validate.
+    /// Strictly speaking we don't usually need content type validation either,
+    /// but the set of valid contents can change over time so it is best to
+    /// re-validate.
     ///
-    /// - Parameter outerDecryptionData: The media tier decryption metadata use as the outer layer of encryption.
-    /// - Parameter innerDecryptionData: The transit tier decryption metadata.
-    /// - Parameter finalEncryptionKey: The encryption key used to encrypt the file in it's final destination.  If the finalEncryptionKey
-    /// matches the encryption key in `innerEncryptionData`, this re-encryption will be skipped.
+    /// - Parameter outerAttachmentKey: The media tier key use as the outer
+    /// layer of encryption.
+    ///
+    /// - Parameter innerDecryptionMetadata: The transit tier decryption
+    /// metadata (or another media tier key if this is a thumbnail).
+    ///
+    /// - Parameter finalEncryptionKey: The encryption key used to encrypt the
+    /// file in its final destination. If this key matches the encryption key in
+    /// `innerDecryptionMetadata`, this re-encryption will be skipped.
     func validateBackupMediaFileContents(
         fileUrl: URL,
-        outerDecryptionData: DecryptionMetadata,
-        innerDecryptionData: DecryptionMetadata,
+        outerAttachmentKey: AttachmentKey,
+        innerDecryptionMetadata: DecryptionMetadata,
         finalAttachmentKey: AttachmentKey,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,

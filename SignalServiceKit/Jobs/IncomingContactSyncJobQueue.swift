@@ -35,7 +35,7 @@ public class IncomingContactSyncJobQueue {
     public func add(
         cdnNumber: UInt32,
         cdnKey: String,
-        encryptionKey: Data,
+        attachmentKey: AttachmentKey,
         digest: Data,
         plaintextLength: UInt32?,
         isComplete: Bool,
@@ -44,7 +44,7 @@ public class IncomingContactSyncJobQueue {
         let jobRecord = IncomingContactSyncJobRecord(
             cdnNumber: cdnNumber,
             cdnKey: cdnKey,
-            encryptionKey: encryptionKey,
+            attachmentKey: attachmentKey,
             digest: digest,
             plaintextLength: plaintextLength,
             isCompleteContactSync: isComplete,
@@ -100,9 +100,11 @@ private class IncomingContactSyncJobRunner: JobRunner {
                 jobRecord.anyRemove(transaction: tx)
             }
             return
-        case .transient(let downloadMetadata):
+        case .transient(let downloadMetadata, let decryptionMetadata):
             fileUrl = try await DependenciesBridge.shared.attachmentDownloadManager.downloadTransientAttachment(
-                metadata: downloadMetadata,
+                downloadMetadata: downloadMetadata,
+                decryptionMetadata: decryptionMetadata,
+                expectedDownloadSize: decryptionMetadata.plaintextLength,
                 progress: nil,
             )
         }

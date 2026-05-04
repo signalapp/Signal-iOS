@@ -634,6 +634,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             syncMessage.blob.hasCdnNumber,
             let cdnKey = syncMessage.blob.cdnKey?.nilIfEmpty,
             let encryptionKey = syncMessage.blob.key?.nilIfEmpty,
+            let attachmentKey = try? AttachmentKey(combinedKey: encryptionKey),
             let digest = syncMessage.blob.digest?.nilIfEmpty,
             syncMessage.blob.hasSize
         else {
@@ -643,7 +644,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         SSKEnvironment.shared.smJobQueuesRef.incomingContactSyncJobQueue.add(
             cdnNumber: syncMessage.blob.cdnNumber,
             cdnKey: cdnKey,
-            encryptionKey: encryptionKey,
+            attachmentKey: attachmentKey,
             digest: digest,
             plaintextLength: syncMessage.blob.size,
             isComplete: syncMessage.isComplete,

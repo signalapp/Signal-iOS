@@ -341,7 +341,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         let downloadedFileUrl = try await downloadEphemeralBackup(
             cdnNumber: cdnNumber,
             cdnKey: cdnKey,
-            ephemeralBackupKey: ephemeralBackupKey,
             progress: progress.child(for: .downloadingBackup),
         )
 
@@ -633,16 +632,14 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private func downloadEphemeralBackup(
         cdnNumber: UInt32,
         cdnKey: String,
-        ephemeralBackupKey: MessageRootBackupKey,
         progress: OWSProgressSink,
     ) async throws -> URL {
         return try await attachmentDownloadManager.downloadEncryptedTransientAttachment(
-            metadata: AttachmentDownloads.DownloadMetadata(
-                mimeType: MimeType.applicationOctetStream.rawValue,
+            downloadMetadata: AttachmentDownloads.DownloadMetadata(
                 cdnNumber: cdnNumber,
-                encryptionKey: ephemeralBackupKey.serialize(),
-                source: .linkNSyncBackup(cdnKey: cdnKey),
+                source: .transitTier(cdnKey: cdnKey),
             ),
+            expectedDownloadSize: nil,
             progress: progress,
         )
     }

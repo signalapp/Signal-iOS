@@ -155,12 +155,12 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
             IncomingContactSyncJobRecord(
                 cdnNumber: 3,
                 cdnKey: "hello",
-                encryptionKey: Data(base64Encoded: "mMiOmZhbHNlLCJzdXBlciI6eyJ1b")!,
-                digest: Data(base64Encoded: "291bnQiOjYsInJlY29yZFR5cGUiO")!,
+                encryptionKey: Data(repeating: 2, count: 64),
+                digest: Data(repeating: 3, count: 32),
                 plaintextLength: 55,
                 isCompleteContactSync: true,
             ),
-            Data(#"{"ICSJR_digest":"291bnQiOjYsInJlY29yZFR5cGUiO","ICSJR_plaintextLength":55,"ICSJR_cdnKey":"hello","status":1,"failureCount":0,"label":"IncomingContactSync","uniqueId":"894EAC5E-918B-434C-A7CE-C24BB8F47932","recordType":61,"ICSJR_cdnNumber":3,"ICSJR_encryptionKey":"mMiOmZhbHNlLCJzdXBlciI6eyJ1b","isCompleteContactSync":true}"#.utf8),
+            Data(#"{"ICSJR_digest":"AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=","ICSJR_plaintextLength":55,"ICSJR_cdnKey":"hello","status":1,"failureCount":0,"label":"IncomingContactSync","uniqueId":"894EAC5E-918B-434C-A7CE-C24BB8F47932","recordType":61,"ICSJR_cdnNumber":3,"ICSJR_encryptionKey":"AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg==","isCompleteContactSync":true}"#.utf8),
         ),
     ]
 
@@ -173,24 +173,23 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
         switch (downloadInfo, against.downloadInfo) {
         case (.invalid, .invalid):
             break
-        case let (.transient(lhsInfo), .transient(rhsInfo)):
-            guard
-                lhsInfo.mimeType == rhsInfo.mimeType,
-                lhsInfo.cdnNumber == rhsInfo.cdnNumber,
-                lhsInfo.encryptionKey == rhsInfo.encryptionKey
-            else {
+        case let (.transient(lhsDownloadMetadata, lhsDecryptionMetadata), .transient(rhsDownloadMetadata, rhsDecryptionMetadata)):
+            guard lhsDownloadMetadata.cdnNumber == rhsDownloadMetadata.cdnNumber else {
                 throw ValidatableModelError.failedToValidate
             }
-            switch (lhsInfo.source, rhsInfo.source) {
-            case let (.transitTier(lhsCdnKey, lhsDigest, lhsPlaintextLength), .transitTier(rhsCdnKey, rhsDigest, rhsPlaintextLength)):
-                guard
-                    lhsCdnKey == rhsCdnKey,
-                    lhsDigest == rhsDigest,
-                    lhsPlaintextLength == rhsPlaintextLength
-                else {
+            switch (lhsDownloadMetadata.source, rhsDownloadMetadata.source) {
+            case let (.transitTier(lhsCdnKey), .transitTier(rhsCdnKey)):
+                guard lhsCdnKey == rhsCdnKey else {
                     throw ValidatableModelError.failedToValidate
                 }
             default:
+                throw ValidatableModelError.failedToValidate
+            }
+            guard
+                lhsDecryptionMetadata.key.combinedKey == rhsDecryptionMetadata.key.combinedKey,
+                lhsDecryptionMetadata.integrityCheck == rhsDecryptionMetadata.integrityCheck,
+                lhsDecryptionMetadata.plaintextLength == rhsDecryptionMetadata.plaintextLength
+            else {
                 throw ValidatableModelError.failedToValidate
             }
         case (.invalid, _), (.transient, _):

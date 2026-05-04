@@ -27,7 +27,8 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
     }
 
     public func downloadEncryptedTransientAttachment(
-        metadata: AttachmentDownloads.DownloadMetadata,
+        downloadMetadata: AttachmentDownloads.DownloadMetadata,
+        expectedDownloadSize: UInt64?,
         progress: (any OWSProgressSink)?,
     ) async throws -> URL {
         try! await Task.sleep(nanoseconds: TimeInterval.infinity.clampedNanoseconds)
@@ -35,7 +36,9 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
     }
 
     public func downloadTransientAttachment(
-        metadata: AttachmentDownloads.DownloadMetadata,
+        downloadMetadata: AttachmentDownloads.DownloadMetadata,
+        decryptionMetadata: DecryptionMetadata,
+        expectedDownloadSize: UInt64?,
         progress: OWSProgressSink?,
     ) async throws -> URL {
         try! await Task.sleep(nanoseconds: TimeInterval.infinity.clampedNanoseconds)

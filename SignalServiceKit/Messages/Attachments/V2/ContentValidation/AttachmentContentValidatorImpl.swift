@@ -143,8 +143,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     public func validateBackupMediaFileContents(
         fileUrl: URL,
-        outerDecryptionData: DecryptionMetadata,
-        innerDecryptionData: DecryptionMetadata,
+        outerAttachmentKey: AttachmentKey,
+        innerDecryptionMetadata: DecryptionMetadata,
         finalAttachmentKey: AttachmentKey,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
@@ -160,16 +160,16 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         )
         try Cryptography.decryptFile(
             at: fileUrl,
-            metadata: outerDecryptionData,
+            metadata: DecryptionMetadata(key: outerAttachmentKey),
             output: tmpFileUrl,
         )
 
         func makeInputType(plaintextLength: UInt64) -> InputType {
             return InputType.encryptedFile(
                 tmpFileUrl,
-                inputAttachmentKey: innerDecryptionData.key,
+                inputAttachmentKey: innerDecryptionMetadata.key,
                 plaintextLength: UInt32(plaintextLength),
-                integrityCheck: innerDecryptionData.integrityCheck,
+                integrityCheck: innerDecryptionMetadata.integrityCheck,
             )
         }
 
@@ -177,7 +177,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         var sha256 = SHA256()
         try Cryptography.decryptFile(
             at: tmpFileUrl,
-            metadata: innerDecryptionData,
+            metadata: innerDecryptionMetadata,
             output: { data in
                 decryptedLength += UInt64(data.count)
                 sha256.update(data: data)

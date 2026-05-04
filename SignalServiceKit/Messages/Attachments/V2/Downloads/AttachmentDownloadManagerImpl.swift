@@ -191,26 +191,36 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     }
 
     public func downloadEncryptedTransientAttachment(
-        metadata: AttachmentDownloads.DownloadMetadata,
+        downloadMetadata: DownloadMetadata,
+        expectedDownloadSize: UInt64?,
         progress: OWSProgressSink?,
     ) async throws -> URL {
         // We want to avoid large downloads from a compromised or buggy service.
         let maxDownloadSize = self.remoteConfigProvider.currentConfig().attachmentMaxEncryptedReceiveBytes
-        let downloadState = DownloadState(type: .transientAttachment(metadata, uuid: UUID()))
+        let downloadState = DownloadState(type: .transientAttachment(downloadMetadata, uuid: UUID()))
         return try await self.downloadQueue.enqueueDownload(
             downloadState: downloadState,
             maxDownloadSizeBytes: maxDownloadSize,
-            expectedDownloadSize: metadata.plaintextLength.map({ .estimatedSizeBytes(UInt64(safeCast: $0)) }) ?? .useHeadRequest,
+            expectedDownloadSize: expectedDownloadSize.map({ .estimatedSizeBytes($0) }) ?? .useHeadRequest,
             progress: progress,
         )
     }
 
     public func downloadTransientAttachment(
-        metadata: AttachmentDownloads.DownloadMetadata,
+        downloadMetadata: DownloadMetadata,
+        decryptionMetadata: DecryptionMetadata,
+        expectedDownloadSize: UInt64?,
         progress: OWSProgressSink?,
     ) async throws -> URL {
-        let encryptedFileUrl = try await downloadEncryptedTransientAttachment(metadata: metadata, progress: progress)
-        return try await self.decrypter.decryptTransientAttachment(encryptedFileUrl: encryptedFileUrl, metadata: metadata)
+        let encryptedFileUrl = try await downloadEncryptedTransientAttachment(
+            downloadMetadata: downloadMetadata,
+            expectedDownloadSize: expectedDownloadSize,
+            progress: progress,
+        )
+        return try await self.decrypter.decryptTransientAttachment(
+            encryptedFileUrl: encryptedFileUrl,
+            metadata: decryptionMetadata,
+        )
     }
 
     public func enqueueDownloadOfAttachmentsForMessage(
@@ -783,21 +793,25 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             let downloadMetadata: DownloadMetadata
             let downloadSizeSource: DownloadQueue.DownloadSizeSource
             let maxDownloadSizeBytes: UInt64
+            let validationMetadata: Decrypter.ValidationMetadata
             switch record.sourceType {
             case .transitTier:
                 // We only download from the latest transit tier info.
                 guard let transitTierInfo = attachment.latestTransitTierInfo else {
                     return .unretryableError(OWSAssertionError("Attempting to download an attachment without cdn info"))
                 }
-                downloadMetadata = .init(
-                    mimeType: attachment.mimeType,
+                guard let attachmentKey = try? AttachmentKey(combinedKey: transitTierInfo.encryptionKey) else {
+                    return .unretryableError(OWSAssertionError("can't download file with malformed attachment key"))
+                }
+                downloadMetadata = DownloadMetadata(
                     cdnNumber: transitTierInfo.cdnNumber,
-                    encryptionKey: transitTierInfo.encryptionKey,
-                    source: .transitTier(
-                        cdnKey: transitTierInfo.cdnKey,
-                        integrityCheck: transitTierInfo.integrityCheck,
-                        plaintextLength: transitTierInfo.unencryptedByteCount,
-                    ),
+                    source: .transitTier(cdnKey: transitTierInfo.cdnKey),
+                )
+                validationMetadata = .transitTier(
+                    mimeType: attachment.mimeType,
+                    attachmentKey: attachmentKey,
+                    plaintextLength: transitTierInfo.unencryptedByteCount,
+                    integrityCheck: transitTierInfo.integrityCheck,
                 )
                 downloadSizeSource = transitTierInfo.unencryptedByteCount.map({
                     .estimatedSizeBytes(Cryptography.estimatedTransitTierCDNSize(
@@ -817,7 +831,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     let mediaTierInfo = attachment.mediaTierInfo,
                     let mediaName = attachment.mediaName,
                     let backupKey = db.read(block: { accountKeyStore.getMediaRootBackupKey(tx: $0) }),
-                    let encryptionMetadata = buildCdnEncryptionMetadata(mediaName: mediaName, backupKey: backupKey, type: .outerLayerFullsizeOrThumbnail),
+                    let outerEncryptionMetadata = buildCdnEncryptionMetadata(mediaName: mediaName, backupKey: backupKey, type: .outerLayerFullsizeOrThumbnail),
                     let cdnCredential = await fetchBackupCdnReadCredential(
                         for: cdnNumber,
                         backupKey: backupKey,
@@ -826,17 +840,29 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 else {
                     return .unretryableError(OWSAssertionError("Attempting to download an attachment without cdn info"))
                 }
-                let integrityCheck = AttachmentIntegrityCheck.plaintextHash(mediaTierInfo.plaintextHash)
+                guard let outerAttachmentKey = try? outerEncryptionMetadata.attachmentKey() else {
+                    return .unretryableError(OWSAssertionError("can't download media file with malformed media key"))
+                }
+                guard let attachmentKey = try? AttachmentKey(combinedKey: attachment.encryptionKey) else {
+                    return .unretryableError(OWSAssertionError("can't download media file with malformed attachment key"))
+                }
                 downloadMetadata = .init(
-                    mimeType: attachment.mimeType,
                     cdnNumber: cdnNumber,
-                    encryptionKey: attachment.encryptionKey,
-                    source: .mediaTierFullsize(
+                    source: .mediaTier(
+                        type: .fullsize,
                         cdnReadCredential: cdnCredential,
-                        outerEncryptionMetadata: encryptionMetadata,
-                        integrityCheck: integrityCheck,
-                        plaintextLength: mediaTierInfo.unencryptedByteCount,
+                        mediaId: outerEncryptionMetadata.mediaId,
                     ),
+                )
+                validationMetadata = .mediaTier(
+                    mimeType: attachment.mimeType,
+                    outerAttachmentKey: outerAttachmentKey,
+                    innerDecryptionMetadata: DecryptionMetadata(
+                        key: attachmentKey,
+                        integrityCheck: .plaintextHash(mediaTierInfo.plaintextHash),
+                        plaintextLength: UInt64(safeCast: mediaTierInfo.unencryptedByteCount),
+                    ),
+                    localAttachmentKey: attachmentKey,
                 )
                 downloadSizeSource = .estimatedSizeBytes(Cryptography.estimatedMediaTierCDNSize(
                     unencryptedSize: UInt64(safeCast: mediaTierInfo.unencryptedByteCount),
@@ -868,20 +894,29 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 else {
                     return .unretryableError(OWSAssertionError("Attempting to download an attachment without cdn info"))
                 }
+                guard let outerAttachmentKey = try? outerEncryptionMetadata.attachmentKey() else {
+                    return .unretryableError(OWSAssertionError("can't download thumbnail with malformed outer media key"))
+                }
+                guard let innerAttachmentKey = try? innerEncryptionMetadata.attachmentKey() else {
+                    return .unretryableError(OWSAssertionError("can't download thumbnail with malformed inner media key"))
+                }
+                guard let attachmentKey = try? AttachmentKey(combinedKey: attachment.encryptionKey) else {
+                    return .unretryableError(OWSAssertionError("can't download thumbnail with malformed attachment key"))
+                }
 
-                let thumbnailMimeType = MimeTypeUtil.thumbnailMimetype(
-                    fullsizeMimeType: attachment.mimeType,
-                    quality: .backupThumbnail,
-                )
                 downloadMetadata = .init(
-                    mimeType: thumbnailMimeType,
                     cdnNumber: cdnNumber,
-                    encryptionKey: attachment.encryptionKey,
-                    source: .mediaTierThumbnail(
+                    source: .mediaTier(
+                        type: .thumbnail,
                         cdnReadCredential: cdnReadCredential,
-                        outerEncyptionMetadata: outerEncryptionMetadata,
-                        innerEncryptionMetadata: innerEncryptionMetadata,
+                        mediaId: outerEncryptionMetadata.mediaId,
                     ),
+                )
+                validationMetadata = .mediaTier(
+                    mimeType: MimeTypeUtil.thumbnailMimetype(fullsizeMimeType: attachment.mimeType, quality: .backupThumbnail),
+                    outerAttachmentKey: outerAttachmentKey,
+                    innerDecryptionMetadata: DecryptionMetadata(key: innerAttachmentKey),
+                    localAttachmentKey: attachmentKey,
                 )
                 // We don't know thumbnail sizes and don't want to issue a
                 // request for each one to check. Just estimate as the max size.
@@ -912,7 +947,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             do {
                 pendingAttachment = try await decrypter.validateAndPrepare(
                     encryptedFileUrl: downloadedFileUrl,
-                    metadata: downloadMetadata,
+                    validationMetadata: validationMetadata,
                 )
             } catch let error {
                 return .unretryableError(OWSAssertionError("Failed to validate: \(error)"))
@@ -1386,7 +1421,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
     // MARK: - Downloads
 
-    typealias DownloadMetadata = AttachmentDownloads.DownloadMetadata
+    public typealias DownloadMetadata = AttachmentDownloads.DownloadMetadata
 
     private enum DownloadError: Error {
         case oversize
@@ -1405,16 +1440,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return info.backupLocationUrl()
             case .attachment(let metadata, _), .transientAttachment(let metadata, _):
                 switch metadata.source {
-                case .transitTier(let cdnKey, _, _), .linkNSyncBackup(let cdnKey):
+                case .transitTier(let cdnKey):
                     guard let encodedKey = cdnKey.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
                         throw OWSAssertionError("Invalid cdnKey.")
                     }
                     return "attachments/\(encodedKey)"
-                case
-                    .mediaTierFullsize(let cdnCredential, let outerEncryptionMetadata, _, _),
-                    .mediaTierThumbnail(let cdnCredential, let outerEncryptionMetadata, _):
+                case .mediaTier(_, let cdnCredential, let mediaId):
                     let prefix = cdnCredential.mediaTierUrlPrefix()
-                    return "\(prefix)/\(outerEncryptionMetadata.mediaId.asBase64Url)"
+                    return "\(prefix)/\(mediaId.asBase64Url)"
                 }
             }
         }
@@ -1434,9 +1467,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return metadata.cdnAuthHeaders
             case .attachment(let metadata, _), .transientAttachment(let metadata, _):
                 switch metadata.source {
-                case .transitTier, .linkNSyncBackup:
+                case .transitTier:
                     return [:]
-                case .mediaTierFullsize(let cdnCredential, _, _, _), .mediaTierThumbnail(let cdnCredential, _, _):
+                case .mediaTier(_, let cdnCredential, _):
                     return cdnCredential.cdnAuthHeaders
                 }
             }
@@ -1448,9 +1481,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return metadata.isExpired
             case .attachment(let metadata, _), .transientAttachment(let metadata, _):
                 switch metadata.source {
-                case .transitTier, .linkNSyncBackup:
+                case .transitTier:
                     return false
-                case .mediaTierFullsize(let cdnCredential, _, _, _), .mediaTierThumbnail(let cdnCredential, _, _):
+                case .mediaTier(_, let cdnCredential, _):
                     return cdnCredential.isExpired
                 }
             }
@@ -1902,7 +1935,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         func decryptTransientAttachment(
             encryptedFileUrl: URL,
-            metadata: DownloadMetadata,
+            metadata: DecryptionMetadata,
         ) async throws -> URL {
             return try await decryptionQueue.run {
                 do {
@@ -1912,15 +1945,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         isAvailableWhileDeviceLocked: false,
                     )
 
-                    try Cryptography.decryptAttachment(
-                        at: encryptedFileUrl,
-                        metadata: DecryptionMetadata(
-                            key: AttachmentKey(combinedKey: metadata.encryptionKey),
-                            integrityCheck: metadata.integrityCheck,
-                            plaintextLength: metadata.plaintextLength.map(UInt64.init(safeCast:)),
-                        ),
-                        output: outputUrl,
-                    )
+                    try Cryptography.decryptAttachment(at: encryptedFileUrl, metadata: metadata, output: outputUrl)
 
                     return outputUrl
                 } catch let error {
@@ -1966,53 +1991,56 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
 
+        enum ValidationMetadata {
+            case transitTier(
+                mimeType: String,
+                attachmentKey: AttachmentKey,
+                plaintextLength: UInt32?,
+                integrityCheck: AttachmentIntegrityCheck,
+            )
+
+            case mediaTier(
+                mimeType: String,
+                /// "Outer" encryption; always derived via MediaRootBackupKey.
+                outerAttachmentKey: AttachmentKey,
+                /// "Inner" encryption: transit tier encryption for full-size files and
+                /// always derived via MediaRootBackupKey for thumbnails.
+                innerDecryptionMetadata: DecryptionMetadata,
+                /// Encryption key used to store the file "at rest"/locally. Matches the
+                /// "inner" encryption for full-size files (which is also the transit tier
+                /// encryption we use for non-backed-up attachments). Matches the full-size
+                /// attachment encryption key for thumbnails.
+                localAttachmentKey: AttachmentKey,
+            )
+        }
+
         func validateAndPrepare(
             encryptedFileUrl: URL,
-            metadata: DownloadMetadata,
+            validationMetadata: ValidationMetadata,
         ) async throws -> PendingAttachment {
             let attachmentValidator = self.attachmentValidator
             return try await decryptionQueue.run {
-                switch metadata.source {
-                case .transitTier(_, let integrityCheck, let plaintextLength):
+                switch validationMetadata {
+                case .transitTier(let mimeType, let attachmentKey, let plaintextLength, let integrityCheck):
                     return try await attachmentValidator.validateDownloadedContents(
                         ofEncryptedFileAt: encryptedFileUrl,
-                        attachmentKey: AttachmentKey(combinedKey: metadata.encryptionKey),
+                        attachmentKey: attachmentKey,
                         plaintextLength: plaintextLength,
                         integrityCheck: integrityCheck,
-                        mimeType: metadata.mimeType,
+                        mimeType: mimeType,
                         renderingFlag: .default,
                         sourceFilename: nil,
                     )
-                case .mediaTierFullsize(_, let outerEncryptionMetadata, let integrityCheck, let plaintextLength):
-                    let innerPlaintextLength: UInt64? = {
-                        guard let plaintextLength else { return nil }
-                        return UInt64(safeCast: plaintextLength)
-                    }()
+                case .mediaTier(let mimeType, let outerAttachmentKey, let innerDecryptionMetadata, let localEncryptionKey):
                     return try await attachmentValidator.validateBackupMediaFileContents(
                         fileUrl: encryptedFileUrl,
-                        outerDecryptionData: DecryptionMetadata(key: outerEncryptionMetadata.attachmentKey()),
-                        innerDecryptionData: DecryptionMetadata(
-                            key: AttachmentKey(combinedKey: metadata.encryptionKey),
-                            integrityCheck: integrityCheck,
-                            plaintextLength: innerPlaintextLength,
-                        ),
-                        finalAttachmentKey: AttachmentKey(combinedKey: metadata.encryptionKey),
-                        mimeType: metadata.mimeType,
+                        outerAttachmentKey: outerAttachmentKey,
+                        innerDecryptionMetadata: innerDecryptionMetadata,
+                        finalAttachmentKey: localEncryptionKey,
+                        mimeType: mimeType,
                         renderingFlag: .default,
                         sourceFilename: nil,
                     )
-                case .mediaTierThumbnail(_, let outerEncryptionMetadata, let innerEncryptionData):
-                    return try await attachmentValidator.validateBackupMediaFileContents(
-                        fileUrl: encryptedFileUrl,
-                        outerDecryptionData: DecryptionMetadata(key: outerEncryptionMetadata.attachmentKey()),
-                        innerDecryptionData: DecryptionMetadata(key: innerEncryptionData.attachmentKey()),
-                        finalAttachmentKey: AttachmentKey(combinedKey: metadata.encryptionKey),
-                        mimeType: metadata.mimeType,
-                        renderingFlag: .default,
-                        sourceFilename: nil,
-                    )
-                case .linkNSyncBackup:
-                    throw OWSAssertionError("Should not be validating link'n'sync backups")
                 }
             }
         }
