@@ -2933,6 +2933,10 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         set { setDesiredKeyboardType(newValue, animated: false) }
     }
 
+    private var defaultLeadingInputAssistantItems: [UIBarButtonItemGroup]?
+
+    private var defaultTrailingInputAssistantItems: [UIBarButtonItemGroup]?
+
     private var _stickerKeyboard: StickerKeyboard?
 
     private var stickerKeyboard: StickerKeyboard {
@@ -3005,6 +3009,17 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             calculateCustomKeyboardHeight()
         }
 
+        // Store default input assistant bar items - buttons displayed above the keyboard on iPad.
+        // We want to hide them when showing custom keyboard and restore when using standard keyboard.
+        if desiredKeyboardType == .system {
+            if defaultLeadingInputAssistantItems == nil {
+                defaultLeadingInputAssistantItems = inputTextView.inputAssistantItem.leadingBarButtonGroups
+            }
+            if defaultTrailingInputAssistantItems == nil {
+                defaultTrailingInputAssistantItems = inputTextView.inputAssistantItem.trailingBarButtonGroups
+            }
+        }
+
         _desiredKeyboardType = keyboardType
 
         ensureButtonVisibility(withAnimation: animated, doLayout: true)
@@ -3012,6 +3027,18 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         // Do this before assigning as `inputView`.
         if let customKeyboard = desiredInputView as? CustomKeyboard {
             customKeyboard.updateHeightForPresentation()
+        }
+
+        if desiredKeyboardType == .system {
+            if let defaultLeadingInputAssistantItems {
+                inputTextView.inputAssistantItem.leadingBarButtonGroups = defaultLeadingInputAssistantItems
+            }
+            if let defaultTrailingInputAssistantItems {
+                inputTextView.inputAssistantItem.trailingBarButtonGroups = defaultTrailingInputAssistantItems
+            }
+        } else {
+            inputTextView.inputAssistantItem.leadingBarButtonGroups = []
+            inputTextView.inputAssistantItem.trailingBarButtonGroups = []
         }
 
         inputTextView.inputView = desiredInputView
