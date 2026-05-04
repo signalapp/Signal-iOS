@@ -190,25 +190,27 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
     }
 
-    public func downloadTransientAttachment(
+    public func downloadEncryptedTransientAttachment(
         metadata: AttachmentDownloads.DownloadMetadata,
         progress: OWSProgressSink?,
     ) async throws -> URL {
         // We want to avoid large downloads from a compromised or buggy service.
         let maxDownloadSize = self.remoteConfigProvider.currentConfig().attachmentMaxEncryptedReceiveBytes
         let downloadState = DownloadState(type: .transientAttachment(metadata, uuid: UUID()))
-        let encryptedFileUrl = try await self.downloadQueue.enqueueDownload(
+        return try await self.downloadQueue.enqueueDownload(
             downloadState: downloadState,
             maxDownloadSizeBytes: maxDownloadSize,
             expectedDownloadSize: metadata.plaintextLength.map({ .estimatedSizeBytes(UInt64(safeCast: $0)) }) ?? .useHeadRequest,
             progress: progress,
         )
-        switch metadata.source {
-        case .linkNSyncBackup:
-            return encryptedFileUrl
-        default:
-            return try await self.decrypter.decryptTransientAttachment(encryptedFileUrl: encryptedFileUrl, metadata: metadata)
-        }
+    }
+
+    public func downloadTransientAttachment(
+        metadata: AttachmentDownloads.DownloadMetadata,
+        progress: OWSProgressSink?,
+    ) async throws -> URL {
+        let encryptedFileUrl = try await downloadEncryptedTransientAttachment(metadata: metadata, progress: progress)
+        return try await self.decrypter.decryptTransientAttachment(encryptedFileUrl: encryptedFileUrl, metadata: metadata)
     }
 
     public func enqueueDownloadOfAttachmentsForMessage(

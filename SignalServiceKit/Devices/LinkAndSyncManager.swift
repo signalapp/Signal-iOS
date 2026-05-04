@@ -636,7 +636,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         ephemeralBackupKey: MessageRootBackupKey,
         progress: OWSProgressSink,
     ) async throws -> URL {
-        return try await attachmentDownloadManager.downloadTransientAttachment(
+        return try await attachmentDownloadManager.downloadEncryptedTransientAttachment(
             metadata: AttachmentDownloads.DownloadMetadata(
                 mimeType: MimeType.applicationOctetStream.rawValue,
                 cdnNumber: cdnNumber,
