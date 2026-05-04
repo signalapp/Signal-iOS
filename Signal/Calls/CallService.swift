@@ -616,6 +616,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 sfuUrl: sfuUrl,
                 hkdfExtraInfo: Data(),
                 audioLevelsIntervalMillis: nil,
+                dredDuration: RemoteConfig.current.ringrtcDredDuration,
                 videoCaptureController: videoCaptureController,
             )
             guard let ringRtcCall else {
@@ -678,6 +679,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 adminPasskey: adminPasskey,
                 hkdfExtraInfo: Data(),
                 audioLevelsIntervalMillis: nil,
+                dredDuration: RemoteConfig.current.ringrtcDredDuration,
                 videoCaptureController: videoCaptureController,
             )
             guard let ringRtcCall else {

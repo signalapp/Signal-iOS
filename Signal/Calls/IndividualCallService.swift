@@ -444,7 +444,16 @@ final class IndividualCallService: CallServiceStateObserver {
                     iceServers = iceServers.filter { !$0.urlStrings.contains { $0.starts(with: "turn:") || $0.starts(with: "turns:") } }
                 }
                 // Tell the Call Manager to proceed with its active call.
-                try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, videoCaptureController: call.videoCaptureController, dataMode: useLowData ? .low : .normal, audioLevelsIntervalMillis: nil, enableVp9: RingrtcVp9Config.enableVp9(with: RemoteConfig.current))
+                try self.callManager.proceed(
+                    callId: callId,
+                    iceServers: iceServers,
+                    hideIp: useTurnOnly,
+                    videoCaptureController: call.videoCaptureController,
+                    dataMode: useLowData ? .low : .normal,
+                    audioLevelsIntervalMillis: nil,
+                    enableVp9: RingrtcVp9Config.enableVp9(with: RemoteConfig.current),
+                    dredDuration: RemoteConfig.current.ringrtcDredDuration,
+                )
             } catch {
                 owsFailDebug("\(error)")
                 guard call === self.callServiceState.currentCall else {

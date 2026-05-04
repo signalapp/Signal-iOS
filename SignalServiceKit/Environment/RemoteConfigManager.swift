@@ -289,6 +289,10 @@ public class RemoteConfig {
         return UInt64(string) ?? defaultValue
     }
 
+    public var ringrtcDredDuration: UInt8 {
+        getUInt8Value(forFlag: .ringrtcDredDuration, defaultValue: 0)
+    }
+
     public var mediaTierFallbackCdnNumber: UInt32 {
         getUInt32Value(forFlag: .mediaTierFallbackCdnNumber, defaultValue: 3)
     }
@@ -433,6 +437,16 @@ public class RemoteConfig {
         forFlag flag: ValueFlag,
         defaultValue: UInt,
     ) -> UInt {
+        getStringConvertibleValue(
+            forFlag: flag,
+            defaultValue: defaultValue,
+        )
+    }
+
+    private func getUInt8Value(
+        forFlag flag: ValueFlag,
+        defaultValue: UInt8,
+    ) -> UInt8 {
         getStringConvertibleValue(
             forFlag: flag,
             defaultValue: defaultValue,
@@ -685,6 +699,7 @@ private enum ValueFlag: String, FlagType {
     case pinnedThreadLimit = "global.pinned_chat_limit"
     case reactiveProfileKeyAttemptInterval = "ios.reactiveProfileKeyAttemptInterval"
     case replaceableInteractionExpiration = "ios.replaceableInteractionExpiration"
+    case ringrtcDredDuration = "ios.ringrtcDredDuration"
     case ringrtcVp9DeviceModelDenylist = "ios.ringrtcVp9DeviceModelDenylist"
     case ringrtcVp9DeviceModelEnablelist = "ios.ringrtcVp9DeviceModelEnablelist"
     case sepaEnabledRegions = "global.donations.sepaEnabledRegions"
@@ -729,6 +744,7 @@ private enum ValueFlag: String, FlagType {
         case .pinnedThreadLimit: true
         case .reactiveProfileKeyAttemptInterval: true
         case .replaceableInteractionExpiration: false
+        case .ringrtcDredDuration: true
         case .ringrtcVp9DeviceModelDenylist: true
         case .ringrtcVp9DeviceModelEnablelist: true
         case .sepaEnabledRegions: true
