@@ -278,10 +278,6 @@ public struct BackupAttachmentDownloadEligibility {
                 fallthrough
             }
         case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
-            if Self.disableTransitTierDownloadsOverride {
-                return nil
-            }
-
             // Download if the upload was < 45 days old,
             // otherwise don't bother trying automatically.
             // (The user could still try a manual download later).
@@ -297,14 +293,6 @@ public struct BackupAttachmentDownloadEligibility {
             } else {
                 return nil
             }
-        }
-    }
-
-    public static var disableTransitTierDownloadsOverride: Bool {
-        get { DebugFlags.internalSettings && UserDefaults.standard.bool(forKey: "disableTransitTierDownloadsOverride") }
-        set {
-            guard DebugFlags.internalSettings else { return }
-            UserDefaults.standard.set(newValue, forKey: "disableTransitTierDownloadsOverride")
         }
     }
 }

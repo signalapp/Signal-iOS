@@ -918,7 +918,6 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             let messageQueueTime: TimeInterval = remoteConfigProvider.currentConfig().messageQueueTime
 
             if
-                !Upload.disableTransitTierUploadReuse,
                 // We have an existing upload
                 let transitTierInfo = attachment.latestTransitTierInfo,
                 // It uses the same primary key (it isn't a reupload with a rotated key)
@@ -1190,16 +1189,6 @@ extension Upload.Result where Metadata: AttachmentUploadMetadata {
             beginTimestamp: beginTimestamp,
             finishTimestamp: finishTimestamp,
         )
-    }
-}
-
-extension Upload {
-    public static var disableTransitTierUploadReuse: Bool {
-        get { DebugFlags.internalSettings && UserDefaults.standard.bool(forKey: "disableTransitTierUploadReuse") }
-        set {
-            guard DebugFlags.internalSettings else { return }
-            UserDefaults.standard.set(newValue, forKey: "disableTransitTierUploadReuse")
-        }
     }
 }
 

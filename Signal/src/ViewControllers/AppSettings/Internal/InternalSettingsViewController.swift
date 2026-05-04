@@ -147,13 +147,11 @@ class InternalSettingsViewController: OWSTableViewController2 {
             return backupSettingsStore.lastBackupDetails(tx: tx)
         }
 
-        if mode != .registration {
-            backupsSection.add(.actionItem(withText: "Export + Validate Message Backup proto") { [self] in
-                Task {
-                    await exportMessageBackupProto()
-                }
-            })
-        }
+        backupsSection.add(.actionItem(withText: "Export + Validate Message Backup proto") { [self] in
+            Task {
+                await exportMessageBackupProto()
+            }
+        })
         if BuildFlags.Backups.showOptimizeMedia {
             backupsSection.add(.switch(
                 withText: "Offload all attachments",
@@ -164,24 +162,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 },
             ))
         }
-        backupsSection.add(.switch(
-            withText: "Disable transit tier downloads",
-            subtitle: "Only download backed-up media, never last 45 days free tier media",
-            isOn: { BackupAttachmentDownloadEligibility.disableTransitTierDownloadsOverride },
-            actionBlock: { _ in
-                BackupAttachmentDownloadEligibility.disableTransitTierDownloadsOverride =
-                    !BackupAttachmentDownloadEligibility.disableTransitTierDownloadsOverride
-            },
-        ))
-        backupsSection.add(.switch(
-            withText: "Don't reuse transit tier uploads",
-            subtitle: "Reupload all attachments for backups, even stuff <45d old",
-            isOn: { Upload.disableTransitTierUploadReuse },
-            actionBlock: { _ in
-                Upload.disableTransitTierUploadReuse =
-                    !Upload.disableTransitTierUploadReuse
-            },
-        ))
         backupsSection.add(.actionItem(withText: "Enable Backups onboarding flow") { [weak self] in
             let backupSettingsStore = BackupSettingsStore()
             let db = DependenciesBridge.shared.db
@@ -200,10 +180,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
             label: "Last Backup chats/messages file size",
             value: lastBackupDetails.flatMap { ByteCountFormatter().string(for: $0.backupFileSizeBytes) },
         ))
-
-        if backupsSection.items.isEmpty.negated {
-            contents.add(backupsSection)
-        }
+        contents.add(backupsSection)
 
         do {
             func makeFileBrowsingActionItem(_ title: String, _ fileUrl: URL) -> OWSTableItem {
@@ -430,7 +407,7 @@ private extension InternalSettingsViewController {
                 title: "Exporting...",
             ) {
                 let (messageBackupKey, localIdentifiers) = try db.read { tx in
-                    let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)!
+                    let localIdentifiers = try tsAccountManager.registeredState(tx: tx).localIdentifiers
                     return (
                         try accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx)!,
                         localIdentifiers,
@@ -452,8 +429,9 @@ private extension InternalSettingsViewController {
                 return (backupKey, exportMetadata)
             }
         } catch {
-            owsFailDebug("Failed to export Backup proto! \(error)")
-            presentBackupErrorsAndToast("Failed to export Backup proto!")
+            let message = "Failed to export Backup proto! \(error)"
+            Logger.error(message)
+            presentBackupErrorsAndToast(message)
             return
         }
 
