@@ -199,6 +199,9 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
             return nil
         }
 
+        try await downloadExistingThumbnails(candidateAttachments)
+
+        // Generate if we can't download
         let pendingThumbnails = try await generateThumbnails(candidateAttachments)
 
         await db.awaitableWrite { tx in
@@ -366,6 +369,35 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
             mediaName: mediaName,
             thumbnailEncryptionKey: attachment.encryptionKey,
         )
+    }
+
+    private func downloadExistingThumbnails(_ attachments: [Attachment]) async throws {
+        await withTaskGroup(of: Void.self) { taskGroup in
+            for attachment in attachments {
+                guard
+                    attachment.localRelativeFilePathThumbnail == nil,
+                    attachment.mediaName != nil,
+                    attachment.thumbnailMediaTierInfo != nil
+                else {
+                    continue
+                }
+
+                taskGroup.addTask {
+                    do {
+                        try await DependenciesBridge.shared.attachmentDownloadManager.downloadAttachment(
+                            id: attachment.id,
+                            priority: .default,
+                            source: .mediaTierThumbnail,
+                            progress: nil,
+                        )
+                    } catch {
+                        // Report the error, but continue
+                        Logger.error("Failed to download thumbnail of attachment \(attachment.id): \(error)")
+                    }
+                }
+            }
+            await taskGroup.waitForAll()
+        }
     }
 
     private func generateThumbnails(_ attachments: [Attachment]) async throws -> [Attachment.IDType: PendingThumbnail] {
