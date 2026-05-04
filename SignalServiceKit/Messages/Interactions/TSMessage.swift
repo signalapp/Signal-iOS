@@ -655,7 +655,6 @@ public extension TSMessage {
             let storyReactionEmoji = storyReactionEmoji?.strippedOrNil,
             let storyAuthorAci = storyAuthorAci?.wrappedAciValue
         {
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             let contactManager = SSKEnvironment.shared.contactManagerRef
 
             if
@@ -664,12 +663,13 @@ public extension TSMessage {
             {
                 return .storyReactionEmoji(String.nonPluralLocalizedStringWithFormat(
                     OWSLocalizedString(
-                        "STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON",
+                        "STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON",
                         comment: "Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}.",
                     ),
                     storyReactionEmoji,
                 ))
-            } else {
+            } else if isOutgoing {
+                // Local user is the one who reacted to someone else's story.
                 let storyAuthorName = contactManager.displayName(for: SignalServiceAddress(storyAuthorAci), tx: tx)
                 return .storyReactionEmoji(String.nonPluralLocalizedStringWithFormat(
                     OWSLocalizedString(
@@ -679,6 +679,25 @@ public extension TSMessage {
                     storyReactionEmoji,
                     storyAuthorName.resolvedValue(useShortNameIfAvailable: true),
                 ))
+            } else if
+                let incomingMessage = self as? TSIncomingMessage,
+                let reactionAuthorAci = incomingMessage.authorAddress.aci
+            {
+                // Non-local user reacted to someone else's story.
+                let storyAuthorName = contactManager.displayName(for: SignalServiceAddress(storyAuthorAci), tx: tx)
+                let reactionAuthorName = contactManager.displayName(for: SignalServiceAddress(reactionAuthorAci), tx: tx)
+                return .storyReactionEmoji(String.nonPluralLocalizedStringWithFormat(
+                    OWSLocalizedString(
+                        "STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON",
+                        comment: "Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}.",
+                    ),
+                    reactionAuthorName.resolvedValue(useShortNameIfAvailable: true),
+                    storyReactionEmoji,
+                    storyAuthorName.resolvedValue(useShortNameIfAvailable: true),
+                ))
+            } else {
+                owsFailDebug("Invalid story reaction state")
+                return .empty
             }
         }
 
