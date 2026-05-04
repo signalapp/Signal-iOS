@@ -218,34 +218,6 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
         }
     }
 
-    private func createPaymentMethodButton(
-        title: String,
-        image: UIImage?,
-        action: @escaping () -> Void,
-    ) -> UIButton {
-        var configuration: UIButton.Configuration
-        if #available(iOS 26, *) {
-            configuration = UIButton.Configuration.glass()
-        } else {
-            configuration = .bordered()
-            configuration.background.cornerRadius = 12
-            configuration.baseForegroundColor = .label
-            configuration.baseBackgroundColor = .Signal.secondaryGroupedBackground
-        }
-
-        configuration.title = title
-        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
-        configuration.image = image
-        configuration.imagePadding = 8
-        configuration.contentInsets = NSDirectionalEdgeInsets(hMargin: 16, vMargin: 12)
-
-        let button = UIButton(
-            configuration: configuration,
-            primaryAction: UIAction { _ in action() },
-        )
-        return button
-    }
-
     private func createCreditOrDebitCardButton() -> UIButton {
         var configuration: UIButton.Configuration
         if #available(iOS 26, *) {
@@ -276,25 +248,59 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
     }
 
     private func createSEPAButton() -> UIButton {
-        createPaymentMethodButton(
-            title: OWSLocalizedString(
-                "DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD",
-                comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer.",
-            ),
-            image: UIImage(named: "building"),
-        ) { [weak self] in
-            guard let self else { return }
-            self.didChoosePaymentMethod(self, .sepa)
+        var configuration: UIButton.Configuration
+        if #available(iOS 26, *) {
+            configuration = UIButton.Configuration.glass()
+        } else {
+            configuration = .bordered()
+            configuration.background.cornerRadius = 12
+            configuration.baseForegroundColor = .label
+            configuration.baseBackgroundColor = .Signal.secondaryGroupedBackground
         }
+
+        configuration.title = OWSLocalizedString(
+            "DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD",
+            comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer.",
+        )
+        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
+        configuration.image = UIImage(named: "building")
+        configuration.imagePadding = 8
+        configuration.contentInsets = NSDirectionalEdgeInsets(hMargin: 16, vMargin: 12)
+
+        let button = UIButton(
+            configuration: configuration,
+            primaryAction: UIAction { [weak self] _ in
+                guard let self else { return }
+                self.didChoosePaymentMethod(self, .sepa)
+            },
+        )
+        return button
     }
 
     private func createIDEALButton() -> UIButton {
-        createPaymentMethodButton(
-            title: "", // The iDEAL|Wero text is embedded in the image
-            image: UIImage(named: "logo_ideal"),
-        ) { [weak self] in
-            guard let self else { return }
-            self.didChoosePaymentMethod(self, .ideal)
+        let backgroundColor = if #available(iOS 26, *) { UIColor(rgbHex: 0xEEF5F7) } else { UIColor(rgbHex: 0xCCD6F2) }
+        var configuration: UIButton.Configuration
+        if #available(iOS 26, *) {
+            configuration = UIButton.Configuration.prominentGlass()
+        } else {
+            configuration = .bordered()
+            configuration.background.cornerRadius = 12
+            configuration.baseForegroundColor = .label
+            configuration.baseBackgroundColor = backgroundColor
         }
+
+        configuration.image = UIImage(named: "logo_ideal")
+        configuration.imagePadding = 8
+        configuration.contentInsets = NSDirectionalEdgeInsets(hMargin: 16, vMargin: 12)
+
+        let button = UIButton(
+            configuration: configuration,
+            primaryAction: UIAction { [weak self] _ in
+                guard let self else { return }
+                self.didChoosePaymentMethod(self, .ideal)
+            },
+        )
+        button.tintColor = backgroundColor
+        return button
     }
 }
