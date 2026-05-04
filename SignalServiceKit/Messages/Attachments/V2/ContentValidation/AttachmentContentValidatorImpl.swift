@@ -173,26 +173,19 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             )
         }
 
-        // Get plaintext length if not given, and validate integrity check if given.
-        let inputType: InputType
-        let primaryFilePlaintextHash: Data
-        if let innerPlainTextLength = innerDecryptionData.plaintextLength, innerDecryptionData.integrityCheck == nil {
-            inputType = makeInputType(plaintextLength: innerPlainTextLength)
-            primaryFilePlaintextHash = try computePlaintextHash(inputType: inputType)
-        } else {
-            var decryptedLength = 0 as UInt64
-            var sha256 = SHA256()
-            try Cryptography.decryptFile(
-                at: tmpFileUrl,
-                metadata: innerDecryptionData,
-                output: { data in
-                    decryptedLength += UInt64(data.count)
-                    sha256.update(data: data)
-                },
-            )
-            inputType = makeInputType(plaintextLength: decryptedLength)
-            primaryFilePlaintextHash = Data(sha256.finalize())
-        }
+        var decryptedLength = 0 as UInt64
+        var sha256 = SHA256()
+        try Cryptography.decryptFile(
+            at: tmpFileUrl,
+            metadata: innerDecryptionData,
+            output: { data in
+                decryptedLength += UInt64(data.count)
+                sha256.update(data: data)
+            },
+        )
+        let inputType = makeInputType(plaintextLength: decryptedLength)
+        let primaryFilePlaintextHash = Data(sha256.finalize())
+
         return try await validateContentsAndPrepareAttachmentFiles(input: Input(
             type: inputType,
             primaryFilePlaintextHash: primaryFilePlaintextHash,
