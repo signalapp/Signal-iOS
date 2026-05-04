@@ -28,6 +28,12 @@ extension UInt64 {
     // It's safe to cast a UInt64 from a UInt64, but we shouldn't.
 }
 
+extension Int64 {
+    public init(safeCast source: UInt8) { self = Int64(source) }
+    public init(safeCast source: UInt16) { self = Int64(source) }
+    public init(safeCast source: UInt32) { self = Int64(source) }
+}
+
 // MARK: -
 
 public extension Int {

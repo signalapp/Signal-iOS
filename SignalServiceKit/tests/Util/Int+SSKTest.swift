@@ -9,6 +9,10 @@ import Testing
 struct IntTest {
     @Test
     func testSafeCast() {
+        _ = Int64(safeCast: UInt32.max)
+        _ = Int64(safeCast: UInt16.max)
+        _ = Int64(safeCast: UInt8.max)
+
         // This is least safe of the safe casts, though it would require
         // UInt.bitWidth to be larger than UInt64.bitWidth. That's not currently a
         // thing, and it seems unlikely to change in the foreseeable future.
