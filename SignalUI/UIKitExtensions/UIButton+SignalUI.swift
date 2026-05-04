@@ -464,6 +464,16 @@ public extension UIBarButtonItem {
         Self.systemItem(.done, action: action)
     }
 
+    /// Creates a "X" (Close) bar button which performs the action in the provided closure.
+    static func closeButton(action: @escaping () -> Void) -> UIBarButtonItem {
+        if #available(iOS 26, *) {
+            .systemItem(.close, action: action)
+        } else {
+            // This looks better without the circular background that system item has.
+            .button(icon: .buttonX, style: .plain, action: action)
+        }
+    }
+
     /// Creates a "Done" bar button which dismisses the view using the provided view controller.
     /// - Parameters:
     ///   - viewController: The view controller to dismiss from.

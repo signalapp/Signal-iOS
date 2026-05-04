@@ -99,14 +99,13 @@ class ViewOnceMessageViewController: OWSViewController {
         ])
 
         // Toolbar at the top.
-        let cancelButtonItem = UIBarButtonItem(
-            image: Theme.iconImage(.buttonX),
-            primaryAction: UIAction { [weak self] _ in
+        let toolbar = if #available(iOS 26, *) { UIToolbar() } else { UIToolbar.clear() }
+        toolbar.items = [
+            .closeButton { [weak self] in
                 self?.dismissButtonPressed()
             },
-        )
-        let toolbar = if #available(iOS 26, *) { UIToolbar() } else { UIToolbar.clear() }
-        toolbar.items = [cancelButtonItem, .flexibleSpace()]
+            .flexibleSpace(),
+        ]
         if #unavailable(iOS 26) {
             toolbar.tintColor = Theme.darkThemeLegacyPrimaryIconColor
         }

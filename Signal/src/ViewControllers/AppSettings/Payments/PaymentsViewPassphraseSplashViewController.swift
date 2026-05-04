@@ -55,6 +55,9 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
             "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE",
             comment: "Title for the 'view payments passphrase' view of the app settings.",
         )
+        navigationItem.leftBarButtonItem = .closeButton { [weak self] in
+            self?.didTapDismiss()
+        }
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
@@ -66,7 +69,6 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
         rootView.autoPinWidthToSuperviewMargins()
 
         updateContents()
-        updateNavbar()
     }
 
     override public func themeDidChange() {
@@ -75,21 +77,10 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
         updateContents()
     }
 
-    private func updateNavbar() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: Theme.iconImage(.buttonX),
-            style: .plain,
-            target: self,
-            action: #selector(didTapDismiss),
-            accessibilityIdentifier: "dismiss",
-        )
-    }
-
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         updateContents()
-        updateNavbar()
     }
 
     private func updateContents() {

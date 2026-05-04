@@ -125,12 +125,9 @@ class AvatarViewController: OWSViewController, InteractivelyDismissableViewContr
         ])
 
         let navigationItem = UINavigationItem(title: "")
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: Theme.iconImage(.buttonX),
-            style: .plain,
-            target: self,
-            action: #selector(didTapClose),
-        )
+        navigationItem.leftBarButtonItem = .closeButton { [weak self] in
+            self?.performInteractiveDismissal(animated: true)
+        }
         navigationBar.setItems([navigationItem], animated: false)
 
         if #unavailable(iOS 26) {
@@ -171,11 +168,6 @@ class AvatarViewController: OWSViewController, InteractivelyDismissableViewContr
             }
             navigationBarTopLayoutConstraint.constant = topInset
         }
-    }
-
-    @objc
-    private func didTapClose() {
-        performInteractiveDismissal(animated: true)
     }
 
     func performInteractiveDismissal(animated: Bool) {

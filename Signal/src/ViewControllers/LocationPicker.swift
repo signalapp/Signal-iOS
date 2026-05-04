@@ -79,10 +79,7 @@ public class LocationPicker: UIViewController {
 
         title = OWSLocalizedString("LOCATION_PICKER_TITLE", comment: "The title for the location picker view")
 
-        navigationItem.rightBarButtonItem = .button(
-            icon: .buttonX,
-            style: .plain,
-        ) { [weak delegate] in
+        navigationItem.rightBarButtonItem = .closeButton { [weak delegate] in
             delegate?.locationPickerDidCancel()
         }
 

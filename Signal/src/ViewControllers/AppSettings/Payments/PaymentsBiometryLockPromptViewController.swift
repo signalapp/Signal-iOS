@@ -64,6 +64,9 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
             "SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT",
             comment: "Title for the 'enable payments lock' view of the payments activation flow.",
         )
+        navigationItem.leftBarButtonItem = .closeButton { [weak self] in
+            self?.didTapClose()
+        }
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
@@ -75,7 +78,6 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         rootView.autoPinWidthToSuperviewMargins()
 
         updateContents()
-        updateNavbar()
     }
 
     override public func themeDidChange() {
@@ -88,21 +90,10 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         updateContents()
     }
 
-    private func updateNavbar() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: Theme.iconImage(.buttonX),
-            style: .plain,
-            target: self,
-            action: #selector(didTapClose),
-            accessibilityIdentifier: "close",
-        )
-    }
-
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         updateContents()
-        updateNavbar()
     }
 
     private func updateContents() {
@@ -178,7 +169,6 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
 
     // MARK: - Events
 
-    @objc
     private func didTapClose() {
         guard hasBeenDoubleReminded == false else {
             dismiss(animated: true, completion: nil)

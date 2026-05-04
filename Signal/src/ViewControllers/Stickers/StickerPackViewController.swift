@@ -46,12 +46,9 @@ class StickerPackViewController: OWSViewController {
         // Toolbar at the top.
         let toolbar: UIToolbar = if #available(iOS 26, *) { UIToolbar() } else { UIToolbar.clear() }
         toolbar.items = [
-            UIBarButtonItem(
-                image: Theme.iconImage(.buttonX),
-                primaryAction: UIAction { [weak self] _ in
-                    self?.dismissButtonPressed()
-                },
-            ),
+            .closeButton { [weak self] in
+                self?.dismissButtonPressed()
+            },
             UIBarButtonItem.flexibleSpace(),
             shareBarButtonItem,
         ]
