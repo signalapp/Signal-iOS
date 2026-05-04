@@ -35,6 +35,10 @@ final class CallingAssetsFetcher {
     }
 
     func cleanupStaleAssets() throws {
+        guard OWSFileSystem.fileOrFolderExists(url: assetsDirectory) else {
+            return
+        }
+
         let baseUrl = assetsDirectory
         let files: [String]
         do {
