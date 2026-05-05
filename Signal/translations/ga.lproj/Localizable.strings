@@ -3023,10 +3023,10 @@
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Tabhartas ar feitheamh";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Tá do thabhartas iDEAL | Wero á phróiseáil fós. Seiceáil d'aip bhaincéireachta le d'íocaíocht a fhaomhadh roimh thabhartas eile a dhéanamh.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Tá do thabhartas iDEAL | Wero á phróiseáil fós. Seiceáil d'aip bhaincéireachta le d'íocaíocht a fhaomhadh roimh thabhartas eile a dhéanamh.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Is gnách go bpróiseáiltear aistrithe bainc idir 1 agus 14 lá gnó. Fan go gcríochnófar an tabhartas seo roimh thabhartas eile a thabhairt.";
@@ -3275,7 +3275,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Bain Triail Eile As";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL | Wero donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Níorbh fhéidir do thabhartas iDEAL | Wero a dheimhniú. Seiceáil d'aip bhaincéireachta le do thabhartas a fhaomhadh nó triail arís.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tá d'aistriú bainc ar feitheamh. Is gnách go bpróiseáiltear aistrithe bainc idir 1 agus 14 lá gnó.";
@@ -3293,16 +3293,16 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Níorbh fhéidir an tabhartas a dheimhniú";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL | Wero one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Níorbh fhéidir do thabhartas aonuaire iDEAL | Wero a phróiseáil. Triail modh íocaíochta eile nó déan teagmháil le do bhanc le tuilleadh faisnéise a fháil.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your one-time %1$@ iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Níorbh fhéidir do thabhartas aonuaire iDEAL | Wero %1$@ a dheimhniú. Seiceáil d'aip bhaincéireachta le do thabhartas iDEAL | Wero a fhaomhadh.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information..";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Níorbh fhéidir do thabhartas athfhillteach míosúil iDEAL | Wero a phróiseáil. Triail modh íocaíochta eile nó déan teagmháil le do bhanc le tuilleadh faisnéise a fháil.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your recurring %1$@ monthly iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Níorbh fhéidir do thabhartas athfhillteach iDEAL | Wero de %1$@ sa mhí a dheimhniú. Seiceáil d'aip bhaincéireachta le do thabhartas iDEAL | Wero a fhaomhadh.";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Tá do thabhartas míosúil athfhillteach críochnaithe. %1$@";
@@ -3689,7 +3689,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Ceangaltán";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "New message";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Teachtaireacht nua";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Tosaigh air";
@@ -4886,16 +4886,16 @@
 "KEY_COMMAND_UNARCHIVE" = "Bain Comhrá den Chartlann";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Please contact support to help us fix the issue.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Déan teagmháil leis an bhfoireann tacaíochta le cabhrú linn an fhadhb a réiteach.";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Contact Support";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Déan Teagmháil le Foireann Tacaíochta Signal";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
 "KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "Níl, go raibh maith agat";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Níl Uathfhíorú Eochracha ar fáil faoi láthair do do ghléas.";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Tuilleadh Eolais";
@@ -8471,7 +8471,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Físeáin";
 
 /* Setting for enabling & disabling the sound effect played when a message is sent. */
-"SETTINGS_MESSAGE_SENT_SOUND" = "Message Sent Sound";
+"SETTINGS_MESSAGE_SENT_SOUND" = "Fuaim ar Sheoladh Teachtaireachtaí";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";

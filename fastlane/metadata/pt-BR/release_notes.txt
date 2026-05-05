@@ -1,1 +1,1 @@
-• Say hello (or “Здравейте” and “Sveiki”) to expanded localization support for Bulgarian and Lithuanian.
+• Diga "oi" (ou “Здравейте” e “Sveiki”). Suporte de localização expandido para búlgaro e lituano.

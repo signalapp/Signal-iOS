@@ -3023,10 +3023,10 @@
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "દાન બાકી છે";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "તમારું iDEAL | Wero દાન હજી પ્રક્રિયામાં છે. બીજું દાન કરતા પહેલાં તમારી ચુકવણી મંજૂર કરવા માટે તમારી બેંકિંગ ઍપ તપાસો.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "તમારું iDEAL | Wero દાન હજી પ્રક્રિયામાં છે. બીજું દાન કરતા પહેલાં તમારી ચુકવણી મંજૂર કરવા માટે તમારી બેંકિંગ ઍપ તપાસો.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "બેંક ટ્રાન્સફરની પ્રક્રિયા થવામાં 1 થી 14 કામકાજી દિવસ લાગી શકે છે. અન્ય દાન આપતાં પહેલાં કૃપા કરીને આ ચુકવણી પૂર્ણ થાય ત્યાં સુધી રાહ જુઓ.";
@@ -3275,7 +3275,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "ફરીથી પ્રયત્ન કરો";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL | Wero donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "તમારા iDEAL | Wero દાનની ખાતરી કરી શકાઈ નથી. તમારા દાનને મંજૂર કરવા માટે તમારી બેંકિંગ ઍપ તપાસો અથવા ફરી પ્રયાસ કરો.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "તમારું બેંક ટ્રાન્સફર બાકી છે. બેંક ટ્રાન્સફરની પ્રક્રિયા થવામાં 1 થી 14 કામકાજી દિવસ લાગી શકે છે.";
@@ -3293,16 +3293,16 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "દાનની ખાતરીકરી શક્યા નથી";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL | Wero one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "તમારા iDEAL | Wero એક-વખતના દાનની પ્રક્રિયા કરી શકાઈ ન હતી. અન્ય ચુકવણી પદ્ધતિ અજમાવો અથવા વધુ માહિતી માટે તમારી બેંકનો સંપર્ક કરો.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your one-time %1$@ iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "તમારા એક વખતના %1$@ iDEAL | Wero દાનની ખાતરી થઈ શકી ન હતી. તમારા iDEAL | Wero દાનને મંજૂર કરવા માટે તમારી બેંકિંગ ઍપ તપાસો.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information..";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "તમારા iDEAL | Wero પુનરાવૃત્ત માસિક દાનની પ્રક્રિયા કરી શકાઈ ન હતી. અન્ય ચુકવણી પદ્ધતિ અજમાવો અથવા વધુ માહિતી માટે તમારી બેંકનો સંપર્ક કરો.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your recurring %1$@ monthly iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "તમારા પુનરાવૃત્ત %1$@ માસિક iDEAL | Wero દાનની ખાતરી કરી શકાઈ ન હતી. તમારા iDEAL | Wero દાનને મંજૂર કરવા માટે તમારી બેંકિંગ ઍપ તપાસો.";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "તમારું પુનરાવર્તિત માસિક દાન સમાપ્ત કરવામાં આવ્યું હતું. %1$@";
@@ -3689,7 +3689,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "જોડાણ";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "New message";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "નવો મેસેજ";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "શરૂઆત કરો";
@@ -4886,16 +4886,16 @@
 "KEY_COMMAND_UNARCHIVE" = "ચેટને અનઆર્કાઇવ કરો";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Please contact support to help us fix the issue.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "અમને આ સમસ્યાને ઠીક કરવામાં મદદ કરવા માટે કૃપા કરીને સપોર્ટનો સંપર્ક કરો.";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Contact Support";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "સંપર્ક સપોર્ટ";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
 "KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "ના, આભાર";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "તમારા ડિવાઇસ માટે હાલમાં ઓટોમેટિક કી વેરિફિકેશન ઉપલબ્ધ નથી.";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "વધુ શીખો";
@@ -8471,7 +8471,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "વિડિયો";
 
 /* Setting for enabling & disabling the sound effect played when a message is sent. */
-"SETTINGS_MESSAGE_SENT_SOUND" = "Message Sent Sound";
+"SETTINGS_MESSAGE_SENT_SOUND" = "મેસેજ મોકલ્યાનો અવાજ";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "જ્યારે મેસેજ વાંચવામાં આવે છે અને ટાઇપ કરવામાં આવે છે ત્યારે જુઓ અને શેર કરો. જો અક્ષમ કરેલ હોય, તો અન્ય લોકોએ વાંચી લીધાની રસીદો અથવા ટાઇપિંગ સૂચકો તમને દેખાશે નહીં.";

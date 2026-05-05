@@ -1,1 +1,1 @@
-• Say hello (or “Здравейте” and “Sveiki”) to expanded localization support for Bulgarian and Lithuanian.
+• Dites bonjour (ou "Здравейте" et "Sveiki") à la nouvelle version de l'appli, qui prend désormais en charge le bulgare et le lituanien.

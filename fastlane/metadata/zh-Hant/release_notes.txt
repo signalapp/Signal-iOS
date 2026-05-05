@@ -1,1 +1,1 @@
-• Say hello (or “Здравейте” and “Sveiki”) to expanded localization support for Bulgarian and Lithuanian.
+• 新增了保加利亞語和立陶宛語本地化支援，歡迎你說聲「你好」（或「Здравейте」與「Sveiki」）打個招呼。

@@ -1,1 +1,1 @@
-• Say hello (or “Здравейте” and “Sveiki”) to expanded localization support for Bulgarian and Lithuanian.
+• ブルガリア語とリトアニア語のローカリゼーション対応が拡充されました。

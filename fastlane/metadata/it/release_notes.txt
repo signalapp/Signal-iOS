@@ -1,1 +1,1 @@
-• Say hello (or “Здравейте” and “Sveiki”) to expanded localization support for Bulgarian and Lithuanian.
+• Mai provato a dire "ciao" in bulgaro o lituano? Beh, da oggi puoi farlo grazie al nuovo supporto per queste lingue su Signal: “Здравейте” o “Sveiki”!

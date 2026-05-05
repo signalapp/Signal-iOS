@@ -1,1 +1,1 @@
-• Say hello (or “Здравейте” and “Sveiki”) to expanded localization support for Bulgarian and Lithuanian.
+• Di hola (o "Здравейте" y "Sveiki") a la nueva versión de la app Signal, que ahora es compatible con búlgaro y lituano.
