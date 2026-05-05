@@ -17,6 +17,26 @@ class FlagsViewController: OWSTableViewController2 {
 
     func updateTableContents() {
         let contents = OWSTableContents()
+        contents.add(OWSTableSection(items: [
+            OWSTableItem.disclosureItem(withText: "Refresh Remote Config") { [weak self] in
+                guard let self else { return }
+
+                let remoteConfigManager = SSKEnvironment.shared.remoteConfigManagerRef
+                ModalActivityIndicatorViewController.present(fromViewController: self) { modal in
+                    let message: String
+                    do {
+                        try await remoteConfigManager.forceRefresh()
+                        message = "Refreshed remote config!"
+                    } catch {
+                        message = "Failed to refresh remote config! \(error)"
+                    }
+
+                    modal.dismiss {
+                        self.presentToast(text: message)
+                    }
+                }
+            },
+        ]))
         contents.add(buildSection(title: "Remote Config", flagMap: RemoteConfig.current.debugDescriptions()))
         self.contents = contents
     }

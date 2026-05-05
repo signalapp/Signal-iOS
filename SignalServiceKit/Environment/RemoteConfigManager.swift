@@ -863,6 +863,9 @@ public protocol RemoteConfigManager: RemoteConfigProvider {
     /// Refresh the remote config from the server if it's been too long since we
     /// last fetched it.
     func refreshIfNeeded() async throws
+
+    /// Forcibly refresh the remote config.
+    func forceRefresh() async throws
 }
 
 // MARK: -
@@ -871,6 +874,7 @@ public protocol RemoteConfigManager: RemoteConfigProvider {
 
 public class StubbableRemoteConfigManager: MockRemoteConfigProvider, RemoteConfigManager {
     public func refreshIfNeeded() async throws {}
+    public func forceRefresh() async throws {}
 }
 
 #endif
@@ -987,6 +991,17 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     private func fetchNextFetchDate() -> Date {
         let lastFetchDate = self.db.read { self.keyValueStore.getLastFetched(transaction: $0) }
         return (lastFetchDate ?? .distantPast).addingTimeInterval(Self.refreshInterval)
+    }
+
+    public func forceRefresh() async throws {
+        try await refreshTaskQueue.run {
+            do {
+                try await self._refresh()
+            } catch {
+                Logger.warn("\(error)")
+                throw error
+            }
+        }
     }
 
     public func refreshIfNeeded() async throws {
