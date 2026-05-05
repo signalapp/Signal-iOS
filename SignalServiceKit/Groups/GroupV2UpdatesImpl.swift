@@ -148,6 +148,10 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
         // The prior method throws if the revisions don't match.
         owsAssertDebug(changedGroupModel.newGroupModel.revision == changedGroupModel.oldGroupModel.revision + 1)
 
+        var updatedLastVerifiedGroupNameHash: Data?
+        if changedGroupModel.shouldUpdateLastVerifiedGroupNameHash {
+            updatedLastVerifiedGroupNameHash = ThreadAssociatedData.groupNameVerificationHash(groupName: changedGroupModel.newGroupModel.groupName)
+        }
         GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
             groupThread: groupThread,
             newGroupModel: changedGroupModel.newGroupModel,
@@ -156,6 +160,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
             groupUpdateSource: changedGroupModel.updateSource,
             localIdentifiers: localIdentifiers,
             spamReportingMetadata: spamReportingMetadata,
+            updatedLastVerifiedGroupNameHash: updatedLastVerifiedGroupNameHash,
             transaction: transaction,
         )
         // The prior method always updates the revision because we've confirmed it's newer.
@@ -181,7 +186,6 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
                 tx: transaction,
             )
         }
-
         return groupThread
     }
 
@@ -416,6 +420,35 @@ public extension GroupV2UpdatesImpl {
         try await SSKEnvironment.shared.groupsV2Ref.downloadAndApplyGroupAvatarIfSkipped(secretParams)
     }
 
+    private func lastVerifiedHashIfLocalUserCreatedGroup(secretParams: GroupSecretParams, localIdentifiers: LocalIdentifiers) async -> Data? {
+        var lastVerifiedHash: Data?
+        do {
+            let groupsV2 = SSKEnvironment.shared.groupsV2Ref
+            let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
+
+            let firstChangeAction = try await groupsV2.fetchRevisionZeroGroupChangeAction(secretParams: secretParams)
+            let author = try firstChangeAction.author(groupV2Params: groupV2Params, localIdentifiers: localIdentifiers)
+            switch author {
+            case .localUser:
+                if let verificationHash = ThreadAssociatedData.groupNameVerificationHash(groupName: firstChangeAction.snapshot?.title) {
+                    lastVerifiedHash = verificationHash
+                }
+            default:
+                break
+            }
+            return lastVerifiedHash
+        } catch GroupsV2Error.localUserNotInGroup {
+            return nil
+        } catch {
+            owsFailDebug("Failed to fetch change action for revision 0 with an unexpected error: \(error)")
+            // This is a best-effort check to determine if the local user created the group
+            // in case the device that created the group was not on an updated build.
+            // If it fails with an unexpected error, return nil and if the creating device
+            // is up to date we will get the updated value from storage service.
+            return nil
+        }
+    }
+
     private func tryToApplyGroupChangesFromService(
         secretParams: GroupSecretParams,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
@@ -423,18 +456,33 @@ public extension GroupV2UpdatesImpl {
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         options: TSGroupModelOptions,
     ) async throws {
+        guard
+            let localIdentifiers = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
+                let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+                return tsAccountManager.localIdentifiers(tx: tx)
+            })
+        else {
+            throw OWSAssertionError("Missing localIdentifiers.")
+        }
+
+        let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
+
+        let threadExists = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            TSGroupThread.fetch(forGroupId: groupId, tx: transaction) != nil
+        }
+
+        var lastVerifiedGroupNameHash: Data?
+        if !threadExists {
+            // Only check rev0 if we're about to insert a new thread.
+            lastVerifiedGroupNameHash = await lastVerifiedHashIfLocalUserCreatedGroup(
+                secretParams: secretParams,
+                localIdentifiers: localIdentifiers,
+            )
+        }
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction) else {
-                throw OWSAssertionError("Missing localIdentifiers.")
-            }
-
-            let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
-            let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
-
-            let groupThread: TSGroupThread
             var localUserWasAddedBy: GroupUpdateSource?
-
+            let groupThread: TSGroupThread
             if let existingThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) {
                 groupThread = existingThread
                 localUserWasAddedBy = nil
@@ -446,6 +494,7 @@ public extension GroupV2UpdatesImpl {
                     groupChanges: groupChanges,
                     groupModelOptions: options,
                     localIdentifiers: localIdentifiers,
+                    lastVerifiedGroupNameHash: lastVerifiedGroupNameHash,
                     transaction: transaction,
                 )
             }
@@ -553,6 +602,7 @@ public extension GroupV2UpdatesImpl {
         groupChanges: [GroupV2Change],
         groupModelOptions: TSGroupModelOptions,
         localIdentifiers: LocalIdentifiers,
+        lastVerifiedGroupNameHash: Data?,
         transaction: DBWriteTransaction,
     ) throws -> (TSGroupThread, addedToNewThreadBy: GroupUpdateSource?) {
         if TSGroupThread.fetch(forGroupId: groupId, tx: transaction) != nil {
@@ -595,6 +645,7 @@ public extension GroupV2UpdatesImpl {
             infoMessagePolicy: .insert,
             localIdentifiers: localIdentifiers,
             spamReportingMetadata: spamReportingMetadata,
+            updatedLastVerifiedGroupNameHash: lastVerifiedGroupNameHash,
             transaction: transaction,
         )
 
@@ -669,7 +720,10 @@ public extension GroupV2UpdatesImpl {
         } else if let snapshot = groupChange.snapshot {
             logger.info("Applying snapshot.")
 
-            var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: snapshot, transaction: transaction)
+            var builder = try TSGroupModelBuilder.builderForSnapshot(
+                groupV2Snapshot: snapshot,
+                transaction: transaction,
+            )
             builder.apply(options: options)
             newGroupModel = try builder.build()
             newDisappearingMessageToken = snapshot.disappearingMessageToken
@@ -682,7 +736,6 @@ public extension GroupV2UpdatesImpl {
             // not a single revision update.
             throw GroupsV2Error.groupChangeProtoForIncompatibleRevision
         }
-
         GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
             groupThread: groupThread,
             newGroupModel: newGroupModel,
@@ -691,6 +744,7 @@ public extension GroupV2UpdatesImpl {
             groupUpdateSource: groupUpdateSource,
             localIdentifiers: localIdentifiers,
             spamReportingMetadata: spamReportingMetadata,
+            updatedLastVerifiedGroupNameHash: nil, // Nothing to update.
             transaction: transaction,
         )
 
@@ -775,6 +829,7 @@ public extension GroupV2UpdatesImpl {
                 infoMessagePolicy: .insert,
                 localIdentifiers: localIdentifiers,
                 spamReportingMetadata: spamReportingMetadata,
+                updatedLastVerifiedGroupNameHash: nil,
                 transaction: transaction,
             )
 

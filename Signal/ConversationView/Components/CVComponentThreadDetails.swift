@@ -432,6 +432,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     static func buildComponentState(
         thread: TSThread,
+        threadAssociatedData: ThreadAssociatedData,
         transaction: DBReadTransaction,
         avatarBuilder: CVAvatarBuilder,
     ) -> CVComponentState.ThreadDetails {
@@ -444,6 +445,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         } else if let groupThread = thread as? TSGroupThread {
             return buildComponentState(
                 groupThread: groupThread,
+                threadAssociatedData: threadAssociatedData,
                 transaction: transaction,
                 avatarBuilder: avatarBuilder,
             )
@@ -519,6 +521,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     private static func buildComponentState(
         groupThread: TSGroupThread,
+        threadAssociatedData: ThreadAssociatedData,
         transaction: DBReadTransaction,
         avatarBuilder: CVAvatarBuilder,
     ) -> CVComponentState.ThreadDetails {
@@ -541,6 +544,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let safetySection = Self.buildGroupsSafetySection(
             from: groupThread,
+            threadAssociatedData: threadAssociatedData,
             tx: transaction,
         )
         let descriptionText: String? = {
@@ -815,6 +819,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 extension CVComponentThreadDetails {
     private static func buildGroupsSafetySection(
         from groupThread: TSGroupThread,
+        threadAssociatedData: ThreadAssociatedData,
         tx: DBReadTransaction,
     ) -> CVComponentState.ThreadDetails.SafetySection {
         let accountManager = DependenciesBridge.shared.tsAccountManager
@@ -932,7 +937,7 @@ extension CVComponentThreadDetails {
             .color(Self.mutualGroupsTextColor),
         )
 
-        let shouldShowUnknownThreadWarning = SSKEnvironment.shared.contactManagerImplRef.isLowTrustGroup(groupThread: groupThread, tx: tx)
+        let shouldShowUnknownThreadWarning = !threadAssociatedData.isGroupNameVerified(groupName: groupThread.groupNameOrDefault)
 
         return .init(
             shouldShowProfileNamesEducation: shouldShowUnknownThreadWarning,

@@ -638,6 +638,9 @@ struct StorageServiceProtos_GroupV2Record: Sendable {
   /// Clears the value of `avatarColor`. Subsequent reads from it will return its default value.
   mutating func clearAvatarColor() {self._avatarColor = nil}
 
+  /// SHA-256 of last verified group name
+  var verifiedNameHash: Data = Data()
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum StorySendMode: SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -1901,7 +1904,7 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
 
 extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupV2Record"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}masterKey\0\u{1}blocked\0\u{1}whitelisted\0\u{1}archived\0\u{1}markedUnread\0\u{1}mutedUntilTimestamp\0\u{1}dontNotifyForMentionsIfMuted\0\u{1}hideStory\0\u{2}\u{2}storySendMode\0\u{1}avatarColor\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}masterKey\0\u{1}blocked\0\u{1}whitelisted\0\u{1}archived\0\u{1}markedUnread\0\u{1}mutedUntilTimestamp\0\u{1}dontNotifyForMentionsIfMuted\0\u{1}hideStory\0\u{2}\u{2}storySendMode\0\u{1}avatarColor\0\u{1}verifiedNameHash\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1919,6 +1922,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
       case 8: try { try decoder.decodeSingularBoolField(value: &self.hideStory) }()
       case 10: try { try decoder.decodeSingularEnumField(value: &self.storySendMode) }()
       case 11: try { try decoder.decodeSingularEnumField(value: &self._avatarColor) }()
+      case 12: try { try decoder.decodeSingularBytesField(value: &self.verifiedNameHash) }()
       default: break
       }
     }
@@ -1959,6 +1963,9 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     try { if let v = self._avatarColor {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 11)
     } }()
+    if !self.verifiedNameHash.isEmpty {
+      try visitor.visitSingularBytesField(value: self.verifiedNameHash, fieldNumber: 12)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1973,6 +1980,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if lhs.hideStory != rhs.hideStory {return false}
     if lhs.storySendMode != rhs.storySendMode {return false}
     if lhs._avatarColor != rhs._avatarColor {return false}
+    if lhs.verifiedNameHash != rhs.verifiedNameHash {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

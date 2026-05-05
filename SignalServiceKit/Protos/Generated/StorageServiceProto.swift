@@ -2258,6 +2258,16 @@ public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConver
         return proto.hasAvatarColor
     }
 
+    public var verifiedNameHash: Data? {
+        guard hasVerifiedNameHash else {
+            return nil
+        }
+        return proto.verifiedNameHash
+    }
+    public var hasVerifiedNameHash: Bool {
+        return !proto.verifiedNameHash.isEmpty
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2322,6 +2332,9 @@ extension StorageServiceProtoGroupV2Record {
         if let _value = avatarColor {
             builder.setAvatarColor(_value)
         }
+        if let _value = verifiedNameHash {
+            builder.setVerifiedNameHash(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2384,6 +2397,16 @@ public struct StorageServiceProtoGroupV2RecordBuilder {
 
     public mutating func setAvatarColor(_ valueParam: StorageServiceProtoAvatarColor) {
         proto.avatarColor = StorageServiceProtoAvatarColorUnwrap(valueParam)
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setVerifiedNameHash(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.verifiedNameHash = valueParam
+    }
+
+    public mutating func setVerifiedNameHash(_ valueParam: Data) {
+        proto.verifiedNameHash = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

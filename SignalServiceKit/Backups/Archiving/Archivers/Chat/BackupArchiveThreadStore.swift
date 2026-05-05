@@ -163,6 +163,7 @@ public final class BackupArchiveThreadStore {
             isMarkedUnread: isMarkedUnread,
             mutedUntilTimestamp: mutedUntilTimestamp ?? 0,
             audioPlaybackRate: 1,
+            lastVerifiedGroupNameHash: nil,
         )
         try threadAssociatedData.insert(context.tx.database)
     }

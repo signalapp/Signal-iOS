@@ -154,6 +154,8 @@ public protocol GroupsV2 {
         transaction: DBWriteTransaction,
     )
 
+    func fetchRevisionZeroGroupChangeAction(secretParams: GroupSecretParams) async throws -> GroupV2Change
+
     func fetchSomeGroupChangeActions(
         secretParams: GroupSecretParams,
         source: GroupChangeActionFetchSource,
@@ -612,6 +614,10 @@ public class MockGroupsV2: GroupsV2 {
 
     public func fetchGroupExternalCredentials(secretParams: GroupSecretParams) async throws -> GroupsProtoGroupExternalCredential {
         owsFail("Not implemented")
+    }
+
+    public func fetchRevisionZeroGroupChangeAction(secretParams: LibSignalClient.GroupSecretParams) async throws -> GroupV2Change {
+        owsFail("not implemented")
     }
 
     public func fetchSomeGroupChangeActions(secretParams: GroupSecretParams, source: GroupChangeActionFetchSource) async throws -> GroupChangesResponse {

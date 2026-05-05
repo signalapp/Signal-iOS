@@ -644,6 +644,37 @@ public class GroupsV2Impl: GroupsV2 {
 
     // MARK: - Fetch Group Change Actions
 
+    /// Fetches change actions starting at revision 0.
+    /// Checking the author of the first change can determine in most cases if the local user was the creator of the group.
+    /// If a GroupsV2.localUserNotInGroup error is thrown fetching the first change, the local user either did not create the group, or has since left
+    /// and rejoined.
+    public func fetchRevisionZeroGroupChangeAction(secretParams: GroupSecretParams) async throws -> GroupV2Change {
+        let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize()
+        let gseExpiration: UInt64
+
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        gseExpiration = databaseStorage.read { tx in
+            let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx)
+            let groupThreadId = groupThread?.sqliteRowId!
+            let endorsementRecord = groupThreadId.flatMap({ try? groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: $0, tx: tx) })
+            return endorsementRecord?.expirationTimestamp ?? 0
+        }
+
+        let groupChangesResponse = try await _fetchSomeGroupChangeActions(
+            secretParams: secretParams,
+            startingAtRevision: 0,
+            upThroughRevision: 0,
+            includeFirstState: true,
+            gseExpiration: gseExpiration,
+        )
+
+        guard let first = groupChangesResponse.groupChanges.first else {
+            throw OWSAssertionError("Missing first group change action")
+        }
+        return first
+    }
+
     /// Fetches some group changes (and a snapshot, if needed).
     public func fetchSomeGroupChangeActions(
         secretParams: GroupSecretParams,

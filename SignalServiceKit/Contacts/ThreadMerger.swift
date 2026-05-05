@@ -108,6 +108,9 @@ final class ThreadMerger {
                 ? valuePair.intoValue.audioPlaybackRate
                 : valuePair.fromValue.audioPlaybackRate,
 
+            // Only group threads track the last verified name hash.
+            lastVerifiedGroupNameHash: nil,
+
         )
 
         func newValueIfChanged<T: Equatable>(_ keyPath: KeyPath<ThreadAssociatedData, T>) -> T? {
@@ -122,6 +125,7 @@ final class ThreadMerger {
             isMarkedUnread: newValueIfChanged(\.isMarkedUnread),
             mutedUntilTimestamp: newValueIfChanged(\.mutedUntilTimestamp),
             audioPlaybackRate: newValueIfChanged(\.audioPlaybackRate),
+            lastVerifiedGroupNameHash: nil,
             updateStorageService: true,
             tx: tx,
         )
@@ -421,6 +425,7 @@ protocol _ThreadMerger_ThreadAssociatedDataManagerShim {
         isMarkedUnread: Bool?,
         mutedUntilTimestamp: UInt64?,
         audioPlaybackRate: Float?,
+        lastVerifiedGroupNameHash: Data?,
         updateStorageService: Bool,
         tx: DBWriteTransaction,
     )
@@ -433,6 +438,7 @@ class _ThreadMerger_ThreadAssociatedDataManagerWrapper: _ThreadMerger_ThreadAsso
         isMarkedUnread: Bool?,
         mutedUntilTimestamp: UInt64?,
         audioPlaybackRate: Float?,
+        lastVerifiedGroupNameHash: Data?,
         updateStorageService: Bool,
         tx: DBWriteTransaction,
     ) {
@@ -444,6 +450,7 @@ class _ThreadMerger_ThreadAssociatedDataManagerWrapper: _ThreadMerger_ThreadAsso
             isMarkedUnread: isMarkedUnread,
             mutedUntilTimestamp: mutedUntilTimestamp,
             audioPlaybackRate: audioPlaybackRate,
+            lastVerifiedGroupNameHash: lastVerifiedGroupNameHash,
             updateStorageService: updateStorageService,
             transaction: tx,
         )
@@ -528,6 +535,7 @@ class ThreadMerger_MockThreadAssociatedDataManager: ThreadMerger.Shims.ThreadAss
         isMarkedUnread: Bool?,
         mutedUntilTimestamp: UInt64?,
         audioPlaybackRate: Float?,
+        lastVerifiedGroupNameHash: Data?,
         updateStorageService: Bool,
         tx: DBWriteTransaction,
     ) {
@@ -537,6 +545,7 @@ class ThreadMerger_MockThreadAssociatedDataManager: ThreadMerger.Shims.ThreadAss
             isMarkedUnread: isMarkedUnread ?? threadAssociatedData.isMarkedUnread,
             mutedUntilTimestamp: mutedUntilTimestamp ?? threadAssociatedData.mutedUntilTimestamp,
             audioPlaybackRate: audioPlaybackRate ?? threadAssociatedData.audioPlaybackRate,
+            lastVerifiedGroupNameHash: lastVerifiedGroupNameHash ?? threadAssociatedData.lastVerifiedGroupNameHash,
         )
     }
 }

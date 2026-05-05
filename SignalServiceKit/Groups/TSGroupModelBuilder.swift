@@ -87,7 +87,10 @@ public struct TSGroupModelBuilder {
         self.isTerminated = groupV2Snapshot.isTerminated
     }
 
-    static func builderForSnapshot(groupV2Snapshot: GroupV2Snapshot, transaction: DBWriteTransaction) throws -> TSGroupModelBuilder {
+    static func builderForSnapshot(
+        groupV2Snapshot: GroupV2Snapshot,
+        transaction: DBWriteTransaction,
+    ) throws -> TSGroupModelBuilder {
         return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot)
     }
 

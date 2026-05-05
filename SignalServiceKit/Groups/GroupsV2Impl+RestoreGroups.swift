@@ -254,8 +254,6 @@ public extension GroupsV2Impl {
             return true
         }
 
-        // This will try to update the group using incremental "changes" but
-        // failover to using a "snapshot".
         do {
             try await SSKEnvironment.shared.groupV2UpdatesRef.fetchAndApplyCurrentGroupV2SnapshotFromService(
                 secretParams: groupContextInfo.groupSecretParams,

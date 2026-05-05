@@ -324,6 +324,7 @@ public class GRDBSchemaMigrator {
         case addDevice
         case addAttachmentBackfillRequestTable
         case wipeBackupAttachmentUploadQueueForLinkedDevices
+        case addLastVerifiedGroupNameHashColumn
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5075,6 +5076,13 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.addLastVerifiedGroupNameHashColumn) { transaction in
+            try transaction.database.alter(table: "thread_associated_data") { table in
+                table.add(column: "lastVerifiedGroupNameHash", .blob)
+            }
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -5261,8 +5269,10 @@ public class GRDBSchemaMigrator {
                         isArchived: thread.isArchivedObsolete,
                         isMarkedUnread: thread.isMarkedUnreadObsolete,
                         mutedUntilTimestamp: thread.mutedUntilTimestampObsolete,
-                        // this didn't exist pre-migration, just write the default
+                        // audioPlaybackRate and lastVerifiedGroupNameHash didn't exist pre-migration,
+                        // just write the default
                         audioPlaybackRate: 1,
+                        lastVerifiedGroupNameHash: nil,
                     ).insert(transaction.database)
                 } catch {
                     thrownError = error

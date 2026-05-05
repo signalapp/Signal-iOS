@@ -262,28 +262,6 @@ private class SystemContactsCache {
 // MARK: -
 
 extension OWSContactsManager: ContactManager {
-
-    public func isLowTrustGroup(groupThread: TSGroupThread, tx: DBReadTransaction) -> Bool {
-        if groupIdsNotNeedingLowTrustWarningCache.contains(groupThread.groupId) {
-            return false
-        }
-
-        if SSKEnvironment.shared.profileManagerRef.isThread(inProfileWhitelist: groupThread, transaction: tx) {
-            groupIdsNotNeedingLowTrustWarningCache.insert(groupThread.groupId)
-            return false
-        }
-
-        if !groupThread.hasPendingMessageRequest(transaction: tx) {
-            return false
-        }
-        // We can skip "unknown thread warnings" if a group has members which are trusted.
-        if hasWhitelistedGroupMember(groupThread: groupThread, tx: tx) {
-            groupIdsNotNeedingLowTrustWarningCache.insert(groupThread.groupId)
-            return false
-        }
-        return true
-    }
-
     private func isInWhitelistedGroupsWithLocalUser(
         otherAddress: SignalServiceAddress,
         requireMultipleMutualGroups: Bool,
@@ -316,12 +294,6 @@ extension OWSContactsManager: ContactManager {
             }
         }
         return false
-    }
-
-    private func hasWhitelistedGroupMember(groupThread: TSGroupThread, tx: DBReadTransaction) -> Bool {
-        groupThread.groupMembership.fullMembers.contains { member in
-            SSKEnvironment.shared.profileManagerRef.isUser(inProfileWhitelist: member, transaction: tx)
-        }
     }
 
     // MARK: - Avatar Blurring

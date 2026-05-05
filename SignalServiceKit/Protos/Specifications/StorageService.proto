@@ -171,6 +171,7 @@ message GroupV2Record {
   bool hideStory = 8;
   StorySendMode storySendMode = 10;
   optional AvatarColor avatarColor = 11;
+  bytes verifiedNameHash = 12; // SHA-256 of last verified group name
 }
 
 message AccountRecord {

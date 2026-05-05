@@ -58,6 +58,7 @@ class ThreadFinderTests: XCTestCase {
             isMarkedUnread: isMarkedUnread,
             mutedUntilTimestamp: 0,
             audioPlaybackRate: 1,
+            lastVerifiedGroupNameHash: nil,
         )
     }
 

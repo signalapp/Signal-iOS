@@ -203,6 +203,7 @@ final class ThreadMergerTest: XCTestCase {
             isMarkedUnread: isMarkedUnread,
             mutedUntilTimestamp: mutedUntilTimestamp,
             audioPlaybackRate: audioPlaybackRate,
+            lastVerifiedGroupNameHash: nil,
         )
     }
 

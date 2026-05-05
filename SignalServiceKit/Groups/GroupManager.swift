@@ -146,6 +146,12 @@ public class GroupManager: NSObject {
                 groupV2Snapshot: snapshotResponse.groupSnapshot,
                 transaction: tx,
             )
+
+            // Since local user created the group, it's name is verified.
+            let lastVerifiedGroupNameHash = ThreadAssociatedData.groupNameVerificationHash(
+                groupName: snapshotResponse.groupSnapshot.title,
+            )
+
             let groupModel = try builder.buildAsV2()
 
             let thread = self.insertGroupThreadInDatabaseAndCreateInfoMessage(
@@ -155,6 +161,7 @@ public class GroupManager: NSObject {
                 infoMessagePolicy: .insert,
                 localIdentifiers: localIdentifiers,
                 spamReportingMetadata: .createdByLocalAction,
+                lastVerifiedGroupNameHash: lastVerifiedGroupNameHash,
                 transaction: tx,
             )
             SSKEnvironment.shared.profileManagerRef.addGroupId(
@@ -243,6 +250,7 @@ public class GroupManager: NSObject {
             infoMessagePolicy: infoMessagePolicy,
             localIdentifiers: localIdentifiers,
             spamReportingMetadata: .unreportable,
+            updatedLastVerifiedGroupNameHash: nil,
             transaction: transaction,
         )
     }
@@ -714,6 +722,7 @@ public class GroupManager: NSObject {
                 //
                 // newDisappearingMessageToken is nil because we don't want to change DM
                 // state.
+                // updatedLastVerifiedGroupNameHash is nil because this is not a change-name action.
                 updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
                     groupThread: groupThread,
                     newGroupModel: newGroupModel,
@@ -723,6 +732,7 @@ public class GroupManager: NSObject {
                     infoMessagePolicy: .insert,
                     localIdentifiers: localIdentifiers,
                     spamReportingMetadata: .createdByLocalAction,
+                    updatedLastVerifiedGroupNameHash: nil,
                     transaction: tx,
                 )
             } catch {
@@ -827,8 +837,10 @@ public class GroupManager: NSObject {
         infoMessagePolicy: InfoMessagePolicy,
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
+        lastVerifiedGroupNameHash: Data?,
         transaction: DBWriteTransaction,
     ) -> TSGroupThread {
+        let threadAssociatedDataStore = DependenciesBridge.shared.threadAssociatedDataStore
 
         if let groupThread = TSGroupThread.fetch(groupId: groupModel.groupId, transaction: transaction) {
             owsFail("Inserting existing group thread: \(groupThread.logString).")
@@ -838,6 +850,14 @@ public class GroupManager: NSObject {
             groupModel: groupModel,
             tx: transaction,
         )
+
+        if let lastVerifiedGroupNameHash {
+            if let threadAssociatedData = threadAssociatedDataStore.fetch(for: groupThread.uniqueId, tx: transaction) {
+                threadAssociatedData.updateWith(lastVerifiedGroupNameHash: lastVerifiedGroupNameHash, updateStorageService: true, transaction: transaction)
+            } else {
+                owsFailDebug("missing threadAssociatedData for group")
+            }
+        }
 
         let newDisappearingMessageToken = disappearingMessageToken ?? DisappearingMessageToken.disabledToken
         _ = updateDisappearingMessageConfiguration(
@@ -894,6 +914,7 @@ public class GroupManager: NSObject {
         infoMessagePolicy: InfoMessagePolicy,
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
+        updatedLastVerifiedGroupNameHash: Data?,
         transaction: DBWriteTransaction,
     ) -> TSGroupThread {
         if DebugFlags.internalLogging {
@@ -911,6 +932,7 @@ public class GroupManager: NSObject {
                 infoMessagePolicy: infoMessagePolicy,
                 localIdentifiers: localIdentifiers,
                 spamReportingMetadata: spamReportingMetadata,
+                updatedLastVerifiedGroupNameHash: updatedLastVerifiedGroupNameHash,
                 transaction: transaction,
             )
             return groupThread
@@ -948,6 +970,7 @@ public class GroupManager: NSObject {
                 infoMessagePolicy: infoMessagePolicy,
                 localIdentifiers: localIdentifiers,
                 spamReportingMetadata: spamReportingMetadata,
+                lastVerifiedGroupNameHash: updatedLastVerifiedGroupNameHash,
                 transaction: transaction,
             )
         }
@@ -969,6 +992,7 @@ public class GroupManager: NSObject {
         infoMessagePolicy: InfoMessagePolicy = .insert,
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
+        updatedLastVerifiedGroupNameHash: Data?,
         transaction: DBWriteTransaction,
     ) {
         guard
@@ -1105,6 +1129,12 @@ public class GroupManager: NSObject {
             with: newGroupModel,
             transaction: transaction,
         )
+
+        if let updatedLastVerifiedGroupNameHash {
+            let threadAssociatedDataStore = DependenciesBridge.shared.threadAssociatedDataStore
+            let threadAssociatedData = threadAssociatedDataStore.fetch(for: groupThread.uniqueId, tx: transaction)
+            threadAssociatedData?.updateWith(lastVerifiedGroupNameHash: updatedLastVerifiedGroupNameHash, updateStorageService: true, transaction: transaction)
+        }
 
         let shouldInsertInfoMessages: Bool
         switch infoMessagePolicy {
@@ -1441,6 +1471,9 @@ extension GroupManager {
                 title != existingGroupModel.groupName
             {
                 groupChangeSet.setTitle(title)
+
+                // Updated verified group name hash in storage service.
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: existingGroupModel)
             }
 
             if

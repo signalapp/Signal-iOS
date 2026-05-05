@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 public import GRDB
 
@@ -18,11 +19,28 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     public private(set) var mutedUntilTimestamp: UInt64 = 0
     public private(set) var audioPlaybackRate: Float = 1
 
+    // The last group name that was set by the local user.
+    // Nil if it has never been set by the local user.
+    public private(set) var lastVerifiedGroupNameHash: Data?
+
     public var isMuted: Bool { mutedUntilTimestamp > Date.ows_millisecondTimestamp() }
 
     public var mutedUntilDate: Date? {
         guard mutedUntilTimestamp > 0 else { return nil }
         return Date(millisecondsSince1970: mutedUntilTimestamp)
+    }
+
+    static func groupNameVerificationHash(groupName: String?) -> Data? {
+        guard let groupName, let groupNameData = groupName.data(using: .utf8) else {
+            return nil
+        }
+        var sha = SHA256()
+        sha.update(data: groupNameData)
+        return Data(sha.finalize())
+    }
+
+    public func isGroupNameVerified(groupName: String) -> Bool {
+        return lastVerifiedGroupNameHash == Self.groupNameVerificationHash(groupName: groupName)
     }
 
     public static var alwaysMutedTimestamp: UInt64 { UInt64(LLONG_MAX) }
@@ -97,6 +115,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         case isMarkedUnread
         case mutedUntilTimestamp
         case audioPlaybackRate
+        case lastVerifiedGroupNameHash
     }
 
     public required init(from decoder: any Decoder) throws {
@@ -115,6 +134,9 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         if let audioPlaybackRate = try container.decodeIfPresent(Float.self, forKey: .audioPlaybackRate) {
             self.audioPlaybackRate = audioPlaybackRate
         }
+        if let lastVerifiedGroupNameHash = try container.decodeIfPresent(Data.self, forKey: .lastVerifiedGroupNameHash) {
+            self.lastVerifiedGroupNameHash = lastVerifiedGroupNameHash
+        }
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -125,6 +147,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         try container.encode(self.isMarkedUnread, forKey: .isMarkedUnread)
         try container.encode(Int64(bitPattern: self.mutedUntilTimestamp), forKey: .mutedUntilTimestamp)
         try container.encode(self.audioPlaybackRate, forKey: .audioPlaybackRate)
+        try container.encodeIfPresent(lastVerifiedGroupNameHash, forKey: .lastVerifiedGroupNameHash)
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -137,12 +160,14 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         isMarkedUnread: Bool,
         mutedUntilTimestamp: UInt64,
         audioPlaybackRate: Float,
+        lastVerifiedGroupNameHash: Data?,
     ) {
         self.threadUniqueId = threadUniqueId
         self.isArchived = isArchived
         self.isMarkedUnread = isMarkedUnread
         self.mutedUntilTimestamp = mutedUntilTimestamp
         self.audioPlaybackRate = audioPlaybackRate
+        self.lastVerifiedGroupNameHash = lastVerifiedGroupNameHash
         super.init()
     }
 
@@ -151,6 +176,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         isMarkedUnread: Bool? = nil,
         mutedUntilTimestamp: UInt64? = nil,
         audioPlaybackRate: Float? = nil,
+        lastVerifiedGroupNameHash: Data? = nil,
         updateStorageService: Bool,
         transaction: DBWriteTransaction,
     ) {
@@ -159,6 +185,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
             || isMarkedUnread != nil
             || mutedUntilTimestamp != nil
             || audioPlaybackRate != nil
+            || lastVerifiedGroupNameHash != nil
         else {
             return owsFailDebug("You must set one value")
         }
@@ -175,6 +202,9 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
             }
             if let audioPlaybackRate {
                 associatedData.audioPlaybackRate = audioPlaybackRate
+            }
+            if let lastVerifiedGroupNameHash {
+                associatedData.lastVerifiedGroupNameHash = lastVerifiedGroupNameHash
             }
         }
     }

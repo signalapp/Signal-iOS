@@ -70,6 +70,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
             isMarkedUnread: false,
             mutedUntilTimestamp: 0,
             audioPlaybackRate: 1,
+            lastVerifiedGroupNameHash: nil,
         )
 
         let interactionStore = MockInteractionStore()

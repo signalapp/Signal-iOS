@@ -18,6 +18,9 @@ public struct ChangedGroupModel {
     /// group change.
     public let newlyLearnedPniToAciAssociations: [Pni: Aci]
 
+    /// Whether we should update the last verified name hash because the local user changed it.
+    public let shouldUpdateLastVerifiedGroupNameHash: Bool
+
     public init(
         oldGroupModel: TSGroupModelV2,
         newGroupModel: TSGroupModelV2,
@@ -25,6 +28,7 @@ public struct ChangedGroupModel {
         updateSource: GroupUpdateSource,
         profileKeys: [Aci: Data],
         newlyLearnedPniToAciAssociations: [Pni: Aci],
+        shouldUpdateLastVerifiedGroupNameHash: Bool,
     ) {
         self.oldGroupModel = oldGroupModel
         self.newGroupModel = newGroupModel
@@ -32,6 +36,7 @@ public struct ChangedGroupModel {
         self.updateSource = updateSource
         self.profileKeys = profileKeys
         self.newlyLearnedPniToAciAssociations = newlyLearnedPniToAciAssociations
+        self.shouldUpdateLastVerifiedGroupNameHash = shouldUpdateLastVerifiedGroupNameHash
     }
 }
 
@@ -533,6 +538,7 @@ public class GroupsV2IncomingChanges {
             groupMembershipBuilder.removeBannedMember(aci)
         }
 
+        var shouldUpdateLastVerifiedGroupNameHash = false
         if let action = changeActionsProto.modifyTitle {
             if !canEditAttributes {
                 owsFailDebug("Cannot modify title.")
@@ -540,6 +546,10 @@ public class GroupsV2IncomingChanges {
 
             // Change clears or updates the group title.
             newGroupName = groupV2Params.decryptGroupName(action.title)
+
+            if changeAuthor == localIdentifiers.aci {
+                shouldUpdateLastVerifiedGroupNameHash = true
+            }
         }
 
         if let action = changeActionsProto.modifyDescription {
@@ -687,6 +697,7 @@ public class GroupsV2IncomingChanges {
             updateSource: updateSource,
             profileKeys: profileKeys,
             newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
+            shouldUpdateLastVerifiedGroupNameHash: shouldUpdateLastVerifiedGroupNameHash,
         )
     }
 }

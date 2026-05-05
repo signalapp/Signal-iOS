@@ -988,6 +988,10 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
         builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
 
+        if let lastVerifiedGroupNameHash = threadAssociatedData.lastVerifiedGroupNameHash {
+            builder.setVerifiedNameHash(lastVerifiedGroupNameHash)
+        }
+
         let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction)
         switch groupThread?.mentionNotificationMode {
         case .none, .default:
@@ -1127,6 +1131,10 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
 
         if mergeDefaultAvatarColor(in: record, groupId: groupId, tx: transaction) {
             needsUpdate = true
+        }
+
+        if let verifiedHash = record.verifiedNameHash, verifiedHash != localThreadAssociatedData.lastVerifiedGroupNameHash {
+            localThreadAssociatedData.updateWith(lastVerifiedGroupNameHash: verifiedHash, updateStorageService: false, transaction: transaction)
         }
 
         return .merged(needsUpdate: needsUpdate, masterKey)
