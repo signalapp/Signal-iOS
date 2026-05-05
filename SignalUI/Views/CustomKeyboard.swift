@@ -51,20 +51,27 @@ open class CustomKeyboard: UIInputView {
 
     // MARK: - Height Management
 
-    public func setSystemKeyboardHeight(
+    public class func setSystemKeyboardHeight(
         _ height: CGFloat,
         forTraitCollection traitCollection: UITraitCollection,
     ) {
         // Only respect this height if it's reasonable, we don't want
         // to have a tiny keyboard.
-        guard height > 170 else { return }
+        guard height > 170 else {
+            Logger.warn("Ignoring suspicious keyboard height: \(height)")
+            return
+        }
 
         let key = SizeClassKey(
             horizontal: traitCollection.horizontalSizeClass,
             vertical: traitCollection.verticalSizeClass,
         )
-        if CustomKeyboard.cachedKeyboardHeights[key] == nil {
-            CustomKeyboard.cachedKeyboardHeights[key] = height
+        Logger.debug(
+            "Keyboard height: \(height). Horizontal: \(traitCollection.horizontalSizeClass) " +
+                "Vertical: \(traitCollection.verticalSizeClass) Size: \(key.screenSize)",
+        )
+        if cachedKeyboardHeights[key] == nil {
+            cachedKeyboardHeights[key] = height
         }
     }
 
@@ -77,7 +84,7 @@ open class CustomKeyboard: UIInputView {
             horizontal: traitCollection.horizontalSizeClass,
             vertical: traitCollection.verticalSizeClass,
         )
-        return CustomKeyboard.cachedKeyboardHeights[key] != nil
+        return cachedKeyboardHeights[key] != nil
     }
 
     private lazy var heightConstraint = heightAnchor.constraint(equalToConstant: 0)
@@ -85,10 +92,23 @@ open class CustomKeyboard: UIInputView {
     private struct SizeClassKey: Hashable {
         let horizontal: UIUserInterfaceSizeClass
         let vertical: UIUserInterfaceSizeClass
+        let screenSize: CGSize
+
+        init(horizontal: UIUserInterfaceSizeClass, vertical: UIUserInterfaceSizeClass) {
+            self.horizontal = horizontal
+            self.vertical = vertical
+            self.screenSize = UIScreen.main.bounds.size
+        }
 
         func hash(into hasher: inout Hasher) {
             hasher.combine(horizontal.rawValue)
             hasher.combine(vertical.rawValue)
+            if #available(iOS 18, *) {
+                hasher.combine(screenSize)
+            } else {
+                hasher.combine(screenSize.width)
+                hasher.combine(screenSize.height)
+            }
         }
 
     }

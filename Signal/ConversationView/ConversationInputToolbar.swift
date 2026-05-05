@@ -3057,13 +3057,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         let viewForKeyboardLayoutGuide = inputToolbarDelegate?.viewForKeyboardLayoutGuide() ?? self
         let keyboardHeight = viewForKeyboardLayoutGuide.keyboardLayoutGuide.layoutFrame.height
-        if keyboardHeight > 100 {
-            Logger.debug("Keyboard height: \(keyboardHeight). Horizontal: \(traitCollection.horizontalSizeClass) Vertical: \(traitCollection.verticalSizeClass)")
-            stickerKeyboard.setSystemKeyboardHeight(keyboardHeight, forTraitCollection: traitCollection)
-            attachmentKeyboard.setSystemKeyboardHeight(keyboardHeight, forTraitCollection: traitCollection)
-        } else {
-            Logger.warn("Suspicious keyboard height: \(keyboardHeight)")
-        }
+        CustomKeyboard.setSystemKeyboardHeight(keyboardHeight, forTraitCollection: traitCollection)
     }
 
     func clearDesiredKeyboard() {
