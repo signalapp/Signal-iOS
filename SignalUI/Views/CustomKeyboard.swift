@@ -62,13 +62,11 @@ open class CustomKeyboard: UIInputView {
             return
         }
 
-        let key = SizeClassKey(
-            horizontal: traitCollection.horizontalSizeClass,
-            vertical: traitCollection.verticalSizeClass,
-        )
+        let key = SizeClassKey(traitCollection: traitCollection)
         Logger.debug(
-            "Keyboard height: \(height). Horizontal: \(traitCollection.horizontalSizeClass) " +
-                "Vertical: \(traitCollection.verticalSizeClass) Size: \(key.screenSize)",
+            "Keyboard height: \(height). Interface: \(traitCollection.userInterfaceIdiom) " +
+                "Horizontal: \(traitCollection.horizontalSizeClass) Vertical: \(traitCollection.verticalSizeClass) " +
+                "Size: \(key.screenSize)",
         )
         if cachedKeyboardHeights[key] == nil {
             cachedKeyboardHeights[key] = height
@@ -80,10 +78,7 @@ open class CustomKeyboard: UIInputView {
     }
 
     public class func hasCachedHeight(forTraitCollection traitCollection: UITraitCollection) -> Bool {
-        let key = SizeClassKey(
-            horizontal: traitCollection.horizontalSizeClass,
-            vertical: traitCollection.verticalSizeClass,
-        )
+        let key = SizeClassKey(traitCollection: traitCollection)
         return cachedKeyboardHeights[key] != nil
     }
 
@@ -92,11 +87,13 @@ open class CustomKeyboard: UIInputView {
     private struct SizeClassKey: Hashable {
         let horizontal: UIUserInterfaceSizeClass
         let vertical: UIUserInterfaceSizeClass
+        let userInterfaceIdiom: UIUserInterfaceIdiom
         let screenSize: CGSize
 
-        init(horizontal: UIUserInterfaceSizeClass, vertical: UIUserInterfaceSizeClass) {
-            self.horizontal = horizontal
-            self.vertical = vertical
+        init(traitCollection: UITraitCollection) {
+            self.horizontal = traitCollection.horizontalSizeClass
+            self.vertical = traitCollection.verticalSizeClass
+            self.userInterfaceIdiom = traitCollection.userInterfaceIdiom
             self.screenSize = UIScreen.main.bounds.size
         }
 
@@ -111,16 +108,56 @@ open class CustomKeyboard: UIInputView {
             }
         }
 
+        func estimatedKeyboardHeight() -> CGFloat? {
+            // iOS 26.4.1 dimensions.
+            switch userInterfaceIdiom {
+            case .phone:
+                switch vertical {
+                case .compact:
+                    // iPhone SE: 206
+                    // iPhone 12/13 Mini: 214
+                    // iPhone 17: 208
+                    // iPhone 17e: 208
+                    // iPhone 17 Pro: 208
+                    // iPhone 17 Pro Max: 208
+                    // iPhone Air: 208
+                    //
+                    // Few points difference are not worth implementing any per-device logic,
+                    // especially given that there's no easy way to distinguish those devices.
+                    return 208
+                case .regular:
+                    // iPhone SE: 260
+                    // iPhone 12/13 Mini: 344
+                    // iPhone 17: 335
+                    // iPhone 17e: 335
+                    // iPhone 17 Pro: 335
+                    // iPhone 17 Pro Max: 345
+                    // iPhone Air: 345
+                    if UIDevice.current.hasIPhoneXNotch {
+                        if UIDevice.current.isPlusSizePhone {
+                            return 345
+                        }
+                        return 335
+                    }
+                    return 260
+                default:
+                    owsFailDebug("Invalid size classes: H:\(horizontal), V:\(vertical)")
+                    return nil
+                }
+            case .pad:
+                return screenSize.height > screenSize.width ? 337 : 422
+            default:
+                owsFailDebug("Invalid userInterfaceIdiom: \(userInterfaceIdiom)")
+                return nil
+            }
+        }
     }
 
     private static var cachedKeyboardHeights = [SizeClassKey: CGFloat]()
 
     private func updateHeightConstraint() {
-        let key = SizeClassKey(
-            horizontal: traitCollection.horizontalSizeClass,
-            vertical: traitCollection.verticalSizeClass,
-        )
-        guard let cachedHeight = CustomKeyboard.cachedKeyboardHeights[key] else {
+        let key = SizeClassKey(traitCollection: traitCollection)
+        guard let keyboardHeight = CustomKeyboard.cachedKeyboardHeights[key] ?? key.estimatedKeyboardHeight() else {
             // We don't have a cached height for this orientation,
             // let the auto sizing do its best guess at what the
             // system keyboard height might be.
@@ -134,7 +171,7 @@ open class CustomKeyboard: UIInputView {
         // does not account for things like the quicktype toolbar.
         allowsSelfSizing = true
         heightConstraint.isActive = true
-        heightConstraint.constant = cachedHeight
+        heightConstraint.constant = keyboardHeight
     }
 
     override open func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
