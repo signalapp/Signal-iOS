@@ -655,7 +655,7 @@ public class MessageSender {
             let fanoutRecipients: Set<ServiceId>
             let sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?
             let senderCertificate: SenderCertificate
-            let udAccess: [ServiceId: OWSUDAccess]
+            let udAccess: [Aci: OWSUDAccess]
             let endorsements: GroupSendEndorsements?
             let localIdentifiers: LocalIdentifiers
             let localDeviceId: DeviceId
@@ -927,7 +927,7 @@ public class MessageSender {
         viaFanoutTo fanoutRecipients: Set<ServiceId>,
         viaSenderKey sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?,
         senderCertificate: SenderCertificate,
-        udAccess sendingAccessMap: [ServiceId: OWSUDAccess],
+        udAccess sendingAccessMap: [Aci: OWSUDAccess],
         endorsements: GroupSendEndorsements?,
         localIdentifiers: LocalIdentifiers,
         localDeviceId: DeviceId,
@@ -957,7 +957,7 @@ public class MessageSender {
                 var sealedSenderParameters = SealedSenderParameters(
                     message: message,
                     senderCertificate: senderCertificate,
-                    accessKey: sendingAccessMap[serviceId],
+                    accessKey: (serviceId as? Aci).flatMap({ sendingAccessMap[$0] }),
                     endorsement: endorsements?.tokenBuilder(forServiceId: serviceId),
                 )
                 if localIdentifiers.contains(serviceId: serviceId) {
