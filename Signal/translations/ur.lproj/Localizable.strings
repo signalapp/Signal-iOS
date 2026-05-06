@@ -655,6 +655,27 @@
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "نئی کیی تخلیق کریں";
 
+/* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Save to Password Manager";
+
+/* Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+
+/* Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Save to password manager?";
+
+/* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Recovery Key";
+
+/* Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+
+/* Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Can't save to password manager";
+
+/* Toast shown after the user successfully saves their 'Recovery Key' to a password manager. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Done. Check your password manager to verify.";
+
 /* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "یہ کیی آپ کے اکاؤنٹ اور ڈیٹا کو بحال کرنے کے لیے درکار ہوتی ہے۔ اس کیی کو کسی محفوظ جگہ پر اسٹور کریں۔ اگر آپ اسے کھو دیتے ہیں، تو آپ اپنا اکاؤنٹ بحال نہیں کر سکیں گے۔";
 
@@ -1621,14 +1642,17 @@
 /* Title for a long-press context menu action to join a voice call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "وائس کال میں شامل ہوں";
 
-/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "کوئی مسڈ کالز نہیں";
+/* Second line of text shown in All Calls when the list is empty. */
+"CALLS_TAB_NO_CALLS_SUBTITLE" = "Recent calls will appear here.";
 
-/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "کوئی حالیہ کالز نہیں";
+/* Top line of text shown in All Calls when the list is empty. */
+"CALLS_TAB_NO_CALLS_TITLE" = "No Calls";
 
-/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "دوست کو کال کرنے سے شروعات کریں";
+/* Second line of text shown in Missed Calls when the list is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Missed calls will appear here.";
+
+/* Top line of text shown in Missed Calls when the list is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No Missed Calls";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "کال پر واپس جائیں";
@@ -1884,6 +1908,12 @@
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "بالحاظ غیر پڑھی ہوئی فلٹر کردہ";
+
+/* Message shown in the chat list when the chat list is empty. */
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+
+/* Message shown in the chat list when the chat list is empty. */
+"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "چیٹس";
@@ -3023,10 +3053,10 @@
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "عطیہ زیر التواء ہے";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "آپ کا iDEAL | Wero کا عطیہ ابھی بھی عمل پذیری میں ہے۔ ایک اور عطیہ دینے سے پہلے اپنی پیمنٹ کی منظوری کے لیے اپنی بینکنگ ایپ چیک کریں۔";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "آپ کا iDEAL | Wero کا عطیہ ابھی بھی عمل پذیری میں ہے۔ ایک اور عطیہ دینے سے پہلے اپنی پیمنٹ کی منظوری کے لیے اپنی بینکنگ ایپ چیک کریں۔";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "بینک ٹرانسفرز کو زیر عمل لانے میں 1 سے 14 کاروباری ایام لگ سکتے ہیں۔ براہ کرم ایک اور عطیہ دینے سے پہلے اس عطیے کے مکمل ہونے کا انتظار کریں۔";
@@ -3275,7 +3305,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "دوبارہ کوشش کریں";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL | Wero donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "آپ کے iDEAL | Wero کے عطیے کی تصدیق نہیں ہو سکی۔ اپنے عطیے کی منظوری کے لیے اپنی بینکنگ ایپ چیک کریں یا دوبارہ کوشش کریں۔";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "آپ کا بینک ٹرانسفر زیر التوا ہے۔ بینک ٹرانسفرز کو زیر عمل لانے میں 1 سے 14 کاروباری ایام لگ سکتے ہیں۔";
@@ -3293,16 +3323,16 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "عطیے کی تصدیق نہیں کی جا سکی";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL | Wero one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "آپ کے iDEAL | Wero کے ایک وقتی عطیہ پر کارروائی نہیں ہو سکی۔ پیمنٹ کا کوئی دوسرا طریقہ آزمائیں یا مزید معلومات کے لیے اپنے بینک سے رابطہ کریں۔";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your one-time %1$@ iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "آپ کے iDEAL | Wero کے ایک وقتی %1$@ عطیہ کی تصدیق نہیں ہو سکی۔ اپنے iDEAL | Wero کے عطیہ کی منظوری کے لیے اپنی بینکنگ ایپ چیک کریں۔";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information..";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your recurring %1$@ monthly iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "آپ کے iDEAL | Wero کے %1$@ کے متواتر ماہانہ عطیے کی تصدیق نہیں ہو سکی۔ اپنے iDEAL | Wero کے عطیہ کی منظوری کے لیے اپنی بینکنگ ایپ چیک کریں۔";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "آپ کا مکرر ماہانہ عطیہ ختم ہو چکا ہے۔ %1$@";
@@ -3689,7 +3719,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "منسلک مواد";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "New message";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "نيا پیغام";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "شروع کریں";
@@ -4717,9 +4747,6 @@
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "آرکائیو کردہ چیٹس نیا میسج آنے پر ان باکس میں منتقل ہو جائیں گی۔";
 
-/* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "ابھی کوئی چیٹس نہیں ہیں۔\nکسی دوست کو میسج کر کے اس کا آغاز کریں۔";
-
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "جانے والی ویڈیو کال";
 
@@ -4886,16 +4913,16 @@
 "KEY_COMMAND_UNARCHIVE" = "چیٹ کو اَن آرکائیو کریں";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Please contact support to help us fix the issue.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "براہ کرم اس مسئلہ کو حل کرنے میں ہماری مدد کے لیے سپورٹ سے رابطہ کریں۔";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Contact Support";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "سپورٹ سے رابطہ کریں";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
 "KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "نہیں شکریہ";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "آپ کی ڈیوائس پر خودکار کیی کی تصدیق فی الحال دستیاب نہیں ہے۔";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "مزید جانیں";
@@ -7447,6 +7474,12 @@
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_ERROR" = "آپ بہت بار کوشش کر چکے ہیں۔براہ کرم دوبارہ کوشش کرنے سے پہلے ایک منٹ انتطار کریں۔";
 
+/* Short description for a sheet warning users about an incorrect recovery key used for registration. */
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
+
+/* Title for a sheet warning users about an incorrect recovery key used for registration. */
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "اس بحالی کی کیی کے ساتھ کوئی بیک اپ منسلک شدہ نہیں ہے۔ براہ کرم یقینی بنائیں کہ کیی درست ہے اور دوبارہ کوشش کریں۔";
 
@@ -8471,7 +8504,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "ویڈیوز";
 
 /* Setting for enabling & disabling the sound effect played when a message is sent. */
-"SETTINGS_MESSAGE_SENT_SOUND" = "Message Sent Sound";
+"SETTINGS_MESSAGE_SENT_SOUND" = "میسج بھیج دیا گیا کی آواز";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "جب پیغامات کو پڑھ اور ٹائپ کیا جا رہا ہو تو دیکھیں اور شئیر کریں۔ اگر غیر فعال ہے تو ، آپ کو پڑھنے کی رسیدیں یا دوسروں کی طرف سے ٹائپنگ کے اشارے نظر نہیں آئیں گے۔";
@@ -9349,14 +9382,17 @@
 /* Context menu action to view metadata about the story */
 "STORIES_INFO_ACTION" = "معلومات";
 
-/* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "ابھی دکھانے کے لیے کوئی اپ ڈیٹس نہیں ہیں۔";
-
 /* The subtitle when this story has no replies */
 "STORIES_NO_REPLIES_SUBTITLE" = "اس گروپ کے تمام ممبرز جوابات دیکھ سکتے ہیں";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "ابھی تک کوئی جوابات نہیں";
+
+/* Message shown in the Stories tab when the list is empty. */
+"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+
+/* Message shown in the Stories tab when the list is empty. */
+"STORIES_NO_STORIES_TITLE" = "No Stories";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "ابھی تک کوئی ویوز نہیں";
@@ -9461,7 +9497,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "آپ نے %2$@ کی سٹوری پر %1$@ ری ایکٹ کیا";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "آپ کی سٹوری پر %1$@ ری ایکٹ کیا";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Reacted %1$@ to your story";
+
+/* Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}. */
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ reacted %2$@ to %3$@’s story";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "سٹوری پر %1$@ ری ایکٹ کیا";

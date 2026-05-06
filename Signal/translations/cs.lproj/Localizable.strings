@@ -655,6 +655,27 @@
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Vytvořit nový klíč";
 
+/* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Save to Password Manager";
+
+/* Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+
+/* Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Save to password manager?";
+
+/* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Recovery Key";
+
+/* Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+
+/* Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Can't save to password manager";
+
+/* Toast shown after the user successfully saves their 'Recovery Key' to a password manager. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Done. Check your password manager to verify.";
+
 /* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "Tento klíč je nutný k obnovení vašeho účtu a dat. Uložte tento klíč na bezpečné místo. Pokud jej ztratíte, nebudete moci svůj účet obnovit.";
 
@@ -1621,14 +1642,17 @@
 /* Title for a long-press context menu action to join a voice call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Připojit se k hlasovému hovoru";
 
-/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Žádné zmeškané hovory";
+/* Second line of text shown in All Calls when the list is empty. */
+"CALLS_TAB_NO_CALLS_SUBTITLE" = "Recent calls will appear here.";
 
-/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Žádné nedávné hovory";
+/* Top line of text shown in All Calls when the list is empty. */
+"CALLS_TAB_NO_CALLS_TITLE" = "No Calls";
 
-/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Začněte tím, že zavoláte příteli";
+/* Second line of text shown in Missed Calls when the list is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Missed calls will appear here.";
+
+/* Top line of text shown in Missed Calls when the list is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No Missed Calls";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Zpátky k hovoru";
@@ -1884,6 +1908,12 @@
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrováno podle nepřečtených";
+
+/* Message shown in the chat list when the chat list is empty. */
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+
+/* Message shown in the chat list when the chat list is empty. */
+"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Chaty";
@@ -3023,10 +3053,10 @@
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Příspěvek se zpracovává";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Váš příspěvek přes iDEAL | Wero se stále zpracovává. Než se rozhodnete znovu přispět, zkontrolujte svou bankovní aplikaci, zda byla platba schválena.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Váš příspěvek přes iDEAL | Wero se stále zpracovává. Než se rozhodnete znovu přispět, zkontrolujte svou bankovní aplikaci, zda byla platba schválena.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Zpracování bankovního převodu může trvat 1 až 14 pracovních dní. S dalším příspěvkem prosím počkejte, dokud nebude tento příspěvek dokončen.";
@@ -3275,7 +3305,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Zkusit znovu";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL | Wero donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Váš příspěvek přes iDEAL | Wero se nepodařilo potvrdit. Zkontrolujte svou bankovní aplikaci a příspěvek potvrďte, nebo to zkuste znovu.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Váš bankovní převod čeká na zpracování. Zpracování bankovního převodu může trvat 1 až 14 pracovních dní.";
@@ -3293,16 +3323,16 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Příspěvek nebylo možné potvrdit";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL | Wero one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Váš příspěvek přes iDEAL | Wero se nepodařilo zpracovat. Zkuste jinou platební metodu, nebo se obraťte na svou banku a požádejte o další informace.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your one-time %1$@ iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Váš jednorázový příspěvek ve výši %1$@ přes iDEAL | Wero se nepodařilo potvrdit. Zkontrolujte svou bankovní aplikaci a příspěvek přes iDEAL | Wero potvrďte.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information..";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your recurring %1$@ monthly iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Váš pravidelný měsíční příspěvek přes iDEAL | Wero ve výši %1$@ se nepodařilo potvrdit. Zkontrolujte svou bankovní aplikaci a příspěvek přes iDEAL | Wero potvrďte.";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Váš pravidelný měsíční příspěvek byl zrušen. %1$@";
@@ -3689,7 +3719,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Příloha";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "New message";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Nová zpráva";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Začněte";
@@ -4717,9 +4747,6 @@
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archivované chaty se po příchodu nové zprávy přesunou do doručených zpráv.";
 
-/* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Zatím žádné chaty.\nZačněte tím, že napíšete svým přátelům.";
-
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "Příchozí videohovor";
 
@@ -4886,16 +4913,16 @@
 "KEY_COMMAND_UNARCHIVE" = "Zrušit archivaci chatu";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Please contact support to help us fix the issue.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Kontaktujte prosím podporu, aby vám pomohla problém vyřešit.";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Contact Support";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Kontaktovat podporu";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
 "KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "Ne, díky";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatické ověření klíče není momentálně na vašem zařízení k dispozici.";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Zjistit více";
@@ -7447,6 +7474,12 @@
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_ERROR" = "Zkoušeli jste to příliš často. Minutu počkejte, než to zkusíte znovu.";
 
+/* Short description for a sheet warning users about an incorrect recovery key used for registration. */
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
+
+/* Title for a sheet warning users about an incorrect recovery key used for registration. */
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "K tomuto klíči pro obnovení není přiřazena žádná záloha. Zkontrolujte, zda je klíč správný, a zkuste to znovu.";
 
@@ -8471,7 +8504,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Videa";
 
 /* Setting for enabling & disabling the sound effect played when a message is sent. */
-"SETTINGS_MESSAGE_SENT_SOUND" = "Message Sent Sound";
+"SETTINGS_MESSAGE_SENT_SOUND" = "Zvuk odeslané zprávy";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "Zobrazte a sdílejte informaci, když jsou zprávy přečteny nebo psány. Pokud tuto možnost zakážete, neuvidíte informace o přečtení zpráv ani indikátory psaní ani u ostatních lidí.";
@@ -9349,14 +9382,17 @@
 /* Context menu action to view metadata about the story */
 "STORIES_INFO_ACTION" = "Info";
 
-/* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "V tuto chvíli nejsou k zobrazení žádné aktualizace.";
-
 /* The subtitle when this story has no replies */
 "STORIES_NO_REPLIES_SUBTITLE" = "Odpovědi uvidí všichni členové této skupiny";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Zatím žádné odpovědi";
+
+/* Message shown in the Stories tab when the list is empty. */
+"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+
+/* Message shown in the Stories tab when the list is empty. */
+"STORIES_NO_STORIES_TITLE" = "No Stories";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "Zatím žádná zobrazení";
@@ -9461,7 +9497,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "Reagoval/a jste %1$@ na příběh uživatele %2$@";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "Reagoval/a %1$@ na váš příběh";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Reacted %1$@ to your story";
+
+/* Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}. */
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ reacted %2$@ to %3$@’s story";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Reagoval/a jsi %1$@ na příběh";

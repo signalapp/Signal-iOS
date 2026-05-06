@@ -655,6 +655,27 @@
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Crear nueva clave";
 
+/* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Save to Password Manager";
+
+/* Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+
+/* Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Save to password manager?";
+
+/* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Recovery Key";
+
+/* Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+
+/* Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Can't save to password manager";
+
+/* Toast shown after the user successfully saves their 'Recovery Key' to a password manager. */
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Done. Check your password manager to verify.";
+
 /* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "Se necesita esta clave para recuperar tu cuenta y tus datos. Guárdala en un lugar seguro. Si la pierdes, no podrás recuperar tu cuenta.";
 
@@ -1621,14 +1642,17 @@
 /* Title for a long-press context menu action to join a voice call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Unirse a la llamada";
 
-/* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_LABEL" = "No hay llamadas perdidas";
+/* Second line of text shown in All Calls when the list is empty. */
+"CALLS_TAB_NO_CALLS_SUBTITLE" = "Recent calls will appear here.";
 
-/* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "No hay llamadas recientes";
+/* Top line of text shown in All Calls when the list is empty. */
+"CALLS_TAB_NO_CALLS_TITLE" = "No Calls";
 
-/* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Llama a alguien para empezar";
+/* Second line of text shown in Missed Calls when the list is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Missed calls will appear here.";
+
+/* Top line of text shown in Missed Calls when the list is empty. */
+"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No Missed Calls";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Volver a la llamada";
@@ -1884,6 +1908,12 @@
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrado por no leídos";
+
+/* Message shown in the chat list when the chat list is empty. */
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+
+/* Message shown in the chat list when the chat list is empty. */
+"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Chats";
@@ -3023,10 +3053,10 @@
 "DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "Donación pendiente";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Tu donación a través de iDEAL| Wero aún se está procesando. Consulta la aplicación de tu banco para aprobar el pago antes de hacer otra donación.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Your iDEAL | Wero donation is still processing. Check your banking app to approve your payment before making another donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Tu donación a través de iDEAL| Wero aún se está procesando. Consulta la aplicación de tu banco para aprobar el pago antes de hacer otra donación.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Las transferencias bancarias pueden tardar entre 1 y 14 días hábiles en procesarse. Espera hasta que se complete esta donación antes de hacer otra.";
@@ -3275,7 +3305,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Inténtalo de nuevo";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Your iDEAL | Wero donation couldn't be confirmed. Check your banking app to approve your donation or try again.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "No se ha podido confirmar tu donación a través de iDEAL | Wero. Consulta la aplicación de tu banco para aprobar tu donación o inténtalo de nuevo.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tu transferencia bancaria está pendiente. Las transferencias bancarias pueden tardar entre 1 y 14 días hábiles en procesarse.";
@@ -3293,16 +3323,16 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "No se ha podido confirmar tu donación";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Your iDEAL | Wero one-time donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "No se ha podido procesar tu donación puntual a través de iDEAL | Wero. Selecciona otro método de pago o contacta con tu banco para obtener más información.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your one-time %1$@ iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "No se ha podido procesar tu donación puntual de %1$@ a través de iDEAL | Wero. Consulta la aplicación de tu banco para aprobar tu donación a través de iDEAL | Wero.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information..";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Your recurring %1$@ monthly iDEAL | Wero donation couldn’t be confirmed. Check your banking app to approve your iDEAL | Wero donation.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "No se ha podido confirmar tu donación mensual recurrente de %1$@ a través de iDEAL | Wero. Consulta la aplicación de tu banco para aprobar tu donación a través de iDEAL | Wero.";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Tu donación mensual ha finalizado. %1$@";
@@ -3689,7 +3719,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Archivo adjunto";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "New message";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Nuevo mensaje";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Primeros pasos";
@@ -4717,9 +4747,6 @@
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Los chats archivados se mostrarán en la lista principal cuando recibas un nuevo mensaje.";
 
-/* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Todavía no tienes chats.\nEnvía un mensaje a quien quieras para empezar.";
-
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "Videollamada entrante";
 
@@ -4886,16 +4913,16 @@
 "KEY_COMMAND_UNARCHIVE" = "Desarchivar chat";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Please contact support to help us fix the issue.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Ponte en contacto con el equipo de asistencia para ayudarnos a solucionar el problema.";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Contact Support";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Contactar con asistencia";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
 "KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "No, gracias";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Actualmente, la verificación automática de claves no está disponible para tu dispositivo.";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Más información";
@@ -7447,6 +7474,12 @@
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_ERROR" = "Lo has intentado demasiadas veces. Espera un minuto antes de intentarlo de nuevo.";
 
+/* Short description for a sheet warning users about an incorrect recovery key used for registration. */
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
+
+/* Title for a sheet warning users about an incorrect recovery key used for registration. */
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "No hay ninguna copia de seguridad asociada a esta clave de recuperación. Asegúrate de que la clave sea correcta e inténtalo de nuevo.";
 
@@ -8267,7 +8300,7 @@
 "SETTINGS_APPEARANCE_APP_ICON" = "Icono de la aplicación";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Muestra las fotos de contactos del teléfono si están disponibles.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Se muestran las fotos de contactos del teléfono si están disponibles.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
 "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Usar fotos de contactos";
@@ -8471,7 +8504,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Vídeos";
 
 /* Setting for enabling & disabling the sound effect played when a message is sent. */
-"SETTINGS_MESSAGE_SENT_SOUND" = "Message Sent Sound";
+"SETTINGS_MESSAGE_SENT_SOUND" = "Sonido de mensaje enviado";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "Mira y comparte cuándo se leen y escriben mensajes. Si lo desactivas, no verás las confirmaciones de lectura ni los indicadores de escritura de nadie.";
@@ -9349,14 +9382,17 @@
 /* Context menu action to view metadata about the story */
 "STORIES_INFO_ACTION" = "Detalles";
 
-/* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No hay actualizaciones que mostrar.";
-
 /* The subtitle when this story has no replies */
 "STORIES_NO_REPLIES_SUBTITLE" = "Todas las personas del grupo pueden ver las respuestas";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Aún no hay respuestas";
+
+/* Message shown in the Stories tab when the list is empty. */
+"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+
+/* Message shown in the Stories tab when the list is empty. */
+"STORIES_NO_STORIES_TITLE" = "No Stories";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "Aún no hay visualizaciones";
@@ -9461,7 +9497,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "Has reaccionado con %1$@ a la historia de %2$@";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "Ha reaccionado con %1$@ a tu historia";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Reacted %1$@ to your story";
+
+/* Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}. */
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ reacted %2$@ to %3$@’s story";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Has reaccionado con %1$@ a una historia";
