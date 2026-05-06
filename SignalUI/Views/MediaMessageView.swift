@@ -311,7 +311,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
                 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
                 comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}.",
             ),
-            OWSFormat.localizedFileSizeString(from: Int64(fileSize)),
+            OWSFormat.localizedFileSizeString(from: fileSize),
         )
 
         label.textColor = tintColor

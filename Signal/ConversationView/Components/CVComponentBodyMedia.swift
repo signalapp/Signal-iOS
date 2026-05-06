@@ -260,7 +260,7 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
                 // Total size of undownloaded media displayed over the blur pill-shaped background.
                 if totalSize > 0 {
-                    var downloadSizeText = [OWSFormat.localizedFileSizeString(from: Int64(totalSize))]
+                    var downloadSizeText = [OWSFormat.localizedFileSizeString(from: UInt64(safeCast: totalSize))]
                     if
                         pendingManualDownloadAttachments.count == 1,
                         let firstAttachmentPointer = pendingManualDownloadAttachments.first

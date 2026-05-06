@@ -32,21 +32,21 @@ class OWSFormatTest: XCTestCase {
     }
 
     func testFileSizes() throws {
-        let kb: Int64 = 1000
-        let mb: Int64 = 1000 * kb
-        let gb: Int64 = 1000 * mb
+        let kb: UInt64 = 1000
+        let mb: UInt64 = 1000 * kb
+        let gb: UInt64 = 1000 * mb
         XCTAssertEqual(OWSFormat.localizedFileSizeString(from: 0), "Zero KB")
         XCTAssertEqual(OWSFormat.localizedFileSizeString(from: 1), "1 byte")
         XCTAssertEqual(OWSFormat.localizedFileSizeString(from: 60), "60 bytes")
         XCTAssertEqual(OWSFormat.localizedFileSizeString(from: 1 * kb), "1 KB")
-        XCTAssertEqual(OWSFormat.localizedFileSizeString(from: Int64(3.3 * Double(kb))), "3 KB")
-        XCTAssertEqual(OWSFormat.localizedFileSizeString(from: Int64(13.5 * Double(kb))), "14 KB")
+        XCTAssertEqual(OWSFormat.localizedFileSizeString(from: UInt64(3.3 * Double(kb))), "3 KB")
+        XCTAssertEqual(OWSFormat.localizedFileSizeString(from: UInt64(13.5 * Double(kb))), "14 KB")
         XCTAssertEqual(OWSFormat.localizedFileSizeString(from: 100 * kb), "100 KB")
         XCTAssertEqual(OWSFormat.localizedFileSizeString(from: 1 * mb), "1 MB")
-        XCTAssertEqual(OWSFormat.localizedFileSizeString(from: Int64(4.32 * Double(mb))), "4.3 MB")
+        XCTAssertEqual(OWSFormat.localizedFileSizeString(from: UInt64(4.32 * Double(mb))), "4.3 MB")
         XCTAssertEqual(OWSFormat.localizedFileSizeString(from: 111 * mb), "111 MB")
         XCTAssertEqual(OWSFormat.localizedFileSizeString(from: 1 * gb), "1 GB")
-        XCTAssertEqual(OWSFormat.localizedFileSizeString(from: Int64(2.34 * Double(gb))), "2.34 GB")
+        XCTAssertEqual(OWSFormat.localizedFileSizeString(from: UInt64(2.34 * Double(gb))), "2.34 GB")
         XCTAssertEqual(OWSFormat.localizedFileSizeString(from: 56 * gb), "56 GB")
     }
 }

@@ -180,7 +180,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             var textComponents = [String]()
 
             if let byteCount = attachmentPointer.unencryptedByteCount, byteCount > 0 {
-                textComponents.append(OWSFormat.localizedFileSizeString(from: Int64(byteCount)))
+                textComponents.append(OWSFormat.localizedFileSizeString(from: UInt64(safeCast: byteCount)))
             }
 
             switch genericAttachment.attachment {
@@ -195,7 +195,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             }
         } else if let attachmentStream = genericAttachment.attachmentStream {
             let fileSize = attachmentStream.unencryptedByteCount
-            text = OWSFormat.localizedFileSizeString(from: Int64(fileSize))
+            text = OWSFormat.localizedFileSizeString(from: UInt64(safeCast: fileSize))
         } else if let _ = genericAttachment.attachmentBackupThumbnail {
             // TODO:[Backups]: Handle similar to attachment pointers above
             owsFailDebug("Not implemented yet")

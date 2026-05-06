@@ -11,7 +11,7 @@ protocol MediaGalleryPrimaryViewController: UIViewController {
     var mediaGalleryFilterMenuItems: [MediaGalleryAccessoriesHelper.MenuItem] { get }
     var isEmpty: Bool { get }
     var hasSelection: Bool { get }
-    func selectionInfo() -> (count: Int, totalSize: Int64)?
+    func selectionInfo() -> (count: Int, totalSize: UInt64)?
     func disableFiltering()
     func batchSelectionModeDidChange(isInBatchSelectMode: Bool)
     func selectAll()

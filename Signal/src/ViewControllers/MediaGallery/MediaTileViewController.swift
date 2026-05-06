@@ -1512,7 +1512,7 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
         return false
     }
 
-    func selectionInfo() -> (count: Int, totalSize: Int64)? {
+    func selectionInfo() -> (count: Int, totalSize: UInt64)? {
         guard
             let items = collectionView.indexPathsForSelectedItems?.compactMap({ galleryItem(at: $0) }),
             !items.isEmpty
@@ -1520,8 +1520,8 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
             return nil
         }
 
-        let totalSize = items.reduce(Int64(0), { result, item in
-            result + Int64(item.attachmentStream.attachmentStream.unencryptedByteCount)
+        let totalSize = items.reduce(UInt64(0), { result, item in
+            result + UInt64(safeCast: item.attachmentStream.attachmentStream.unencryptedByteCount)
         })
         return (items.count, totalSize)
     }

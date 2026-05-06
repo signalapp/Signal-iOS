@@ -114,8 +114,8 @@ public extension OWSFormat {
         return result ?? ""
     }
 
-    static func localizedFileSizeString(from fileSize: Int64) -> String {
-        return byteCountFormatter.string(fromByteCount: fileSize)
+    static func localizedFileSizeString(from fileSize: UInt64) -> String {
+        return byteCountFormatter.string(fromByteCount: Int64(clamping: fileSize))
     }
 }
 
