@@ -715,7 +715,12 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
                 newVerificationState = .verified
             }
 
-            deps.identityManager.saveIdentityKey(identityKey, for: recipientAci, tx: tx)
+            deps.identityManager.saveIdentityKey(
+                identityKey,
+                for: recipientAci,
+                shouldUpdateStorageService: true,
+                tx: tx,
+            )
             _ = deps.identityManager.setVerificationState(
                 newVerificationState,
                 of: identityKey.publicKey.keyBytes,

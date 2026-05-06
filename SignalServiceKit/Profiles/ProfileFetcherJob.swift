@@ -484,7 +484,7 @@ public class ProfileFetcherJob {
             }
 
             let identityManager = DependenciesBridge.shared.identityManager
-            identityManager.saveIdentityKey(profile.identityKey, for: serviceId, tx: transaction)
+            identityManager.saveIdentityKey(profile.identityKey, for: serviceId, shouldUpdateStorageService: true, tx: transaction)
 
             let paymentAddress = fetchedProfile.decryptedProfile?.paymentAddress(identityKey: fetchedProfile.identityKey)
             self.paymentsHelper.setArePaymentsEnabled(

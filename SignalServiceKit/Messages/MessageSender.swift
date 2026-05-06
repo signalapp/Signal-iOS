@@ -259,7 +259,7 @@ public class MessageSender {
         transaction tx: DBWriteTransaction,
     ) {
         let identityManager = DependenciesBridge.shared.identityManager
-        identityManager.saveIdentityKey(identityKey, for: serviceId, tx: tx)
+        identityManager.saveIdentityKey(identityKey, for: serviceId, shouldUpdateStorageService: true, tx: tx)
     }
 
     /// If true, we expect fetching a bundle will fail no matter what it contains.

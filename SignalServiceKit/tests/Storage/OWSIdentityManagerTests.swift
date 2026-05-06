@@ -45,7 +45,7 @@ class OWSIdentityManagerTests: SSKBaseTest {
         let newKey = IdentityKeyPair.generate().identityKey
         let aci = Aci.randomForTesting()
         try write { transaction in
-            identityManager.saveIdentityKey(newKey, for: aci, tx: transaction)
+            identityManager.saveIdentityKey(newKey, for: aci, shouldUpdateStorageService: false, tx: transaction)
             XCTAssert(try identityManager.isTrustedIdentityKey(
                 newKey,
                 serviceId: aci,
@@ -65,7 +65,7 @@ class OWSIdentityManagerTests: SSKBaseTest {
         let originalKey = IdentityKeyPair.generate().identityKey
         let aci = Aci.randomForTesting()
         try write { transaction in
-            identityManager.saveIdentityKey(originalKey, for: aci, tx: transaction)
+            identityManager.saveIdentityKey(originalKey, for: aci, shouldUpdateStorageService: false, tx: transaction)
 
             XCTAssert(try identityManager.isTrustedIdentityKey(
                 originalKey,

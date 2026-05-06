@@ -51,7 +51,7 @@ class OWSRecipientIdentityTest: SSKBaseTest {
             for serviceId in recipients {
                 var recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
                 recipientManager.markAsRegisteredAndSave(&recipient, shouldUpdateStorageService: false, tx: tx)
-                identityManager.saveIdentityKey(identityKey(serviceId), for: serviceId, tx: tx)
+                identityManager.saveIdentityKey(identityKey(serviceId), for: serviceId, shouldUpdateStorageService: false, tx: tx)
             }
 
             // Create a group with our recipients plus us.

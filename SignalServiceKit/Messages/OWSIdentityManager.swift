@@ -33,7 +33,12 @@ public protocol OWSIdentityManager {
     func identityKey(for serviceId: ServiceId, tx: DBReadTransaction) throws -> IdentityKey?
 
     @discardableResult
-    func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<IdentityChange, RecipientIdError>
+    func saveIdentityKey(
+        _ identityKey: Data,
+        for serviceId: ServiceId,
+        shouldUpdateStorageService: Bool,
+        tx: DBWriteTransaction,
+    ) -> Result<IdentityChange, RecipientIdError>
 
     func insertIdentityChangeInfoMessage(for serviceId: ServiceId, wasIdentityVerified: Bool, tx: DBWriteTransaction)
     func insertSessionSwitchoverEvent(for recipient: SignalRecipient, phoneNumber: String?, tx: DBWriteTransaction)
@@ -68,8 +73,18 @@ public protocol OWSIdentityManager {
 
 extension OWSIdentityManager {
     @discardableResult
-    public func saveIdentityKey(_ identityKey: IdentityKey, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<IdentityChange, RecipientIdError> {
-        return saveIdentityKey(identityKey.publicKey.keyBytes, for: serviceId, tx: tx)
+    public func saveIdentityKey(
+        _ identityKey: IdentityKey,
+        for serviceId: ServiceId,
+        shouldUpdateStorageService: Bool,
+        tx: DBWriteTransaction,
+    ) -> Result<IdentityChange, RecipientIdError> {
+        return saveIdentityKey(
+            identityKey.publicKey.keyBytes,
+            for: serviceId,
+            shouldUpdateStorageService: shouldUpdateStorageService,
+            tx: tx,
+        )
     }
 }
 
@@ -137,6 +152,7 @@ public class IdentityStore: IdentityKeyStore {
         try identityManager.saveIdentityKey(
             identityKey,
             for: address.serviceId,
+            shouldUpdateStorageService: true,
             tx: context.asTransaction,
         ).get()
     }
@@ -350,12 +366,31 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     }
 
     @discardableResult
-    public func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<IdentityChange, RecipientIdError> {
+    public func saveIdentityKey(
+        _ identityKey: Data,
+        for serviceId: ServiceId,
+        shouldUpdateStorageService: Bool,
+        tx: DBWriteTransaction,
+    ) -> Result<IdentityChange, RecipientIdError> {
         let recipientResult = recipientIdFinder.ensureRecipient(for: serviceId, tx: tx)
-        return recipientResult.map({ _saveIdentityKey(identityKey, for: serviceId, recipient: $0, tx: tx) })
+        return recipientResult.map({
+            return _saveIdentityKey(
+                identityKey,
+                for: serviceId,
+                recipient: $0,
+                shouldUpdateStorageService: shouldUpdateStorageService,
+                tx: tx,
+            )
+        })
     }
 
-    private func _saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, recipient: SignalRecipient, tx: DBWriteTransaction) -> IdentityChange {
+    private func _saveIdentityKey(
+        _ identityKey: Data,
+        for serviceId: ServiceId,
+        recipient: SignalRecipient,
+        shouldUpdateStorageService: Bool,
+        tx: DBWriteTransaction,
+    ) -> IdentityChange {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
 
         let existingIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipient.uniqueId, transaction: tx)
@@ -371,7 +406,9 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             // Cancel any pending verification state sync messages for this recipient.
             clearSyncMessage(for: recipient.uniqueId, tx: tx)
             fireIdentityStateChangeNotification(after: tx)
-            storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipient.uniqueId])
+            if shouldUpdateStorageService {
+                storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipient.uniqueId])
+            }
             return .newOrUnchanged
         }
 
@@ -398,7 +435,9 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         sessionStore.archiveSessions(forRecipientId: recipient.id, localIdentity: .aci, tx: tx)
         // Cancel any pending verification state sync messages for this recipient.
         clearSyncMessage(for: recipient.uniqueId, tx: tx)
-        storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipient.uniqueId])
+        if shouldUpdateStorageService {
+            storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipient.uniqueId])
+        }
         return .replacedExisting
     }
 
@@ -871,7 +910,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         if shouldSaveIdentityKey {
             // Ensure a remote identity exists for this key. We may be learning about
             // it for the first time.
-            saveIdentityKey(identityKey, for: aci, tx: tx)
+            saveIdentityKey(identityKey, for: aci, shouldUpdateStorageService: false, tx: tx)
             recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: tx)
         }
 
@@ -1018,7 +1057,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                         continue
                     }
 
-                    self.saveIdentityKey(identityKey, for: serviceId, tx: tx)
+                    self.saveIdentityKey(identityKey, for: serviceId, shouldUpdateStorageService: true, tx: tx)
                 }
             }
         }

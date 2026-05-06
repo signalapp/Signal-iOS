@@ -163,7 +163,12 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
             handler: { _ in
                 DependenciesBridge.shared.db.write { tx in
                     let identityManager = DependenciesBridge.shared.identityManager
-                    identityManager.saveIdentityKey(identityKey, for: recipientAci, tx: tx)
+                    identityManager.saveIdentityKey(
+                        identityKey,
+                        for: recipientAci,
+                        shouldUpdateStorageService: true,
+                        tx: tx,
+                    )
                     _ = identityManager.setVerificationState(
                         .verified,
                         of: identityKey.publicKey.keyBytes,

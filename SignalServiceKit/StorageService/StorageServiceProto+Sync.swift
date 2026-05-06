@@ -563,7 +563,12 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         let localIdentityKey = try? identityManager.identityKey(for: serviceIds.aciOrElsePni, tx: tx)
         if let identityKey = record.identityKey.flatMap({ try? IdentityKey(bytes: $0) }) {
             if identityKey != localIdentityKey {
-                identityManager.saveIdentityKey(identityKey, for: serviceIds.aciOrElsePni, tx: tx)
+                identityManager.saveIdentityKey(
+                    identityKey,
+                    for: serviceIds.aciOrElsePni,
+                    shouldUpdateStorageService: false,
+                    tx: tx,
+                )
             }
             // Make sure we fetch this after changing the identity key.
             let identityState = record.identityState.verificationState

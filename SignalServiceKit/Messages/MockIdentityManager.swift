@@ -82,7 +82,7 @@ open class MockIdentityManager: OWSIdentityManager {
     }
 
     open func identityKey(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data? { fatalError() }
-    open func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<IdentityChange, RecipientIdError> { fatalError() }
+    open func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, shouldUpdateStorageService: Bool, tx: DBWriteTransaction) -> Result<IdentityChange, RecipientIdError> { fatalError() }
     open func untrustedIdentityForSending(to address: SignalServiceAddress, untrustedThreshold: Date?, tx: DBReadTransaction) -> OWSRecipientIdentity? { fatalError() }
     open func tryToSyncQueuedVerificationStates() { fatalError() }
     open func verificationState(for address: SignalServiceAddress, tx: DBReadTransaction) -> VerificationState { fatalError() }

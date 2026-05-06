@@ -56,7 +56,7 @@ class DebugUISessionState: DebugUIPage {
                 flippedKey[i] = currentKey[i] ^ 0xFF
             }
             owsAssertDebug(flippedKey.count == currentKey.count)
-            identityManager.saveIdentityKey(flippedKey, for: serviceId, tx: tx)
+            identityManager.saveIdentityKey(flippedKey, for: serviceId, shouldUpdateStorageService: true, tx: tx)
         }
     }
 }
