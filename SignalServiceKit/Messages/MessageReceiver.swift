@@ -404,7 +404,7 @@ public final class MessageReceiver {
                     if let groupId {
                         SSKEnvironment.shared.profileManagerRef.addGroupId(
                             toProfileWhitelist: groupId.serialize(),
-                            userProfileWriter: .localUser,
+                            userProfileWriter: .syncMessage,
                             transaction: tx,
                         )
                     } else {
@@ -422,7 +422,7 @@ public final class MessageReceiver {
                         let profileManager = SSKEnvironment.shared.profileManagerRef
                         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
                         if var recipient = recipientFetcher.fetchOrCreate(address: destinationAddress, tx: tx) {
-                            profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: tx)
+                            profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .syncMessage, tx: tx)
                         }
                     }
                 }

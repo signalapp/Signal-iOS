@@ -319,10 +319,9 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             blockingManager.removeBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
             switch thread {
             case let thread as TSGroupThread:
-                // TODO: Fix userProfileWriter.
                 profileManager.addGroupId(
                     toProfileWhitelist: thread.groupModel.groupId,
-                    userProfileWriter: .localUser,
+                    userProfileWriter: .syncMessage,
                     transaction: transaction,
                 )
 
@@ -334,8 +333,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                 /// and unhide here.
                 if var recipient = recipientFetcher.fetchOrCreate(address: thread.contactAddress, tx: transaction) {
                     hidingManager.removeHiddenRecipient(&recipient, wasLocallyInitiated: false, tx: transaction)
-                    // TODO: Fix userProfileWriter.
-                    profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: transaction)
+                    profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .syncMessage, tx: transaction)
                 }
 
             default:
