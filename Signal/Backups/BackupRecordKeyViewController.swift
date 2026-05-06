@@ -119,13 +119,14 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
                 },
             ),
         ]
-        if #available(iOS 26.2, *), DebugFlags.internalLogging {
+        if #available(iOS 26.2, *) {
             let saveToPasswordManagerButton = UIButton(
-                configuration: .smallSecondary(title: "Save to Password Manager"),
+                configuration: .smallSecondary(title: OWSLocalizedString(
+                    "BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE",
+                    comment: "Title for a button allowing users to save their 'Recovery Key' to a password manager.",
+                )),
                 primaryAction: UIAction { [weak self] _ in
-                    Task {
-                        await self?.saveToPasswordManager()
-                    }
+                    self?.saveToPasswordManagerWithConfirmation()
                 },
             )
             topButtons.append(saveToPasswordManagerButton)
@@ -191,16 +192,45 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
     }
 
     @available(iOS 26.2, *)
-    private func saveToPasswordManager() async {
+    private func saveToPasswordManagerWithConfirmation() {
         guard let window = view.window else {
             owsFailDebug("Missing window!")
             return
         }
 
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE",
+                comment: "Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager.",
+            ),
+            message: OWSLocalizedString(
+                "BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE",
+                comment: "Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust.",
+            ),
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.continueButton,
+            handler: { [self] _ in
+                Task {
+                    await _saveToPasswordManager(window: window)
+                }
+            },
+        ))
+        actionSheet.addAction(.cancel)
+
+        presentActionSheet(actionSheet)
+    }
+
+    @available(iOS 26.2, *)
+    private func _saveToPasswordManager(window: ASPresentationAnchor) async {
         do {
             let credentialDataManager = ASCredentialDataManager()
+            let credentialName = OWSLocalizedString(
+                "BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME",
+                comment: "Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager.",
+            )
             let password = ASPasswordCredential(
-                user: "Signal Recovery Key",
+                user: credentialName,
                 password: aep.displayString,
             )
             let scope = ASAutoFillURLScope(host: "signal.org")
@@ -208,14 +238,30 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
             try await credentialDataManager.save(
                 password: password,
                 for: scope,
-                title: "Signal Recovery Key",
+                title: credentialName,
                 anchor: window,
             )
 
-            presentToast(text: "Done. Check your password manager to verify.")
+            presentToast(text: OWSLocalizedString(
+                "BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST",
+                comment: "Toast shown after the user successfully saves their 'Recovery Key' to a password manager.",
+            ))
         } catch {
             Logger.warn("Failed to save to password manager! \(error)")
-            presentToast(text: "Something went wrong.")
+
+            let actionSheet = ActionSheetController(
+                title: OWSLocalizedString(
+                    "BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE",
+                    comment: "Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails.",
+                ),
+                message: OWSLocalizedString(
+                    "BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE",
+                    comment: "Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured.",
+                ),
+            )
+            actionSheet.addAction(.ok)
+
+            presentActionSheet(actionSheet)
         }
     }
 }

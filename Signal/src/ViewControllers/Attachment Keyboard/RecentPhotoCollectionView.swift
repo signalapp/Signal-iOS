@@ -206,8 +206,7 @@ class RecentPhotosCollectionView: UICollectionView {
                 comment: "Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos.",
             )),
             primaryAction: UIAction { _ in
-                let openAppSettingsUrl = URL(string: UIApplication.openSettingsURLString)!
-                UIApplication.shared.open(openAppSettingsUrl)
+                UIApplication.shared.openSystemSettings()
             },
         )
         let stackView = UIStackView(arrangedSubviews: [textLabel, button])

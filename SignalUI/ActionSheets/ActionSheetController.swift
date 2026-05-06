@@ -480,6 +480,13 @@ extension ActionSheetAction {
         )
     }
 
+    public static var ok: ActionSheetAction {
+        ActionSheetAction(
+            title: CommonStrings.okButton,
+            style: .default,
+        )
+    }
+
     public static var okay: ActionSheetAction {
         ActionSheetAction(
             title: CommonStrings.okayButton,

@@ -22,6 +22,7 @@ extension UIApplication {
         return window.findFrontmostViewController(ignoringAlerts: false)
     }
 
+    /// Opens the iOS Settings page for Signal.
     func openSystemSettings() {
         open(URL(string: UIApplication.openSettingsURLString)!, options: [:])
     }
