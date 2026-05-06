@@ -782,12 +782,13 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
                 saveChangeMessages(for: recipient, verificationState: verificationState, isLocalChange: true, tx: tx)
                 enqueueSyncMessage(for: recipientUniqueId, tx: tx)
+
+                // Verification state has changed, so notify storage service.
+                storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipientUniqueId])
             } else {
                 // Cancel any pending verification state sync messages for this recipient.
                 clearSyncMessage(for: recipientUniqueId, tx: tx)
             }
-            // Verification state has changed, so notify storage service.
-            storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipientUniqueId])
         }
         fireIdentityStateChangeNotification(after: tx)
         return .success
