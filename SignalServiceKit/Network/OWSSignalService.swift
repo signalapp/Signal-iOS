@@ -199,6 +199,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         return buildUrlSession(
             endpoint: endpoint,
             configuration: configuration,
+            assumesHTTP3Capable: signalServiceInfo.assumesHTTP3Capable,
             maxResponseSize: maxResponseSize,
             shouldHandleRemoteDeprecation: signalServiceInfo.shouldHandleRemoteDeprecation,
             onFailureCallback: nil,
@@ -208,6 +209,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
     private func buildUrlSession(
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration?,
+        assumesHTTP3Capable: Bool,
         maxResponseSize: UInt64?,
         shouldHandleRemoteDeprecation: Bool,
         onFailureCallback: ((any Error) -> Void)?,
@@ -219,6 +221,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             canUseSignalProxy: endpoint.frontingInfo == nil,
             onFailureCallback: onFailureCallback,
         )
+        urlSession.assumesHTTP3Capable = assumesHTTP3Capable
         urlSession.shouldHandleRemoteDeprecation = shouldHandleRemoteDeprecation
         return urlSession
     }
@@ -302,6 +305,11 @@ public class OWSSignalService: OWSSignalServiceProtocol {
                         shouldUseSignalCertificate: true,
                     ),
                     configuration: urlSessionConfiguration,
+                    // Optimistically attempt HTTP/3 (QUIC) for CDN requests.
+                    // CDN endpoints (Cloudflare) advertise h3 via Alt-Svc, but
+                    // ephemeral sessions don't persist the Alt-Svc cache. This
+                    // enables QUIC racing from the first request.
+                    assumesHTTP3Capable: true,
                     maxResponseSize: maxResponseSize,
                     shouldHandleRemoteDeprecation: false,
                     onFailureCallback: { [weak self] error in

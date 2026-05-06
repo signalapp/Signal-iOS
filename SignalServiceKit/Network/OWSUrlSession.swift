@@ -266,6 +266,10 @@ public class OWSURLSession: OWSURLSessionProtocol {
 
     private let canUseSignalProxy: Bool
 
+    /// When set, outgoing requests will set `assumesHTTP3Capable`, enabling QUIC
+    /// racing without waiting for HTTP/3 service discovery via Alt-Svc.
+    public var assumesHTTP3Capable: Bool = false
+
     // MARK: Deinit
 
     deinit {
@@ -372,6 +376,10 @@ public class OWSURLSession: OWSURLSessionProtocol {
     private func prepareRequest(request: URLRequest) -> URLRequest {
 
         var request = request
+
+        if assumesHTTP3Capable {
+            request.assumesHTTP3Capable = true
+        }
 
         request.httpShouldHandleCookies = false
 

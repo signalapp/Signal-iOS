@@ -80,6 +80,7 @@ public extension OWSSignalServiceProtocol {
 
 public struct SignalServiceInfo {
     let baseUrl: URL
+    let assumesHTTP3Capable: Bool
     let censorshipCircumventionSupported: Bool
     let censorshipCircumventionPathPrefix: String
     let shouldUseSignalCertificate: Bool
@@ -94,6 +95,7 @@ extension SignalServiceType {
         case .mainSignalService:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.mainServiceURL)!,
+                assumesHTTP3Capable: false,
                 censorshipCircumventionSupported: true,
                 censorshipCircumventionPathPrefix: TSConstants.serviceCensorshipPrefix,
                 shouldUseSignalCertificate: true,
@@ -103,6 +105,7 @@ extension SignalServiceType {
         case .storageService:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.storageServiceURL)!,
+                assumesHTTP3Capable: false,
                 censorshipCircumventionSupported: true,
                 censorshipCircumventionPathPrefix: TSConstants.storageServiceCensorshipPrefix,
                 shouldUseSignalCertificate: true,
@@ -112,6 +115,7 @@ extension SignalServiceType {
         case .updates:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.updatesURL)!,
+                assumesHTTP3Capable: true,
                 censorshipCircumventionSupported: false,
                 censorshipCircumventionPathPrefix: "unimplemented",
                 shouldUseSignalCertificate: false,
@@ -121,6 +125,7 @@ extension SignalServiceType {
         case .updates2:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.updates2URL)!,
+                assumesHTTP3Capable: true,
                 censorshipCircumventionSupported: false,
                 censorshipCircumventionPathPrefix: "unimplemented", // BADGES TODO
                 shouldUseSignalCertificate: true,
@@ -130,6 +135,7 @@ extension SignalServiceType {
         case .svr2:
             return SignalServiceInfo(
                 baseUrl: URL(string: TSConstants.svr2URL)!,
+                assumesHTTP3Capable: false,
                 censorshipCircumventionSupported: true,
                 censorshipCircumventionPathPrefix: TSConstants.svr2CensorshipPrefix,
                 shouldUseSignalCertificate: true,
