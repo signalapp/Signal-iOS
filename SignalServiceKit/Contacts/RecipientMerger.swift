@@ -14,6 +14,7 @@ public protocol RecipientMerger {
         aci: Aci,
         phoneNumber: E164,
         pni: Pni?,
+        shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction,
     ) -> SignalRecipient
 
@@ -63,6 +64,7 @@ public protocol RecipientMerger {
     func splitUnregisteredRecipientIfNeeded(
         localIdentifiers: LocalIdentifiers,
         unregisteredRecipient: inout SignalRecipient,
+        shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction,
     )
 }
@@ -207,11 +209,12 @@ class RecipientMergerImpl: RecipientMerger {
         aci: Aci,
         phoneNumber: E164,
         pni: Pni?,
+        shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction,
     ) -> SignalRecipient {
-        let aciResult = mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: true, tx: tx)
+        let aciResult = mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: true, shouldUpdateStorageService: shouldUpdateStorageService, tx: tx)
         if let pni {
-            return mergeAlways(phoneNumber: phoneNumber, pni: pni, isLocalRecipient: true, tx: tx)
+            return mergeAlways(phoneNumber: phoneNumber, pni: pni, isLocalRecipient: true, shouldUpdateStorageService: shouldUpdateStorageService, tx: tx)
         }
         return aciResult
     }
@@ -270,14 +273,14 @@ class RecipientMergerImpl: RecipientMerger {
                 return nil
             }
             // Explicit cast to guarantee this method doesn't return an Optional.
-            return mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx) as SignalRecipient
+            return mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, shouldUpdateStorageService: false, tx: tx) as SignalRecipient
         }()
         let phoneNumberPniRecipient: SignalRecipient? = {
             guard let phoneNumber, let pni = serviceIds.pni else {
                 return nil
             }
             // Explicit cast to guarantee this method doesn't return an Optional.
-            return mergeAlways(phoneNumber: phoneNumber, pni: pni, isLocalRecipient: false, tx: tx) as SignalRecipient
+            return mergeAlways(phoneNumber: phoneNumber, pni: pni, isLocalRecipient: false, shouldUpdateStorageService: false, tx: tx) as SignalRecipient
         }()
         if let phoneNumberResult = phoneNumberPniRecipient ?? aciPhoneNumberRecipient {
             return phoneNumberResult
@@ -304,7 +307,7 @@ class RecipientMergerImpl: RecipientMerger {
         guard let phoneNumber else {
             return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
         }
-        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, aci: aci, phoneNumber: phoneNumber, tx: tx)
+        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, aci: aci, phoneNumber: phoneNumber, shouldUpdateStorageService: false, tx: tx)
     }
 
     func applyMergeFromSealedSender(
@@ -316,7 +319,7 @@ class RecipientMergerImpl: RecipientMerger {
         guard let phoneNumber else {
             return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
         }
-        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, aci: aci, phoneNumber: phoneNumber, tx: tx)
+        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, aci: aci, phoneNumber: phoneNumber, shouldUpdateStorageService: true, tx: tx)
     }
 
     func applyMergeFromPniSignature(
@@ -345,6 +348,7 @@ class RecipientMergerImpl: RecipientMerger {
             mightReplaceNonnilPhoneNumber: true,
             insertSessionSwitchoverIfNeeded: false,
             isLocalMerge: false,
+            shouldUpdateStorageService: true,
             tx: tx,
         ) { _ in
             aciRecipient.phoneNumber = pniRecipient.phoneNumber
@@ -384,14 +388,15 @@ class RecipientMergerImpl: RecipientMerger {
             aci = nil
         }
         if let aci {
-            _ = mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx)
+            _ = mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, shouldUpdateStorageService: true, tx: tx)
         }
-        return mergeAlways(phoneNumber: phoneNumber, pni: pni, isLocalRecipient: false, tx: tx)
+        return mergeAlways(phoneNumber: phoneNumber, pni: pni, isLocalRecipient: false, shouldUpdateStorageService: true, tx: tx)
     }
 
     func splitUnregisteredRecipientIfNeeded(
         localIdentifiers: LocalIdentifiers,
         unregisteredRecipient: inout SignalRecipient,
+        shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction,
     ) {
         // We can't split if they're registered or lacking an ACI.
@@ -411,6 +416,7 @@ class RecipientMergerImpl: RecipientMerger {
             mightReplaceNonnilPhoneNumber: true,
             insertSessionSwitchoverIfNeeded: true,
             isLocalMerge: false,
+            shouldUpdateStorageService: shouldUpdateStorageService,
             tx: tx,
         ) { tx in
             var splitRecipient = failIfThrowsDatabaseError { () throws(GRDB.DatabaseError) in
@@ -433,12 +439,19 @@ class RecipientMergerImpl: RecipientMerger {
         localIdentifiers: LocalIdentifiers,
         aci: Aci,
         phoneNumber: E164,
+        shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction,
     ) -> SignalRecipient {
         if localIdentifiers.containsAnyOf(aci: aci, phoneNumber: phoneNumber, pni: nil) {
             return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
         }
-        return mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx)
+        return mergeAlways(
+            aci: aci,
+            phoneNumber: phoneNumber,
+            isLocalRecipient: false,
+            shouldUpdateStorageService: shouldUpdateStorageService,
+            tx: tx,
+        )
     }
 
     // MARK: - Merge Logic
@@ -466,6 +479,7 @@ class RecipientMergerImpl: RecipientMerger {
         aci: Aci,
         phoneNumber: E164,
         isLocalRecipient: Bool,
+        shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction,
     ) -> SignalRecipient {
         let aciRecipient = recipientDatabaseTable.fetchRecipient(serviceId: aci, transaction: tx)
@@ -494,6 +508,7 @@ class RecipientMergerImpl: RecipientMerger {
             mightReplaceNonnilPhoneNumber: true,
             insertSessionSwitchoverIfNeeded: true,
             isLocalMerge: isLocalRecipient,
+            shouldUpdateStorageService: shouldUpdateStorageService,
             tx: tx,
         ) { tx in
             let mergeResult = _mergeHighTrust(
@@ -565,6 +580,7 @@ class RecipientMergerImpl: RecipientMerger {
         phoneNumber: E164,
         pni: Pni,
         isLocalRecipient: Bool,
+        shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction,
     ) -> SignalRecipient {
         let phoneNumberRecipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
@@ -583,6 +599,7 @@ class RecipientMergerImpl: RecipientMerger {
             mightReplaceNonnilPhoneNumber: false,
             insertSessionSwitchoverIfNeeded: true,
             isLocalMerge: isLocalRecipient,
+            shouldUpdateStorageService: shouldUpdateStorageService,
             tx: tx,
         ) { tx in
             let mergeResult = _mergeAlways(
@@ -669,6 +686,7 @@ class RecipientMergerImpl: RecipientMerger {
             mightReplaceNonnilPhoneNumber: false,
             insertSessionSwitchoverIfNeeded: true,
             isLocalMerge: false,
+            shouldUpdateStorageService: false,
             tx: tx,
         ) { tx in
             let mergeResult = _mergeAlwaysFromStorageService(
@@ -760,6 +778,7 @@ class RecipientMergerImpl: RecipientMerger {
         mightReplaceNonnilPhoneNumber: Bool,
         insertSessionSwitchoverIfNeeded: Bool,
         isLocalMerge: Bool,
+        shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction,
         applyMerge: (DBWriteTransaction) -> (mergedRecipient: SignalRecipient, otherUpdatedRecipients: [SignalRecipient]),
     ) -> SignalRecipient {
@@ -814,7 +833,9 @@ class RecipientMergerImpl: RecipientMerger {
             }
         }
 
-        storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: affectedRecipients.map { $0.uniqueId })
+        if shouldUpdateStorageService {
+            storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: affectedRecipients.map { $0.uniqueId })
+        }
 
         let threadMergeEventCount = observers.didLearnAssociation(
             mergedRecipient: MergedRecipient(

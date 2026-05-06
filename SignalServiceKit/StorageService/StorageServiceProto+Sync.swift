@@ -463,6 +463,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 recipientMerger.splitUnregisteredRecipientIfNeeded(
                     localIdentifiers: localIdentifiers,
                     unregisteredRecipient: &recipient,
+                    shouldUpdateStorageService: false,
                     tx: transaction,
                 )
             }

@@ -310,6 +310,7 @@ public class SSKEnvironment: NSObject {
                 aci: localIdentifiers.aci,
                 phoneNumber: phoneNumber,
                 pni: localIdentifiers.pni,
+                shouldUpdateStorageService: true,
                 tx: tx,
             )
             blockedRecipientStore.setBlocked(false, recipientId: localRecipient.id, tx: tx)

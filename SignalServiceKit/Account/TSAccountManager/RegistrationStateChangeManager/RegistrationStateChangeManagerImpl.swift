@@ -104,7 +104,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             tx: tx,
         )
 
-        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, deviceId: .primary, tx: tx)
+        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, deviceId: .primary, shouldUpdateStorageService: true, tx: tx)
 
         tx.addSyncCompletion {
             self.postLocalNumberDidChangeNotification()
@@ -128,7 +128,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             serverAuthToken: authToken,
             tx: tx,
         )
-        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, deviceId: deviceId, tx: tx)
+        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, deviceId: deviceId, shouldUpdateStorageService: false, tx: tx)
 
         tx.addSyncCompletion {
             self.postLocalNumberDidChangeNotification()
@@ -144,7 +144,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     ) {
         tsAccountManager.changeLocalNumber(newE164: e164, aci: aci, pni: pni, tx: tx)
 
-        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, deviceId: .primary, tx: tx)
+        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, deviceId: .primary, shouldUpdateStorageService: false, tx: tx)
 
         tx.addSyncCompletion {
             self.postLocalNumberDidChangeNotification()
@@ -331,6 +331,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         aci: Aci,
         pni: Pni,
         deviceId: DeviceId,
+        shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction,
     ) {
         udManager.removeSenderCertificates(tx: tx)
@@ -346,6 +347,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             aci: aci,
             phoneNumber: e164,
             pni: pni,
+            shouldUpdateStorageService: shouldUpdateStorageService,
             tx: tx,
         )
         // Always add the .primary DeviceId as well as our own. This is how linked
@@ -354,7 +356,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             &recipient,
             deviceIdsToAdd: [deviceId, .primary],
             deviceIdsToRemove: [],
-            shouldUpdateStorageService: false,
+            shouldUpdateStorageService: shouldUpdateStorageService,
             tx: tx,
         )
         // Always make sure we haven't blocked ourselves. (It's logically
@@ -404,6 +406,7 @@ extension RegistrationStateChangeManagerImpl {
             aci: localIdentifiers.aci,
             pni: localIdentifiers.pni!,
             deviceId: .primary,
+            shouldUpdateStorageService: false,
             tx: tx,
         )
     }

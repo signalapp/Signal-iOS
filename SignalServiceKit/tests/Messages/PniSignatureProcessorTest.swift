@@ -9,7 +9,7 @@ import XCTest
 @testable import SignalServiceKit
 
 private class MockRecipientMerger: RecipientMerger {
-    func applyMergeForLocalAccount(aci: Aci, phoneNumber: E164, pni: Pni?, tx: DBWriteTransaction) -> SignalRecipient {
+    func applyMergeForLocalAccount(aci: Aci, phoneNumber: E164, pni: Pni?, shouldUpdateStorageService: Bool, tx: DBWriteTransaction) -> SignalRecipient {
         fatalError()
     }
 
@@ -34,7 +34,7 @@ private class MockRecipientMerger: RecipientMerger {
         appliedMergesFromPniSignatures += 1
     }
 
-    func splitUnregisteredRecipientIfNeeded(localIdentifiers: LocalIdentifiers, unregisteredRecipient: inout SignalRecipient, tx: DBWriteTransaction) {
+    func splitUnregisteredRecipientIfNeeded(localIdentifiers: LocalIdentifiers, unregisteredRecipient: inout SignalRecipient, shouldUpdateStorageService: Bool, tx: DBWriteTransaction) {
         fatalError()
     }
 }

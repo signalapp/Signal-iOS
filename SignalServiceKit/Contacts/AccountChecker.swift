@@ -95,6 +95,7 @@ public class AccountChecker {
         recipientMerger.splitUnregisteredRecipientIfNeeded(
             localIdentifiers: localIdentifiers,
             unregisteredRecipient: &recipient,
+            shouldUpdateStorageService: true,
             tx: tx,
         )
     }
