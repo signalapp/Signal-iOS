@@ -93,6 +93,16 @@ extension Optional where Wrapped == String {
     }
 }
 
+// MARK: -
+
+public extension Character {
+    /// - SeeAlso ``String/asciiDigitsOnly``
+    var isAsciiDigit: Bool { isASCII && isNumber }
+
+    /// - SeeAlso ``String/asciiAlphanumericsOnly``
+    var isAsciiAlphanumeric: Bool { isASCII && (isLetter || isNumber) }
+}
+
 public extension String {
     /// A version of the string that only contains ASCII digits.
     ///
@@ -105,7 +115,7 @@ public extension String {
     /// // => "23"
     /// ```
     var asciiDigitsOnly: String {
-        filter { $0.isASCII && $0.isNumber }
+        filter { $0.isAsciiDigit }
     }
 
     /// Is every character an ASCII digit between 0 and 9?
@@ -119,7 +129,7 @@ public extension String {
     /// "1.23".isAsciiDigitsOnly // => false
     /// ```
     var isAsciiDigitsOnly: Bool {
-        allSatisfy { $0.isASCII && $0.isNumber }
+        allSatisfy { $0.isAsciiDigit }
     }
 
     /// A version of the string that only contains ASCII alphanumerics.
@@ -131,7 +141,7 @@ public extension String {
     /// // => "bc123"
     /// ```
     var asciiAlphanumericsOnly: String {
-        filter { $0.isASCII && ($0.isLetter || $0.isNumber) }
+        filter { $0.isAsciiAlphanumeric }
     }
 
     /// Is every character an ASCII alphanumeric?
@@ -143,8 +153,10 @@ public extension String {
     /// "abc12#".isAsciiAlphanumericsOnly // => false
     /// ```
     var isAsciiAlphanumericsOnly: Bool {
-        allSatisfy { $0.isASCII && ($0.isLetter || $0.isNumber) }
+        allSatisfy { $0.isAsciiAlphanumeric }
     }
+
+    // MARK: -
 
     func substring(withRange range: NSRange) -> String {
         (self as NSString).substring(with: range)
@@ -156,10 +168,6 @@ public extension String {
 
     func substring(afterRange range: NSRange) -> String {
         (self as NSString).substring(from: range.location + range.length)
-    }
-
-    enum StringError: Error {
-        case invalidCharacterShift
     }
 
     /// Converts all non arabic numerals within a string to arabic numerals
@@ -480,8 +488,7 @@ public extension String {
     func caesar(shift: UInt32) throws -> String {
         let shiftedScalars: [UnicodeScalar] = try unicodeScalars.map { c in
             guard let shiftedScalar = UnicodeScalar((c.value + shift) % 127) else {
-                owsFailDebug("invalidCharacterShift")
-                throw StringError.invalidCharacterShift
+                throw OWSAssertionError("Invalid character shift")
             }
             return shiftedScalar
         }

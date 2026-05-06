@@ -6,10 +6,16 @@
 import SignalServiceKit
 import SignalUI
 
-class AccountEntropyPoolTextView: UIView {
+class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
     enum Mode {
         case entry(onTextViewChanged: () -> Void)
-        case display(aep: AccountEntropyPool)
+        case display(DisplayableAccountEntropyPool)
+    }
+
+    enum AEPContents {
+        case partialEntry
+        case malformed
+        case valid(DisplayableAccountEntropyPool)
     }
 
     private enum Constants {
@@ -36,7 +42,26 @@ class AccountEntropyPoolTextView: UIView {
 
     private let mode: Mode
 
-    var text: String { textView.text ?? "" }
+    var aepContents: AEPContents {
+        switch mode {
+        case .display(let displayableAEP):
+            return .valid(displayableAEP)
+        case .entry:
+            break
+        }
+
+        let enteredText = textView.text?.filter { !$0.isWhitespace } ?? ""
+
+        guard enteredText.count == AccountEntropyPool.Constants.byteLength else {
+            return .partialEntry
+        }
+
+        guard let displayableAEP = try? DisplayableAccountEntropyPool(displayString: enteredText) else {
+            return .malformed
+        }
+
+        return .valid(displayableAEP)
+    }
 
     init(mode: Mode) {
         self.mode = mode
@@ -61,9 +86,9 @@ class AccountEntropyPoolTextView: UIView {
         textView.setTextContentType(val: .password)
 
         switch mode {
-        case .display(let aep):
+        case .display(let displayableAEP):
             textView.isEditable = false
-            textView.text = aep.displayString
+            textView.text = displayableAEP.displayString
         case .entry:
             break
         }
@@ -118,11 +143,8 @@ class AccountEntropyPoolTextView: UIView {
             ],
         )
     }
-}
 
-// MARK: -
-
-extension AccountEntropyPoolTextView: TextViewWithPlaceholderDelegate {
+    // MARK: - TextViewWithPlaceholderDelegate
 
     func textViewDidUpdateText(_ textView: TextViewWithPlaceholder) {
         // For autofill, the text is set without first passing through the formatting code.
@@ -162,10 +184,11 @@ extension AccountEntropyPoolTextView: TextViewWithPlaceholderDelegate {
             uiTextView,
             shouldChangeCharactersIn: range,
             replacementString: text,
-            allowedCharacters: .alphanumeric,
+            allowedCharacters: DisplayableAccountEntropyPool.allowedCharacters,
             maxCharacters: AccountEntropyPool.Constants.byteLength,
             format: { unformatted in
-                return unformatted.uppercased()
+                return unformatted
+                    .uppercased()
                     .enumerated()
                     .map { index, char -> String in
                         if index > 0, index % Constants.chunkSize == 0 {
@@ -214,7 +237,7 @@ private class AEPPreviewViewController: UIViewController {
 
 @available(iOS 17, *)
 #Preview("Display") {
-    AEPPreviewViewController(mode: .display(aep: AccountEntropyPool()))
+    AEPPreviewViewController(mode: .display(AccountEntropyPool().forDisplay))
 }
 
 @available(iOS 17, *)

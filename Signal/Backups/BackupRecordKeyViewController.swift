@@ -38,7 +38,7 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
         onBackPressedBlock != nil
     }
 
-    private let aep: AccountEntropyPool
+    private let displayableAEP: DisplayableAccountEntropyPool
     private let onContinuePressedBlock: (BackupRecordKeyViewController) -> Void
     private let onCreateNewKeyPressedBlock: (BackupRecordKeyViewController) -> Void
     private let onBackPressedBlock: (() -> Void)?
@@ -57,7 +57,7 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
         onContinuePressed: @escaping (BackupRecordKeyViewController) -> Void = { _ in },
         onBackPressed: (() -> Void)? = nil,
     ) {
-        self.aep = aepMode.aep
+        self.displayableAEP = DisplayableAccountEntropyPool(aep: aepMode.aep)
         self.onContinuePressedBlock = onContinuePressed
         self.onCreateNewKeyPressedBlock = onCreateNewKeyPressed
         self.onBackPressedBlock = onBackPressed
@@ -105,7 +105,7 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
             comment: "Subtitle for a view allowing users to record their 'Recovery Key'.",
         ))
 
-        let aepTextView = AccountEntropyPoolTextView(mode: .display(aep: aep))
+        let aepTextView = AccountEntropyPoolTextView(mode: .display(displayableAEP))
         aepTextView.backgroundColor = .Signal.secondaryGroupedBackground
 
         var topButtons: [UIButton] = [
@@ -177,7 +177,7 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
 
     private func copyToClipboard() {
         UIPasteboard.general.setItems(
-            [[UIPasteboard.typeAutomatic: aep.displayString]],
+            [[UIPasteboard.typeAutomatic: displayableAEP.displayString]],
             options: [.expirationDate: Date().addingTimeInterval(60)],
         )
 
@@ -231,7 +231,7 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
             )
             let password = ASPasswordCredential(
                 user: credentialName,
-                password: aep.displayString,
+                password: displayableAEP.displayString,
             )
             let scope = ASAutoFillURLScope(host: "signal.org")
 

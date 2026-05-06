@@ -139,27 +139,25 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
         case notFullyEntered
         case malformedAEP
         case wellFormedButMismatched
-        case success(AccountEntropyPool)
+        case success(DisplayableAccountEntropyPool)
     }
 
     private func validateAEPText() -> AEPValidationResult {
-        let enteredAepText = aepTextView.text.filter {
-            $0.isNumber || $0.isLetter
-        }
-
-        guard enteredAepText.count == AccountEntropyPool.Constants.byteLength else {
+        let enteredAep: DisplayableAccountEntropyPool
+        switch aepTextView.aepContents {
+        case .partialEntry:
             return .notFullyEntered
-        }
-
-        guard let enteredAep = try? AccountEntropyPool(key: enteredAepText) else {
+        case .malformed:
             return .malformedAEP
+        case .valid(let displayableAEP):
+            enteredAep = displayableAEP
         }
 
         switch aepValidationPolicy! {
         case .acceptAnyWellFormed:
             return .success(enteredAep)
         case .acceptOnly(let expectedAep):
-            if enteredAep == expectedAep {
+            if enteredAep.rawValue == expectedAep {
                 return .success(enteredAep)
             } else {
                 return .wellFormedButMismatched
@@ -197,9 +195,9 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
         switch validateAEPText() {
         case .notFullyEntered, .malformedAEP, .wellFormedButMismatched:
             owsFailDebug("Next button should be disabled!")
-        case .success(let aep):
+        case .success(let displayableAEP):
             dismissKeyboard()
-            onEntryConfirmed(aep)
+            onEntryConfirmed(displayableAEP.rawValue)
         }
     }
 }
@@ -225,7 +223,7 @@ private extension EnterAccountEntropyPoolViewController {
                 title: "Footer Button",
                 action: { print("Footer button!") },
             ),
-            onEntryConfirmed: { print("Confirmed: \($0.displayString)") },
+            onEntryConfirmed: { print("Confirmed: \($0.rawString)") },
         )
         return viewController
     }

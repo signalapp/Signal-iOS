@@ -27,27 +27,27 @@ public enum FormattedNumberField {
         case forward
     }
 
-    public enum AllowedCharacters {
-        case numbers
-        case alphanumeric
+    public struct AllowedCharacters {
+        public let keyboardType: UIKeyboardType
+        fileprivate let stringFilter: (Character) -> Bool
 
-        public var keyboardType: UIKeyboardType {
-            switch self {
-            case .numbers:
-                return .asciiCapableNumberPad
-            case .alphanumeric:
-                return .asciiCapable
-            }
+        public init(
+            keyboardType: UIKeyboardType,
+            stringFilter: @escaping (Character) -> Bool,
+        ) {
+            self.keyboardType = keyboardType
+            self.stringFilter = stringFilter
         }
 
-        fileprivate var stringFilter: KeyPath<String, String> {
-            switch self {
-            case .numbers:
-                return \.asciiDigitsOnly
-            case .alphanumeric:
-                return \.asciiAlphanumericsOnly
-            }
-        }
+        public static let numbers = AllowedCharacters(
+            keyboardType: .asciiCapableNumberPad,
+            stringFilter: \.isAsciiDigit,
+        )
+
+        public static let alphanumeric = AllowedCharacters(
+            keyboardType: .asciiCapable,
+            stringFilter: \.isAsciiAlphanumeric,
+        )
     }
 
     /// Call this from your [`UITextFieldDelgate#textField`][0] method.
@@ -153,10 +153,15 @@ public enum FormattedNumberField {
     private static func unformattedPosition(
         formattedString: String,
         positionInFormattedString: Int,
+        allowedCharacters: AllowedCharacters,
     ) -> Int {
-        formattedString
-            .prefix(positionInFormattedString)
-            .reduce(0) { $0 + (($1.isNumber || $1.isLetter) ? 1 : 0) }
+        var position = 0
+        for char in formattedString.prefix(positionInFormattedString) {
+            if allowedCharacters.stringFilter(char) {
+                position += 1
+            }
+        }
+        return position
     }
 
     /// Turn the cursor position inside an unformatted string into the cursor
@@ -192,6 +197,7 @@ public enum FormattedNumberField {
         unformattedString: String,
         positionInUnformattedString: Int,
         formattedString: String,
+        allowedCharacters: AllowedCharacters,
     ) -> (lower: Int, upper: Int) {
         var lower: Int?
         var upper: Int?
@@ -200,6 +206,7 @@ public enum FormattedNumberField {
             let unformattedCursorPosition = unformattedPosition(
                 formattedString: formattedString,
                 positionInFormattedString: i,
+                allowedCharacters: allowedCharacters,
             )
             if unformattedCursorPosition == positionInUnformattedString {
                 lower = lower ?? i
@@ -241,7 +248,7 @@ public enum FormattedNumberField {
         direction: SingleDeletionDirection,
         format: (String) -> String,
     ) -> OperationResult? {
-        let oldUnformattedString = formattedString[keyPath: allowedCharacters.stringFilter]
+        let oldUnformattedString = formattedString.filter(allowedCharacters.stringFilter)
         if oldUnformattedString.isEmpty {
             return nil
         }
@@ -249,6 +256,7 @@ public enum FormattedNumberField {
         let cursorPositionInOldUnformattedString = Self.unformattedPosition(
             formattedString: formattedString,
             positionInFormattedString: cursorPosition,
+            allowedCharacters: allowedCharacters,
         )
 
         let cursorOffset: Int
@@ -275,6 +283,7 @@ public enum FormattedNumberField {
             unformattedString: newUnformattedString,
             positionInUnformattedString: cursorPositionInOldUnformattedString + cursorOffset,
             formattedString: newFormattedString,
+            allowedCharacters: allowedCharacters,
         ).lower
 
         return .init(
@@ -313,17 +322,19 @@ public enum FormattedNumberField {
         maxCharacters: Int,
         format: (String) -> String,
     ) -> OperationResult? {
-        let insertion = rawInsertion[keyPath: allowedCharacters.stringFilter].uppercased()
+        let insertion = rawInsertion.filter(allowedCharacters.stringFilter).uppercased()
 
         let selectionStartInOldUnformattedString = Self.unformattedPosition(
             formattedString: formattedString,
             positionInFormattedString: selectionStart,
+            allowedCharacters: allowedCharacters,
         )
         let selectionEndInOldUnformattedString = Self.unformattedPosition(
             formattedString: formattedString,
             positionInFormattedString: selectionEnd,
+            allowedCharacters: allowedCharacters,
         )
-        let oldUnformattedString = formattedString[keyPath: allowedCharacters.stringFilter]
+        let oldUnformattedString = formattedString.filter(allowedCharacters.stringFilter)
 
         let newUnformattedString: String = {
             let prefix = oldUnformattedString.prefix(selectionStartInOldUnformattedString)
@@ -354,6 +365,7 @@ public enum FormattedNumberField {
             unformattedString: newUnformattedString,
             positionInUnformattedString: selectionStartInOldUnformattedString + insertion.count,
             formattedString: newFormattedString,
+            allowedCharacters: allowedCharacters,
         ).upper
 
         return .init(

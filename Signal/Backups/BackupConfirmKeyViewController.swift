@@ -66,7 +66,7 @@ class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController, OWS
                     onSeeKeyAgain()
                 },
             ),
-            onEntryConfirmed: { [weak self] aep in
+            onEntryConfirmed: { [weak self] _ in
                 guard let self else { return }
 
                 present(

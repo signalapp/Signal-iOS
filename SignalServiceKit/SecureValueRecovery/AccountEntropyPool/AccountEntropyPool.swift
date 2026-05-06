@@ -17,12 +17,10 @@ public struct AccountEntropyPool: Codable, Equatable {
 
     /// The raw representation of the AEP, suitable for passing to LibSignal and
     /// other APIs.
+    ///
+    /// - Important
+    /// Not suitable for display to the user. See: `DisplayableAccountEntropyPool`.
     public let rawString: String
-
-    /// A stylized representation of the AEP, suitable for display to the user.
-    public var displayString: String {
-        rawString.uppercased()
-    }
 
     public init() {
         let generatedKey: String = LibSignalClient.AccountEntropyPool.generate()

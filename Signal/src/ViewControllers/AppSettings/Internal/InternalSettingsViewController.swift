@@ -172,14 +172,33 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
             self?.presentToast(text: "Backups onboarding enabled!")
         })
-        backupsSection.add(.actionItem(withText: "Backup media integrity check") { [weak self] in
-            let vc = InternalListMediaViewController()
-            self?.navigationController?.pushViewController(vc, animated: true)
-        })
         backupsSection.add(.copyableItem(
             label: "Last Backup chats/messages file size",
             value: lastBackupDetails.flatMap { ByteCountFormatter().string(for: $0.backupFileSizeBytes) },
         ))
+        backupsSection.add(.actionItem(withText: #"Show "Backup Key Reminder" flow"#) { [weak self] in
+            guard let self else { return }
+
+            let accountKeyStore = DependenciesBridge.shared.accountKeyStore
+            let db = DependenciesBridge.shared.db
+
+            guard let aep = db.read(block: { accountKeyStore.getAccountEntropyPool(tx: $0) }) else {
+                presentToast(text: "Missing AEP?!")
+                return
+            }
+
+            BackupRecoveryKeyReminderCoordinator(
+                aep: aep,
+                fromViewController: self,
+                onSuccess: {
+                    self.presentToast(text: "Success!")
+                },
+            ).presentVerifyFlow()
+        })
+        backupsSection.add(.actionItem(withText: "Backup media integrity check") { [weak self] in
+            let vc = InternalListMediaViewController()
+            self?.navigationController?.pushViewController(vc, animated: true)
+        })
         contents.add(backupsSection)
 
         do {

@@ -2702,6 +2702,8 @@
 		D925F563298D8F9400158EE4 /* Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BE297A04EB00F7ED6D /* Usernames.swift */; };
 		D927372D2CD2DD1800E15D95 /* StorageServiceRecordIkmMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D927372C2CD2DD0D00E15D95 /* StorageServiceRecordIkmMigrator.swift */; };
 		D92812DC2FA545E200667DCF /* CallingAssetsFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F588CA982FA088B700693838 /* CallingAssetsFetcher.swift */; };
+		D92812DE2FA94B7200667DCF /* DisplayableAccountEntropyPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92812DD2FA94B6E00667DCF /* DisplayableAccountEntropyPool.swift */; };
+		D92812E22FA95C1400667DCF /* DisplayableAccountEntropyPoolTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92812E12FA95C0D00667DCF /* DisplayableAccountEntropyPoolTest.swift */; };
 		D92A1CDA2E314BD400C91E21 /* DebugUIPrompts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92A1CD92E314BD000C91E21 /* DebugUIPrompts.swift */; };
 		D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */; };
 		D92C57552A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */; };
@@ -6990,6 +6992,8 @@
 		D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameLookupManager.swift; sourceTree = "<group>"; };
 		D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupRecordTest.swift; sourceTree = "<group>"; };
 		D927372C2CD2DD0D00E15D95 /* StorageServiceRecordIkmMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceRecordIkmMigrator.swift; sourceTree = "<group>"; };
+		D92812DD2FA94B6E00667DCF /* DisplayableAccountEntropyPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayableAccountEntropyPool.swift; sourceTree = "<group>"; };
+		D92812E12FA95C0D00667DCF /* DisplayableAccountEntropyPoolTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayableAccountEntropyPoolTest.swift; sourceTree = "<group>"; };
 		D92A1CD92E314BD000C91E21 /* DebugUIPrompts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIPrompts.swift; sourceTree = "<group>"; };
 		D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManager.swift; sourceTree = "<group>"; };
 		D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+DisplayableGroupUpdateItemTest.swift"; sourceTree = "<group>"; };
@@ -13572,6 +13576,7 @@
 				D951F5302D9B236100C5EBF3 /* BackupSettingsViewController.swift */,
 				D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */,
 				D9680CF22DBB0B28005DD5BE /* ChooseBackupPlanViewController.swift */,
+				D92812DD2FA94B6E00667DCF /* DisplayableAccountEntropyPool.swift */,
 				D98CA2BD2DF398DF0060370E /* EnterAccountEntropyPoolViewController.swift */,
 			);
 			path = Backups;
@@ -13890,6 +13895,7 @@
 				D9324F7B2E1492820095D104 /* BackupAttachmentTrackerTest.swift */,
 				D9A952452E0A1C3C00C3D1F7 /* BackupAttachmentUploadTrackerTest.swift */,
 				04B975472E43BFE000E20364 /* BackupRefreshManagerTest.swift */,
+				D92812E12FA95C0D00667DCF /* DisplayableAccountEntropyPoolTest.swift */,
 			);
 			path = Backups;
 			sourceTree = "<group>";
@@ -18409,6 +18415,7 @@
 				C147C1722D9C58D60026952D /* DeviceTransferStatusViewController.swift in Sources */,
 				D900E6FF2DE143F9004D01A1 /* DisappearingMessagesCustomTimePickerViewController.swift in Sources */,
 				D900E6F82DE10499004D01A1 /* DisappearingMessagesTimerSettingsViewController.swift in Sources */,
+				D92812DE2FA94B7200667DCF /* DisplayableAccountEntropyPool.swift in Sources */,
 				34A95501271B503E00B05242 /* DisplayableText.swift in Sources */,
 				5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */,
 				F96B66AA2912B88B004FFFAA /* DonateChoosePaymentMethodSheet.swift in Sources */,
@@ -18881,6 +18888,7 @@
 				F93999F628C81F2100E34899 /* DataMessagePaddingTests.swift in Sources */,
 				3494BBE026E66FC30079B11B /* DateUtilTest.swift in Sources */,
 				C17A54962D7B3D9E00E1D267 /* DeviceProvisioningURLTest.swift in Sources */,
+				D92812E22FA95C1400667DCF /* DisplayableAccountEntropyPoolTest.swift in Sources */,
 				45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */,
 				F90B7BC12912B90100F50A59 /* DonateViewControllerTest.swift in Sources */,
 				F99D2C8B2926F0DD00748CCB /* DonationPaymentDetailsViewControllerTest.swift in Sources */,
