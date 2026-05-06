@@ -63,6 +63,7 @@ class GroupCallRemoteVideoManager {
                 guard let groupCall = self.currentRingRtcCall else { return }
 
                 var activeSpeakerHeight: UInt16 = 0
+                var isSomeonePresenting = false
 
                 let videoRequests: [VideoRequest] = groupCall.remoteDeviceStates.map { demuxId, _ in
                     guard
@@ -71,6 +72,8 @@ class GroupCallRemoteVideoManager {
                     else {
                         return VideoRequest(demuxId: demuxId, width: 0, height: 0, framerate: nil)
                     }
+
+                    isSomeonePresenting = isSomeonePresenting || renderingVideoViews.contains(where: \.value.isScreenShare)
 
                     if let activeSpeakerVideoView = renderingVideoViews[.speaker] {
                         activeSpeakerHeight = max(activeSpeakerHeight, UInt16(activeSpeakerVideoView.currentSize.height))
@@ -88,6 +91,9 @@ class GroupCallRemoteVideoManager {
                     )
                 }
 
+                // currently we do not support presenting + speaker videos
+                // so when someone is presenting, do not prioritize active speaker video over presenter video
+                activeSpeakerHeight = isSomeonePresenting ? 0 : activeSpeakerHeight
                 groupCall.updateVideoRequests(resolutions: videoRequests, activeSpeakerHeight: activeSpeakerHeight)
             }
         })
