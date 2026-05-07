@@ -581,6 +581,8 @@ private class TextViewTableViewCell: UITableViewCell, TextViewWithPlaceholderDel
         selectionStyle = .none
         textView.editorFont = .dynamicTypeBodyClamped
         textView.delegate = self
+        contentView.preservesSuperviewLayoutMargins = false
+        contentView.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 7)
         contentView.addSubview(textView)
         textView.autoPinEdgesToSuperviewMargins()
 
