@@ -66,7 +66,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         view.axis = .vertical
         view.distribution = .equalSpacing
         view.alignment = .center
-        view.layoutMargins = .init(hMargin: 32, vMargin: 46)
+        view.directionalLayoutMargins = .init(top: 32, leading: 24, bottom: 16, trailing: 24)
         view.isLayoutMarginsRelativeArrangement = true
         return view
     }()
@@ -74,7 +74,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     private let headlineLabel: UILabel = {
         let label = UILabel()
         label.font = .dynamicTypeTitle2.semibold()
-        label.textColor = Theme.primaryTextColor
+        label.textColor = .Signal.label
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -83,7 +83,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .dynamicTypeSubheadline
-        label.textColor = Theme.secondaryTextAndIconColor
+        label.textColor = .Signal.secondaryLabel
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -138,6 +138,8 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = .Signal.background
+
         view.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
 
@@ -157,7 +159,6 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
     // MARK: - Events
 
-    @objc
     private func didTapContinueToStartRecovery() {
         switch state {
         case .awaitingUserConfirmation:
@@ -171,13 +172,11 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         }
     }
 
-    @objc
     private func didTapToExportDatabase() {
         owsPrecondition(DebugFlags.internalSettings, "Only internal users can export databases")
         SignalApp.shared.showExportDatabaseUI(from: self)
     }
 
-    @objc
     private func didTapContinueToBypassStorageWarning() {
         switch state {
         case .showingDeviceSpaceWarning:
@@ -187,7 +186,6 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         }
     }
 
-    @objc
     private func didTapToResetSignal() {
         OWSActionSheets.showConfirmationAlert(
             title: OWSLocalizedString(
@@ -380,7 +378,6 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         }
     }
 
-    @objc
     private func didTapLaunchApp() {
         switch state {
         case .recoverySucceeded(let setupResult):
@@ -395,8 +392,6 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     // MARK: - Top-level renderers
 
     private func render() {
-        stackView.backgroundColor = Theme.backgroundColor
-
         switch state {
         case .awaitingUserConfirmation:
             renderAwaitingUserConfirmation()
@@ -435,7 +430,9 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         if DebugFlags.internalSettings {
             let exportDatabaseButton = button(
                 title: "Export Database (internal)",
-                selector: #selector(didTapToExportDatabase),
+                action: UIAction { [weak self] _ in
+                    self?.didTapToExportDatabase()
+                },
             )
             stackView.addArrangedSubview(exportDatabaseButton)
             exportDatabaseButton.autoPinWidthToSuperviewMargins()
@@ -443,7 +440,9 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
         let continueButton = button(
             title: CommonStrings.continueButton,
-            selector: #selector(didTapContinueToStartRecovery),
+            action: UIAction { [weak self] _ in
+                self?.didTapContinueToStartRecovery()
+            },
         )
         stackView.addArrangedSubview(continueButton)
         continueButton.autoPinWidthToSuperviewMargins()
@@ -476,7 +475,9 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
                 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY",
                 comment: "On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning.",
             ),
-            selector: #selector(didTapContinueToBypassStorageWarning),
+            action: UIAction { [weak self] _ in
+                self?.didTapContinueToBypassStorageWarning()
+            },
         )
 
         stackView.removeAllSubviews()
@@ -507,7 +508,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
             )
 
             progressBar.setProgress(0, animated: false)
-            progressBar.trackTintColor = Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05
+            progressBar.trackTintColor = .Signal.primaryFill
 
             stackView.removeAllSubviews()
             stackView.addArrangedSubviews([
@@ -539,21 +540,25 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
             comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message.",
         )
 
-        let resetSignalButton = self.button(
+        let resetSignalButton = button(
             title: OWSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON",
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data.",
             ),
-            selector: #selector(didTapToResetSignal),
-            backgroundColor: .ows_accentRed,
+            action: UIAction { [weak self] _ in
+                self?.didTapToResetSignal()
+            },
+            backgroundColor: .Signal.red,
         )
 
-        let submitDebugLogsButton = self.button(
+        let submitDebugLogsButton = button(
             title: OWSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON",
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log.",
             ),
-            selector: #selector(didRequestToSubmitDebugLogs),
+            action: UIAction { [weak self] _ in
+                self?.didRequestToSubmitDebugLogs()
+            },
         )
 
         stackView.removeAllSubviews()
@@ -586,7 +591,9 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
         let launchAppButton = button(
             title: CommonStrings.continueButton,
-            selector: #selector(didTapLaunchApp),
+            action: UIAction { [weak self] _ in
+                self?.didTapLaunchApp()
+            },
         )
 
         stackView.removeAllSubviews()
@@ -621,17 +628,12 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         }
     }
 
-    private func button(title: String, selector: Selector, backgroundColor: UIColor = .ows_accentBlue) -> UIView {
-        let button = OWSFlatButton.button(
-            title: title,
-            font: UIFont.dynamicTypeHeadline,
-            titleColor: .white,
-            backgroundColor: backgroundColor,
-            target: self,
-            selector: selector,
+    private func button(title: String, action: UIAction, backgroundColor: UIColor = .Signal.accent) -> UIView {
+        let button = UIButton(
+            configuration: .largePrimary(title: title),
+            primaryAction: action,
         )
-        button.autoSetHeightUsingFont()
-        button.cornerRadius = 8
+        button.configuration?.baseBackgroundColor = backgroundColor
         return button
     }
 
