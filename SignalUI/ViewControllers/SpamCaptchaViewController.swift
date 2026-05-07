@@ -8,24 +8,16 @@ import UIKit
 
 public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
 
-    private var captchaView: CaptchaView?
+    private lazy var captchaView: CaptchaView = {
+        let view = CaptchaView(context: .challenge)
+        view.delegate = self
+        return view
+    }()
 
     var completionHandler: ((String?) -> Void)?
 
-    private init() {
+    fileprivate init() {
         super.init(nibName: nil, bundle: nil)
-    }
-
-    override public func loadView() {
-        let captchaView = CaptchaView(context: .challenge)
-        captchaView.delegate = self
-
-        let view = UIView()
-        view.addSubview(captchaView)
-        captchaView.autoPinEdgesToSuperviewEdges()
-
-        self.captchaView = captchaView
-        self.view = view
     }
 
     required init?(coder: NSCoder) {
@@ -34,7 +26,12 @@ public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        captchaView?.loadCaptcha()
+
+        view.backgroundColor = .Signal.background
+
+        view.addSubview(captchaView)
+        captchaView.autoPinEdgesToSuperviewEdges()
+        captchaView.loadCaptcha()
 
         isModalInPresentation = true
         navigationItem.title = OWSLocalizedString("SPAM_CAPTCHA_VIEW_CONTROLLER", comment: "Title for the captcha view controller")
@@ -44,105 +41,77 @@ public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
         }
     }
 
+    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return UIDevice.current.isIPad ? .all : .portrait
+    }
+
+    // MARK: - CaptchaViewDelegate
+
     public func captchaView(_: CaptchaView, didCompleteCaptchaWithToken token: String) {
         completionHandler?(token)
         completionHandler = nil
     }
 
     public func captchaViewDidFailToCompleteCaptcha(_: CaptchaView) {
-        captchaView?.loadCaptcha()
+        captchaView.loadCaptcha()
     }
 
-    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return UIDevice.current.isIPad ? .all : .portrait
-    }
-}
-
-extension SpamCaptchaViewController {
+    // MARK: - Presentation
 
     public static func presentActionSheet(from fromVC: UIViewController) {
-
-        let titleLabel = UILabel()
-        titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
-        titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.textAlignment = .center
-        titleLabel.text = OWSLocalizedString("SPAM_CAPTCHA_SHEET_TITLE", comment: "Title for action sheet explaining captcha requirement.")
-
-        let bodyLabel = UILabel()
-        bodyLabel.font = .dynamicTypeSubheadlineClamped
-        bodyLabel.textColor = Theme.primaryTextColor
-        bodyLabel.numberOfLines = 0
-        bodyLabel.lineBreakMode = .byWordWrapping
-        bodyLabel.text = OWSLocalizedString("SPAM_CAPTCHA_SHEET_BODY", comment: "Body for action sheet explaining captcha requirement.")
-
-        let continueButton = OWSFlatButton()
-        continueButton.setTitle(
-            title: CommonStrings.continueButton,
-            font: UIFont.dynamicTypeHeadlineClamped,
-            titleColor: .white,
+        let sheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "SPAM_CAPTCHA_SHEET_TITLE",
+                comment: "Title for action sheet explaining captcha requirement.",
+            ),
+            message: OWSLocalizedString(
+                "SPAM_CAPTCHA_SHEET_BODY",
+                comment: "Body for action sheet explaining captcha requirement.",
+            ),
         )
-        continueButton.setBackgroundColors(upColor: Theme.accentBlueColor)
-        continueButton.layer.cornerRadius = 8
-        continueButton.layer.masksToBounds = true
-        continueButton.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 14)
-
-        let stackView = UIStackView(arrangedSubviews: [
-            titleLabel,
-            bodyLabel,
-            UIView.spacer(withHeight: 72),
-            continueButton,
-        ])
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.distribution = .fill
-        stackView.spacing = 16
-
-        let sheet = SheetViewController()
-        sheet.isHandleHidden = true
-        sheet.contentView.addSubview(stackView)
-        sheet.dismissHandler = { sheet in
-            sheet.dismiss(animated: true)
-
-            let confirmationSheet = ActionSheetController(
-                title: OWSLocalizedString(
-                    "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE",
-                    comment: "Title for confirmation dialog confirming to ignore verification.",
-                ),
-                message: OWSLocalizedString(
-                    "SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE",
-                    comment: "Message for confirmation dialog confirming to ignore verification.",
-                ),
-            )
-
-            confirmationSheet.addAction(
-                ActionSheetAction(
-                    title: OWSLocalizedString("SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION", comment: "Action to skip verification"),
-                    style: .destructive,
-                ),
-            )
-            confirmationSheet.addAction(
-                ActionSheetAction(
-                    title: CommonStrings.cancelButton,
-                    style: .cancel,
-                    handler: { _ in
-                        presentActionSheet(from: fromVC)
-                    },
-                ),
-            )
-            fromVC.present(confirmationSheet, animated: true, completion: nil)
-        }
-
-        continueButton.setPressedBlock {
-            sheet.dismiss(animated: true)
-            presentCaptchaVC(from: fromVC)
-        }
-
-        stackView.autoPinEdgesToSuperviewMargins(
-            with: UIEdgeInsets(hMargin: 24, vMargin: 16),
+        sheet.addAction(
+            ActionSheetAction(
+                title: CommonStrings.continueButton,
+                handler: { _ in
+                    presentCaptchaVC(from: fromVC)
+                },
+            ),
         )
-        continueButton.autoPinWidthToSuperviewMargins()
+        sheet.addAction(
+            ActionSheetAction(
+                title: CommonStrings.notNowButton,
+                style: .cancel,
+                handler: { _ in
+                    let confirmationSheet = ActionSheetController(
+                        title: OWSLocalizedString(
+                            "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE",
+                            comment: "Title for confirmation dialog confirming to ignore verification.",
+                        ),
+                        message: OWSLocalizedString(
+                            "SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE",
+                            comment: "Message for confirmation dialog confirming to ignore verification.",
+                        ),
+                    )
+
+                    confirmationSheet.addAction(
+                        ActionSheetAction(
+                            title: OWSLocalizedString("SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION", comment: "Action to skip verification"),
+                            style: .destructive,
+                        ),
+                    )
+                    confirmationSheet.addAction(
+                        ActionSheetAction(
+                            title: CommonStrings.cancelButton,
+                            style: .cancel,
+                            handler: { _ in
+                                presentActionSheet(from: fromVC)
+                            },
+                        ),
+                    )
+                    fromVC.present(confirmationSheet, animated: true, completion: nil)
+                },
+            ),
+        )
 
         fromVC.present(sheet, animated: true, completion: nil)
     }
@@ -165,3 +134,12 @@ extension SpamCaptchaViewController {
         fromVC.present(navVC, animated: true, completion: nil)
     }
 }
+
+#if DEBUG
+
+@available(iOS 17, *)
+#Preview {
+    SpamCaptchaViewController()
+}
+
+#endif
