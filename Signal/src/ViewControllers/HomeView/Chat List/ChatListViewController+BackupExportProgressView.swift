@@ -198,9 +198,8 @@ class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
                     }
                 }
             },
-            NotificationCenter.default.startTaskTrackingNotifications(
-                named: .lastBackupDetailsDidChange,
-                onNotification: { [weak self] in
+            Task { @MainActor [weak self] in
+                for await _ in NotificationCenter.default.notifications(named: .lastBackupDetailsDidChange) {
                     guard let self else { return }
 
                     let lastBackupDetails = db.read { tx in
@@ -211,11 +210,10 @@ class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
                         _state.lastBackupDetails = lastBackupDetails
                         self.setViewStateForState(state: &_state)
                     }
-                },
-            ),
-            NotificationCenter.default.startTaskTrackingNotifications(
-                named: .isHiddenDidChange,
-                onNotification: { [weak self] in
+                }
+            },
+            Task { @MainActor [weak self] in
+                for await _ in NotificationCenter.default.notifications(named: .isHiddenDidChange) {
                     guard let self else { return }
 
                     let isHidden = db.read { tx in
@@ -226,8 +224,8 @@ class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
                         _state.isHidden = isHidden
                         self.setViewStateForState(state: &_state)
                     }
-                },
-            ),
+                }
+            },
         ]
     }
 
