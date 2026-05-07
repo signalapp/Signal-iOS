@@ -51,6 +51,33 @@ public class ReferencedAttachment {
         return .init(reference: reference, attachmentBackupThumbnail: attachmentBackupThumbnail)
     }
 
+    public func getThumbnailImage(quality: AttachmentThumbnailQuality) async -> UIImage? {
+        if let stream = asReferencedStream?.attachmentStream {
+            return await stream.thumbnailImage(quality: quality)
+        } else if let backupThumbnail = AttachmentBackupThumbnail(attachment: attachment) {
+            return backupThumbnail.image
+        }
+        return nil
+    }
+
+    public func getThumbnailImageSync(quality: AttachmentThumbnailQuality) -> UIImage? {
+        if let stream = asReferencedStream?.attachmentStream {
+            return stream.thumbnailImageSync(quality: quality)
+        } else if let backupThumbnail = AttachmentBackupThumbnail(attachment: attachment) {
+            return backupThumbnail.image
+        }
+        return nil
+    }
+
+    public func getBestAvailableLocalImage() -> UIImage? {
+        if let stream = asReferencedStream?.attachmentStream {
+            return try? stream.decryptedImage()
+        } else if let backupThumbnail = AttachmentBackupThumbnail(attachment: attachment) {
+            return backupThumbnail.image
+        }
+        return nil
+    }
+
     public func unencryptedByteCount() -> UInt64? {
         if let stream = asReferencedStream {
             return UInt64(safeCast: stream.attachmentStream.unencryptedByteCount)
