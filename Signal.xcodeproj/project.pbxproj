@@ -176,7 +176,6 @@
 		3402AA35271D9DCD0084CBAE /* ActionSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95569271B510500B05242 /* ActionSheetController.swift */; };
 		3402AA37271D9DCD0084CBAE /* ConversationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557C271B510500B05242 /* ConversationItem.swift */; };
 		3402AA3B271D9DCD0084CBAE /* OWSWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95567271B510500B05242 /* OWSWindow.swift */; };
-		3402AA3C271D9DCD0084CBAE /* SheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95595271B510500B05242 /* SheetViewController.swift */; };
 		3402AA3D271D9DCD0084CBAE /* AttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95599271B510500B05242 /* AttachmentPrepViewController.swift */; };
 		3402AA3E271D9DCD0084CBAE /* StickerPackDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95571271B510500B05242 /* StickerPackDataSource.swift */; };
 		3402AA3F271D9DCD0084CBAE /* ApprovalRailCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9559B271B510500B05242 /* ApprovalRailCellView.swift */; };
@@ -4645,7 +4644,6 @@
 		34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactShareNameViewController.swift; sourceTree = "<group>"; };
 		34A9558E271B510500B05242 /* ApprovalFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApprovalFooterView.swift; sourceTree = "<group>"; };
 		34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalActivityIndicatorViewController.swift; sourceTree = "<group>"; };
-		34A95595271B510500B05242 /* SheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetViewController.swift; sourceTree = "<group>"; };
 		34A95597271B510500B05242 /* AttachmentTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentTextView.swift; sourceTree = "<group>"; };
 		34A95598271B510500B05242 /* AttachmentItemCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentItemCollection.swift; sourceTree = "<group>"; };
 		34A95599271B510500B05242 /* AttachmentPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentPrepViewController.swift; sourceTree = "<group>"; };
@@ -9299,7 +9297,6 @@
 				34A95567271B510500B05242 /* OWSWindow.swift */,
 				345779402682464700732869 /* ScanQRCodeViewController.swift */,
 				7677E41029F7A60500AC6A75 /* ScreenLockViewController.swift */,
-				34A95595271B510500B05242 /* SheetViewController.swift */,
 				34A9557E271B510500B05242 /* SpamCaptchaViewController.swift */,
 				B92E76A82B647E780095C4DF /* StackSheetViewController.swift */,
 				34A9557F271B510500B05242 /* TextApprovalViewController.swift */,
@@ -17965,7 +17962,6 @@
 				504861AA2EEB4D0D00B13C49 /* SendableAttachment.swift in Sources */,
 				D9791BB92EAA84830016AA5A /* SheetDisplayableError.swift in Sources */,
 				B9A53B932CF7928A0000578B /* SheetPreviewViewController.swift in Sources */,
-				3402AA3C271D9DCD0084CBAE /* SheetViewController.swift in Sources */,
 				504861AB2EEB4D1500B13C49 /* SignalAttachment.swift in Sources */,
 				B9E322E72CD170ED006DAF3B /* SignalList.swift in Sources */,
 				B9F817642BA263A900EAEE23 /* SignalSymbols.swift in Sources */,
