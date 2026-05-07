@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-final class SAEScreenLockViewController: ScreenLockViewController {
+final class SAEScreenLockViewController: ScreenLockViewController, ScreenLockViewDelegate {
 
     private var completion: ((_ didUnlock: Bool) -> Void)?
 
@@ -28,10 +28,11 @@ final class SAEScreenLockViewController: ScreenLockViewController {
 
     // MARK: - UIViewController
 
-    override func loadView() {
-        super.loadView()
-        view.backgroundColor = Theme.launchScreenBackgroundColor
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
         title = OWSLocalizedString("SHARE_EXTENSION_VIEW_TITLE", comment: "Title for the 'share extension' view.")
+
         navigationItem.leftBarButtonItem = .systemItem(.stop) { [weak self] in
             Logger.debug("tapped dismiss share button")
             self?.cancelShareExperience()
@@ -49,7 +50,7 @@ final class SAEScreenLockViewController: ScreenLockViewController {
 
         ensureUI()
 
-        if !hasShownAuthUIOnce {
+        if hasShownAuthUIOnce == false {
             hasShownAuthUIOnce = true
             tryToPresentAuthUIToUnlockScreenLock()
         }
@@ -66,9 +67,8 @@ final class SAEScreenLockViewController: ScreenLockViewController {
     }
 
     private func tryToPresentAuthUIToUnlockScreenLock() {
-        AssertIsOnMainThread()
+        guard isShowingAuthUI == false else { return }
 
-        guard !isShowingAuthUI else { return }
         isShowingAuthUI = true
 
         ScreenLock.shared.tryToUnlockScreenLock(
@@ -117,8 +117,6 @@ final class SAEScreenLockViewController: ScreenLockViewController {
     }
 
     private func showScreenLockFailureAlertWithMessage(_ message: String) {
-        AssertIsOnMainThread()
-
         OWSActionSheets.showActionSheet(
             title: OWSLocalizedString(
                 "SCREEN_LOCK_UNLOCK_FAILED",
@@ -135,13 +133,10 @@ final class SAEScreenLockViewController: ScreenLockViewController {
     private func cancelShareExperience() {
         invokeCompletion(didUnlock: false)
     }
-}
 
-extension SAEScreenLockViewController: ScreenLockViewDelegate {
+    // MARK: - ScreenLockViewDelegate:
 
     func unlockButtonWasTapped() {
-        AssertIsOnMainThread()
-
         Logger.info("unlockButtonWasTapped")
 
         tryToPresentAuthUIToUnlockScreenLock()
