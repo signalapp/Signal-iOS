@@ -24,69 +24,35 @@ class QRCodeView: UIView {
 
         super.init(frame: .zero)
 
-        overrideUserInterfaceStyle = .light
-        backgroundColor = .Signal.background
-        directionalLayoutMargins = .init(margin: contentInset)
+        // MARK: View properties
 
+        backgroundColor = .white
+        layoutMargins = UIEdgeInsets(margin: contentInset)
         layer.cornerRadius = cornerRadius
         layer.borderWidth = borderWidth
         layer.borderColor = qrCodeTintColor.paddingBorder.cgColor
 
-        //
-        // Spinner
-        //
         loadingSpinner.style = .large
-        loadingSpinner.color = .Signal.label
+        loadingSpinner.color = Theme.lightThemePrimaryColor
         loadingSpinner.hidesWhenStopped = true
-        addSubview(loadingSpinner)
-        loadingSpinner.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            loadingSpinner.widthAnchor.constraint(equalToConstant: 40),
-            loadingSpinner.heightAnchor.constraint(equalTo: widthAnchor),
 
-            // Make sure spinner is within QRCodeView's layout margins.
-            loadingSpinner.topAnchor.constraint(greaterThanOrEqualTo: layoutMarginsGuide.topAnchor),
-            loadingSpinner.centerYAnchor.constraint(equalTo: layoutMarginsGuide.centerYAnchor),
-
-            // Centers spinner in `QRCodeView`.
-            loadingSpinner.leadingAnchor.constraint(greaterThanOrEqualTo: layoutMarginsGuide.leadingAnchor),
-            loadingSpinner.centerXAnchor.constraint(equalTo: layoutMarginsGuide.centerXAnchor),
-        ])
-
-        //
-        // QR Code image
-        //
         // Don't antialias QR codes
         qrCodeImageView.layer.magnificationFilter = .nearest
         qrCodeImageView.layer.minificationFilter = .nearest
-        qrCodeImageView.contentMode = .scaleAspectFit
+
+        // MARK: Layout
+
+        addSubview(loadingSpinner)
+        loadingSpinner.autoSetDimensions(to: .square(40))
+        loadingSpinner.autoPinEdgesToSuperviewMargins()
+
         addSubview(qrCodeImageView)
-        qrCodeImageView.translatesAutoresizingMaskIntoConstraints = false
-        // Constrain image to QRCodeView's layout margins.
-        NSLayoutConstraint.activate([
-            qrCodeImageView.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
-            qrCodeImageView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-            qrCodeImageView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
-            qrCodeImageView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
-        ])
+        qrCodeImageView.autoPinEdgesToSuperviewMargins()
+        qrCodeImageView.contentMode = .scaleAspectFit
 
-        //
-        // Error image
-        //
         addSubview(errorImageView)
-        errorImageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            errorImageView.widthAnchor.constraint(equalToConstant: 40),
-            errorImageView.heightAnchor.constraint(equalTo: widthAnchor),
-
-            // Make sure `errorImageView` is within QRCodeView's layout margins.
-            errorImageView.topAnchor.constraint(greaterThanOrEqualTo: layoutMarginsGuide.topAnchor),
-            errorImageView.centerYAnchor.constraint(equalTo: layoutMarginsGuide.centerYAnchor),
-
-            // Centers `errorImageView` in `QRCodeView`.
-            errorImageView.leadingAnchor.constraint(greaterThanOrEqualTo: layoutMarginsGuide.leadingAnchor),
-            errorImageView.centerXAnchor.constraint(equalTo: layoutMarginsGuide.centerXAnchor),
-        ])
+        errorImageView.autoSetDimensions(to: .square(40))
+        errorImageView.autoCenterInSuperviewMargins()
 
         setLoading()
     }
