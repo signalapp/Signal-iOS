@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
-public protocol PaymentsBiometryLockPromptDelegate: AnyObject {
+@MainActor
+protocol PaymentsBiometryLockPromptDelegate: AnyObject {
     func didEnablePaymentsLock()
     func didNotEnablePaymentsLock()
 }
@@ -37,7 +38,7 @@ private enum KnownDeviceOwnerAuthenticationType {
 
 // MARK: -
 
-public class PaymentsBiometryLockPromptViewController: OWSViewController {
+class PaymentsBiometryLockPromptViewController: OWSViewController {
 
     private var hasBeenDoubleReminded: Bool = false
 
@@ -45,9 +46,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
 
     private weak var delegate: PaymentsBiometryLockPromptDelegate?
 
-    private let rootView = UIStackView()
-
-    public init?(deviceOwnerAuthenticationType: DeviceOwnerAuthenticationType, delegate: PaymentsBiometryLockPromptDelegate?) {
+    init?(deviceOwnerAuthenticationType: DeviceOwnerAuthenticationType, delegate: PaymentsBiometryLockPromptDelegate?) {
         guard let knownDeviceOwnerAuthenticationType = KnownDeviceOwnerAuthenticationType.from(deviceOwnerAuthenticationType) else {
             return nil
         }
@@ -57,7 +56,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         super.init()
     }
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString(
@@ -68,103 +67,48 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
             self?.didTapClose()
         }
 
-        OWSTableViewController2.removeBackButtonText(viewController: self)
-
-        rootView.axis = .vertical
-        rootView.alignment = .fill
-        view.addSubview(rootView)
-        rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        rootView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-        rootView.autoPinWidthToSuperviewMargins()
-
-        updateContents()
-    }
-
-    override public func themeDidChange() {
-        super.themeDidChange()
-
-        self.applyTheme()
-    }
-
-    public func applyTheme() {
-        updateContents()
-    }
-
-    override public func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        updateContents()
-    }
-
-    private func updateContents() {
-        AssertIsOnMainThread()
-
-        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
+        view.backgroundColor = .Signal.groupedBackground
 
         let heroImage = UIImageView(image: UIImage(named: "payments-lock"))
+        let heroImageContainer = UIView.container()
+        heroImageContainer.addSubview(heroImage)
+        heroImage.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            heroImage.topAnchor.constraint(equalTo: heroImageContainer.topAnchor, constant: 24),
+            heroImage.centerYAnchor.constraint(equalTo: heroImageContainer.centerYAnchor),
 
-        let titleLabel = UILabel()
-        titleLabel.text = OWSLocalizedString(
+            heroImage.leadingAnchor.constraint(greaterThanOrEqualTo: heroImageContainer.leadingAnchor),
+            heroImage.centerXAnchor.constraint(equalTo: heroImageContainer.centerXAnchor),
+        ])
+
+        let titleLabel = UILabel.title1Label(text: OWSLocalizedString(
             "SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE",
             comment: "Title for the content section of the  'payments lock prompt' view shown after payemts activation.",
+        ))
+
+        let explanationLabel = UILabel.explanationTextLabel(text: localizedExplanationLabelText())
+
+        let enableButton = UIButton(
+            configuration: .largePrimary(title: enableButtonTitle()),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapEnableButton()
+            },
         )
-        titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
-        titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.textAlignment = .center
 
-        let explanationLabel = UILabel()
-        explanationLabel.text = localizedExplanationLabelText()
-        explanationLabel.font = .dynamicTypeSubheadlineClamped
-        explanationLabel.textColor = Theme.primaryTextColor
-        explanationLabel.textAlignment = .center
-        explanationLabel.numberOfLines = 0
+        let notNowButton = UIButton(
+            configuration: .largeSecondary(title: CommonStrings.notNowButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapNotNowButton()
+            },
+        )
 
-        let topStack = UIStackView(arrangedSubviews: [
-            heroImage,
-            UIView.spacer(withHeight: 20),
+        addStaticContentStackView(arrangedSubviews: [
+            heroImageContainer,
             titleLabel,
-            UIView.spacer(withHeight: 10),
             explanationLabel,
+            .vStretchingSpacer(),
+            [enableButton, notNowButton].enclosedInVerticalStackView(isFullWidthButtons: true),
         ])
-        topStack.axis = .vertical
-        topStack.alignment = .center
-        topStack.isLayoutMarginsRelativeArrangement = true
-        topStack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 0)
-
-        let enableButton = OWSFlatButton.insetButton(
-            title: enableButtonTitle(),
-            font: UIFont.dynamicTypeHeadline,
-            titleColor: .white,
-            backgroundColor: .ows_accentBlue,
-            target: self,
-            selector: #selector(didTapEnableButton),
-        )
-        enableButton.autoSetHeightUsingFont()
-
-        let notNowButton = OWSFlatButton.insetButton(
-            title: CommonStrings.notNowButton,
-            font: UIFont.dynamicTypeHeadline,
-            titleColor: .ows_accentBlue,
-            backgroundColor: .clear,
-            target: self,
-            selector: #selector(didTapNotNowButton),
-        )
-        notNowButton.autoSetHeightUsingFont()
-
-        let spacerFactory = SpacerFactory()
-
-        rootView.removeAllSubviews()
-        rootView.addArrangedSubviews([
-            spacerFactory.buildVSpacer(),
-            topStack,
-            spacerFactory.buildVSpacer(),
-            enableButton,
-            UIView.spacer(withHeight: 16),
-            notNowButton,
-            UIView.spacer(withHeight: 8),
-        ])
-
-        spacerFactory.finalizeSpacers()
     }
 
     // MARK: - Events
@@ -178,7 +122,6 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         showDoubleReminder()
     }
 
-    @objc
     private func didTapEnableButton() {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             SSKEnvironment.shared.owsPaymentsLockRef.setIsPaymentsLockEnabled(true, transaction: transaction)
@@ -186,10 +129,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         dismiss(animated: true, completion: nil)
     }
 
-    @objc
     private func didTapNotNowButton() {
-        AssertIsOnMainThread()
-
         guard hasBeenDoubleReminded == false else {
             dismiss(animated: true, completion: nil)
             return
@@ -199,9 +139,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
     }
 
     func showDoubleReminder() {
-        AssertIsOnMainThread()
-
-        self.hasBeenDoubleReminded = true
+        hasBeenDoubleReminded = true
 
         let actionSheet = ActionSheetController(
             title: doubleReminderActionSheetTitle(),
@@ -233,25 +171,27 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         presentActionSheet(actionSheet)
     }
 
+    // MARK: - User-visible text.
+
     private func localizedExplanationLabelText() -> String {
         switch knownDeviceOwnerAuthenticationType {
         case .faceId:
-            return OWSLocalizedString(
+            OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID",
                 comment: "Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation.",
             )
         case .touchId:
-            return OWSLocalizedString(
+            OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID",
                 comment: "Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation.",
             )
         case .opticId:
-            return OWSLocalizedString(
+            OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID",
                 comment: "Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation.",
             )
         case .passcode:
-            return OWSLocalizedString(
+            OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE",
                 comment: "Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation.",
             )
@@ -261,22 +201,22 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
     private func enableButtonTitle() -> String {
         switch knownDeviceOwnerAuthenticationType {
         case .faceId:
-            return OWSLocalizedString(
+            OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID",
                 comment: "Enable Button title in Payments Lock Prompt view for Face ID.",
             )
         case .touchId:
-            return OWSLocalizedString(
+            OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID",
                 comment: "Enable Button title in Payments Lock Prompt view for Touch ID.",
             )
         case .opticId:
-            return OWSLocalizedString(
+            OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID",
                 comment: "Enable Button title in Payments Lock Prompt view for Optic ID.",
             )
         case .passcode:
-            return OWSLocalizedString(
+            OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE",
                 comment: "Enable Button title in Payments Lock Prompt view for Passcode.",
             )
@@ -286,22 +226,22 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
     private func doubleReminderActionSheetTitle() -> String {
         switch knownDeviceOwnerAuthenticationType {
         case .faceId:
-            return OWSLocalizedString(
+            OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID",
                 comment: "Double reminder action sheet title in Payments Lock Prompt view for Face ID.",
             )
         case .touchId:
-            return OWSLocalizedString(
+            OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID",
                 comment: "Double reminder action sheet title in Payments Lock Prompt view for Touch ID.",
             )
         case .opticId:
-            return OWSLocalizedString(
+            OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID",
                 comment: "Double reminder action sheet title in Payments Lock Prompt view for Optic ID.",
             )
         case .passcode:
-            return OWSLocalizedString(
+            OWSLocalizedString(
                 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE",
                 comment: "Double reminder action sheet title in Payments Lock Prompt view for Passcode.",
             )

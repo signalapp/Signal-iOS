@@ -4,18 +4,18 @@
 //
 
 import Foundation
-public import SignalServiceKit
+import SignalServiceKit
 import SignalUI
 
-public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
+struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
 
     private let archivedPayment: ArchivedPayment
-    public let displayName: String
+    let displayName: String
 
     private let paymentInfo: TSArchivedPaymentInfo
-    public let isIncoming: Bool
+    let isIncoming: Bool
 
-    public let address: SignalServiceKit.SignalServiceAddress?
+    let address: SignalServiceKit.SignalServiceAddress?
 
     init?(
         archivedPayment: ArchivedPayment,
@@ -39,33 +39,33 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
         }
     }
 
-    public var isOutgoing: Bool {
+    var isOutgoing: Bool {
         !isIncoming
     }
 
-    public var isUnidentified: Bool {
+    var isUnidentified: Bool {
         archivedPayment.interactionUniqueId == nil
     }
 
-    public var isFailed: Bool {
+    var isFailed: Bool {
         return archivedPayment.status.isFailure
     }
 
-    public var isDefragmentation: Bool {
+    var isDefragmentation: Bool {
         return false
     }
 
-    public var receiptData: Data? {
+    var receiptData: Data? {
         archivedPayment.receipt
     }
 
-    public var paymentAmount: TSPaymentAmount? {
+    var paymentAmount: TSPaymentAmount? {
         return SUIEnvironment.shared.paymentsImplRef.unmaskReceiptAmount(
             data: archivedPayment.receipt,
         )?.tsPaymentAmount
     }
 
-    public var formattedFeeAmount: String? {
+    var formattedFeeAmount: String? {
         guard
             let archivedFee = paymentInfo.fee,
             let fee = PaymentsFormat.formatFromArchive(amount: archivedFee)
@@ -77,15 +77,15 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
         )
     }
 
-    public var paymentType: TSPaymentType {
+    var paymentType: TSPaymentType {
         isIncoming ? .incomingPayment : .outgoingPayment
     }
 
-    public var paymentState: TSPaymentState {
+    var paymentState: TSPaymentState {
         return .incomingComplete
     }
 
-    public var ledgerBlockDate: Date? {
+    var ledgerBlockDate: Date? {
         guard
             let timestamp = archivedPayment.blockTimestamp,
             timestamp > 0
@@ -93,19 +93,19 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
         return Date(millisecondsSince1970: timestamp)
     }
 
-    public var ledgerBlockIndex: UInt64? {
+    var ledgerBlockIndex: UInt64? {
         archivedPayment.blockIndex
     }
 
-    public var isUnread: Bool {
+    var isUnread: Bool {
         return false
     }
 
-    public var memoMessage: String? {
+    var memoMessage: String? {
         paymentInfo.note
     }
 
-    public var attributedPaymentAmount: NSAttributedString? {
+    var attributedPaymentAmount: NSAttributedString? {
         guard
             let archivedAmount = paymentInfo.amount,
             let amount = PaymentsFormat.formatFromArchive(amount: archivedAmount)
@@ -119,7 +119,7 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
         return PaymentsFormat.attributedFormat(mobileCoinString: formattedAmount, withSpace: false)
     }
 
-    public var formattedPaymentAmount: String? {
+    var formattedPaymentAmount: String? {
         guard
             let archivedAmount = paymentInfo.amount,
             let amount = PaymentsFormat.formatFromArchive(amount: archivedAmount)
@@ -131,16 +131,16 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
         )
     }
 
-    public func statusDescription(isLongForm: Bool) -> String? {
+    func statusDescription(isLongForm: Bool) -> String? {
         return archivedPayment.statusDescription(isOutgoing: isOutgoing)
     }
 
     /// Read status is only tracked on TSPaymentModels, so there's not really anything to do here.
-    public func markAsRead(tx: SignalServiceKit.DBWriteTransaction) { }
+    func markAsRead(tx: SignalServiceKit.DBWriteTransaction) { }
 
     /// Reload is used on payment details to track updates to the TSPaymentModel.
     /// Since ArchivedPayments aren't updated, reloading here isn't necessary.
-    public func reload(tx: SignalServiceKit.DBReadTransaction) -> Self? {
+    func reload(tx: SignalServiceKit.DBReadTransaction) -> Self? {
         return self
     }
 }

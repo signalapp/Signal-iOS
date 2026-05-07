@@ -4,24 +4,40 @@
 //
 
 import SignalServiceKit
-public import SignalUI
+import SignalUI
 
-public protocol SendPaymentMemoViewDelegate: AnyObject {
+@MainActor
+protocol SendPaymentMemoViewDelegate: AnyObject {
     func didChangeMemo(memoMessage: String?)
 }
 
-// MARK: -
+class SendPaymentMemoViewController: OWSViewController, UITextFieldDelegate {
+    weak var delegate: SendPaymentMemoViewDelegate?
 
-public class SendPaymentMemoViewController: OWSViewController {
+    private lazy var memoTextField: UITextField = {
+        let textField = UITextField()
+        textField.font = .dynamicTypeBodyClamped
+        textField.textColor = .Signal.label
+        textField.rightViewMode = .always
+        textField.rightView = memoCharacterCountLabel
+        textField.placeholder = OWSLocalizedString(
+            "PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER",
+            comment: "Placeholder for the new payment or payment request message.",
+        )
+        textField.delegate = self
+        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        return textField
+    }()
 
-    public weak var delegate: SendPaymentMemoViewDelegate?
+    private lazy var memoCharacterCountLabel: UILabel = {
+        let label = UILabel()
+        label.text = " "
+        label.font = .dynamicTypeBodyClamped.monospaced()
+        label.textColor = .Signal.tertiaryLabel
+        return label
+    }()
 
-    private let rootStack = UIStackView()
-
-    private let memoTextField = UITextField()
-    private let memoCharacterCountLabel = UILabel()
-
-    public init(memoMessage: String?) {
+    init(memoMessage: String?) {
         super.init()
 
         memoTextField.text = memoMessage
@@ -39,96 +55,60 @@ public class SendPaymentMemoViewController: OWSViewController {
             self?.didTapDoneMemo()
         }
 
-        rootStack.axis = .vertical
-        rootStack.alignment = .fill
-        rootStack.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(rootStack)
+        view.backgroundColor = .Signal.groupedBackground
+
+        let memoFieldContainer = UIView()
+        memoFieldContainer.backgroundColor = .Signal.secondaryGroupedBackground
+        memoFieldContainer.directionalLayoutMargins = .init(
+            hMargin: OWSTableViewController2.cellHInnerMargin,
+            vMargin: OWSTableViewController2.cellVInnerMargin,
+        )
+        if #available(iOS 26, *) {
+            memoFieldContainer.cornerConfiguration = .capsule(maximumRadius: 26)
+        } else {
+            memoFieldContainer.layer.cornerRadius = 10
+        }
+        memoFieldContainer.addSubview(memoTextField)
+        memoTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            rootStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            rootStack.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            rootStack.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            rootStack.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -16),
+            memoTextField.topAnchor.constraint(equalTo: memoFieldContainer.layoutMarginsGuide.topAnchor),
+            memoTextField.leadingAnchor.constraint(equalTo: memoFieldContainer.layoutMarginsGuide.leadingAnchor),
+            memoTextField.trailingAnchor.constraint(equalTo: memoFieldContainer.layoutMarginsGuide.trailingAnchor),
+            memoTextField.bottomAnchor.constraint(equalTo: memoFieldContainer.layoutMarginsGuide.bottomAnchor),
         ])
 
-        updateContents()
+        addStaticContentStackView(
+            arrangedSubviews: [.spacer(withHeight: 16), memoFieldContainer, .vStretchingSpacer()],
+            isScrollable: true,
+            shouldAvoidKeyboard: true,
+        )
+
+        updateMemoCharacterCount()
     }
 
-    override public func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         memoTextField.becomeFirstResponder()
     }
 
-    override public func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         memoTextField.becomeFirstResponder()
     }
 
-    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return UIDevice.current.isIPad ? .all : .portrait
-    }
-
-    private func updateContents() {
-        AssertIsOnMainThread()
-
-        rootStack.removeAllSubviews()
-
-        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
-
-        memoTextField.backgroundColor = .clear
-        memoTextField.font = .dynamicTypeBodyClamped
-        memoTextField.textColor = Theme.primaryTextColor
-        let placeholder = NSAttributedString(
-            string: OWSLocalizedString(
-                "PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER",
-                comment: "Placeholder for the new payment or payment request message.",
-            ),
-            attributes: [
-                .foregroundColor: Theme.secondaryTextAndIconColor,
-            ],
-        )
-        memoTextField.attributedPlaceholder = placeholder
-        memoTextField.delegate = self
-        memoTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-
-        memoCharacterCountLabel.font = .dynamicTypeBodyClamped
-        memoCharacterCountLabel.textColor = .Signal.tertiaryLabel
-
-        memoCharacterCountLabel.setCompressionResistanceHorizontalHigh()
-        memoCharacterCountLabel.setContentHuggingHorizontalHigh()
-
-        let memoRow = UIStackView(arrangedSubviews: [
-            memoTextField,
-            memoCharacterCountLabel,
-        ])
-        memoRow.axis = .horizontal
-        memoRow.spacing = 8
-        memoRow.alignment = .center
-        memoRow.isLayoutMarginsRelativeArrangement = true
-        memoRow.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 14)
-        let backgroundColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true)
-        let backgroundView = memoRow.addBackgroundView(withBackgroundColor: backgroundColor)
-        backgroundView.layer.cornerRadius = 10
-
-        updateMemoCharacterCount()
-
-        rootStack.addArrangedSubviews([
-            UIView.spacer(withHeight: SendPaymentHelper.minTopVSpacing),
-            memoRow,
-            UIView.vStretchingSpacer(),
-        ])
-    }
-
-    override public func themeDidChange() {
-        super.themeDidChange()
-
-        updateContents()
     }
 
     // MARK: -
 
     fileprivate func updateMemoCharacterCount() {
+        defer {
+            memoCharacterCountLabel.sizeToFit()
+        }
+
         guard
             let strippedMemoMessage = memoTextField.text,
             !strippedMemoMessage.isEmpty
@@ -162,10 +142,10 @@ public class SendPaymentMemoViewController: OWSViewController {
     private func textFieldDidChange(_ textField: UITextField) {
         updateMemoCharacterCount()
     }
-}
 
-extension SendPaymentMemoViewController: UITextFieldDelegate {
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString: String) -> Bool {
+    // MARK: - UITextFieldDelegate
+
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString: String) -> Bool {
         // Truncate the replacement to fit.
         let left: String = ((textField.text ?? "") as NSString).substring(to: range.location)
         let right: String = ((textField.text ?? "") as NSString).substring(from: range.location + range.length)

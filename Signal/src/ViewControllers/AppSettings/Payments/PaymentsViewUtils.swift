@@ -3,38 +3,45 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
-public class PaymentsViewUtils {
-
-    private init() {}
-
-    public static func buildMemoLabel(memoMessage: String?) -> UIView? {
+@MainActor
+struct PaymentsUI {
+    static func buildMemoLabel(memoMessage: String?) -> UIView? {
         guard let memoMessage = memoMessage?.ows_stripped().nilIfEmpty else {
             return nil
         }
 
         let label = UILabel()
         label.text = memoMessage
-        label.textColor = Theme.primaryTextColor
-        label.font = UIFont.dynamicTypeSubheadlineClamped
+        label.textColor = .Signal.label
+        label.font = .dynamicTypeSubheadlineClamped
         label.textAlignment = .center
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
 
-        let stack = UIStackView(arrangedSubviews: [label])
-        stack.axis = .vertical
-        stack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 8)
-        stack.isLayoutMarginsRelativeArrangement = true
+        let labelContainer = UIView()
+        labelContainer.backgroundColor = .Signal.secondaryGroupedBackground
+        labelContainer.directionalLayoutMargins = .init(
+            hMargin: OWSTableViewController2.cellHInnerMargin,
+            vMargin: OWSTableViewController2.cellVInnerMargin,
+        )
+        if #available(iOS 26, *) {
+            labelContainer.cornerConfiguration = .capsule(maximumRadius: 26)
+        } else {
+            labelContainer.layer.cornerRadius = 10
+        }
+        labelContainer.addSubview(label)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: labelContainer.layoutMarginsGuide.topAnchor),
+            label.leadingAnchor.constraint(equalTo: labelContainer.layoutMarginsGuide.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: labelContainer.layoutMarginsGuide.trailingAnchor),
+            label.bottomAnchor.constraint(equalTo: labelContainer.layoutMarginsGuide.bottomAnchor),
+        ])
 
-        let backgroundView = OWSLayerView.pillView()
-        backgroundView.backgroundColor = Theme.secondaryBackgroundColor
-        stack.addSubview(backgroundView)
-        backgroundView.autoPinEdgesToSuperviewEdges()
-        stack.sendSubviewToBack(backgroundView)
-
-        return stack
+        return labelContainer
     }
 
     static func buildUnidentifiedTransactionAvatar(avatarSize: UInt) -> UIView {
@@ -67,22 +74,6 @@ public class PaymentsViewUtils {
             )
     }
 
-    // MARK: -
-
-    static func markPaymentAsRead(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {
-        owsAssertDebug(paymentModel.isUnread)
-        paymentModel.update(withIsUnread: false, transaction: transaction)
-    }
-
-    static func markAllUnreadPaymentsAsReadWithSneakyTransaction() {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            for paymentModel in PaymentFinder.allUnreadPaymentModels(transaction: transaction) {
-                owsAssertDebug(paymentModel.isUnread)
-                paymentModel.update(withIsUnread: false, transaction: transaction)
-            }
-        }
-    }
-
     static func buildPassphraseGrid(
         passphrase: PaymentsPassphrase,
         footerButton: UIView? = nil,
@@ -103,34 +94,26 @@ public class PaymentsViewUtils {
             stack.alignment = .fill
             stack.spacing = 10
 
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: UIFont.dynamicTypeBodyClamped,
+                .foregroundColor: UIColor.Signal.secondaryLabel,
+            ]
+
             for wordAndIndex in words {
                 let attributedText = NSMutableAttributedString()
                 attributedText.append(
                     OWSFormat.formatInt(wordAndIndex.index + 1),
-                    attributes: [
-                        .font: UIFont.dynamicTypeBodyClamped,
-                        .foregroundColor: Theme.secondaryTextAndIconColor,
-                    ],
+                    attributes: attributes,
                 )
                 attributedText.append(
-                    ":",
-                    attributes: [
-                        .font: UIFont.dynamicTypeBodyClamped,
-                        .foregroundColor: Theme.secondaryTextAndIconColor,
-                    ],
-                )
-                attributedText.append(
-                    " ",
-                    attributes: [
-                        .font: UIFont.dynamicTypeBodyClamped,
-                        .foregroundColor: Theme.secondaryTextAndIconColor,
-                    ],
+                    ": ",
+                    attributes: attributes,
                 )
                 attributedText.append(
                     wordAndIndex.word,
                     attributes: [
                         .font: UIFont.dynamicTypeHeadlineClamped,
-                        .foregroundColor: Theme.primaryTextColor,
+                        .foregroundColor: UIColor.Signal.label,
                     ],
                 )
                 let wordLabel = UILabel()
@@ -158,19 +141,18 @@ public class PaymentsViewUtils {
         stack.axis = .vertical
         stack.alignment = .fill
         stack.spacing = 24
-        stack.isLayoutMarginsRelativeArrangement = true
-        stack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 24)
-        let backgroundColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true)
-        stack.addBackgroundView(
-            withBackgroundColor: backgroundColor,
-            cornerRadius: 10,
-        )
 
         if let footerButton {
-            let footerButtonStack = UIStackView(arrangedSubviews: [footerButton])
-            footerButtonStack.axis = .vertical
-            footerButtonStack.alignment = .center
-            stack.addArrangedSubview(footerButtonStack)
+            let footerButtonContainer = UIView.container()
+            footerButtonContainer.addSubview(footerButton)
+            footerButton.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                footerButton.topAnchor.constraint(equalTo: footerButtonContainer.topAnchor),
+                footerButton.leadingAnchor.constraint(greaterThanOrEqualTo: footerButtonContainer.leadingAnchor),
+                footerButton.centerXAnchor.constraint(equalTo: footerButtonContainer.centerXAnchor),
+                footerButton.bottomAnchor.constraint(equalTo: footerButtonContainer.bottomAnchor),
+            ])
+            stack.addArrangedSubview(footerButtonContainer)
         }
 
         return stack
@@ -180,11 +162,9 @@ public class PaymentsViewUtils {
         text: String,
         font: UIFont,
         learnMoreUrl: URL,
-    ) -> UITextView {
+    ) -> UIView {
         let textView = LinkingTextView()
-        textView.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
-        textView.textColor = .Signal.label
-        textView.font = UIFont.dynamicTypeHeadlineClamped
+        textView.backgroundColor = .clear
         textView.attributedText = NSAttributedString.composed(of: [
             text,
             " ",
@@ -193,16 +173,33 @@ public class PaymentsViewUtils {
             ),
         ]).styled(
             with: .font(font),
-            .color(Theme.secondaryTextAndIconColor),
+            .color(.Signal.secondaryLabel),
         )
-        textView.linkTextAttributes = [.foregroundColor: Theme.primaryTextColor]
+        textView.linkTextAttributes = [.foregroundColor: UIColor.Signal.label]
+        textView.textAlignment = .center
         return textView
+    }
+}
+
+enum PaymentUtils {
+    static func markPaymentAsRead(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {
+        owsAssertDebug(paymentModel.isUnread)
+        paymentModel.update(withIsUnread: false, transaction: transaction)
+    }
+
+    static func markAllUnreadPaymentsAsReadWithSneakyTransaction() {
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            for paymentModel in PaymentFinder.allUnreadPaymentModels(transaction: transaction) {
+                owsAssertDebug(paymentModel.isUnread)
+                paymentModel.update(withIsUnread: false, transaction: transaction)
+            }
+        }
     }
 }
 
 // MARK: -
 
-public extension TSPaymentModel {
+extension TSPaymentModel {
 
     private static var statusDateShortFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -428,8 +425,7 @@ public extension TSPaymentModel {
 }
 
 extension OWSActionSheets {
-    public static func showPaymentsOutdatedClientSheet(title: OutdatedTitleType) {
-
+    static func showPaymentsOutdatedClientSheet(title: OutdatedTitleType) {
         OWSActionSheets.showConfirmationWithNotNowAlert(
             title: title.localizedTitle,
             message: OWSLocalizedString(
@@ -448,12 +444,10 @@ extension OWSActionSheets {
     }
 }
 
-public enum OutdatedTitleType {
+enum OutdatedTitleType {
     case cantSendPayment
     case updateRequired
-}
 
-extension OutdatedTitleType {
     var localizedTitle: String {
         switch self {
         case .cantSendPayment:

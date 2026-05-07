@@ -3,11 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
+import SignalServiceKit
 import SignalUI
 
 // MARK: -
 
+@MainActor
 protocol PaymentsHistoryDataSourceDelegate: AnyObject {
     var recordType: PaymentsHistoryDataSource.RecordType { get }
 
@@ -19,7 +20,7 @@ protocol PaymentsHistoryDataSourceDelegate: AnyObject {
 // MARK: -
 
 @MainActor
-class PaymentsHistoryDataSource {
+class PaymentsHistoryDataSource: DatabaseChangeDelegate {
 
     enum RecordType: Int, CustomStringConvertible {
         case all = 0
@@ -96,7 +97,7 @@ class PaymentsHistoryDataSource {
             return paymentModels.map { paymentModel in
                 var displayName: String
                 if paymentModel.isUnidentified {
-                    displayName = PaymentsViewUtils.buildUnidentifiedTransactionString(paymentModel: paymentModel)
+                    displayName = PaymentsUI.buildUnidentifiedTransactionString(paymentModel: paymentModel)
                 } else if let senderOrRecipientAci = paymentModel.senderOrRecipientAci {
                     displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(senderOrRecipientAci), tx: transaction).resolvedValue()
                 } else if paymentModel.isOutgoingTransfer {
@@ -145,11 +146,8 @@ class PaymentsHistoryDataSource {
         cell.configure(paymentItem: paymentItem)
         return cell
     }
-}
 
-// MARK: -
-
-extension PaymentsHistoryDataSource: DatabaseChangeDelegate {
+    // MARK: - DatabaseChangeDelegate
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         guard databaseChanges.didUpdate(tableName: TSPaymentModel.databaseTableName) else {
@@ -169,7 +167,7 @@ extension PaymentsHistoryDataSource: DatabaseChangeDelegate {
 }
 
 extension ArchivedPayment {
-    public func statusDescription(isOutgoing: Bool) -> String? {
+    func statusDescription(isOutgoing: Bool) -> String? {
         if status.isFailure {
             switch (failureReason, isOutgoing) {
             case (.insufficientFundsFailure, true):

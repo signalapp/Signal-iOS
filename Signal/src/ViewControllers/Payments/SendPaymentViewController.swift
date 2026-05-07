@@ -4,16 +4,17 @@
 //
 
 import Lottie
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
-public protocol SendPaymentViewDelegate: AnyObject {
+@MainActor
+protocol SendPaymentViewDelegate: AnyObject {
     func didSendPayment(success: Bool)
 }
 
 // MARK: -
 
-public enum SendPaymentMode: UInt {
+enum SendPaymentMode: UInt {
     case fromConversationView
     case fromPaymentSettings
     case fromTransferOutFlow
@@ -31,22 +32,56 @@ public enum SendPaymentMode: UInt {
 
 // MARK: -
 
-public class SendPaymentViewController: OWSViewController {
-
+class SendPaymentViewController: OWSViewController, SendPaymentMemoViewDelegate, SendPaymentHelperDelegate,
+    SendPaymentCompletionDelegate, AmountsDelegate
+{
     private let mode: SendPaymentMode
 
     fileprivate typealias PaymentInfo = SendPaymentInfo
 
-    public weak var delegate: SendPaymentViewDelegate?
+    weak var delegate: SendPaymentViewDelegate?
 
     private let recipient: SendPaymentRecipient
     private let isOutgoingTransfer: Bool
 
-    private let rootStack = UIStackView()
+    private let bigAmountLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 54)
+        label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.25
+        label.setContentHuggingVerticalHigh()
+        label.setCompressionResistanceVerticalHigh()
+        return label
+    }()
 
-    private let bigAmountLabel = UILabel()
-    private let smallAmountLabel = UILabel()
-    private let currencyConversionInfoView = UIImageView()
+    private let smallAmountLabel: UILabel = {
+        let label = UILabel()
+        label.font = .dynamicTypeSubheadlineClamped
+        label.adjustsFontSizeToFitWidth = true
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = .Signal.secondaryLabel
+        label.textAlignment = .center
+        label.setContentHuggingVerticalHigh()
+        label.setCompressionResistanceVerticalHigh()
+        return label
+    }()
+
+    private lazy var currencyConversionInfoButton: UIButton = {
+        let button = UIButton(
+            configuration: .plain(),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapCurrencyConversionInfo()
+            },
+        )
+        button.configuration?.image = UIImage(named: "info-20")
+        button.configuration?.contentInsets = .init(hMargin: 12, vMargin: 4)
+        button.tintColor = .Signal.secondaryLabel
+        button.setCompressionResistanceHorizontalHigh()
+        return button
+    }()
+
+    private var memoView = UIView()
 
     private let balanceLabel = SendPaymentHelper.buildBottomLabel()
 
@@ -58,7 +93,11 @@ public class SendPaymentViewController: OWSViewController {
 
     // MARK: -
 
-    private var memoMessage: String?
+    private var memoMessage: String? {
+        didSet {
+            updateMemoView()
+        }
+    }
 
     private var hasMemoMessage: Bool {
         memoMessage?.strippedOrNil != nil
@@ -76,7 +115,7 @@ public class SendPaymentViewController: OWSViewController {
         return presentingViewController != nil
     }
 
-    public init(
+    init(
         recipient: SendPaymentRecipient,
         initialPaymentAmount: TSPaymentAmount?,
         isOutgoingTransfer: Bool,
@@ -117,6 +156,14 @@ public class SendPaymentViewController: OWSViewController {
         helper = SendPaymentHelper(delegate: self)
         amounts.delegate = self
     }
+
+    deinit {
+        for observation in observations {
+            NotificationCenter.default.removeObserver(observation)
+        }
+    }
+
+    // MARK: - Presenting
 
     private enum PresentationMode {
         case fromConversationView(fromViewController: UIViewController)
@@ -350,7 +397,7 @@ public class SendPaymentViewController: OWSViewController {
         }
     }
 
-    public static func presentFromConversationView(
+    static func presentFromConversationView(
         _ fromViewController: UIViewController,
         delegate: SendPaymentViewDelegate,
         recipientAddress: SignalServiceAddress,
@@ -368,7 +415,7 @@ public class SendPaymentViewController: OWSViewController {
         )
     }
 
-    public static func present(
+    static func present(
         inNavigationController navigationController: UINavigationController,
         delegate: SendPaymentViewDelegate,
         recipientAddress: SignalServiceAddress,
@@ -387,24 +434,127 @@ public class SendPaymentViewController: OWSViewController {
         )
     }
 
+    // MARK: - UIViewController
+
     override open func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
+        if mode.isModalRootView {
+            navigationItem.rightBarButtonItem = .doneButton(dismissingFrom: self)
+        }
 
-        addListeners()
+        view.backgroundColor = .Signal.groupedBackground
 
-        createSubviews()
+        //
+        // 1. Amounts
+        //
+        let amountsView = UIView()
+        // Big label.
+        amountsView.addSubview(bigAmountLabel)
+        // Small label with (i) info button next to it.
+        amountsView.addSubview(smallAmountLabel)
+        amountsView.addSubview(currencyConversionInfoButton)
 
-        updateContents()
+        bigAmountLabel.translatesAutoresizingMaskIntoConstraints = false
+        smallAmountLabel.translatesAutoresizingMaskIntoConstraints = false
+        currencyConversionInfoButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            bigAmountLabel.topAnchor.constraint(equalTo: amountsView.topAnchor),
+            bigAmountLabel.leadingAnchor.constraint(greaterThanOrEqualTo: amountsView.leadingAnchor),
+            bigAmountLabel.centerXAnchor.constraint(equalTo: amountsView.centerXAnchor),
+
+            smallAmountLabel.topAnchor.constraint(equalTo: bigAmountLabel.bottomAnchor, constant: 8),
+            smallAmountLabel.leadingAnchor.constraint(greaterThanOrEqualTo: amountsView.leadingAnchor),
+            smallAmountLabel.centerXAnchor.constraint(equalTo: amountsView.centerXAnchor),
+            smallAmountLabel.bottomAnchor.constraint(equalTo: amountsView.bottomAnchor),
+
+            currencyConversionInfoButton.centerYAnchor.constraint(equalTo: smallAmountLabel.centerYAnchor),
+            currencyConversionInfoButton.leadingAnchor.constraint(equalTo: smallAmountLabel.trailingAnchor),
+            currencyConversionInfoButton.trailingAnchor.constraint(lessThanOrEqualTo: amountsView.trailingAnchor),
+        ])
+        // Transfer button next to big label.
+        if currentCurrencyConversion != nil {
+            let transferButton = UIButton(
+                configuration: .plain(),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.didTapSwapCurrency()
+                },
+            )
+            transferButton.tintColor = .secondaryLabel
+            transferButton.configuration?.image = UIImage(named: "transfer")
+            transferButton.configuration?.contentInsets = .init(margin: 4)
+            transferButton.setCompressionResistanceHorizontalHigh()
+            amountsView.addSubview(transferButton)
+            transferButton.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                transferButton.centerYAnchor.constraint(equalTo: bigAmountLabel.centerYAnchor),
+                transferButton.trailingAnchor.constraint(equalTo: amountsView.trailingAnchor),
+                transferButton.leadingAnchor.constraint(greaterThanOrEqualTo: bigAmountLabel.trailingAnchor),
+            ])
+        }
+
+        let stackView = addStaticContentStackView(
+            arrangedSubviews: [
+                amountsView,
+            ],
+            isScrollable: true,
+        )
+
+        //
+        // 2. Memo (optional)
+        //
+        if isIdentifiedPayment {
+            updateMemoView()
+            stackView.addArrangedSubview(memoView)
+        }
+
+        //
+        //
+        // 3. Stretching space.
+        stackView.addArrangedSubview(.vStretchingSpacer())
+
+        //
+        // 4. Keyboard
+        //
+        let keyboardView = buildKeyboardView()
+        stackView.addArrangedSubview(keyboardView)
+        stackView.setCustomSpacing(24, after: keyboardView)
+
+        //
+        // 5. Big blue Pay button.
+        //
+        let payButton = UIButton(
+            configuration: .largePrimary(title: OWSLocalizedString(
+                "PAYMENTS_NEW_PAYMENT_PAY_BUTTON",
+                comment: "Label for the 'new payment' button.",
+            )),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapPayButton()
+            },
+        )
+        // This sets required side margins and is necessary even though there's just one button.
+        let payButtonContainer = [payButton].enclosedInVerticalStackView(isFullWidthButtons: true)
+        stackView.addArrangedSubview(payButtonContainer)
+        stackView.setCustomSpacing(0, after: payButtonContainer)
+
+        //
+        // 6. Balance Label.
+        //
+        stackView.addArrangedSubview(balanceLabel)
+        stackView.addArrangedSubview(.spacer(withHeight: 16))
+
+        updateAmountLabels()
+        updateBalanceLabel()
+
+        addObservations()
     }
 
-    override public func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         helper?.refreshObservedValues()
     }
 
-    override public func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         // For now, the design only allows for portrait layout on non-iPads
@@ -413,22 +563,22 @@ public class SendPaymentViewController: OWSViewController {
         }
     }
 
-    override public func themeDidChange() {
-        super.themeDidChange()
-
-        updateContents()
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return UIDevice.current.isIPad ? .all : .portrait
     }
 
-    private func addListeners() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(isPaymentsVersionOutdatedDidChange),
+    // MARK: - Observations
+
+    private var observations = [NotificationCenter.Observer]()
+
+    private func addObservations() {
+        observations.append(NotificationCenter.default.addObserver(
             name: PaymentsConstants.isPaymentsVersionOutdatedDidChange,
-            object: nil,
-        )
+        ) { [weak self] _ in
+            self?.isPaymentsVersionOutdatedDidChange()
+        })
     }
 
-    @objc
     private func isPaymentsVersionOutdatedDidChange() {
         guard UIApplication.shared.frontmostViewController == self else { return }
         if SSKEnvironment.shared.paymentsHelperRef.isPaymentsVersionOutdated {
@@ -436,333 +586,13 @@ public class SendPaymentViewController: OWSViewController {
         }
     }
 
-    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return UIDevice.current.isIPad ? .all : .portrait
-    }
-
-    private func resetContents() {
-        amounts.reset()
-
-        memoMessage = nil
-    }
-
-    private func updateContents() {
-        AssertIsOnMainThread()
-
-        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
-        navigationItem.title = nil
-        if mode.isModalRootView {
-            navigationItem.rightBarButtonItem = .doneButton(dismissingFrom: self)
-        } else {
-            navigationItem.rightBarButtonItem = nil
-        }
-
-        updateAmountLabels()
-        updateBalanceLabel()
-
-        let swapCurrencyIconSize: CGFloat = 24
-        let bigAmountLeft = UIView.container()
-        let bigAmountRight: UIView
-        if nil != currentCurrencyConversion {
-            bigAmountRight = UIImageView.withTemplateImageName("transfer", tintColor: .ows_gray45)
-            bigAmountRight.autoPinToSquareAspectRatio()
-            bigAmountRight.isUserInteractionEnabled = true
-            bigAmountRight.addGestureRecognizer(UITapGestureRecognizer(
-                target: self,
-                action: #selector(didTapSwapCurrency),
-            ))
-        } else {
-            bigAmountRight = UIView.container()
-        }
-        bigAmountLeft.autoSetDimension(.width, toSize: swapCurrencyIconSize)
-        bigAmountRight.autoSetDimension(.width, toSize: swapCurrencyIconSize)
-        let bigAmountRow = UIStackView(arrangedSubviews: [bigAmountLeft, bigAmountLabel, bigAmountRight])
-        bigAmountRow.axis = .horizontal
-        bigAmountRow.alignment = .center
-        bigAmountRow.spacing = 8
-
-        let memoView: UIView
-        if let hasMemoView = PaymentsViewUtils.buildMemoLabel(memoMessage: memoMessage) {
-            memoView = hasMemoView
-        } else {
-            let addMemoLabel = UILabel()
-            addMemoLabel.text = OWSLocalizedString(
-                "PAYMENTS_NEW_PAYMENT_ADD_MEMO",
-                comment: "Label for the 'add memo' ui in the 'send payment' UI.",
-            )
-            addMemoLabel.font = .dynamicTypeBodyClamped
-            addMemoLabel.textColor = Theme.accentBlueColor
-            memoView = addMemoLabel
-        }
-        let memoStack = UIStackView(arrangedSubviews: [memoView])
-        memoStack.axis = .vertical
-        memoStack.alignment = .center
-        memoStack.isLayoutMarginsRelativeArrangement = true
-        memoStack.layoutMargins = UIEdgeInsets(hMargin: 0, vMargin: 12)
-        memoStack.isUserInteractionEnabled = true
-        memoStack.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapAddMemo)))
-
-        let spacerFactory = SpacerFactory()
-
-        let keyboardViews = buildKeyboard(spacerFactory: spacerFactory)
-
-        let amountButtons = buildAmountButtons()
-
-        let smallAmountSpacerFactory = SpacerFactory()
-        let smallAmountRow = UIStackView(arrangedSubviews: [
-            smallAmountSpacerFactory.buildHSpacer(),
-            smallAmountLabel,
-            currencyConversionInfoView,
-            smallAmountSpacerFactory.buildHSpacer(),
-        ])
-        smallAmountSpacerFactory.finalizeSpacers()
-        smallAmountRow.axis = .horizontal
-        smallAmountRow.alignment = .center
-        smallAmountRow.spacing = 8
-        smallAmountRow.isUserInteractionEnabled = true
-        smallAmountRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCurrencyConversionInfo)))
-
-        var requiredViews = [UIView]()
-        requiredViews += [
-            bigAmountRow,
-            smallAmountRow,
-        ]
-        if isIdentifiedPayment {
-            requiredViews.append(memoStack)
-        }
-        requiredViews += [
-            amountButtons,
-            balanceLabel,
-        ]
-        requiredViews += keyboardViews.keyboardRows
-
-        for requiredView in requiredViews {
-            requiredView.setCompressionResistanceVerticalHigh()
-            requiredView.setContentHuggingHigh()
-        }
-
-        rootStack.removeAllSubviews()
-        rootStack.addArrangedSubviews(
-            [
-                spacerFactory.buildVSpacer(),
-                spacerFactory.buildVSpacer(),
-                spacerFactory.buildVSpacer(),
-                bigAmountRow,
-                smallAmountRow,
-                spacerFactory.buildVSpacer(),
-                spacerFactory.buildVSpacer(),
-                memoStack,
-                spacerFactory.buildVSpacer(),
-                spacerFactory.buildVSpacer(),
-                spacerFactory.buildVSpacer(),
-            ] +
-                keyboardViews.allRows
-                + [
-                    spacerFactory.buildVSpacer(),
-                    spacerFactory.buildVSpacer(),
-                    spacerFactory.buildVSpacer(),
-                    amountButtons,
-                    spacerFactory.buildVSpacer(),
-                    balanceLabel,
-                ],
-        )
-
-        spacerFactory.finalizeSpacers()
-
-        UIView.matchHeightsOfViews(keyboardViews.keyboardRows)
-    }
-
-    struct KeyboardViews {
-        let allRows: [UIView]
-        let keyboardRows: [UIView]
-    }
-
-    private func buildKeyboard(spacerFactory: SpacerFactory) -> KeyboardViews {
-
-        let keyboardHSpacing: CGFloat = 32
-        let buttonFont = UIFont.dynamicTypeTitle1Clamped
-        func buildAmountKeyboardButton(title: String, block: @escaping () -> Void) -> OWSButton {
-            let button = OWSButton(block: block)
-
-            let label = UILabel()
-            label.text = title
-            label.font = buttonFont
-            label.textColor = Theme.primaryTextColor
-            button.addSubview(label)
-            button.backgroundColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
-            label.autoCenterInSuperview()
-
-            return button
-        }
-        func buildAmountKeyboardButton(imageName: String, block: @escaping () -> Void) -> OWSButton {
-            let button = OWSButton(
-                imageName: imageName,
-                tintColor: Theme.primaryTextColor,
-                block: block,
-            )
-            button.backgroundColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
-            return button
-        }
-        var keyboardRows = [UIView]()
-        let buildAmountKeyboardRow = { (buttons: [OWSButton]) -> UIView in
-
-            let buttons = buttons.map { button -> UIView in
-                let buttonSize = buttonFont.lineHeight * 1.7
-                button.autoSetDimension(.height, toSize: buttonSize)
-
-                let downStateColor = (
-                    Theme.isDarkThemeEnabled
-                        ? UIColor.ows_gray90
-                        : UIColor.ows_gray02,
-                )
-                let downStateImage = UIImage.image(
-                    color: downStateColor,
-                    size: CGSize(width: 1, height: 1),
-                )
-                button.setBackgroundImage(downStateImage, for: .highlighted)
-
-                // We clip the button to a circle so that the
-                // down state is circular.
-                let buttonClipView = OWSLayerView.circleView()
-                buttonClipView.addSubview(button)
-                button.autoPinEdgesToSuperviewEdges()
-                buttonClipView.clipsToBounds = true
-
-                let buttonWrapper = UIView.container()
-                buttonWrapper.addSubview(buttonClipView)
-                buttonClipView.autoPinEdge(toSuperviewEdge: .top)
-                buttonClipView.autoPinEdge(toSuperviewEdge: .bottom)
-                buttonClipView.autoHCenterInSuperview()
-                buttonClipView.autoPinEdge(toSuperviewEdge: .leading)
-                buttonClipView.autoPinEdge(toSuperviewEdge: .trailing)
-
-                return buttonWrapper
-            }
-
-            let rowStack = UIStackView(arrangedSubviews: buttons)
-            rowStack.axis = .horizontal
-            rowStack.spacing = keyboardHSpacing
-            rowStack.distribution = .fillEqually
-            rowStack.alignment = .fill
-
-            keyboardRows.append(rowStack)
-
-            return rowStack
-        }
-
-        func buildDecimalButton() -> OWSButton {
-            if let decimalSeparator = PaymentsConstants.decimalSeparator.nilIfEmpty {
-                return buildAmountKeyboardButton(title: decimalSeparator) { [weak self] in
-                    self?.keyboardPressedDecimal()
-                }
-            } else {
-                return buildAmountKeyboardButton(imageName: "decimal-32") { [weak self] in
-                    self?.keyboardPressedDecimal()
-                }
-            }
-        }
-
-        // Don't localize; use Arabic numeral literals.
-        //
-        // TODO: Localize or remove custom keyboard to support payments
-        //       in locales that don't use arabic numerals.
-        let allRows = [
-            buildAmountKeyboardRow([
-                buildAmountKeyboardButton(title: "1") { [weak self] in
-                    self?.keyboardPressedNumeral("1")
-                },
-                buildAmountKeyboardButton(title: "2") { [weak self] in
-                    self?.keyboardPressedNumeral("2")
-                },
-                buildAmountKeyboardButton(title: "3") { [weak self] in
-                    self?.keyboardPressedNumeral("3")
-                },
-            ]),
-            spacerFactory.buildVSpacer(),
-            buildAmountKeyboardRow([
-                buildAmountKeyboardButton(title: "4") { [weak self] in
-                    self?.keyboardPressedNumeral("4")
-                },
-                buildAmountKeyboardButton(title: "5") { [weak self] in
-                    self?.keyboardPressedNumeral("5")
-                },
-                buildAmountKeyboardButton(title: "6") { [weak self] in
-                    self?.keyboardPressedNumeral("6")
-                },
-            ]),
-            spacerFactory.buildVSpacer(),
-            buildAmountKeyboardRow([
-                buildAmountKeyboardButton(title: "7") { [weak self] in
-                    self?.keyboardPressedNumeral("7")
-                },
-                buildAmountKeyboardButton(title: "8") { [weak self] in
-                    self?.keyboardPressedNumeral("8")
-                },
-                buildAmountKeyboardButton(title: "9") { [weak self] in
-                    self?.keyboardPressedNumeral("9")
-                },
-            ]),
-            spacerFactory.buildVSpacer(),
-            buildAmountKeyboardRow([
-                buildDecimalButton(),
-                buildAmountKeyboardButton(title: "0") { [weak self] in
-                    self?.keyboardPressedNumeral("0")
-                },
-                buildAmountKeyboardButton(imageName: "backspace-32") { [weak self] in
-                    self?.keyboardPressedBackspace()
-                },
-            ]),
-        ]
-
-        return KeyboardViews(allRows: allRows, keyboardRows: keyboardRows)
-    }
-
-    private func buildAmountButtons() -> UIView {
-        return buildBottomButtonStack([buildBottomButton(
-            title: OWSLocalizedString("PAYMENTS_NEW_PAYMENT_PAY_BUTTON", comment: "Label for the 'new payment' button."),
-            target: self,
-            selector: #selector(didTapPayButton),
-        )])
-    }
-
-    // MARK: -
-
-    private func createSubviews() {
-        rootStack.axis = .vertical
-        rootStack.alignment = .fill
-        rootStack.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(rootStack)
-        NSLayoutConstraint.activate([
-            rootStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            rootStack.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 20),
-            rootStack.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -20),
-            rootStack.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -24),
-        ])
-
-        bigAmountLabel.font = UIFont.regularFont(ofSize: 60)
-        bigAmountLabel.textAlignment = .center
-        bigAmountLabel.adjustsFontSizeToFitWidth = true
-        bigAmountLabel.minimumScaleFactor = 0.25
-        bigAmountLabel.setContentHuggingVerticalHigh()
-        bigAmountLabel.setCompressionResistanceVerticalHigh()
-
-        smallAmountLabel.font = UIFont.dynamicTypeSubheadline
-        smallAmountLabel.textColor = Theme.secondaryTextAndIconColor
-        smallAmountLabel.textAlignment = .center
-        smallAmountLabel.setContentHuggingVerticalHigh()
-        smallAmountLabel.setCompressionResistanceVerticalHigh()
-
-        currencyConversionInfoView.setTemplateImageName("info-compact", tintColor: Theme.secondaryTextAndIconColor)
-        currencyConversionInfoView.autoSetDimensions(to: .square(16))
-        currencyConversionInfoView.setCompressionResistanceHigh()
-    }
+    // MARK: - Updating UI
 
     private func updateAmountLabels() {
-
         let isZero = amount.inputString.isZero
 
         func hideConversionLabelOrShowWarning() {
-            let shouldHaveValidValue = (!isZero && currentCurrencyConversion != nil)
+            let shouldHaveValidValue = isZero == false && currentCurrencyConversion != nil
             smallAmountLabel.text = (
                 shouldHaveValidValue
                     ? OWSLocalizedString(
@@ -771,14 +601,14 @@ public class SendPaymentViewController: OWSViewController {
                     )
                     : " ",
             )
-            smallAmountLabel.textColor = UIColor.ows_accentRed
-            currencyConversionInfoView.tintColor = .clear
+            smallAmountLabel.textColor = .Signal.warningLabel
+            currencyConversionInfoButton.alpha = 0
         }
 
         func enableSmallLabel(_ text: String) {
             smallAmountLabel.text = text
-            smallAmountLabel.textColor = Theme.secondaryTextAndIconColor
-            currencyConversionInfoView.tintColor = Theme.secondaryTextAndIconColor
+            smallAmountLabel.textColor = .Signal.secondaryLabel
+            currencyConversionInfoButton.alpha = 1
         }
 
         bigAmountLabel.attributedText = amount.formatAsKeyboardInputAttributed(withSpace: false)
@@ -786,7 +616,7 @@ public class SendPaymentViewController: OWSViewController {
         switch amount {
         case .mobileCoin:
             if
-                let otherCurrencyAmount = self.otherCurrencyAmount,
+                let otherCurrencyAmount,
                 let currencyConversion = otherCurrencyAmount.currencyConversion
             {
                 let formattedAmount = otherCurrencyAmount.formatForDisplay(withSpace: true).string
@@ -836,6 +666,58 @@ public class SendPaymentViewController: OWSViewController {
         }
     }
 
+    private func updateMemoView() {
+        memoView.removeAllSubviews()
+
+        var buttonConfiguration: UIButton.Configuration
+        if let memoString = memoMessage?.stripped.nilIfEmpty {
+            buttonConfiguration = .bordered()
+            buttonConfiguration.baseBackgroundColor = .Signal.secondaryGroupedBackground
+            buttonConfiguration.title = memoString
+            buttonConfiguration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeSubheadlineClamped)
+            buttonConfiguration.baseForegroundColor = .Signal.label
+            if #available(iOS 26, *) {
+                buttonConfiguration.cornerStyle = .capsule
+            } else {
+                buttonConfiguration.cornerStyle = .fixed
+                buttonConfiguration.background.cornerRadius = 10
+            }
+        } else {
+            buttonConfiguration = .plain()
+            buttonConfiguration.title = OWSLocalizedString(
+                "PAYMENTS_NEW_PAYMENT_ADD_MEMO",
+                comment: "Label for the 'add memo' ui in the 'send payment' UI.",
+            )
+            buttonConfiguration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBodyClamped)
+            buttonConfiguration.baseForegroundColor = .Signal.accent
+        }
+        buttonConfiguration.contentInsets = .init(
+            hMargin: OWSTableViewController2.cellHInnerMargin,
+            vMargin: OWSTableViewController2.cellVInnerMargin,
+        )
+
+        let button = UIButton(
+            configuration: buttonConfiguration,
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapAddMemo()
+            },
+        )
+        memoView.addSubview(button)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            button.topAnchor.constraint(equalTo: memoView.topAnchor),
+            button.leadingAnchor.constraint(greaterThanOrEqualTo: memoView.leadingAnchor),
+            button.centerXAnchor.constraint(equalTo: memoView.centerXAnchor),
+            button.bottomAnchor.constraint(equalTo: memoView.bottomAnchor),
+        ])
+    }
+
+    private func updateBalanceLabel() {
+        helper?.updateBalanceLabel(balanceLabel)
+    }
+
+    // MARK: - Formatting helpers
+
     static func formatWithConversionFreshness(
         formattedAmount: String,
         currencyConversion: CurrencyConversionInfo,
@@ -852,43 +734,32 @@ public class SendPaymentViewController: OWSViewController {
         return String.nonPluralLocalizedStringWithFormat(conversionFormat, formattedAmount, formattedFreshness)
     }
 
-    private func updateBalanceLabel() {
-        guard let helper else {
-            return
-        }
-        helper.updateBalanceLabel(balanceLabel)
-    }
-
-    private func showInvalidAmountAlert() {
-        let errorMessage = OWSLocalizedString(
-            "PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT",
-            comment: "Label for the 'invalid amount' button.",
-        )
-        OWSActionSheets.showErrorAlert(message: errorMessage)
-    }
-
-    // MARK: - Events
-
-    @objc
-    private func didTapAddMemo() {
-        let view = SendPaymentMemoViewController(memoMessage: self.memoMessage)
-        view.delegate = self
-        navigationController?.pushViewController(view, animated: true)
-    }
-
     private func updateAmount(_ amount: Amount) -> Amount {
-        guard let currencyConversion = self.currentCurrencyConversion else {
+        guard let currentCurrencyConversion else {
             return amount
         }
         switch amount {
         case .mobileCoin:
             return amount
         case .fiatCurrency(let inputString, _):
-            return .fiatCurrency(inputString: inputString, currencyConversion: currencyConversion)
+            return .fiatCurrency(inputString: inputString, currencyConversion: currentCurrencyConversion)
         }
     }
 
-    @objc
+    private func resetContents() {
+        amounts.reset()
+
+        memoMessage = nil
+    }
+
+    // MARK: - Button action handlers
+
+    private func didTapAddMemo() {
+        let view = SendPaymentMemoViewController(memoMessage: self.memoMessage)
+        view.delegate = self
+        navigationController?.pushViewController(view, animated: true)
+    }
+
     private func didTapSwapCurrency() {
         // If users repeatedly swap input currency, we don't want the
         // values to drift due to rounding errors.  So we keep around
@@ -942,18 +813,8 @@ public class SendPaymentViewController: OWSViewController {
         }
     }
 
-    @objc
-    private func didTapRequestButton(_ sender: UIButton) {
-        // TODO: Add support for requests.
-        //        guard let parsedAmount = parsedAmount,
-        //              parsedAmount > 0 else {
-        //            showInvalidAmountAlert()
-        //            return
-        //        }
-        //        let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: parsedAmount)
-        //        // Snapshot the conversion rate.
-        //        let currencyConversion = self.currentCurrencyConversion
-        //        currentStep = .confirmRequest(paymentAmount: paymentAmount, currencyConversion: currencyConversion)
+    private func didTapCurrencyConversionInfo() {
+        PaymentsSettingsViewController.showCurrencyConversionInfoAlert(fromViewController: self)
     }
 
     // MARK: -
@@ -981,12 +842,19 @@ public class SendPaymentViewController: OWSViewController {
         }
     }
 
-    // MARK: -
+    // MARK: - Payment handling
 
     private var actionSheet: SendPaymentCompletionActionSheet?
 
-    @objc
-    private func didTapPayButton(_ sender: UIButton) {
+    private func showInvalidAmountAlert() {
+        let errorMessage = OWSLocalizedString(
+            "PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT",
+            comment: "Label for the 'invalid amount' button.",
+        )
+        OWSActionSheets.showErrorAlert(message: errorMessage)
+    }
+
+    private func didTapPayButton() {
         let paymentAmount = parsedPaymentAmount
         guard paymentAmount.picoMob > 0 else {
             showInvalidAmountAlert()
@@ -994,7 +862,6 @@ public class SendPaymentViewController: OWSViewController {
         }
 
         setWasLastPaymentInFiat(amounts.currentAmount.isFiat)
-
         getEstimatedFeeAndSubmit(paymentAmount: paymentAmount)
     }
 
@@ -1219,25 +1086,172 @@ public class SendPaymentViewController: OWSViewController {
         SignalApp.shared.showAppSettings(mode: .payments)
     }
 
-    @objc
-    private func didTapCurrencyConversionInfo() {
-        PaymentsSettingsViewController.showCurrencyConversionInfoAlert(fromViewController: self)
-    }
-}
+    // MARK: - SendPaymentMemoViewDelegate
 
-// MARK: -
-
-extension SendPaymentViewController: SendPaymentMemoViewDelegate {
-    public func didChangeMemo(memoMessage: String?) {
+    func didChangeMemo(memoMessage: String?) {
+        // Will update UI in setter.
         self.memoMessage = memoMessage?.nilIfEmpty
-
-        updateContents()
     }
-}
 
-// MARK: - Payment Keyboard
+    // MARK: - Payment Keyboard
 
-private extension SendPaymentViewController {
+    private func buildKeyboardView() -> UIView {
+        let keyboardButtonSpacing: CGFloat = 24
+        let buttonFont = UIFont.dynamicTypeTitle1Clamped
+        let buttonSize = buttonFont.lineHeight * 2.2
+
+        var buttonConfiguration: UIButton.Configuration
+        if #available(iOS 26, *) {
+            buttonConfiguration = .prominentGlass()
+        } else {
+            buttonConfiguration = .borderedProminent()
+        }
+        buttonConfiguration.cornerStyle = .capsule
+        buttonConfiguration.titleTextAttributesTransformer = .defaultFont(buttonFont)
+        buttonConfiguration.baseForegroundColor = .Signal.label
+        buttonConfiguration.baseBackgroundColor = .Signal.secondaryGroupedBackground
+
+        func buildAmountKeyboardButton(title: String, action: UIAction) -> UIButton {
+            let button = UIButton(configuration: buttonConfiguration, primaryAction: action)
+            button.configuration?.title = title
+            return button
+        }
+        func buildAmountKeyboardButton(imageName: String, action: UIAction) -> UIButton {
+            let button = UIButton(configuration: buttonConfiguration, primaryAction: action)
+            button.configuration?.image = UIImage(named: imageName)
+            return button
+        }
+
+        var keyboardRows = [UIView]()
+        let buildKeyboardRow = { (buttons: [UIButton]) -> UIView in
+            buttons.forEach { button in
+                button.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    button.widthAnchor.constraint(equalToConstant: buttonSize),
+                    button.widthAnchor.constraint(equalTo: button.heightAnchor),
+                ])
+            }
+
+            let rowStack = UIStackView(arrangedSubviews: buttons)
+            rowStack.axis = .horizontal
+            rowStack.spacing = keyboardButtonSpacing
+            rowStack.distribution = .fillEqually
+            rowStack.alignment = .fill
+            rowStack.translatesAutoresizingMaskIntoConstraints = false
+
+            let buttonWidth: CGFloat = buttonSize * CGFloat(buttons.count)
+            let spacingWidth: CGFloat = keyboardButtonSpacing * CGFloat(buttons.count - 1)
+            rowStack.widthAnchor.constraint(equalToConstant: buttonWidth + spacingWidth).isActive = true
+
+            keyboardRows.append(rowStack)
+
+            return rowStack
+        }
+
+        func buildDecimalButton() -> UIButton {
+            if let decimalSeparator = PaymentsConstants.decimalSeparator.nilIfEmpty {
+                return buildAmountKeyboardButton(
+                    title: decimalSeparator,
+                    action: UIAction { [weak self] _ in
+                        self?.keyboardPressedDecimal()
+                    },
+                )
+            }
+            return buildAmountKeyboardButton(
+                imageName: "decimal-32",
+                action: UIAction { [weak self] _ in
+                    self?.keyboardPressedDecimal()
+                },
+            )
+        }
+
+        // Don't localize; use Arabic numeral literals.
+        //
+        // TODO: Localize or remove custom keyboard to support payments
+        //       in locales that don't use arabic numerals.
+        let keyboardStackView = UIStackView(arrangedSubviews: [
+            buildKeyboardRow([
+                buildAmountKeyboardButton(
+                    title: "1",
+                    action: UIAction { [weak self] _ in
+                        self?.keyboardPressedNumeral("1")
+                    },
+                ),
+                buildAmountKeyboardButton(
+                    title: "2",
+                    action: UIAction { [weak self] _ in
+                        self?.keyboardPressedNumeral("2")
+                    },
+                ),
+                buildAmountKeyboardButton(
+                    title: "3",
+                    action: UIAction { [weak self] _ in
+                        self?.keyboardPressedNumeral("3")
+                    },
+                ),
+            ]),
+            buildKeyboardRow([
+                buildAmountKeyboardButton(
+                    title: "4",
+                    action: UIAction { [weak self] _ in
+                        self?.keyboardPressedNumeral("4")
+                    },
+                ),
+                buildAmountKeyboardButton(
+                    title: "5",
+                    action: UIAction { [weak self] _ in
+                        self?.keyboardPressedNumeral("5")
+                    },
+                ),
+                buildAmountKeyboardButton(
+                    title: "6",
+                    action: UIAction { [weak self] _ in
+                        self?.keyboardPressedNumeral("6")
+                    },
+                ),
+            ]),
+            buildKeyboardRow([
+                buildAmountKeyboardButton(
+                    title: "7",
+                    action: UIAction { [weak self] _ in
+                        self?.keyboardPressedNumeral("7")
+                    },
+                ),
+                buildAmountKeyboardButton(
+                    title: "8",
+                    action: UIAction { [weak self] _ in
+                        self?.keyboardPressedNumeral("8")
+                    },
+                ),
+                buildAmountKeyboardButton(
+                    title: "9",
+                    action: UIAction { [weak self] _ in
+                        self?.keyboardPressedNumeral("9")
+                    },
+                ),
+            ]),
+            buildKeyboardRow([
+                buildDecimalButton(),
+                buildAmountKeyboardButton(
+                    title: "0",
+                    action: UIAction { [weak self] _ in
+                        self?.keyboardPressedNumeral("0")
+                    },
+                ),
+                buildAmountKeyboardButton(
+                    imageName: "backspace-32",
+                    action: UIAction { [weak self] _ in
+                        self?.keyboardPressedBackspace()
+                    },
+                ),
+            ]),
+        ])
+        keyboardStackView.axis = .vertical
+        keyboardStackView.spacing = keyboardButtonSpacing
+        keyboardStackView.alignment = .center
+
+        return keyboardStackView
+    }
 
     private func keyboardPressedNumeral(_ numeralString: String) {
         let inputString = amount.inputString.append(.digit(digit: numeralString))
@@ -1288,17 +1302,14 @@ private extension SendPaymentViewController {
             return currencyConversion.convertFromFiatCurrencyToMOB(amount.asDouble)
         }
     }
-}
 
-// MARK: -
+    // MARK: - SendPaymentHelperDelegate
 
-extension SendPaymentViewController: SendPaymentHelperDelegate {
-
-    public func balanceDidChange() {
+    func balanceDidChange() {
         updateBalanceLabel()
     }
 
-    public func currencyConversionDidChange() {
+    func currencyConversionDidChange() {
         guard isViewLoaded else {
             return
         }
@@ -1323,16 +1334,21 @@ extension SendPaymentViewController: SendPaymentHelperDelegate {
         updateAmountLabels()
         updateBalanceLabel()
     }
-}
 
-// MARK: -
+    // MARK: - SendPaymentCompletionDelegate
 
-extension SendPaymentViewController: SendPaymentCompletionDelegate {
-    public func didSendPayment(success: Bool) {
+    func didSendPayment(success: Bool) {
         let delegate = self.delegate
-        self.dismiss(animated: true) {
+        dismiss(animated: true) {
             delegate?.didSendPayment(success: success)
         }
+    }
+
+    // MARK: - AmountsDelegate
+
+    fileprivate func amountDidChange(oldValue: Amount, newValue: Amount) {
+        guard isViewLoaded else { return }
+        updateAmountLabels()
     }
 }
 
@@ -1450,12 +1466,14 @@ private enum Amount {
 
 // MARK: -
 
+@MainActor
 private protocol AmountsDelegate: AnyObject {
     func amountDidChange(oldValue: Amount, newValue: Amount)
 }
 
 // MARK: -
 
+@MainActor
 private class Amounts {
 
     weak var delegate: AmountsDelegate?
@@ -1492,21 +1510,6 @@ private class Amounts {
 
     func reset() {
         set(currentAmount: Self.defaultMCAmount, otherCurrencyAmount: nil)
-    }
-}
-
-// MARK: -
-
-extension SendPaymentViewController: AmountsDelegate {
-    fileprivate func amountDidChange(oldValue: Amount, newValue: Amount) {
-        guard isViewLoaded else {
-            return
-        }
-        if oldValue.isFiat != newValue.isFiat {
-            updateContents()
-        } else {
-            updateAmountLabels()
-        }
     }
 }
 
@@ -1774,34 +1777,5 @@ private struct InputString: Equatable {
 
         let formatted = formattedChars.joined()
         return formatted
-    }
-}
-
-// MARK: -
-
-// This view's contents must adapt to a wide variety of form factors.
-// We use vertical spacers of equal height to ensure the layout is
-// both responsive and balanced.
-class SpacerFactory {
-    private var hSpacers = [UIView]()
-    private var vSpacers = [UIView]()
-
-    func buildHSpacer() -> UIView {
-        let spacer = UIView.container()
-        spacer.setContentHuggingHorizontalLow()
-        hSpacers.append(spacer)
-        return spacer
-    }
-
-    func buildVSpacer() -> UIView {
-        let spacer = UIView.container()
-        spacer.setContentHuggingVerticalLow()
-        vSpacers.append(spacer)
-        return spacer
-    }
-
-    func finalizeSpacers() {
-        UIView.matchWidthsOfViews(hSpacers)
-        UIView.matchHeightsOfViews(vSpacers)
     }
 }

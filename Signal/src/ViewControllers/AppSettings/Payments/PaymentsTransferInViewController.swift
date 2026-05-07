@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class PaymentsTransferInViewController: OWSTableViewController2 {
+class PaymentsTransferInViewController: OWSViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -16,22 +16,69 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             comment: "Label for 'add money' view in the payment settings.",
         )
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
-
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: Theme.iconImage(.buttonShare),
-            style: .plain,
-            target: self,
-            action: #selector(didTapShare),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapShare()
+            },
+        )
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+            self?.didTapDone()
+        }
+
+        view.backgroundColor = .Signal.groupedBackground
+
+        let contentView: UIView
+        if let walletAddressView = buildWalletAddressView() {
+            contentView = walletAddressView
+        } else {
+            let errorLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS",
+                comment: "Indicator that the payments wallet address is invalid.",
+            ))
+            errorLabel.textColor = .Signal.label
+            errorLabel.font = .dynamicTypeSubheadlineClamped.semibold()
+            errorLabel.adjustsFontSizeToFitWidth = true
+            errorLabel.numberOfLines = 0
+            errorLabel.lineBreakMode = .byWordWrapping
+            contentView = errorLabel
+        }
+
+        let contentViewContainer = UIView()
+        contentViewContainer.directionalLayoutMargins = .init(hMargin: 16, vMargin: 24)
+        contentViewContainer.backgroundColor = .Signal.secondaryGroupedBackground
+        if #available(iOS 26, *) {
+            contentViewContainer.cornerConfiguration = .uniformCorners(radius: .fixed(26))
+        } else {
+            contentViewContainer.layer.cornerRadius = 14
+        }
+        contentViewContainer.addSubview(contentView)
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            contentView.topAnchor.constraint(equalTo: contentViewContainer.layoutMarginsGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: contentViewContainer.layoutMarginsGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: contentViewContainer.layoutMarginsGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: contentViewContainer.layoutMarginsGuide.bottomAnchor),
+        ])
+
+        let infoLabel = PaymentsUI.buildTextWithLearnMoreLinkTextView(
+            text: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION",
+                comment: "Explanation of the process for adding money in the 'add money' settings view.",
+            ),
+            font: .dynamicTypeSubheadlineClamped,
+            learnMoreUrl: URL.Support.Payments.transferFromExchange,
         )
 
-        updateTableContents()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        updateTableContents()
+        addStaticContentStackView(
+            arrangedSubviews: [
+                .spacer(withHeight: 16),
+                contentViewContainer,
+                infoLabel,
+                .vStretchingSpacer(),
+            ],
+            isScrollable: true,
+        )
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -41,101 +88,9 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
     }
 
-    override func themeDidChange() {
-        super.themeDidChange()
-
-        updateTableContents()
-    }
-
-    private func updateTableContents() {
-        let contents = OWSTableContents()
-
-        let addressSection = OWSTableSection()
-        addressSection.hasBackground = false
-        addressSection.shouldDisableCellSelection = true
-        addressSection.add(OWSTableItem(
-            customCellBlock: { [weak self] in
-                let cell = OWSTableItem.newCell()
-                self?.configureAddressCell(cell: cell)
-                return cell
-            },
-            actionBlock: nil,
-        ))
-        contents.add(addressSection)
-
-        let infoSection = OWSTableSection()
-        infoSection.hasBackground = false
-        infoSection.shouldDisableCellSelection = true
-        infoSection.add(OWSTableItem(
-            customCellBlock: {
-                let cell = OWSTableItem.newCell()
-
-                let label = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
-                    text: OWSLocalizedString(
-                        "SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION",
-                        comment: "Explanation of the process for adding money in the 'add money' settings view.",
-                    ),
-                    font: .dynamicTypeSubheadlineClamped,
-                    learnMoreUrl: URL.Support.Payments.transferFromExchange,
-                )
-                label.textAlignment = .center
-                cell.contentView.addSubview(label)
-                label.autoPinEdgesToSuperviewMargins()
-
-                return cell
-            },
-            actionBlock: nil,
-        ))
-
-        contents.add(infoSection)
-
-        self.contents = contents
-    }
-
-    private func configureAddressCell(cell: UITableViewCell) {
-        func configureWithSubviews(subviews: [UIView]) {
-            let innerStack = UIStackView(arrangedSubviews: subviews)
-            innerStack.axis = .vertical
-            innerStack.alignment = .center
-            innerStack.layoutMargins = UIEdgeInsets(top: 44, leading: 44, bottom: 32, trailing: 44)
-            innerStack.isLayoutMarginsRelativeArrangement = true
-            innerStack.addBackgroundView(
-                withBackgroundColor: self.cellBackgroundColor,
-                cornerRadius: 10,
-            )
-
-            let outerStack = OWSStackView(
-                name: "outerStack",
-                arrangedSubviews: [innerStack],
-            )
-            outerStack.axis = .vertical
-            outerStack.alignment = .center
-            outerStack.layoutMargins = UIEdgeInsets(top: 40, leading: 40, bottom: 0, trailing: 40)
-            outerStack.isLayoutMarginsRelativeArrangement = true
-            cell.contentView.addSubview(outerStack)
-            outerStack.autoPinEdgesToSuperviewMargins()
-            cell.addBackgroundView(backgroundColor: self.tableBackgroundColor)
-
-            outerStack.addTapGesture { [weak self] in
-                self?.didTapCopyAddress()
-            }
-        }
-
-        func configureForError() {
-            let label = UILabel()
-            label.text = OWSLocalizedString(
-                "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS",
-                comment: "Indicator that the payments wallet address is invalid.",
-            )
-            label.textColor = Theme.primaryTextColor
-            label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
-
-            configureWithSubviews(subviews: [label])
-        }
-
+    private func buildWalletAddressView() -> UIView? {
         guard let walletAddressBase58 = SUIEnvironment.shared.paymentsRef.walletAddressBase58() else {
-            configureForError()
-            return
+            return nil
         }
         let walletAddressBase58Data = Data(walletAddressBase58.utf8)
 
@@ -145,63 +100,61 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             )
         else {
             owsFailDebug("Failed to generate QR code image!")
-            configureForError()
-            return
+            return nil
         }
 
         let qrCodeView = UIImageView(image: qrImage)
         // Don't antialias QR Codes.
         qrCodeView.layer.magnificationFilter = .nearest
         qrCodeView.layer.minificationFilter = .nearest
-        let viewSize = view.bounds.size
-        let qrCodeSize = min(viewSize.width, viewSize.height) * 0.5
-        qrCodeView.autoSetDimensions(to: .square(qrCodeSize))
-        qrCodeView.layer.cornerRadius = 8
-        qrCodeView.layer.masksToBounds = true
 
         let titleLabel = UILabel()
         titleLabel.text = OWSLocalizedString(
             "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL",
             comment: "Label for the payments wallet address.",
         )
-        titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
+        titleLabel.textColor = .Signal.label
+        titleLabel.font = .dynamicTypeSubheadlineClamped.semibold()
         titleLabel.textAlignment = .center
 
         let walletAddressLabel = UILabel()
         walletAddressLabel.text = walletAddressBase58
-        walletAddressLabel.textColor = Theme.secondaryTextAndIconColor
-        walletAddressLabel.font = UIFont.monospacedDigitFont(ofSize: UIFont.dynamicTypeSubheadlineClamped.pointSize)
+        walletAddressLabel.textColor = .Signal.secondaryLabel
+        walletAddressLabel.font = .monospacedDigitFont(ofSize: UIFont.dynamicTypeSubheadlineClamped.pointSize)
         walletAddressLabel.lineBreakMode = .byTruncatingMiddle
         walletAddressLabel.textAlignment = .center
 
-        let copyLabel = UILabel()
-        copyLabel.text = CommonStrings.copyButton
-        copyLabel.textColor = Theme.accentBlueColor
-        copyLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
+        let copyButton = UIButton(
+            configuration: .smallSecondary(title: CommonStrings.copyButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapCopyAddress()
+            },
+        )
 
-        let copyStack = UIStackView(arrangedSubviews: [copyLabel])
-        copyStack.axis = .vertical
-        copyStack.layoutMargins = UIEdgeInsets(hMargin: 30, vMargin: 4)
-        copyStack.isLayoutMarginsRelativeArrangement = true
-        copyStack.addPillBackgroundView(backgroundColor: Theme.secondaryBackgroundColor)
-
-        configureWithSubviews(subviews: [
-            qrCodeView,
-            UIView.spacer(withHeight: 20),
-            titleLabel,
-            UIView.spacer(withHeight: 8),
-            walletAddressLabel,
-            UIView.spacer(withHeight: 20),
-            copyStack,
+        let qrCodeContainer = UIView.container()
+        qrCodeContainer.addSubview(qrCodeView)
+        qrCodeView.translatesAutoresizingMaskIntoConstraints = false
+        let qrCodeSize = view.bounds.size.smallerAxis * 0.5
+        NSLayoutConstraint.activate([
+            qrCodeView.topAnchor.constraint(equalTo: qrCodeContainer.topAnchor),
+            qrCodeView.heightAnchor.constraint(equalTo: qrCodeView.widthAnchor),
+            qrCodeView.leadingAnchor.constraint(greaterThanOrEqualTo: qrCodeContainer.leadingAnchor),
+            qrCodeView.widthAnchor.constraint(equalToConstant: qrCodeSize),
+            qrCodeView.centerXAnchor.constraint(equalTo: qrCodeContainer.centerXAnchor),
+            qrCodeView.bottomAnchor.constraint(equalTo: qrCodeContainer.bottomAnchor),
         ])
+
+        let stackView = UIStackView(arrangedSubviews: [qrCodeContainer, titleLabel, walletAddressLabel, copyButton])
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = 20
+        stackView.setCustomSpacing(8, after: titleLabel)
+        return stackView
     }
 
     // MARK: - Events
 
     private func didTapCopyAddress() {
-        AssertIsOnMainThread()
-
         guard let walletAddressBase58 = SUIEnvironment.shared.paymentsRef.walletAddressBase58() else {
             owsFailDebug("Missing walletAddressBase58.")
             return
@@ -217,12 +170,10 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         )
     }
 
-    @objc
     private func didTapDone() {
         dismiss(animated: true, completion: nil)
     }
 
-    @objc
     private func didTapShare() {
         guard let walletAddressBase58 = SUIEnvironment.shared.paymentsRef.walletAddressBase58() else {
             owsFailDebug("Missing walletAddressBase58.")

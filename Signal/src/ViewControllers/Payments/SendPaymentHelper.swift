@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-public struct SendPaymentInfo {
+struct SendPaymentInfo {
     let recipient: SendPaymentRecipient
     let paymentAmount: TSPaymentAmount
     let estimatedFeeAmount: TSPaymentAmount
@@ -18,7 +18,7 @@ public struct SendPaymentInfo {
 // MARK: -
 
 // TODO: Add support for requests.
-public struct SendRequestInfo {
+struct SendRequestInfo {
     let recipientAddress: SignalServiceAddress
     let paymentAmount: TSPaymentAmount
     let estimatedFeeAmount: TSPaymentAmount
@@ -28,6 +28,7 @@ public struct SendRequestInfo {
 
 // MARK: -
 
+@MainActor
 protocol SendPaymentHelperDelegate: AnyObject {
     func balanceDidChange()
     func currencyConversionDidChange()
@@ -35,6 +36,7 @@ protocol SendPaymentHelperDelegate: AnyObject {
 
 // MARK: -
 
+@MainActor
 class SendPaymentHelper {
 
     private weak var delegate: SendPaymentHelperDelegate?
@@ -62,22 +64,27 @@ class SendPaymentHelper {
         updateMaximumPaymentAmount()
     }
 
-    private func addObservers() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(currentPaymentBalanceDidChange),
-            name: PaymentsImpl.currentPaymentBalanceDidChange,
-            object: nil,
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(paymentConversionRatesDidChange),
-            name: PaymentsCurrenciesImpl.paymentConversionRatesDidChange,
-            object: nil,
-        )
+    deinit {
+        for observation in observations {
+            NotificationCenter.default.removeObserver(observation)
+        }
     }
 
-    @MainActor
+    private var observations = [NotificationCenter.Observer]()
+
+    private func addObservers() {
+        observations.append(NotificationCenter.default.addObserver(
+            name: PaymentsImpl.currentPaymentBalanceDidChange,
+        ) { [weak self] _ in
+            self?.currentPaymentBalanceDidChange()
+        })
+        observations.append(NotificationCenter.default.addObserver(
+            name: PaymentsCurrenciesImpl.paymentConversionRatesDidChange,
+        ) { [weak self] _ in
+            self?.paymentConversionRatesDidChange()
+        })
+    }
+
     func refreshObservedValues() {
         updateCurrentCurrencyConversion()
 
@@ -85,65 +92,18 @@ class SendPaymentHelper {
         SSKEnvironment.shared.paymentsCurrenciesRef.updateConversionRates()
     }
 
-    static let minTopVSpacing: CGFloat = 16
-
-    static let vSpacingAboveBalance: CGFloat = 20
-
-    static func buildBottomButton(
-        title: String,
-        target: Any,
-        selector: Selector,
-    ) -> UIView {
-        let button = OWSFlatButton.insetButton(
-            title: title,
-            font: bottomButtonFont,
-            titleColor: .white,
-            backgroundColor: .ows_accentBlue,
-            target: target,
-            selector: selector,
-        )
-        button.autoSetHeightUsingFont(extraVerticalInsets: 6)
-        return button
-    }
-
-    static func buildBottomButtonStack(_ subviews: [UIView]) -> UIView {
-        let buttonStack = UIStackView(arrangedSubviews: subviews)
-        buttonStack.axis = .horizontal
-        buttonStack.spacing = 20
-        buttonStack.distribution = .fillEqually
-        buttonStack.alignment = .center
-        buttonStack.autoSetDimension(.height, toSize: bottomControlHeight)
-        return buttonStack
-    }
-
     static let progressIndicatorSize: CGFloat = 48
-
-    // To avoid layout jitter, all of the "bottom controls"
-    // (buttons, progress indicator, error indicator) occupy
-    // the same exact height.
-    static var bottomControlHeight: CGFloat {
-        max(
-            progressIndicatorSize,
-            OWSFlatButton.heightForFont(bottomButtonFont) + 2.0,
-        )
-    }
-
-    static var bottomButtonFont: UIFont {
-        UIFont.dynamicTypeHeadline
-    }
 
     static func buildBottomLabel() -> UILabel {
         let label = UILabel()
         label.font = .dynamicTypeSubheadlineClamped
-        label.textColor = Theme.secondaryTextAndIconColor
+        label.textColor = .Signal.secondaryLabel
         label.textAlignment = .center
         return label
     }
 
     func updateBalanceLabel(_ balanceLabel: UILabel) {
-        AssertIsOnMainThread()
-
-        guard let maximumPaymentAmount = self.maximumPaymentAmount else {
+        guard let maximumPaymentAmount else {
             // Use whitespace to ensure that the height of the label
             // is constant, avoiding layout jitter.
             balanceLabel.text = " "
@@ -177,14 +137,12 @@ class SendPaymentHelper {
         delegate?.balanceDidChange()
     }
 
-    @objc
     private func currentPaymentBalanceDidChange() {
         delegate?.balanceDidChange()
 
         updateMaximumPaymentAmount()
     }
 
-    @objc
     private func paymentConversionRatesDidChange() {
         updateCurrentCurrencyConversion()
     }
@@ -223,29 +181,5 @@ class SendPaymentHelper {
             formattedAmount,
             PaymentsConstants.mobileCoinCurrencyIdentifier,
         )
-    }
-}
-
-extension SendPaymentHelperDelegate {
-    var minTopVSpacing: CGFloat { SendPaymentHelper.minTopVSpacing }
-
-    var vSpacingAboveBalance: CGFloat { SendPaymentHelper.vSpacingAboveBalance }
-
-    var bottomControlHeight: CGFloat { SendPaymentHelper.bottomControlHeight }
-
-    func buildBottomButtonStack(_ subviews: [UIView]) -> UIView {
-        SendPaymentHelper.buildBottomButtonStack(subviews)
-    }
-
-    func buildBottomButton(title: String, target: Any, selector: Selector) -> UIView {
-        SendPaymentHelper.buildBottomButton(title: title, target: target, selector: selector)
-    }
-
-    func buildBottomLabel() -> UILabel {
-        SendPaymentHelper.buildBottomLabel()
-    }
-
-    func formatMobileCoinAmount(_ paymentAmount: TSPaymentAmount) -> String {
-        SendPaymentHelper.formatMobileCoinAmount(paymentAmount)
     }
 }

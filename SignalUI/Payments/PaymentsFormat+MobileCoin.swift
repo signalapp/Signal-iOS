@@ -138,7 +138,7 @@ public extension PaymentsFormat {
         text.append(
             currencyString.ows_stripped(),
             attributes: [
-                .foregroundColor: Theme.primaryTextColor,
+                .foregroundColor: UIColor.Signal.label,
             ],
         )
 
@@ -149,7 +149,7 @@ public extension PaymentsFormat {
         text.append(
             currencyCode.ows_stripped(),
             attributes: [
-                .foregroundColor: Theme.secondaryTextAndIconColor,
+                .foregroundColor: UIColor.Signal.secondaryLabel,
             ],
         )
 

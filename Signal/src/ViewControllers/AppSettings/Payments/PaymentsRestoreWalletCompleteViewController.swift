@@ -3,23 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
-public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController2 {
+class PaymentsRestoreWalletCompleteViewController: OWSViewController {
 
     private let passphrase: PaymentsPassphrase
 
     private weak var restoreWalletDelegate: PaymentsRestoreWalletDelegate?
 
-    private let bottomStack = UIStackView()
-
-    override open var bottomFooter: UIView? {
-        get { bottomStack }
-        set {}
-    }
-
-    public init(
+    init(
         restoreWalletDelegate: PaymentsRestoreWalletDelegate,
         passphrase: PaymentsPassphrase,
     ) {
@@ -27,122 +20,65 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         self.restoreWalletDelegate = restoreWalletDelegate
 
         super.init()
-
-        self.shouldAvoidKeyboard = true
     }
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString(
-            "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE",
-            comment: "Title for the 'restore payments wallet' view of the app settings.",
-        )
-
-        buildBottomView()
-        updateTableContents()
-    }
-
-    override public func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        updateTableContents()
-    }
-
-    override public func themeDidChange() {
-        super.themeDidChange()
-
-        updateTableContents()
-    }
-
-    private func buildBottomView() {
-        let doneButton = OWSFlatButton.button(
-            title: CommonStrings.doneButton,
-            font: UIFont.dynamicTypeHeadline,
-            titleColor: .white,
-            backgroundColor: .ows_accentBlue,
-            target: self,
-            selector: #selector(didTapDoneButton),
-        )
-        doneButton.autoSetHeightUsingFont()
-
-        let editButton = OWSFlatButton.button(
-            title: CommonStrings.editButton,
-            font: .dynamicTypeBody,
-            titleColor: .ows_accentBlue,
-            backgroundColor: self.tableBackgroundColor,
-            target: self,
-            selector: #selector(didTapEditButton),
-        )
-        editButton.autoSetHeightUsingFont()
-
-        bottomStack.axis = .vertical
-        bottomStack.alignment = .fill
-        bottomStack.isLayoutMarginsRelativeArrangement = true
-        bottomStack.layoutMargins = .init(top: 8, left: 20, bottom: 8, right: 20)
-        bottomStack.addArrangedSubviews([
-            doneButton,
-            UIView.spacer(withHeight: 8),
-            editButton,
-        ])
-    }
-
-    private func updateTableContents() {
-        AssertIsOnMainThread()
-
-        let contents = OWSTableContents()
-
-        let section = OWSTableSection()
-        section.customHeaderView = buildHeader()
-        section.shouldDisableCellSelection = true
-
-        let passphrase = self.passphrase
-        section.add(OWSTableItem(
-            customCellBlock: {
-                let cell = OWSTableItem.newCell()
-                let passphraseGrid = PaymentsViewUtils.buildPassphraseGrid(passphrase: passphrase)
-                cell.contentView.addSubview(passphraseGrid)
-                passphraseGrid.autoPinEdgesToSuperviewMargins()
-                return cell
-            },
-            actionBlock: nil,
-        ))
-        contents.add(section)
-
-        self.contents = contents
-    }
-
-    private func buildHeader() -> UIView {
-        let titleLabel = UILabel()
-        titleLabel.text = OWSLocalizedString(
             "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE",
             comment: "Title for the 'review payments passphrase' step of the 'restore payments wallet' views.",
         )
-        titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
-        titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.textAlignment = .center
 
-        let explanationLabel = UILabel()
-        explanationLabel.text = OWSLocalizedString(
+        view.backgroundColor = .Signal.groupedBackground
+
+        let explanationLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
             "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION",
             comment: "Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views.",
-        )
-        explanationLabel.font = .dynamicTypeSubheadlineClamped
-        explanationLabel.textColor = Theme.secondaryTextAndIconColor
-        explanationLabel.textAlignment = .center
-        explanationLabel.numberOfLines = 0
-        explanationLabel.lineBreakMode = .byWordWrapping
+        ))
 
-        let topStack = UIStackView(arrangedSubviews: [
-            titleLabel,
-            UIView.spacer(withHeight: 10),
-            explanationLabel,
+        let passphraseGrid = PaymentsUI.buildPassphraseGrid(passphrase: passphrase)
+        let passphraseGridContainer = UIView()
+        passphraseGridContainer.directionalLayoutMargins = .init(margin: 24)
+        passphraseGridContainer.backgroundColor = .Signal.secondaryGroupedBackground
+        if #available(iOS 26, *) {
+            passphraseGridContainer.cornerConfiguration = .uniformCorners(radius: 26)
+        } else {
+            passphraseGridContainer.layer.cornerRadius = 10
+        }
+        passphraseGridContainer.addSubview(passphraseGrid)
+        passphraseGrid.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            passphraseGrid.topAnchor.constraint(equalTo: passphraseGridContainer.layoutMarginsGuide.topAnchor),
+            passphraseGrid.leadingAnchor.constraint(equalTo: passphraseGridContainer.layoutMarginsGuide.leadingAnchor),
+            passphraseGrid.trailingAnchor.constraint(equalTo: passphraseGridContainer.layoutMarginsGuide.trailingAnchor),
+            passphraseGrid.bottomAnchor.constraint(equalTo: passphraseGridContainer.layoutMarginsGuide.bottomAnchor),
         ])
-        topStack.axis = .vertical
-        topStack.alignment = .center
-        topStack.isLayoutMarginsRelativeArrangement = true
-        topStack.layoutMargins = .init(top: 32, left: 20, bottom: 40, right: 20)
-        return topStack
+
+        let doneButton = UIButton(
+            configuration: .largePrimary(title: CommonStrings.doneButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapDoneButton()
+            },
+        )
+        let editButton = UIButton(
+            configuration: .largeSecondary(title: CommonStrings.editButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapEditButton()
+            },
+        )
+
+        let stackView = addStaticContentStackView(
+            arrangedSubviews: [
+                .spacer(withHeight: 16),
+                explanationLabel,
+                passphraseGridContainer,
+                .vStretchingSpacer(),
+                [doneButton, editButton].enclosedInVerticalStackView(isFullWidthButtons: true),
+            ],
+            isScrollable: true,
+        )
+        stackView.setCustomSpacing(24, after: explanationLabel)
     }
 
     private func showInvalidPassphraseAlert() {
@@ -175,7 +111,6 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
 
     // MARK: - Events
 
-    @objc
     private func didTapDoneButton() {
         guard SUIEnvironment.shared.paymentsRef.paymentsEntropy == nil else {
             owsFailDebug("paymentsEntropy already set.")
@@ -206,7 +141,6 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         })
     }
 
-    @objc
     private func didTapEditButton() {
         returnToFirstWordView(shouldClearInput: false)
     }
@@ -218,6 +152,11 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
 
         // We want to pop back to the _first_ of the "enter wallet passphrase" views.
         for viewController in navigationController.viewControllers {
+            if let viewController = viewController as? PaymentsRestoreWalletPasteboardViewController {
+                navigationController.popToViewController(viewController, animated: true)
+                return
+            }
+
             guard let viewController = viewController as? PaymentsRestoreWalletWordViewController else {
                 continue
             }

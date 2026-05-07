@@ -124,7 +124,7 @@ public struct PaymentsHistoryModelItem: PaymentsHistoryItem {
     }
 
     public func markAsRead(tx: DBWriteTransaction) {
-        PaymentsViewUtils.markPaymentAsRead(paymentModel, transaction: tx)
+        PaymentUtils.markPaymentAsRead(paymentModel, transaction: tx)
     }
 
     public func reload(tx: DBReadTransaction) -> Self? {

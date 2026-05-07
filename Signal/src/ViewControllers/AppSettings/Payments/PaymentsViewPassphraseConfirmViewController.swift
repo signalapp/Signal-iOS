@@ -3,21 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
-public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController2 {
+class PaymentsViewPassphraseConfirmViewController: OWSViewController, UITextFieldDelegate {
 
     private let passphrase: PaymentsPassphrase
 
     private weak var viewPassphraseDelegate: PaymentsViewPassphraseDelegate?
-
-    private let bottomStack = UIStackView()
-
-    override open var bottomFooter: UIView? {
-        get { bottomStack }
-        set {}
-    }
 
     private let wordIndices: [Int]
     private var wordIndex0: Int { wordIndices[0] }
@@ -25,8 +18,8 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
     private var word0: String { passphrase.words[wordIndex0] }
     private var word1: String { passphrase.words[wordIndex1] }
 
-    private let wordTextfield0 = UITextField()
-    private let wordTextfield1 = UITextField()
+    private lazy var wordTextfield0 = createTextfield(wordIndex: wordIndex0)
+    private lazy var wordTextfield1 = createTextfield(wordIndex: wordIndex1)
 
     private let correctnessIconView0 = UIImageView()
     private let correctnessIconView1 = UIImageView()
@@ -70,7 +63,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         correctness.filter { $0 }.count
     }
 
-    public init(
+    init(
         passphrase: PaymentsPassphrase,
         viewPassphraseDelegate: PaymentsViewPassphraseDelegate,
     ) {
@@ -79,8 +72,6 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         self.wordIndices = Self.buildWordIndices(forPassphrase: passphrase)
 
         super.init()
-
-        self.shouldAvoidKeyboard = true
     }
 
     private static func buildWordIndices(forPassphrase passphrase: PaymentsPassphrase) -> [Int] {
@@ -94,39 +85,72 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         currentCorrectness = [isWordCorrect0, isWordCorrect1]
     }
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString(
-            "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE",
-            comment: "Title for the 'view payments passphrase' view of the app settings.",
+            "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE",
+            comment: "Title for the 'confirm words' step of the 'view payments passphrase' views.",
         )
 
-        createViews()
-        buildBottomView()
-        updateTableContents()
+        view.backgroundColor = .Signal.groupedBackground
+
+        let instructionsFormat = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT",
+            comment: "Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}.",
+        )
+        let instructions = String.nonPluralLocalizedStringWithFormat(
+            instructionsFormat,
+            OWSFormat.formatInt(wordIndex0 + 1),
+            OWSFormat.formatInt(wordIndex1 + 1),
+        )
+        let instructionsLabel = UILabel.explanationTextLabel(text: instructions)
+
+        let textFieldContainer0 = buildTextFieldContainer(textField: wordTextfield0)
+        let textFieldContainer1 = buildTextFieldContainer(textField: wordTextfield1)
+
+        let confirmButton = UIButton(
+            configuration: .largePrimary(title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM",
+                comment: "Label for 'confirm' button in the 'view payments passphrase' view of the app settings.",
+            )),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapConfirmButton()
+            },
+        )
+
+        let seeCodeAgainButton = UIButton(
+            configuration: .largeSecondary(title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN",
+                comment: "Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings.",
+            )),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapSeePassphraseAgainButton()
+            },
+        )
+
+        let stackView = addStaticContentStackView(
+            arrangedSubviews: [
+                .spacer(withHeight: 16),
+                instructionsLabel,
+                textFieldContainer0,
+                textFieldContainer1,
+                .vStretchingSpacer(),
+                [confirmButton, seeCodeAgainButton].enclosedInVerticalStackView(isFullWidthButtons: true),
+            ],
+            isScrollable: true,
+            shouldAvoidKeyboard: true,
+        )
+        stackView.setCustomSpacing(24, after: instructionsLabel)
+        stackView.setCustomSpacing(16, after: textFieldContainer0)
+
+        updateCorrectnessIndicators()
     }
 
-    override public func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        updateTableContents()
-    }
-
-    override public func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         updateFirstResponder()
-    }
-
-    override public func themeDidChange() {
-        super.themeDidChange()
-
-        wordTextfield0.textColor = Theme.primaryTextColor
-        wordTextfield1.textColor = Theme.primaryTextColor
-        buildBottomView()
-
-        updateTableContents()
     }
 
     private func updateFirstResponder() {
@@ -137,145 +161,71 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         }
     }
 
-    private func createViews() {
-        func configureTextfield(_ textfield: UITextField, wordIndex: Int) {
-            textfield.delegate = self
-            textfield.textColor = Theme.primaryTextColor
-            textfield.font = .dynamicTypeBodyClamped
-            textfield.keyboardAppearance = Theme.keyboardAppearance
-            textfield.autocapitalizationType = .none
-            textfield.autocorrectionType = .no
-            textfield.spellCheckingType = .no
-            textfield.smartQuotesType = .no
-            textfield.smartDashesType = .no
-            textfield.returnKeyType = .done
-            textfield.accessibilityIdentifier = "payments.passphrase.confirm.\(wordIndex)"
-            textfield.addTarget(self, action: #selector(textfieldDidChange), for: .editingChanged)
-
-            let placeholderFormat = OWSLocalizedString(
-                "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT",
-                comment: "Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}.",
-            )
-            textfield.placeholder = String.nonPluralLocalizedStringWithFormat(placeholderFormat, OWSFormat.formatInt(wordIndex + 1))
+    private func buildTextFieldContainer(textField: UITextField) -> UIView {
+        let textFieldContainer = UIView()
+        textFieldContainer.backgroundColor = .Signal.secondaryGroupedBackground
+        textFieldContainer.directionalLayoutMargins = .init(
+            hMargin: OWSTableViewController2.cellHInnerMargin,
+            vMargin: OWSTableViewController2.cellVInnerMargin,
+        )
+        if #available(iOS 26, *) {
+            textFieldContainer.cornerConfiguration = .capsule(maximumRadius: 26)
+        } else {
+            textFieldContainer.layer.cornerRadius = 10
         }
-        configureTextfield(wordTextfield0, wordIndex: wordIndex0)
-        configureTextfield(wordTextfield1, wordIndex: wordIndex1)
-    }
-
-    private func buildBottomView() {
-        let confirmButton = OWSFlatButton.insetButton(
-            title: OWSLocalizedString(
-                "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM",
-                comment: "Label for 'confirm' button in the 'view payments passphrase' view of the app settings.",
-            ),
-            font: UIFont.dynamicTypeHeadline,
-            titleColor: .white,
-            backgroundColor: .ows_accentBlue,
-            target: self,
-            selector: #selector(didTapConfirmButton),
-        )
-
-        confirmButton.autoSetHeightUsingFont()
-        confirmButton.cornerRadius = 14
-
-        let backButton = OWSFlatButton.insetButton(
-            title: OWSLocalizedString(
-                "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN",
-                comment: "Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings.",
-            ),
-            font: UIFont.dynamicTypeHeadline,
-            titleColor: .ows_accentBlue,
-            backgroundColor: self.tableBackgroundColor,
-            target: self,
-            selector: #selector(didTapSeePassphraseAgainButton),
-        )
-
-        backButton.autoSetHeightUsingFont()
-
-        bottomStack.axis = .vertical
-        bottomStack.alignment = .fill
-        bottomStack.isLayoutMarginsRelativeArrangement = true
-        bottomStack.layoutMargins = .init(top: 8, left: 20, bottom: 8, right: 20)
-        bottomStack.removeAllSubviews()
-        bottomStack.addArrangedSubviews([
-            confirmButton,
-            UIView.spacer(withHeight: 8),
-            backButton,
+        textFieldContainer.addSubview(textField)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            textField.topAnchor.constraint(equalTo: textFieldContainer.layoutMarginsGuide.topAnchor),
+            textField.leadingAnchor.constraint(equalTo: textFieldContainer.layoutMarginsGuide.leadingAnchor),
+            textField.trailingAnchor.constraint(equalTo: textFieldContainer.layoutMarginsGuide.trailingAnchor),
+            textField.bottomAnchor.constraint(equalTo: textFieldContainer.layoutMarginsGuide.bottomAnchor),
         ])
+        return textFieldContainer
     }
 
-    private func updateTableContents() {
-        AssertIsOnMainThread()
+    private func createTextfield(wordIndex: Int) -> UITextField {
+        let textField = UITextField()
+        textField.delegate = self
+        textField.rightViewMode = .always
+        textField.textColor = .Signal.label
+        textField.tintColor = .Signal.label // caret color
+        textField.font = .dynamicTypeBodyClamped
+        textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
+        textField.spellCheckingType = .no
+        textField.smartQuotesType = .no
+        textField.smartDashesType = .no
+        textField.returnKeyType = .done
+        textField.accessibilityIdentifier = "payments.passphrase.confirm.\(wordIndex)"
+        textField.addTarget(self, action: #selector(textfieldDidChange), for: .editingChanged)
 
-        let contents = OWSTableContents()
-
-        let section0 = OWSTableSection()
-        let section1 = OWSTableSection()
-        section0.customHeaderView = buildConfirmHeader()
-        section0.shouldDisableCellSelection = true
-        section1.shouldDisableCellSelection = true
-
-        func buildWordRow(
-            wordTextfield: UITextField,
-            correctnessIconView: UIView,
-            isCorrect: Bool,
-        ) -> OWSTableItem {
-            OWSTableItem(
-                customCellBlock: {
-                    let cell = OWSTableItem.newCell()
-                    let stack = UIStackView(arrangedSubviews: [
-                        wordTextfield,
-                        correctnessIconView,
-                    ])
-                    stack.axis = .horizontal
-                    stack.alignment = .center
-                    stack.spacing = 8
-                    cell.contentView.addSubview(stack)
-                    stack.autoPinEdgesToSuperviewMargins()
-                    wordTextfield.setContentHuggingHorizontalLow()
-                    correctnessIconView.setContentHuggingHigh()
-                    correctnessIconView.setCompressionResistanceHigh()
-
-                    return cell
-                },
-                actionBlock: nil,
-            )
-        }
-
-        section0.add(buildWordRow(
-            wordTextfield: wordTextfield0,
-            correctnessIconView: correctnessIconView0,
-            isCorrect: isWordCorrect0,
-        ))
-        section1.add(buildWordRow(
-            wordTextfield: wordTextfield1,
-            correctnessIconView: correctnessIconView1,
-            isCorrect: isWordCorrect1,
-        ))
-        contents.add(section0)
-        contents.add(section1)
-
-        self.contents = contents
-
-        updateCorrectnessIndicators()
+        let placeholderFormat = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT",
+            comment: "Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}.",
+        )
+        textField.placeholder = String.nonPluralLocalizedStringWithFormat(placeholderFormat, OWSFormat.formatInt(wordIndex + 1))
+        return textField
     }
 
     private func updateCorrectnessIndicators() {
-
         func updateCorrectnessIndicators(
             input: String,
             isWordCorrect: Bool,
             wordTextfield: UITextField,
             correctnessIconView: UIImageView,
         ) {
-            let iconName = isWordCorrect ? "check-circle" : "x-circle"
-            let tintColor: UIColor = isWordCorrect ? .ows_accentGreen : .ows_accentRed
-            correctnessIconView.setTemplateImageName(iconName, tintColor: tintColor)
             // Always show the correct indicator.
             // Hide incorrect indicator if user is typing or hasn't entered any text yet.
             let shouldHideIndicator = !isWordCorrect && (wordTextfield.isFirstResponder || input.isEmpty)
             if shouldHideIndicator {
-                correctnessIconView.tintColor = .clear
+                wordTextfield.rightView = nil
+            } else {
+                let iconName = isWordCorrect ? "check-circle" : "x-circle"
+                let tintColor: UIColor = isWordCorrect ? .Signal.green : .Signal.red
+                correctnessIconView.setTemplateImageName(iconName, tintColor: tintColor)
+                correctnessIconView.sizeToFit()
+                wordTextfield.rightView = correctnessIconView
             }
         }
         updateCorrectnessIndicators(
@@ -292,49 +242,8 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         )
     }
 
-    private func buildConfirmHeader() -> UIView {
-        let titleLabel = UILabel()
-        titleLabel.text = OWSLocalizedString(
-            "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE",
-            comment: "Title for the 'confirm words' step of the 'view payments passphrase' views.",
-        )
-        titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
-        titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.textAlignment = .center
-
-        let explanationForm = OWSLocalizedString(
-            "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT",
-            comment: "Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}.",
-        )
-        let explanation = String.nonPluralLocalizedStringWithFormat(
-            explanationForm,
-            OWSFormat.formatInt(wordIndex0 + 1),
-            OWSFormat.formatInt(wordIndex1 + 1),
-        )
-
-        let explanationLabel = UILabel()
-        explanationLabel.text = explanation
-        explanationLabel.font = .dynamicTypeSubheadlineClamped
-        explanationLabel.textColor = Theme.secondaryTextAndIconColor
-        explanationLabel.textAlignment = .center
-        explanationLabel.numberOfLines = 0
-        explanationLabel.lineBreakMode = .byWordWrapping
-
-        let topStack = UIStackView(arrangedSubviews: [
-            titleLabel,
-            UIView.spacer(withHeight: 10),
-            explanationLabel,
-        ])
-        topStack.axis = .vertical
-        topStack.alignment = .center
-        topStack.isLayoutMarginsRelativeArrangement = true
-        topStack.layoutMargins = .init(top: 32, left: 20, bottom: 40, right: 20)
-        return topStack
-    }
-
     // MARK: - Events
 
-    @objc
     private func didTapConfirmButton() {
         guard areAllWordsCorrect else {
             wordTextfield0.resignFirstResponder()
@@ -364,7 +273,6 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         })
     }
 
-    @objc
     private func didTapSeePassphraseAgainButton() {
         navigationController?.popViewController(animated: true)
     }
@@ -373,20 +281,18 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
     private func textfieldDidChange() {
         updateCorrectness()
     }
-}
 
-// MARK: -
+    // MARK: - UITextFieldDelegate
 
-extension PaymentsViewPassphraseConfirmViewController: UITextFieldDelegate {
-    public func textFieldDidBeginEditing(_ textField: UITextField) {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
         updateCorrectnessIndicators()
     }
 
-    public func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
+    func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
         updateCorrectnessIndicators()
     }
 
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return true
     }
 }

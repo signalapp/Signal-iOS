@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class PaymentsDetailViewController: OWSTableViewController2 {
+class PaymentsDetailViewController: OWSTableViewController2, DatabaseChangeDelegate {
 
     private var paymentItem: PaymentsHistoryItem
 
@@ -47,15 +47,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         }
     }
 
-    override func themeDidChange() {
-        super.themeDidChange()
-
-        updateTableContents()
-    }
-
     private func updateTableContents() {
-        AssertIsOnMainThread()
-
         let contents = OWSTableContents()
 
         let headerSection = OWSTableSection()
@@ -90,19 +82,16 @@ class PaymentsDetailViewController: OWSTableViewController2 {
             name: "paymentType",
             accessoryText: paymentModel.paymentType.formatted,
             accessibilityIdentifier: "paymentType",
-            actionBlock: nil,
         ))
         section.add(OWSTableItem.item(
             name: "paymentState",
             accessoryText: paymentModel.paymentState.formatted,
             accessibilityIdentifier: "paymentState",
-            actionBlock: nil,
         ))
         section.add(OWSTableItem.item(
             name: "paymentFailure",
             accessoryText: paymentModel.paymentFailure.formatted,
             accessibilityIdentifier: "paymentFailure",
-            actionBlock: nil,
         ))
 
         if let paymentAmount = paymentModel.paymentAmount {
@@ -110,7 +99,6 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                 name: "paymentAmount",
                 accessoryText: paymentAmount.formatted,
                 accessibilityIdentifier: "paymentAmount",
-                actionBlock: nil,
             ))
         }
 
@@ -215,8 +203,6 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.customHeaderHeight = 16
 
-        let paymentItem = self.paymentItem
-
         // Block
         if
             paymentItem.isUnidentified,
@@ -282,7 +268,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         // Fee
         if
             paymentItem.isOutgoing,
-            let feeAmount = paymentItem.formattedFeeAmount, !paymentItem.isFailed
+            paymentItem.isFailed == false,
+            let feeAmount = paymentItem.formattedFeeAmount
         {
             section.add(buildStatusItem(
                 topText: OWSLocalizedString(
@@ -369,7 +356,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                     comment: "Footer string for the status section of the payment details view in the app settings.",
                 ),
         )
-        let footerLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
+        let footerLabel = PaymentsUI.buildTextWithLearnMoreLinkTextView(
             text: footerText,
             font: .dynamicTypeCaption1Clamped,
             learnMoreUrl: URL.Support.Payments.details,
@@ -395,12 +382,12 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
                 let topLabel = UILabel()
                 topLabel.text = topText
-                topLabel.textColor = useFailedColor ? .ows_accentRed : Theme.primaryTextColor
+                topLabel.textColor = useFailedColor ? .Signal.red : .Signal.label
                 topLabel.font = UIFont.dynamicTypeBodyClamped
 
                 let bottomLabel = UILabel()
                 bottomLabel.text = bottomText
-                bottomLabel.textColor = Theme.secondaryTextAndIconColor
+                bottomLabel.textColor = .Signal.secondaryLabel
                 bottomLabel.font = UIFont.dynamicTypeFootnoteClamped
                 bottomLabel.numberOfLines = 0
                 bottomLabel.lineBreakMode = .byWordWrapping
@@ -430,7 +417,6 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         cell: UITableViewCell,
         address: SignalServiceAddress,
     ) {
-
         var stackViews = [UIView]()
 
         let avatarView = ConversationAvatarView(sizeClass: .customDiameter(52), localUserDisplayMode: .asUser)
@@ -438,7 +424,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         stackViews.append(UIView.spacer(withHeight: 12))
 
         let usernameLabel = UILabel()
-        usernameLabel.textColor = Theme.primaryTextColor
+        usernameLabel.textColor = .Signal.label
         usernameLabel.font = UIFont.dynamicTypeSubheadlineClamped
         usernameLabel.textAlignment = .center
         usernameLabel.numberOfLines = 0
@@ -448,7 +434,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         stackViews.append(buildAmountView())
 
-        if let memoLabel = PaymentsViewUtils.buildMemoLabel(memoMessage: paymentItem.memoMessage) {
+        if let memoLabel = PaymentsUI.buildMemoLabel(memoMessage: paymentItem.memoMessage) {
             stackViews.append(UIView.spacer(withHeight: 12))
             stackViews.append(memoLabel)
         }
@@ -483,18 +469,17 @@ class PaymentsDetailViewController: OWSTableViewController2 {
     }
 
     private func configureHeaderUnidentified(cell: UITableViewCell) {
-
         var stackViews = [UIView]()
 
         let avatarSize: UInt = 52
-        let avatarView = PaymentsViewUtils.buildUnidentifiedTransactionAvatar(avatarSize: avatarSize)
+        let avatarView = PaymentsUI.buildUnidentifiedTransactionAvatar(avatarSize: avatarSize)
         avatarView.autoSetDimensions(to: .square(CGFloat(avatarSize)))
         stackViews.append(avatarView)
         stackViews.append(UIView.spacer(withHeight: 12))
 
         let usernameLabel = UILabel()
         usernameLabel.text = paymentItem.displayName
-        usernameLabel.textColor = Theme.primaryTextColor
+        usernameLabel.textColor = .Signal.label
         usernameLabel.font = UIFont.dynamicTypeBodyClamped
         usernameLabel.textAlignment = .center
         usernameLabel.numberOfLines = 0
@@ -503,7 +488,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         stackViews.append(UIView.spacer(withHeight: 8))
 
         let amountLabel = UILabel()
-        amountLabel.textColor = Theme.primaryTextColor
+        amountLabel.textColor = .Signal.label
         amountLabel.font = UIFont.regularFont(ofSize: 54)
         amountLabel.textAlignment = .center
         amountLabel.adjustsFontSizeToFitWidth = true
@@ -520,10 +505,9 @@ class PaymentsDetailViewController: OWSTableViewController2 {
     }
 
     private func buildAmountView() -> UIView {
-
         let amountLabel = UILabel()
-        amountLabel.textColor = Theme.primaryTextColor
-        amountLabel.font = UIFont.regularFont(ofSize: 54)
+        amountLabel.textColor = .Signal.label
+        amountLabel.font = UIFont.systemFont(ofSize: 54)
         amountLabel.textAlignment = .center
         amountLabel.adjustsFontSizeToFitWidth = true
 
@@ -566,17 +550,12 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-}
-
-// MARK: -
-
-extension PaymentsDetailViewController: DatabaseChangeDelegate {
+    // MARK: - DatabaseChangeDelegate
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         guard databaseChanges.didUpdate(tableName: TSPaymentModel.databaseTableName) else {
             return
         }
-
         updateItem()
     }
 

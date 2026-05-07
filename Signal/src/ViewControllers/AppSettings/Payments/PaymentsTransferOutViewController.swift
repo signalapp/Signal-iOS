@@ -3,17 +3,29 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Lottie
 import MobileCoin
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
-public class PaymentsTransferOutViewController: OWSTableViewController2 {
-
+class PaymentsTransferOutViewController: OWSTableViewController2, UITextFieldDelegate,
+    SendPaymentViewDelegate, PaymentsQRScanDelegate
+{
     private let transferAmount: TSPaymentAmount?
 
-    // TODO: Should this be a text area?
-    private let addressTextfield = UITextField()
+    private lazy var addressTextfield: UITextField = {
+        let textField = UITextField()
+        textField.delegate = self
+        textField.textColor = .Signal.label
+        textField.tintColor = .Signal.label
+        textField.font = .dynamicTypeBodyClamped
+        textField.accessibilityIdentifier = "payments.transfer.out.addressTextfield"
+        textField.addTarget(self, action: #selector(addressDidChange), for: .editingChanged)
+        textField.placeholder = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER",
+            comment: "Placeholder text for the address text field in the 'transfer currency out' settings view.",
+        )
+        return textField
+    }()
 
     private var addressValue: String? {
         addressTextfield.text?.ows_stripped()
@@ -26,11 +38,12 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         return !addressValue.isEmpty
     }
 
-    public init(transferAmount: TSPaymentAmount?) {
+    init(transferAmount: TSPaymentAmount?) {
         self.transferAmount = transferAmount
+        super.init()
     }
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString(
@@ -38,41 +51,27 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
             comment: "Label for 'transfer currency out' view in the payment settings.",
         )
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapDismiss),
-            accessibilityIdentifier: "dismiss",
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.didTapDismiss()
+        }
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: CommonStrings.nextButton,
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapNext()
+            },
         )
-
-        createViews()
 
         updateTableContents()
-
-        updateNavbar()
     }
 
-    private func updateNavbar() {
-        let rightBarButtonItem = UIBarButtonItem(
-            title: CommonStrings.nextButton,
-            style: .plain,
-            target: self,
-            action: #selector(didTapNext),
-        )
-        rightBarButtonItem.isEnabled = hasValidAddress
-        navigationItem.rightBarButtonItem = rightBarButtonItem
-    }
-
-    override public func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        updateTableContents()
         updateNavbar()
-
         addressTextfield.becomeFirstResponder()
     }
 
-    override public func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
@@ -81,35 +80,11 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         addressTextfield.becomeFirstResponder()
     }
 
-    private func createViews() {
-        addressTextfield.delegate = self
-        addressTextfield.font = .dynamicTypeBodyClamped
-        addressTextfield.keyboardAppearance = Theme.keyboardAppearance
-        addressTextfield.accessibilityIdentifier = "payments.transfer.out.addressTextfield"
-        addressTextfield.addTarget(self, action: #selector(addressDidChange), for: .editingChanged)
-    }
-
-    override public func themeDidChange() {
-        super.themeDidChange()
-
-        updateTableContents()
+    private func updateNavbar() {
+        navigationItem.rightBarButtonItem?.isEnabled = hasValidAddress
     }
 
     private func updateTableContents() {
-        AssertIsOnMainThread()
-
-        addressTextfield.textColor = Theme.primaryTextColor
-        let placeholder = NSAttributedString(
-            string: OWSLocalizedString(
-                "SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER",
-                comment: "Placeholder text for the address text field in the 'transfer currency out' settings view.",
-            ),
-            attributes: [
-                .foregroundColor: Theme.secondaryTextAndIconColor,
-            ],
-        )
-        addressTextfield.attributedPlaceholder = placeholder
-
         let contents = OWSTableContents()
 
         let section = OWSTableSection()
@@ -119,28 +94,35 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         )
         let addressTextfield = self.addressTextfield
 
-        let iconView = UIImageView.withTemplateImageName("qr_code", tintColor: Theme.primaryIconColor)
-        iconView.autoSetDimensions(to: .square(24))
-        iconView.setCompressionResistanceHigh()
-        iconView.setContentHuggingHigh()
-        iconView.isUserInteractionEnabled = true
-        iconView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapScanQR)))
+        let qrCodeButton = UIButton(
+            configuration: .plain(),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapScanQR()
+            },
+        )
+        qrCodeButton.configuration?.image = UIImage(named: "qr_code")
+        qrCodeButton.configuration?.contentInsets = .init(margin: 4)
 
         section.shouldDisableCellSelection = true
         section.add(OWSTableItem(
             customCellBlock: {
                 let cell = OWSTableItem.newCell()
 
-                let stackView = UIStackView(arrangedSubviews: [addressTextfield, iconView])
+                let stackView = UIStackView(arrangedSubviews: [addressTextfield, qrCodeButton])
                 stackView.axis = .horizontal
                 stackView.alignment = .center
                 stackView.spacing = 8
                 cell.contentView.addSubview(stackView)
-                stackView.autoPinEdgesToSuperviewMargins()
+                stackView.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8),
+                    stackView.leadingAnchor.constraint(equalTo: cell.contentView.layoutMarginsGuide.leadingAnchor),
+                    stackView.trailingAnchor.constraint(equalTo: cell.contentView.layoutMarginsGuide.trailingAnchor),
+                    stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8),
+                ])
 
                 return cell
             },
-            actionBlock: nil,
         ))
         contents.add(section)
 
@@ -149,12 +131,10 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
 
     // MARK: - Events
 
-    @objc
     private func didTapDismiss() {
         dismiss(animated: true, completion: nil)
     }
 
-    @objc
     private func didTapNext() {
         guard let publicAddress = tryToParseAddress() else {
             OWSActionSheets.showActionSheet(
@@ -169,6 +149,7 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
             )
             return
         }
+
         let recipientAddressBase58 = PaymentsImpl.formatAsBase58(publicAddress: publicAddress)
         guard
             let localWalletAddressBase58 = SUIEnvironment.shared.paymentsRef.walletAddressBase58(),
@@ -205,7 +186,6 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         if let publicAddress = PaymentsImpl.parse(publicAddressBase58: text) {
             return publicAddress
         }
-        owsFailDebug("Could not parse value.")
         return nil
     }
 
@@ -214,25 +194,20 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         updateNavbar()
     }
 
-    @objc
     private func didTapScanQR() {
         let view = PaymentsQRScanViewController(delegate: self)
         navigationController?.pushViewController(view, animated: true)
     }
-}
 
-// MARK: -
+    // MARK: - UITextFieldDelegate
 
-extension PaymentsTransferOutViewController: UITextFieldDelegate {
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return true
     }
-}
 
-// MARK: -
+    // MARK: - SendPaymentViewDelegate
 
-extension PaymentsTransferOutViewController: SendPaymentViewDelegate {
-    public func didSendPayment(success: Bool) {
+    func didSendPayment(success: Bool) {
         dismiss(animated: true) {
             guard success else {
                 // only prompt users to enable payments lock when successful.
@@ -243,12 +218,10 @@ extension PaymentsTransferOutViewController: SendPaymentViewDelegate {
             }
         }
     }
-}
 
-// MARK: -
+    // MARK: - PaymentsQRScanDelegate
 
-extension PaymentsTransferOutViewController: PaymentsQRScanDelegate {
-    public func didScanPaymentAddressQRCode(publicAddressBase58: String) {
+    func didScanPaymentAddressQRCode(publicAddressBase58: String) {
         addressTextfield.text = publicAddressBase58
         updateNavbar()
     }

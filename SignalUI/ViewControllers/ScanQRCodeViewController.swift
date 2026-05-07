@@ -129,6 +129,7 @@ public enum QRCodeScanOutcome: UInt {
 
 // MARK: -
 
+@MainActor
 public protocol QRCodeScanDelegate: AnyObject {
     // A QR code scan might yield a String payload, Data payload or both.
     //

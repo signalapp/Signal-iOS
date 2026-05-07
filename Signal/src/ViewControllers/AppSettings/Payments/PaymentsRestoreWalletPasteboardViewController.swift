@@ -4,25 +4,42 @@
 //
 
 import SignalServiceKit
-public import SignalUI
+import SignalUI
 
-public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
+class PaymentsRestoreWalletPasteboardViewController: OWSViewController, UITextFieldDelegate {
 
     private weak var restoreWalletDelegate: PaymentsRestoreWalletDelegate?
 
-    private let textField = UITextField()
+    private lazy var textField: UITextField = {
+        let textField = UITextField()
+        textField.textColor = .Signal.label
+        textField.tintColor = .Signal.label // caret color
+        textField.font = .dynamicTypeBodyClamped
+        textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
+        textField.spellCheckingType = .no
+        textField.smartQuotesType = .no
+        textField.smartDashesType = .no
+        textField.returnKeyType = .done
+        textField.delegate = self
+        textField.placeholder = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER",
+            comment: "Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings.",
+        )
+        return textField
+    }()
 
     private var passphraseText: String? {
         textField.text?.strippedOrNil?.lowercased()
     }
 
-    public init(restoreWalletDelegate: PaymentsRestoreWalletDelegate) {
+    init(restoreWalletDelegate: PaymentsRestoreWalletDelegate) {
         self.restoreWalletDelegate = restoreWalletDelegate
 
         super.init()
     }
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString(
@@ -30,112 +47,69 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
             comment: "Title for the 'restore payments wallet from pasteboard' view of the app settings.",
         )
 
-        OWSTableViewController2.removeBackButtonText(viewController: self)
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.didTapDismiss()
+        }
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapDismiss),
-            accessibilityIdentifier: "dismiss",
+        view.backgroundColor = .Signal.groupedBackground
+
+        let textFieldContainer = UIView()
+        textFieldContainer.backgroundColor = .Signal.secondaryGroupedBackground
+        textFieldContainer.directionalLayoutMargins = .init(
+            hMargin: OWSTableViewController2.cellHInnerMargin,
+            vMargin: OWSTableViewController2.cellVInnerMargin,
         )
-        createContents()
+        if #available(iOS 26, *) {
+            textFieldContainer.cornerConfiguration = .capsule(maximumRadius: 26)
+        } else {
+            textFieldContainer.layer.cornerRadius = 10
+        }
+        textFieldContainer.addSubview(textField)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            textField.topAnchor.constraint(equalTo: textFieldContainer.layoutMarginsGuide.topAnchor),
+            textField.leadingAnchor.constraint(equalTo: textFieldContainer.layoutMarginsGuide.leadingAnchor),
+            textField.trailingAnchor.constraint(equalTo: textFieldContainer.layoutMarginsGuide.trailingAnchor),
+            textField.bottomAnchor.constraint(equalTo: textFieldContainer.layoutMarginsGuide.bottomAnchor),
+        ])
+
+        let nextButton = UIButton(
+            configuration: .largePrimary(title: CommonStrings.nextButton),
+            primaryAction: UIAction { [weak self] _ in
+                self?.tryToRestoreFromPassphrase()
+            },
+        )
+
+        addStaticContentStackView(
+            arrangedSubviews: [
+                .spacer(withHeight: 16),
+                textFieldContainer,
+                .vStretchingSpacer(),
+                nextButton,
+                .spacer(withHeight: 16),
+            ],
+            shouldAvoidKeyboard: true,
+        )
     }
 
-    override public func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         textField.becomeFirstResponder()
     }
 
-    override public func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         textField.becomeFirstResponder()
     }
 
-    override public func themeDidChange() {
-        super.themeDidChange()
-
-        updateContents()
-    }
-
-    private let rootView = UIStackView()
-
-    private func createContents() {
-        rootView.axis = .vertical
-        rootView.alignment = .fill
-        view.addSubview(rootView)
-        rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        rootView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-        rootView.autoPinWidthToSuperviewMargins()
-
-        updateContents()
-    }
-
-    private func updateContents() {
-
-        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
-
-        textField.textColor = Theme.primaryTextColor
-        textField.font = .dynamicTypeBodyClamped
-        textField.keyboardAppearance = Theme.keyboardAppearance
-        textField.autocapitalizationType = .none
-        textField.autocorrectionType = .no
-        textField.spellCheckingType = .no
-        textField.smartQuotesType = .no
-        textField.smartDashesType = .no
-        textField.returnKeyType = .done
-        textField.accessibilityIdentifier = "payments.passphrase.restore-paste"
-        textField.delegate = self
-
-        textField.placeholder = OWSLocalizedString(
-            "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER",
-            comment: "Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings.",
-        )
-
-        let textfieldStack = UIStackView(arrangedSubviews: [textField])
-        textfieldStack.axis = .vertical
-        textfieldStack.alignment = .fill
-        textfieldStack.isLayoutMarginsRelativeArrangement = true
-        textfieldStack.layoutMargins = UIEdgeInsets(
-            hMargin: OWSTableViewController2.cellHInnerMargin,
-            vMargin: OWSTableViewController2.cellVInnerMargin,
-        )
-        textfieldStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor, cornerRadius: 10)
-
-        let nextButton = OWSFlatButton.button(
-            title: CommonStrings.nextButton,
-            font: UIFont.dynamicTypeHeadline,
-            titleColor: .white,
-            backgroundColor: .ows_accentBlue,
-            target: self,
-            selector: #selector(didTapNextButton),
-        )
-        nextButton.autoSetHeightUsingFont()
-
-        rootView.removeAllSubviews()
-        rootView.addArrangedSubviews([
-            UIView.spacer(withHeight: 16),
-            textfieldStack,
-            UIView.vStretchingSpacer(),
-            nextButton,
-            UIView.spacer(withHeight: 8),
-        ])
-    }
-
     // MARK: - Events
 
-    @objc
     private func didTapDismiss() {
         navigationController?.popViewController(animated: true)
     }
 
-    @objc
-    private func didTapNextButton() {
-        tryToRestoreFromPassphrase()
-    }
-
-    @objc
     private func tryToRestoreFromPassphrase() {
         guard let restoreWalletDelegate else {
             owsFailDebug("Missing restoreWalletDelegate.")
@@ -143,7 +117,7 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
             return
         }
         func tryToParsePassphrase() -> PaymentsPassphrase? {
-            guard let passphraseText = self.passphraseText else {
+            guard let passphraseText else {
                 return nil
             }
             do {
@@ -169,12 +143,10 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
         )
         navigationController?.pushViewController(view, animated: true)
     }
-}
 
-// MARK: -
+    // MARK: - UITextFieldDelegate
 
-extension PaymentsRestoreWalletPasteboardViewController: UITextFieldDelegate {
-    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         tryToRestoreFromPassphrase()
         return false
     }

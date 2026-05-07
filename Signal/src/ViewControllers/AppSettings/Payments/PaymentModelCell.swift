@@ -5,17 +5,51 @@
 
 import SignalServiceKit
 import SignalUI
-public import UIKit
 
-public class PaymentModelCell: UITableViewCell {
+class PaymentModelCell: UITableViewCell {
     static let reuseIdentifier = "PaymentModelCell"
 
     let contactAvatarView = ConversationAvatarView(sizeClass: avatarSizeClass, localUserDisplayMode: .asUser)
-    let nameLabel = UILabel()
-    let statusLabel = UILabel()
-    let amountLabel = UILabel()
-    let hStack = UIStackView()
-    let vStack = UIStackView()
+    let nameLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .Signal.label
+        label.font = .dynamicTypeBodyClamped
+        label.adjustsFontForContentSizeCategory = true
+        return label
+    }()
+
+    let statusLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .Signal.secondaryLabel
+        label.font = .dynamicTypeSubheadlineClamped
+        label.adjustsFontForContentSizeCategory = true
+        return label
+    }()
+
+    let amountLabel: UILabel = {
+        let label = UILabel()
+        label.font = .dynamicTypeBodyClamped
+        label.adjustsFontForContentSizeCategory = true
+        label.setCompressionResistanceHigh()
+        label.setContentHuggingHigh()
+        return label
+    }()
+
+    let hStack: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .fill
+        stackView.spacing = PaymentModelCell.hStackSpacing
+        return stackView
+    }()
+
+    lazy var vStack: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [nameLabel, statusLabel])
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        return stackView
+    }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -24,21 +58,6 @@ public class PaymentModelCell: UITableViewCell {
         backgroundColor = .clear
         selectionStyle = .none
 
-        amountLabel.setCompressionResistanceHigh()
-        amountLabel.setContentHuggingHigh()
-
-        vStack.addArrangedSubview(nameLabel)
-        vStack.addArrangedSubview(statusLabel)
-        vStack.axis = .vertical
-        vStack.alignment = .fill
-        vStack.setContentHuggingHorizontalLow()
-
-        hStack.axis = .horizontal
-        hStack.alignment = .center
-        hStack.distribution = .fill
-        hStack.spacing = Self.hStackSpacing
-        hStack.isLayoutMarginsRelativeArrangement = true
-        hStack.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
         contentView.addSubview(hStack)
         hStack.autoPinEdgesToSuperviewMargins()
     }
@@ -51,27 +70,11 @@ public class PaymentModelCell: UITableViewCell {
 
     private static var hStackSpacing: CGFloat = 12
 
-    public static var separatorInsetLeading: CGFloat {
+    static var separatorInsetLeading: CGFloat {
         CGFloat(avatarSizeClass.diameter) + hStackSpacing
     }
 
     func configure(paymentItem: PaymentsHistoryItem) {
-
-        var arrangedSubviews = [UIView]()
-
-        nameLabel.font = .dynamicTypeBodyClamped
-        nameLabel.textColor = Theme.primaryTextColor
-
-        statusLabel.font = .dynamicTypeSubheadlineClamped
-        statusLabel.textColor = .Signal.tertiaryLabel
-
-        amountLabel.font = .dynamicTypeBodyClamped
-        amountLabel.textColor = (
-            paymentItem.isIncoming
-                ? UIColor.ows_accentGreen
-                : Theme.primaryTextColor,
-        )
-
         var avatarView: UIView
         if let address = paymentItem.address {
             contactAvatarView.updateWithSneakyTransactionIfNecessary { config in
@@ -80,7 +83,7 @@ public class PaymentModelCell: UITableViewCell {
             avatarView = contactAvatarView
         } else {
             let avatarSize = Self.avatarSizeClass.diameter
-            avatarView = PaymentsViewUtils.buildUnidentifiedTransactionAvatar(avatarSize: avatarSize)
+            avatarView = PaymentsUI.buildUnidentifiedTransactionAvatar(avatarSize: avatarSize)
         }
         if paymentItem.isUnread {
             let avatarWrapper = UIView.container()
@@ -89,32 +92,25 @@ public class PaymentModelCell: UITableViewCell {
             avatarView = avatarWrapper
             avatarView.addCircleBadge(color: .Signal.accent)
         }
-        arrangedSubviews.append(avatarView)
+        hStack.addArrangedSubview(avatarView)
 
         nameLabel.text = paymentItem.displayName
+        statusLabel.text = paymentItem.statusDescription(isLongForm: false)
+        hStack.addArrangedSubview(vStack)
 
         // We don't want to render the amount for incoming
         // transactions until they are verified.
         amountLabel.text = paymentItem.formattedPaymentAmount
-
-        arrangedSubviews.append(vStack)
-        arrangedSubviews.append(amountLabel)
-        hStack.removeAllSubviews()
-        for subview in arrangedSubviews {
-            hStack.addArrangedSubview(subview)
-        }
-
-        statusLabel.text = paymentItem.statusDescription(isLongForm: false)
+        amountLabel.textColor = paymentItem.isIncoming ? .Signal.green : .Signal.label
+        hStack.addArrangedSubview(amountLabel)
 
         accessoryType = .disclosureIndicator
     }
 
-    override public func prepareForReuse() {
+    override func prepareForReuse() {
         super.prepareForReuse()
 
         contactAvatarView.reset()
-        nameLabel.text = nil
-        statusLabel.text = nil
-        amountLabel.text = nil
+        hStack.removeAllSubviews()
     }
 }

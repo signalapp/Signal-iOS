@@ -6,8 +6,9 @@
 import SignalServiceKit
 import SignalUI
 
-class PaymentsSendRecipientViewController: RecipientPickerContainerViewController {
-
+class PaymentsSendRecipientViewController: RecipientPickerContainerViewController, SendPaymentViewDelegate,
+    RecipientPickerDelegate, UsernameLinkScanDelegate
+{
     private let isOutgoingTransfer: Bool
 
     init(isOutgoingTransfer: Bool) {
@@ -28,7 +29,7 @@ class PaymentsSendRecipientViewController: RecipientPickerContainerViewControlle
             comment: "Label for the 'send payment to recipient' view in the payment settings.",
         )
 
-        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
+        view.backgroundColor = .Signal.groupedBackground
 
         recipientPicker.allowsAddByAddress = false
         recipientPicker.shouldHideLocalRecipient = true
@@ -37,16 +38,17 @@ class PaymentsSendRecipientViewController: RecipientPickerContainerViewControlle
 
         addRecipientPicker()
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didTapDismiss))
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+            self?.didTapDismiss()
+        }
     }
 
-    @objc
     private func didTapDismiss() {
         dismiss(animated: true)
     }
 
     private func showSendPayment(address: SignalServiceAddress) {
-        guard let navigationController = self.navigationController else {
+        guard let navigationController else {
             owsFailDebug("Missing navigationController.")
             return
         }
@@ -58,11 +60,8 @@ class PaymentsSendRecipientViewController: RecipientPickerContainerViewControlle
             mode: .fromPaymentSettings,
         )
     }
-}
 
-// MARK: -
-
-extension PaymentsSendRecipientViewController: RecipientPickerDelegate, UsernameLinkScanDelegate {
+    // MARK: - RecipientPickerDelegate
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
@@ -105,11 +104,8 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate, Username
             return nil
         }
     }
-}
 
-// MARK: -
-
-extension PaymentsSendRecipientViewController: SendPaymentViewDelegate {
+    // MARK: - SendPaymentViewDelegate
 
     func didSendPayment(success: Bool) {
         dismiss(animated: true) {
