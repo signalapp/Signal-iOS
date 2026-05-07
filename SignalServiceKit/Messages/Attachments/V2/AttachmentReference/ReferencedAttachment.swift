@@ -50,6 +50,15 @@ public class ReferencedAttachment {
         }
         return .init(reference: reference, attachmentBackupThumbnail: attachmentBackupThumbnail)
     }
+
+    public func unencryptedByteCount() -> UInt64? {
+        if let stream = asReferencedStream {
+            return UInt64(safeCast: stream.attachmentStream.unencryptedByteCount)
+        } else if let sourceByteCount = reference.sourceUnencryptedByteCount {
+            return UInt64(safeCast: sourceByteCount)
+        }
+        return nil
+    }
 }
 
 public class ReferencedAttachmentStream: ReferencedAttachment {
