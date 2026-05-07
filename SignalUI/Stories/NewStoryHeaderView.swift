@@ -41,40 +41,31 @@ public class NewStoryHeaderView: UIStackView {
         addArrangedSubview(.hStretchingSpacer())
 
         // TODO: Replace with ContextMenuButton
-        let newStoryButton = OWSFlatButton.button(
-            title: OWSLocalizedString(
-                "NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON",
-                comment: "table section header button to add a new story",
-            ),
-            font: UIFont.dynamicTypeFootnoteClamped.semibold(),
-            titleColor: Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90,
-            backgroundColor: delegate.cellBackgroundColor,
-            target: self,
-            selector: #selector(didTapNewStory),
+        let newStoryButton = UIButton(
+            configuration: .bordered(),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapNewStory()
+            },
         )
-        newStoryButton.setImage(UIImage(imageLiteralResourceName: "plus-extra-small"))
-        newStoryButton.contentEdgeInsets = UIEdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 18)
-        newStoryButton.titleEdgeInsets = UIEdgeInsets(top: 0, leading: 6, bottom: 0, trailing: -6)
-        newStoryButton.tintColor = Theme.primaryIconColor
-        newStoryButton.clipsToBounds = true
-        newStoryButton.isHidden = !showsNewStoryButton
-
-        let pillWrapper = ManualLayoutView(name: "PillWrapper")
-        pillWrapper.shouldDeactivateConstraints = false
-
-        pillWrapper.addSubview(newStoryButton) { view in
-            newStoryButton.layer.cornerRadius = view.height / 2
-        }
-        newStoryButton.autoPinEdgesToSuperviewEdges()
-
-        addArrangedSubview(pillWrapper)
+        newStoryButton.configuration?.image = UIImage(imageLiteralResourceName: "plus-extra-small")
+        newStoryButton.configuration?.imagePlacement = .leading
+        newStoryButton.configuration?.imagePadding = 6
+        newStoryButton.configuration?.title = OWSLocalizedString(
+            "NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON",
+            comment: "table section header button to add a new story",
+        )
+        newStoryButton.configuration?.titleTextAttributesTransformer = .defaultFont(.dynamicTypeFootnoteClamped.semibold())
+        newStoryButton.configuration?.contentInsets = .init(hMargin: 12, vMargin: 6)
+        newStoryButton.configuration?.baseForegroundColor = .Signal.label
+        newStoryButton.configuration?.baseBackgroundColor = delegate.cellBackgroundColor
+        newStoryButton.configuration?.cornerStyle = .capsule
+        addArrangedSubview(newStoryButton)
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     private func didTapNewStory() {
         let vc = NewStorySheet { [weak self] items in
             guard let self else { return }
