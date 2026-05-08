@@ -6,11 +6,11 @@
 import GRDB
 import LibSignalClient
 import Testing
-import XCTest
 
 @testable import SignalServiceKit
 
-class GRDBSchemaMigratorTest: XCTestCase {
+struct GRDBSchemaMigratorTest {
+    @Test
     func testSchemaMigrations() throws {
         // TODO: Reuse initializeSampleDatabase when it doesn't need globals.
         let databaseStorage = try SDSDatabaseStorage(
@@ -77,6 +77,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
         return coder.encodedData
     }
 
+    @Test
     func testPopulateStoryContextAssociatedData() throws {
         let nowMs = Date().ows_millisecondsSince1970
         let databaseQueue = DatabaseQueue()
@@ -108,23 +109,24 @@ class GRDBSchemaMigratorTest: XCTestCase {
         let rows = try databaseQueue.read { db in
             return try Row.fetchAll(db, sql: "SELECT * FROM model_StoryContextAssociatedData")
         }
-        XCTAssertEqual(rows.count, 2)
+        #expect(rows.count == 2)
 
-        XCTAssertEqual(rows[0]["contactUuid"] as String?, "00000000-0000-4000-8000-00000000000A")
-        XCTAssertEqual(rows[0]["groupId"] as Data?, nil)
-        XCTAssertEqual(rows[0]["isHidden"] as Bool, true)
-        XCTAssertEqual(rows[0]["latestUnexpiredTimestamp"] as UInt64?, nowMs - 20_002)
-        XCTAssertEqual(rows[0]["lastReceivedTimestamp"] as UInt64?, nowMs - 20_002)
-        XCTAssertEqual(rows[0]["lastViewedTimestamp"] as UInt64?, nowMs - 20_001)
+        #expect(rows[0]["contactUuid"] as String? == "00000000-0000-4000-8000-00000000000A")
+        #expect(rows[0]["groupId"] as Data? == nil)
+        #expect(rows[0]["isHidden"] as Bool == true)
+        #expect(rows[0]["latestUnexpiredTimestamp"] as UInt64? == nowMs - 20_002)
+        #expect(rows[0]["lastReceivedTimestamp"] as UInt64? == nowMs - 20_002)
+        #expect(rows[0]["lastViewedTimestamp"] as UInt64? == nowMs - 20_001)
 
-        XCTAssertEqual(rows[1]["contactUuid"] as String?, nil)
-        XCTAssertEqual(rows[1]["groupId"] as Data?, Data(repeating: 9, count: 32))
-        XCTAssertEqual(rows[1]["isHidden"] as Bool, false)
-        XCTAssertEqual(rows[1]["latestUnexpiredTimestamp"] as UInt64?, nil)
-        XCTAssertEqual(rows[1]["lastReceivedTimestamp"] as UInt64?, nowMs - 86400_002)
-        XCTAssertEqual(rows[1]["lastViewedTimestamp"] as UInt64?, nowMs - 86400_001)
+        #expect(rows[1]["contactUuid"] as String? == nil)
+        #expect(rows[1]["groupId"] as Data? == Data(repeating: 9, count: 32))
+        #expect(rows[1]["isHidden"] as Bool == false)
+        #expect(rows[1]["latestUnexpiredTimestamp"] as UInt64? == nil)
+        #expect(rows[1]["lastReceivedTimestamp"] as UInt64? == nowMs - 86400_002)
+        #expect(rows[1]["lastViewedTimestamp"] as UInt64? == nowMs - 86400_001)
     }
 
+    @Test
     func testPopulateStoryMessageReplyCount() throws {
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -151,9 +153,10 @@ class GRDBSchemaMigratorTest: XCTestCase {
         let replyCount = try databaseQueue.read { db in
             return try Int.fetchOne(db, sql: "SELECT replyCount FROM model_StoryMessage")
         }
-        XCTAssertEqual(replyCount, 1)
+        #expect(replyCount == 1)
     }
 
+    @Test
     func testMigrateVoiceMessageDrafts() throws {
         let collection = "DraftVoiceMessage"
 
@@ -207,27 +210,28 @@ class GRDBSchemaMigratorTest: XCTestCase {
         }
         let migratedFilenames = Dictionary(uniqueKeysWithValues: copyRequests.map { ($0.0.lastPathComponent, $0.1.lastPathComponent) })
 
-        XCTAssertEqual(rows.count, 3)
+        #expect(rows.count == 3)
 
-        XCTAssertEqual(rows[0]["collection"], collection)
-        XCTAssertEqual(rows[0]["key"], "00000000-0000-4000-8000-000000000001")
-        XCTAssertEqual(
-            rows[0]["value"],
-            keyedArchiverData(rootObject: migratedFilenames["00000000%2D0000%2D4000%2D8000%2D000000000001"]!),
+        #expect(rows[0]["collection"] == collection)
+        #expect(rows[0]["key"] == "00000000-0000-4000-8000-000000000001")
+        #expect(
+            rows[0]["value"]
+                == keyedArchiverData(rootObject: migratedFilenames["00000000%2D0000%2D4000%2D8000%2D000000000001"]!),
         )
 
-        XCTAssertEqual(rows[1]["collection"], collection)
-        XCTAssertEqual(rows[1]["key"], "abc1+/==")
-        XCTAssertEqual(
-            rows[1]["value"],
-            keyedArchiverData(rootObject: migratedFilenames["abc1%2B%2F%3D%3D"]!),
+        #expect(rows[1]["collection"] == collection)
+        #expect(rows[1]["key"] == "abc1+/==")
+        #expect(
+            rows[1]["value"]
+                == keyedArchiverData(rootObject: migratedFilenames["abc1%2B%2F%3D%3D"]!),
         )
 
-        XCTAssertEqual(rows[2]["collection"], "UnrelatedCollection")
-        XCTAssertEqual(rows[2]["key"], "SomeKey")
-        XCTAssertEqual(rows[2]["value"], Data(count: 3))
+        #expect(rows[2]["collection"] == "UnrelatedCollection")
+        #expect(rows[2]["key"] == "SomeKey")
+        #expect(rows[2]["value"] == Data(count: 3))
     }
 
+    @Test
     func testMigrateThreadReplyInfos() throws {
         let collection = "TSThreadReplyInfo"
 
@@ -250,7 +254,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
             for (collection, key, value) in initialEntries {
                 try db.execute(
                     sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                    arguments: [collection, key, try XCTUnwrap(value.data(using: .utf8))],
+                    arguments: [collection, key, value.data(using: .utf8)],
                 )
             }
         }
@@ -267,21 +271,22 @@ class GRDBSchemaMigratorTest: XCTestCase {
             try Row.fetchAll($0, sql: "SELECT collection, key, value FROM keyvalue ORDER BY collection, key")
         }
 
-        XCTAssertEqual(rows.count, 3)
+        #expect(rows.count == 3)
 
-        XCTAssertEqual(rows[0]["collection"], collection)
-        XCTAssertEqual(rows[0]["key"], "00000000-0000-4000-8000-000000000001")
-        XCTAssertEqual(rows[0]["value"], #"{"author":"00000000-0000-4000-8000-00000000000A","timestamp":1683201600000}"#)
+        #expect(rows[0]["collection"] == collection)
+        #expect(rows[0]["key"] == "00000000-0000-4000-8000-000000000001")
+        #expect(rows[0]["value"] == #"{"author":"00000000-0000-4000-8000-00000000000A","timestamp":1683201600000}"#)
 
-        XCTAssertEqual(rows[1]["collection"], collection)
-        XCTAssertEqual(rows[1]["key"], "00000000-0000-4000-8000-000000000003")
-        XCTAssertEqual(rows[1]["value"], "ABC123")
+        #expect(rows[1]["collection"] == collection)
+        #expect(rows[1]["key"] == "00000000-0000-4000-8000-000000000003")
+        #expect(rows[1]["value"] == "ABC123")
 
-        XCTAssertEqual(rows[2]["collection"], "UnrelatedCollection")
-        XCTAssertEqual(rows[2]["key"], "00000000-0000-4000-8000-000000000001")
-        XCTAssertEqual(rows[2]["value"], #"{"author":{"backingUuid":"00000000-0000-4000-8000-00000000000A","backingPhoneNumber":null},"timestamp":1683201600000}"#)
+        #expect(rows[2]["collection"] == "UnrelatedCollection")
+        #expect(rows[2]["key"] == "00000000-0000-4000-8000-000000000001")
+        #expect(rows[2]["value"] == #"{"author":{"backingUuid":"00000000-0000-4000-8000-00000000000A","backingPhoneNumber":null},"timestamp":1683201600000}"#)
     }
 
+    @Test
     func testMigrateEditRecords() throws {
         let tableName = EditRecord.databaseTableName
         let tempTableName = "\(EditRecord.databaseTableName)_temp"
@@ -311,11 +316,12 @@ class GRDBSchemaMigratorTest: XCTestCase {
             try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM \(tableName)")
         })
 
-        XCTAssertTrue(exists)
-        XCTAssertFalse(tempExists)
-        XCTAssertEqual(count, initialValues.count)
+        #expect(exists)
+        #expect(!tempExists)
+        #expect(count == initialValues.count)
     }
 
+    @Test
     func testMigrateEditRecordsEmptyExisting() throws {
         let tableName = EditRecord.databaseTableName
         let tempTableName = "\(EditRecord.databaseTableName)_temp"
@@ -334,11 +340,11 @@ class GRDBSchemaMigratorTest: XCTestCase {
         let exists = checkTableExists(tableName: tableName, databaseQueue: databaseQueue)
         let tempExists = checkTableExists(tableName: tempTableName, databaseQueue: databaseQueue)
 
-        XCTAssertTrue(exists)
-        XCTAssertFalse(tempExists)
+        #expect(exists)
+        #expect(!tempExists)
     }
 
-    fileprivate func checkTableExists(tableName: String, databaseQueue: DatabaseQueue) -> Bool {
+    private func checkTableExists(tableName: String, databaseQueue: DatabaseQueue) -> Bool {
         do {
             try databaseQueue.read({ db in
                 try db.execute(sql: "SELECT EXISTS (SELECT 1 FROM \(tableName));")
@@ -350,7 +356,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
 
     }
 
-    fileprivate func setupEditRecordMigrationTables(
+    private func setupEditRecordMigrationTables(
         databaseQueue: DatabaseQueue,
         initialRecords: [(Int64, Int64, Int64)],
         initialInteractionIds: [Int64],
@@ -384,6 +390,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
         }
     }
 
+    @Test
     func testMigrateRemovePhoneNumbers() throws {
         // Set up the database with sample data that may have existed.
         let databaseQueue = DatabaseQueue()
@@ -435,36 +442,37 @@ class GRDBSchemaMigratorTest: XCTestCase {
             let cursor = try Row.fetchCursor(db, sql: "SELECT * FROM SampleTable")
             var row: Row
             row = try cursor.next()!
-            XCTAssertEqual(row[1] as String?, nil)
-            XCTAssertEqual(row[2] as String?, "00000000-0000-4000-A000-000000000000")
+            #expect(row[1] as String? == nil)
+            #expect(row[2] as String? == "00000000-0000-4000-A000-000000000000")
             row = try cursor.next()!
-            XCTAssertEqual(row[1] as String?, nil)
-            XCTAssertEqual(row[2] as String?, "00000000-0000-4000-B000-000000000000")
+            #expect(row[1] as String? == nil)
+            #expect(row[2] as String? == "00000000-0000-4000-B000-000000000000")
             row = try cursor.next()!
-            XCTAssertEqual(row[1] as String?, nil)
-            XCTAssertEqual(row[2] as String?, "00000000-0000-4000-A000-000000000000")
+            #expect(row[1] as String? == nil)
+            #expect(row[2] as String? == "00000000-0000-4000-A000-000000000000")
             row = try cursor.next()!
-            XCTAssertEqual(row[1] as String?, "+17635550100")
-            XCTAssertEqual(row[2] as String?, "PNI:00000000-0000-4000-A000-000000000000")
+            #expect(row[1] as String? == "+17635550100")
+            #expect(row[2] as String? == "PNI:00000000-0000-4000-A000-000000000000")
             row = try cursor.next()!
-            XCTAssertEqual(row[1] as String?, nil)
-            XCTAssertEqual(row[2] as String?, "00000000-0000-4000-A000-000000000000")
+            #expect(row[1] as String? == nil)
+            #expect(row[2] as String? == "00000000-0000-4000-A000-000000000000")
             row = try cursor.next()!
-            XCTAssertEqual(row[1] as String?, "+17635550101")
-            XCTAssertEqual(row[2] as String?, nil)
+            #expect(row[1] as String? == "+17635550101")
+            #expect(row[2] as String? == nil)
             row = try cursor.next()!
-            XCTAssertEqual(row[1] as String?, "+17635550102")
-            XCTAssertEqual(row[2] as String?, nil)
+            #expect(row[1] as String? == "+17635550102")
+            #expect(row[2] as String? == nil)
             row = try cursor.next()!
-            XCTAssertEqual(row[1] as String?, "kLocalProfileUniqueId")
-            XCTAssertEqual(row[2] as String?, nil)
+            #expect(row[1] as String? == "kLocalProfileUniqueId")
+            #expect(row[2] as String? == nil)
             row = try cursor.next()!
-            XCTAssertEqual(row[1] as String?, "kLocalProfileUniqueId")
-            XCTAssertEqual(row[2] as String?, nil)
-            XCTAssertNil(try cursor.next())
+            #expect(row[1] as String? == "kLocalProfileUniqueId")
+            #expect(row[2] as String? == nil)
+            try #expect(cursor.next() == nil)
         }
     }
 
+    @Test
     func testRemoveDeadEndGroupThreadIdMappings() throws {
         let collection = "TSGroupThread.uniqueIdMappingStore"
         let databaseQueue = DatabaseQueue()
@@ -497,12 +505,13 @@ class GRDBSchemaMigratorTest: XCTestCase {
         let groupIdKeys = try databaseQueue.read { db in
             return try String.fetchAll(db, sql: "SELECT key FROM keyvalue")
         }
-        XCTAssertEqual(Set(groupIdKeys), [
+        #expect(Set(groupIdKeys) == [
             Data(repeating: 0, count: 16).hexadecimalString,
             Data(repeating: 1, count: 32).hexadecimalString,
         ])
     }
 
+    @Test
     func testMigrateBlockedRecipients() throws {
         // Set up the database with sample data that may have existed.
         let blockedAciStrings = [
@@ -601,11 +610,11 @@ class GRDBSchemaMigratorTest: XCTestCase {
             }
 
             let blockedRecipientIds = try Int64.fetchAll(db, sql: "SELECT * FROM BlockedRecipient")
-            XCTAssertEqual(blockedRecipientIds, [1, 2, 3, 5, 8, 9])
+            #expect(blockedRecipientIds == [1, 2, 3, 5, 8, 9])
 
             let encodedState = try Data.fetchOne(db, sql: "SELECT value FROM keyvalue WHERE collection = ? AND key = ?", arguments: ["kOWSStorageServiceOperation_IdentifierMap", "state"])
             let decodedState = try encodedState.map { try JSONDecoder().decode([String: [String: Int]].self, from: $0) } ?? [:]
-            XCTAssertEqual(decodedState["accountIdChangeMap"], [
+            #expect(decodedState["accountIdChangeMap"] == [
                 "00000000-0000-4000-B000-000000000009": 1,
                 "00000000-0000-4000-B000-000000000123": 0,
                 "00000000-0000-4000-B000-00000000000C": 1,
@@ -613,6 +622,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
         }
     }
 
+    @Test
     func testMigrateCallRecords() throws {
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -669,26 +679,27 @@ class GRDBSchemaMigratorTest: XCTestCase {
             }
 
             let tableNames = try Row.fetchAll(db, sql: "pragma table_list").map { $0["name"] as String }
-            XCTAssert(tableNames.contains("CallLink"))
-            XCTAssert(tableNames.contains("CallRecord"))
-            XCTAssert(!tableNames.contains("new_CallRecord"))
-            XCTAssert(tableNames.contains("DeletedCallRecord"))
-            XCTAssert(!tableNames.contains("new_DeletedCallRecord"))
+            #expect(tableNames.contains("CallLink"))
+            #expect(tableNames.contains("CallRecord"))
+            #expect(!tableNames.contains("new_CallRecord"))
+            #expect(tableNames.contains("DeletedCallRecord"))
+            #expect(!tableNames.contains("new_DeletedCallRecord"))
 
             let callRecords = try Row.fetchAll(db, sql: "SELECT * FROM CallRecord")
-            XCTAssertEqual(callRecords[0]["id"], 1)
-            XCTAssertEqual(callRecords[0]["callId"], "18446744073709551615")
-            XCTAssertEqual(callRecords[1]["id"], 2)
-            XCTAssertEqual(callRecords[1]["callId"], "18446744073709551614")
+            #expect(callRecords[0]["id"] == 1)
+            #expect(callRecords[0]["callId"] == "18446744073709551615")
+            #expect(callRecords[1]["id"] == 2)
+            #expect(callRecords[1]["callId"] == "18446744073709551614")
 
             let deletedCallRecords = try Row.fetchAll(db, sql: "SELECT * FROM DeletedCallRecord")
-            XCTAssertEqual(deletedCallRecords[0]["id"], 1)
-            XCTAssertEqual(deletedCallRecords[0]["callId"], "18446744073709551613")
-            XCTAssertEqual(deletedCallRecords[1]["id"], 2)
-            XCTAssertEqual(deletedCallRecords[1]["callId"], "18446744073709551612")
+            #expect(deletedCallRecords[0]["id"] == 1)
+            #expect(deletedCallRecords[0]["callId"] == "18446744073709551613")
+            #expect(deletedCallRecords[1]["id"] == 2)
+            #expect(deletedCallRecords[1]["callId"] == "18446744073709551612")
         }
     }
 
+    @Test
     func testMigrateBlockedGroups() throws {
         @objc(TSGroupModelMigrateBlockedGroups)
         class TSGroupModelMigrateBlockedGroups: NSObject, NSSecureCoding {
@@ -715,9 +726,10 @@ class GRDBSchemaMigratorTest: XCTestCase {
         coder.encode(blockedGroups, forKey: NSKeyedArchiveRootObjectKey)
 
         let groupIds = Set(try GRDBSchemaMigrator.decodeBlockedGroupIds(dataValue: coder.encodedData))
-        XCTAssertEqual(groupIds, [Data(count: 16), Data(count: 32)])
+        #expect(groupIds == [Data(count: 16), Data(count: 32)])
     }
 
+    @Test
     func testPopulateDefaultAvatarColorsTable() throws {
         let groupId = Data(repeating: 9, count: 32)
         let databaseQueue = DatabaseQueue()
@@ -751,9 +763,9 @@ class GRDBSchemaMigratorTest: XCTestCase {
             }
 
             let rows = try Row.fetchAll(db, sql: "SELECT * FROM AvatarDefaultColor")
-            XCTAssertEqual(rows.count, 4)
-            XCTAssertEqual(rows.filter { $0["groupId"] != nil }.count, 1)
-            XCTAssertEqual(rows.filter { $0["recipientRowId"] != nil }.count, 3)
+            #expect(rows.count == 4)
+            #expect(rows.filter { $0["groupId"] != nil }.count == 1)
+            #expect(rows.filter { $0["recipientRowId"] != nil }.count == 3)
         }
     }
 
@@ -788,6 +800,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
         return coder.encodedData
     }
 
+    @Test
     func testDecodeSignalServiceAddresses() throws {
         let exampleAddresses: [SampleSignalServiceAddress] = [
             .init(serviceId: Aci.parseFrom(aciString: "00000000-0000-4000-8000-000000000000")!, phoneNumber: nil),
@@ -797,10 +810,11 @@ class GRDBSchemaMigratorTest: XCTestCase {
 
         let encodedAddresses = try Self.encodedAddresses(exampleAddresses)
         let decodedAddresses = try GRDBSchemaMigrator.decodeSignalServiceAddresses(dataValue: encodedAddresses)
-        XCTAssertEqual(decodedAddresses.map(\.serviceId), exampleAddresses.map(\.serviceId))
-        XCTAssertEqual(decodedAddresses.map(\.phoneNumber), exampleAddresses.map(\.phoneNumber))
+        #expect(decodedAddresses.map(\.serviceId) == exampleAddresses.map(\.serviceId))
+        #expect(decodedAddresses.map(\.phoneNumber) == exampleAddresses.map(\.phoneNumber))
     }
 
+    @Test
     func testCreateStoryRecipients() throws {
         // Set up the database with sample data that may have existed.
         let databaseQueue = DatabaseQueue()
@@ -863,30 +877,30 @@ class GRDBSchemaMigratorTest: XCTestCase {
                 db,
                 sql: "SELECT threadId, recipientId FROM StoryRecipient ORDER BY threadId, recipientId",
             ).map { [$0[0] as Int64, $0[1] as Int64] }
-            XCTAssertEqual(storyRecipients, [[3, 1], [4, 1], [4, 3], [4, 4], [4, 5], [4, 6]])
+            #expect(storyRecipients == [[3, 1], [4, 1], [4, 3], [4, 4], [4, 5], [4, 6]])
 
             let storyAddresses = try (Data?).fetchAll(
                 db,
                 sql: "SELECT addresses FROM model_TSThread ORDER BY id",
             )
-            XCTAssertEqual(storyAddresses, [Data(), nil, nil, nil])
+            #expect(storyAddresses == [Data(), nil, nil, nil])
 
             let signalRecipients = try Row.fetchAll(
                 db,
                 sql: "SELECT * FROM model_SignalRecipient ORDER BY id",
             )
-            XCTAssertEqual(signalRecipients.count, 6)
-            XCTAssertEqual(signalRecipients[3]["recipientUUID"], "00000000-0000-4000-A000-000000000AAA")
-            XCTAssertEqual(signalRecipients[3]["recipientPhoneNumber"], nil as String?)
-            XCTAssertEqual(signalRecipients[3]["pni"], nil as String?)
+            #expect(signalRecipients.count == 6)
+            #expect(signalRecipients[3]["recipientUUID"] == "00000000-0000-4000-A000-000000000AAA")
+            #expect(signalRecipients[3]["recipientPhoneNumber"] == nil as String?)
+            #expect(signalRecipients[3]["pni"] == nil as String?)
 
-            XCTAssertEqual(signalRecipients[4]["recipientUUID"], nil as String?)
-            XCTAssertEqual(signalRecipients[4]["recipientPhoneNumber"], nil as String?)
-            XCTAssertEqual(signalRecipients[4]["pni"], "PNI:00000000-0000-4000-A000-000000000BBB")
+            #expect(signalRecipients[4]["recipientUUID"] == nil as String?)
+            #expect(signalRecipients[4]["recipientPhoneNumber"] == nil as String?)
+            #expect(signalRecipients[4]["pni"] == "PNI:00000000-0000-4000-A000-000000000BBB")
 
-            XCTAssertEqual(signalRecipients[5]["recipientUUID"], nil as String?)
-            XCTAssertEqual(signalRecipients[5]["recipientPhoneNumber"], "+17635550142")
-            XCTAssertEqual(signalRecipients[5]["pni"], nil as String?)
+            #expect(signalRecipients[5]["recipientUUID"] == nil as String?)
+            #expect(signalRecipients[5]["recipientPhoneNumber"] == "+17635550142")
+            #expect(signalRecipients[5]["pni"] == nil as String?)
         }
     }
 
@@ -895,6 +909,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
         return try NSKeyedArchiver.archivedData(withRootObject: deviceIdSet, requiringSecureCoding: true)
     }
 
+    @Test
     func testMigrateRecipientDevices() throws {
         // Set up the database with sample data that may have existed.
         let databaseQueue = DatabaseQueue()
@@ -922,13 +937,14 @@ class GRDBSchemaMigratorTest: XCTestCase {
                 db,
                 sql: "SELECT * FROM model_SignalRecipient ORDER BY id",
             )
-            XCTAssertEqual(signalRecipients.count, 3)
-            XCTAssertEqual([UInt8](signalRecipients[0]["devices"] as Data), [])
-            XCTAssertEqual([UInt8](signalRecipients[1]["devices"] as Data), [1])
-            XCTAssertEqual([UInt8](signalRecipients[2]["devices"] as Data), [1, 2, 3])
+            #expect(signalRecipients.count == 3)
+            #expect([UInt8](signalRecipients[0]["devices"] as Data) == [])
+            #expect([UInt8](signalRecipients[1]["devices"] as Data) == [1])
+            #expect([UInt8](signalRecipients[2]["devices"] as Data) == [1, 2, 3])
         }
     }
 
+    @Test
     func testMigratePreKeys() throws {
         let now = Date()
         let databaseQueue = DatabaseQueue()
@@ -987,31 +1003,32 @@ class GRDBSchemaMigratorTest: XCTestCase {
 
             let preKeys = try Row.fetchAll(db, sql: "SELECT * FROM PreKey")
 
-            XCTAssertEqual(preKeys.count, 3)
+            #expect(preKeys.count == 3)
 
-            XCTAssertEqual(preKeys[0]["identity"] as Int64, 0)
-            XCTAssertEqual(preKeys[0]["namespace"] as Int64, 0)
-            XCTAssertEqual(preKeys[0]["keyId"] as UInt32, 123)
-            XCTAssertEqual(preKeys[0]["isOneTime"] as Bool, true)
-            XCTAssertEqual(preKeys[0]["replacedAt"] as Int64?, Int64(now.timeIntervalSince1970))
-            XCTAssertNotNil(preKeys[0]["serializedRecord"] as Data?)
+            #expect(preKeys[0]["identity"] as Int64 == 0)
+            #expect(preKeys[0]["namespace"] as Int64 == 0)
+            #expect(preKeys[0]["keyId"] as UInt32 == 123)
+            #expect(preKeys[0]["isOneTime"] as Bool == true)
+            #expect(preKeys[0]["replacedAt"] as Int64? == Int64(now.timeIntervalSince1970))
+            #expect(preKeys[0]["serializedRecord"] as Data? != nil)
 
-            XCTAssertEqual(preKeys[1]["identity"] as Int64, 1)
-            XCTAssertEqual(preKeys[1]["namespace"] as Int64, 2)
-            XCTAssertEqual(preKeys[1]["keyId"] as UInt32, 234)
-            XCTAssertEqual(preKeys[1]["isOneTime"] as Bool, false)
-            XCTAssertEqual(preKeys[1]["replacedAt"] as Int64?, Int64(now.timeIntervalSince1970))
-            XCTAssertNotNil(preKeys[1]["serializedRecord"] as Data?)
+            #expect(preKeys[1]["identity"] as Int64 == 1)
+            #expect(preKeys[1]["namespace"] as Int64 == 2)
+            #expect(preKeys[1]["keyId"] as UInt32 == 234)
+            #expect(preKeys[1]["isOneTime"] as Bool == false)
+            #expect(preKeys[1]["replacedAt"] as Int64? == Int64(now.timeIntervalSince1970))
+            #expect(preKeys[1]["serializedRecord"] as Data? != nil)
 
-            XCTAssertEqual(preKeys[2]["identity"] as Int64, 0)
-            XCTAssertEqual(preKeys[2]["namespace"] as Int64, 1)
-            XCTAssertEqual(preKeys[2]["keyId"] as UInt32, 345)
-            XCTAssertEqual(preKeys[2]["isOneTime"] as Bool, true)
-            XCTAssertEqual(preKeys[2]["replacedAt"] as Int64?, Int64(now.timeIntervalSince1970))
-            XCTAssertNotNil(preKeys[2]["serializedRecord"] as Data?)
+            #expect(preKeys[2]["identity"] as Int64 == 0)
+            #expect(preKeys[2]["namespace"] as Int64 == 1)
+            #expect(preKeys[2]["keyId"] as UInt32 == 345)
+            #expect(preKeys[2]["isOneTime"] as Bool == true)
+            #expect(preKeys[2]["replacedAt"] as Int64? == Int64(now.timeIntervalSince1970))
+            #expect(preKeys[2]["serializedRecord"] as Data? != nil)
         }
     }
 
+    @Test
     func testUniquifyUsernameLookupRecord_CaseSensitive() throws {
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -1038,14 +1055,15 @@ class GRDBSchemaMigratorTest: XCTestCase {
 
             let usernames = try Row.fetchAll(db, sql: "SELECT * FROM UsernameLookupRecord")
 
-            XCTAssertEqual(usernames.count, 2)
-            XCTAssertEqual(usernames[0]["aci"], aci2)
-            XCTAssertEqual(usernames[0]["username"], "blorp.01")
-            XCTAssertEqual(usernames[1]["aci"], aci3)
-            XCTAssertEqual(usernames[1]["username"], "florp.01")
+            #expect(usernames.count == 2)
+            #expect(usernames[0]["aci"] == aci2)
+            #expect(usernames[0]["username"] == "blorp.01")
+            #expect(usernames[1]["aci"] == aci3)
+            #expect(usernames[1]["username"] == "florp.01")
         }
     }
 
+    @Test
     func testUniquifyUsernameLookupRecord_CaseInsensitive() throws {
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -1071,12 +1089,13 @@ class GRDBSchemaMigratorTest: XCTestCase {
 
             let usernames = try Row.fetchAll(db, sql: "SELECT * FROM UsernameLookupRecord")
 
-            XCTAssertEqual(usernames.count, 1)
-            XCTAssertEqual(usernames[0]["aci"], aci2)
-            XCTAssertEqual(usernames[0]["username"], "FLORP.01")
+            #expect(usernames.count == 1)
+            #expect(usernames[0]["aci"] == aci2)
+            #expect(usernames[0]["username"] == "FLORP.01")
         }
     }
 
+    @Test
     func testFixUpcomingCallLinks() throws {
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -1108,16 +1127,17 @@ class GRDBSchemaMigratorTest: XCTestCase {
             }
 
             let callLinks = try Row.fetchAll(db, sql: "SELECT * FROM CallLink")
-            XCTAssertEqual(callLinks.count, 6)
-            XCTAssertEqual(callLinks[0][0] as Bool?, true)
-            XCTAssertEqual(callLinks[1][0] as Bool?, false)
-            XCTAssertEqual(callLinks[2][0] as Bool?, nil)
-            XCTAssertEqual(callLinks[3][0] as Bool?, false)
-            XCTAssertEqual(callLinks[4][0] as Bool?, false)
-            XCTAssertEqual(callLinks[5][0] as Bool?, nil)
+            #expect(callLinks.count == 6)
+            #expect(callLinks[0][0] as Bool? == true)
+            #expect(callLinks[1][0] as Bool? == false)
+            #expect(callLinks[2][0] as Bool? == nil)
+            #expect(callLinks[3][0] as Bool? == false)
+            #expect(callLinks[4][0] as Bool? == false)
+            #expect(callLinks[5][0] as Bool? == nil)
         }
     }
 
+    @Test
     func testFixRevokedForRestoredCallLinks() throws {
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -1143,13 +1163,14 @@ class GRDBSchemaMigratorTest: XCTestCase {
             }
 
             let callLinks = try Row.fetchAll(db, sql: "SELECT * FROM CallLink")
-            XCTAssertEqual(callLinks.count, 3)
-            XCTAssertEqual(callLinks[0][0] as Bool?, true)
-            XCTAssertEqual(callLinks[1][0] as Bool?, nil)
-            XCTAssertEqual(callLinks[2][0] as Bool?, false)
+            #expect(callLinks.count == 3)
+            #expect(callLinks[0][0] as Bool? == true)
+            #expect(callLinks[1][0] as Bool? == nil)
+            #expect(callLinks[2][0] as Bool? == false)
         }
     }
 
+    @Test
     func testFixNameForRestoredCallLinks() throws {
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -1167,10 +1188,10 @@ class GRDBSchemaMigratorTest: XCTestCase {
             }
 
             let callLinks = try Row.fetchAll(db, sql: "SELECT * FROM CallLink")
-            XCTAssertEqual(callLinks.count, 3)
-            XCTAssertEqual(callLinks[0][0] as String?, nil)
-            XCTAssertEqual(callLinks[1][0] as String?, nil)
-            XCTAssertEqual(callLinks[2][0] as String?, "Something")
+            #expect(callLinks.count == 3)
+            #expect(callLinks[0][0] as String? == nil)
+            #expect(callLinks[1][0] as String? == nil)
+            #expect(callLinks[2][0] as String? == "Something")
         }
     }
 
@@ -1179,6 +1200,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
         return keyedArchiverData(rootObject: sessionDictionary)
     }
 
+    @Test
     func testMigrateSessions() throws {
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -1255,40 +1277,41 @@ class GRDBSchemaMigratorTest: XCTestCase {
 
             let sessions = try Row.fetchAll(db, sql: "SELECT * FROM Session ORDER BY recipientId, localIdentity, deviceId")
 
-            XCTAssertEqual(sessions.count, 6)
+            #expect(sessions.count == 6)
 
-            XCTAssertEqual(sessions[0]["recipientId"] as Int64, 1)
-            XCTAssertEqual(sessions[0]["localIdentity"] as Int64, 0)
-            XCTAssertEqual(sessions[0]["deviceId"] as Int8, 1)
-            XCTAssertEqual(sessions[0]["serializedRecord"] as Data?, Data())
+            #expect(sessions[0]["recipientId"] as Int64 == 1)
+            #expect(sessions[0]["localIdentity"] as Int64 == 0)
+            #expect(sessions[0]["deviceId"] as Int8 == 1)
+            #expect(sessions[0]["serializedRecord"] as Data? == Data())
 
-            XCTAssertEqual(sessions[1]["recipientId"] as Int64, 1)
-            XCTAssertEqual(sessions[1]["localIdentity"] as Int64, 0)
-            XCTAssertEqual(sessions[1]["deviceId"] as Int8, 2)
-            XCTAssertEqual(sessions[1]["serializedRecord"] as Data?, Data())
+            #expect(sessions[1]["recipientId"] as Int64 == 1)
+            #expect(sessions[1]["localIdentity"] as Int64 == 0)
+            #expect(sessions[1]["deviceId"] as Int8 == 2)
+            #expect(sessions[1]["serializedRecord"] as Data? == Data())
 
-            XCTAssertEqual(sessions[2]["recipientId"] as Int64, 1)
-            XCTAssertEqual(sessions[2]["localIdentity"] as Int64, 1)
-            XCTAssertEqual(sessions[2]["deviceId"] as Int8, 2)
-            XCTAssertEqual(sessions[2]["serializedRecord"] as Data?, Data())
+            #expect(sessions[2]["recipientId"] as Int64 == 1)
+            #expect(sessions[2]["localIdentity"] as Int64 == 1)
+            #expect(sessions[2]["deviceId"] as Int8 == 2)
+            #expect(sessions[2]["serializedRecord"] as Data? == Data())
 
-            XCTAssertEqual(sessions[3]["recipientId"] as Int64, 1)
-            XCTAssertEqual(sessions[3]["localIdentity"] as Int64, 1)
-            XCTAssertEqual(sessions[3]["deviceId"] as Int8, 3)
-            XCTAssertEqual(sessions[3]["serializedRecord"] as Data?, Data())
+            #expect(sessions[3]["recipientId"] as Int64 == 1)
+            #expect(sessions[3]["localIdentity"] as Int64 == 1)
+            #expect(sessions[3]["deviceId"] as Int8 == 3)
+            #expect(sessions[3]["serializedRecord"] as Data? == Data())
 
-            XCTAssertEqual(sessions[4]["recipientId"] as Int64, 2)
-            XCTAssertEqual(sessions[4]["localIdentity"] as Int64, 0)
-            XCTAssertEqual(sessions[4]["deviceId"] as Int8, 1)
-            XCTAssertEqual(sessions[4]["serializedRecord"] as Data?, Data())
+            #expect(sessions[4]["recipientId"] as Int64 == 2)
+            #expect(sessions[4]["localIdentity"] as Int64 == 0)
+            #expect(sessions[4]["deviceId"] as Int8 == 1)
+            #expect(sessions[4]["serializedRecord"] as Data? == Data())
 
-            XCTAssertEqual(sessions[5]["recipientId"] as Int64, 4)
-            XCTAssertEqual(sessions[5]["localIdentity"] as Int64, 0)
-            XCTAssertEqual(sessions[5]["deviceId"] as Int8, 1)
-            XCTAssertEqual(sessions[5]["serializedRecord"] as Data?, nil)
+            #expect(sessions[5]["recipientId"] as Int64 == 4)
+            #expect(sessions[5]["localIdentity"] as Int64 == 0)
+            #expect(sessions[5]["deviceId"] as Int8 == 1)
+            #expect(sessions[5]["serializedRecord"] as Data? == nil)
         }
     }
 
+    @Test
     func testMigrateWhitelist() throws {
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -1335,16 +1358,17 @@ class GRDBSchemaMigratorTest: XCTestCase {
             }
 
             let recipients = try Row.fetchAll(db, sql: "SELECT * FROM model_SignalRecipient ORDER BY id")
-            XCTAssertEqual(recipients.count, 6)
-            XCTAssertEqual(recipients[0]["status"] as Int64, 1)
-            XCTAssertEqual(recipients[1]["status"] as Int64, 0)
-            XCTAssertEqual(recipients[2]["status"] as Int64, 1)
-            XCTAssertEqual(recipients[3]["status"] as Int64, 1)
-            XCTAssertEqual(recipients[4]["status"] as Int64, 1)
-            XCTAssertEqual(recipients[5]["status"] as Int64, 1)
+            #expect(recipients.count == 6)
+            #expect(recipients[0]["status"] as Int64 == 1)
+            #expect(recipients[1]["status"] as Int64 == 0)
+            #expect(recipients[2]["status"] as Int64 == 1)
+            #expect(recipients[3]["status"] as Int64 == 1)
+            #expect(recipients[4]["status"] as Int64 == 1)
+            #expect(recipients[5]["status"] as Int64 == 1)
         }
     }
 
+    @Test
     func testUpdateCallLinkRootKeyConstraint() throws {
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -1382,7 +1406,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
                 try db.execute(sql: """
                 INSERT INTO CallLink VALUES (3, X'030102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f', X'000102030405060708090a0b0c0d0e0f00010203040506', NULL, 0, 0, 0, 0, 'D', 0, FALSE, NULL);
                 """)
-                XCTFail()
+                Issue.record("Expected insert to fail before migration")
             } catch {
                 // This is where we want to be
             }
@@ -1398,52 +1422,52 @@ class GRDBSchemaMigratorTest: XCTestCase {
 
         try databaseQueue.write { db in
             let rows = try Row.fetchAll(db, sql: "SELECT * FROM CallLink ORDER BY id")
-            XCTAssertEqual(rows[0]["id"], 0)
-            XCTAssertEqual(rows[0]["roomId"], Data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
-            XCTAssertEqual(rows[0]["rootKey"], Data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
-            XCTAssertEqual(rows[0]["adminPasskey"] as Data?, nil)
-            XCTAssertEqual(rows[0]["adminDeletedAtTimestampMs"], 0)
-            XCTAssertEqual(rows[0]["activeCallId"], 0)
-            XCTAssertEqual(rows[0]["isUpcoming"], 0)
-            XCTAssertEqual(rows[0]["pendingActionCounter"], 0)
-            XCTAssertEqual(rows[0]["name"], "A")
-            XCTAssertEqual(rows[0]["restrictions"], 0)
-            XCTAssertEqual(rows[0]["revoked"], false)
-            XCTAssertEqual(rows[0]["expiration"] as Int?, nil)
-            XCTAssertEqual(rows[1]["id"], 1)
-            XCTAssertEqual(rows[1]["roomId"], Data([1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
-            XCTAssertEqual(rows[1]["rootKey"], Data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
-            XCTAssertEqual(rows[1]["adminPasskey"] as Data?, nil)
-            XCTAssertEqual(rows[1]["adminDeletedAtTimestampMs"], 0)
-            XCTAssertEqual(rows[1]["activeCallId"], 0)
-            XCTAssertEqual(rows[1]["isUpcoming"], 0)
-            XCTAssertEqual(rows[1]["pendingActionCounter"], 0)
-            XCTAssertEqual(rows[1]["name"], "B")
-            XCTAssertEqual(rows[1]["restrictions"], 0)
-            XCTAssertEqual(rows[1]["revoked"], false)
-            XCTAssertEqual(rows[1]["expiration"] as Int?, nil)
-            XCTAssertEqual(rows[2]["id"], 2)
-            XCTAssertEqual(rows[2]["roomId"], Data([2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
-            XCTAssertEqual(rows[2]["rootKey"], Data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
-            XCTAssertEqual(rows[2]["adminPasskey"] as Data?, nil)
-            XCTAssertEqual(rows[2]["adminDeletedAtTimestampMs"], 0)
-            XCTAssertEqual(rows[2]["activeCallId"], 0)
-            XCTAssertEqual(rows[2]["isUpcoming"], 0)
-            XCTAssertEqual(rows[2]["pendingActionCounter"], 0)
-            XCTAssertEqual(rows[2]["name"], "C")
-            XCTAssertEqual(rows[2]["restrictions"], 0)
-            XCTAssertEqual(rows[2]["revoked"], false)
-            XCTAssertEqual(rows[2]["expiration"] as Int?, nil)
+            #expect(rows[0]["id"] == 0)
+            #expect(rows[0]["roomId"] == Data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
+            #expect(rows[0]["rootKey"] == Data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
+            #expect(rows[0]["adminPasskey"] as Data? == nil)
+            #expect(rows[0]["adminDeletedAtTimestampMs"] == 0)
+            #expect(rows[0]["activeCallId"] == 0)
+            #expect(rows[0]["isUpcoming"] == 0)
+            #expect(rows[0]["pendingActionCounter"] == 0)
+            #expect(rows[0]["name"] == "A")
+            #expect(rows[0]["restrictions"] == 0)
+            #expect(rows[0]["revoked"] == false)
+            #expect(rows[0]["expiration"] as Int? == nil)
+            #expect(rows[1]["id"] == 1)
+            #expect(rows[1]["roomId"] == Data([1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
+            #expect(rows[1]["rootKey"] == Data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
+            #expect(rows[1]["adminPasskey"] as Data? == nil)
+            #expect(rows[1]["adminDeletedAtTimestampMs"] == 0)
+            #expect(rows[1]["activeCallId"] == 0)
+            #expect(rows[1]["isUpcoming"] == 0)
+            #expect(rows[1]["pendingActionCounter"] == 0)
+            #expect(rows[1]["name"] == "B")
+            #expect(rows[1]["restrictions"] == 0)
+            #expect(rows[1]["revoked"] == false)
+            #expect(rows[1]["expiration"] as Int? == nil)
+            #expect(rows[2]["id"] == 2)
+            #expect(rows[2]["roomId"] == Data([2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
+            #expect(rows[2]["rootKey"] == Data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]))
+            #expect(rows[2]["adminPasskey"] as Data? == nil)
+            #expect(rows[2]["adminDeletedAtTimestampMs"] == 0)
+            #expect(rows[2]["activeCallId"] == 0)
+            #expect(rows[2]["isUpcoming"] == 0)
+            #expect(rows[2]["pendingActionCounter"] == 0)
+            #expect(rows[2]["name"] == "C")
+            #expect(rows[2]["restrictions"] == 0)
+            #expect(rows[2]["revoked"] == false)
+            #expect(rows[2]["expiration"] as Int? == nil)
 
             let recordRows = try Row.fetchAll(db, sql: "SELECT * FROM CallRecord ORDER BY id")
-            XCTAssertEqual(recordRows[0]["id"], 0)
-            XCTAssertEqual(recordRows[0]["callLinkRowId"], 0)
-            XCTAssertEqual(recordRows[1]["id"], 1)
-            XCTAssertEqual(recordRows[1]["callLinkRowId"], 0)
-            XCTAssertEqual(recordRows[2]["id"], 2)
-            XCTAssertEqual(recordRows[2]["callLinkRowId"], 1)
-            XCTAssertEqual(recordRows[3]["id"], 3)
-            XCTAssertEqual(recordRows[3]["callLinkRowId"], 2)
+            #expect(recordRows[0]["id"] == 0)
+            #expect(recordRows[0]["callLinkRowId"] == 0)
+            #expect(recordRows[1]["id"] == 1)
+            #expect(recordRows[1]["callLinkRowId"] == 0)
+            #expect(recordRows[2]["id"] == 2)
+            #expect(recordRows[2]["callLinkRowId"] == 1)
+            #expect(recordRows[3]["id"] == 3)
+            #expect(recordRows[3]["callLinkRowId"] == 2)
 
             // Attempt to insert a call link with a root key longer than 16 bytes. This should succeed after migration.
             try db.execute(sql: """
@@ -1451,9 +1475,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
             """)
         }
     }
-}
 
-struct GRDBSchemaMigratorTest2 {
     @Test
     func testAddDevice() throws {
         let databaseQueue = DatabaseQueue()
@@ -1510,12 +1532,12 @@ struct GRDBSchemaMigratorTest2 {
             db: Database,
         ) throws {
             try db.execute(sql: """
-            CREATE TABLE keyvalue ( 
-              KEY TEXT NOT NULL, 
-              collection TEXT NOT NULL, 
-              VALUE BLOB NOT NULL, 
-              PRIMARY KEY ( 
-                KEY, 
+            CREATE TABLE keyvalue (
+              KEY TEXT NOT NULL,
+              collection TEXT NOT NULL,
+              VALUE BLOB NOT NULL,
+              PRIMARY KEY (
+                KEY,
                 collection
               )
             );
@@ -1526,21 +1548,21 @@ struct GRDBSchemaMigratorTest2 {
               id INTEGER PRIMARY KEY AUTOINCREMENT
             );
 
-            CREATE TABLE BackupAttachmentUploadQueue ( 
-              id INTEGER PRIMARY KEY AUTOINCREMENT, 
-              attachmentRowId INTEGER NOT NULL REFERENCES Attachment ( 
+            CREATE TABLE BackupAttachmentUploadQueue (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              attachmentRowId INTEGER NOT NULL REFERENCES Attachment (
                 id
-              ) ON DELETE CASCADE, 
-              maxOwnerTimestamp INTEGER, 
-              estimatedByteCount INTEGER NOT NULL, 
-              isFullsize BOOLEAN NOT NULL, 
-              numRetries INTEGER NOT NULL DEFAULT 0, 
-              minRetryTimestamp INTEGER NOT NULL DEFAULT 0, 
+              ) ON DELETE CASCADE,
+              maxOwnerTimestamp INTEGER,
+              estimatedByteCount INTEGER NOT NULL,
+              isFullsize BOOLEAN NOT NULL,
+              numRetries INTEGER NOT NULL DEFAULT 0,
+              minRetryTimestamp INTEGER NOT NULL DEFAULT 0,
               state INTEGER DEFAULT 0
             );
 
-            CREATE TRIGGER __BackupAttachmentUploadQueue_au AFTER UPDATE OF state ON BackupAttachmentUploadQueue BEGIN 
-              DELETE FROM BackupAttachmentUploadQueue WHERE state = 1 AND NOT EXISTS ( 
+            CREATE TRIGGER __BackupAttachmentUploadQueue_au AFTER UPDATE OF state ON BackupAttachmentUploadQueue BEGIN
+              DELETE FROM BackupAttachmentUploadQueue WHERE state = 1 AND NOT EXISTS (
                 SELECT id FROM BackupAttachmentUploadQueue WHERE state = 0
               );
             END;
