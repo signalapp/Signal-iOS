@@ -639,8 +639,8 @@ public class AttachmentManagerImpl: AttachmentManager {
                         plaintextHash: pendingAttachment.plaintextHash,
                         tx: tx,
                     ),
-                    let existingAttachment = try? Attachment(record: existingAttachmentRecord),
-                    let existingAttachmentFilePath = existingAttachment.streamInfo?.localRelativeFilePath
+                    let existingAttachmentFilePath = Attachment(record: existingAttachmentRecord)
+                        .streamInfo?.localRelativeFilePath
                 {
                     hasExistingAttachmentWithSameFile = existingAttachmentFilePath == pendingAttachment.localRelativeFilePath
                 } else {

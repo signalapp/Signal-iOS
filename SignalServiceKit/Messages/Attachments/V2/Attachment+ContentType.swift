@@ -14,7 +14,7 @@ extension Attachment {
     /// These indexes rely on the generated virtual columns isVisualMediaContentType and
     /// isInvalidOrFileContentType respectively. These columns must be redefined if the raw
     /// values of this enum change, and might need to be redefined if new cases are added.
-    public enum ContentType: UInt32 {
+    public enum ContentType: UInt32, Codable {
         case file = 1
         case image = 2
         case video = 3

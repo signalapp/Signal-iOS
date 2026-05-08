@@ -168,24 +168,13 @@ public struct AttachmentStore {
         ids: [Attachment.IDType],
         tx: DBReadTransaction,
     ) -> [Attachment] {
-        if ids.isEmpty {
-            return []
-        }
-        do {
-            return try Attachment.Record
-                .fetchAll(
-                    tx.database,
-                    keys: ids,
-                )
-                .compactMap { record in
-                    // Errors will be logged by the initializer.
-                    // Drop only _this_ attachment by returning nil,
-                    // instead of throwing and failing all of them.
-                    return try? Attachment(record: record)
-                }
-        } catch {
-            owsFailDebug("Failed to read attachment records from disk \(error)")
-            return []
+        return failIfThrows {
+            try Attachment.Record.fetchAll(
+                tx.database,
+                keys: ids,
+            ).map { record in
+                Attachment(record: record)
+            }
         }
     }
 
@@ -334,8 +323,7 @@ public struct AttachmentStore {
             .filter(Column(Attachment.Record.CodingKeys.originalAttachmentIdForQuotedReply) == originalAttachmentId)
 
         return failIfThrows {
-            try query.fetchAll(tx.database)
-                .compactMap { try? Attachment(record: $0) }
+            try query.fetchAll(tx.database).map { Attachment(record: $0) }
         }
     }
 
@@ -580,7 +568,7 @@ public struct AttachmentStore {
         tx: DBWriteTransaction,
     ) {
         let receivedAtTimestampColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.receivedAtTimestamp)
-        let ownerTypeColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerTypeRaw)
+        let ownerTypeColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerType)
         let ownerRowIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId)
         let sql = """
             UPDATE \(MessageAttachmentReferenceRecord.databaseTableName)
@@ -1087,7 +1075,7 @@ public struct AttachmentStore {
             // plaintext hash and mediaName). Importantly, those are checked
             // above manually.
             try attachmentRecord.insert(tx.database)
-            return try Attachment(record: attachmentRecord)
+            return Attachment(record: attachmentRecord)
         }
 
         addReference(

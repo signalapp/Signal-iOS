@@ -335,14 +335,7 @@ extension AttachmentReference {
 extension AttachmentReference.Owner {
 
     static func validateAndBuild(record: AttachmentReference.MessageAttachmentReferenceRecord) throws -> AttachmentReference.Owner {
-        guard let ownerType = AttachmentReference.MessageAttachmentReferenceRecord.OwnerType(rawValue: record.ownerTypeRaw) else {
-            throw OWSAssertionError("Invalid owner type! \(record.ownerTypeRaw)")
-        }
-        guard let contentType = Attachment.ContentType(rawValue: record.contentType) else {
-            throw OWSAssertionError("Invalid content type! \(record.contentType)")
-        }
-
-        switch ownerType {
+        switch record.ownerType {
         case .bodyAttachment:
             guard let orderInMessage = record.orderInMessage else {
                 throw OWSAssertionError("orderInMessage required for body attachment")
@@ -351,7 +344,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: contentType,
+                contentType: record.contentType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
                 caption: record.caption,
                 renderingFlag: try .init(rawValue: record.renderingFlag),
@@ -364,7 +357,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: contentType,
+                contentType: record.contentType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
             )))
         case .linkPreview:
@@ -372,7 +365,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: contentType,
+                contentType: record.contentType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
             )))
         case .quotedReplyAttachment:
@@ -380,7 +373,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: contentType,
+                contentType: record.contentType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
                 renderingFlag: try .init(rawValue: record.renderingFlag),
             )))
@@ -395,7 +388,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: contentType,
+                contentType: record.contentType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
                 stickerPackId: stickerPackId,
                 stickerId: stickerId,
@@ -405,7 +398,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: contentType,
+                contentType: record.contentType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
             )))
         }
@@ -414,15 +407,7 @@ extension AttachmentReference.Owner {
     static func validateAndBuild(
         record: AttachmentReference.StoryMessageAttachmentReferenceRecord,
     ) throws -> AttachmentReference.Owner {
-        guard
-            let ownerType = AttachmentReference.StoryMessageAttachmentReferenceRecord.OwnerType(
-                rawValue: record.ownerTypeRaw,
-            )
-        else {
-            throw OWSAssertionError("Invalid owner type")
-        }
-
-        switch ownerType {
+        switch record.ownerType {
         case .media:
             let caption: StyleOnlyMessageBody? = try record.caption.map { text in
                 guard let rawRanges = record.captionBodyRanges else {

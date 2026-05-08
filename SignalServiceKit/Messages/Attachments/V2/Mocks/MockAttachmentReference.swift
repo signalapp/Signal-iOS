@@ -44,7 +44,7 @@ extension AttachmentReference.ConstructionParams {
                 messageRowId: messageRowId,
                 receivedAtTimestamp: receivedAtTimestamp,
                 threadRowId: threadRowId,
-                contentType: Attachment.ContentType(rawValue: attachmentRecord.contentType)!,
+                contentType: attachmentRecord.contentType,
                 isPastEditRevision: isPastEditRevision,
                 caption: caption,
                 renderingFlag: renderingFlag,

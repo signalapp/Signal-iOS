@@ -8,7 +8,7 @@ public import GRDB
 extension AttachmentReference {
 
     public struct MessageAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
-        public enum OwnerType: UInt32, CaseIterable {
+        public enum OwnerType: UInt32, CaseIterable, Codable {
             case bodyAttachment = 0
             case oversizeText = 1
             case linkPreview = 2
@@ -17,15 +17,15 @@ extension AttachmentReference {
             case contactAvatar = 5
         }
 
-        let ownerTypeRaw: UInt32
+        let ownerType: OwnerType
         var ownerRowId: Int64
         let attachmentRowId: Int64
         @DBUInt64
         var receivedAtTimestamp: UInt64
         /// - Important
         /// The underlying database column for this is nullable, but in practice
-        /// must always contain a non-NULL value.
-        let contentType: UInt32
+        /// must always contain a valid non-NULL value.
+        let contentType: Attachment.ContentType
         let renderingFlag: UInt32
         let idInMessage: String?
         let orderInMessage: UInt32?
@@ -43,7 +43,7 @@ extension AttachmentReference {
         // MARK: - Coding Keys
 
         public enum CodingKeys: String, CodingKey {
-            case ownerTypeRaw = "ownerType"
+            case ownerType
             case ownerRowId
             case attachmentRowId
             case receivedAtTimestamp
@@ -66,7 +66,7 @@ extension AttachmentReference {
         // MARK: - Columns
 
         enum Columns {
-            static let ownerType = Column(CodingKeys.ownerTypeRaw)
+            static let ownerType = Column(CodingKeys.ownerType)
             static let ownerRowId = Column(CodingKeys.ownerRowId)
             static let orderInMessage = Column(CodingKeys.orderInMessage)
             static let attachmentRowId = Column(CodingKeys.attachmentRowId)
@@ -99,7 +99,7 @@ extension AttachmentReference {
             sourceMediaSizePixels: CGSize?,
             messageSource: AttachmentReference.Owner.MessageSource,
         ) {
-            self.ownerTypeRaw = messageSource.persistedOwnerType.rawValue
+            self.ownerType = messageSource.persistedOwnerType
             self.attachmentRowId = attachmentRowId
             self.sourceFilename = sourceFilename
             self.sourceUnencryptedByteCount = sourceUnencryptedByteCount
@@ -115,7 +115,7 @@ extension AttachmentReference {
             case .bodyAttachment(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
-                self.contentType = metadata.contentType.rawValue
+                self.contentType = metadata.contentType
                 self.renderingFlag = UInt32(metadata.renderingFlag.rawValue)
                 self.idInMessage = metadata.idInOwner?.uuidString
                 self.orderInMessage = metadata.orderInMessage
@@ -128,7 +128,7 @@ extension AttachmentReference {
             case .oversizeText(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
-                self.contentType = metadata.contentType.rawValue
+                self.contentType = metadata.contentType
                 self.renderingFlag = UInt32(AttachmentReference.RenderingFlag.default.rawValue)
                 self.idInMessage = nil
                 self.orderInMessage = nil
@@ -142,7 +142,7 @@ extension AttachmentReference {
             case .linkPreview(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
-                self.contentType = metadata.contentType.rawValue
+                self.contentType = metadata.contentType
                 self.renderingFlag = UInt32(AttachmentReference.RenderingFlag.default.rawValue)
                 self.idInMessage = nil
                 self.orderInMessage = nil
@@ -156,7 +156,7 @@ extension AttachmentReference {
             case .quotedReply(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
-                self.contentType = metadata.contentType.rawValue
+                self.contentType = metadata.contentType
                 self.renderingFlag = UInt32(metadata.renderingFlag.rawValue)
                 self.idInMessage = nil
                 self.orderInMessage = nil
@@ -170,7 +170,7 @@ extension AttachmentReference {
             case .sticker(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
-                self.contentType = metadata.contentType.rawValue
+                self.contentType = metadata.contentType
                 self.renderingFlag = UInt32(AttachmentReference.RenderingFlag.default.rawValue)
                 self.idInMessage = nil
                 self.orderInMessage = nil
@@ -184,7 +184,7 @@ extension AttachmentReference {
             case .contactAvatar(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
-                self.contentType = metadata.contentType.rawValue
+                self.contentType = metadata.contentType
                 self.renderingFlag = UInt32(AttachmentReference.RenderingFlag.default.rawValue)
                 self.idInMessage = nil
                 self.orderInMessage = nil
@@ -200,12 +200,12 @@ extension AttachmentReference {
     }
 
     public struct StoryMessageAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
-        public enum OwnerType: UInt32, CaseIterable {
+        public enum OwnerType: UInt32, CaseIterable, Codable {
             case media = 0
             case linkPreview = 1
         }
 
-        let ownerTypeRaw: UInt32
+        let ownerType: OwnerType
         let ownerRowId: Int64
         let attachmentRowId: Int64
         let shouldLoop: Bool
@@ -219,7 +219,7 @@ extension AttachmentReference {
         // MARK: - Coding Keys
 
         public enum CodingKeys: String, CodingKey {
-            case ownerTypeRaw = "ownerType"
+            case ownerType
             case ownerRowId
             case attachmentRowId
             case shouldLoop
@@ -234,7 +234,7 @@ extension AttachmentReference {
         // MARK: - Columns
 
         enum Columns {
-            static let ownerType = Column(CodingKeys.ownerTypeRaw)
+            static let ownerType = Column(CodingKeys.ownerType)
             static let ownerRowId = Column(CodingKeys.ownerRowId)
             static let attachmentRowId = Column(CodingKeys.attachmentRowId)
         }
@@ -265,7 +265,7 @@ extension AttachmentReference {
             sourceMediaSizePixels: CGSize?,
             storyMessageSource: AttachmentReference.Owner.StoryMessageSource,
         ) {
-            self.ownerTypeRaw = storyMessageSource.persistedOwnerType.rawValue
+            self.ownerType = storyMessageSource.persistedOwnerType
             self.attachmentRowId = attachmentRowId
             self.sourceFilename = sourceFilename
             self.sourceUnencryptedByteCount = sourceUnencryptedByteCount

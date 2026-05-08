@@ -267,18 +267,15 @@ public class Attachment {
 
     // MARK: - Init
 
-    init(record: Attachment.Record) throws {
+    init(record: Attachment.Record) {
         guard let id = record.sqliteId else {
-            throw OWSAssertionError("Attachment is only for inserted records")
-        }
-        guard let contentType = ContentType(rawValue: record.contentType) else {
-            throw OWSAssertionError("Invalid content type raw value: \(record.contentType)")
+            owsFail("Attachment can only be instantiated from a record with an ID!")
         }
 
         self.id = id
         self.blurHash = record.blurHash
         self.mimeType = record.mimeType
-        self.contentType = contentType
+        self.contentType = record.contentType
         self.encryptionKey = record.encryptionKey
         self.originalAttachmentIdForQuotedReply = record.originalAttachmentIdForQuotedReply
         self.plaintextHash = record.plaintextHash

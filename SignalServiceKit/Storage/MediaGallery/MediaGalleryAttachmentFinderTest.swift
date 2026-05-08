@@ -278,7 +278,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             )
             try! attachmentRecord.insert(tx.database)
 
-            let attachment = try! Attachment(record: attachmentRecord)
+            let attachment = Attachment(record: attachmentRecord)
 
             let referenceParams = AttachmentReference.ConstructionParams.mock(
                 owner: .message(.bodyAttachment(.init(

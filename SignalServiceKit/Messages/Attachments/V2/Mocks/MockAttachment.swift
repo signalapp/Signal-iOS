@@ -163,7 +163,7 @@ extension Attachment {
             lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
         )
 
-        return try! Attachment(record: record)
+        return Attachment(record: record)
     }
 }
 

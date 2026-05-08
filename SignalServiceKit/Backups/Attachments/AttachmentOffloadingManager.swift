@@ -152,9 +152,8 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                 .order(Column(Attachment.Record.CodingKeys.sqliteId).asc)
                 .fetchCursor(tx.database)
 
-            while let record = try cursor.next() {
+            while let attachment = try cursor.next().map({ Attachment(record: $0) }) {
                 guard
-                    let attachment = try? Attachment(record: record),
                     let mostRecentReference = attachmentStore.fetchMostRecentReference(
                         toAttachmentId: attachment.id,
                         tx: tx,

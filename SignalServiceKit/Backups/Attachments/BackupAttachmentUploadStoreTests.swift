@@ -36,7 +36,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 tx: tx,
             )
             store.enqueue(
-                try! Attachment(record: attachmentRecord).asStream()!,
+                Attachment(record: attachmentRecord).asStream()!,
                 owner: reference.owner.asEligibleUploadOwnerType,
                 fullsize: true,
                 tx: tx,
@@ -64,7 +64,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 tx: tx,
             )
             store.enqueue(
-                try! Attachment(record: attachmentRecord).asStream()!,
+                Attachment(record: attachmentRecord).asStream()!,
                 owner: reference.owner.asEligibleUploadOwnerType,
                 fullsize: true,
                 tx: tx,
@@ -91,7 +91,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             )
             try! referenceRecord.insert(tx.database)
             store.enqueue(
-                try! Attachment(record: attachmentRecord).asStream()!,
+                Attachment(record: attachmentRecord).asStream()!,
                 owner: try! AttachmentReference(record: referenceRecord).owner.asEligibleUploadOwnerType,
                 fullsize: true,
                 tx: tx,
@@ -118,7 +118,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 tx: tx,
             )
             store.enqueue(
-                try! Attachment(record: attachmentRecord).asStream()!,
+                Attachment(record: attachmentRecord).asStream()!,
                 owner: reference.owner.asEligibleUploadOwnerType,
                 fullsize: true,
                 tx: tx,
@@ -166,7 +166,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                     }
                 }()
                 store.enqueue(
-                    try! Attachment(record: attachmentRecord).asStream()!,
+                    Attachment(record: attachmentRecord).asStream()!,
                     owner: reference.owner.asEligibleUploadOwnerType,
                     fullsize: true,
                     tx: tx,
@@ -255,13 +255,13 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 )
                 // Enqueue both fullsize and thumbnail
                 store.enqueue(
-                    try! Attachment(record: attachmentRecord).asStream()!,
+                    Attachment(record: attachmentRecord).asStream()!,
                     owner: reference.owner.asEligibleUploadOwnerType,
                     fullsize: true,
                     tx: tx,
                 )
                 store.enqueue(
-                    try! Attachment(record: attachmentRecord).asStream()!,
+                    Attachment(record: attachmentRecord).asStream()!,
                     owner: reference.owner.asEligibleUploadOwnerType,
                     fullsize: false,
                     tx: tx,
@@ -353,7 +353,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 messageRowId: messageRowId,
                 receivedAtTimestamp: timestamp,
                 threadRowId: threadRowId,
-                contentType: Attachment.ContentType(rawValue: attachmentRecord.contentType)!,
+                contentType: attachmentRecord.contentType,
                 isPastEditRevision: false,
             )),
         )

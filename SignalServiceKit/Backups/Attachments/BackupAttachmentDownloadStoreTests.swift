@@ -30,7 +30,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
             try! attachmentRecord.insert(
                 tx.database,
             )
-            let attachment = try! Attachment(record: attachmentRecord)
+            let attachment = Attachment(record: attachmentRecord)
             let reference = insertMessageAttachmentReferenceRecord(
                 attachment: attachment,
                 messageRowId: messageRowId,
@@ -56,7 +56,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
 
         // Re enqueue at a higher timestamp.
         try db.write { tx in
-            let attachment = try! Attachment(record: attachmentRecord)
+            let attachment = Attachment(record: attachmentRecord)
             let reference = insertMessageAttachmentReferenceRecord(
                 attachment: attachment,
                 messageRowId: messageRowId,
@@ -89,7 +89,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
             )
             try referenceRecord.insert(tx.database)
 
-            let attachment = try Attachment(record: attachmentRecord)
+            let attachment = Attachment(record: attachmentRecord)
             let reference = try AttachmentReference(record: referenceRecord)
 
             store.enqueue(
@@ -109,7 +109,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
 
         // Re enqueue at an even higher timestamp.
         try db.write { tx in
-            let attachment = try! Attachment(record: attachmentRecord)
+            let attachment = Attachment(record: attachmentRecord)
             let reference = insertMessageAttachmentReferenceRecord(
                 attachment: attachment,
                 messageRowId: messageRowId,
@@ -159,7 +159,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                     try attachmentRecord.insert(
                         tx.database,
                     )
-                    let attachment = try! Attachment(record: attachmentRecord)
+                    let attachment = Attachment(record: attachmentRecord)
                     let reference = insertMessageAttachmentReferenceRecord(
                         attachment: attachment,
                         messageRowId: messageRowId,
@@ -188,7 +188,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 try attachmentRecord.insert(
                     tx.database,
                 )
-                let attachment = try! Attachment(record: attachmentRecord)
+                let attachment = Attachment(record: attachmentRecord)
                 let reference = insertMessageAttachmentReferenceRecord(
                     attachment: attachment,
                     messageRowId: messageRowId,

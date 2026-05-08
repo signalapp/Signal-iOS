@@ -401,22 +401,17 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                             .filter(Column(Attachment.Record.CodingKeys.sqliteId) > id)
                     }
 
-                    let attachmentRecord: Attachment.Record? = failIfThrows {
-                        try query.fetchOne(tx.database)
-                    }
-
-                    guard let attachmentRecord else {
+                    guard
+                        let attachment = failIfThrows(block: {
+                            try query.fetchOne(tx.database)
+                                .map { Attachment(record: $0) }
+                        })
+                    else {
                         txContext.didFinish = true
                         return .done(())
                     }
 
-                    txContext.lastEnumeratedAttachmentId = attachmentRecord.sqliteId.owsFailUnwrap("")
-
-                    // Ignore invalid attachments: there's nothing we can do
-                    // here to recover them.
-                    guard let attachment = try? Attachment(record: attachmentRecord) else {
-                        return .more
-                    }
+                    txContext.lastEnumeratedAttachmentId = attachment.id
 
                     guard let fullsizeMediaName = attachment.mediaName else {
                         owsFailDebug("We filtered by mediaName presence, how is it missing")

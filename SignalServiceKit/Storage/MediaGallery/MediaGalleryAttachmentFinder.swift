@@ -276,7 +276,7 @@ public struct MediaGalleryAttachmentFinder {
         let threadIdColumn = Column(RecordType.CodingKeys.threadRowId)
         let renderingFlagColumn = Column(RecordType.CodingKeys.renderingFlag)
         let contentTypeColumn = Column(RecordType.CodingKeys.contentType)
-        let ownerTypeColumn = Column(RecordType.CodingKeys.ownerTypeRaw)
+        let ownerTypeColumn = Column(RecordType.CodingKeys.ownerType)
         let isViewOnceColumn = Column(RecordType.CodingKeys.isViewOnce)
         let isPastEditRevisionColumn = Column(RecordType.CodingKeys.ownerIsPastEditRevision)
 

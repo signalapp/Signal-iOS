@@ -280,7 +280,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 messageRowId: interaction.sqliteRowId!,
                 receivedAtTimestamp: interaction.receivedAtTimestamp,
                 threadRowId: thread.sqliteRowId!,
-                contentType: Attachment.ContentType(rawValue: attachmentParams.contentType)!,
+                contentType: attachmentParams.contentType,
                 isPastEditRevision: false,
                 caption: nil,
                 renderingFlag: .default,

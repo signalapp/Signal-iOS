@@ -19,8 +19,8 @@ extension Attachment {
         let mimeType: String
         /// - Important
         /// The underlying database column for this is nullable, but in practice
-        /// must always contain a non-NULL value.
-        let contentType: UInt32
+        /// must always contain a valid non-NULL value.
+        let contentType: Attachment.ContentType
         let encryptionKey: Data
         let ciphertextDigest: Data?
         let latestTransitCdnNumber: UInt32?
@@ -178,7 +178,7 @@ extension Attachment {
             self.encryptedByteCount = streamInfo?.encryptedByteCount
             self.unencryptedByteCount = streamInfo?.unencryptedByteCount
             self.mimeType = mimeType
-            self.contentType = contentType.rawValue
+            self.contentType = contentType
             self.encryptionKey = encryptionKey
             self.ciphertextDigest = streamInfo?.ciphertextDigest
             self.latestTransitCdnNumber = latestTransitTierInfo?.cdnNumber

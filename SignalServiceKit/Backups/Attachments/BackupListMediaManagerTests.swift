@@ -340,7 +340,7 @@ public class BackupListMediaManagerTests {
         try! attachmentRecord.insert(tx.database)
 
         if let mediaTierInfo {
-            let attachment = try! Attachment(record: attachmentRecord)
+            let attachment = Attachment(record: attachmentRecord)
             attachment.mediaTierInfo = mediaTierInfo
 
             attachmentRecord = Attachment.Record(attachment: attachment)
