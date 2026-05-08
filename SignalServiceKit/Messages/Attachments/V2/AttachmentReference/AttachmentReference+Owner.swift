@@ -99,7 +99,7 @@ extension AttachmentReference {
 
                 /// Mirrors the values of ``Attachment/contentType``, for the
                 /// referenced attachment, duplicated here for query purposes.
-                public let contentType: Attachment.ContentTypeRaw
+                public let contentType: Attachment.ContentType
 
                 /// True if the owning message's ``TSEditState`` is `pastRevision`.
                 public let isPastEditRevision: Bool
@@ -108,7 +108,7 @@ extension AttachmentReference {
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
-                    contentType: Attachment.ContentTypeRaw,
+                    contentType: Attachment.ContentType,
                     isPastEditRevision: Bool,
                 ) {
                     self.messageRowId = messageRowId
@@ -140,7 +140,7 @@ extension AttachmentReference {
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
-                    contentType: Attachment.ContentTypeRaw,
+                    contentType: Attachment.ContentType,
                     isPastEditRevision: Bool,
                     caption: String?,
                     renderingFlag: RenderingFlag,
@@ -171,7 +171,7 @@ extension AttachmentReference {
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
-                    contentType: Attachment.ContentTypeRaw,
+                    contentType: Attachment.ContentType,
                     isPastEditRevision: Bool,
                     renderingFlag: RenderingFlag,
                 ) {
@@ -195,7 +195,7 @@ extension AttachmentReference {
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
-                    contentType: Attachment.ContentTypeRaw,
+                    contentType: Attachment.ContentType,
                     isPastEditRevision: Bool,
                     stickerPackId: Data,
                     stickerId: UInt32,
@@ -338,7 +338,7 @@ extension AttachmentReference.Owner {
         guard let ownerType = AttachmentReference.MessageAttachmentReferenceRecord.OwnerType(rawValue: record.ownerTypeRaw) else {
             throw OWSAssertionError("Invalid owner type! \(record.ownerTypeRaw)")
         }
-        guard let contentType = Attachment.ContentTypeRaw(rawValue: record.contentType) else {
+        guard let contentType = Attachment.ContentType(rawValue: record.contentType) else {
             throw OWSAssertionError("Invalid content type! \(record.contentType)")
         }
 
@@ -453,7 +453,7 @@ extension AttachmentReference.Owner {
     /// When we go from a pointer to a stream (e.g. by downloading) and find another attachment with the same plaintext hash,
     /// we instead reassign the pointer's references to that existing attachment. When we do so, we need to update their contentType
     /// to match the new/old attachment (theyre the same plaintext hash so same content type).
-    public func forReassignmentWithContentType(_ contentType: Attachment.ContentTypeRaw) -> Self {
+    public func forReassignmentWithContentType(_ contentType: Attachment.ContentType) -> Self {
         switch self {
         case .message(let messageSource):
             return .message({

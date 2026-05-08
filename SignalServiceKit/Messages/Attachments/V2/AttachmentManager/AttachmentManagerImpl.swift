@@ -193,7 +193,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             sourceFilename: sourceFilename,
         )
 
-        let contentType = Attachment.ContentTypeRaw(mimeType: mimeType)
+        let contentType = Attachment.ContentType(mimeType: mimeType)
         var attachmentRecord = Attachment.Record.forInsertingPointer(
             blurHash: proto.blurHash,
             mimeType: mimeType,
@@ -339,7 +339,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             incrementalMacInfo = nil
         }
 
-        let contentType = Attachment.ContentTypeRaw(mimeType: mimeType)
+        let contentType = Attachment.ContentType(mimeType: mimeType)
         var attachmentRecord: Attachment.Record
         let sourceUnencryptedByteCount: UInt32?
 
@@ -1032,7 +1032,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 thumbnailTransitTierInfo = nil
                 thumbnailEncryptionKey = originalAttachment.encryptionKey
             }
-            let thumbnailContentType = Attachment.ContentTypeRaw(mimeType: thumbnailMimeType)
+            let thumbnailContentType = Attachment.ContentType(mimeType: thumbnailMimeType)
 
             // Create a new attachment, but add foreign key reference to the original
             // so that when/if we download the original we can update this thumbnail'ed copy.

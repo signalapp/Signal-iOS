@@ -15,7 +15,7 @@ public class AttachmentStream {
 
     public var id: Attachment.IDType { attachment.id }
     public var mimeType: String { attachment.mimeType }
-    public var contentType: Attachment.ContentTypeRaw { attachment.contentType }
+    public var contentType: Attachment.ContentType { attachment.contentType }
 
     public var ciphertextDigest: Data { info.ciphertextDigest }
     public var plaintextHash: Data { info.plaintextHash }

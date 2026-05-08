@@ -159,7 +159,7 @@ extension Attachment {
             sqliteId: IDType?,
             blurHash: String?,
             mimeType: String,
-            contentType: Attachment.ContentTypeRaw,
+            contentType: Attachment.ContentType,
             encryptionKey: Data,
             plaintextHash: Data?,
             mediaName: String?,
@@ -237,7 +237,7 @@ extension Attachment {
         static func forInsertingPointer(
             blurHash: String?,
             mimeType: String,
-            contentType: ContentTypeRaw,
+            contentType: ContentType,
             encryptionKey: Data,
             latestTransitTierInfo: Attachment.TransitTierInfo,
         ) -> Record {
@@ -264,7 +264,7 @@ extension Attachment {
         static func forInsertingStream(
             blurHash: String?,
             mimeType: String,
-            contentType: ContentTypeRaw,
+            contentType: ContentType,
             encryptionKey: Data,
             streamInfo: Attachment.StreamInfo,
             plaintextHash: Data,
@@ -292,7 +292,7 @@ extension Attachment {
         static func forInsertingFromBackup(
             blurHash: String?,
             mimeType: String,
-            contentType: ContentTypeRaw,
+            contentType: ContentType,
             encryptionKey: Data,
             latestTransitTierInfo: Attachment.TransitTierInfo?,
             plaintextHash: Data?,
@@ -324,7 +324,7 @@ extension Attachment {
         static func forInsertingInvalidBackupAttachment(
             blurHash: String?,
             mimeType: String,
-            contentType: ContentTypeRaw,
+            contentType: ContentType,
         ) -> Record {
             return Record(
                 sqliteId: nil,
@@ -351,7 +351,7 @@ extension Attachment {
             originalAttachment: Attachment,
             thumbnailBlurHash: String?,
             thumbnailMimeType: String,
-            thumbnailContentType: ContentTypeRaw,
+            thumbnailContentType: ContentType,
             thumbnailEncryptionKey: Data,
             thumbnailTransitTierInfo: Attachment.TransitTierInfo?,
         ) -> Record {

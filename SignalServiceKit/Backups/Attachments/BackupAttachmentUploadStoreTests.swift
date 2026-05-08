@@ -353,7 +353,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 messageRowId: messageRowId,
                 receivedAtTimestamp: timestamp,
                 threadRowId: threadRowId,
-                contentType: Attachment.ContentTypeRaw(rawValue: attachmentRecord.contentType)!,
+                contentType: Attachment.ContentType(rawValue: attachmentRecord.contentType)!,
                 isPastEditRevision: false,
             )),
         )

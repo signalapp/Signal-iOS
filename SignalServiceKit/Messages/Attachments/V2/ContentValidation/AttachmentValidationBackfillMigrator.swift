@@ -45,12 +45,12 @@ enum ValidationBackfill: Int, CaseIterable {
 
         /// Filter to just a content type; don't sub-filter by mime type. Other filters can be applied
         /// but typically this will take advantage of the contentType,mimeType index.
-        case contentType(Attachment.ContentTypeRaw)
+        case contentType(Attachment.ContentType)
 
         /// Filter to both a content and mime type. You cannot filter to just a mime type (that doesn't
         /// really make sense, anyway, all mime types are subscoped to a content type). Takes
         /// advantage of the contentType,mimeType index.
-        case mimeTypes(Attachment.ContentTypeRaw, mimeType: String)
+        case mimeTypes(Attachment.ContentType, mimeType: String)
     }
 
     /// Filters _which_ existing attachments should be re-validated by content and optionally mime type.

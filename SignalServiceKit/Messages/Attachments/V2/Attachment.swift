@@ -27,7 +27,7 @@ public class Attachment {
     public let mimeType: String
 
     /// A reduction of `mimeType`.
-    public let contentType: ContentTypeRaw
+    public let contentType: ContentType
 
     /// Encryption key used for the local file AND media tier.
     /// If from an incoming message, we get this from the proto, and can reuse it for local and media backup encryption.
@@ -271,7 +271,7 @@ public class Attachment {
         guard let id = record.sqliteId else {
             throw OWSAssertionError("Attachment is only for inserted records")
         }
-        guard let contentType = ContentTypeRaw(rawValue: record.contentType) else {
+        guard let contentType = ContentType(rawValue: record.contentType) else {
             throw OWSAssertionError("Invalid content type raw value: \(record.contentType)")
         }
 

@@ -408,7 +408,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
 
     private func attachmentRowIdsForTablePopulation(tx: DBReadTransaction) throws -> [Attachment.IDType] {
         return try Attachment.Record
-            .filter(Column(Attachment.Record.CodingKeys.contentType) == Attachment.ContentTypeRaw.file.rawValue)
+            .filter(Column(Attachment.Record.CodingKeys.contentType) == Attachment.ContentType.file.rawValue)
             .filter(Column(Attachment.Record.CodingKeys.mimeType) == MimeType.textXSignalPlain.rawValue)
             .filter(Column(Attachment.Record.CodingKeys.localRelativeFilePath) != nil)
             // Only rows not already represented in the oversize text cache table

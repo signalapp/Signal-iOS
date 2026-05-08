@@ -42,8 +42,8 @@ public struct PendingAttachment {
     let audioDuration: TimeInterval?
     let audioWaveformRelativeFilePath: String?
 
-    var contentType: Attachment.ContentTypeRaw {
-        Attachment.ContentTypeRaw(mimeType: mimeType)
+    var contentType: Attachment.ContentType {
+        Attachment.ContentType(mimeType: mimeType)
     }
 
     var mediaName: String {

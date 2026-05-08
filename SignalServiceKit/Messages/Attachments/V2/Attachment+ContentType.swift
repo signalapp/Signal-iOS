@@ -14,7 +14,7 @@ extension Attachment {
     /// These indexes rely on the generated virtual columns isVisualMediaContentType and
     /// isInvalidOrFileContentType respectively. These columns must be redefined if the raw
     /// values of this enum change, and might need to be redefined if new cases are added.
-    public enum ContentTypeRaw: UInt32 {
+    public enum ContentType: UInt32 {
         /// MIME type indicated it should be some other non-file type but validation failed.
         /// Inspect ``Attachment/mimeType`` to determine what type it tried to be.
         case invalid = 0
@@ -42,7 +42,7 @@ extension Attachment {
     }
 }
 
-extension Attachment.ContentTypeRaw {
+extension Attachment.ContentType {
     public var isImage: Bool {
         switch self {
         case .image:

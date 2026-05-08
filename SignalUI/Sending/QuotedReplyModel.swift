@@ -124,7 +124,7 @@ public class QuotedReplyModel {
             }
         }
 
-        public var attachmentContentType: Attachment.ContentTypeRaw? {
+        public var attachmentContentType: Attachment.ContentType? {
             switch self {
             case .text:
                 return nil
