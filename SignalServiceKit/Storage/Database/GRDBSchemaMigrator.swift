@@ -326,6 +326,7 @@ public class GRDBSchemaMigrator {
         case wipeBackupAttachmentUploadQueueForLinkedDevices
         case addLastVerifiedGroupNameHashColumn
         case setAttachmentContentTypeFromMimeType
+        case dropAttachmentContentTypeAUTrigger
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5134,6 +5135,14 @@ public class GRDBSchemaMigrator {
                 ) THEN 2
                 ELSE 1
             END
+            """)
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.dropAttachmentContentTypeAUTrigger) { tx in
+            try tx.database.execute(sql: """
+            DROP TRIGGER __Attachment_contentType_au
             """)
 
             return .success(())
