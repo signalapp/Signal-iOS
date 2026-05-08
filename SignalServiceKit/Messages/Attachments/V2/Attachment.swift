@@ -24,7 +24,10 @@ public class Attachment {
     /// MIME type we get from the attachment's sender, known even before downloading the attachment.
     /// **If undownloaded, unverified (spoofable by the sender) and may not match the type of the actual bytes.**
     /// If downloaded, check ``AttachmentStream/contentType`` for a validated representation of the type..
-    public var mimeType: String
+    public let mimeType: String
+
+    /// A reduction of `mimeType`.
+    public let contentType: ContentTypeRaw
 
     /// Encryption key used for the local file AND media tier.
     /// If from an incoming message, we get this from the proto, and can reuse it for local and media backup encryption.
@@ -112,8 +115,6 @@ public class Attachment {
         ///  Byte count of the decrypted fullsize resource
         public let unencryptedByteCount: UInt32
 
-        public var contentType: ContentTypeRaw
-
         /// A cached pixel size for this attachment, if it is visual media.
         public var cachedMediaSizePixels: CGSize?
 
@@ -148,7 +149,6 @@ public class Attachment {
                 mediaName: pendingAttachment.mediaName,
                 encryptedByteCount: pendingAttachment.encryptedByteCount,
                 unencryptedByteCount: pendingAttachment.unencryptedByteCount,
-                contentType: pendingAttachment.contentType,
                 cachedMediaSizePixels: pendingAttachment.mediaPixelSize,
                 cachedVideoDuration: pendingAttachment.videoDuration,
                 cachedVideoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath,
@@ -164,7 +164,6 @@ public class Attachment {
             mediaName: String,
             encryptedByteCount: UInt32,
             unencryptedByteCount: UInt32,
-            contentType: ContentTypeRaw,
             cachedMediaSizePixels: CGSize?,
             cachedVideoDuration: TimeInterval?,
             cachedVideoStillFrameRelativeFilePath: String?,
@@ -177,7 +176,6 @@ public class Attachment {
             self.mediaName = mediaName
             self.encryptedByteCount = encryptedByteCount
             self.unencryptedByteCount = unencryptedByteCount
-            self.contentType = contentType
             self.cachedMediaSizePixels = cachedMediaSizePixels
             self.cachedVideoDuration = cachedVideoDuration
             self.cachedVideoStillFrameRelativeFilePath = cachedVideoStillFrameRelativeFilePath
@@ -277,6 +275,17 @@ public class Attachment {
         self.id = id
         self.blurHash = record.blurHash
         self.mimeType = record.mimeType
+        // TODO: [Sasha, Attachments] Revisit this if/when we remove the .invalid case.
+        self.contentType = {
+            if
+                let rawValue = record.contentType,
+                let parsedValue = ContentTypeRaw(rawValue: rawValue)
+            {
+                return parsedValue
+            }
+
+            return ContentTypeRaw(mimeType: record.mimeType)
+        }()
         self.encryptionKey = record.encryptionKey
         self.originalAttachmentIdForQuotedReply = record.originalAttachmentIdForQuotedReply
         self.plaintextHash = record.plaintextHash
@@ -289,20 +298,14 @@ public class Attachment {
             let mediaName = record.mediaName,
             let encryptedByteCount = record.encryptedByteCount,
             let unencryptedByteCount = record.unencryptedByteCount,
-            let contentType = record.contentType,
             let ciphertextDigest = record.ciphertextDigest,
             let localRelativeFilePath = record.localRelativeFilePath
         {
-            guard let contentType = ContentTypeRaw(rawValue: contentType) else {
-                throw OWSAssertionError("Unexpected raw content type! \(contentType)")
-            }
-
             self.streamInfo = StreamInfo(
                 plaintextHash: plaintextHash,
                 mediaName: mediaName,
                 encryptedByteCount: encryptedByteCount,
                 unencryptedByteCount: unencryptedByteCount,
-                contentType: contentType,
                 cachedMediaSizePixels: {
                     if
                         let width = record.cachedMediaWidthPixels.map({ Int($0) }),

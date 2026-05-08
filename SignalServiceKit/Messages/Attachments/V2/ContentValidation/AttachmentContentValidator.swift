@@ -35,13 +35,16 @@ public struct PendingAttachment {
     let sourceFilename: String?
     let orphanRecordId: OrphanedAttachmentRecord.RowId
 
-    let contentType: Attachment.ContentTypeRaw
     let blurHash: String?
     let mediaPixelSize: CGSize?
     let videoDuration: TimeInterval?
     let videoStillFrameRelativeFilePath: String?
     let audioDuration: TimeInterval?
     let audioWaveformRelativeFilePath: String?
+
+    var contentType: Attachment.ContentTypeRaw {
+        Attachment.ContentTypeRaw(mimeType: mimeType)
+    }
 
     var mediaName: String {
         Attachment.mediaName(
@@ -61,12 +64,9 @@ public struct PendingAttachment {
 }
 
 public struct RevalidatedAttachment {
-    /// Revalidation might _change_ the mimeType we report.
-    let mimeType: String
     /// Orphan record for any created ancillary files, such as the audio waveform.
     let orphanRecordId: OrphanedAttachmentRecord.RowId
 
-    let contentType: Attachment.ContentTypeRaw
     let blurHash: String?
     let mediaPixelSize: CGSize?
     let videoDuration: TimeInterval?

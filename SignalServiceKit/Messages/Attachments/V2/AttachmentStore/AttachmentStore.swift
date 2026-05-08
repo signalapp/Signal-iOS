@@ -604,7 +604,6 @@ public struct AttachmentStore {
         attachment: Attachment,
         sourceType: QueuedAttachmentDownloadRecord.SourceType,
         priority: AttachmentDownloadPriority,
-        validatedMimeType: String,
         streamInfo: Attachment.StreamInfo,
         timestamp: UInt64,
         tx: DBWriteTransaction,
@@ -670,14 +669,12 @@ public struct AttachmentStore {
 
         switch sourceType {
         case .transitTier:
-            attachment.mimeType = validatedMimeType
             attachment.streamInfo = streamInfo
             attachment.plaintextHash = streamInfo.plaintextHash
             attachment.latestTransitTierInfo = latestTransitTierInfo
             attachment.mediaName = streamInfo.mediaName
             attachment.lastFullscreenViewTimestamp = lastFullscreenViewTimestamp ?? attachment.lastFullscreenViewTimestamp
         case .mediaTierFullsize:
-            attachment.mimeType = validatedMimeType
             attachment.streamInfo = streamInfo
             attachment.plaintextHash = streamInfo.plaintextHash
             attachment.latestTransitTierInfo = latestTransitTierInfo
@@ -712,7 +709,6 @@ public struct AttachmentStore {
         streamInfo: Attachment.StreamInfo,
         into attachment: Attachment,
         encryptionKey: Data,
-        validatedMimeType: String,
         latestTransitTierInfo: Attachment.TransitTierInfo?,
         originalTransitTierInfo: Attachment.TransitTierInfo?,
         mediaTierInfo: Attachment.MediaTierInfo?,
@@ -724,7 +720,6 @@ public struct AttachmentStore {
             "Merging stream info into an attachment that is already a stream!",
         )
 
-        attachment.mimeType = validatedMimeType
         attachment.encryptionKey = encryptionKey
         attachment.streamInfo = streamInfo
         attachment.latestTransitTierInfo = latestTransitTierInfo
@@ -894,10 +889,8 @@ public struct AttachmentStore {
     // MARK: -
 
     /// Update an attachment after revalidating.
-    public func updateAttachment(
+    public func updateRevalidatedAttachment(
         _ attachment: Attachment,
-        mimeType: String,
-        contentType: Attachment.ContentTypeRaw,
         blurHash: String?,
         mediaPixelSize: CGSize?,
         videoDuration: TimeInterval?,
@@ -906,10 +899,8 @@ public struct AttachmentStore {
         audioWaveformRelativeFilePath: String?,
         tx: DBWriteTransaction,
     ) {
-        attachment.mimeType = mimeType
         attachment.blurHash = blurHash
         if var streamInfo = attachment.streamInfo {
-            streamInfo.contentType = contentType
             streamInfo.cachedMediaSizePixels = mediaPixelSize
             streamInfo.cachedVideoDuration = videoDuration
             streamInfo.cachedVideoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
@@ -919,8 +910,6 @@ public struct AttachmentStore {
             attachment.streamInfo = streamInfo
         }
 
-        // A SQL post-update trigger will update `contentType` on all associated
-        // AttachmentReference rows.
         let newRecord = Attachment.Record(attachment: attachment)
         failIfThrows {
             try newRecord.update(tx.database)

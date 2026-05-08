@@ -15,7 +15,6 @@ extension Attachment.StreamInfo {
         mediaName: String = UUID().uuidString,
         encryptedByteCount: UInt32 = .random(in: 0..<95_000_000),
         unencryptedByteCount: UInt32 = .random(in: 0..<95_000_000),
-        contentType: Attachment.ContentTypeRaw = .file,
         ciphertextDigest: Data = Randomness.generateRandomBytes(32),
         localRelativeFilePath: String = UUID().uuidString,
     ) -> Attachment.StreamInfo {
@@ -24,7 +23,6 @@ extension Attachment.StreamInfo {
             mediaName: mediaName,
             encryptedByteCount: encryptedByteCount,
             unencryptedByteCount: unencryptedByteCount,
-            contentType: contentType,
             cachedMediaSizePixels: nil,
             cachedVideoDuration: nil,
             cachedVideoStillFrameRelativeFilePath: nil,
@@ -133,8 +131,8 @@ extension Attachment {
 
     public static func mock(
         blurHash: String? = nil,
-        mimeType: String? = nil,
-        encryptionKey: Data? = nil,
+        mimeType: String = MimeType.applicationOctetStream.rawValue,
+        encryptionKey: Data = Randomness.generateRandomBytes(64),
         plaintextHash: Data? = nil,
         mediaName: String? = nil,
         streamInfo: Attachment.StreamInfo? = nil,
@@ -148,10 +146,11 @@ extension Attachment {
         let record = Attachment.Record(
             sqliteId: .random(in: 0..<(.max)),
             blurHash: blurHash,
-            mimeType: mimeType ?? MimeType.applicationOctetStream.rawValue,
-            encryptionKey: encryptionKey ?? Randomness.generateRandomBytes(64),
-            plaintextHash: plaintextHash ?? streamInfo?.plaintextHash ?? UUID().data,
-            mediaName: mediaName ?? streamInfo?.mediaName ?? UUID().uuidString,
+            mimeType: mimeType,
+            contentType: Attachment.ContentTypeRaw(mimeType: mimeType),
+            encryptionKey: encryptionKey,
+            plaintextHash: plaintextHash ?? streamInfo?.plaintextHash,
+            mediaName: mediaName ?? streamInfo?.mediaName,
             localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,
             streamInfo: streamInfo,
             latestTransitTierInfo: transitTierInfo,
@@ -170,7 +169,7 @@ extension AttachmentStream {
 
     public static func mock(
         blurHash: String? = nil,
-        mimeType: String? = nil,
+        mimeType: String = MimeType.applicationOctetStream.rawValue,
         mediaName: String? = nil,
         streamInfo: Attachment.StreamInfo = .mock(),
         transitTierInfo: Attachment.TransitTierInfo? = nil,

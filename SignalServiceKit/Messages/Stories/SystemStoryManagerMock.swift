@@ -144,7 +144,6 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
             renderingFlag: .default,
             sourceFilename: dataSource.sourceFilename,
             orphanRecordId: 1,
-            contentType: .file,
             blurHash: nil,
             mediaPixelSize: nil,
             videoDuration: nil,

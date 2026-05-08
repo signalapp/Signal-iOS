@@ -584,7 +584,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             let owner: AttachmentReference.Owner = ownedDataSource.owner.build(
                 knownIdInOwner: .none,
                 renderingFlag: existingAttachmentMetadata.renderingFlag,
-                contentType: existingAttachment.streamInfo?.contentType,
+                contentType: existingAttachment.contentType,
             )
             let referenceParams = AttachmentReference.ConstructionParams(
                 owner: owner,
@@ -683,7 +683,6 @@ public class AttachmentManagerImpl: AttachmentManager {
                         newAttachmentOwner: owner,
                         pendingAttachmentStreamInfo: streamInfo,
                         pendingAttachmentEncryptionKey: pendingAttachment.encryptionKey,
-                        pendingAttachmentMimeType: pendingAttachment.mimeType,
                         pendingAttachmentOrphanRecordId: hasOrphanRecord ? pendingAttachment.orphanRecordId : nil,
                         pendingAttachmentLatestTransitTierInfo: nil,
                         pendingAttachmentOriginalTransitTierInfo: nil,
@@ -722,7 +721,6 @@ public class AttachmentManagerImpl: AttachmentManager {
                 // Not technically true but close enough.
                 sourceType: .mediaTierFullsize,
                 priority: .backupRestore,
-                validatedMimeType: pendingAttachment.mimeType,
                 streamInfo: Attachment.StreamInfo(pendingAttachment: pendingAttachment),
                 // This is used for "last viewed" state which isn't used
                 // for oversize text so it doesn't really matter but give
@@ -796,7 +794,6 @@ public class AttachmentManagerImpl: AttachmentManager {
         newAttachmentOwner: AttachmentReference.Owner? = nil,
         pendingAttachmentStreamInfo: Attachment.StreamInfo,
         pendingAttachmentEncryptionKey: Data,
-        pendingAttachmentMimeType: String,
         pendingAttachmentOrphanRecordId: OrphanedAttachmentRecord.RowId?,
         pendingAttachmentLatestTransitTierInfo: Attachment.TransitTierInfo?,
         pendingAttachmentOriginalTransitTierInfo: Attachment.TransitTierInfo?,
@@ -936,7 +933,6 @@ public class AttachmentManagerImpl: AttachmentManager {
             streamInfo: pendingAttachmentStreamInfo,
             into: existingAttachment,
             encryptionKey: pendingAttachmentEncryptionKey,
-            validatedMimeType: pendingAttachmentMimeType,
             latestTransitTierInfo: latestTransitTierInfo,
             originalTransitTierInfo: originalTransitTierInfo,
             mediaTierInfo: mediaTierInfo,

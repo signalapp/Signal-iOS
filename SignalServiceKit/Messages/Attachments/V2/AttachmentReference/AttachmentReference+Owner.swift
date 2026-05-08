@@ -97,6 +97,7 @@ extension AttachmentReference {
                 /// when we want to e.g. get all files sent on messages in a thread.
                 let threadRowId: Int64
 
+                // TODO: [Sasha, Attachments] This will become non-optional.
                 /// Validated type of the actual file content on disk, if we have it.
                 /// Mirrors `Attachment.contentType`.
                 ///

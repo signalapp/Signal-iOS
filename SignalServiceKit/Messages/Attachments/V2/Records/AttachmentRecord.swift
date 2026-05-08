@@ -17,9 +17,10 @@ extension Attachment {
         let encryptedByteCount: UInt32?
         let unencryptedByteCount: UInt32?
         let mimeType: String
+        // TODO: [Sasha, Attachments] This will become non-optional.
+        let contentType: UInt32?
         let encryptionKey: Data
         let ciphertextDigest: Data?
-        let contentType: UInt32?
         let latestTransitCdnNumber: UInt32?
         let latestTransitCdnKey: String?
         @DBUInt64Optional
@@ -137,6 +138,7 @@ extension Attachment {
                 sqliteId: attachment.id,
                 blurHash: attachment.blurHash,
                 mimeType: attachment.mimeType,
+                contentType: attachment.contentType,
                 encryptionKey: attachment.encryptionKey,
                 plaintextHash: attachment.plaintextHash,
                 mediaName: attachment.mediaName,
@@ -155,6 +157,7 @@ extension Attachment {
             sqliteId: IDType?,
             blurHash: String?,
             mimeType: String,
+            contentType: Attachment.ContentTypeRaw,
             encryptionKey: Data,
             plaintextHash: Data?,
             mediaName: String?,
@@ -173,9 +176,9 @@ extension Attachment {
             self.encryptedByteCount = streamInfo?.encryptedByteCount
             self.unencryptedByteCount = streamInfo?.unencryptedByteCount
             self.mimeType = mimeType
+            self.contentType = contentType.rawValue
             self.encryptionKey = encryptionKey
             self.ciphertextDigest = streamInfo?.ciphertextDigest
-            self.contentType = streamInfo?.contentType.rawValue
             self.latestTransitCdnNumber = latestTransitTierInfo?.cdnNumber
             self.latestTransitCdnKey = latestTransitTierInfo?.cdnKey
             self._latestTransitUploadTimestamp = DBUInt64Optional(wrappedValue: latestTransitTierInfo?.uploadTimestamp)
@@ -239,6 +242,7 @@ extension Attachment {
                 sqliteId: nil,
                 blurHash: blurHash,
                 mimeType: mimeType,
+                contentType: ContentTypeRaw(mimeType: mimeType),
                 encryptionKey: encryptionKey,
                 plaintextHash: nil,
                 mediaName: nil,
@@ -266,6 +270,7 @@ extension Attachment {
                 sqliteId: nil,
                 blurHash: blurHash,
                 mimeType: mimeType,
+                contentType: ContentTypeRaw(mimeType: mimeType),
                 encryptionKey: encryptionKey,
                 plaintextHash: plaintextHash,
                 mediaName: mediaName,
@@ -293,6 +298,7 @@ extension Attachment {
                 sqliteId: nil,
                 blurHash: blurHash,
                 mimeType: mimeType,
+                contentType: ContentTypeRaw(mimeType: mimeType),
                 encryptionKey: encryptionKey,
                 plaintextHash: plaintextHash,
                 mediaName: plaintextHash.map {
@@ -318,6 +324,7 @@ extension Attachment {
                 sqliteId: nil,
                 blurHash: blurHash,
                 mimeType: mimeType,
+                contentType: ContentTypeRaw(mimeType: mimeType),
                 // We don't have any cdn info from which to download, so what
                 // encryption key we use is irrelevant. Just generate a new one.
                 encryptionKey: AttachmentKey.generate().combinedKey,
@@ -345,6 +352,7 @@ extension Attachment {
                 sqliteId: nil,
                 blurHash: thumbnailBlurHash,
                 mimeType: thumbnailMimeType,
+                contentType: ContentTypeRaw(mimeType: thumbnailMimeType),
                 encryptionKey: thumbnailEncryptionKey,
                 plaintextHash: nil,
                 mediaName: nil,

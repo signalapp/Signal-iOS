@@ -24,60 +24,60 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         let threadRowId = thread.sqliteRowId!
 
         // Insert one matching content type before the date range
-        try insertAttachment(
+        insertAttachment(
             messageRowId: messageRowId,
             threadRowId: threadRowId,
             receivedAtTimestamp: 100,
-            contentType: .image,
+            mimeType: "image/jpeg",
             orderInMessage: 0,
         )
         // ...and one matching content type after the date range
-        try insertAttachment(
+        insertAttachment(
             messageRowId: messageRowId,
             threadRowId: threadRowId,
             receivedAtTimestamp: 300,
-            contentType: .image,
+            mimeType: "image/jpeg",
             orderInMessage: 1,
         )
         // ...and one non-matching content type within the date range
-        try insertAttachment(
+        insertAttachment(
             messageRowId: messageRowId,
             threadRowId: threadRowId,
             receivedAtTimestamp: 200,
-            contentType: .audio,
+            mimeType: "audio/mp3",
             orderInMessage: 2,
         )
         // ...and two matching content type within the date range
-        try insertAttachment(
+        insertAttachment(
             messageRowId: messageRowId,
             threadRowId: threadRowId,
             receivedAtTimestamp: 200,
-            contentType: .image,
+            mimeType: "image/jpeg",
             orderInMessage: 3,
         )
-        try insertAttachment(
+        insertAttachment(
             messageRowId: messageRowId,
             threadRowId: threadRowId,
             receivedAtTimestamp: 200,
-            contentType: .image,
+            mimeType: "image/jpeg",
             orderInMessage: 4,
         )
         // ...and one within the date range that we will exclude.
-        try insertAttachment(
+        insertAttachment(
             messageRowId: messageRowId,
             threadRowId: threadRowId,
             receivedAtTimestamp: 200,
-            contentType: .image,
+            mimeType: "image/jpeg",
             orderInMessage: 5,
         )
         // ...and a view once attachment that will be excluded.
-        try insertAttachment(
+        insertAttachment(
             messageRowId: messageRowId,
             threadRowId: threadRowId,
             receivedAtTimestamp: 200,
-            contentType: .image,
-            isViewOnce: true,
+            mimeType: "image/jpeg",
             orderInMessage: 6,
+            isViewOnce: true,
         )
         let exclusionSet = Set<AttachmentReferenceId>([
             .init(ownerId: .messageBodyAttachment(messageRowId: messageRowId), orderInMessage: 5),
@@ -268,45 +268,40 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         messageRowId: Int64,
         threadRowId: Int64,
         receivedAtTimestamp: UInt64,
-        contentType: Attachment.ContentTypeRaw,
-        caption: String? = nil,
-        renderingFlag: AttachmentReference.RenderingFlag = .default,
-        isViewOnce: Bool = false,
-        isPastEditRevision: Bool = false,
+        mimeType: String,
         orderInMessage: UInt32,
-        idInOwner: UUID? = nil,
-    ) throws -> Attachment.IDType {
-        let attachmentParams = Attachment.Record.mockStream(
-            streamInfo: .mock(
-                contentType: contentType,
-            ),
-        )
-        let referenceParams = AttachmentReference.ConstructionParams.mock(
-            owner: .message(.bodyAttachment(.init(
-                messageRowId: messageRowId,
-                receivedAtTimestamp: receivedAtTimestamp,
-                threadRowId: threadRowId,
-                contentType: contentType,
-                isPastEditRevision: isPastEditRevision,
-                caption: caption,
-                renderingFlag: renderingFlag,
-                orderInMessage: orderInMessage,
-                idInOwner: idInOwner,
-                isViewOnce: isViewOnce,
-            ))),
-        )
+        isViewOnce: Bool = false,
+    ) -> Attachment.IDType {
+        db.write { tx in
+            var attachmentRecord = Attachment.Record.mockStream(
+                mimeType: mimeType,
+            )
+            try! attachmentRecord.insert(tx.database)
 
-        var attachmentRecord = attachmentParams
+            let attachment = try! Attachment(record: attachmentRecord)
 
-        try db.write { tx in
-            try attachmentRecord.insert(tx.database)
+            let referenceParams = AttachmentReference.ConstructionParams.mock(
+                owner: .message(.bodyAttachment(.init(
+                    messageRowId: messageRowId,
+                    receivedAtTimestamp: receivedAtTimestamp,
+                    threadRowId: threadRowId,
+                    contentType: attachment.contentType,
+                    isPastEditRevision: false,
+                    caption: nil,
+                    renderingFlag: .default,
+                    orderInMessage: orderInMessage,
+                    idInOwner: nil,
+                    isViewOnce: isViewOnce,
+                ))),
+            )
+
             attachmentStore.addReference(
                 referenceParams,
-                attachmentRowId: attachmentRecord.sqliteId!,
+                attachmentRowId: attachment.id,
                 tx: tx,
             )
-        }
 
-        return attachmentRecord.sqliteId!
+            return attachment.id
+        }
     }
 }
