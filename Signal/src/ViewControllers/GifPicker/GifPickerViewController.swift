@@ -531,13 +531,13 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         forAsset asset: ProxiedContentAsset,
         attachmentLimits: OutgoingAttachmentLimits,
     ) async throws -> PreviewableAttachment {
-        guard let giphyAsset = asset.assetDescription as? GiphyAsset else {
+        guard asset.assetDescription is GiphyAsset else {
             throw OWSAssertionError("Invalid asset description.")
         }
 
-        let assetFileExtension = giphyAsset.type.extension
+        let assetFileExtension = GiphyAsset.fileExtension
         let assetFilePath = asset.filePath
-        let assetTypeIdentifier = giphyAsset.type.utiType
+        let assetTypeIdentifier = GiphyAsset.utiType
 
         let consumableFilePath = OWSFileSystem.temporaryFilePath(
             fileExtension: assetFileExtension,

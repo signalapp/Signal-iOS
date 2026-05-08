@@ -7,10 +7,12 @@ import Foundation
 import UniformTypeIdentifiers
 
 public class GiphyAsset: ProxiedContentAssetDescription {
+    public static let fileExtension = "mp4"
+    public static let utiType = UTType.mpeg4Movie.identifier
+
     let rendition: Rendition
     let dimensions: CGSize
     let size: Int
-    public let type: FileType
 
     static func parsing(renditionString: String, definition: [String: Any]) -> [GiphyAsset] {
         guard let rendition = Rendition(rawValue: renditionString) else { return [] }
@@ -28,50 +30,29 @@ public class GiphyAsset: ProxiedContentAssetDescription {
             return []
         }
         let dimensions = CGSize(width: width, height: height)
-        var results: [GiphyAsset] = []
 
-        // A given rendition may have multiple underlying assets.
-        // First check for an mp4 specific url (must be of type mp4)
-        if
+        guard
             let url = parseUrl(dict: definition, key: "mp4"),
             let size = parsePositiveInt(dict: definition, key: "mp4_size"),
-            let asset = GiphyAsset(rendition: rendition, dimensions: dimensions, url: url, size: size),
-            asset.type == .mp4
-        {
-            results.append(asset)
-        }
-
-        // Then check for anything keyed by "url" (can be any format)
-        if
-            let url = parseUrl(dict: definition, key: "url"),
-            let size = parsePositiveInt(dict: definition, key: "size"),
             let asset = GiphyAsset(rendition: rendition, dimensions: dimensions, url: url, size: size)
-        {
-            results.append(asset)
+        else {
+            Logger.error("No valid mp4 asset found while parsing: \(rendition)")
+            return []
         }
-
-        if results.isEmpty {
-            Logger.error("No valid assets found while parsing: \(rendition)")
-        }
-        return results
+        return [asset]
     }
 
     private init?(rendition: Rendition, dimensions: CGSize, url: URL, size: Int) {
-        switch url.pathExtension.lowercased() {
-        case "jpg": self.type = .jpg
-        case "gif": self.type = .gif
-        case "mp4": self.type = .mp4
-        default: return nil
-        }
+        guard url.pathExtension.lowercased() == Self.fileExtension else { return nil }
 
         self.rendition = rendition
         self.dimensions = dimensions
         self.size = size
-        super.init(url: url as NSURL, fileExtension: self.type.extension)
+        super.init(url: url as NSURL, fileExtension: Self.fileExtension)
     }
 
     var assetDescription: ProxiedContentAssetDescription? {
-        ProxiedContentAssetDescription(url: url as NSURL, fileExtension: type.extension)
+        ProxiedContentAssetDescription(url: url as NSURL, fileExtension: Self.fileExtension)
     }
 }
 
@@ -79,13 +60,6 @@ extension GiphyAsset {
     enum Rendition: String, RawRepresentable {
         // Original
         case original = "original"
-
-        // Still variants
-        case fixedHeightSmallStill = "fixed_height_small_still"
-        case fixedHeightStill = "fixed_height_still"
-        case fixedWidthSmallStill = "fixed_width_small_still"
-        case fixedWidthStill = "fixed_width_still"
-        case downsizedStill = "downsized_still"
 
         // Animated preview variants
         case preview = "preview"
@@ -97,38 +71,6 @@ extension GiphyAsset {
         case fixedWidth = "fixed_width"
         case fixedWidthSmall = "fixed_width_small"
         case downsizedSmall = "downsized_small"
-
-        var isStill: Bool {
-            [
-                .fixedHeightSmallStill,
-                .fixedHeightStill,
-                .fixedWidthSmallStill,
-                .fixedWidthStill,
-                .downsizedStill,
-            ].contains(self)
-        }
-    }
-
-    public enum FileType: Equatable {
-        case jpg
-        case gif
-        case mp4
-
-        public var `extension`: String {
-            switch self {
-            case .jpg: return "jpg"
-            case .gif: return "gif"
-            case .mp4: return "mp4"
-            }
-        }
-
-        public var utiType: String {
-            switch self {
-            case .jpg: return UTType.jpeg.identifier
-            case .gif: return UTType.gif.identifier
-            case .mp4: return UTType.mpeg4Movie.identifier
-            }
-        }
     }
 }
 

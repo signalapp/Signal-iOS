@@ -3,13 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SDWebImage
 import SignalServiceKit
 import SignalUI
 
 class GifPickerCell: UICollectionViewCell {
 
-    private let imageView = SDAnimatedImageView()
     private let mp4View = LoopingVideoView()
     private let activityIndicator: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView(style: .medium)
@@ -35,13 +33,11 @@ class GifPickerCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        [imageView, mp4View, activityIndicator].forEach {
+        [mp4View, activityIndicator].forEach {
             contentView.addSubview($0)
         }
-        imageView.isHidden = true
         mp4View.isHidden = true
 
-        imageView.autoPinEdgesToSuperviewEdges()
         mp4View.autoPinEdgesToSuperviewEdges()
         activityIndicator.autoCenterInSuperview()
 
@@ -98,7 +94,7 @@ class GifPickerCell: UICollectionViewCell {
     }
 
     var isDisplayingPreview: Bool {
-        (previewAsset != nil) && (mp4View.video != nil || imageView.image != nil)
+        previewAsset != nil && mp4View.video != nil
     }
 
     func requestRenditionForSending() async throws(GiphyError) -> ProxiedContentAsset {
@@ -196,28 +192,14 @@ class GifPickerCell: UICollectionViewCell {
             activityIndicator.stopAnimating()
         }
 
-        if asset.assetDescription.fileExtension == "mp4" {
-            let video = LoopingVideo(decryptedLocalFileUrl: URL(fileURLWithPath: asset.filePath))
-            mp4View.video = video
-            mp4View.isHidden = false
-        } else if (try? DataImageSource.forPath(asset.filePath))?.ows_isValidImage ?? false, let image = SDAnimatedImage(contentsOfFile: asset.filePath) {
-            imageView.image = image
-            imageView.isHidden = false
-        } else if (try? DataImageSource.forPath(asset.filePath))?.ows_isValidImage ?? false, let image = UIImage(contentsOfFile: asset.filePath) {
-            imageView.image = image
-            imageView.isHidden = false
-        } else {
-            owsFailDebug("could not load asset.")
-            clearViewState()
-            return
-        }
+        let video = LoopingVideo(decryptedLocalFileUrl: URL(fileURLWithPath: asset.filePath))
+        mp4View.video = video
+        mp4View.isHidden = false
     }
 
     private func clearViewState() {
         AssertIsOnMainThread()
 
-        imageView.image = nil
-        imageView.isHidden = true
         mp4View.video = nil
         mp4View.isHidden = true
         activityIndicator.stopAnimating()

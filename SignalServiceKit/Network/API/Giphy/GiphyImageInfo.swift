@@ -70,19 +70,13 @@ extension GiphyImageInfo {
 
     public var animatedPreviewAsset: GiphyAsset? {
         assets
-            .filter { !$0.rendition.isStill }
-            .filter { [.gif, .mp4].contains($0.type) }
             .filter { $0.dimensions.fits(range: kValidPreviewDimensions) }
             .filter { $0.size > 0 }
             .bestOption(forTargetSize: kPreferedPreviewFileSize)
     }
 
     public var fullSizeAsset: GiphyAsset? {
-        let validTypes: [GiphyAsset.FileType] = [.gif, .mp4]
-
-        return assets
-            .filter { !$0.rendition.isStill }
-            .filter { validTypes.contains($0.type) }
+        assets
             .filter { $0.dimensions.fits(range: kValidSendingDimensions) }
             .filter { $0.size > 0 }
             .bestOption(forTargetSize: kPreferedSendingFileSize)
@@ -135,17 +129,5 @@ private extension Sequence where Element == GiphyAsset {
 private extension CGSize {
     func fits<T>(range: T) -> Bool where T: RangeExpression, T.Bound == CGFloat {
         range.contains(width) && range.contains(height)
-    }
-}
-
-private extension URL {
-    var giphyAssetFileExtension: String? {
-        let urlExtension = pathExtension.lowercased()
-        if ["gif", "mp4", "jpg"].contains(urlExtension) {
-            return urlExtension
-        } else {
-            Logger.error("Invalid file extension from giphy")
-            return nil
-        }
     }
 }
