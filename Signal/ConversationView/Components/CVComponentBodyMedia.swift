@@ -17,16 +17,9 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
     private var areAllItemsImages: Bool {
         for item in items {
-            // This potentially reads the image data on disk.
-            // We will eventually have better guarantees about this
-            // state being cached and not requiring a disk read.
-            switch item.attachmentStream?.contentType {
+            switch item.attachment.contentType {
             case .image, .animatedImage:
                 continue
-            case .none:
-                if !MimeTypeUtil.isSupportedImageMimeType(item.attachment.attachment.attachment.mimeType) {
-                    return false
-                }
             case .video, .audio, .file:
                 return false
             }
@@ -608,14 +601,14 @@ extension CVComponentBodyMedia: CVAccessibilityComponent {
         }
 
         switch mediaItem.attachment {
-        case .stream(let referencedAttachmentStream, isUploading: _):
-            switch referencedAttachmentStream.attachmentStream.contentType {
+        case .stream, .pointer:
+            switch mediaItem.attachment.contentType {
             case .file:
                 return CommonStrings.attachmentTypeFile
             case .image:
                 return CommonStrings.attachmentTypePhoto
             case .video:
-                if referencedAttachmentStream.reference.renderingFlag == .shouldLoop {
+                if mediaItem.renderingFlag == .shouldLoop {
                     return CommonStrings.attachmentTypeAnimated
                 }
                 return CommonStrings.attachmentTypeVideo
@@ -624,20 +617,6 @@ extension CVComponentBodyMedia: CVAccessibilityComponent {
             case .audio:
                 return CommonStrings.attachmentTypeAudio
             }
-        case .pointer(let referencedAttachmentPointer, _):
-            let mimeType = referencedAttachmentPointer.attachmentPointer.attachment.mimeType
-            if MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) {
-                return CommonStrings.attachmentTypeAnimated
-            }
-
-            if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
-                return CommonStrings.attachmentTypePhoto
-            }
-
-            if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
-                return CommonStrings.attachmentTypeVideo
-            }
-            return genericMediaString
         case .backupThumbnail, .undownloadable:
             return genericMediaString
         }

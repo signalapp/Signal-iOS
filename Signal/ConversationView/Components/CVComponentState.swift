@@ -16,6 +16,10 @@ public enum CVAttachment: Equatable {
     /// Typically happens if we restore from a free-tier backup with old media expired from transit tier.
     case undownloadable(ReferencedAttachment)
 
+    public var contentType: Attachment.ContentType {
+        return attachment.attachment.contentType
+    }
+
     public var attachment: ReferencedAttachment {
         switch self {
         case .stream(let stream, _):
