@@ -345,7 +345,6 @@ public extension Cryptography {
     internal static func encrypt(
         _ input: Data,
         attachmentKey inputKey: AttachmentKey? = nil,
-        iv: Data? = nil,
         applyExtraPadding: Bool = false,
     ) throws -> (Data, EncryptionMetadata) {
         let inputKey = inputKey ?? .generate()
@@ -361,7 +360,6 @@ public extension Cryptography {
                 outputData.append(outputBlock)
             },
             attachmentKey: inputKey,
-            iv: iv,
             applyExtraPadding: applyExtraPadding,
         )
         return (outputData, encryptionMetadata)
@@ -382,7 +380,6 @@ public extension Cryptography {
         enumerateInputInBlocks: ((Data) throws -> Void) throws -> UInt64,
         output: @escaping (Data) -> Void,
         attachmentKey: AttachmentKey,
-        iv inputIV: Data? = nil,
         applyExtraPadding: Bool,
     ) throws -> EncryptionMetadata {
 
@@ -392,15 +389,7 @@ public extension Cryptography {
             output(outputData)
         }
 
-        let iv: Data
-        if let inputIV {
-            if inputIV.count != Constants.aescbcIVLength {
-                throw OWSAssertionError("Invalid IV length")
-            }
-            iv = inputIV
-        } else {
-            iv = Randomness.generateRandomBytes(UInt(Constants.aescbcIVLength))
-        }
+        let iv = Randomness.generateRandomBytes(UInt(Constants.aescbcIVLength))
 
         var hmac = HMAC<SHA256>(key: SymmetricKey(data: attachmentKey.authenticationKey))
         var sha256 = SHA256()
