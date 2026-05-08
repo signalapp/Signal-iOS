@@ -9,7 +9,7 @@ public import SignalServiceKit
 import SignalUI
 
 public enum CVAttachment: Equatable {
-    case stream(ReferencedAttachmentStream, isUploading: Bool)
+    case stream(ReferencedAttachmentStream, isUploading: Bool, imageMetadata: ImageMetadata?)
     case pointer(ReferencedAttachmentPointer, downloadState: AttachmentDownloadState)
     case backupThumbnail(ReferencedAttachmentBackupThumbnail)
     /// The attachment has no stream and cannot be downloaded because there is no cdn info.
@@ -22,7 +22,7 @@ public enum CVAttachment: Equatable {
 
     public var attachment: ReferencedAttachment {
         switch self {
-        case .stream(let stream, _):
+        case .stream(let stream, _, _):
             return stream
         case .pointer(let pointer, _):
             return pointer
@@ -35,7 +35,7 @@ public enum CVAttachment: Equatable {
 
     public var attachmentStream: AttachmentStream? {
         switch self {
-        case .stream(let stream, _):
+        case .stream(let stream, _, _):
             return stream.attachmentStream
         case .pointer, .backupThumbnail:
             return nil
@@ -98,7 +98,11 @@ public enum CVAttachment: Equatable {
                 isUploading = true
             }
 
-            return .stream(stream, isUploading: isUploading)
+            return .stream(
+                stream,
+                isUploading: isUploading,
+                imageMetadata: stream.attachmentStream.imageMetadata(),
+            )
         } else if let pointer = referencedAttachment.asReferencedAnyPointer {
             return .pointer(pointer, downloadState: pointer.attachmentPointer.downloadState(tx: tx))
         } else if let thumbnail = referencedAttachment.asReferencedBackupThumbnail {
@@ -110,7 +114,7 @@ public enum CVAttachment: Equatable {
 
     public static func ==(lhs: CVAttachment, rhs: CVAttachment) -> Bool {
         switch (lhs, rhs) {
-        case (.stream(let lhsStream, let lhsIsUploading), .stream(let rhsStream, let rhsIsUploading)):
+        case (.stream(let lhsStream, let lhsIsUploading, imageMetadata: _), .stream(let rhsStream, let rhsIsUploading, imageMetadata: _)):
             return lhsStream.attachment.id == rhsStream.attachment.id
                 && lhsStream.reference.hasSameOwner(as: rhsStream.reference)
                 && lhsIsUploading == rhsIsUploading
@@ -291,7 +295,9 @@ public struct CVComponentState: Equatable {
             stickerMetadata: any StickerMetadata,
             attachmentStream: ReferencedAttachmentStream,
             isUploading: Bool,
+            imageMetadata: ImageMetadata,
         )
+        case invalidImage(attachmentId: Attachment.IDType)
         case downloading(attachmentPointer: ReferencedAttachmentPointer)
         case skipped(
             attachmentPointer: ReferencedAttachmentPointer,
@@ -300,38 +306,38 @@ public struct CVComponentState: Equatable {
 
         var stickerMetadata: (any StickerMetadata)? {
             switch self {
-            case .available(let stickerMetadata, attachmentStream: _, isUploading: _):
+            case .available(let stickerMetadata, attachmentStream: _, isUploading: _, imageMetadata: _):
                 return stickerMetadata
-            case .downloading, .skipped:
+            case .invalidImage, .downloading, .skipped:
                 return nil
             }
         }
 
         var attachmentStream: ReferencedAttachmentStream? {
             switch self {
-            case .available(stickerMetadata: _, let attachmentStream, isUploading: _):
+            case .available(stickerMetadata: _, let attachmentStream, isUploading: _, imageMetadata: _):
                 return attachmentStream
-            case .downloading:
-                return nil
-            case .skipped:
+            case .invalidImage, .downloading, .skipped:
                 return nil
             }
         }
 
         var attachmentPointer: ReferencedAttachmentPointer? {
             switch self {
-            case .available:
+            case .available, .invalidImage:
                 return nil
-            case .downloading(let attachmentPointer):
-                return attachmentPointer
-            case .skipped(let attachmentPointer, _):
+            case .downloading(let attachmentPointer),
+                 .skipped(let attachmentPointer, _):
                 return attachmentPointer
             }
         }
 
         static func ==(lhs: CVComponentState.Sticker, rhs: CVComponentState.Sticker) -> Bool {
             switch (lhs, rhs) {
-            case let (.available(lhsData, lhsStream, lhsIsUploading), .available(rhsData, rhsStream, rhsIsUploading)):
+            case let (
+                .available(lhsData, lhsStream, lhsIsUploading, imageMetadata: _),
+                .available(rhsData, rhsStream, rhsIsUploading, imageMetadata: _),
+            ):
                 return lhsData.stickerInfo.asKey() == rhsData.stickerInfo.asKey()
                     && lhsStream.attachment.id == rhsStream.attachment.id
                     && lhsStream.reference.hasSameOwner(as: rhsStream.reference)
@@ -343,7 +349,9 @@ public struct CVComponentState: Equatable {
                 return lhsPointer.attachment.id == rhsPointer.attachment.id
                     && lhsPointer.reference.hasSameOwner(as: rhsPointer.reference)
                     && lhsState == rhsState
-            case (.available, _), (.downloading, _), (.skipped, _):
+            case let (.invalidImage(lhsAttachmentId), .invalidImage(rhsAttachmentId)):
+                return lhsAttachmentId == rhsAttachmentId
+            case (.available, _), (.downloading, _), (.skipped, _), (.invalidImage, _):
                 return false
             }
         }
@@ -1606,21 +1614,26 @@ private extension CVComponentState.Builder {
         )
 
         switch cvAttachment {
-        case .stream(let referencedAttachmentStream, let isUploading):
-            let stickerMetadata = EncryptedStickerMetadata(
-                stickerInfo: messageSticker.info,
-                stickerType: StickerManager.stickerType(forContentType: referencedAttachmentStream.attachment.mimeType),
-                emojiString: messageSticker.emoji,
-                encryptedStickerDataUrl: referencedAttachmentStream.attachmentStream.fileURL,
-                encryptionKey: referencedAttachmentStream.attachmentStream.attachment.encryptionKey,
-                plaintextLength: referencedAttachmentStream.attachmentStream.unencryptedByteCount,
-            )
+        case .stream(let referencedAttachmentStream, let isUploading, let imageMetadata):
+            if let imageMetadata {
+                let stickerMetadata = EncryptedStickerMetadata(
+                    stickerInfo: messageSticker.info,
+                    stickerType: StickerManager.stickerType(forContentType: referencedAttachmentStream.attachment.mimeType),
+                    emojiString: messageSticker.emoji,
+                    encryptedStickerDataUrl: referencedAttachmentStream.attachmentStream.fileURL,
+                    encryptionKey: referencedAttachmentStream.attachmentStream.attachment.encryptionKey,
+                    plaintextLength: referencedAttachmentStream.attachmentStream.unencryptedByteCount,
+                )
 
-            self.sticker = .available(
-                stickerMetadata: stickerMetadata,
-                attachmentStream: referencedAttachmentStream,
-                isUploading: isUploading,
-            )
+                self.sticker = .available(
+                    stickerMetadata: stickerMetadata,
+                    attachmentStream: referencedAttachmentStream,
+                    isUploading: isUploading,
+                    imageMetadata: imageMetadata,
+                )
+            } else {
+                self.sticker = .invalidImage(attachmentId: referencedAttachmentStream.attachment.id)
+            }
         case .pointer(let referencedAttachmentPointer, let downloadState):
             switch downloadState {
             case .enqueuedOrDownloading:
@@ -1761,30 +1774,51 @@ private extension CVComponentState.Builder {
                     isBroken: false,
                     threadHasPendingMessageRequest: threadHasPendingMessageRequest,
                 ))
-                continue
-            case .stream(let referencedAttachmentStream, isUploading: _):
+            case .stream(let referencedAttachmentStream, isUploading: _, let imageMetadata):
                 let attachmentStream = referencedAttachmentStream.attachmentStream
-                guard let mediaSizePixels = attachmentStream.cachedMediaSizePixels else {
-                    Logger.warn("Filtering media without pixel size.")
-                    mediaAlbumItems.append(CVMediaAlbumItem(
-                        attachment: cvAttachment,
-                        attachmentStream: nil,
-                        hasCaption: hasCaption,
-                        mediaSize: .zero,
-                        isBroken: true,
-                        threadHasPendingMessageRequest: threadHasPendingMessageRequest,
-                    ))
-                    continue
-                }
-
-                mediaAlbumItems.append(CVMediaAlbumItem(
+                let brokenAlbumItem = CVMediaAlbumItem(
                     attachment: cvAttachment,
-                    attachmentStream: attachmentStream,
+                    attachmentStream: nil,
                     hasCaption: hasCaption,
-                    mediaSize: mediaSizePixels,
-                    isBroken: false,
+                    mediaSize: .zero,
+                    isBroken: true,
                     threadHasPendingMessageRequest: threadHasPendingMessageRequest,
-                ))
+                )
+
+                switch attachmentStream.contentType {
+                case .audio, .file:
+                    owsFailDebug("Building media album, but have audio or file attachment?")
+                    mediaAlbumItems.append(brokenAlbumItem)
+                case .video:
+                    if let mediaSizePixels = attachmentStream.cachedMediaSizePixels {
+                        mediaAlbumItems.append(CVMediaAlbumItem(
+                            attachment: cvAttachment,
+                            attachmentStream: attachmentStream,
+                            hasCaption: hasCaption,
+                            mediaSize: mediaSizePixels,
+                            isBroken: false,
+                            threadHasPendingMessageRequest: threadHasPendingMessageRequest,
+                        ))
+                    } else {
+                        mediaAlbumItems.append(brokenAlbumItem)
+                    }
+                case .image:
+                    if
+                        let mediaSizePixels = attachmentStream.cachedMediaSizePixels,
+                        imageMetadata != nil
+                    {
+                        mediaAlbumItems.append(CVMediaAlbumItem(
+                            attachment: cvAttachment,
+                            attachmentStream: attachmentStream,
+                            hasCaption: hasCaption,
+                            mediaSize: mediaSizePixels,
+                            isBroken: false,
+                            threadHasPendingMessageRequest: threadHasPendingMessageRequest,
+                        ))
+                    } else {
+                        mediaAlbumItems.append(brokenAlbumItem)
+                    }
+                }
             case .backupThumbnail(let thumbnail):
                 // TODO: Need to make CVMediaAlbumItem take a thumbnail
                 var mediaSize: CGSize = .zero
@@ -1803,7 +1837,6 @@ private extension CVComponentState.Builder {
                     isBroken: false,
                     threadHasPendingMessageRequest: threadHasPendingMessageRequest,
                 ))
-                continue
             case .undownloadable(let attachment):
                 var mediaSize: CGSize = .zero
                 if let sourceMediaSizePixels = attachment.reference.sourceMediaSizePixels {
@@ -1819,7 +1852,6 @@ private extension CVComponentState.Builder {
                     isBroken: true,
                     threadHasPendingMessageRequest: threadHasPendingMessageRequest,
                 ))
-                continue
             }
         }
         return mediaAlbumItems

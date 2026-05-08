@@ -62,7 +62,7 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             return defaultCellHeight
         }
         let genericAttachment = CVComponentState.GenericAttachment(
-            attachment: .stream(attachment, isUploading: false),
+            attachment: .stream(attachment, isUploading: false, imageMetadata: nil),
         )
 
         let genericAttachmentViewSize = CVComponentGenericAttachment.measure(
@@ -160,6 +160,7 @@ class MediaGalleryFileCell: MediaTileListModeCell {
         let genericAttachment = CVComponentState.GenericAttachment(attachment: .stream(
             fileItem.attachmentStream,
             isUploading: false,
+            imageMetadata: nil,
         ))
         let component = CVComponentGenericAttachment(
             itemModel: itemModel,
@@ -229,6 +230,7 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             genericAttachment: .init(attachment: .stream(
                 fileItem.attachmentStream,
                 isUploading: false,
+                imageMetadata: nil,
             )),
         )
         if

@@ -397,7 +397,7 @@ class CVAttachmentProgressView: ManualLayoutView {
         case .backupThumbnail:
             // TODO: [Backups]: Update download state based on the media tier attachment state
             return .none
-        case .stream(let referencedAttachmentStream, let isUploading):
+        case .stream(let referencedAttachmentStream, let isUploading, imageMetadata: _):
             if isUploading {
                 return .uploading(attachmentStream: referencedAttachmentStream.attachmentStream)
             } else {

@@ -169,26 +169,34 @@ public class AttachmentStream {
         return text
     }
 
+    public func imageMetadata() -> ImageMetadata? {
+        switch contentType {
+        case .file, .video, .audio:
+            return nil
+        case .image:
+            break
+        }
+
+        do {
+            let attachmentKey = try AttachmentKey(combinedKey: attachment.encryptionKey)
+            let imageSource = try EncryptedFileHandleImageSource(
+                encryptedFileUrl: fileURL,
+                attachmentKey: attachmentKey,
+                plaintextLength: UInt64(safeCast: unencryptedByteCount),
+            )
+
+            return imageSource.imageMetadata()
+        } catch {
+            return nil
+        }
+    }
+
     public func decryptedImage() throws -> UIImage {
         switch contentType {
         case .file, .audio:
             throw OWSAssertionError("Requesting image from non-visual attachment")
         case .image:
             return try UIImage.from(self)
-        case .animatedImage:
-            let data = try self.decryptedRawData()
-            let image: UIImage?
-            if mimeType.caseInsensitiveCompare(MimeType.imageWebp.rawValue) == .orderedSame {
-                /// Use SDAnimatedImage for webp.
-                image = SDAnimatedImage(data: data)
-            } else {
-                image = UIImage(data: data)
-            }
-
-            guard let image else {
-                throw OWSAssertionError("Failed to load image")
-            }
-            return image
         case .video:
             guard let stillImageRelativeFilePath = info.cachedVideoStillFrameRelativeFilePath else {
                 throw OWSAssertionError("Still image unavailable for video")
@@ -206,14 +214,14 @@ public class AttachmentStream {
         switch contentType {
         case .file, .audio, .video:
             throw OWSAssertionError("Requesting image from non-visual attachment")
-        case .image, .animatedImage:
+        case .image:
             return try SDAnimatedImage.sdImage(from: self)
         }
     }
 
     public func decryptedAVAsset() throws -> AVAsset {
         switch contentType {
-        case .file, .image, .animatedImage:
+        case .file, .image:
             throw OWSAssertionError("Requesting AVAsset from incompatible attachment")
         case .video, .audio:
             return try AVAsset.from(self)

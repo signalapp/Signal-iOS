@@ -89,15 +89,13 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         switch attachmentStream.attachmentStream.contentType {
         case .video:
             return renderingFlag != .shouldLoop
-        case .file, .image, .animatedImage, .audio:
+        case .file, .image, .audio:
             return false
         }
     }
 
     var isAnimated: Bool {
         switch attachmentStream.attachmentStream.contentType {
-        case .animatedImage:
-            return true
         case .video:
             return renderingFlag == .shouldLoop
         case .file, .image, .audio:
@@ -109,7 +107,7 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         switch attachmentStream.attachmentStream.contentType {
         case .image:
             return true
-        case .file, .video, .animatedImage, .audio:
+        case .file, .video, .audio:
             return false
         }
     }

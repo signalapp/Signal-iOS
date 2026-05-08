@@ -42,7 +42,6 @@ public protocol MediaViewAdapter {
 // MARK: -
 
 public enum ReusableMediaError: Error {
-    case invalidMedia
     case redundantLoad
 }
 
@@ -190,8 +189,7 @@ public class ReusableMediaView {
                 }
             } catch {
                 switch error {
-                case ReusableMediaError.redundantLoad,
-                     ReusableMediaError.invalidMedia:
+                case ReusableMediaError.redundantLoad:
                     Logger.warn("Error: \(error)")
                 default:
                     owsFailDebug("Error: \(error)")
@@ -271,7 +269,7 @@ class MediaViewAdapterLoopingVideo: MediaViewAdapter {
 
     func loadMedia() async throws -> AnyObject {
         guard let video = LoopingVideo(attachmentStream) else {
-            throw ReusableMediaError.invalidMedia
+            throw OWSAssertionError("Invalid looping video")
         }
         return video
     }
@@ -318,9 +316,6 @@ class MediaViewAdapterAnimated: MediaViewAdapter {
     }
 
     func loadMedia() async throws -> AnyObject {
-        guard attachmentStream.contentType.isAnimatedImage else {
-            throw ReusableMediaError.invalidMedia
-        }
         guard let animatedImage = try? attachmentStream.decryptedSDAnimatedImage() else {
             throw OWSAssertionError("Invalid animated image.")
         }
@@ -374,9 +369,6 @@ class MediaViewAdapterStill: MediaViewAdapter {
     }
 
     func loadMedia() async throws -> AnyObject {
-        guard attachmentStream.contentType.isImage else {
-            throw ReusableMediaError.invalidMedia
-        }
         let image = await self.attachmentStream.thumbnailImage(quality: self.thumbnailQuality)
         guard let image else {
             throw OWSAssertionError("Could not load thumbnail")
@@ -477,9 +469,6 @@ class MediaViewAdapterVideo: MediaViewAdapter {
     }
 
     func loadMedia() async throws -> AnyObject {
-        guard attachmentStream.contentType.isVideo else {
-            throw ReusableMediaError.invalidMedia
-        }
         let image = await self.attachmentStream.thumbnailImage(quality: self.thumbnailQuality)
         guard let image else {
             throw OWSAssertionError("Could not load thumbnail")
@@ -508,21 +497,25 @@ class MediaViewAdapterVideo: MediaViewAdapter {
 
 public class MediaViewAdapterSticker: MediaViewAdapter {
 
-    public let shouldBeRenderedByYY: Bool
-    let attachmentStream: AttachmentStream
-    let imageView: UIImageView
+    private let attachmentStream: AttachmentStream
+    private let isAnimated: Bool
+    private let imageView: UIImageView
 
-    public init(attachmentStream: AttachmentStream) {
-        self.shouldBeRenderedByYY = attachmentStream.contentType.isAnimatedImage
+    public init(attachmentStream: AttachmentStream, isAnimated: Bool) {
         self.attachmentStream = attachmentStream
+        self.isAnimated = isAnimated
 
-        if shouldBeRenderedByYY {
+        if isAnimated {
             imageView = CVAnimatedImageView()
         } else {
             imageView = CVImageView()
         }
 
         imageView.contentMode = .scaleAspectFit
+    }
+
+    public var shouldBeRenderedByYY: Bool {
+        isAnimated
     }
 
     public var mediaView: UIView {
@@ -538,13 +531,7 @@ public class MediaViewAdapterSticker: MediaViewAdapter {
     }
 
     public func loadMedia() async throws -> AnyObject {
-        switch attachmentStream.contentType {
-        case .image, .animatedImage:
-            break
-        case .video, .audio, .file:
-            throw ReusableMediaError.invalidMedia
-        }
-        if shouldBeRenderedByYY {
+        if isAnimated {
             guard let animatedImage = try? attachmentStream.decryptedSDAnimatedImage() else {
                 throw OWSAssertionError("Invalid animated image.")
             }
@@ -560,7 +547,7 @@ public class MediaViewAdapterSticker: MediaViewAdapter {
     public func applyMedia(_ media: AnyObject) {
         AssertIsOnMainThread()
 
-        if shouldBeRenderedByYY {
+        if isAnimated {
             guard let image = media as? SDAnimatedImage else {
                 owsFailDebug("Media has unexpected type: \(type(of: media))")
                 return

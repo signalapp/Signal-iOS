@@ -70,10 +70,17 @@ public class AttachmentViewOnceManagerImpl: AttachmentViewOnceManager {
         case .file, .audio:
             owsFailDebug("Unexpected content type.")
             return nil
-        case .animatedImage:
-            viewOnceType = .animatedImage
         case .image:
-            viewOnceType = .stillImage
+            guard let imageMetadata = attachmentStream.attachmentStream.imageMetadata() else {
+                Logger.warn("View-once image with invalid image metadata")
+                return nil
+            }
+
+            if imageMetadata.isAnimated {
+                viewOnceType = .animatedImage
+            } else {
+                viewOnceType = .stillImage
+            }
         case .video where attachmentStream.reference.renderingFlag == .shouldLoop:
             viewOnceType = .loopingVideo
         case .video:

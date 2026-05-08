@@ -883,12 +883,18 @@ class StoryItemMediaView: UIView {
                 let videoView = buildVideoView(attachment: stream.attachment)
                 container.addSubview(videoView)
                 videoView.autoPinEdgesToSuperviewEdges()
-            case .animatedImage:
-                let yyImageView = buildYYImageView(attachment: stream.attachment.attachmentStream)
-                container.addSubview(yyImageView)
-                yyImageView.autoPinEdgesToSuperviewEdges()
             case .image:
-                let imageView = buildImageView(attachment: stream.attachment.attachmentStream)
+                guard let imageMetadata = stream.attachment.attachmentStream.imageMetadata() else {
+                    owsFailDebug("Failed to get image metadata")
+                    return buildContentUnavailableView()
+                }
+
+                let imageView: UIView
+                if imageMetadata.isAnimated {
+                    imageView = buildYYImageView(attachment: stream.attachment.attachmentStream)
+                } else {
+                    imageView = buildImageView(attachment: stream.attachment.attachmentStream)
+                }
                 container.addSubview(imageView)
                 imageView.autoPinEdgesToSuperviewEdges()
             case .audio, .file:

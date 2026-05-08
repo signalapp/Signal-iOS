@@ -16,15 +16,12 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
     }
 
     private var areAllItemsImages: Bool {
-        for item in items {
-            switch item.attachment.contentType {
-            case .image, .animatedImage:
-                continue
-            case .video, .audio, .file:
-                return false
+        return items.allSatisfy {
+            switch $0.attachment.contentType {
+            case .image: true
+            case .video, .audio, .file: false
             }
         }
-        return true
     }
 
     private let footerOverlay: CVComponent?
@@ -440,7 +437,7 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 componentDelegate.didCancelDownload(message, attachmentId: pointer.attachment.id)
                 return true
             }
-        case .stream(let stream, isUploading: _):
+        case .stream(let stream, isUploading: _, imageMetadata: _):
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
             if let item = items.first(where: { $0.attachment.attachment.attachment.id == stream.attachment.id }), item.isBroken {
                 componentDelegate.didTapBrokenVideo()
@@ -600,25 +597,40 @@ extension CVComponentBodyMedia: CVAccessibilityComponent {
             return genericMediaString
         }
 
+        let contentType: Attachment.ContentType
+        let imageMetadata: ImageMetadata?
         switch mediaItem.attachment {
-        case .stream, .pointer:
-            switch mediaItem.attachment.contentType {
-            case .file:
-                return CommonStrings.attachmentTypeFile
-            case .image:
-                return CommonStrings.attachmentTypePhoto
-            case .video:
-                if mediaItem.renderingFlag == .shouldLoop {
-                    return CommonStrings.attachmentTypeAnimated
-                }
-                return CommonStrings.attachmentTypeVideo
-            case .animatedImage:
+        case .stream(let referencedAttachmentStream, isUploading: _, let _imageMetadata):
+            contentType = referencedAttachmentStream.attachment.contentType
+            imageMetadata = _imageMetadata
+        case .pointer(let referencedAttachmentPointer, downloadState: _):
+            contentType = referencedAttachmentPointer.attachment.contentType
+            imageMetadata = nil
+        case .backupThumbnail(let referencedAttachmentBackupThumbnail):
+            contentType = referencedAttachmentBackupThumbnail.attachment.contentType
+            imageMetadata = nil
+        case .undownloadable(let referencedAttachment):
+            contentType = referencedAttachment.attachment.contentType
+            imageMetadata = nil
+        }
+
+        switch contentType {
+        case .file:
+            return CommonStrings.attachmentTypeFile
+        case .image:
+            if let imageMetadata, imageMetadata.isAnimated {
                 return CommonStrings.attachmentTypeAnimated
-            case .audio:
-                return CommonStrings.attachmentTypeAudio
+            } else {
+                return CommonStrings.attachmentTypePhoto
             }
-        case .backupThumbnail, .undownloadable:
-            return genericMediaString
+        case .video:
+            if mediaItem.renderingFlag == .shouldLoop {
+                return CommonStrings.attachmentTypeAnimated
+            } else {
+                return CommonStrings.attachmentTypeVideo
+            }
+        case .audio:
+            return CommonStrings.attachmentTypeAudio
         }
     }
 }

@@ -184,7 +184,7 @@ class VideoPlaybackControlView: UIView {
             } else {
                 showRewindAndFastForward = false
             }
-        case .file, .image, .animatedImage, .audio:
+        case .file, .image, .audio:
             break
         }
     }

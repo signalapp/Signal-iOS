@@ -50,14 +50,17 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         let stackView = componentView.stackView
 
         switch sticker {
-        case .available(_, let attachmentStream, let isUploading):
+        case .available(_, let attachmentStream, let isUploading, let imageMetadata):
             let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.attachment.id)
-            let isAnimated = attachmentStream.attachmentStream.contentType.isAnimatedImage
+            let isAnimated = imageMetadata.isAnimated
             let reusableMediaView: ReusableMediaView
             if let cachedView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
                 reusableMediaView = cachedView
             } else {
-                let mediaViewAdapter = MediaViewAdapterSticker(attachmentStream: attachmentStream.attachmentStream)
+                let mediaViewAdapter = MediaViewAdapterSticker(
+                    attachmentStream: attachmentStream.attachmentStream,
+                    isAnimated: isAnimated,
+                )
                 reusableMediaView = ReusableMediaView(mediaViewAdapter: mediaViewAdapter, mediaCache: mediaCache)
                 mediaCache.setMediaView(reusableMediaView, forKey: cacheKey, isAnimated: isAnimated)
             }
@@ -74,9 +77,11 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 subviews: [mediaView],
             )
 
-            switch CVAttachmentProgressView.progressType(
-                cvAttachment: .stream(attachmentStream, isUploading: isUploading),
-            ) {
+            switch CVAttachmentProgressView.progressType(cvAttachment: .stream(
+                attachmentStream,
+                isUploading: isUploading,
+                imageMetadata: imageMetadata,
+            )) {
             case .none:
                 break
             case .uploading:
@@ -91,26 +96,48 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             case .downloading:
                 break
             }
+        case .invalidImage(attachmentId: _):
+            configureForRenderingInvalidImage(
+                stackView: stackView,
+                cellMeasurement: cellMeasurement,
+            )
         case .downloading(let attachmentPointer):
-            configureForRendering(
-                attachmentPointer: attachmentPointer,
+            configureForRenderingDownload(
                 downloadState: .enqueuedOrDownloading,
+                attachmentPointer: attachmentPointer,
                 stackView: stackView,
                 cellMeasurement: cellMeasurement,
             )
         case .skipped(let attachmentPointer, let downloadState):
-            configureForRendering(
-                attachmentPointer: attachmentPointer,
+            configureForRenderingDownload(
                 downloadState: downloadState,
+                attachmentPointer: attachmentPointer,
                 stackView: stackView,
                 cellMeasurement: cellMeasurement,
             )
         }
     }
 
-    private func configureForRendering(
-        attachmentPointer: ReferencedAttachmentPointer,
+    private func configureForRenderingInvalidImage(
+        stackView: ManualStackView,
+        cellMeasurement: CVCellMeasurement,
+    ) {
+        let placeholderView = UIView()
+        placeholderView.backgroundColor = Theme.washColor
+        placeholderView.layer.cornerRadius = 18
+
+        stackView.reset()
+        stackView.configure(
+            config: stackViewConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_stackView,
+            subviews: [placeholderView],
+        )
+    }
+
+    private func configureForRenderingDownload(
         downloadState: AttachmentDownloadState,
+        attachmentPointer: ReferencedAttachmentPointer,
         stackView: ManualStackView,
         cellMeasurement: CVCellMeasurement,
     ) {

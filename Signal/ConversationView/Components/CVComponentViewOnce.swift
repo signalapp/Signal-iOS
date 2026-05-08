@@ -414,8 +414,6 @@ private extension CVComponentViewOnce {
                 return .photo
             case .video:
                 return .video
-            case .animatedImage:
-                return .photo
             }
         case .unknown,
              .incomingExpired,

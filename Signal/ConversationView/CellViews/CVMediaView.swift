@@ -103,13 +103,15 @@ class CVMediaView: ManualLayoutViewWithLayer {
         case .pointer(let pointer, _):
             configureForUndownloadedMedia(pointer.attachment)
 
-        case .stream(let attachmentStream, isUploading: _):
+        case .stream(let attachmentStream, isUploading: _, let imageMetadata):
             let attachmentStream = attachmentStream.attachmentStream
             switch attachmentStream.contentType {
             case .image:
-                configureForStillImage(attachmentStream: attachmentStream)
-            case .animatedImage:
-                configureForAnimatedImage(attachmentStream: attachmentStream)
+                if let imageMetadata, imageMetadata.isAnimated {
+                    configureForAnimatedImage(attachmentStream: attachmentStream)
+                } else {
+                    configureForStillImage(attachmentStream: attachmentStream)
+                }
             case .video where isLoopingVideo:
                 configureForLoopingVideo(attachmentStream: attachmentStream)
             case .video:
@@ -254,20 +256,18 @@ class CVMediaView: ManualLayoutViewWithLayer {
 
     private func configureForAnimatedImage(attachmentStream: AttachmentStream) {
         let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.id)
-        let isAnimated = attachmentStream.contentType.isAnimatedImage
-        if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
+        if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: true) {
             applyReusableMediaView(reusableMediaView)
             return
         }
 
         let mediaViewAdapter = MediaViewAdapterAnimated(attachmentStream: attachmentStream)
-        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
+        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: true)
     }
 
     private func configureForStillImage(attachmentStream: AttachmentStream) {
         let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.id)
-        let isAnimated = attachmentStream.contentType.isAnimatedImage
-        if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
+        if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: false) {
             applyReusableMediaView(reusableMediaView)
             return
         }
@@ -276,13 +276,12 @@ class CVMediaView: ManualLayoutViewWithLayer {
             attachmentStream: attachmentStream,
             thumbnailQuality: thumbnailQuality,
         )
-        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
+        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: false)
     }
 
     private func configureForVideo(attachmentStream: AttachmentStream) {
         let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.id)
-        let isAnimated = attachmentStream.contentType.isAnimatedImage
-        if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
+        if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: false) {
             applyReusableMediaView(reusableMediaView)
             return
         }
@@ -291,7 +290,7 @@ class CVMediaView: ManualLayoutViewWithLayer {
             attachmentStream: attachmentStream,
             thumbnailQuality: thumbnailQuality,
         )
-        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
+        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: false)
     }
 
     private func configureForBackupThumbnail(attachmentBackupThumbnail: AttachmentBackupThumbnail) {

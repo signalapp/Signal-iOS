@@ -18,7 +18,6 @@ extension Attachment {
         case file = 1
         case image = 2
         case video = 3
-        case animatedImage = 4
         case audio = 5
 
         init(mimeType: String) {
@@ -57,18 +56,9 @@ extension Attachment.ContentType {
         }
     }
 
-    public var isAnimatedImage: Bool {
-        switch self {
-        case .animatedImage:
-            return true
-        default:
-            return false
-        }
-    }
-
     public var isVisualMedia: Bool {
         switch self {
-        case .image, .video, .animatedImage:
+        case .image, .video:
             return true
         default:
             return false

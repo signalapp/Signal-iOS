@@ -450,7 +450,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             {
                 throw OWSAssertionError("Oversize text attachment too big!")
             }
-        case .image, .animatedImage:
+        case .image:
             (
                 blurHash,
                 mediaPixelSize,

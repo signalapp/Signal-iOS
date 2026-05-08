@@ -164,7 +164,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
                 return .cannotGenerate
             }
 
-        case .image, .animatedImage:
+        case .image:
             guard let pixelSize = attachmentStream.cachedMediaSizePixels else {
                 return .cannotGenerate
             }

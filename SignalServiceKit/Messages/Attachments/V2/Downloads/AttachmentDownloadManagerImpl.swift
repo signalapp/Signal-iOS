@@ -818,9 +818,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         unencryptedSize: UInt64(safeCast: $0),
                     ) ?? { owsFail("can always produce estimate for 32-bit byte count") }())
                 }) ?? .useHeadRequest
+
                 let attachmentLimits = IncomingAttachmentLimits.currentLimits(remoteConfig: remoteConfigProvider.currentConfig())
-                switch Attachment.ContentType(mimeType: attachment.mimeType) {
-                case .image, .animatedImage:
+                switch attachment.contentType {
+                case .image:
                     maxDownloadSizeBytes = attachmentLimits.maxEncryptedImageBytes
                 case .audio, .video, .file:
                     maxDownloadSizeBytes = attachmentLimits.maxEncryptedBytes

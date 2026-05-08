@@ -225,7 +225,7 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
 
         var isAudioAttachment: Bool {
             switch quotedReplyModel.originalContent.attachmentContentType {
-            case .file, .image, .video, .animatedImage:
+            case .file, .image, .video:
                 return false
             case .audio:
                 return true
@@ -240,7 +240,7 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
 
         var isVideoAttachment: Bool {
             switch quotedReplyModel.originalContent.attachmentContentType {
-            case .file, .image, .audio, .animatedImage:
+            case .file, .image, .audio:
                 return false
             case .video:
                 return true

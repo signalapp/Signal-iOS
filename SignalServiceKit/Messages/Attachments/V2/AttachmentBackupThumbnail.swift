@@ -78,7 +78,7 @@ public class AttachmentBackupThumbnail {
             } else {
                 return true
             }
-        case .video, .animatedImage:
+        case .video:
             // Visual but require conversion to still image.
             return true
         }

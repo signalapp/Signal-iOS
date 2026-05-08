@@ -117,13 +117,16 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
         let view: UIView
         if attachmentStream.contentType.isVideo, galleryItem.renderingFlag == .shouldLoop {
-            if attachmentStream.contentType.isVideo, let loopingVideoPlayerView = buildLoopingVideoPlayerView() {
+            if let loopingVideoPlayerView = buildLoopingVideoPlayerView() {
                 loopingVideoPlayerView.delegate = self
                 view = loopingVideoPlayerView
             } else {
                 view = buildPlaceholderView()
             }
-        } else if attachmentStream.contentType.isAnimatedImage {
+        } else if
+            let imageMetadata = attachmentStream.imageMetadata(),
+            imageMetadata.isAnimated
+        {
             if let animatedGif = try? attachmentStream.decryptedSDAnimatedImage() {
                 view = SDAnimatedImageView(image: animatedGif)
             } else {

@@ -283,7 +283,7 @@ public class LinkPreviewSent: LinkPreviewState {
             }
         }
         switch attachmentStream.contentType {
-        case .image, .animatedImage:
+        case .image:
             break
         default:
             return .invalid
@@ -311,21 +311,25 @@ public class LinkPreviewSent: LinkPreviewState {
             }
             DispatchQueue.global().async {
                 switch attachmentStream.contentType {
-                case .animatedImage:
-                    guard let image = try? attachmentStream.decryptedSDAnimatedImage() else {
-                        owsFailDebug("Could not load image")
+                case .image:
+                    guard let imageMetadata = attachmentStream.imageMetadata() else {
+                        owsFailDebug("Failed to get image metadata")
+                        return
+                    }
+
+                    let image: UIImage?
+                    if imageMetadata.isAnimated {
+                        image = try? attachmentStream.decryptedSDAnimatedImage()
+                    } else {
+                        image = attachmentStream.thumbnailImageSync(quality: thumbnailQuality)
+                    }
+
+                    guard let image else {
+                        owsFailDebug("Failed to load image")
                         return
                     }
                     completion(image)
-                case .image:
-                    Task {
-                        guard let image = await attachmentStream.thumbnailImage(quality: thumbnailQuality) else {
-                            owsFailDebug("Could not load thumnail.")
-                            return
-                        }
-                        completion(image)
-                    }
-                default:
+                case .file, .video, .audio:
                     owsFailDebug("Invalid image.")
                     return
                 }
