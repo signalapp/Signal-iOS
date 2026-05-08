@@ -103,6 +103,7 @@ extension Attachment.Record {
         return .forInsertingPointer(
             blurHash: blurHash,
             mimeType: mimeType,
+            contentType: Attachment.ContentTypeRaw(mimeType: mimeType),
             encryptionKey: encryptionKey,
             latestTransitTierInfo: transitTierInfo,
         )
@@ -119,6 +120,7 @@ extension Attachment.Record {
         return .forInsertingStream(
             blurHash: blurHash,
             mimeType: mimeType,
+            contentType: Attachment.ContentTypeRaw(mimeType: mimeType),
             encryptionKey: encryptionKey,
             streamInfo: streamInfo,
             plaintextHash: plaintextHash ?? streamInfo.plaintextHash,

@@ -30,12 +30,11 @@ extension Attachment {
                 self = .video
             } else if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
                 self = .audio
-            } else if MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) {
-                self = .animatedImage
-            } else if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
+            } else if
+                MimeTypeUtil.isSupportedImageMimeType(mimeType)
+                || MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType)
+            {
                 self = .image
-            } else if MimeTypeUtil.isSupportedMaybeAnimatedMimeType(mimeType) {
-                self = .animatedImage
             } else {
                 self = .file
             }

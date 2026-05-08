@@ -271,21 +271,14 @@ public class Attachment {
         guard let id = record.sqliteId else {
             throw OWSAssertionError("Attachment is only for inserted records")
         }
+        guard let contentType = ContentTypeRaw(rawValue: record.contentType) else {
+            throw OWSAssertionError("Invalid content type raw value: \(record.contentType)")
+        }
 
         self.id = id
         self.blurHash = record.blurHash
         self.mimeType = record.mimeType
-        // TODO: [Sasha, Attachments] Revisit this if/when we remove the .invalid case.
-        self.contentType = {
-            if
-                let rawValue = record.contentType,
-                let parsedValue = ContentTypeRaw(rawValue: rawValue)
-            {
-                return parsedValue
-            }
-
-            return ContentTypeRaw(mimeType: record.mimeType)
-        }()
+        self.contentType = contentType
         self.encryptionKey = record.encryptionKey
         self.originalAttachmentIdForQuotedReply = record.originalAttachmentIdForQuotedReply
         self.plaintextHash = record.plaintextHash

@@ -17,8 +17,10 @@ extension Attachment {
         let encryptedByteCount: UInt32?
         let unencryptedByteCount: UInt32?
         let mimeType: String
-        // TODO: [Sasha, Attachments] This will become non-optional.
-        let contentType: UInt32?
+        /// - Important
+        /// The underlying database column for this is nullable, but in practice
+        /// must always contain a non-NULL value.
+        let contentType: UInt32
         let encryptionKey: Data
         let ciphertextDigest: Data?
         let latestTransitCdnNumber: UInt32?
@@ -235,6 +237,7 @@ extension Attachment {
         static func forInsertingPointer(
             blurHash: String?,
             mimeType: String,
+            contentType: ContentTypeRaw,
             encryptionKey: Data,
             latestTransitTierInfo: Attachment.TransitTierInfo,
         ) -> Record {
@@ -242,7 +245,7 @@ extension Attachment {
                 sqliteId: nil,
                 blurHash: blurHash,
                 mimeType: mimeType,
-                contentType: ContentTypeRaw(mimeType: mimeType),
+                contentType: contentType,
                 encryptionKey: encryptionKey,
                 plaintextHash: nil,
                 mediaName: nil,
@@ -261,6 +264,7 @@ extension Attachment {
         static func forInsertingStream(
             blurHash: String?,
             mimeType: String,
+            contentType: ContentTypeRaw,
             encryptionKey: Data,
             streamInfo: Attachment.StreamInfo,
             plaintextHash: Data,
@@ -270,7 +274,7 @@ extension Attachment {
                 sqliteId: nil,
                 blurHash: blurHash,
                 mimeType: mimeType,
-                contentType: ContentTypeRaw(mimeType: mimeType),
+                contentType: contentType,
                 encryptionKey: encryptionKey,
                 plaintextHash: plaintextHash,
                 mediaName: mediaName,
@@ -288,6 +292,7 @@ extension Attachment {
         static func forInsertingFromBackup(
             blurHash: String?,
             mimeType: String,
+            contentType: ContentTypeRaw,
             encryptionKey: Data,
             latestTransitTierInfo: Attachment.TransitTierInfo?,
             plaintextHash: Data?,
@@ -298,7 +303,7 @@ extension Attachment {
                 sqliteId: nil,
                 blurHash: blurHash,
                 mimeType: mimeType,
-                contentType: ContentTypeRaw(mimeType: mimeType),
+                contentType: contentType,
                 encryptionKey: encryptionKey,
                 plaintextHash: plaintextHash,
                 mediaName: plaintextHash.map {
@@ -319,12 +324,13 @@ extension Attachment {
         static func forInsertingInvalidBackupAttachment(
             blurHash: String?,
             mimeType: String,
+            contentType: ContentTypeRaw,
         ) -> Record {
             return Record(
                 sqliteId: nil,
                 blurHash: blurHash,
                 mimeType: mimeType,
-                contentType: ContentTypeRaw(mimeType: mimeType),
+                contentType: contentType,
                 // We don't have any cdn info from which to download, so what
                 // encryption key we use is irrelevant. Just generate a new one.
                 encryptionKey: AttachmentKey.generate().combinedKey,
@@ -345,6 +351,7 @@ extension Attachment {
             originalAttachment: Attachment,
             thumbnailBlurHash: String?,
             thumbnailMimeType: String,
+            thumbnailContentType: ContentTypeRaw,
             thumbnailEncryptionKey: Data,
             thumbnailTransitTierInfo: Attachment.TransitTierInfo?,
         ) -> Record {
@@ -352,7 +359,7 @@ extension Attachment {
                 sqliteId: nil,
                 blurHash: thumbnailBlurHash,
                 mimeType: thumbnailMimeType,
-                contentType: ContentTypeRaw(mimeType: thumbnailMimeType),
+                contentType: thumbnailContentType,
                 encryptionKey: thumbnailEncryptionKey,
                 plaintextHash: nil,
                 mediaName: nil,

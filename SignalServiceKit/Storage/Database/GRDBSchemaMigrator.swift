@@ -325,6 +325,7 @@ public class GRDBSchemaMigrator {
         case addAttachmentBackfillRequestTable
         case wipeBackupAttachmentUploadQueueForLinkedDevices
         case addLastVerifiedGroupNameHashColumn
+        case setAttachmentContentTypeFromMimeType
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -448,7 +449,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 142
+    public static let grdbSchemaVersionLatest: UInt = 143
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5080,6 +5081,61 @@ public class GRDBSchemaMigrator {
             try transaction.database.alter(table: "thread_associated_data") { table in
                 table.add(column: "lastVerifiedGroupNameHash", .blob)
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.setAttachmentContentTypeFromMimeType) { tx in
+            // The __Attachment_contentType_au trigger mirrors contentType
+            // to MessageAttachmentReference, so it'll be updated as well.
+            try tx.database.execute(sql: """
+            UPDATE Attachment
+            SET contentType = CASE
+                WHEN mimeType IN (
+                    'video/3gpp',
+                    'video/3gpp2',
+                    'video/mp4',
+                    'video/quicktime',
+                    'video/x-m4v',
+                    'video/mpeg'
+                ) THEN 3
+                WHEN mimeType IN (
+                    'audio/aac',
+                    'audio/x-m4p',
+                    'audio/x-m4b',
+                    'audio/x-m4a',
+                    'audio/wav',
+                    'audio/x-wav',
+                    'audio/x-mpeg',
+                    'audio/mpeg',
+                    'audio/mp4',
+                    'audio/mp3',
+                    'audio/mpeg3',
+                    'audio/x-mp3',
+                    'audio/x-mpeg3',
+                    'audio/aiff',
+                    'audio/x-aiff',
+                    'audio/3gpp2',
+                    'audio/3gpp'
+                ) THEN 5
+                WHEN mimeType IN (
+                    'image/jpeg',
+                    'image/pjpeg',
+                    'image/png',
+                    'image/tiff',
+                    'image/x-tiff',
+                    'image/bmp',
+                    'image/x-windows-bmp',
+                    'image/heic',
+                    'image/heif',
+                    'image/webp',
+                    'image/gif',
+                    'image/apng',
+                    'image/vnd.mozilla.apng'
+                ) THEN 2
+                ELSE 1
+            END
+            """)
+
             return .success(())
         }
 

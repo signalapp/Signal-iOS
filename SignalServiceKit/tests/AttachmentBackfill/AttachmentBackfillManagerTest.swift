@@ -335,6 +335,7 @@ class AttachmentBackfillManagerTest: SSKBaseTest {
         return db.write { tx in
             var attachmentRecord = Attachment.Record.mockPointer()
             let referenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                attachmentRecord: attachmentRecord,
                 messageRowId: messageRowId,
                 threadRowId: threadRowId,
                 orderInMessage: orderInMessage,

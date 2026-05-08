@@ -22,7 +22,10 @@ extension AttachmentReference {
         let attachmentRowId: Int64
         @DBUInt64
         var receivedAtTimestamp: UInt64
-        let contentType: UInt32?
+        /// - Important
+        /// The underlying database column for this is nullable, but in practice
+        /// must always contain a non-NULL value.
+        let contentType: UInt32
         let renderingFlag: UInt32
         let idInMessage: String?
         let orderInMessage: UInt32?
@@ -112,7 +115,7 @@ extension AttachmentReference {
             case .bodyAttachment(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
-                self.contentType = metadata.contentType.map { UInt32($0.rawValue) }
+                self.contentType = metadata.contentType.rawValue
                 self.renderingFlag = UInt32(metadata.renderingFlag.rawValue)
                 self.idInMessage = metadata.idInOwner?.uuidString
                 self.orderInMessage = metadata.orderInMessage
@@ -125,7 +128,7 @@ extension AttachmentReference {
             case .oversizeText(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
-                self.contentType = metadata.contentType.map { UInt32($0.rawValue) }
+                self.contentType = metadata.contentType.rawValue
                 self.renderingFlag = UInt32(AttachmentReference.RenderingFlag.default.rawValue)
                 self.idInMessage = nil
                 self.orderInMessage = nil
@@ -139,7 +142,7 @@ extension AttachmentReference {
             case .linkPreview(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
-                self.contentType = metadata.contentType.map { UInt32($0.rawValue) }
+                self.contentType = metadata.contentType.rawValue
                 self.renderingFlag = UInt32(AttachmentReference.RenderingFlag.default.rawValue)
                 self.idInMessage = nil
                 self.orderInMessage = nil
@@ -153,7 +156,7 @@ extension AttachmentReference {
             case .quotedReply(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
-                self.contentType = metadata.contentType.map { UInt32($0.rawValue) }
+                self.contentType = metadata.contentType.rawValue
                 self.renderingFlag = UInt32(metadata.renderingFlag.rawValue)
                 self.idInMessage = nil
                 self.orderInMessage = nil
@@ -167,7 +170,7 @@ extension AttachmentReference {
             case .sticker(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
-                self.contentType = metadata.contentType.map { UInt32($0.rawValue) }
+                self.contentType = metadata.contentType.rawValue
                 self.renderingFlag = UInt32(AttachmentReference.RenderingFlag.default.rawValue)
                 self.idInMessage = nil
                 self.orderInMessage = nil
@@ -181,7 +184,7 @@ extension AttachmentReference {
             case .contactAvatar(let metadata):
                 self.ownerRowId = metadata.messageRowId
                 self._receivedAtTimestamp = DBUInt64(wrappedValue: metadata.receivedAtTimestamp)
-                self.contentType = metadata.contentType.map { UInt32($0.rawValue) }
+                self.contentType = metadata.contentType.rawValue
                 self.renderingFlag = UInt32(AttachmentReference.RenderingFlag.default.rawValue)
                 self.idInMessage = nil
                 self.orderInMessage = nil

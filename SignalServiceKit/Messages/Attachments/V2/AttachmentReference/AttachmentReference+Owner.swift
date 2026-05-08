@@ -97,19 +97,9 @@ extension AttachmentReference {
                 /// when we want to e.g. get all files sent on messages in a thread.
                 let threadRowId: Int64
 
-                // TODO: [Sasha, Attachments] This will become non-optional.
-                /// Validated type of the actual file content on disk, if we have it.
-                /// Mirrors `Attachment.contentType`.
-                ///
-                /// We _write_ and keep this value if available for all attachments,
-                /// but only _read_ it for:
-                /// * message body attachments
-                /// * quoted reply attachment (note some types are disallowed)
-                ///
-                /// Note: if you want to know if an attachment is, say, a video,
-                /// even if you are ok using the mimeType for that if undownloaded,
-                /// you must fetch the full attachment object and use its mimeType.
-                public let contentType: Attachment.ContentTypeRaw?
+                /// Mirrors the values of ``Attachment/contentType``, for the
+                /// referenced attachment, duplicated here for query purposes.
+                public let contentType: Attachment.ContentTypeRaw
 
                 /// True if the owning message's ``TSEditState`` is `pastRevision`.
                 public let isPastEditRevision: Bool
@@ -118,7 +108,7 @@ extension AttachmentReference {
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
-                    contentType: Attachment.ContentTypeRaw?,
+                    contentType: Attachment.ContentTypeRaw,
                     isPastEditRevision: Bool,
                 ) {
                     self.messageRowId = messageRowId
@@ -150,7 +140,7 @@ extension AttachmentReference {
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
-                    contentType: Attachment.ContentTypeRaw?,
+                    contentType: Attachment.ContentTypeRaw,
                     isPastEditRevision: Bool,
                     caption: String?,
                     renderingFlag: RenderingFlag,
@@ -181,7 +171,7 @@ extension AttachmentReference {
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
-                    contentType: Attachment.ContentTypeRaw?,
+                    contentType: Attachment.ContentTypeRaw,
                     isPastEditRevision: Bool,
                     renderingFlag: RenderingFlag,
                 ) {
@@ -205,7 +195,7 @@ extension AttachmentReference {
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
-                    contentType: Attachment.ContentTypeRaw?,
+                    contentType: Attachment.ContentTypeRaw,
                     isPastEditRevision: Bool,
                     stickerPackId: Data,
                     stickerId: UInt32,
@@ -345,12 +335,11 @@ extension AttachmentReference {
 extension AttachmentReference.Owner {
 
     static func validateAndBuild(record: AttachmentReference.MessageAttachmentReferenceRecord) throws -> AttachmentReference.Owner {
-        guard
-            let ownerType = AttachmentReference.MessageAttachmentReferenceRecord.OwnerType(
-                rawValue: record.ownerTypeRaw,
-            )
-        else {
-            throw OWSAssertionError("Invalid owner type")
+        guard let ownerType = AttachmentReference.MessageAttachmentReferenceRecord.OwnerType(rawValue: record.ownerTypeRaw) else {
+            throw OWSAssertionError("Invalid owner type! \(record.ownerTypeRaw)")
+        }
+        guard let contentType = Attachment.ContentTypeRaw(rawValue: record.contentType) else {
+            throw OWSAssertionError("Invalid content type! \(record.contentType)")
         }
 
         switch ownerType {
@@ -362,7 +351,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: record.contentType.flatMap { Attachment.ContentTypeRaw(rawValue: $0) },
+                contentType: contentType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
                 caption: record.caption,
                 renderingFlag: try .init(rawValue: record.renderingFlag),
@@ -375,7 +364,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: record.contentType.flatMap { Attachment.ContentTypeRaw(rawValue: $0) },
+                contentType: contentType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
             )))
         case .linkPreview:
@@ -383,7 +372,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: record.contentType.flatMap { Attachment.ContentTypeRaw(rawValue: $0) },
+                contentType: contentType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
             )))
         case .quotedReplyAttachment:
@@ -391,7 +380,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: record.contentType.flatMap { Attachment.ContentTypeRaw(rawValue: $0) },
+                contentType: contentType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
                 renderingFlag: try .init(rawValue: record.renderingFlag),
             )))
@@ -406,7 +395,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: record.contentType.flatMap { Attachment.ContentTypeRaw(rawValue: $0) },
+                contentType: contentType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
                 stickerPackId: stickerPackId,
                 stickerId: stickerId,
@@ -416,7 +405,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
-                contentType: record.contentType.flatMap { Attachment.ContentTypeRaw(rawValue: $0) },
+                contentType: contentType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
             )))
         }

@@ -2283,6 +2283,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     var attachmentRecord = Attachment.Record.forInsertingStream(
                         blurHash: pendingAttachment.blurHash,
                         mimeType: pendingAttachment.mimeType,
+                        contentType: pendingAttachment.contentType,
                         encryptionKey: pendingAttachment.encryptionKey,
                         streamInfo: streamInfo,
                         plaintextHash: pendingAttachment.plaintextHash,
@@ -2357,7 +2358,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     alreadyAssignedFirstReference = false
                 }
 
-                // Move all existing references to the new thumbnail stream.
                 let referencesToUpdate = alreadyAssignedFirstReference
                     ? references.suffix(max(references.count - 1, 0))
                     : references
@@ -2452,6 +2452,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     var attachmentRecord = Attachment.Record.forInsertingStream(
                         blurHash: pendingThumbnailAttachment.blurHash,
                         mimeType: pendingThumbnailAttachment.mimeType,
+                        contentType: pendingThumbnailAttachment.contentType,
                         encryptionKey: pendingThumbnailAttachment.encryptionKey,
                         streamInfo: streamInfo,
                         plaintextHash: pendingThumbnailAttachment.plaintextHash,

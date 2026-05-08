@@ -79,6 +79,7 @@ class AttachmentStoreTests: XCTestCase {
                 try attachmentIds.enumerated().forEach { index, id in
                     var attachmentParams = Attachment.Record.mockPointer()
                     let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                        attachmentRecord: attachmentParams,
                         messageRowId: messageId,
                         threadRowId: threadId,
                         orderInMessage: UInt32(index),
@@ -183,6 +184,7 @@ class AttachmentStoreTests: XCTestCase {
         let (threadId2, messageId2) = insertThreadAndInteraction()
         db.write { tx in
             let attachmentReferenceParams1 = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                attachmentRecord: attachmentParams1,
                 messageRowId: messageId1,
                 threadRowId: threadId1,
             )
@@ -202,6 +204,7 @@ class AttachmentStoreTests: XCTestCase {
             ).first!
 
             let attachmentReferenceParams2 = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                attachmentRecord: attachmentParams2,
                 messageRowId: messageId2,
                 threadRowId: threadId2,
             )
@@ -333,6 +336,7 @@ class AttachmentStoreTests: XCTestCase {
                 return try (0..<5).map { index in
                     let attachmentIdInOwner = UUID()
                     let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                        attachmentRecord: attachmentParams,
                         messageRowId: messageId,
                         threadRowId: threadId,
                         orderInMessage: UInt32(index),
@@ -374,12 +378,13 @@ class AttachmentStoreTests: XCTestCase {
         try db.write { tx in
             try threadIdAndMessageIds.forEach { threadId, messageId in
                 try (0..<5).forEach { index in
+                    var record = Attachment.Record.mockPointer()
                     let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                        attachmentRecord: record,
                         messageRowId: messageId,
                         threadRowId: threadId,
                         orderInMessage: UInt32(index),
                     )
-                    var record = Attachment.Record.mockPointer()
                     try attachmentStore.insert(
                         &record,
                         reference: attachmentReferenceParams,
@@ -584,6 +589,7 @@ class AttachmentStoreTests: XCTestCase {
         try db.write { tx in
             var attachmentParams = Attachment.Record.mockStream()
             let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                attachmentRecord: attachmentParams,
                 messageRowId: messageId,
                 threadRowId: threadId,
             )
@@ -654,6 +660,7 @@ class AttachmentStoreTests: XCTestCase {
             try attachmentStore.insert(
                 &attachmentParams,
                 reference: AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                    attachmentRecord: attachmentParams,
                     messageRowId: messageId1,
                     threadRowId: threadId1,
                 ),
@@ -662,6 +669,7 @@ class AttachmentStoreTests: XCTestCase {
             let attachmentId = tx.database.lastInsertedRowID
             attachmentStore.addReference(
                 AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                    attachmentRecord: attachmentParams,
                     messageRowId: messageId2,
                     threadRowId: threadId2,
                 ),
@@ -724,6 +732,7 @@ class AttachmentStoreTests: XCTestCase {
             try attachmentStore.insert(
                 &attachmentParams,
                 reference: AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                    attachmentRecord: attachmentParams,
                     messageRowId: messageId1,
                     threadRowId: threadId1,
                     orderInMessage: 0,
@@ -734,6 +743,7 @@ class AttachmentStoreTests: XCTestCase {
             let attachmentId = tx.database.lastInsertedRowID
             attachmentStore.addReference(
                 AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                    attachmentRecord: attachmentParams,
                     messageRowId: messageId1,
                     threadRowId: threadId1,
                     orderInMessage: 1,
@@ -885,6 +895,7 @@ class AttachmentStoreTests: XCTestCase {
                 try attachmentStore.insert(
                     &attachmentParams,
                     reference: AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                        attachmentRecord: attachmentParams,
                         messageRowId: messageRowId!,
                         threadRowId: threadRowId!,
                     ),

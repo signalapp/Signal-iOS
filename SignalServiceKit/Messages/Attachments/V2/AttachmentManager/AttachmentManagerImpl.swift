@@ -193,9 +193,11 @@ public class AttachmentManagerImpl: AttachmentManager {
             sourceFilename: sourceFilename,
         )
 
+        let contentType = Attachment.ContentTypeRaw(mimeType: mimeType)
         var attachmentRecord = Attachment.Record.forInsertingPointer(
             blurHash: proto.blurHash,
             mimeType: mimeType,
+            contentType: contentType,
             encryptionKey: transitTierInfo.encryptionKey,
             latestTransitTierInfo: transitTierInfo,
         )
@@ -215,8 +217,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             owner: owner.build(
                 knownIdInOwner: knownIdFromProto,
                 renderingFlag: .fromProto(proto),
-                // Not downloaded so we don't know the content type.
-                contentType: nil,
+                contentType: contentType,
                 // This should be unset for newly-incoming attachments, but it's
                 // still technically in the proto definition.
                 caption: proto.hasCaption ? proto.caption : nil,
@@ -338,6 +339,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             incrementalMacInfo = nil
         }
 
+        let contentType = Attachment.ContentTypeRaw(mimeType: mimeType)
         var attachmentRecord: Attachment.Record
         let sourceUnencryptedByteCount: UInt32?
 
@@ -366,6 +368,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 attachmentRecord = .forInsertingFromBackup(
                     blurHash: proto.blurHash.nilIfEmpty,
                     mimeType: mimeType,
+                    contentType: contentType,
                     encryptionKey: encryptionKey,
                     latestTransitTierInfo: transitTierInfo,
                     plaintextHash: plaintextHash,
@@ -391,6 +394,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                     attachmentRecord = .forInsertingFromBackup(
                         blurHash: proto.blurHash.nilIfEmpty,
                         mimeType: mimeType,
+                        contentType: contentType,
                         encryptionKey: encryptionKey,
                         latestTransitTierInfo: transitTierInfo,
                         plaintextHash: nil,
@@ -401,6 +405,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                     attachmentRecord = .forInsertingInvalidBackupAttachment(
                         blurHash: proto.blurHash.nilIfEmpty,
                         mimeType: mimeType,
+                        contentType: contentType,
                     )
                 }
             }
@@ -408,6 +413,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             attachmentRecord = .forInsertingInvalidBackupAttachment(
                 blurHash: proto.blurHash.nilIfEmpty,
                 mimeType: mimeType,
+                contentType: contentType,
             )
             sourceUnencryptedByteCount = nil
         }
@@ -418,8 +424,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 owner: ownedProto.owner.build(
                     knownIdInOwner: knownIdFromProto,
                     renderingFlag: ownedProto.renderingFlag,
-                    // Not downloaded so we don't know the content type.
-                    contentType: nil,
+                    contentType: contentType,
                     // Restored legacy attachments might have a caption.
                     caption: proto.hasCaption ? proto.caption : nil,
                 ),
@@ -615,6 +620,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             var attachmentRecord = Attachment.Record.forInsertingStream(
                 blurHash: pendingAttachment.blurHash,
                 mimeType: pendingAttachment.mimeType,
+                contentType: pendingAttachment.contentType,
                 encryptionKey: pendingAttachment.encryptionKey,
                 streamInfo: streamInfo,
                 plaintextHash: pendingAttachment.plaintextHash,
@@ -1026,6 +1032,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 thumbnailTransitTierInfo = nil
                 thumbnailEncryptionKey = originalAttachment.encryptionKey
             }
+            let thumbnailContentType = Attachment.ContentTypeRaw(mimeType: thumbnailMimeType)
 
             // Create a new attachment, but add foreign key reference to the original
             // so that when/if we download the original we can update this thumbnail'ed copy.
@@ -1033,6 +1040,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 originalAttachment: originalAttachment,
                 thumbnailBlurHash: thumbnailBlurHash,
                 thumbnailMimeType: thumbnailMimeType,
+                thumbnailContentType: thumbnailContentType,
                 thumbnailEncryptionKey: thumbnailEncryptionKey,
                 thumbnailTransitTierInfo: thumbnailTransitTierInfo,
             )
@@ -1040,7 +1048,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 owner: referenceOwner.build(
                     knownIdInOwner: .none,
                     renderingFlag: originalAttachmentSource.renderingFlag,
-                    contentType: nil,
+                    contentType: thumbnailContentType,
                 ),
                 sourceFilename: originalAttachmentSource.sourceFilename,
                 sourceUnencryptedByteCount: originalAttachmentSource.sourceUnencryptedByteCount,

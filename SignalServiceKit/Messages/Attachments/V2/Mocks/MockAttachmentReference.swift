@@ -25,10 +25,10 @@ extension AttachmentReference.ConstructionParams {
     }
 
     public static func mockMessageBodyAttachmentReference(
+        attachmentRecord: Attachment.Record,
         messageRowId: Int64,
         threadRowId: Int64,
         receivedAtTimestamp: UInt64 = Date().ows_millisecondsSince1970,
-        contentType: Attachment.ContentTypeRaw? = .image,
         caption: String? = nil,
         renderingFlag: AttachmentReference.RenderingFlag = .default,
         isViewOnce: Bool = false,
@@ -44,7 +44,7 @@ extension AttachmentReference.ConstructionParams {
                 messageRowId: messageRowId,
                 receivedAtTimestamp: receivedAtTimestamp,
                 threadRowId: threadRowId,
-                contentType: contentType,
+                contentType: Attachment.ContentTypeRaw(rawValue: attachmentRecord.contentType)!,
                 isPastEditRevision: isPastEditRevision,
                 caption: caption,
                 renderingFlag: renderingFlag,
@@ -62,7 +62,7 @@ extension AttachmentReference.ConstructionParams {
         messageRowId: Int64,
         threadRowId: Int64,
         receivedAtTimestamp: UInt64 = Date().ows_millisecondsSince1970,
-        contentType: Attachment.ContentTypeRaw? = .image,
+        contentType: Attachment.ContentTypeRaw = .image,
         isPastEditRevision: Bool = false,
         stickerPackId: Data = Data(repeating: 0, count: 16),
         stickerId: UInt32 = 0,

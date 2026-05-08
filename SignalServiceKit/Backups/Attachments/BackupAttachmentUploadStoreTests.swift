@@ -29,7 +29,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         db.write { tx in
             try! attachmentRecord.insert(tx.database)
             let reference = insertMessageAttachmentReferenceRecord(
-                attachmentRowId: attachmentRecord.sqliteId!,
+                attachmentRecord: attachmentRecord,
                 messageRowId: messageRowId,
                 threadRowId: threadRowId,
                 timestamp: 1234,
@@ -57,7 +57,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         // Re enqueue at a higher timestamp.
         db.write { tx in
             let reference = insertMessageAttachmentReferenceRecord(
-                attachmentRowId: attachmentRecord.sqliteId!,
+                attachmentRecord: attachmentRecord,
                 messageRowId: messageRowId,
                 threadRowId: threadRowId,
                 timestamp: 5678,
@@ -111,7 +111,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         // Re enqueue at an even higher timestamp.
         db.write { tx in
             let reference = insertMessageAttachmentReferenceRecord(
-                attachmentRowId: attachmentRecord.sqliteId!,
+                attachmentRecord: attachmentRecord,
                 messageRowId: messageRowId,
                 threadRowId: threadRowId,
                 timestamp: 9999,
@@ -148,7 +148,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 let reference: AttachmentReference = {
                     if let timestamp {
                         return insertMessageAttachmentReferenceRecord(
-                            attachmentRowId: attachmentRecord.sqliteId!,
+                            attachmentRecord: attachmentRecord,
                             messageRowId: messageRowId,
                             threadRowId: threadRowId,
                             timestamp: timestamp,
@@ -247,7 +247,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             db.write { tx in
                 try! attachmentRecord.insert(tx.database)
                 let reference: AttachmentReference = insertMessageAttachmentReferenceRecord(
-                    attachmentRowId: attachmentRecord.sqliteId!,
+                    attachmentRecord: attachmentRecord,
                     messageRowId: messageRowId,
                     threadRowId: threadRowId,
                     timestamp: timestamp,
@@ -338,14 +338,14 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
     }
 
     private func insertMessageAttachmentReferenceRecord(
-        attachmentRowId: Int64,
+        attachmentRecord: Attachment.Record,
         messageRowId: Int64,
         threadRowId: Int64,
         timestamp: UInt64,
         tx: DBWriteTransaction,
     ) -> AttachmentReference {
         let record = AttachmentReference.MessageAttachmentReferenceRecord(
-            attachmentRowId: attachmentRowId,
+            attachmentRowId: attachmentRecord.sqliteId!,
             sourceFilename: nil,
             sourceUnencryptedByteCount: nil,
             sourceMediaSizePixels: nil,
@@ -353,7 +353,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 messageRowId: messageRowId,
                 receivedAtTimestamp: timestamp,
                 threadRowId: threadRowId,
-                contentType: nil,
+                contentType: Attachment.ContentTypeRaw(rawValue: attachmentRecord.contentType)!,
                 isPastEditRevision: false,
             )),
         )
