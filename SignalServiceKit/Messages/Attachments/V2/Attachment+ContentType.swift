@@ -15,10 +15,6 @@ extension Attachment {
     /// isInvalidOrFileContentType respectively. These columns must be redefined if the raw
     /// values of this enum change, and might need to be redefined if new cases are added.
     public enum ContentType: UInt32 {
-        /// MIME type indicated it should be some other non-file type but validation failed.
-        /// Inspect ``Attachment/mimeType`` to determine what type it tried to be.
-        case invalid = 0
-        /// Some arbitrary file. Used when no other case applies.
         case file = 1
         case image = 2
         case video = 3

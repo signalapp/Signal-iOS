@@ -114,7 +114,7 @@ class CVMediaView: ManualLayoutViewWithLayer {
                 configureForLoopingVideo(attachmentStream: attachmentStream)
             case .video:
                 configureForVideo(attachmentStream: attachmentStream)
-            case .audio, .file, .invalid:
+            case .audio, .file:
                 owsFailDebug("Attachment has unexpected type.")
                 configureForError(attachment: attachmentStream.attachment)
             }

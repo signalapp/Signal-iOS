@@ -152,7 +152,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
         quality: AttachmentThumbnailQuality,
     ) -> ThumbnailSpec {
         switch attachmentStream.contentType {
-        case .invalid, .file, .audio:
+        case .file, .audio:
             return .cannotGenerate
 
         case .video:

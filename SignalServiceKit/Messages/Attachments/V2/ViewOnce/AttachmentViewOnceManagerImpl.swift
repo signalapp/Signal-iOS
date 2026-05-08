@@ -67,7 +67,7 @@ public class AttachmentViewOnceManagerImpl: AttachmentViewOnceManager {
 
         let viewOnceType: ViewOnceContent.ContentType
         switch attachmentStream.attachmentStream.contentType {
-        case .file, .invalid, .audio:
+        case .file, .audio:
             owsFailDebug("Unexpected content type.")
             return nil
         case .animatedImage:

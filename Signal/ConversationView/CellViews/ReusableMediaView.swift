@@ -541,7 +541,7 @@ public class MediaViewAdapterSticker: MediaViewAdapter {
         switch attachmentStream.contentType {
         case .image, .animatedImage:
             break
-        case .video, .audio, .file, .invalid:
+        case .video, .audio, .file:
             throw ReusableMediaError.invalidMedia
         }
         if shouldBeRenderedByYY {

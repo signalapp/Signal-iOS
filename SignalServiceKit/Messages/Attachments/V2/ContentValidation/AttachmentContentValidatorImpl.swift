@@ -437,13 +437,6 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         // Precompute some properties for this attachment, depending on what
         // type we think it is.
         switch Attachment.ContentType(mimeType: input.mimeType) {
-        case .invalid:
-            blurHash = nil
-            mediaPixelSize = nil
-            videoDuration = nil
-            videoStillFramePendingFile = nil
-            audioDuration = nil
-            audioWaveformPendingFile = nil
         case .file:
             blurHash = nil
             mediaPixelSize = nil

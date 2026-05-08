@@ -407,7 +407,7 @@ private extension CVComponentViewOnce {
         switch viewOnceState {
         case let .incomingAvailable(attachmentStream, _):
             switch attachmentStream.contentType {
-            case .file, .invalid, .audio:
+            case .file, .audio:
                 owsFailDebug("Invalid view once type")
                 return .unknown
             case .image:

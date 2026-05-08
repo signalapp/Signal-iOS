@@ -891,7 +891,7 @@ class StoryItemMediaView: UIView {
                 let imageView = buildImageView(attachment: stream.attachment.attachmentStream)
                 container.addSubview(imageView)
                 imageView.autoPinEdgesToSuperviewEdges()
-            case .audio, .file, .invalid:
+            case .audio, .file:
                 owsFailDebug("Unexpected content type.")
                 return buildContentUnavailableView()
             }

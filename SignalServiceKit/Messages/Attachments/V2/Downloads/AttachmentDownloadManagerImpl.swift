@@ -822,7 +822,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 switch Attachment.ContentType(mimeType: attachment.mimeType) {
                 case .image, .animatedImage:
                     maxDownloadSizeBytes = attachmentLimits.maxEncryptedImageBytes
-                case .audio, .video, .file, .invalid:
+                case .audio, .video, .file:
                     maxDownloadSizeBytes = attachmentLimits.maxEncryptedBytes
                 }
             case .mediaTierFullsize:

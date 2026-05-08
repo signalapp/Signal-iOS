@@ -23,7 +23,7 @@ enum AttachmentSaving {
             let attachmentStream = referencedAttachmentStream.attachmentStream
 
             switch attachmentStream.contentType {
-            case .invalid, .audio, .file:
+            case .audio, .file:
                 return
             case .image, .animatedImage, .video:
                 break
@@ -38,7 +38,7 @@ enum AttachmentSaving {
             }
 
             switch attachmentStream.contentType {
-            case .invalid, .audio, .file:
+            case .audio, .file:
                 owsFail("Impossible: checked above!")
             case .image, .animatedImage:
                 result.append(.imageTempFile(tmpFileUrl: decryptedFileUrl))

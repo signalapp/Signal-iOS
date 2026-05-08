@@ -57,7 +57,7 @@ public class ContactShareViewModel: NSObject {
         {
             let avatarImageData: Data?
             switch avatarAttachment.attachmentStream.contentType {
-            case .file, .invalid, .video, .animatedImage, .audio:
+            case .file, .video, .animatedImage, .audio:
                 avatarImageData = nil
             case .image:
                 avatarImageData = try? avatarAttachment.attachmentStream.decryptedRawData()

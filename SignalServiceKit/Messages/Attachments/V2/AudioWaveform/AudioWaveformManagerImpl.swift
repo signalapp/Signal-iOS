@@ -24,7 +24,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         highPriority: Bool,
     ) -> Task<AudioWaveform, Error> {
         switch attachmentStream.contentType {
-        case .invalid, .file, .image, .video, .animatedImage:
+        case .file, .image, .video, .animatedImage:
             return Task {
                 throw OWSAssertionError("Unexpected contentType for audio waveform! \(attachmentStream.contentType)")
             }

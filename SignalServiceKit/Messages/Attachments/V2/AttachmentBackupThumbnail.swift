@@ -64,7 +64,7 @@ public class AttachmentBackupThumbnail {
         }
 
         switch stream.contentType {
-        case .invalid, .file, .audio:
+        case .file, .audio:
             return false
         case .image:
             // If the image itself is small enough to fit the thumbnail

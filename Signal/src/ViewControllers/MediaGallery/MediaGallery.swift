@@ -89,7 +89,7 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         switch attachmentStream.attachmentStream.contentType {
         case .video:
             return renderingFlag != .shouldLoop
-        case .file, .invalid, .image, .animatedImage, .audio:
+        case .file, .image, .animatedImage, .audio:
             return false
         }
     }
@@ -100,7 +100,7 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
             return true
         case .video:
             return renderingFlag == .shouldLoop
-        case .file, .invalid, .image, .audio:
+        case .file, .image, .audio:
             return false
         }
     }
@@ -109,7 +109,7 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         switch attachmentStream.attachmentStream.contentType {
         case .image:
             return true
-        case .file, .invalid, .video, .animatedImage, .audio:
+        case .file, .video, .animatedImage, .audio:
             return false
         }
     }

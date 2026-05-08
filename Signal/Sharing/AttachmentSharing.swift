@@ -210,12 +210,6 @@ public class ShareableAttachment: NSObject, UIActivityItemSource {
                 return nil
             }
             self.shareType = .decryptedFileURL(decryptedFileUrl)
-        case .invalid:
-            // Let the user try to share as long as its a visual mime type.
-            guard MimeTypeUtil.isSupportedVisualMediaMimeType(attachmentStream.mimeType) else {
-                return nil
-            }
-            self.shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy(filename: sourceFilename))
         }
     }
 

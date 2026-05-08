@@ -27,7 +27,7 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 if !MimeTypeUtil.isSupportedImageMimeType(item.attachment.attachment.attachment.mimeType) {
                     return false
                 }
-            case .video, .audio, .file, .invalid:
+            case .video, .audio, .file:
                 return false
             }
         }
@@ -610,8 +610,6 @@ extension CVComponentBodyMedia: CVAccessibilityComponent {
         switch mediaItem.attachment {
         case .stream(let referencedAttachmentStream, isUploading: _):
             switch referencedAttachmentStream.attachmentStream.contentType {
-            case .invalid:
-                return genericMediaString
             case .file:
                 return CommonStrings.attachmentTypeFile
             case .image:
