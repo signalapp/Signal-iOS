@@ -267,6 +267,7 @@ public struct AttachmentStore {
             SELECT *
             FROM \(MessageAttachmentReferenceRecord.databaseTableName)
             WHERE \(Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId).name) = ?
+            ORDER BY \(Column(MessageAttachmentReferenceRecord.CodingKeys.orderInMessage).name) ASC
         """
 
         let referenceRecords = failIfThrows {
