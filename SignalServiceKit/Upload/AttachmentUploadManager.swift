@@ -1150,7 +1150,6 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         let tmpDecryptedFile = fileSystem.temporaryFileUrl()
         let decryptionMedatata = DecryptionMetadata(
             key: try AttachmentKey(combinedKey: attachmentStream.attachment.encryptionKey),
-            // No need to validate for an already-validated stream
             integrityCheck: .plaintextHash(attachmentStream.plaintextHash),
             plaintextLength: UInt64(safeCast: attachmentStream.unencryptedByteCount),
         )
