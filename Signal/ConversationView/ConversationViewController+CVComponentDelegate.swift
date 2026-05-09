@@ -972,11 +972,7 @@ extension ConversationViewController: CVComponentDelegate {
     }
 
     public func didTapGroupMigrationLearnMore() {
-        AssertIsOnMainThread()
-        presentFormSheet(
-            LegacyGroupLearnMoreViewController(mode: .explainNewGroups),
-            animated: true,
-        )
+        LegacyGroupLearnMoreUI.presentActionSheet(for: .explainNewGroups, from: self)
     }
 
     public func didTapGroupInviteLinkPromotion(groupModel: TSGroupModel) {

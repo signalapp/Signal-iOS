@@ -162,10 +162,8 @@ public extension ConversationViewController {
             let legacyGroupView = BlockingErrorBottomPanelView(
                 text: blockingLegacyGroupText(),
                 onTap: { [weak self] in
-                    self?.presentFormSheet(
-                        LegacyGroupLearnMoreViewController(mode: .explainUnsupportedLegacyGroups),
-                        animated: true,
-                    )
+                    guard let self else { return }
+                    LegacyGroupLearnMoreUI.presentActionSheet(for: .explainUnsupportedLegacyGroups, from: self)
                 },
             )
             requestView = legacyGroupView

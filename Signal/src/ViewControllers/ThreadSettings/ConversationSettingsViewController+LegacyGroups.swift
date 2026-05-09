@@ -75,10 +75,55 @@ class LegacyGroupView: UIView {
             owsFailDebug("Missing viewController.")
             return
         }
+        LegacyGroupLearnMoreUI.presentActionSheet(for: .explainUnsupportedLegacyGroups, from: viewController)
+    }
+}
 
-        viewController.presentFormSheet(
-            LegacyGroupLearnMoreViewController(mode: .explainUnsupportedLegacyGroups),
-            animated: true,
+enum LegacyGroupLearnMoreUI {
+
+    enum Mode {
+        case explainUnsupportedLegacyGroups
+        case explainNewGroups
+
+        var titleString: String {
+            switch self {
+            case .explainUnsupportedLegacyGroups:
+                return OWSLocalizedString(
+                    "LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE",
+                    comment: "Title for a sheet explaining details about 'Legacy Groups'.",
+                )
+            case .explainNewGroups:
+                return OWSLocalizedString(
+                    "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE",
+                    comment: "Title for a sheet explaining details about 'New Groups'.",
+                )
+            }
+        }
+
+        var bodyString: String {
+            switch self {
+            case .explainUnsupportedLegacyGroups:
+                return OWSLocalizedString(
+                    "LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY",
+                    comment: "Text in a sheet explaining details about 'Legacy Groups'.",
+                )
+            case .explainNewGroups:
+                return OWSLocalizedString(
+                    "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY",
+                    comment: "Text in a sheet explaining details about 'New Groups'.",
+                )
+            }
+        }
+    }
+
+    static func presentActionSheet(for mode: Mode, from viewController: UIViewController) {
+        let actionSheet = ActionSheetController(title: mode.titleString, message: mode.bodyString)
+        actionSheet.addAction(
+            ActionSheetAction(
+                title: CommonStrings.okayButton,
+                style: .cancel,
+            ),
         )
+        viewController.present(actionSheet, animated: true)
     }
 }

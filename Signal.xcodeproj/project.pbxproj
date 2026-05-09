@@ -3192,7 +3192,6 @@
 		D9C2D77E299D750200D79715 /* UsernameEducationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */; };
 		D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */; };
 		D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */; };
-		D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C30DDA2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift */; };
 		D9C42C2F2B6C60600086B142 /* CallRecordDeleteManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C42C2E2B6C60600086B142 /* CallRecordDeleteManagerTest.swift */; };
 		D9C42C332B6C66320086B142 /* MockCallRecordDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C42C322B6C66320086B142 /* MockCallRecordDeleteManager.swift */; };
 		D9C4C0852E0A75F200B74696 /* BackupAttachmentUploadEraStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C4C0842E0A75EF00B74696 /* BackupAttachmentUploadEraStore.swift */; };
@@ -7492,7 +7491,6 @@
 		D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationManager.swift; sourceTree = "<group>"; };
 		D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUsernameMegaphone.swift; sourceTree = "<group>"; };
 		D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameSelectionCoordinator.swift; sourceTree = "<group>"; };
-		D9C30DDA2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyGroupLearnMoreViewController.swift; sourceTree = "<group>"; };
 		D9C42C2E2B6C60600086B142 /* CallRecordDeleteManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordDeleteManagerTest.swift; sourceTree = "<group>"; };
 		D9C42C322B6C66320086B142 /* MockCallRecordDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallRecordDeleteManager.swift; sourceTree = "<group>"; };
 		D9C4C0842E0A75EF00B74696 /* BackupAttachmentUploadEraStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadEraStore.swift; sourceTree = "<group>"; };
@@ -9402,7 +9400,6 @@
 				327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */,
 				340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */,
 				3490D57C25ADDC2900F5F96C /* GroupLinkPromotionActionSheet.swift */,
-				D9C30DDA2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift */,
 				76C87FE028BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift */,
 				88A9729322FB4D02004B4FBF /* LocationPicker.swift */,
 				3496744E2076ACCE00080B5F /* LongTextViewController.swift */,
@@ -18522,7 +18519,6 @@
 				5045F44229E0DB7100058E5F /* LaunchJobs.swift in Sources */,
 				502F187F2D5530AA00A1BD62 /* LazyDatabaseMigratorRunner.swift in Sources */,
 				D92CA9EF2F500EA500FDE32D /* LeaveGroupCoordinator.swift in Sources */,
-				D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */,
 				B9E02DF02D974F2B00C9DDF8 /* LimitedPhotoPermissionsView.swift in Sources */,
 				B97803012DD65B0A00E9FC82 /* LinearProgressView.swift in Sources */,
 				66F98DE82DBBF25A009F1A86 /* LineWrappingStackViewTestController.swift in Sources */,
