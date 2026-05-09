@@ -2693,7 +2693,6 @@
 		D9247EAA2BFD424800DFEF6F /* InteractionDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9247EA92BFD424800DFEF6F /* InteractionDeleteManager.swift */; };
 		D925937A28B0497900D5D437 /* LocalUserLeaveGroupJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */; };
 		D925C7BB2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925C7BA2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift */; };
-		D925F5512983399D00158EE4 /* CircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F5502983399D00158EE4 /* CircleButton.swift */; };
 		D925F55D298C6A7D00158EE4 /* UsernameLookupRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F557298B39D800158EE4 /* UsernameLookupRecord.swift */; };
 		D925F55F298C743E00158EE4 /* UsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F55E298C743E00158EE4 /* UsernameLookupManager.swift */; };
 		D925F560298D8F9400158EE4 /* Usernames+UsernameLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F552298349EF00158EE4 /* Usernames+UsernameLink.swift */; };
@@ -6982,7 +6981,6 @@
 		D9247EA92BFD424800DFEF6F /* InteractionDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionDeleteManager.swift; sourceTree = "<group>"; };
 		D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJob.swift; sourceTree = "<group>"; };
 		D925C7BA2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingCallLogEventSyncMessageTest.swift; sourceTree = "<group>"; };
-		D925F5502983399D00158EE4 /* CircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleButton.swift; sourceTree = "<group>"; };
 		D925F552298349EF00158EE4 /* Usernames+UsernameLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+UsernameLink.swift"; sourceTree = "<group>"; };
 		D925F55429834BC900158EE4 /* Usernames+UsernameLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+UsernameLinkTests.swift"; sourceTree = "<group>"; };
 		D925F557298B39D800158EE4 /* UsernameLookupRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupRecord.swift; sourceTree = "<group>"; };
@@ -9144,7 +9142,6 @@
 				34A95545271B510400B05242 /* AvatarImageView.swift */,
 				760981872936DE90008F8300 /* BezierPathView.swift */,
 				83B9573827C9A1FA00A678FD /* CaptchaView.swift */,
-				D925F5502983399D00158EE4 /* CircleButton.swift */,
 				34A9553F271B510400B05242 /* CircleView.swift */,
 				764D8C232F72029100DA82B8 /* CircularProgressView.swift */,
 				76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */,
@@ -17796,7 +17793,6 @@
 				5073EACD2C4F45F2001FBB3E /* CallLink.swift in Sources */,
 				5073EACF2C4F469A001FBB3E /* CallLinkFetcher.swift in Sources */,
 				83B9573927C9A1FA00A678FD /* CaptchaView.swift in Sources */,
-				D925F5512983399D00158EE4 /* CircleButton.swift in Sources */,
 				3402AA9D271D9E180084CBAE /* CircleView.swift in Sources */,
 				76BC91EC2F883C0000BE569B /* CircularProgressView.swift in Sources */,
 				34A954E0271B4F3E00B05242 /* ColorOrGradient+SignalUI.swift in Sources */,
