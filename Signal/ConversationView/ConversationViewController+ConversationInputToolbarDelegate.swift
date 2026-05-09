@@ -253,6 +253,20 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         cancelRecordingVoiceMessage()
     }
 
+    public func voiceMemoGestureDidPause() {
+        AssertIsOnMainThread()
+        Logger.info("")
+
+        pauseRecordingVoiceMessage()
+    }
+
+    public func voiceMemoGestureDidResume() {
+        AssertIsOnMainThread()
+        Logger.info("")
+
+        resumeRecordingVoiceMessage()
+    }
+
     public func voiceMemoGestureWasInterrupted() {
         AssertIsOnMainThread()
         Logger.info("")
