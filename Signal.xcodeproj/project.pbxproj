@@ -215,7 +215,6 @@
 		3402AA7C271D9E180084CBAE /* ContactsViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9551E271B510400B05242 /* ContactsViewHelper.swift */; };
 		3402AA7D271D9E180084CBAE /* ImageEditorContents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9555F271B510400B05242 /* ImageEditorContents.swift */; };
 		3402AA7F271D9E180084CBAE /* LinkingTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95529271B510400B05242 /* LinkingTextView.swift */; };
-		3402AA80271D9E180084CBAE /* TappableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95532271B510400B05242 /* TappableView.swift */; };
 		3402AA82271D9E180084CBAE /* DisappearingTimerConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9551F271B510400B05242 /* DisappearingTimerConfigurationView.swift */; };
 		3402AA83271D9E180084CBAE /* OWSFlatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95511271B510400B05242 /* OWSFlatButton.swift */; };
 		3402AA87271D9E180084CBAE /* CVCellMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95523271B510400B05242 /* CVCellMeasurement.swift */; };
@@ -4592,7 +4591,6 @@
 		34A9552D271B510400B05242 /* BodyRangesTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyRangesTextView.swift; sourceTree = "<group>"; };
 		34A9552F271B510400B05242 /* LoopingVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopingVideoView.swift; sourceTree = "<group>"; };
 		34A95530271B510400B05242 /* OWSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSButton.swift; sourceTree = "<group>"; };
-		34A95532271B510400B05242 /* TappableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TappableView.swift; sourceTree = "<group>"; };
 		34A95535271B510400B05242 /* OWSBubbleShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSBubbleShapeView.swift; sourceTree = "<group>"; };
 		34A95536271B510400B05242 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
 		34A95538271B510400B05242 /* OWSLayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLayerView.swift; sourceTree = "<group>"; };
@@ -9170,7 +9168,6 @@
 				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
 				763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */,
 				766BCA7C29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift */,
-				34A95532271B510400B05242 /* TappableView.swift */,
 				885275BF27E26775003F2F9B /* TextAttachmentView.swift */,
 				764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */,
 				34A9553E271B510400B05242 /* TextViewWithPlaceholder.swift */,
@@ -17979,7 +17976,6 @@
 				3402A9DA271D953B0084CBAE /* SUIEnvironment.swift in Sources */,
 				B9D721762C87B8EB007EDA85 /* SwiftUI+Animations.swift in Sources */,
 				3407BB4B271D9DCD0084CBAF /* TablePreviewViewController.swift in Sources */,
-				3402AA80271D9E180084CBAE /* TappableView.swift in Sources */,
 				B99288002CF124AC000D62C4 /* Text+Links.swift in Sources */,
 				3402AA31271D9DCD0084CBAE /* TextApprovalViewController.swift in Sources */,
 				88B6D673280770C4005D86EC /* TextAttachmentView.swift in Sources */,
