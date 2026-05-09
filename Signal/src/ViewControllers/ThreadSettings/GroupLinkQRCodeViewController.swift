@@ -3,13 +3,22 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import BonMot
 import SignalServiceKit
-public import SignalUI
+import SignalUI
 
-public class GroupLinkQRCodeViewController: OWSViewController {
+class GroupLinkQRCodeViewController: OWSViewController {
 
-    private var groupModelV2: TSGroupModelV2
+    private let groupModelV2: TSGroupModelV2
+
+    private lazy var shareCodeButton = UIButton(
+        configuration: .largePrimary(title: OWSLocalizedString(
+            "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON",
+            comment: "Label for the 'share code' button in the 'group link QR code' view.",
+        )),
+        primaryAction: UIAction { [weak self] _ in
+            self?.didTapShareCode()
+        },
+    )
 
     init(groupModelV2: TSGroupModelV2) {
         self.groupModelV2 = groupModelV2
@@ -19,78 +28,67 @@ public class GroupLinkQRCodeViewController: OWSViewController {
 
     // MARK: - View Lifecycle
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString(
             "GROUP_LINK_QR_CODE_VIEW_TITLE",
             comment: "The title for the 'group link QR code' view.",
         )
-        view.backgroundColor = Theme.backgroundColor
-
-        createContents()
-    }
-
-    // MARK: -
-
-    private func createContents() {
+        view.backgroundColor = .Signal.groupedBackground
 
         let qrCodeView = QRCodeView()
-        qrCodeView.autoPinToSquareAspectRatio()
-
         do {
             let inviteLinkUrl = try groupModelV2.groupInviteLinkUrl()
-
             qrCodeView.setQRCode(url: inviteLinkUrl)
         } catch {
             owsFailDebug("error \(error)")
         }
+        let qrCodeViewContainer = UIView.container()
+        qrCodeViewContainer.addSubview(qrCodeView)
+        qrCodeView.translatesAutoresizingMaskIntoConstraints = false
+        // Allow container to grow in width, keeping QRCode view square,
+        // centered horizontally and pinned to top and bottom edges.
+        NSLayoutConstraint.activate([
+            qrCodeView.widthAnchor.constraint(equalTo: qrCodeView.heightAnchor),
+
+            qrCodeView.topAnchor.constraint(equalTo: qrCodeViewContainer.topAnchor),
+            qrCodeView.bottomAnchor.constraint(equalTo: qrCodeViewContainer.bottomAnchor),
+
+            qrCodeView.leadingAnchor.constraint(greaterThanOrEqualTo: qrCodeViewContainer.leadingAnchor),
+            qrCodeView.centerXAnchor.constraint(equalTo: qrCodeViewContainer.centerXAnchor),
+        ])
 
         let descriptionLabel = UILabel()
         descriptionLabel.text = OWSLocalizedString(
             "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION",
             comment: "Description text in the 'group link QR code' view.",
         )
-        descriptionLabel.textColor = Theme.secondaryTextAndIconColor
+        descriptionLabel.textColor = .Signal.secondaryLabel
         descriptionLabel.font = .dynamicTypeFootnote
         descriptionLabel.textAlignment = .center
         descriptionLabel.numberOfLines = 0
         descriptionLabel.lineBreakMode = .byWordWrapping
+        descriptionLabel.setContentHuggingVerticalHigh()
 
-        let shareCodeButton = OWSFlatButton.button(
-            title: OWSLocalizedString(
-                "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON",
-                comment: "Label for the 'share code' button in the 'group link QR code' view.",
-            ),
-            font: UIFont.dynamicTypeHeadline,
-            titleColor: .white,
-            backgroundColor: .ows_accentBlue,
-            target: self,
-            selector: #selector(didTapShareCode),
-        )
-        shareCodeButton.autoSetHeightUsingFont()
-
-        let vSpacer1 = UIView.vStretchingSpacer()
-        let vSpacer2 = UIView.vStretchingSpacer()
-        let stackView = UIStackView(arrangedSubviews: [
-            vSpacer1,
-            qrCodeView,
-            UIView.spacer(withHeight: 24),
+        let spacer1 = UIView.transparentSpacer()
+        let spacer2 = UIView.transparentSpacer()
+        let stackView = addStaticContentStackView(arrangedSubviews: [
+            spacer1,
+            qrCodeViewContainer,
             descriptionLabel,
-            vSpacer2,
-            shareCodeButton,
+            spacer2,
+            shareCodeButton.enclosedInVerticalStackView(isFullWidthButton: true),
         ])
         stackView.axis = .vertical
-        stackView.alignment = .fill
-        view.addSubview(stackView)
-        stackView.autoPinWidthToSuperviewMargins()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        stackView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-        vSpacer1.autoPinHeight(toHeightOf: vSpacer2)
+        stackView.setCustomSpacing(20, after: qrCodeViewContainer)
+
+        NSLayoutConstraint.activate([
+            spacer1.heightAnchor.constraint(equalTo: spacer2.heightAnchor),
+        ])
     }
 
-    @objc
-    private func didTapShareCode(_ sender: UIButton) {
+    private func didTapShareCode() {
         do {
             guard
                 let qrCodeImage = QRCodeGenerator().generateQRCode(
@@ -116,7 +114,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
             )
             try imageData.write(to: fileUrl)
 
-            AttachmentSharing.showShareUI(for: fileUrl, sender: sender)
+            AttachmentSharing.showShareUI(for: fileUrl, sender: shareCodeButton)
         } catch {
             owsFailDebug("error \(error)")
         }
