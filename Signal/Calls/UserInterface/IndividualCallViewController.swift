@@ -942,7 +942,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         let permissionErrorView = PermissionErrorView(
             thread: self.thread,
             contactManager: SSKEnvironment.shared.contactManagerRef,
-            okayButtonWasTapped: { [weak self] in self?.dismissImmediately() },
+            okayButtonAction: UIAction { [weak self] _ in self?.dismissImmediately() },
         )
         view.addSubview(permissionErrorView)
         permissionErrorView.autoPinWidthToSuperview(withMargin: 16)
@@ -1346,13 +1346,12 @@ extension IndividualCallViewController: CallServiceStateObserver {
 }
 
 private class PermissionErrorView: UIView {
-    private lazy var okayButton: OWSFlatButton = {
-        let okayButton = OWSFlatButton()
-        okayButton.useDefaultCornerRadius()
-        okayButton.setTitle(title: CommonStrings.okayButton, font: UIFont.dynamicTypeHeadline, titleColor: Theme.accentBlueColor)
-        okayButton.setBackgroundColors(upColor: .ows_gray05)
-        okayButton.contentEdgeInsets = UIEdgeInsets(top: 13, left: 34, bottom: 13, right: 34)
-        return okayButton
+    private lazy var okayButton: UIButton = {
+        let button = UIButton(configuration: .largePrimary(title: CommonStrings.okayButton), primaryAction: nil)
+        button.configuration?.baseBackgroundColor = .Signal.primaryFill
+        button.configuration?.contentInsets.leading = 34
+        button.configuration?.contentInsets.trailing = 34
+        return button
     }()
 
     private lazy var contactAvatarView: ConversationAvatarView = {
@@ -1400,19 +1399,21 @@ private class PermissionErrorView: UIView {
     init(
         thread: TSContactThread,
         contactManager: ContactManager,
-        okayButtonWasTapped: @escaping () -> Void,
+        okayButtonAction: UIAction,
     ) {
         self.thread = thread
         self.contactManager = contactManager
 
         super.init(frame: .zero)
 
+        overrideUserInterfaceStyle = .dark
+
         self.addSubview(contactAvatarView)
         contactAvatarView.autoSetDimension(.height, toSize: 200)
 
         self.addSubview(needPermissionLabel)
 
-        okayButton.setPressedBlock(okayButtonWasTapped)
+        okayButton.addAction(okayButtonAction, for: .primaryActionTriggered)
         self.addSubview(okayButton)
 
         contactAvatarView.translatesAutoresizingMaskIntoConstraints = false
