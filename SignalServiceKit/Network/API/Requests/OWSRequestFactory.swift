@@ -10,7 +10,6 @@ public enum OWSRequestFactory {
 
     static let textSecureAccountsAPI = "v1/accounts"
     static let textSecureAttributesAPI = "v1/accounts/attributes/"
-    static let textSecureMessagesAPI = "v1/messages/"
     static let textSecureKeysAPI = "v2/keys"
     static let textSecureSignedKeysAPI = "v2/keys/signed"
     static let textSecureDirectoryAPI = "v1/directory"
@@ -93,38 +92,6 @@ public enum OWSRequestFactory {
     static func accountRequest(serviceId: ServiceId) -> TSRequest {
         var request = TSRequest(url: URL(string: "v1/accounts/account/\(serviceId.serviceIdString)")!, method: "HEAD")
         request.auth = .anonymous
-        return request
-    }
-
-    static func submitMessageRequest(
-        serviceId: ServiceId,
-        messages: [DeviceMessage],
-        timestamp: UInt64,
-        isOnline: Bool,
-        isUrgent: Bool,
-        auth: TSRequest.SealedSenderAuth?,
-    ) -> TSRequest {
-        // NOTE: messages may be empty; See comments in OWSDeviceManager.
-        owsAssertDebug(timestamp > 0)
-
-        let path = "\(self.textSecureMessagesAPI)\(serviceId.serviceIdString)?story=\(auth?.isStory == true ? "true" : "false")"
-
-        // Returns the per-account-message parameters used when submitting a message to
-        // the Signal Web Service.
-        // See
-        // <https://github.com/signalapp/Signal-Server/blob/65da844d70369cb8b44966cfb2d2eb9b925a6ba4/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java>.
-        let parameters: [String: Any] = [
-            "messages": messages.map { $0.requestParameters() },
-            "timestamp": timestamp,
-            "online": isOnline,
-            "urgent": isUrgent,
-        ]
-
-        var request = TSRequest(url: URL(string: path)!, method: "PUT", parameters: parameters)
-        request.timeoutInterval = sendMessageTimeout(estimatedRequestSize: messages.reduce(into: 0, { $0 += $1.content.count + 50 }) + 100)
-        if let auth {
-            request.auth = .sealedSender(auth)
-        }
         return request
     }
 
@@ -584,13 +551,15 @@ public enum OWSRequestFactory {
 extension DeviceMessage {
     /// Returns the per-device-message parameters when sending a message.
     ///
+    /// Note: This API is (currently) used only when changing your number.
+    ///
     /// See <https://github.com/signalapp/Signal-Server/blob/ab26a65/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessage.java>.
     func requestParameters() -> NSDictionary {
         return [
-            "type": type.rawValue,
-            "destinationDeviceId": destinationDeviceId.uint32Value,
-            "destinationRegistrationId": Int32(bitPattern: destinationRegistrationId),
-            "content": content.base64EncodedString(),
+            "type": self.type.rawValue,
+            "destinationDeviceId": self.deviceId.uint32Value,
+            "destinationRegistrationId": Int32(bitPattern: self.registrationId),
+            "content": self.content.base64EncodedString(),
         ]
     }
 }

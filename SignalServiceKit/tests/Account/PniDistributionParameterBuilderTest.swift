@@ -35,12 +35,11 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     }
 
     private func buildDeviceMessage(deviceId: DeviceId, registrationId: UInt32) -> DeviceMessage {
-        return DeviceMessage(
-            type: .ciphertext,
-            destinationDeviceId: deviceId,
-            destinationRegistrationId: registrationId,
-            content: Data(),
-        )
+        return .unsealed(SingleOutboundUnsealedMessage(
+            deviceId: deviceId,
+            registrationId: registrationId,
+            contents: CiphertextMessage(try! PlaintextContent(bytes: [0xC0])),
+        ))
     }
 
     func testBuildParametersHappyPath() async throws {
@@ -76,8 +75,8 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         )
 
         XCTAssertEqual(parameters.deviceMessages.count, 1)
-        XCTAssertEqual(parameters.deviceMessages.first?.destinationDeviceId, DeviceId(validating: 123)!)
-        XCTAssertEqual(parameters.deviceMessages.first?.destinationRegistrationId, 456)
+        XCTAssertEqual(parameters.deviceMessages.first?.deviceId, DeviceId(validating: 123)!)
+        XCTAssertEqual(parameters.deviceMessages.first?.registrationId, 456)
 
         XCTAssertTrue(messageSenderMock.deviceMessagesMocks.get().isEmpty)
     }
@@ -159,7 +158,7 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
         let nextResult = deviceMessagesMocks.update { $0.removeFirst() }
         let result = try nextResult.get()
         try await self.db.awaitableWrite { tx in
-            try result.forEach { _ = try buildPlaintextContent($0.destinationDeviceId, tx) }
+            try result.forEach { _ = try buildPlaintextContent($0.deviceId, tx) }
         }
         return result
     }

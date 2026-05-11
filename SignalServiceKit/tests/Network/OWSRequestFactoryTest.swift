@@ -38,32 +38,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.parameters as! [String: String], ["body": "AQID"])
     }
 
-    // MARK: - Message requests
-
-    func testSubmitMessageRequest() throws {
-        let udAccessKey = getUdAccessKey()
-
-        let serviceId = Aci.randomForTesting()
-
-        let request = OWSRequestFactory.submitMessageRequest(
-            serviceId: serviceId,
-            messages: [],
-            timestamp: 1234,
-            isOnline: true,
-            isUrgent: false,
-            auth: .accessKey(udAccessKey),
-        )
-
-        XCTAssertEqual(request.method, "PUT")
-        XCTAssertEqual(request.url.path, "v1/messages/\(serviceId.serviceIdString)")
-        XCTAssertEqual(Set(request.parameters.keys), Set(["messages", "timestamp", "online", "urgent"]))
-        XCTAssertEqual(request.parameters["messages"] as? NSArray, [])
-        XCTAssertEqual(request.parameters["timestamp"] as? UInt64, 1234)
-        XCTAssertEqual(request.parameters["online"] as? Bool, true)
-        XCTAssertEqual(request.parameters["urgent"] as? Bool, false)
-        XCTAssertEqual(try queryItemsAsDictionary(url: request.url), ["story": "false"])
-    }
-
     // MARK: - Donations
 
     func testBoostStripeCreatePaymentIntentWithAmount() {

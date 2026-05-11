@@ -10,21 +10,34 @@ import LibSignalClient
 final class SealedSenderParameters {
     let message: any SendableMessage
     let senderCertificate: SenderCertificate
-    let accessKey: OWSUDAccess?
+    let unidentifiedAccess: UnidentifiedAccess?
     let endorsement: GroupSendFullTokenBuilder?
+
+    struct UnidentifiedAccess {
+        var aci: Aci
+        var value: OWSUDAccess
+
+        init?(aci: Aci, value: OWSUDAccess?) {
+            guard let value else {
+                return nil
+            }
+            self.aci = aci
+            self.value = value
+        }
+    }
 
     init?(
         message: any SendableMessage,
         senderCertificate: SenderCertificate,
-        accessKey: OWSUDAccess?,
+        unidentifiedAccess: UnidentifiedAccess?,
         endorsement: GroupSendFullTokenBuilder?,
     ) {
         self.message = message
         self.senderCertificate = senderCertificate
-        guard message.isStorySend || accessKey != nil || endorsement != nil else {
+        guard message.isStorySend || unidentifiedAccess != nil || endorsement != nil else {
             return nil
         }
-        self.accessKey = accessKey
+        self.unidentifiedAccess = unidentifiedAccess
         self.endorsement = endorsement
     }
 

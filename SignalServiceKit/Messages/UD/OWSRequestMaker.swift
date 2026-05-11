@@ -6,18 +6,8 @@
 import Foundation
 import LibSignalClient
 
-@objc
-public enum RequestMakerUDAuthError: Int, Error, IsRetryableProvider {
+public enum RequestMakerUDAuthError: Error {
     case udAuthFailure
-
-    // MARK: - IsRetryableProvider
-
-    public var isRetryableProvider: Bool {
-        switch self {
-        case .udAuthFailure:
-            return true
-        }
-    }
 }
 
 // MARK: -

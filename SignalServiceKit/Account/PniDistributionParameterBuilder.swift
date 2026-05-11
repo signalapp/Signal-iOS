@@ -57,7 +57,7 @@ public enum PniDistribution {
             registrationId: UInt32,
             deviceMessage: DeviceMessage,
         ) {
-            owsPrecondition(deviceId == deviceMessage.destinationDeviceId)
+            owsPrecondition(deviceId == deviceMessage.deviceId)
 
             devicePniSignedPreKeys["\(deviceId)"] = signedPreKey
             devicePniPqLastResortPreKeys["\(deviceId)"] = pqLastResortPreKey
@@ -206,9 +206,9 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         )
 
         return deviceMessages.map {
-            let syncMessage = syncMessages[$0.destinationDeviceId]!
+            let syncMessage = syncMessages[$0.deviceId]!
             return LinkedDevicePniGenerationParams(
-                deviceId: $0.destinationDeviceId,
+                deviceId: $0.deviceId,
                 signedPreKey: syncMessage.signedPreKey,
                 pqLastResortPreKey: syncMessage.pqLastResortPreKey,
                 registrationId: syncMessage.registrationId,

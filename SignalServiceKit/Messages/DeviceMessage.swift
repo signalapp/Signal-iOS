@@ -6,11 +6,48 @@
 import Foundation
 import LibSignalClient
 
-struct DeviceMessage {
-    let type: SSKProtoEnvelopeType
-    let destinationDeviceId: DeviceId
-    let destinationRegistrationId: UInt32
-    let content: Data
+enum DeviceMessage {
+    case sealedSender(SingleOutboundSealedSenderMessage)
+    case unsealed(SingleOutboundUnsealedMessage)
+
+    var type: SSKProtoEnvelopeType {
+        switch self {
+        case .sealedSender:
+            return .unidentifiedSender
+        case .unsealed(let message):
+            switch message.contents.messageType {
+            case .whisper:
+                return .ciphertext
+            case .preKey:
+                return .prekeyBundle
+            case .plaintext:
+                return .plaintextContent
+            default:
+                return .unknown
+            }
+        }
+    }
+
+    var deviceId: DeviceId {
+        switch self {
+        case .sealedSender(let message): return message.deviceId
+        case .unsealed(let message): return message.deviceId
+        }
+    }
+
+    var registrationId: UInt32 {
+        switch self {
+        case .sealedSender(let message): return message.registrationId
+        case .unsealed(let message): return message.registrationId
+        }
+    }
+
+    var content: Data {
+        switch self {
+        case .sealedSender(let message): return message.contents
+        case .unsealed(let message): return message.contents.serialize()
+        }
+    }
 }
 
 struct SentDeviceMessage {

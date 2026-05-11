@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import LibSignalClient
 import ObjectiveC
 
 extension Error {
@@ -59,4 +60,15 @@ public class OWSRetryableError: CustomNSError, IsRetryableProvider {
     // MARK: - IsRetryableProvider
 
     public var isRetryableProvider: Bool { true }
+}
+
+// MARK: - SignalError
+
+extension SignalError: IsRetryableProvider {
+    public var isRetryableProvider: Bool {
+        switch self {
+        case .mismatchedDevices: return true
+        default: return false
+        }
+    }
 }

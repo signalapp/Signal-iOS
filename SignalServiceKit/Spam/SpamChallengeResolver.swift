@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
 
@@ -192,51 +193,29 @@ extension SpamChallengeResolver {
 
 // MARK: - Server challenges
 
-private struct ServerChallengePayload: Decodable {
-    let token: String
-    let options: [Options]
-
-    enum Options: String, Decodable {
-        case captcha
-        case pushChallenge
-        case unrecognized
-
-        init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            let string = try container.decode(String.self)
-            self = Options(rawValue: string) ?? .unrecognized
-        }
-    }
-}
-
 extension SpamChallengeResolver {
 
-    @objc
-    public func handleServerChallengeBody(
-        _ body: Data,
+    private func handleServerChallengeBody(
+        token: String,
+        options: Set<ChallengeOption>,
         retryAfter: Date,
-        silentRecoveryCompletionHandler: ((Bool) -> Void)? = nil,
+        silentRecoveryCompletionHandler: @escaping (Bool) -> Void,
     ) {
-        guard appReadiness.isAppReady else { return owsFailDebug("App not ready") }
-        guard let payload = try? JSONDecoder().decode(ServerChallengePayload.self, from: body) else {
-            return owsFailDebug("Invalid server spam request response body: \(body)")
-        }
-
-        Logger.info("Received incoming spam challenge: \(payload.options.map { $0.rawValue })")
+        Logger.info("Received incoming spam challenge: \(options)")
 
         workQueue.async {
-            // If we already have a pending captcha challenge, we should wait for that to resolve
-            // If we were given a silent recovery closure, reply with a failure
+            // If we already have a pending captcha challenge, wait for that to
+            // resolve. If we were given a silent recovery, reply with a failure.
             guard self.challenges?.contains(where: { $0 is CaptchaChallenge }) == false else {
                 Logger.info("Captcha challenge already in progress")
-                silentRecoveryCompletionHandler?(false)
+                silentRecoveryCompletionHandler(false)
                 return
             }
 
-            if payload.options.contains(.pushChallenge), let completion = silentRecoveryCompletionHandler {
+            if options.contains(.pushChallenge) {
                 if let latestPushChallenge = self.challenges?.first(where: { $0 is PushChallenge && $0.isLive }) {
                     Logger.info("Push challenge already in progress; attempting silent recovery")
-                    latestPushChallenge.completionHandlers.append(completion)
+                    latestPushChallenge.completionHandlers.append(silentRecoveryCompletionHandler)
                 } else {
                     Logger.info("Requesting push for silent recovery")
                     let challenge = PushChallenge(expiry: Date(timeIntervalSinceNow: 10))
@@ -244,32 +223,41 @@ extension SpamChallengeResolver {
                     challenge.completionHandlers.append({ didSucceed in
                         Logger.info("Silent recovery \(didSucceed ? "did" : "did not") succeed")
                         if !didSucceed {
-                            self.handleServerChallengeBody(body, retryAfter: retryAfter)
+                            var options = options
+                            options.remove(.pushChallenge)
+                            // Try again without the option to use a pushChallenge
+                            self.handleServerChallengeBody(
+                                token: token,
+                                options: options,
+                                retryAfter: retryAfter,
+                                silentRecoveryCompletionHandler: { _ in },
+                            )
                         }
-                        completion(didSucceed)
+                        silentRecoveryCompletionHandler(didSucceed)
                     })
                     self.challenges?.append(challenge)
                 }
                 self.recheckChallenges()
 
-            } else if payload.options.contains(.captcha) {
+            } else if options.contains(.captcha) {
                 Logger.info("Registering captcha challenge")
 
-                let challenge = CaptchaChallenge(tokenIn: payload.token, expiry: retryAfter)
+                let challenge = CaptchaChallenge(tokenIn: token, expiry: retryAfter)
                 challenge.schedulingDelegate = self
                 self.challenges?.append(challenge)
                 self.recheckChallenges()
-                silentRecoveryCompletionHandler?(false)
+                silentRecoveryCompletionHandler(false)
             }
         }
     }
 
-    func tryToHandleSilently(bodyData: Data?, retryAfter: Date?) async throws {
-        guard let bodyData, let retryAfter else {
+    func tryToHandleSilently(token: String, options: Set<ChallengeOption>, retryAfter: TimeInterval?) async throws {
+        guard let retryAfter else {
             throw SpamChallengeRequiredError()
         }
+        let retryAfterDate = Date(timeIntervalSinceNow: retryAfter)
         try await withCheckedThrowingContinuation { continuation in
-            handleServerChallengeBody(bodyData, retryAfter: retryAfter) { didResolve in
+            handleServerChallengeBody(token: token, options: options, retryAfter: retryAfterDate) { didResolve in
                 if didResolve {
                     continuation.resume(returning: ())
                 } else {

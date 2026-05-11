@@ -403,7 +403,9 @@ extension MessageSender {
             let sealedSenderParameters = SealedSenderParameters(
                 message: outgoingSKDM,
                 senderCertificate: senderCertificate,
-                accessKey: (serviceId as? Aci).flatMap { udAccessMap[$0] },
+                unidentifiedAccess: (serviceId as? Aci).flatMap({
+                    return SealedSenderParameters.UnidentifiedAccess(aci: $0, value: udAccessMap[$0])
+                }),
                 endorsement: endorsements?.tokenBuilder(forServiceId: serviceId),
             )
 
@@ -532,25 +534,7 @@ extension MessageSender {
         } catch SignalError.mismatchedDevices(entries: let entries, message: _) {
             let databaseStorage = SSKEnvironment.shared.databaseStorageRef
             await databaseStorage.awaitableWrite { tx in
-                for entry in entries {
-                    // Incorrect device set. We should add/remove devices and try again.
-                    if !entry.missingDevices.isEmpty || !entry.extraDevices.isEmpty {
-                        handleMismatchedDevices(
-                            serviceId: entry.account,
-                            missingDevices: entry.missingDevices.compactMap(DeviceId.init(validating:)),
-                            extraDevices: entry.extraDevices.compactMap(DeviceId.init(validating:)),
-                            tx: tx,
-                        )
-                    }
-                    // Server reports stale devices. We should reset our session and try again.
-                    if !entry.staleDevices.isEmpty {
-                        handleStaleDevices(
-                            serviceId: entry.account,
-                            staleDevices: entry.staleDevices.compactMap(DeviceId.init(validating:)),
-                            tx: tx,
-                        )
-                    }
-                }
+                handleMismatchedDevices(entries: entries, tx: tx)
             }
             throw SenderKeyError.mismatchedDevices
         }
