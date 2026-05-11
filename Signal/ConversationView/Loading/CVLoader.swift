@@ -430,6 +430,15 @@ public class CVLoader: NSObject {
             default:
                 return nil
             }
+        case .error:
+            guard let errorMessage = interaction as? TSErrorMessage else {
+                owsFailDebug("error interaction is not TSErrorMessage")
+                return nil
+            }
+            if errorMessage.errorType == .nonBlockingIdentityChange {
+                return isGroupThread ? .groupUpdates : .chatUpdates
+            }
+            return nil
         case .call:
             // Don't collapse an active group call.
             if
