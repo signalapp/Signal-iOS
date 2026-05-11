@@ -1859,18 +1859,25 @@ public final class MessageReceiver {
                 Logger.warn("Ignoring typingMessage for non-existent thread")
                 return
             }
-            guard groupThread.groupModel.groupMembership.isLocalUserFullOrInvitedMember else {
-                Logger.info("Ignoring message for left group")
+            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                Logger.warn("Ignoring typingMessage for non-GV2 thread")
                 return
             }
-
+            guard groupModel.groupMembership.isLocalUserFullOrInvitedMember else {
+                Logger.info("Ignoring typingMessage for left group")
+                return
+            }
+            guard groupModel.groupMembership.isFullMember(envelope.sourceAci) else {
+                Logger.info("Ignoring typingMessage from non-member")
+                return
+            }
             guard !groupThread.isTerminatedGroup else {
                 Logger.info("Ignoring message for terminated group")
                 return
             }
-
-            if let groupModel = groupThread.groupModel as? TSGroupModelV2, groupModel.isAnnouncementsOnly {
+            if groupModel.isAnnouncementsOnly {
                 guard groupModel.groupMembership.isFullMemberAndAdministrator(envelope.sourceAci) else {
+                    Logger.info("Ignoring typingMessage from non-admin in announcement-only group")
                     return
                 }
             }
