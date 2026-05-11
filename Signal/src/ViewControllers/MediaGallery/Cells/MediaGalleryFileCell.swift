@@ -12,7 +12,7 @@ class MediaGalleryFileCell: MediaTileListModeCell {
 
     static let reuseIdentifier = "MediaGalleryFileCell"
 
-    private var attachment: ReferencedAttachmentStream?
+    private var referencedAttachment: ReferencedAttachment?
     private var receivedAtDate: Date?
     private var owningMessage: TSMessage?
     private var mediaMetadata: MediaMetadata?
@@ -20,13 +20,13 @@ class MediaGalleryFileCell: MediaTileListModeCell {
     private var fileItem: MediaGalleryCellItemOtherFile? {
         didSet {
             guard let fileItem else {
-                attachment = nil
+                referencedAttachment = nil
                 receivedAtDate = nil
                 owningMessage = nil
                 mediaMetadata = nil
                 return
             }
-            attachment = fileItem.attachmentStream
+            referencedAttachment = fileItem.referencedAttachment
             receivedAtDate = fileItem.receivedAtDate
             owningMessage = fileItem.message
             mediaMetadata = fileItem.metadata
@@ -58,7 +58,7 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             return cellHeight
         }
 
-        guard let attachment = item.attachmentStream else {
+        guard let attachment = item.referencedAttachment?.asReferencedStream else {
             return defaultCellHeight
         }
         let genericAttachment = CVComponentState.GenericAttachment(
@@ -86,6 +86,7 @@ class MediaGalleryFileCell: MediaTileListModeCell {
     private var itemModel: CVItemModel?
 
     private var genericAttachmentView: CVComponentView?
+    private var attachmentType: CVAttachment?
 
     private let genericAttachmentContainerView: UIView = {
         let view = UIView.container()
@@ -157,11 +158,21 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             itemViewState: itemViewState.build(),
             coreState: coreState,
         )
-        let genericAttachment = CVComponentState.GenericAttachment(attachment: .stream(
-            fileItem.attachmentStream,
-            isUploading: false,
-            imageMetadata: nil,
-        ))
+
+        self.attachmentType = {
+            if let stream = fileItem.referencedAttachment.asReferencedStream {
+                return .stream(stream, isUploading: false, imageMetadata: nil)
+            } else if let backupPointer = fileItem.referencedAttachment.asReferencedBackupThumbnail {
+                return .backupThumbnail(backupPointer)
+            } else if let pointer = fileItem.referencedAttachment.asReferencedAnyPointer {
+                let downloadState = pointer.attachmentPointer.downloadState(tx: transaction)
+                return .pointer(pointer, downloadState: downloadState)
+            }
+            return nil
+        }()
+        guard let attachmentType else { return }
+
+        let genericAttachment = CVComponentState.GenericAttachment(attachment: attachmentType)
         let component = CVComponentGenericAttachment(
             itemModel: itemModel,
             genericAttachment: genericAttachment,
@@ -222,16 +233,15 @@ class MediaGalleryFileCell: MediaTileListModeCell {
 
     @objc
     private func handleTapGesture(_ sender: UITapGestureRecognizer) {
-        guard let fileItem, let itemModel else {
+        guard
+            let itemModel,
+            let attachmentType
+        else {
             return
         }
         let genericAttachment = CVComponentGenericAttachment(
             itemModel: itemModel,
-            genericAttachment: .init(attachment: .stream(
-                fileItem.attachmentStream,
-                isUploading: false,
-                imageMetadata: nil,
-            )),
+            genericAttachment: .init(attachment: attachmentType),
         )
         if
             PKAddPassesViewController.canAddPasses(),
@@ -419,7 +429,7 @@ extension MediaGalleryFileCell: CVComponentDelegate {
 
     func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
-        attachmentStream: ReferencedAttachmentStream,
+        attachment: ReferencedAttachment,
         imageView: UIView,
     ) {}
 

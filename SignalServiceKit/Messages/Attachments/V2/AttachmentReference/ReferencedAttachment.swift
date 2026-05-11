@@ -7,7 +7,7 @@ import Foundation
 
 /// Just a simple structure holding an attachment and a reference to it,
 /// since that's something we need to do very often.
-public class ReferencedAttachment {
+public class ReferencedAttachment: CustomDebugStringConvertible {
     public let reference: AttachmentReference
     public let attachment: Attachment
 
@@ -54,26 +54,32 @@ public class ReferencedAttachment {
     public func getThumbnailImage(quality: AttachmentThumbnailQuality) async -> UIImage? {
         if let stream = asReferencedStream?.attachmentStream {
             return await stream.thumbnailImage(quality: quality)
-        } else if let backupThumbnail = AttachmentBackupThumbnail(attachment: attachment) {
-            return backupThumbnail.image
         }
-        return nil
+        return getPlaceholderImage()
     }
 
     public func getThumbnailImageSync(quality: AttachmentThumbnailQuality) -> UIImage? {
         if let stream = asReferencedStream?.attachmentStream {
             return stream.thumbnailImageSync(quality: quality)
-        } else if let backupThumbnail = AttachmentBackupThumbnail(attachment: attachment) {
-            return backupThumbnail.image
         }
-        return nil
+        return getPlaceholderImage()
     }
 
     public func getBestAvailableLocalImage() -> UIImage? {
         if let stream = asReferencedStream?.attachmentStream {
             return try? stream.decryptedImage()
-        } else if let backupThumbnail = AttachmentBackupThumbnail(attachment: attachment) {
+        }
+        return getPlaceholderImage()
+    }
+
+    private func getPlaceholderImage() -> UIImage? {
+        if let backupThumbnail = AttachmentBackupThumbnail(attachment: attachment) {
             return backupThumbnail.image
+        } else if
+            let blurHash = attachment.blurHash?.nilIfEmpty,
+            let blurHashImage = BlurHash.image(for: blurHash)
+        {
+            return blurHashImage
         }
         return nil
     }
@@ -85,6 +91,11 @@ public class ReferencedAttachment {
             return UInt64(safeCast: sourceByteCount)
         }
         return nil
+    }
+
+    public var debugDescription: String {
+        let isStream = self as? ReferencedAttachmentStream != nil
+        return "ReferencedAttachment(reference: \(reference.owner.id), attachment: \(attachment.id), downloaded: \(isStream))"
     }
 }
 

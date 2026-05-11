@@ -22,14 +22,14 @@ enum MediaGalleryCellItem {
     case audio(MediaGalleryCellItemAudio)
     case otherFile(MediaGalleryCellItemOtherFile)
 
-    var attachmentStream: ReferencedAttachmentStream? {
+    var referencedAttachment: ReferencedAttachment? {
         switch self {
         case .photoVideo(let item):
-            return item.galleryItem.attachmentStream
+            return item.galleryItem.referencedAttachment
         case .audio(let audioItem):
-            return audioItem.attachmentStream
+            return audioItem.referencedAttachment
         case .otherFile(let fileItem):
-            return fileItem.attachmentStream
+            return fileItem.referencedAttachment
         }
     }
 }
@@ -40,9 +40,9 @@ extension MediaGalleryCellItem: Equatable {
         case let (.photoVideo(lvalue), .photoVideo(rvalue)):
             return lvalue === rvalue
         case let (.audio(lvalue), .audio(rvalue)):
-            return lvalue.attachmentStream.reference.attachmentRowId == rvalue.attachmentStream.reference.attachmentRowId
+            return lvalue.referencedAttachment.reference.attachmentRowId == rvalue.referencedAttachment.reference.attachmentRowId
         case let (.otherFile(lvalue), .otherFile(rvalue)):
-            return lvalue.attachmentStream.reference.attachmentRowId == rvalue.attachmentStream.reference.attachmentRowId
+            return lvalue.referencedAttachment.reference.attachmentRowId == rvalue.referencedAttachment.reference.attachmentRowId
         case (.photoVideo, _), (.audio, _), (.otherFile, _):
             return false
         }
@@ -53,7 +53,7 @@ struct MediaGalleryCellItemAudio {
     var message: TSMessage
     var interaction: TSInteraction
     var thread: TSThread
-    var attachmentStream: ReferencedAttachmentStream
+    var referencedAttachment: ReferencedAttachment
     var receivedAtDate: Date
     var isVoiceMessage: Bool
     var mediaCache: CVMediaCache
@@ -78,13 +78,13 @@ struct MediaGalleryCellItemOtherFile {
     var message: TSMessage
     var interaction: TSInteraction
     var thread: TSThread
-    var attachmentStream: ReferencedAttachmentStream
+    var referencedAttachment: ReferencedAttachment
     var receivedAtDate: Date
     var mediaCache: CVMediaCache
     var metadata: MediaMetadata
 
-    var size: UInt {
-        UInt(attachmentStream.attachmentStream.unencryptedByteCount)
+    var size: UInt64 {
+        referencedAttachment.unencryptedByteCount() ?? 0
     }
 
     var localizedString: String {
@@ -105,7 +105,7 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
     var type: PhotoGridItemType {
         if galleryItem.isVideo {
             return .video(
-                duration: galleryItem.attachmentStream.attachmentStream.cachedVideoDuration,
+                duration: galleryItem.referencedAttachment.asReferencedStream?.attachmentStream.cachedVideoDuration,
             )
         } else if galleryItem.isAnimated {
             return .animated
@@ -128,7 +128,7 @@ extension MediaGalleryItem {
         return MediaMetadata(
             sender: sender?.name ?? "",
             abbreviatedSender: sender?.abbreviatedName ?? "",
-            byteSize: Int(attachmentStream.attachmentStream.unencryptedByteCount),
+            byteSize: Int(clamping: referencedAttachment.unencryptedByteCount() ?? 0),
             creationDate: receivedAtDate,
         )
     }

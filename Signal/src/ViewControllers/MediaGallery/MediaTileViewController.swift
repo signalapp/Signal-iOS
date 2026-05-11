@@ -613,7 +613,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
 
             guard
                 let pageVC = MediaPageViewController(
-                    initialMediaAttachment: galleryItem.attachmentStream,
+                    initialMediaAttachment: galleryItem.referencedAttachment,
                     mediaGallery: mediaGallery,
                     spoilerState: spoilerState,
                 )
@@ -804,7 +804,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                 message: galleryItem.message,
                 interaction: galleryItem.message,
                 thread: thread,
-                attachmentStream: galleryItem.attachmentStream,
+                referencedAttachment: galleryItem.referencedAttachment,
                 receivedAtDate: galleryItem.receivedAtDate,
                 isVoiceMessage: galleryItem.renderingFlag == .voiceMessage,
                 mediaCache: mediaCache,
@@ -815,7 +815,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                 message: galleryItem.message,
                 interaction: galleryItem.message,
                 thread: thread,
-                attachmentStream: galleryItem.attachmentStream,
+                referencedAttachment: galleryItem.referencedAttachment,
                 receivedAtDate: galleryItem.receivedAtDate,
                 mediaCache: mediaCache,
                 metadata: galleryItem.mediaMetadata!,
@@ -1521,7 +1521,7 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
         }
 
         let totalSize = items.reduce(UInt64(0), { result, item in
-            result + UInt64(safeCast: item.attachmentStream.attachmentStream.unencryptedByteCount)
+            result + (item.referencedAttachment.unencryptedByteCount() ?? 0)
         })
         return (items.count, totalSize)
     }
@@ -1737,8 +1737,12 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
             return
         }
 
-        let attachments = indexPaths.compactMap {
-            self.galleryItem(at: $0)?.attachmentStream
+        let attachments: [ReferencedAttachmentStream] = indexPaths.compactMap {
+            self.galleryItem(at: $0)?.referencedAttachment.asReferencedStream
+        }
+        if attachments.count < indexPaths.count {
+            // TODO: [MediaGallery] Better handling of undownloaded attachmets
+            owsFailDebug("Attempting to share undownloaded attachments")
         }
         let items: [ShareableAttachment] = (try? attachments.asShareableAttachments()) ?? []
         guard items.count == indexPaths.count else {

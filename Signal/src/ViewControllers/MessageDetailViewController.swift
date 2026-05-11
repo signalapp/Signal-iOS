@@ -820,7 +820,7 @@ extension MessageDetailViewController: MediaPresentationContextProvider {
             return nil
         }
 
-        guard let mediaView = cellView.albumItemView(forAttachment: galleryItem.attachmentStream) else {
+        guard let mediaView = cellView.albumItemView(forAttachment: galleryItem.referencedAttachment) else {
             owsFailDebug("itemView was unexpectedly nil")
             return nil
         }
@@ -1160,7 +1160,7 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
-        attachmentStream: ReferencedAttachmentStream,
+        attachment: ReferencedAttachment,
         imageView: UIView,
     ) {
         guard let thread else {
@@ -1169,7 +1169,7 @@ extension MessageDetailViewController: CVComponentDelegate {
         }
         guard
             let mediaPageVC = MediaPageViewController(
-                initialMediaAttachment: attachmentStream,
+                initialMediaAttachment: attachment,
                 thread: thread,
                 spoilerState: self.spoilerState,
                 showingSingleMessage: true,

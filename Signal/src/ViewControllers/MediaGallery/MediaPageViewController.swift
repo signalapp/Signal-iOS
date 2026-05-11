@@ -547,8 +547,13 @@ class MediaPageViewController: UIPageViewController {
 
     private func shareCurrentMedia(fromNavigationBar: Bool) {
         guard let currentViewController else { return }
+        guard let stream = currentViewController.galleryItem.referencedAttachment.asReferencedStream else {
+            // TODO: [MediaGallery]: Handle undownloaded media
+            owsFailDebug("Cannot share undownloaded media")
+            return
+        }
         guard
-            let attachmentStream = (try? [currentViewController.galleryItem.attachmentStream].asShareableAttachments())?.first
+            let attachmentStream = (try? [stream].asShareableAttachments())?.first
         else {
             return
         }
@@ -560,9 +565,13 @@ class MediaPageViewController: UIPageViewController {
 
     private func saveCurrentMediaToPhotos() {
         guard let mediaItem = currentItem else { return }
-
+        guard let stream = mediaItem.referencedAttachment.asReferencedStream else {
+            // TODO: [MediaGallery]: Handle undownloaded media
+            owsFailDebug("Cannot share undownloaded media")
+            return
+        }
         AttachmentSaving.saveToPhotoLibrary(
-            referencedAttachmentStreams: [mediaItem.attachmentStream],
+            referencedAttachmentStreams: [stream],
         )
     }
 
@@ -835,7 +844,7 @@ extension MediaPageViewController: MediaGalleryDelegate {
     }
 
     func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery) {
-        let attachment = currentItem.attachmentStream
+        let attachment = currentItem.referencedAttachment
         guard let reloadedItem = mediaGallery.ensureLoadedForDetailView(focusedAttachment: attachment) else {
             // Assume the item was deleted.
             dismissSelf(animated: true)

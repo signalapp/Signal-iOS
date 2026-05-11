@@ -333,7 +333,7 @@ extension ConversationViewController: MediaPresentationContextProvider {
             return nil
         }
 
-        guard let mediaView = messageCell.albumItemView(forAttachment: galleryItem.attachmentStream) else {
+        guard let mediaView = messageCell.albumItemView(forAttachment: galleryItem.referencedAttachment) else {
             owsFailDebug("itemView was unexpectedly nil")
             return nil
         }

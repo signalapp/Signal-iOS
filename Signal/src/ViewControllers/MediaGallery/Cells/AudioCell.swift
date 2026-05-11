@@ -14,16 +14,9 @@ class AudioCell: MediaTileListModeCell {
 
     private var audioItem: MediaGalleryCellItemAudio? {
         didSet {
-            guard let audioItem else {
+            if audioItem == nil {
                 audioAttachment = nil
-                return
             }
-            audioAttachment = AudioAttachment(
-                attachmentStream: audioItem.attachmentStream,
-                owningMessage: audioItem.message,
-                metadata: audioItem.metadata,
-                receivedAtDate: audioItem.receivedAtDate,
-            )
         }
     }
 
@@ -45,7 +38,7 @@ class AudioCell: MediaTileListModeCell {
 
         let currentContentSizeCategory = UITraitCollection.current.preferredContentSizeCategory
         let displaysTopLabel = AudioAllMediaPresenter.hasAttachmentLabel(
-            attachment: audioItem.attachmentStream.attachment,
+            attachment: audioItem.referencedAttachment.attachment,
             isVoiceMessage: audioItem.isVoiceMessage,
         )
 
@@ -60,8 +53,9 @@ class AudioCell: MediaTileListModeCell {
         }
 
         guard
+            let stream = audioItem.referencedAttachment.asReferencedStream,
             let audioAttachment = AudioAttachment(
-                attachmentStream: audioItem.attachmentStream,
+                attachmentStream: stream,
                 owningMessage: audioItem.message,
                 metadata: audioItem.metadata,
                 receivedAtDate: audioItem.receivedAtDate,
@@ -266,7 +260,7 @@ class AudioCell: MediaTileListModeCell {
             let cvAudioPlayer = AppEnvironment.shared.cvAudioPlayerRef
             cvAudioPlayer.setPlaybackProgress(
                 progress: scrubbedTime,
-                forAttachment: audioItem.attachmentStream.attachment,
+                forAttachment: audioItem.referencedAttachment.attachment,
             )
         case .possible, .failed, .cancelled:
             audioMessageView.clearOverrideProgress(animated: false)
@@ -283,6 +277,7 @@ class AudioCell: MediaTileListModeCell {
         guard let itemModel, let audioMessageView, let audioItem, let audioAttachment else {
             return
         }
+        guard case .attachmentStream = audioAttachment.state else { return }
         if audioMessageView.handleTap(sender: sender, itemModel: itemModel) {
             return
         }
@@ -317,7 +312,6 @@ class AudioCell: MediaTileListModeCell {
             owsFailDebug("Unexpected item type")
             return
         }
-        self.audioItem = audioItem
         self.spoilerState = spoilerState
 
         if let audioMessageView {
@@ -325,7 +319,24 @@ class AudioCell: MediaTileListModeCell {
             self.audioMessageView = nil
         }
 
+        self.audioItem = audioItem
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            if let referencedStream = audioItem.referencedAttachment.asReferencedStream {
+                audioAttachment = AudioAttachment(
+                    attachmentStream: referencedStream,
+                    owningMessage: audioItem.message,
+                    metadata: audioItem.metadata,
+                    receivedAtDate: audioItem.receivedAtDate,
+                )
+            } else if let pointer = audioItem.referencedAttachment.asReferencedAnyPointer {
+                audioAttachment = AudioAttachment(
+                    attachmentPointer: pointer,
+                    owningMessage: audioItem.message,
+                    metadata: audioItem.metadata,
+                    receivedAtDate: audioItem.receivedAtDate,
+                    downloadState: pointer.attachmentPointer.downloadState(tx: transaction),
+                )
+            }
             createAudioMessageView(transaction: transaction)
         }
     }

@@ -33,7 +33,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
         super.init()
 
-        image = attachmentStream.thumbnailImageSync(quality: .large)
+        image = galleryItem.referencedAttachment.getThumbnailImageSync(quality: .large)
     }
 
     deinit {
@@ -116,37 +116,43 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         guard mediaView == nil else { return }
 
         let view: UIView
-        if attachmentStream.contentType.isVideo, galleryItem.renderingFlag == .shouldLoop {
-            if let loopingVideoPlayerView = buildLoopingVideoPlayerView() {
+        let referencedAttachmentStream = galleryItem.referencedAttachment.asReferencedStream
+        if
+            let referencedAttachmentStream,
+            referencedAttachmentStream.attachmentStream.contentType.isVideo,
+            galleryItem.renderingFlag == .shouldLoop
+        {
+            if let loopingVideoPlayerView = buildLoopingVideoPlayerView(attachmentStream: referencedAttachmentStream.attachmentStream) {
                 loopingVideoPlayerView.delegate = self
                 view = loopingVideoPlayerView
             } else {
                 view = buildPlaceholderView()
             }
         } else if
-            let imageMetadata = attachmentStream.imageMetadata(),
+            let referencedAttachmentStream,
+            let imageMetadata = referencedAttachmentStream.attachmentStream.imageMetadata(),
             imageMetadata.isAnimated
         {
-            if let animatedGif = try? attachmentStream.decryptedSDAnimatedImage() {
+            if let animatedGif = try? referencedAttachmentStream.attachmentStream.decryptedSDAnimatedImage() {
                 view = SDAnimatedImageView(image: animatedGif)
             } else {
                 view = buildPlaceholderView()
             }
-        } else if image == nil {
-            // Still loading thumbnail.
-            view = buildPlaceholderView()
-        } else if isVideo {
-            if attachmentStream.contentType.isVideo, let videoPlayerView = buildVideoPlayerView() {
-                videoPlayerView.delegate = self
-                videoPlayerView.videoPlayer?.delegate = self
+        } else if
+            let referencedAttachmentStream,
+            isVideo, // TODO: Separate isVideo from isVideoPlayable
+            let videoPlayerView = buildVideoPlayerView(referencedAttachmentStream: referencedAttachmentStream)
+        {
+            videoPlayerView.delegate = self
+            videoPlayerView.videoPlayer?.delegate = self
 
-                view = videoPlayerView
-            } else {
-                view = buildPlaceholderView()
-            }
-        } else {
+            view = videoPlayerView
+        } else if let image {
             // Present the static image using standard UIImageView
             view = UIImageView(image: image)
+        } else {
+            // Still loading thumbnail.
+            view = buildPlaceholderView()
         }
 
         mediaView = view
@@ -158,7 +164,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         return view
     }
 
-    private func buildLoopingVideoPlayerView() -> LoopingVideoView? {
+    private func buildLoopingVideoPlayerView(attachmentStream: AttachmentStream) -> LoopingVideoView? {
         guard let loopingVideo = LoopingVideo(attachmentStream) else {
             owsFailBeta("Invalid looping video")
             return nil
@@ -168,8 +174,8 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         return videoView
     }
 
-    private func buildVideoPlayerView() -> VideoPlayerView? {
-        guard let videoPlayer = try? VideoPlayer(attachment: galleryItem.attachmentStream) else {
+    private func buildVideoPlayerView(referencedAttachmentStream: ReferencedAttachmentStream) -> VideoPlayerView? {
+        guard let videoPlayer = try? VideoPlayer(attachment: referencedAttachmentStream) else {
             owsFailBeta("Invalid attachment")
             return nil
         }
@@ -224,7 +230,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         }
 
         let timestamp = Date().ows_millisecondsSince1970
-        let attachmentId = galleryItem.attachmentStream.attachment.id
+        let attachmentId = galleryItem.referencedAttachment.attachment.id
         Task {
             await DependenciesBridge.shared.db.awaitableWrite { tx in
                 DependenciesBridge.shared.attachmentStore.markViewedFullscreen(
@@ -245,8 +251,6 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
     // MARK: - Helpers
 
     private var image: UIImage?
-
-    private var attachmentStream: AttachmentStream { galleryItem.attachmentStream.attachmentStream }
 
     // MARK: - Video Playback
 

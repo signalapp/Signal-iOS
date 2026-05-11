@@ -40,10 +40,10 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
 
     let message: TSMessage
     let sender: Sender?
-    let attachmentStream: ReferencedAttachmentStream
+    let referencedAttachment: ReferencedAttachment
     let receivedAtDate: Date
 
-    var renderingFlag: AttachmentReference.RenderingFlag { attachmentStream.reference.renderingFlag }
+    var renderingFlag: AttachmentReference.RenderingFlag { referencedAttachment.reference.renderingFlag }
 
     let galleryDate: GalleryDate
     let captionForDisplay: MediaCaptionView.Content?
@@ -54,7 +54,7 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     init(
         message: TSMessage,
         sender: Sender?,
-        attachmentStream: ReferencedAttachmentStream,
+        referencedAttachment: ReferencedAttachment,
         albumIndex: Int,
         numItemsInAlbum: Int,
         spoilerState: SpoilerRenderState,
@@ -62,13 +62,13 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     ) {
         self.message = message
         self.sender = sender
-        self.attachmentStream = attachmentStream
+        self.referencedAttachment = referencedAttachment
         self.receivedAtDate = message.receivedAtDate
         self.galleryDate = GalleryDate(message: message)
         self.albumIndex = albumIndex
         self.numItemsInAlbum = numItemsInAlbum
         self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.sortId, attachmentSortKey: albumIndex)
-        if let captionText = attachmentStream.reference.legacyMessageCaption?.filterForDisplay {
+        if let captionText = referencedAttachment.reference.legacyMessageCaption?.filterForDisplay {
             self.captionForDisplay = .attachmentStreamCaption(captionText)
         } else if let body = message.body {
             let hydratedMessageBody = MessageBody(
@@ -83,11 +83,15 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         }
     }
 
-    private var mimeType: String { attachmentStream.attachmentStream.mimeType }
+    private var mimeType: String { referencedAttachment.attachment.mimeType }
 
     var isVideo: Bool {
-        switch attachmentStream.attachmentStream.contentType {
+        switch referencedAttachment.attachment.contentType {
         case .video:
+            // For now, if the video isn't a stream, don't treat it as a video.
+            if referencedAttachment.asReferencedStream == nil {
+                return false
+            }
             return renderingFlag != .shouldLoop
         case .file, .image, .audio:
             return false
@@ -95,7 +99,7 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     }
 
     var isAnimated: Bool {
-        switch attachmentStream.attachmentStream.contentType {
+        switch referencedAttachment.attachment.contentType {
         case .video:
             return renderingFlag == .shouldLoop
         case .file, .image, .audio:
@@ -104,7 +108,7 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     }
 
     var isImage: Bool {
-        switch attachmentStream.attachmentStream.contentType {
+        switch referencedAttachment.attachment.contentType {
         case .image:
             return true
         case .file, .video, .audio:
@@ -112,33 +116,33 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         }
     }
 
-    var attachmentId: AttachmentReferenceId { attachmentStream.reference.referenceId }
+    var attachmentId: AttachmentReferenceId { referencedAttachment.reference.referenceId }
 
     typealias AsyncThumbnailBlock = @MainActor (UIImage) -> Void
     func thumbnailImage(completion: @escaping AsyncThumbnailBlock) {
-        Task { [attachmentStream] in
-            if let image = await attachmentStream.attachmentStream.thumbnailImage(quality: .small) {
+        Task { [referencedAttachment] in
+            if let image = await referencedAttachment.getThumbnailImage(quality: .small) {
                 await completion(image)
             }
         }
     }
 
     func thumbnailImageSync() -> UIImage? {
-        return attachmentStream.attachmentStream.thumbnailImageSync(quality: .small)
+        referencedAttachment.getThumbnailImageSync(quality: .small)
     }
 
     // MARK: Equatable
 
     static func ==(lhs: MediaGalleryItem, rhs: MediaGalleryItem) -> Bool {
-        return lhs.attachmentStream.attachmentStream.id == rhs.attachmentStream.attachmentStream.id
-            && lhs.attachmentStream.reference.hasSameOwner(as: rhs.attachmentStream.reference)
+        return lhs.referencedAttachment.attachment.id == rhs.referencedAttachment.attachment.id
+            && lhs.referencedAttachment.reference.hasSameOwner(as: rhs.referencedAttachment.reference)
     }
 
     // MARK: Hashable
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(attachmentStream.attachmentStream.id)
-        let attachmentReference = attachmentStream.reference
+        hasher.combine(referencedAttachment.attachment.id)
+        let attachmentReference = referencedAttachment.reference
         hasher.combine(attachmentReference.owner.id)
     }
 
@@ -484,10 +488,6 @@ class MediaGallery {
         spoilerState: SpoilerRenderState,
         transaction: DBReadTransaction,
     ) -> MediaGalleryItem? {
-        guard let attachmentStream = attachment.attachment.asStream() else {
-            owsFailDebug("gallery doesn't yet support showing undownloaded attachments")
-            return nil
-        }
 
         let message: TSMessage
         switch attachment.reference.owner {
@@ -560,7 +560,7 @@ class MediaGallery {
         return MediaGalleryItem(
             message: message,
             sender: sender,
-            attachmentStream: .init(reference: attachment.reference, attachmentStream: attachmentStream),
+            referencedAttachment: .init(reference: attachment.reference, attachment: attachment.attachment),
             albumIndex: Int(albumIndex),
             numItemsInAlbum: itemsInAlbum.count,
             spoilerState: spoilerState,
@@ -674,7 +674,7 @@ class MediaGallery {
         shouldLoadAlbumRemainder: Bool,
     ) {
         guard let path = indexPath(for: item) else {
-            owsFailDebug("showing detail view for an item that hasn't been loaded: \(item.attachmentStream)")
+            owsFailDebug("showing detail view for an item that hasn't been loaded: \(item.referencedAttachment)")
             return
         }
 
@@ -702,7 +702,7 @@ class MediaGallery {
 
             guard
                 let itemId = mediaGalleryFinder.galleryItemId(
-                    of: focusedItem.attachmentStream,
+                    of: focusedItem.referencedAttachment,
                     in: focusedItem.galleryDate.interval,
                     excluding: deletedAttachmentIds,
                     tx: transaction,
@@ -839,13 +839,13 @@ class MediaGallery {
             return
         }
 
-        Logger.info("with items: \(items.map { ($0.attachmentStream, $0.message.timestamp) })")
+        Logger.info("with items: \(items.map { ($0.referencedAttachment, $0.message.timestamp) })")
 
         deletedGalleryItems.formUnion(items)
         delegates.forEach { $0.mediaGallery(self, willDelete: items, initiatedBy: initiatedBy) }
 
         deletedAttachmentIds.formUnion(items.lazy.map {
-            $0.attachmentStream.reference.referenceId
+            $0.referencedAttachment.reference.referenceId
         })
 
         Task {
@@ -858,7 +858,7 @@ class MediaGallery {
 
                 for item in items {
                     let message = item.message
-                    let referencedAttachment: ReferencedAttachment = item.attachmentStream
+                    let referencedAttachment: ReferencedAttachment = item.referencedAttachment
 
                     attachmentStore.removeReference(
                         reference: referencedAttachment.reference,

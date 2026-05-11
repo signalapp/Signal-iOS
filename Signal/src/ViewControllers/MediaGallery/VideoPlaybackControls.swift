@@ -173,11 +173,10 @@ class VideoPlaybackControlView: UIView {
     weak var delegate: VideoPlaybackControlViewDelegate?
 
     func updateWithMediaItem(_ mediaItem: MediaGalleryItem) {
-        let attachmentStream = mediaItem.attachmentStream.attachmentStream
-        switch attachmentStream.contentType {
+        switch mediaItem.referencedAttachment.attachment.contentType {
         case .video:
             if
-                let videoDuration = attachmentStream.cachedVideoDuration,
+                let videoDuration = mediaItem.referencedAttachment.asReferencedStream?.attachmentStream.cachedVideoDuration,
                 videoDuration > 30
             {
                 showRewindAndFastForward = true

@@ -860,10 +860,10 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         navigationController?.pushViewController(tileVC, animated: true)
     }
 
-    func showMediaPageView(for attachmentStream: ReferencedAttachmentStream) {
+    func showMediaPageView(for referencedAttachment: ReferencedAttachment) {
         guard
             let vc = MediaPageViewController(
-                initialMediaAttachment: attachmentStream,
+                initialMediaAttachment: referencedAttachment,
                 thread: thread,
                 spoilerState: spoilerState,
             )
@@ -879,7 +879,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     let maximumRecentMedia = 4
     private(set) var recentMedia = OrderedDictionary<
         AttachmentReferenceId,
-        (attachment: ReferencedAttachmentStream, imageView: UIImageView),
+        (attachment: ReferencedAttachment, imageView: UIImageView),
     >() {
         didSet { AssertIsOnMainThread() }
     }
@@ -894,10 +894,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, tx: transaction)
         }
         recentMedia = recentAttachments.reduce(into: OrderedDictionary(), { result, attachment in
-            guard let attachmentStream = attachment.asReferencedStream else {
-                return owsFailDebug("Unexpected type of attachment")
-            }
-
             let imageView = UIImageView()
             imageView.clipsToBounds = true
             if #available(iOS 26, *) {
@@ -907,14 +903,11 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                 imageView.layer.cornerRadius = 4
             }
             imageView.contentMode = .scaleAspectFill
-
-            Task {
-                imageView.image = await attachmentStream.attachmentStream.thumbnailImage(quality: .small)
-            }
+            imageView.image = attachment.getThumbnailImageSync(quality: .small)
 
             result.append(
-                key: attachmentStream.reference.referenceId,
-                value: (attachmentStream, imageView),
+                key: attachment.reference.referenceId,
+                value: (attachment, imageView),
             )
         })
         shouldRefreshAttachmentsOnReappear = false
@@ -1093,7 +1086,7 @@ extension ConversationSettingsViewController: MediaPresentationContextProvider {
         let mediaViewShape: MediaViewShape
         switch item {
         case .gallery(let galleryItem):
-            guard let imageView = recentMedia[galleryItem.attachmentStream.reference.referenceId]?.imageView else { return nil }
+            guard let imageView = recentMedia[galleryItem.referencedAttachment.reference.referenceId]?.imageView else { return nil }
             mediaView = imageView
             mediaViewShape = .rectangle(imageView.layer.cornerRadius)
         case .image:

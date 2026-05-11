@@ -685,7 +685,7 @@ extension MemberLabelViewController: CVComponentDelegate {
 
     func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
-        attachmentStream: ReferencedAttachmentStream,
+        attachment: ReferencedAttachment,
         imageView: UIView,
     ) {}
 

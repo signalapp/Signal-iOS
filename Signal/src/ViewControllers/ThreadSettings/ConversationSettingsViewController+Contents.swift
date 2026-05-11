@@ -275,9 +275,9 @@ extension ConversationSettingsViewController {
                 let availableWidth = self.view.width - ((Self.cellHInnerMargin * 2) + self.cellOuterInsets.totalWidth + self.view.safeAreaInsets.totalWidth)
                 let imageWidth = (availableWidth - totalSpacerSize) / CGFloat(self.maximumRecentMedia)
 
-                for (attachmentStream, imageView) in self.recentMedia.orderedValues {
+                for (referencedAttachment, imageView) in self.recentMedia.orderedValues {
                     let button = OWSButton { [weak self] in
-                        self?.showMediaPageView(for: attachmentStream)
+                        self?.showMediaPageView(for: referencedAttachment)
                     }
                     stackView.addArrangedSubview(button)
                     button.autoSetDimensions(to: CGSize(square: imageWidth))

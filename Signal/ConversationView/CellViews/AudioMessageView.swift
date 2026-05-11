@@ -519,20 +519,14 @@ extension AudioAttachment {
         case .attachmentStream(let stream, _):
             return ByteCountFormatter().string(for: stream.attachmentStream.unencryptedByteCount) ?? ""
         case .attachmentPointer:
-            owsFailDebug("Shouldn't get here - undownloaded media not implemented")
+            // TODO: [Media Gallery]: Source byte information for undownloaded attachment
             return ""
         }
     }
 
     var dateString: String {
-        switch state {
-        case .attachmentStream:
-            let dateFormatter = DateFormatter()
-            dateFormatter.setLocalizedDateFormatFromTemplate("Mdyy")
-            return dateFormatter.string(from: receivedAtDate)
-        case .attachmentPointer:
-            owsFailDebug("Shouldn't get here - undownloaded media not implemented")
-            return ""
-        }
+        let dateFormatter = DateFormatter()
+        dateFormatter.setLocalizedDateFormatFromTemplate("Mdyy")
+        return dateFormatter.string(from: receivedAtDate)
     }
 }

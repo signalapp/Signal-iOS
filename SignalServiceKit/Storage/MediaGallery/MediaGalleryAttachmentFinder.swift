@@ -241,7 +241,7 @@ public struct MediaGalleryAttachmentFinder {
 
     // Disregards filter.
     public func galleryItemId(
-        of attachment: ReferencedAttachmentStream,
+        of attachment: ReferencedAttachment,
         in interval: DateInterval,
         excluding deletedAttachmentIds: Set<AttachmentReferenceId>,
         tx: DBReadTransaction,

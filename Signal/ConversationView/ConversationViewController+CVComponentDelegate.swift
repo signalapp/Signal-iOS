@@ -483,7 +483,7 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
-        attachmentStream: ReferencedAttachmentStream,
+        attachment: ReferencedAttachment,
         imageView: UIView,
     ) {
         AssertIsOnMainThread()
@@ -492,7 +492,7 @@ extension ConversationViewController: CVComponentDelegate {
 
         guard
             let pageVC = MediaPageViewController(
-                initialMediaAttachment: attachmentStream,
+                initialMediaAttachment: attachment,
                 thread: self.thread,
                 spoilerState: self.viewState.spoilerState,
             )

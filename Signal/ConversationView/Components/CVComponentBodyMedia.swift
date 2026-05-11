@@ -437,21 +437,25 @@ class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 componentDelegate.didCancelDownload(message, attachmentId: pointer.attachment.id)
                 return true
             }
-        case .stream(let stream, isUploading: _, imageMetadata: _):
+        case .stream(let referencedAttachmentStream, isUploading: _, imageMetadata: _):
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-            if let item = items.first(where: { $0.attachment.attachment.attachment.id == stream.attachment.id }), item.isBroken {
+            if let item = items.first(where: { $0.attachment.attachment.attachment.id == referencedAttachmentStream.attachment.id }), item.isBroken {
                 componentDelegate.didTapBrokenVideo()
                 return true
             }
             componentDelegate.didTapBodyMedia(
                 itemViewModel: itemViewModel,
-                attachmentStream: stream,
+                attachment: referencedAttachmentStream,
                 imageView: mediaView,
             )
             return true
-        case .backupThumbnail:
-            // Download the fullsize attachment
-            componentDelegate.didTapSkippedDownloads(message)
+        case .backupThumbnail(let thumbnail):
+            let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+            componentDelegate.didTapBodyMedia(
+                itemViewModel: itemViewModel,
+                attachment: thumbnail,
+                imageView: mediaView,
+            )
             return true
         case .undownloadable:
             componentDelegate.didTapUndownloadableMedia()

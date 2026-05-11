@@ -12,7 +12,7 @@ enum Media {
     var image: UIImage? {
         switch self {
         case let .gallery(item):
-            return try? item.attachmentStream.attachmentStream.decryptedImage()
+            return item.referencedAttachment.getBestAvailableLocalImage()
         case let .image(image):
             return image
         }

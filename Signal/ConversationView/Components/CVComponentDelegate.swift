@@ -134,7 +134,7 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
 
     func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
-        attachmentStream: ReferencedAttachmentStream,
+        attachment: ReferencedAttachment,
         imageView: UIView,
     )
 
