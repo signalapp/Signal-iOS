@@ -70,6 +70,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         self.attachmentUpdater = AttachmentUpdater(
             attachmentStore: attachmentStore,
             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
+            dateProvider: dateProvider,
             db: db,
             decrypter: decrypter,
             interactionStore: interactionStore,
@@ -2060,6 +2061,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         private let attachmentStore: AttachmentStore
         private let backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler
+        private let dateProvider: DateProvider
         private let db: any DB
         private let decrypter: Decrypter
         private let interactionStore: InteractionStore
@@ -2072,6 +2074,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         init(
             attachmentStore: AttachmentStore,
             backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
+            dateProvider: @escaping DateProvider,
             db: any DB,
             decrypter: Decrypter,
             interactionStore: InteractionStore,
@@ -2083,6 +2086,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         ) {
             self.attachmentStore = attachmentStore
             self.backupAttachmentUploadScheduler = backupAttachmentUploadScheduler
+            self.dateProvider = dateProvider
             self.db = db
             self.decrypter = decrypter
             self.interactionStore = interactionStore
@@ -2151,6 +2155,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         orphanedAttachmentStore: orphanedAttachmentStore,
                         backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
                         orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
+                        dateProvider: dateProvider,
                         tx: tx,
                     )
 
@@ -2335,6 +2340,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             orphanedAttachmentStore: orphanedAttachmentStore,
                             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
                             orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
+                            dateProvider: dateProvider,
                             tx: tx,
                         )
                         tx.addSyncCompletion {
@@ -2508,6 +2514,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             orphanedAttachmentStore: orphanedAttachmentStore,
                             backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
                             orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
+                            dateProvider: dateProvider,
                             tx: tx,
                         )
                         tx.addSyncCompletion {

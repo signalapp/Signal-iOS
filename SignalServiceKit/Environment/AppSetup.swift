@@ -385,10 +385,14 @@ extension AppSetup.GlobalsContinuation {
 
         let attachmentStore = AttachmentStore()
 
-        let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(db: db)
+        let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(
+            dateProvider: dateProvider,
+            db: db,
+        )
         let attachmentContentValidator = AttachmentContentValidatorImpl(
             attachmentStore: attachmentStore,
             audioWaveformManager: audioWaveformManager,
+            dateProvider: dateProvider,
             db: db,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
         )
@@ -678,6 +682,7 @@ extension AppSetup.GlobalsContinuation {
             attachmentStore: attachmentStore,
             attachmentValidationBackfillStore: AttachmentValidationBackfillStore(),
             databaseStorage: databaseStorage,
+            dateProvider: dateProvider,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
             validator: attachmentContentValidator,

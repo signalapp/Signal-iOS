@@ -697,6 +697,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                         orphanedAttachmentStore: orphanedAttachmentStore,
                         backupAttachmentUploadScheduler: backupAttachmentUploadScheduler,
                         orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
+                        dateProvider: dateProvider,
                         tx: tx,
                     )
                 } else {
@@ -808,6 +809,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         orphanedAttachmentStore: OrphanedAttachmentStore,
         backupAttachmentUploadScheduler: BackupAttachmentUploadScheduler,
         orphanedBackupAttachmentScheduler: OrphanedBackupAttachmentScheduler,
+        dateProvider: @escaping DateProvider,
         tx: DBWriteTransaction,
     ) throws -> Attachment.IDType {
         let existingAttachmentId: Attachment.IDType
@@ -881,6 +883,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                         localRelativeFilePathThumbnail: thumbnailRelativeFilePath,
                         localRelativeFilePathAudioWaveform: nil,
                         localRelativeFilePathVideoStillFrame: nil,
+                        timestamp: dateProvider().ows_millisecondsSince1970,
                     ),
                     tx: tx,
                 )

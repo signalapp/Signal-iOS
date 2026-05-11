@@ -241,6 +241,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                         localRelativeFilePathThumbnail: nil,
                         localRelativeFilePathAudioWaveform: attachment.streamInfo?.cachedAudioWaveformRelativeFilePath,
                         localRelativeFilePathVideoStillFrame: attachment.streamInfo?.cachedVideoStillFrameRelativeFilePath,
+                        timestamp: dateProvider().ows_millisecondsSince1970,
                     ),
                     tx: tx,
                 )
@@ -422,6 +423,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                         localRelativeFilePathThumbnail: reservedThumbnailFilePath,
                         localRelativeFilePathAudioWaveform: nil,
                         localRelativeFilePathVideoStillFrame: nil,
+                        timestamp: dateProvider().ows_millisecondsSince1970,
                     )
                 },
             )

@@ -97,6 +97,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
 
     private let attachmentStore: AttachmentStore
     private let databaseStorage: SDSDatabaseStorage
+    private let dateProvider: DateProvider
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private let orphanedAttachmentStore: OrphanedAttachmentStore
     private let store: AttachmentValidationBackfillStore
@@ -106,12 +107,14 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
         attachmentStore: AttachmentStore,
         attachmentValidationBackfillStore: AttachmentValidationBackfillStore,
         databaseStorage: SDSDatabaseStorage,
+        dateProvider: @escaping DateProvider,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
         validator: AttachmentContentValidator,
     ) {
         self.attachmentStore = attachmentStore
         self.databaseStorage = databaseStorage
+        self.dateProvider = dateProvider
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.orphanedAttachmentStore = orphanedAttachmentStore
         self.store = attachmentValidationBackfillStore
@@ -245,6 +248,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
                 localRelativeFilePathThumbnail: nil,
                 localRelativeFilePathAudioWaveform: streamInfo.cachedAudioWaveformRelativeFilePath,
                 localRelativeFilePathVideoStillFrame: streamInfo.cachedVideoStillFrameRelativeFilePath,
+                timestamp: dateProvider().ows_millisecondsSince1970,
             )
         }()
 

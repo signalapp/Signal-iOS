@@ -12,17 +12,20 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     private let attachmentStore: AttachmentStore
     private let audioWaveformManager: AudioWaveformManager
+    private let dateProvider: DateProvider
     private let db: DB
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
 
     init(
         attachmentStore: AttachmentStore,
         audioWaveformManager: AudioWaveformManager,
+        dateProvider: @escaping DateProvider,
         db: DB,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
     ) {
         self.attachmentStore = attachmentStore
         self.audioWaveformManager = audioWaveformManager
+        self.dateProvider = dateProvider
         self.db = db
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
     }
@@ -870,6 +873,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 localRelativeFilePathThumbnail: nil,
                 localRelativeFilePathAudioWaveform: audioWaveformFile?.reservedRelativeFilePath,
                 localRelativeFilePathVideoStillFrame: videoStillFrameFile?.reservedRelativeFilePath,
+                timestamp: dateProvider().ows_millisecondsSince1970,
             )
             orphanRecords[key] = orphanRecord
             if let primaryPendingFile = contentResult.primaryFile?.pendingFile {

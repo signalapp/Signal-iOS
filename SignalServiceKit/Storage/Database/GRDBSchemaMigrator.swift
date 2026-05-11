@@ -327,6 +327,7 @@ public class GRDBSchemaMigrator {
         case addLastVerifiedGroupNameHashColumn
         case setAttachmentContentTypeFromMimeType
         case dropAttachmentContentTypeAUTrigger
+        case addOrphanedAttachmentTimestamp
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5144,6 +5145,23 @@ public class GRDBSchemaMigrator {
             try tx.database.execute(sql: """
             DROP TRIGGER __Attachment_contentType_au
             """)
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addOrphanedAttachmentTimestamp) { tx in
+            try tx.database.alter(table: "OrphanedAttachment") { table in
+                table.add(column: "timestamp", .integer).defaults(to: 0)
+            }
+
+            try tx.database.create(
+                index: "index_orphaned_attachment_on_pending_and_timestamp",
+                on: "OrphanedAttachment",
+                columns: [
+                    "isPendingAttachment",
+                    "timestamp",
+                ],
+            )
 
             return .success(())
         }

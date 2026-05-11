@@ -12,6 +12,9 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
     private var db: InMemoryDB!
 
+    private var currentDate = Date()
+    private var dateProvider: (() -> Date)!
+
     private var attachmentStore: AttachmentStore!
     private var orphanedAttachmentCleaner: OrphanedAttachmentCleanerImpl!
     private var mockFileSystem: OrphanedAttachmentCleanerImpl.Mocks.OWSFileSystem!
@@ -19,10 +22,12 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
     override func setUp() async throws {
         db = InMemoryDB()
+        dateProvider = { self.currentDate }
         attachmentStore = AttachmentStore()
         mockFileSystem = OrphanedAttachmentCleanerImpl.Mocks.OWSFileSystem()
         mockTaskScheduler = OrphanedAttachmentCleanerImpl.Mocks.TaskScheduler()
         orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(
+            dateProvider: dateProvider,
             db: db,
             fileSystem: mockFileSystem,
             taskScheduler: mockTaskScheduler,
@@ -146,6 +151,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                     localRelativeFilePathThumbnail: nil,
                     localRelativeFilePathAudioWaveform: nil,
                     localRelativeFilePathVideoStillFrame: nil,
+                    timestamp: dateProvider().ows_millisecondsSince1970,
                 )
                 _ = OrphanedAttachmentRecord.insertRecord(record, tx: tx)
             }
@@ -171,6 +177,54 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         }
     }
 
+    func testPendingAttachmentGracePeriod() async throws {
+        let filePath = UUID().uuidString
+
+        // Insert a pending record at the current time.
+        db.write { tx in
+            let record = OrphanedAttachmentRecord.InsertableRecord(
+                isPendingAttachment: true,
+                localRelativeFilePath: filePath,
+                localRelativeFilePathThumbnail: nil,
+                localRelativeFilePathAudioWaveform: nil,
+                localRelativeFilePathVideoStillFrame: nil,
+                timestamp: dateProvider().ows_millisecondsSince1970,
+            )
+            _ = OrphanedAttachmentRecord.insertRecord(record, tx: tx)
+        }
+
+        // Run the cleaner. The record is within the 30-second grace period,
+        // so it should not be touched.
+        orphanedAttachmentCleaner.beginObserving()
+        XCTAssertEqual(mockTaskScheduler.tasks.count, 1)
+        _ = try await mockTaskScheduler.tasks[0].value
+
+        XCTAssertTrue(
+            mockFileSystem.deletedFiles.isEmpty,
+            "Pending attachment within grace period should not be deleted",
+        )
+        try db.read { tx in
+            XCTAssertNotNil(
+                try OrphanedAttachmentRecord.fetchOne(tx.database),
+                "Record should still exist within the grace period",
+            )
+        }
+
+        currentDate = currentDate.addingTimeInterval(31)
+        try await orphanedAttachmentCleaner.runUntilFinished()
+
+        XCTAssertFalse(
+            mockFileSystem.deletedFiles.isEmpty,
+            "Pending attachment should now be deleted",
+        )
+        try db.read { tx in
+            XCTAssertNil(
+                try OrphanedAttachmentRecord.fetchOne(tx.database),
+                "Record should have been removed by the cleaner",
+            )
+        }
+    }
+
     func testIgnoreFailingRowIds() async throws {
         let filePath1 = UUID().uuidString
         let url1 = AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: filePath1)
@@ -185,6 +239,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                     localRelativeFilePathThumbnail: nil,
                     localRelativeFilePathAudioWaveform: nil,
                     localRelativeFilePathVideoStillFrame: nil,
+                    timestamp: dateProvider().ows_millisecondsSince1970,
                 )
                 _ = OrphanedAttachmentRecord.insertRecord(record, tx: tx)
             }
@@ -238,7 +293,10 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         let url3 = AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: filePath3)
 
         mockFileSystem.deleteFileMock = { url in
-            if url == url3 {
+            if url == url1 {
+                file1WasAttempted = true
+                throw SomeError()
+            } else if url == url3 {
                 return
             } else if self.thumbnailFileURLs(localRelativeFilePath: filePath3).contains(url) {
                 return
@@ -254,6 +312,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                 localRelativeFilePathThumbnail: nil,
                 localRelativeFilePathAudioWaveform: nil,
                 localRelativeFilePathVideoStillFrame: nil,
+                timestamp: dateProvider().ows_millisecondsSince1970,
             )
             _ = OrphanedAttachmentRecord.insertRecord(record, tx: tx)
         }
@@ -277,65 +336,6 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         }
     }
 
-    func testTooManySkippedRowIds() async throws {
-        // Set up 1001 records to skip; this would overwhelm
-        // GRDB/SQLite if we tried to filter each one in SQL.
-        var skippedIds: [Int64] = []
-        for _ in 0..<1001 {
-            let record = OrphanedAttachmentRecord.InsertableRecord(
-                isPendingAttachment: true,
-                localRelativeFilePath: UUID().uuidString,
-                localRelativeFilePathThumbnail: nil,
-                localRelativeFilePathAudioWaveform: nil,
-                localRelativeFilePathVideoStillFrame: nil,
-            )
-            skippedIds.append(await orphanedAttachmentCleaner.commitPendingAttachment(record))
-        }
-
-        // Insert one record we actually want to delete
-        let record = OrphanedAttachmentRecord.InsertableRecord(
-            isPendingAttachment: false,
-            localRelativeFilePath: UUID().uuidString,
-            localRelativeFilePathThumbnail: UUID().uuidString,
-            localRelativeFilePathAudioWaveform: UUID().uuidString,
-            localRelativeFilePathVideoStillFrame: UUID().uuidString,
-        )
-
-        try db.write { tx in
-            _ = OrphanedAttachmentRecord.insertRecord(record, tx: tx)
-            let count = try OrphanedAttachmentRecord.fetchCount(tx.database)
-            XCTAssertEqual(count, skippedIds.count + 1)
-        }
-
-        // Should delete all existing rows as soon as we start observing.
-        orphanedAttachmentCleaner.beginObserving()
-
-        await mockTaskScheduler.tasks[0].await()
-
-        // Should have deleted the first record and none of the others.
-        try db.read { tx in
-            let count = try OrphanedAttachmentRecord.fetchCount(tx.database)
-            XCTAssertEqual(count, skippedIds.count)
-        }
-
-        // Mark all the ids as not needing skipping anymore.
-        db.write { tx in
-            for id in skippedIds {
-                orphanedAttachmentCleaner.releasePendingAttachment(withId: id, tx: tx)
-            }
-        }
-
-        orphanedAttachmentCleaner.beginObserving()
-
-        await mockTaskScheduler.tasks[1].await()
-
-        // Everything should be deleted
-        try db.read { tx in
-            let count = try OrphanedAttachmentRecord.fetchCount(tx.database)
-            XCTAssertEqual(count, 0)
-        }
-    }
-
     func testOrphanRecordFieldCoverage() async throws {
         let record = OrphanedAttachmentRecord.InsertableRecord(
             isPendingAttachment: false,
@@ -343,6 +343,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
             localRelativeFilePathThumbnail: UUID().uuidString,
             localRelativeFilePathAudioWaveform: UUID().uuidString,
             localRelativeFilePathVideoStillFrame: UUID().uuidString,
+            timestamp: dateProvider().ows_millisecondsSince1970,
         )
 
         db.write { tx in
@@ -419,7 +420,7 @@ private class _OrphanedAttachmentCleanerImpl_TaskSchedulerMock: _OrphanedAttachm
         try? await withCheckedThrowingContinuation { [weak self] continuation in
             self?.scheduleContinuation = continuation
             Task {
-                try await Task.sleep(nanoseconds: 2.clampedNanoseconds)
+                try await Task.sleep(nanoseconds: (10 * .second).clampedNanoseconds)
                 self?.scheduleContinuation.take()?.resume(throwing: CancellationError())
             }
         }

@@ -21,6 +21,7 @@ public struct OrphanedAttachmentRecord: Codable, FetchableRecord, PersistableRec
     let localRelativeFilePathThumbnail: String?
     let localRelativeFilePathAudioWaveform: String?
     let localRelativeFilePathVideoStillFrame: String?
+    let timestamp: UInt64
 
     // MARK: - Coding Keys
 
@@ -31,6 +32,7 @@ public struct OrphanedAttachmentRecord: Codable, FetchableRecord, PersistableRec
         case localRelativeFilePathThumbnail
         case localRelativeFilePathAudioWaveform
         case localRelativeFilePathVideoStillFrame
+        case timestamp
     }
 
     // MARK: - MutablePersistableRecord
@@ -45,6 +47,7 @@ public struct OrphanedAttachmentRecord: Codable, FetchableRecord, PersistableRec
         let localRelativeFilePathThumbnail: String?
         let localRelativeFilePathAudioWaveform: String?
         let localRelativeFilePathVideoStillFrame: String?
+        let timestamp: UInt64
     }
 
     static func insertRecord(_ insertableRecord: InsertableRecord, tx: DBWriteTransaction) -> Self {
@@ -57,8 +60,9 @@ public struct OrphanedAttachmentRecord: Codable, FetchableRecord, PersistableRec
                     \(CodingKeys.localRelativeFilePath.rawValue),
                     \(CodingKeys.localRelativeFilePathThumbnail.rawValue),
                     \(CodingKeys.localRelativeFilePathAudioWaveform.rawValue),
-                    \(CodingKeys.localRelativeFilePathVideoStillFrame.rawValue)
-                ) VALUES (?, ?, ?, ?, ?) RETURNING *
+                    \(CodingKeys.localRelativeFilePathVideoStillFrame.rawValue),
+                    \(CodingKeys.timestamp.rawValue)
+                ) VALUES (?, ?, ?, ?, ?, ?) RETURNING *
                 """,
                 arguments: [
                     insertableRecord.isPendingAttachment,
@@ -66,6 +70,7 @@ public struct OrphanedAttachmentRecord: Codable, FetchableRecord, PersistableRec
                     insertableRecord.localRelativeFilePathThumbnail,
                     insertableRecord.localRelativeFilePathAudioWaveform,
                     insertableRecord.localRelativeFilePathVideoStillFrame,
+                    insertableRecord.timestamp,
                 ],
             )!
         }

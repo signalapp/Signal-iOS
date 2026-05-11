@@ -559,6 +559,16 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             },
         )
 
+        cron.schedulePeriodically(
+            uniqueKey: .cleanUpOrphanedAttachments,
+            approximateInterval: 5 * .minute,
+            mustBeRegistered: true,
+            mustBeConnected: false,
+            operation: {
+                try await DependenciesBridge.shared.orphanedAttachmentCleaner.runUntilFinished()
+            },
+        )
+
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Task.detached(priority: .low) {
                 await FullTextSearchOptimizer(
