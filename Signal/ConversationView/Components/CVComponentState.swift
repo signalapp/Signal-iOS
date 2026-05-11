@@ -996,47 +996,6 @@ public struct CVComponentState: Equatable {
 
     // MARK: -
 
-    static func buildDateHeader(
-        interaction: TSInteraction,
-        itemBuildingContext: CVItemBuildingContext,
-    ) -> CVComponentState {
-        var builder = CVComponentState.Builder(
-            interaction: interaction,
-            itemBuildingContext: itemBuildingContext,
-        )
-        builder.dateHeader = DateHeader()
-        return builder.build()
-    }
-
-    static func buildUnreadIndicator(
-        interaction: TSInteraction,
-        itemBuildingContext: CVItemBuildingContext,
-    ) -> CVComponentState {
-        var builder = CVComponentState.Builder(
-            interaction: interaction,
-            itemBuildingContext: itemBuildingContext,
-        )
-        builder.unreadIndicator = UnreadIndicator()
-        return builder.build()
-    }
-
-    static func buildCollapseSet(
-        interaction: CollapseSetInteraction,
-        itemBuildingContext: CVItemBuildingContext,
-    ) -> CVComponentState {
-        var builder = CVComponentState.Builder(
-            interaction: interaction,
-            itemBuildingContext: itemBuildingContext,
-        )
-        builder.collapseSet = CollapseSet(
-            collapsedInteractions: interaction.collapsedInteractions,
-            collapseSetType: interaction.collapseSetType,
-            isExpanded: interaction.isExpanded,
-            finalTimerDescription: interaction.finalTimerDescription,
-        )
-        return builder.build()
-    }
-
     static func build(
         interaction: TSInteraction,
         itemBuildingContext: CVItemBuildingContext,

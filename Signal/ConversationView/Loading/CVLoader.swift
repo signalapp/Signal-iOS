@@ -171,27 +171,18 @@ public class CVLoader: NSObject {
                     throw error
                 }
 
-                var ungroupedItemModels = self.buildUngroupedItemModels(
-                    loadContext: loadContext,
-                    updatedInteractionIds: updatedInteractionIds,
-                    localAci: localAci,
-                    cachedModels: nil,
-                )
+                let initialLoadCount = messageLoader.loadedInteractions.count
 
-                let initialLoadCount = ungroupedItemModels.count
-
-                var groupedModels = Self.applyCollapseGroups(
-                    to: ungroupedItemModels,
+                var processedInteractions = Self.preprocessInteractions(
+                    messageLoader.loadedInteractions,
                     loadContext: loadContext,
                 )
 
-                // MessageLoader doesn't know the type of messages, so we
-                // collapse them here and ask for more if it's not enough.
                 if case .loadInitialMapping = loadRequest.loadType {
                     let maxExtraLoads = 5
                     var extraLoads = 0
                     while
-                        groupedModels.count < initialLoadCount,
+                        processedInteractions.count < initialLoadCount,
                         messageLoader.canLoadOlder,
                         extraLoads < maxExtraLoads
                     {
@@ -200,21 +191,22 @@ public class CVLoader: NSObject {
                             deletedInteractionIds: deletedInteractionIds,
                             tx: transaction,
                         )
-                        ungroupedItemModels = self.buildUngroupedItemModels(
-                            loadContext: loadContext,
-                            updatedInteractionIds: updatedInteractionIds,
-                            localAci: localAci,
-                            cachedModels: ungroupedItemModels,
-                        )
-                        groupedModels = Self.applyCollapseGroups(
-                            to: ungroupedItemModels,
+                        processedInteractions = Self.preprocessInteractions(
+                            messageLoader.loadedInteractions,
                             loadContext: loadContext,
                         )
                         extraLoads += 1
                     }
                 }
 
-                let items = groupedModels.compactMap { item in
+                let itemModels = self.buildItemModels(
+                    interactions: processedInteractions,
+                    loadContext: loadContext,
+                    updatedInteractionIds: updatedInteractionIds,
+                    localAci: localAci,
+                )
+
+                let items = itemModels.compactMap { item in
                     Self.buildRenderItem(
                         itemBuildingContext: loadContext,
                         itemModel: item,
@@ -251,11 +243,11 @@ public class CVLoader: NSObject {
 
     // MARK: -
 
-    private func buildUngroupedItemModels(
+    private func buildItemModels(
+        interactions: [TSInteraction],
         loadContext: CVLoadContext,
         updatedInteractionIds: Set<String>,
         localAci: Aci,
-        cachedModels: [CVItemModel]?,
     ) -> [CVItemModel] {
         let conversationStyle = loadContext.conversationStyle
 
@@ -277,37 +269,34 @@ public class CVLoader: NSObject {
             )
         }
 
-        if let cachedModels = cachedModels?.nilIfEmpty {
-            itemModelBuilder.reuseComponentStates(from: cachedModels)
-        }
-
-        return itemModelBuilder.buildItems(localAci: localAci)
+        return itemModelBuilder.buildItems(localAci: localAci, interactions: interactions)
     }
 
-    // MARK: - Collapse Set Grouping
+    // MARK: - Interaction Preprocessing
 
     private static let maxCollapseSetSize = 50
 
-    /// Takes ungrouped item models and returns a list of item models with info
-    /// messages merged into collapse sets
-    private static func applyCollapseGroups(
-        to itemModels: [CVItemModel],
+    /// Takes a list of interactions and applies preprocessing before the expensive task of creating `CVItemModel`s via `CVItemModelBuilder.buildItems`.
+    ///
+    ///  1. Inserts date headers
+    ///  2. Inserts unread indicator
+    ///  3. Collapses chat events
+    private static func preprocessInteractions(
+        _ interactions: [TSInteraction],
         loadContext: CVLoadContext,
-    ) -> [CVItemModel] {
-        guard BuildFlags.collapsingChatEvents else {
-            return itemModels
-        }
-
+    ) -> [TSInteraction] {
         let thread = loadContext.thread
-        let threadAssociatedData = loadContext.threadViewModel.associatedData
         let isGroupThread = thread.isGroupThread
         let expandedCollapseSets = loadContext.viewStateSnapshot.expandedCollapseSets
-        let coreState = loadContext.viewStateSnapshot.coreState
+        let oldestUnreadSortId = loadContext.viewStateSnapshot.oldestUnreadMessageSortId
 
-        var result = [CVItemModel]()
-        var currentRun = [CVItemModel]()
+        let todayDate = Date()
+        var result = [TSInteraction]()
+        var currentRun = [TSInteraction]()
         var currentRunType: CollapseSetInteraction.MessagesType?
         var pastUnreadIndicator = false
+        var shouldShowDateOnNextViewItem = true
+        var previousDaysBeforeToday: Int?
 
         func finalizeSet() {
             defer {
@@ -315,70 +304,106 @@ public class CVLoader: NSObject {
                 currentRunType = nil
             }
             guard currentRun.count >= 2, let runType = currentRunType else {
-                // Nothing to collapse
                 result.append(contentsOf: currentRun)
                 return
             }
-            let collapseId = "CollapseSet_\(currentRun[0].interaction.timestamp)"
-
+            let collapseId = "CollapseSet_\(currentRun[0].timestamp)"
             let isExpanded = expandedCollapseSets.contains(collapseId)
             let collapseSetInteraction = CollapseSetInteraction(
                 thread: thread,
-                collapsedInteractions: currentRun.map(\.interaction),
+                collapsedInteractions: currentRun,
                 collapseSetType: runType,
                 isExpanded: isExpanded,
             )
-            let componentState = CVComponentState.buildCollapseSet(
-                interaction: collapseSetInteraction,
-                itemBuildingContext: loadContext,
-            )
-            let itemModel = CVItemModel(
-                interaction: collapseSetInteraction,
-                thread: thread,
-                threadAssociatedData: threadAssociatedData,
-                componentState: componentState,
-                itemViewState: CVItemViewState.Builder().build(),
-                coreState: coreState,
-            )
-            result.append(itemModel)
+            result.append(collapseSetInteraction)
             if isExpanded {
                 result.append(contentsOf: currentRun)
             }
         }
 
-        for item in itemModels {
-            // Don't collapse unread items
+        for interaction in interactions {
+            let timestamp = interaction.timestamp
+            let daysBeforeToday = DateUtil.daysFrom(
+                firstDate: Date(millisecondsSince1970: timestamp),
+                toSecondDate: todayDate,
+            )
+
+            if let previousDaysBeforeToday {
+                if daysBeforeToday != previousDaysBeforeToday {
+                    shouldShowDateOnNextViewItem = true
+                }
+            } else {
+                // Only show for the first item if the date is not today
+                shouldShowDateOnNextViewItem = daysBeforeToday != 0
+            }
+
+            if
+                shouldShowDateOnNextViewItem,
+                canShowDateHeader(before: interaction)
+            {
+                // Collapse sets shouldn't cross date boundaries
+                finalizeSet()
+                result.append(DateHeaderInteraction(thread: thread, timestamp: timestamp))
+                shouldShowDateOnNextViewItem = false
+            }
+            previousDaysBeforeToday = daysBeforeToday
+
+            // Only insert one unread indicator and don't collapse unread events
             if pastUnreadIndicator {
-                result.append(item)
+                result.append(interaction)
                 continue
             }
 
-            switch item.interaction.interactionType {
-            case .dateHeader:
+            if let oldestUnreadSortId, oldestUnreadSortId <= interaction.sortId {
                 finalizeSet()
-                result.append(item)
-            case .unreadIndicator:
-                finalizeSet()
+                let unreadIndicatorInteraction = UnreadIndicatorInteraction(
+                    thread: thread,
+                    timestamp: timestamp,
+                    receivedAtTimestamp: interaction.receivedAtTimestamp,
+                )
+                result.append(unreadIndicatorInteraction)
                 pastUnreadIndicator = true
-                result.append(item)
-            default:
-                let collapseSetType = collapseSetType(for: item.interaction, isGroupThread: isGroupThread)
-                if let collapseSetType {
-                    let isDifferentSetThanCurrentRun = currentRunType != nil && currentRunType != collapseSetType
-                    let exceededCurrentRunLimit = currentRun.count >= maxCollapseSetSize
-                    if isDifferentSetThanCurrentRun || exceededCurrentRunLimit {
-                        finalizeSet()
-                    }
-                    currentRun.append(item)
-                    currentRunType = collapseSetType
-                } else {
+                result.append(interaction)
+                continue
+            }
+
+            guard BuildFlags.collapsingChatEvents else {
+                result.append(interaction)
+                continue
+            }
+
+            let collapseType = collapseSetType(for: interaction, isGroupThread: isGroupThread)
+            if let collapseType {
+                let isDifferentSetThanCurrentRun = currentRunType != nil && currentRunType != collapseType
+                let exceededCurrentRunLimit = currentRun.count >= maxCollapseSetSize
+                if isDifferentSetThanCurrentRun || exceededCurrentRunLimit {
                     finalizeSet()
-                    result.append(item)
                 }
+                currentRun.append(interaction)
+                currentRunType = collapseType
+            } else {
+                finalizeSet()
+                result.append(interaction)
             }
         }
         finalizeSet()
         return result
+    }
+
+    private static func canShowDateHeader(before interaction: TSInteraction) -> Bool {
+        switch interaction.interactionType {
+        case .unknown, .typingIndicator, .threadDetails, .dateHeader, .unknownThreadWarning, .defaultDisappearingMessageTimer, .collapseSet:
+            return false
+        case .info:
+            guard let infoMessage = interaction as? TSInfoMessage else {
+                owsFailDebug("Invalid interaction.")
+                return false
+            }
+            // Only show the date for non-synced thread messages;
+            return infoMessage.messageType != .syncedThread
+        case .unreadIndicator, .incomingMessage, .outgoingMessage, .error, .call:
+            return true
+        }
     }
 
     private static func collapseSetType(
@@ -452,6 +477,8 @@ public class CVLoader: NSObject {
             return nil
         }
     }
+
+    // MARK: -
 
 #if USE_DEBUG_UI
 

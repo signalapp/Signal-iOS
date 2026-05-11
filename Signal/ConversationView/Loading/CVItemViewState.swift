@@ -86,10 +86,6 @@ struct CVItemModelBuilder: CVItemBuilding {
 
     // MARK: -
 
-    private var shouldShowDateOnNextViewItem = true
-    private let todayDate = Date()
-    private var previousDaysBeforeToday: Int?
-
     private var items = [ItemBuilder]()
     private var previousItem: ItemBuilder? {
         items.last
@@ -102,12 +98,12 @@ struct CVItemModelBuilder: CVItemBuilding {
 
     // TODO: How should we handle failed stickers?
     // TODO: Do we need a new equivalent of clearNeedsUpdate?
-    mutating func buildItems(localAci: Aci) -> [CVItemModel] {
+    mutating func buildItems(localAci: Aci, interactions: [TSInteraction]) -> [CVItemModel] {
         // Contact Offers / Thread Details are the first item in the thread
         if messageLoader.shouldShowThreadDetails {
             // The thread details should have a stable timestamp.
             let threadDetailsTimestamp: UInt64
-            if let firstInteraction = messageLoader.loadedInteractions.first {
+            if let firstInteraction = interactions.first {
                 threadDetailsTimestamp = max(1, firstInteraction.timestamp) - 2
             } else {
                 threadDetailsTimestamp = 1
@@ -121,7 +117,7 @@ struct CVItemModelBuilder: CVItemBuilding {
         }
 
         var interactionIds = Set<String>()
-        for interaction in messageLoader.loadedInteractions {
+        for interaction in interactions {
             guard !interactionIds.contains(interaction.uniqueId) else {
                 owsFailDebug("Duplicate interaction(1): \(interaction.uniqueId)")
                 continue
@@ -578,76 +574,6 @@ struct CVItemModelBuilder: CVItemBuilding {
         }
     }
 
-    private mutating func addDateHeaderViewItemIfNecessary(item: ItemBuilder) {
-        let itemTimestamp = item.interaction.timestamp
-        owsAssertDebug(itemTimestamp > 0)
-
-        let itemDate = Date(millisecondsSince1970: itemTimestamp)
-        let daysBeforeToday = DateUtil.daysFrom(firstDate: itemDate, toSecondDate: todayDate)
-
-        var shouldShowDate = false
-        if let previousDaysBeforeToday = self.previousDaysBeforeToday {
-            if daysBeforeToday != previousDaysBeforeToday {
-                shouldShowDateOnNextViewItem = true
-            }
-        } else {
-            // Only show for the first item if the date is not today
-            shouldShowDateOnNextViewItem = daysBeforeToday != 0
-        }
-
-        if shouldShowDateOnNextViewItem, item.canShowDate {
-            shouldShowDate = true
-            shouldShowDateOnNextViewItem = false
-        }
-
-        if shouldShowDate {
-            let interaction = DateHeaderInteraction(thread: thread, timestamp: itemTimestamp)
-            let componentState = CVComponentState.buildDateHeader(
-                interaction: interaction,
-                itemBuildingContext: itemBuildingContext,
-            )
-            let item = ItemBuilder(
-                interaction: interaction,
-                thread: thread,
-                threadAssociatedData: threadAssociatedData,
-                componentState: componentState,
-            )
-            items.append(item)
-        }
-
-        self.previousDaysBeforeToday = daysBeforeToday
-    }
-
-    var hasPlacedUnreadIndicator = false
-
-    private mutating func addUnreadHeaderViewItemIfNecessary(item: ItemBuilder) {
-        let itemTimestamp = item.interaction.timestamp
-        owsAssertDebug(itemTimestamp > 0)
-
-        if hasPlacedUnreadIndicator {
-            return
-        }
-        if let oldestSortId = viewStateSnapshot.oldestUnreadMessageSortId, oldestSortId <= item.interaction.sortId {
-            hasPlacedUnreadIndicator = true
-            let interaction = UnreadIndicatorInteraction(
-                thread: thread,
-                timestamp: itemTimestamp,
-                receivedAtTimestamp: item.interaction.receivedAtTimestamp,
-            )
-            let componentState = CVComponentState.buildUnreadIndicator(
-                interaction: interaction,
-                itemBuildingContext: itemBuildingContext,
-            )
-            let item = ItemBuilder(
-                interaction: interaction,
-                thread: thread,
-                threadAssociatedData: threadAssociatedData,
-                componentState: componentState,
-            )
-            items.append(item)
-        }
-    }
-
     private class ComponentStateCache {
         var cache = [String: CVComponentState]()
 
@@ -673,17 +599,6 @@ struct CVItemModelBuilder: CVItemBuilding {
             componentStateCache.add(
                 interactionId: renderItem.interactionUniqueId,
                 componentState: renderItem.rootComponent.componentState,
-            )
-        }
-    }
-
-    mutating func reuseComponentStates(from itemModels: [CVItemModel]) {
-        // Dynamic interactions like collapse sets could have their
-        // ID change as more are loaded, so don't cache them.
-        for model in itemModels where !model.interaction.isDynamicInteraction {
-            componentStateCache.add(
-                interactionId: model.interaction.uniqueId,
-                componentState: model.componentState,
             )
         }
     }
@@ -715,10 +630,6 @@ struct CVItemModelBuilder: CVItemBuilding {
         else {
             return nil
         }
-
-        // Insert dynamic header item(s) before this item if necessary.
-        addDateHeaderViewItemIfNecessary(item: item)
-        addUnreadHeaderViewItemIfNecessary(item: item)
 
         if let previousItem {
             configureAdjacent(
@@ -891,22 +802,6 @@ private class ItemBuilder {
 
     var interactionType: OWSInteractionType {
         interaction.interactionType
-    }
-
-    var canShowDate: Bool {
-        switch interaction.interactionType {
-        case .unknown, .typingIndicator, .threadDetails, .dateHeader, .unknownThreadWarning, .defaultDisappearingMessageTimer, .collapseSet:
-            return false
-        case .info:
-            guard let infoMessage = interaction as? TSInfoMessage else {
-                owsFailDebug("Invalid interaction.")
-                return false
-            }
-            // Only show the date for non-synced thread messages;
-            return infoMessage.messageType != .syncedThread
-        case .unreadIndicator, .incomingMessage, .outgoingMessage, .error, .call:
-            return true
-        }
     }
 }
 
