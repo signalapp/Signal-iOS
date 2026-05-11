@@ -279,7 +279,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             throw OWSAssertionError("Missing digest")
         }
 
-        return .init(
+        return Attachment.TransitTierInfo(
             cdnNumber: cdnNumber,
             cdnKey: cdnKey,
             uploadTimestamp: proto.uploadTimestamp,
@@ -341,7 +341,6 @@ public class AttachmentManagerImpl: AttachmentManager {
 
         let contentType = Attachment.ContentType(mimeType: mimeType)
         var attachmentRecord: Attachment.Record
-        let sourceUnencryptedByteCount: UInt32?
 
         if
             proto.hasLocatorInfo,
@@ -352,12 +351,6 @@ public class AttachmentManagerImpl: AttachmentManager {
                 owningMessageReceivedAtTimestamp: ownedProto.owningMessageReceivedAtTimestamp,
                 incrementalMacInfo: incrementalMacInfo,
             )
-
-            if proto.locatorInfo.size > 0 {
-                sourceUnencryptedByteCount = proto.locatorInfo.size
-            } else {
-                sourceUnencryptedByteCount = nil
-            }
 
             switch proto.locatorInfo.integrityCheck {
             case .plaintextHash(let plaintextHash):
@@ -415,7 +408,6 @@ public class AttachmentManagerImpl: AttachmentManager {
                 mimeType: mimeType,
                 contentType: contentType,
             )
-            sourceUnencryptedByteCount = nil
         }
 
         let referenceParams: AttachmentReference.ConstructionParams
@@ -429,7 +421,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                     caption: proto.hasCaption ? proto.caption : nil,
                 ),
                 sourceFilename: sourceFilename,
-                sourceUnencryptedByteCount: sourceUnencryptedByteCount,
+                sourceUnencryptedByteCount: proto.locatorInfo.size,
                 sourceMediaSizePixels: sourceMediaSizePixels,
             )
         }
@@ -441,23 +433,18 @@ public class AttachmentManagerImpl: AttachmentManager {
                 tx: tx,
             )
 
-            if let sourceUnencryptedByteCount {
-                let estimatedMediaTierSize: UInt64
-                if
-                    let size = Cryptography
-                        .estimatedMediaTierCDNSize(unencryptedSize: UInt64(safeCast: sourceUnencryptedByteCount))
-                {
-                    estimatedMediaTierSize = size
-                } else {
-                    Logger.warn("Failed to get estimated media tier size for attachment \(attachment.id)!")
-                    estimatedMediaTierSize = UInt64(UInt32.max)
-                }
-
-                attachmentByteCounter.addToByteCount(
-                    attachmentID: attachment.id,
-                    byteCount: estimatedMediaTierSize,
-                )
+            let estimatedMediaTierSize: UInt64
+            if let size = Cryptography.estimatedMediaTierCDNSize(unencryptedSize: UInt64(safeCast: proto.locatorInfo.size)) {
+                estimatedMediaTierSize = size
+            } else {
+                Logger.warn("Failed to get estimated media tier size for attachment \(attachment.id)!")
+                estimatedMediaTierSize = UInt64(UInt32.max)
             }
+
+            attachmentByteCounter.addToByteCount(
+                attachmentID: attachment.id,
+                byteCount: estimatedMediaTierSize,
+            )
 
             if let mediaName = attachmentRecord.mediaName {
                 orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(
@@ -504,13 +491,6 @@ public class AttachmentManagerImpl: AttachmentManager {
             return nil
         }
 
-        let unencryptedByteCount: UInt32?
-        if locatorInfo.size > 0 {
-            unencryptedByteCount = locatorInfo.size
-        } else {
-            unencryptedByteCount = nil
-        }
-
         let uploadTimestampMs: UInt64
         if locatorInfo.hasTransitTierUploadTimestamp, locatorInfo.transitTierUploadTimestamp > 0 {
             uploadTimestampMs = locatorInfo.transitTierUploadTimestamp
@@ -545,7 +525,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             cdnKey: locatorInfo.transitCdnKey,
             uploadTimestamp: uploadTimestampMs,
             encryptionKey: locatorInfo.key,
-            unencryptedByteCount: unencryptedByteCount,
+            unencryptedByteCount: locatorInfo.size,
             integrityCheck: integrityCheck,
             incrementalMacInfo: incrementalMacInfo,
             lastDownloadAttemptTimestamp: nil,

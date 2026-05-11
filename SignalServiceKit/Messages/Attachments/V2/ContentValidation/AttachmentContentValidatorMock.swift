@@ -32,7 +32,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
     open func validateDownloadedContents(
         ofEncryptedFileAt fileUrl: URL,
         attachmentKey: AttachmentKey,
-        plaintextLength: UInt32?,
+        plaintextLength: UInt32,
         integrityCheck: AttachmentIntegrityCheck,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,

@@ -814,12 +814,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     plaintextLength: transitTierInfo.unencryptedByteCount,
                     integrityCheck: transitTierInfo.integrityCheck,
                 )
-                downloadSizeSource = transitTierInfo.unencryptedByteCount.map({
-                    .estimatedSizeBytes(Cryptography.estimatedTransitTierCDNSize(
-                        unencryptedSize: UInt64(safeCast: $0),
-                    ) ?? { owsFail("can always produce estimate for 32-bit byte count") }())
-                }) ?? .useHeadRequest
-
+                downloadSizeSource = .estimatedSizeBytes(Cryptography.estimatedTransitTierCDNSize(
+                    unencryptedSize: UInt64(safeCast: transitTierInfo.unencryptedByteCount),
+                ) ?? { owsFail("can always produce estimate for 32-bit byte count") }())
                 let attachmentLimits = IncomingAttachmentLimits.currentLimits(remoteConfig: remoteConfigProvider.currentConfig())
                 switch attachment.contentType {
                 case .image:
@@ -1997,7 +1994,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case transitTier(
                 mimeType: String,
                 attachmentKey: AttachmentKey,
-                plaintextLength: UInt32?,
+                plaintextLength: UInt32,
                 integrityCheck: AttachmentIntegrityCheck,
             )
 

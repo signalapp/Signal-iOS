@@ -513,7 +513,7 @@ extension ReferencedAttachment {
             locatorInfo.integrityCheck = .plaintextHash(streamInfo.plaintextHash)
         } else if let transitTierInfoToExport {
             locatorInfo.key = attachment.encryptionKey
-            locatorInfo.size = transitTierInfoToExport.unencryptedByteCount ?? 0
+            locatorInfo.size = transitTierInfoToExport.unencryptedByteCount
 
             // At the time of writing, TransitTierInfo.integrityCheck prefers
             // the encrypted digest even if both are present. (See comment in

@@ -270,24 +270,19 @@ extension ReferencedAttachment {
             builder.setFlags(0)
         }
 
-        let unencryptedByteCount: UInt32?
         let pixelSize: CGSize?
         if let streamInfo = pointer.attachment.streamInfo {
-            unencryptedByteCount = streamInfo.unencryptedByteCount
             pixelSize = streamInfo.cachedMediaSizePixels
         } else {
-            unencryptedByteCount = reference.sourceUnencryptedByteCount
             pixelSize = reference.sourceMediaSizePixels
-        }
-
-        if let unencryptedByteCount {
-            builder.setSize(unencryptedByteCount)
         }
         if let pixelSize {
             builder.setWidth(UInt32(pixelSize.width.rounded()))
             builder.setHeight(UInt32(pixelSize.height.rounded()))
         }
+
         builder.setKey(pointer.info.encryptionKey)
+        builder.setSize(pointer.info.unencryptedByteCount)
         builder.setDigest(ciphertextDigest)
         builder.setUploadTimestamp(pointer.uploadTimestamp)
 

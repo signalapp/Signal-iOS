@@ -37,7 +37,7 @@ public class IncomingContactSyncJobQueue {
         cdnKey: String,
         attachmentKey: AttachmentKey,
         digest: Data,
-        plaintextLength: UInt32?,
+        plaintextLength: UInt32,
         isComplete: Bool,
         tx: DBWriteTransaction,
     ) {

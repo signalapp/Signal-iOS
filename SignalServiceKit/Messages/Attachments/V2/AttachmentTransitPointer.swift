@@ -19,7 +19,7 @@ public class AttachmentTransitPointer {
     public var cdnKey: String { info.cdnKey }
     public var uploadTimestamp: UInt64 { info.uploadTimestamp }
     public var lastDownloadAttemptTimestamp: UInt64? { info.lastDownloadAttemptTimestamp }
-    public var unencryptedByteCount: UInt32? { info.unencryptedByteCount }
+    public var unencryptedByteCount: UInt32 { info.unencryptedByteCount }
 
     private init(
         attachment: Attachment,

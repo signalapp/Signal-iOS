@@ -51,13 +51,12 @@ public class AttachmentPointer {
         ].compacted().max()
     }
 
-    public var unencryptedByteCount: UInt32? {
+    public var unencryptedByteCount: UInt32 {
         switch source {
         case .mediaTier(let mediaTier):
             return mediaTier.unencryptedByteCount
         case .transitTier(let transitTier):
             return transitTier.unencryptedByteCount
-                ?? AttachmentBackupPointer(attachment: attachment)?.unencryptedByteCount
         }
     }
 

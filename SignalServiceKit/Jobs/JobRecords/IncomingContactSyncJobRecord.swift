@@ -62,7 +62,7 @@ public final class IncomingContactSyncJobRecord: JobRecord {
         cdnKey: String,
         attachmentKey: AttachmentKey,
         digest: Data,
-        plaintextLength: UInt32?,
+        plaintextLength: UInt32,
         isCompleteContactSync: Bool,
         failureCount: UInt = 0,
         status: Status = .ready,

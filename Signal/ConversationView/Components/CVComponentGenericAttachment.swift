@@ -179,8 +179,8 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         if let attachmentPointer = genericAttachment.attachmentPointer {
             var textComponents = [String]()
 
-            if let byteCount = attachmentPointer.unencryptedByteCount, byteCount > 0 {
-                textComponents.append(OWSFormat.localizedFileSizeString(from: UInt64(safeCast: byteCount)))
+            if attachmentPointer.unencryptedByteCount > 0 {
+                textComponents.append(OWSFormat.localizedFileSizeString(from: UInt64(safeCast: attachmentPointer.unencryptedByteCount)))
             }
 
             switch genericAttachment.attachment {

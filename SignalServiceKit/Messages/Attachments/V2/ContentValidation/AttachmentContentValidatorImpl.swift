@@ -74,7 +74,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     public func validateDownloadedContents(
         ofEncryptedFileAt fileUrl: URL,
         attachmentKey inputAttachmentKey: AttachmentKey,
-        plaintextLength: UInt32?,
+        plaintextLength: UInt32,
         integrityCheck: AttachmentIntegrityCheck,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
@@ -82,20 +82,15 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     ) async throws -> PendingAttachment {
         // Very very first thing: validate the integrity check.
         // Throw if this fails.
-        var decryptedLength = 0
         try Cryptography.decryptFile(
             at: fileUrl,
             metadata: DecryptionMetadata(
                 key: inputAttachmentKey,
                 integrityCheck: integrityCheck,
-                plaintextLength: plaintextLength.map(UInt64.init(safeCast:)),
+                plaintextLength: UInt64(safeCast: plaintextLength),
             ),
-            output: { data in
-                decryptedLength += data.count
-            },
+            output: { _ in },
         )
-        let plaintextLength = plaintextLength ?? UInt32(decryptedLength)
-
         let inputType = InputType.encryptedFile(
             fileUrl,
             inputAttachmentKey: inputAttachmentKey,

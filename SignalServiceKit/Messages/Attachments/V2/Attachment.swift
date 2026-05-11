@@ -204,7 +204,7 @@ public class Attachment {
 
         /// Expected byte count after decrypting the resource off the transit tier (and removing padding).
         /// Provided by the sender of incoming attachments.
-        public let unencryptedByteCount: UInt32?
+        public let unencryptedByteCount: UInt32
 
         /// Generated locally for outgoing attachments.
         /// For incoming attachments, taken off the service proto. If validation fails, the download is rejected.
@@ -458,9 +458,7 @@ public class Attachment {
                     cdnNumber: latestTransitTierInfo.cdnNumber,
                     key: latestTransitTierInfo.encryptionKey,
                     digest: digest,
-                    // Okay to fall back to our local data length even if the original sender
-                    // didn't include it; we now know it from the local file.
-                    plaintextDataLength: latestTransitTierInfo.unencryptedByteCount ?? metadata.plaintextDataLength,
+                    plaintextDataLength: latestTransitTierInfo.unencryptedByteCount,
                     // Encrypted length is the same regardless of the key used.
                     encryptedDataLength: metadata.encryptedDataLength,
                 ),
@@ -536,7 +534,8 @@ private extension Attachment.TransitTierInfo {
         self.uploadTimestamp = uploadTimestamp
         self.lastDownloadAttemptTimestamp = lastDownloadAttemptTimestamp
         self.encryptionKey = encryptionKey
-        self.unencryptedByteCount = unencryptedByteCount
+        // Old clients may have incorrectly persisted `nil` when `0` was provided.
+        self.unencryptedByteCount = unencryptedByteCount ?? 0
         self.integrityCheck = integrityCheck
         if let incrementalMac, let incrementalMacChunkSize {
             self.incrementalMacInfo = .init(mac: incrementalMac, chunkSize: incrementalMacChunkSize)
