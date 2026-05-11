@@ -33,7 +33,7 @@ public class MessageSender {
             guard let session = try sessionStore.loadSession(forServiceId: serviceId, deviceId: deviceId, tx: tx) else {
                 return nil
             }
-            guard session.hasCurrentState else {
+            guard session.hasCurrentState(requirePqRatio: 0, now: Date()) else {
                 return nil
             }
             return session

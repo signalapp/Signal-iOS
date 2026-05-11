@@ -288,7 +288,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>adler2 2.0.1, anyhow 1.0.100, anyhow 1.0.102, async-trait 0.1.89, atomic-waker 1.1.2, auto_enums 0.8.7, curve25519-dalek-derive 0.1.1, derive_utils 0.15.0, displaydoc 0.2.5, dyn-clone 1.0.20, fastrand 2.3.0, fastrand 2.4.1, home 0.5.11, home 0.5.12, itoa 1.0.17, itoa 1.0.18, linkme 0.3.35, linkme-impl 0.3.35, linux-raw-sys 0.12.1, linux-raw-sys 0.4.15, minimal-lexical 0.2.1, num_enum 0.7.5, num_enum 0.7.6, num_enum_derive 0.7.5, num_enum_derive 0.7.6, once_cell 1.21.3, once_cell 1.21.4, paste 1.0.15, pin-project 1.1.10, pin-project-internal 1.1.10, pin-project-lite 0.2.16, prettyplease 0.2.37, proc-macro-crate 3.4.0, proc-macro-crate 3.5.0, proc-macro2 1.0.105, proc-macro2 1.0.106, quote 1.0.43, quote 1.0.45, ref-cast 1.0.25, ref-cast-impl 1.0.25, rustix 0.38.44, rustix 1.1.3, rustix 1.1.4, rustversion 1.0.22, semver 1.0.27, semver 1.0.28, send_wrapper 0.6.0, serde 1.0.228, serde_core 1.0.228, serde_derive 1.0.228, serde_json 1.0.149, syn 1.0.109, syn 2.0.114, syn 2.0.117, syn-mid 0.6.0, thiserror 1.0.69, thiserror 2.0.17, thiserror 2.0.18, thiserror-impl 1.0.69, thiserror-impl 2.0.17, thiserror-impl 2.0.18, unicode-ident 1.0.22, unicode-ident 1.0.24, utf-8 0.7.6, zmij 1.0.12, zmij 1.0.21</string>
+			<string>adler2 2.0.1, anyhow 1.0.100, anyhow 1.0.102, async-trait 0.1.89, atomic-waker 1.1.2, auto_enums 0.8.7, curve25519-dalek-derive 0.1.1, derive_utils 0.15.0, displaydoc 0.2.5, dyn-clone 1.0.20, fastrand 2.3.0, fastrand 2.4.1, home 0.5.11, home 0.5.12, itoa 1.0.17, itoa 1.0.18, linkme 0.3.35, linkme-impl 0.3.35, linux-raw-sys 0.12.1, linux-raw-sys 0.4.15, minimal-lexical 0.2.1, num_enum 0.7.5, num_enum 0.7.6, num_enum_derive 0.7.5, num_enum_derive 0.7.6, once_cell 1.21.3, once_cell 1.21.4, paste 1.0.15, pin-project 1.1.10, pin-project-internal 1.1.10, pin-project-lite 0.2.16, prettyplease 0.2.37, proc-macro-crate 3.4.0, proc-macro-crate 3.5.0, proc-macro2 1.0.105, proc-macro2 1.0.106, quote 1.0.43, quote 1.0.45, ref-cast 1.0.25, ref-cast-impl 1.0.25, rustix 0.38.44, rustix 1.1.3, rustix 1.1.4, rustversion 1.0.22, semver 1.0.27, semver 1.0.28, send_wrapper 0.6.0, serde 1.0.228, serde_core 1.0.228, serde_derive 1.0.228, serde_json 1.0.149, syn 2.0.114, syn 2.0.117, syn-mid 0.6.0, thiserror 1.0.69, thiserror 2.0.17, thiserror 2.0.18, thiserror-impl 1.0.69, thiserror-impl 2.0.17, thiserror-impl 2.0.18, unicode-ident 1.0.22, unicode-ident 1.0.24, utf-8 0.7.6, zmij 1.0.12, zmij 1.0.21</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -950,7 +950,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>backtrace 0.3.76, cc 1.2.52, cc 1.2.59, cfg-if 1.0.4, cmake 0.1.57, cmake 0.1.58, find-msvc-tools 0.1.7, find-msvc-tools 0.1.9, pkg-config 0.3.32, rustc-demangle 0.1.26, socket2 0.6.1</string>
+			<string>backtrace 0.3.76, cc 1.2.52, cc 1.2.59, cfg-if 1.0.4, cmake 0.1.57, cmake 0.1.58, find-msvc-tools 0.1.7, find-msvc-tools 0.1.9, pkg-config 0.3.32, rustc-demangle 0.1.26, socket2 0.6.3</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -2630,42 +2630,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>Copyright (c) 2012 The Go Authors. All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-   * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
-   * Redistributions in binary form must reproduce the above
-copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the
-distribution.
-   * Neither the name of Google Inc. nor the names of its
-contributors may be used to endorse or promote products derived from
-this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
-IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
-OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</string>
-			<key>License</key>
-			<string>BSD 3-Clause "New" or "Revised" License</string>
-			<key>Title</key>
-			<string>curve25519-dalek 4.1.3</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
 			<string>Copyright (c) 2016-2021 isis agora lovecruft. All rights reserved.
 Copyright (c) 2016-2021 Henry de Valence. All rights reserved.
 
@@ -2691,6 +2655,42 @@ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
 HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
 SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
 TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</string>
+			<key>License</key>
+			<string>BSD 3-Clause "New" or "Revised" License</string>
+			<key>Title</key>
+			<string>curve25519-dalek 4.1.3</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Copyright (c) 2012 The Go Authors. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+   * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+   * Neither the name of Google Inc. nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
 PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
@@ -5020,41 +5020,6 @@ DEALINGS IN THE SOFTWARE.
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>Copyright (c) 2014-2020 The Rust Project Developers
-
-Permission is hereby granted, free of charge, to any
-person obtaining a copy of this software and associated
-documentation files (the "Software"), to deal in the
-Software without restriction, including without
-limitation the rights to use, copy, modify, merge,
-publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software
-is furnished to do so, subject to the following
-conditions:
-
-The above copyright notice and this permission notice
-shall be included in all copies or substantial portions
-of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
-ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
-SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
-IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-</string>
-			<key>License</key>
-			<string>MIT License</string>
-			<key>Title</key>
-			<string>libc 0.2.180</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
 			<string>Copyright (c) The Rust Project Developers
 
 Permission is hereby granted, free of charge, to any
@@ -5084,7 +5049,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>libc 0.2.184</string>
+			<string>libc 0.2.184, libc 0.2.186</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -8458,7 +8423,7 @@ THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>mio 1.1.1</string>
+			<string>mio 1.2.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -11007,6 +10972,29 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 		</dict>
 		<dict>
 			<key>FooterText</key>
+			<string>Copyright 2015-2025 Brian Smith.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+</string>
+			<key>License</key>
+			<string>ISC License</string>
+			<key>Title</key>
+			<string>ring 0.17.14</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
 			<string>
                                  Apache License
                            Version 2.0, January 2004
@@ -11282,29 +11270,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </string>
 			<key>License</key>
 			<string>Apache License 2.0</string>
-			<key>Title</key>
-			<string>ring 0.17.14</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
-			<string>Copyright 2015-2025 Brian Smith.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
-SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
-OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-</string>
-			<key>License</key>
-			<string>ISC License</string>
 			<key>Title</key>
 			<string>ring 0.17.14</string>
 			<key>Type</key>
@@ -13737,7 +13702,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>tokio 1.49.0, tokio-stream 0.1.18, tokio-util 0.7.18</string>
+			<string>tokio 1.52.2, tokio-stream 0.1.18, tokio-util 0.7.18</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -13805,7 +13770,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>tokio-macros 2.6.0</string>
+			<string>tokio-macros 2.7.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
