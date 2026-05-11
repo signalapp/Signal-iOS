@@ -52,10 +52,6 @@ public final class KeyTransparencyManager {
     // MARK: Opt-out
 
     public func isEnabled(tx: DBReadTransaction) -> Bool {
-        guard BuildFlags.KeyTransparency.enabled else {
-            return false
-        }
-
         return keyTransparencyStore.isEnabled(tx: tx)
     }
 
@@ -476,10 +472,6 @@ public struct KeyTransparencyStore {
     // MARK: - Opt-out
 
     fileprivate func isEnabled(tx: DBReadTransaction) -> Bool {
-        guard BuildFlags.KeyTransparency.enabled else {
-            return false
-        }
-
         return kvStore.fetchValue(Bool.self, forKey: KVStoreKeys.isEnabled, tx: tx) ?? true
     }
 
@@ -499,10 +491,6 @@ public struct KeyTransparencyStore {
     // MARK: - First-time education
 
     public func shouldShowFirstTimeEducation(tx: DBReadTransaction) -> Bool {
-        guard BuildFlags.KeyTransparency.enabled else {
-            return false
-        }
-
         return kvStore.fetchValue(Bool.self, forKey: KVStoreKeys.shouldShowFirstTimeEducation, tx: tx) ?? true
     }
 
