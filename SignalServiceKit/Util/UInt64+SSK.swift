@@ -14,10 +14,11 @@ extension UInt64 {
 
 extension UInt64 {
     init(clamping double: Double) {
-        if double > Double(UInt64.max) {
-            self.init(UInt64.max)
-        } else {
-            self.init(double)
+        self = switch double {
+        case _ where double.isNaN: 0
+        case ...0: 0
+        case Double(UInt64.max)...: UInt64.max
+        default: UInt64(double)
         }
     }
 }

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+@testable import SignalServiceKit
 import Testing
 
 struct IntTest {
@@ -17,5 +18,18 @@ struct IntTest {
         // UInt.bitWidth to be larger than UInt64.bitWidth. That's not currently a
         // thing, and it seems unlikely to change in the foreseeable future.
         _ = UInt64(safeCast: UInt.max)
+    }
+}
+
+struct UInt64Test {
+    @Test(arguments: [
+        (-5.0, 0),
+        (42.7, 42),
+        (1e30, .max),
+        (.nan, 0),
+        (.infinity, .max),
+    ])
+    func testDoubleClamp(double: Double, clamped: UInt64) async throws {
+        #expect(UInt64(clamping: double) == clamped)
     }
 }
