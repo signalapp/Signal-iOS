@@ -481,7 +481,7 @@ public class GroupsV2OutgoingChanges {
             // least-recently banned.
             let maxNumBannableIds = RemoteConfig.current.maxGroupSizeBannedMembers
             let netNumIdsToBan = acisToBan.count - acisToUnban.count
-            let nOldMembersToUnban = currentBannedMembers.count + netNumIdsToBan - Int(maxNumBannableIds)
+            let nOldMembersToUnban = currentBannedMembers.count + netNumIdsToBan - Int(clamping: maxNumBannableIds)
 
             if nOldMembersToUnban > 0 {
                 let bannedSortedByAge = currentBannedMembers.sorted { member1, member2 -> Bool in
