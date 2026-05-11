@@ -44,12 +44,7 @@ class TestingViewController: OWSTableViewController2 {
             )
         }
 
-        var testableFlags = DebugFlags.allTestableFlags()
-        testableFlags.sort { lhs, rhs -> Bool in
-            lhs.title < rhs.title
-        }
-
-        for testableFlag in testableFlags {
+        for testableFlag in DebugFlags.allTestableFlags() {
             let section = OWSTableSection()
             section.footerTitle = testableFlag.details
             section.add(buildSwitchItem(title: testableFlag.title, testableFlag: testableFlag))

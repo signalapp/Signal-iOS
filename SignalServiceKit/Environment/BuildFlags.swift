@@ -163,6 +163,12 @@ public enum DebugFlags {
 
     public static let extraDebugLogs = build <= .internal
 
+    public static let mediaGalleryOnlyAllowDownloaded = TestableFlag(
+        true,
+        title: LocalizationNotNeeded("Media Gallery: only allow downloaded"),
+        details: LocalizationNotNeeded("Only allow downloaded media to appear in the Media Gallery."),
+    )
+
     public static let messageSendsFail = TestableFlag(
         false,
         title: LocalizationNotNeeded("Message Sends Fail"),
@@ -210,6 +216,7 @@ public enum DebugFlags {
 
     public static func allTestableFlags() -> [TestableFlag] {
         return [
+            mediaGalleryOnlyAllowDownloaded,
             callingUseTestSFU,
             callingNeverRelay,
             callingForceVp9Off,
