@@ -987,9 +987,7 @@ public final class MessageReceiver {
         }
 
         var message: TSIncomingMessage?
-        if dataMessage.flags & UInt32(SSKProtoDataMessageFlags.endSession.rawValue) != 0 {
-            handleIncomingEndSessionEnvelope(envelope, withDataMessage: dataMessage, tx: tx)
-        } else if dataMessage.flags & UInt32(SSKProtoDataMessageFlags.expirationTimerUpdate.rawValue) != 0 {
+        if dataMessage.flags & UInt32(SSKProtoDataMessageFlags.expirationTimerUpdate.rawValue) != 0 {
             updateDisappearingMessageConfiguration(envelope: envelope, dataMessage: dataMessage, thread: thread, tx: tx)
         } else if dataMessage.flags & UInt32(SSKProtoDataMessageFlags.profileKeyUpdate.rawValue) != 0 {
             // Do nothing, we handle profile keys on all incoming messages above.
@@ -2301,26 +2299,6 @@ public final class MessageReceiver {
             Logger.info("Message received from unknown linked device; adding to local SignalRecipient: \(deviceId).")
             recipientManager.markAsRegisteredAndSave(&recipient, deviceId: deviceId, shouldUpdateStorageService: true, tx: tx)
         }
-    }
-
-    private func handleIncomingEndSessionEnvelope(
-        _ decryptedEnvelope: DecryptedIncomingEnvelope,
-        withDataMessage dataMessage: SSKProtoDataMessage,
-        tx: DBWriteTransaction,
-    ) {
-        guard decryptedEnvelope.localIdentity == .aci else {
-            owsFailDebug("Can't receive end session messages to our PNI.")
-            return
-        }
-
-        let thread = TSContactThread.getOrCreateThread(
-            withContactAddress: SignalServiceAddress(decryptedEnvelope.sourceAci),
-            transaction: tx,
-        )
-        TSInfoMessage(thread: thread, messageType: .typeRemoteUserEndedSession).anyInsert(transaction: tx)
-
-        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-        sessionStore.archiveSessions(forServiceId: decryptedEnvelope.sourceAci, tx: tx)
     }
 }
 

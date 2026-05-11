@@ -1217,12 +1217,11 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Flags: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
-    case endSession = 1
     case expirationTimerUpdate = 2
     case profileKeyUpdate = 4
 
     init() {
-      self = .endSession
+      self = .expirationTimerUpdate
     }
 
   }
@@ -6071,7 +6070,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
 }
 
 extension SignalServiceProtos_DataMessage.Flags: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}END_SESSION\0\u{1}EXPIRATION_TIMER_UPDATE\0\u{2}\u{2}PROFILE_KEY_UPDATE\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}EXPIRATION_TIMER_UPDATE\0\u{2}\u{2}PROFILE_KEY_UPDATE\0")
 }
 
 extension SignalServiceProtos_DataMessage.ProtocolVersion: SwiftProtobuf._ProtoNameProviding {

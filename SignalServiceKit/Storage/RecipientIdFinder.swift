@@ -55,13 +55,6 @@ public final class RecipientIdFinder {
         return validateRecipient(recipient, for: serviceId).map(\.id)
     }
 
-    public func recipientId(for address: SignalServiceAddress, tx: DBReadTransaction) -> Result<SignalRecipient.RowId, RecipientIdError>? {
-        guard let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx) else {
-            return nil
-        }
-        return validateRecipient(recipient, for: address.serviceId).map(\.id)
-    }
-
     public func ensureRecipientId(for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<SignalRecipient.RowId, RecipientIdError> {
         return ensureRecipient(for: serviceId, tx: tx).map(\.id)
     }

@@ -69,11 +69,9 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         }
 
         var isExpirationTimerUpdate = false
-        var isEndSessionMessage = false
         if dataMessage.hasFlags {
             let flags = Int32(dataMessage.flags)
             isExpirationTimerUpdate = (flags & SSKProtoDataMessageFlags.expirationTimerUpdate.rawValue) != 0
-            isEndSessionMessage = (flags & SSKProtoDataMessageFlags.endSession.rawValue) != 0
         }
 
         let type: SentMessageTranscriptType
@@ -98,12 +96,6 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
                 return nil
             }
             type = .expirationTimerUpdate(target)
-        } else if isEndSessionMessage {
-            guard let recipientAddress else {
-                owsFailDebug("We should never receive a 'end session' for messages in group threads.")
-                return nil
-            }
-            type = .endSessionUpdate(TSContactThread.getOrCreateThread(contactAddress: recipientAddress))
         } else if dataMessage.payment != nil {
             guard
                 let target = getTarget(
@@ -200,7 +192,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         case .message, .expirationTimerUpdate, .paymentNotification, .archivedPayment:
             // We only validate these types
             break
-        case .recipientUpdate, .endSessionUpdate:
+        case .recipientUpdate:
             // Don't validate these types, as was done historically.
             return true
         }

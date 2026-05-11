@@ -84,18 +84,6 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             // to avoid resurrecting threads or messages.
             // No timestamp validation
             return self.processRecipientUpdate(transcript, groupThread: groupThread, tx: tx)
-        case .endSessionUpdate(let thread):
-            guard validateTimestampInt64() else {
-                return .failure(OWSAssertionError("Timestamp validation failed"))
-            }
-            Logger.info("EndSession was sent to recipient: \(thread.contactAddress)")
-            self.archiveSessions(for: thread.contactAddress, tx: tx)
-
-            let infoMessage = TSInfoMessage(thread: thread, messageType: .typeLocalUserEndedSession)
-            interactionStore.insertInteraction(infoMessage, tx: tx)
-
-            // Don't continue processing lest we print a bubble for the session reset.
-            return .success(nil)
         case .paymentNotification(let paymentNotification):
             Logger.info("Recording payment notification from sync transcript in thread: \(paymentNotification.target.thread.logString) timestamp: \(transcript.timestamp)")
             guard validateTimestampValue() else {
@@ -531,9 +519,5 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         }
 
         return .success(messageFound)
-    }
-
-    private func archiveSessions(for address: SignalServiceAddress, tx: DBWriteTransaction) {
-        self.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.archiveSessions(forAddress: address, tx: tx)
     }
 }

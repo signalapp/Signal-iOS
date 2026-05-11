@@ -237,15 +237,6 @@ public class SessionManagerForIdentity: LibSignalClient.SessionStore {
         )
     }
 
-    func archiveSessions(forAddress address: SignalServiceAddress, tx: DBWriteTransaction) {
-        Logger.info("archiving all sessions for \(address)")
-        self._archiveSessions(
-            recipientIdResult: self.recipientIdFinder.recipientId(for: address, tx: tx),
-            deviceId: nil,
-            tx: tx,
-        )
-    }
-
     private func _archiveSessions(
         recipientIdResult: Result<SignalRecipient.RowId, RecipientIdError>?,
         deviceId: DeviceId?,

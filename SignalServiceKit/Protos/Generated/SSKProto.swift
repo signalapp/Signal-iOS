@@ -9014,14 +9014,12 @@ extension SSKProtoDataMessageAdminDeleteBuilder {
 
 @objc
 public enum SSKProtoDataMessageFlags: Int32 {
-    case endSession = 1
     case expirationTimerUpdate = 2
     case profileKeyUpdate = 4
 }
 
 private func SSKProtoDataMessageFlagsWrap(_ value: SignalServiceProtos_DataMessage.Flags) -> SSKProtoDataMessageFlags {
     switch value {
-    case .endSession: return .endSession
     case .expirationTimerUpdate: return .expirationTimerUpdate
     case .profileKeyUpdate: return .profileKeyUpdate
     }
@@ -9029,7 +9027,6 @@ private func SSKProtoDataMessageFlagsWrap(_ value: SignalServiceProtos_DataMessa
 
 private func SSKProtoDataMessageFlagsUnwrap(_ value: SSKProtoDataMessageFlags) -> SignalServiceProtos_DataMessage.Flags {
     switch value {
-    case .endSession: return .endSession
     case .expirationTimerUpdate: return .expirationTimerUpdate
     case .profileKeyUpdate: return .profileKeyUpdate
     }

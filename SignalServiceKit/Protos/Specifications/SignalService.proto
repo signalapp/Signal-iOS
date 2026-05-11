@@ -201,7 +201,7 @@ message CallMessage {
 
 message DataMessage {
   enum Flags {
-    END_SESSION = 1;
+    reserved /*END_SESSION*/ 1;
     EXPIRATION_TIMER_UPDATE = 2;
     PROFILE_KEY_UPDATE = 4;
   }

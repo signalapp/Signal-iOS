@@ -64,7 +64,6 @@ public enum SentMessageTranscriptType {
     case message(Message)
     case recipientUpdate(TSGroupThread)
     case expirationTimerUpdate(SentMessageTranscriptTarget)
-    case endSessionUpdate(TSContactThread)
     case paymentNotification(PaymentNotification)
     case archivedPayment(ArchivedPayment)
 }
@@ -86,7 +85,7 @@ extension SentMessageTranscript {
 
     public var threadForDataMessage: TSThread? {
         switch type {
-        case .endSessionUpdate, .expirationTimerUpdate:
+        case .expirationTimerUpdate:
             return nil
         case .message(let messageParams):
             return messageParams.target.thread
