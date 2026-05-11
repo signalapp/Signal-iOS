@@ -129,6 +129,8 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
     // MARK: - Index Usage
 
     func testAllQueriesUseIndex() throws {
+        DebugFlags.mediaGalleryOnlyAllowDownloaded.set(false)
+
         let (thread, _) = insertThreadAndInteraction()
 
         // Set up some parametrized values for tests.
