@@ -800,7 +800,10 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
-        guard contentLength > 0 else {
+        guard
+            contentLength > 0,
+            contentLength < OutgoingAttachmentLimits.currentLimits().maxPlaintextBytes
+        else {
             owsFailDebug("Asset size response has invalid content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
