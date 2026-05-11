@@ -267,7 +267,7 @@ public class PollStore {
             throw OWSAssertionError("Poll doesn't support multi-select but multiple options were voted for")
         }
 
-        if voteCount > Int32.max {
+        if voteCount >= Int32.max {
             throw OWSAssertionError("Vote count does not fit in Int32!")
         }
 
