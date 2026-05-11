@@ -317,12 +317,9 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 return
             }
 
-            self.updateTransitTier(
-                attachmentStream: attachmentStream,
-                with: result,
-                logger: logger,
-                tx: tx,
-            )
+            self.updateTransitTier(forAttachmentStream: attachmentStream, uploadResult: result, tx: tx)
+
+            self.touchAllMessageReferences(attachmentId: attachmentStream.attachment.id, logger: logger, tx: tx)
 
             self.cleanup(record: record, logger: logger, tx: tx)
         }
@@ -479,27 +476,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             }()
 
             if shouldUpdateTransitTierInfo {
-                let transitTierInfo = Attachment.TransitTierInfo(
-                    cdnNumber: uploadResult.cdnNumber,
-                    cdnKey: uploadResult.cdnKey,
-                    uploadTimestamp: uploadResult.beginTimestamp,
-                    encryptionKey: uploadResult.localUploadMetadata.key,
-                    unencryptedByteCount: uploadResult.localUploadMetadata.plaintextDataLength,
-                    // ALWAYS use digest for integrity check for uploaded attachments;
-                    // we only allow sending using a digest integrity check not a plaintext hash
-                    // so prefer digest if we have both. If we don't, this attachment we just
-                    // uploaded will fail to send.
-                    integrityCheck: .ciphertextDigest(uploadResult.localUploadMetadata.digest),
-                    // TODO: [Attachment Streaming] support incremental mac
-                    incrementalMacInfo: nil,
-                    lastDownloadAttemptTimestamp: nil,
-                )
-
-                attachmentStore.saveLatestTransitTierInfo(
-                    attachmentStream: attachmentStream,
-                    transitTierInfo: transitTierInfo,
-                    tx: tx,
-                )
+                self.updateTransitTier(forAttachmentStream: attachmentStream, uploadResult: uploadResult, tx: tx)
             }
 
             self.cleanup(record: record, logger: logger, tx: tx)
@@ -1053,14 +1030,11 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         attachmentUploadStore.removeRecord(for: record.attachmentId, sourceType: record.sourceType, tx: tx)
     }
 
-    // Update all the necessary places once the upload succeeds
     private func updateTransitTier(
-        attachmentStream: AttachmentStream,
-        with result: Upload.AttachmentResult,
-        logger: PrefixedLogger,
+        forAttachmentStream attachmentStream: AttachmentStream,
+        uploadResult result: Upload.AttachmentResult,
         tx: DBWriteTransaction,
     ) {
-
         let transitTierInfo = Attachment.TransitTierInfo(
             cdnNumber: result.cdnNumber,
             cdnKey: result.cdnKey,
@@ -1082,9 +1056,11 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             transitTierInfo: transitTierInfo,
             tx: tx,
         )
+    }
 
+    private func touchAllMessageReferences(attachmentId: Attachment.IDType, logger: PrefixedLogger, tx: DBWriteTransaction) {
         attachmentStore.enumerateAllReferences(
-            toAttachmentId: attachmentStream.attachment.id,
+            toAttachmentId: attachmentId,
             tx: tx,
         ) { attachmentReference, _ in
             switch attachmentReference.owner {
