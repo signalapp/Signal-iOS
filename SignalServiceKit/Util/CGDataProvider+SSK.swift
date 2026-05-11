@@ -20,10 +20,12 @@ extension FileHandle: CGDataProviderFileHandle {
 extension CGDataProvider {
     // Class-bound wrapper around a FileHandle
     private class FileHandleWrapper {
-        let fileHandle: any CGDataProviderFileHandle
+        // It may be possible for `getBytesAtPosition` to be invoked from multiple
+        // threads concurrently, so add a lock to ensure mutual exclusion.
+        let fileHandle: TSMutex<any CGDataProviderFileHandle>
 
         init(_ fileHandle: any CGDataProviderFileHandle) {
-            self.fileHandle = fileHandle
+            self.fileHandle = TSMutex(initialState: fileHandle)
         }
     }
 
@@ -37,17 +39,19 @@ extension CGDataProvider {
                     return 0
                 }
                 let fileHandle = Unmanaged<FileHandleWrapper>.fromOpaque(info).takeUnretainedValue().fileHandle
-                do {
-                    if offset != (try fileHandle.offset()) {
-                        try fileHandle.seek(toOffset: UInt64(offset))
+                return fileHandle.withLock {
+                    do {
+                        if offset != (try $0.offset()) {
+                            try $0.seek(toOffset: UInt64(offset))
+                        }
+                        let data = try $0.readNonOptional(upToCount: byteCount)
+                        data.withUnsafeBytes { bytes in
+                            buffer.copyMemory(from: bytes.baseAddress!, byteCount: bytes.count)
+                        }
+                        return data.count
+                    } catch {
+                        return 0
                     }
-                    let data = try fileHandle.readNonOptional(upToCount: byteCount)
-                    data.withUnsafeBytes { bytes in
-                        buffer.copyMemory(from: bytes.baseAddress!, byteCount: bytes.count)
-                    }
-                    return data.count
-                } catch {
-                    return 0
                 }
             },
             releaseInfo: { info in
