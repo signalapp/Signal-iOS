@@ -7,9 +7,14 @@ import SignalServiceKit
 import SignalUI
 
 class ConversationViewModel {
+    enum BadgeType {
+        case verified
+        case official
+    }
+
     let groupCallInProgress: Bool
     let isSystemContact: Bool
-    let shouldShowVerifiedBadge: Bool
+    let badgeType: BadgeType?
     let unreadMentionMessageIds: [String]
 
     static func load(for thread: TSThread, tx: DBReadTransaction) -> ConversationViewModel {
@@ -29,7 +34,7 @@ class ConversationViewModel {
         return ConversationViewModel(
             groupCallInProgress: groupCallInProgress,
             isSystemContact: isSystemContact,
-            shouldShowVerifiedBadge: shouldShowVerifiedBadge(for: thread, tx: tx),
+            badgeType: badgeType(for: thread, tx: tx),
             unreadMentionMessageIds: unreadMentionMessageIds,
         )
     }
@@ -37,30 +42,30 @@ class ConversationViewModel {
     init(
         groupCallInProgress: Bool,
         isSystemContact: Bool,
-        shouldShowVerifiedBadge: Bool,
+        badgeType: BadgeType?,
         unreadMentionMessageIds: [String],
     ) {
         self.groupCallInProgress = groupCallInProgress
         self.isSystemContact = isSystemContact
-        self.shouldShowVerifiedBadge = shouldShowVerifiedBadge
+        self.badgeType = badgeType
         self.unreadMentionMessageIds = unreadMentionMessageIds
     }
 
-    private static func shouldShowVerifiedBadge(for thread: TSThread, tx: DBReadTransaction) -> Bool {
+    private static func badgeType(for thread: TSThread, tx: DBReadTransaction) -> BadgeType? {
         let identityManager = DependenciesBridge.shared.identityManager
         switch thread {
         case let groupThread as TSGroupThread:
             if groupThread.groupModel.groupMembers.isEmpty {
-                return false
+                return nil
             }
-            return !identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx)
+            return identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx) ? nil : .verified
         case let contactThread as TSContactThread:
-            return identityManager.verificationState(for: contactThread.contactAddress, tx: tx) == .verified
+            return identityManager.verificationState(for: contactThread.contactAddress, tx: tx) == .verified ? .verified : nil
         case is TSReleaseNotesThread:
-            return false
+            return .official
         default:
             owsFailDebug("Showing conversation for unexpected thread type.")
-            return false
+            return nil
         }
     }
 }

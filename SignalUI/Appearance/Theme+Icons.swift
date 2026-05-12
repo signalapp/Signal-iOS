@@ -84,6 +84,7 @@ public enum ThemeIcon: UInt {
     case refresh
     case spam
     case official
+    case officialNoColor
     case qrCode
     case qrCodeLight
     case threadCompact
@@ -360,6 +361,8 @@ public extension Theme {
             return "spam"
         case .official:
             return "official"
+        case .officialNoColor:
+            return "official-no-color"
         case .qrCode:
             return "qr_code"
         case .qrCodeLight:

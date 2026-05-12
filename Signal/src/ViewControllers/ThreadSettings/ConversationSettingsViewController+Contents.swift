@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SafariServices
 import SignalServiceKit
 import SignalUI
 import UIKit
@@ -44,9 +45,9 @@ extension ConversationSettingsViewController {
         firstSection.customHeaderView = header
 
         // Main section.
-        addDisappearingMessagesItem(to: mainSection)
+        addDisappearingMessagesItemIfNecessary(to: mainSection)
         addNicknameItemIfNecessary(to: mainSection)
-        addColorAndWallpaperSettingsItem(to: mainSection)
+        addColorAndWallpaperSettingsItemIfNecessary(to: mainSection)
         if !isNoteToSelf { addSoundAndNotificationSettingsItem(to: mainSection) }
         addSafetyNumberItemIfNecessary(to: mainSection)
 
@@ -75,7 +76,8 @@ extension ConversationSettingsViewController {
         // Bottom sections
         if
             !isNoteToSelf,
-            !thread.isGroupV1Thread
+            !thread.isGroupV1Thread,
+            !thread.isReleaseNotesThread
         {
             contents.add(buildBlockAndLeaveSection())
         }
@@ -87,6 +89,14 @@ extension ConversationSettingsViewController {
             !groupModelV2.isTerminated
         {
             contents.add(buildEndGroupSection())
+        }
+
+        if thread.isReleaseNotesThread {
+            let helpSection = buildHelpSettingsSection()
+            contents.add(helpSection)
+
+            let donateSection = buildDonateSettingsSection()
+            contents.add(donateSection)
         }
 
         if DebugFlags.internalSettings {
@@ -426,7 +436,9 @@ extension ConversationSettingsViewController {
         contents.add(section)
     }
 
-    private func addColorAndWallpaperSettingsItem(to section: OWSTableSection) {
+    private func addColorAndWallpaperSettingsItemIfNecessary(to section: OWSTableSection) {
+        guard !thread.isReleaseNotesThread else { return }
+
         section.add(OWSTableItem(
             customCellBlock: { [weak self] in
                 guard let self else {
@@ -476,7 +488,92 @@ extension ConversationSettingsViewController {
         ))
     }
 
-    private func addDisappearingMessagesItem(to section: OWSTableSection) {
+    private func buildDonateSettingsSection() -> OWSTableSection {
+        let donateSection = OWSTableSection()
+        donateSection.add(OWSTableItem(
+            customCellBlock: {
+                let cell = OWSTableItem.buildCell(
+                    icon: .settingsDonate,
+                    itemName: OWSLocalizedString(
+                        "SETTINGS_DONATE",
+                        comment: "Title for the 'donate to signal' link in settings.",
+                    ),
+                    accessoryType: .disclosureIndicator,
+                )
+                return cell
+            },
+            actionBlock: { [weak self] in
+                self?.navigationController?.pushViewController(
+                    DonationSettingsViewController(),
+                    animated: true,
+                )
+            },
+        ))
+        return donateSection
+    }
+
+    private func buildHelpSettingsSection() -> OWSTableSection {
+        let helpSection = OWSTableSection(title: CommonStrings.help)
+        helpSection.add(items: [
+            OWSTableItem(
+                customCellBlock: {
+                    let cell = OWSTableItem.buildCell(
+                        icon: .settingsHelp,
+                        itemName: OWSLocalizedString(
+                            "HELP_SUPPORT_CENTER",
+                            comment: "Help item that takes the user to the Signal support website",
+                        ),
+                        accessoryType: .disclosureIndicator,
+                    )
+                    return cell
+                },
+                actionBlock: {
+                    let vc = SFSafariViewController(url: URL.Support.generic)
+                    self.present(vc, animated: true, completion: nil)
+                },
+            ),
+            OWSTableItem(
+                customCellBlock: {
+                    let cell = OWSTableItem.buildCell(
+                        icon: .settingsInvite,
+                        itemName: OWSLocalizedString(
+                            "HELP_CONTACT_US",
+                            comment: "Help item allowing the user to file a support request",
+                        ),
+                        accessoryType: .disclosureIndicator,
+                    )
+                    return cell
+                },
+                actionBlock: {
+                    guard ComposeSupportEmailOperation.canSendEmails else {
+                        let localizedSheetTitle = OWSLocalizedString(
+                            "EMAIL_SIGNAL_TITLE",
+                            comment: "Title for the fallback support sheet if user cannot send email",
+                        )
+                        let localizedSheetMessage = OWSLocalizedString(
+                            "EMAIL_SIGNAL_MESSAGE",
+                            comment: "Description for the fallback support sheet if user cannot send email",
+                        )
+                        let fallbackSheet = ActionSheetController(
+                            title: localizedSheetTitle,
+                            message: localizedSheetMessage,
+                        )
+                        let buttonTitle = OWSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
+                        fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
+                        self.presentActionSheet(fallbackSheet)
+                        return
+                    }
+                    let supportVC = ContactSupportViewController()
+                    let navVC = OWSNavigationController(rootViewController: supportVC)
+                    self.presentFormSheet(navVC, animated: true)
+                },
+            ),
+        ])
+        return helpSection
+    }
+
+    private func addDisappearingMessagesItemIfNecessary(to section: OWSTableSection) {
+        guard !thread.isReleaseNotesThread else { return }
 
         let canEditConversationAttributes = self.canEditConversationAttributes
         let disappearingMessagesConfiguration = self.disappearingMessagesConfiguration

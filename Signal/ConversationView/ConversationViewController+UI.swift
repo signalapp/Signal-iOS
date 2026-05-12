@@ -18,7 +18,7 @@ extension ConversationViewController {
         // pushed over ConversationViewController.
         navigationItem.title = title
 
-        headerView.titleIcon = thread.isNoteToSelf ? Theme.iconImage(.official) : nil
+        headerView.titleIcon = thread.isNoteToSelf || thread.isReleaseNotesThread ? Theme.iconImage(.official) : nil
 
         if conversationViewModel.isSystemContact {
             // To ensure a single source of text color do not set `color` attributes unless you really need to.
@@ -202,11 +202,11 @@ extension ConversationViewController {
 
         let isMuted = threadViewModel.isMuted
         let hasTimer = disappearingMessagesConfiguration.isEnabled
-        let isVerified = conversationViewModel.shouldShowVerifiedBadge
+        let badgeType = conversationViewModel.badgeType
 
         if isMuted {
             subtitleText.appendTemplatedImage(named: "bell-slash-compact", font: subtitleFont)
-            if !isVerified {
+            if badgeType == nil {
                 subtitleText.append(iconSpacer, attributes: attributes)
                 subtitleText.append(
                     OWSLocalizedString(
@@ -234,18 +234,29 @@ extension ConversationViewController {
             )
         }
 
-        if isVerified {
-            if hasTimer || isMuted {
-                subtitleText.append(betweenItemSpacer, attributes: attributes)
+        if let badgeType {
+            switch badgeType {
+            case .verified:
+                if hasTimer || isMuted {
+                    subtitleText.append(betweenItemSpacer, attributes: attributes)
+                }
+
+                subtitleText.append(SignalSymbol.safetyNumber.attributedString(staticFontSize: subtitleFont.pointSize))
+
+                subtitleText.append(iconSpacer, attributes: attributes)
+                subtitleText.append(
+                    SafetyNumberStrings.verified,
+                    attributes: attributes,
+                )
+            case .official:
+                if isMuted {
+                    subtitleText.append(betweenItemSpacer, attributes: attributes)
+                }
+                subtitleText.append(
+                    OWSLocalizedString("RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL", comment: "Label displayed in thread details of the release notes chat"),
+                    attributes: attributes,
+                )
             }
-
-            subtitleText.append(SignalSymbol.safetyNumber.attributedString(staticFontSize: subtitleFont.pointSize))
-
-            subtitleText.append(iconSpacer, attributes: attributes)
-            subtitleText.append(
-                SafetyNumberStrings.verified,
-                attributes: attributes,
-            )
         }
 
         headerView.subtitleLabel.attributedText = subtitleText

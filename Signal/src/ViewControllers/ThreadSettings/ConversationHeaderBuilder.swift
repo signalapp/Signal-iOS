@@ -52,6 +52,13 @@ struct ConversationHeaderBuilder {
                 memberLabel: memberLabel,
                 delegate: delegate,
             )
+        } else if let releaseNotesThread = thread as? TSReleaseNotesThread {
+            return ConversationHeaderBuilder.buildHeaderForReleaseNotes(
+                releaseNotesThread: releaseNotesThread,
+                sizeClass: sizeClass,
+                options: options,
+                delegate: delegate,
+            )
         } else {
             owsFailDebug("Invalid thread.")
             return UIView()
@@ -202,6 +209,47 @@ struct ConversationHeaderBuilder {
 
         builder.addButtons()
 
+        return builder.build()
+    }
+
+    static func buildHeaderForReleaseNotes(
+        releaseNotesThread: TSReleaseNotesThread,
+        sizeClass: ConversationAvatarView.Configuration.SizeClass,
+        options: Options,
+        delegate: ConversationHeaderDelegate,
+    ) -> UIView {
+        // Make sure the view is loaded before we open a transaction,
+        // because it can end up creating a transaction within.
+        _ = delegate.view
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            self.buildHeaderForReleaseNotes(
+                releaseNotesThread: releaseNotesThread,
+                sizeClass: sizeClass,
+                options: options,
+                delegate: delegate,
+                transaction: transaction,
+            )
+        }
+    }
+
+    static func buildHeaderForReleaseNotes(
+        releaseNotesThread: TSReleaseNotesThread,
+        sizeClass: ConversationAvatarView.Configuration.SizeClass,
+        options: Options,
+        delegate: ConversationHeaderDelegate,
+        transaction: DBReadTransaction,
+    ) -> UIView {
+
+        var builder = ConversationHeaderBuilder(
+            delegate: delegate,
+            sizeClass: sizeClass,
+            options: options,
+            isTerminatedGroup: false,
+            transaction: transaction,
+        )
+
+        builder.addButtons()
+        builder.addReleaseNotesDescription()
         return builder.build()
     }
 
@@ -400,6 +448,65 @@ struct ConversationHeaderBuilder {
         return button
     }
 
+    mutating func addReleaseNotesDescription() {
+        func descriptionLine(icon: ThemeIcon, text: String) -> UIStackView {
+            let stackView = UIStackView()
+            stackView.axis = .horizontal
+            stackView.spacing = 16
+
+            let iconImage = Theme.iconImage(icon)
+            let imageView = UIImageView(image: iconImage)
+            imageView.contentMode = .scaleAspectFit
+            imageView.tintColor = Theme.primaryIconColor
+            imageView.autoSetDimensions(to: .square(15))
+            stackView.addArrangedSubview(imageView)
+
+            let label = UILabel()
+            label.textAlignment = .natural
+            label.numberOfLines = 0
+            label.font = .dynamicTypeSubheadline
+            label.text = text
+
+            stackView.addArrangedSubview(label)
+
+            return stackView
+        }
+
+        subviews.append(UIView.spacer(withHeight: 12))
+        let backgroundContainer = UIView()
+        backgroundContainer.backgroundColor = delegate.tableViewController.cellBackgroundColor
+        backgroundContainer.layer.cornerRadius = 20
+        backgroundContainer.layer.masksToBounds = true
+
+        let outerStackView = UIStackView()
+        outerStackView.axis = .vertical
+        outerStackView.spacing = 12
+
+        let firstDescription = descriptionLine(
+            icon: ThemeIcon.officialNoColor,
+            text: OWSLocalizedString(
+                "RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT",
+                comment: "Settings description label for the release notes thread telling a user this is the only official chat",
+            ),
+        )
+
+        let secondDescription = descriptionLine(
+            icon: ThemeIcon.settingsNotifications,
+            text: OWSLocalizedString(
+                "RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED",
+                comment: "Settings description label for the release notes thread telling a user to keep up to date",
+            ),
+        )
+
+        outerStackView.addArrangedSubviews([firstDescription, secondDescription])
+
+        backgroundContainer.addSubview(outerStackView)
+        backgroundContainer.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 20)
+        outerStackView.autoPinEdgesToSuperviewMargins()
+
+        subviews.append(backgroundContainer)
+    }
+
     mutating func addGroupDescriptionPreview(text: String) {
         let previewView: GroupDescriptionPreviewView
         if
@@ -486,7 +593,11 @@ struct ConversationHeaderBuilder {
         )
 
         avatarView.update(transaction) {
-            $0.dataSource = .thread(delegate.thread)
+            if delegate.thread.isReleaseNotesThread {
+                $0.dataSource = .asset(avatar: AvatarBuilder.releaseNotesIcon(), badge: nil)
+            } else {
+                $0.dataSource = .thread(delegate.thread)
+            }
             $0.storyConfiguration = .autoUpdate()
         }
         avatarView.interactionDelegate = delegate
@@ -519,6 +630,7 @@ struct ConversationHeaderBuilder {
         threadName: String,
         isNoteToSelf: Bool,
         isSystemContact: Bool,
+        isReleaseNotes: Bool,
         canTap: Bool,
         tx: DBReadTransaction,
     ) -> NSAttributedString {
@@ -529,7 +641,7 @@ struct ConversationHeaderBuilder {
             .font: font,
         ])
 
-        if isNoteToSelf {
+        if isNoteToSelf || isReleaseNotes {
             attributedString.append(" ")
             let verifiedBadgeImage = Theme.iconImage(.official)
             let verifiedBadgeAttachment = NSAttributedString.with(
@@ -716,6 +828,7 @@ extension ConversationHeaderDelegate {
             threadName: threadName,
             isNoteToSelf: thread.isNoteToSelf,
             isSystemContact: isSystemContact,
+            isReleaseNotes: thread.isReleaseNotesThread,
             canTap: self.canTapThreadName,
             tx: tx,
         )
@@ -774,7 +887,7 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
 
     func buildMainHeader() -> UIView {
         let options: ConversationHeaderBuilder.Options
-        if isTerminatedGroup {
+        if isTerminatedGroup || thread.isReleaseNotesThread {
             options = [.mute, .search]
         } else if callRecords.isEmpty {
             options = [.videoCall, .audioCall, .mute, .search, .renderLocalUserAsNoteToSelf]

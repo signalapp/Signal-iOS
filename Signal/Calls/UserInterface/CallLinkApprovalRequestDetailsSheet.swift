@@ -138,6 +138,7 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
                 threadName: self.approvalRequest.name,
                 isNoteToSelf: false,
                 isSystemContact: isSystemContact,
+                isReleaseNotes: false,
                 canTap: true,
                 tx: tx,
             )
