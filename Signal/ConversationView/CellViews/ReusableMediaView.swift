@@ -57,7 +57,13 @@ public class ReusableMediaView {
     }
 
     var isVideo: Bool {
-        mediaViewAdapter is MediaViewAdapterVideo
+        if mediaViewAdapter is MediaViewAdapterVideo {
+            return true
+        }
+        if let thumbnail = mediaViewAdapter as? MediaViewAdapterBackupThumbnail {
+            return thumbnail.isVideo
+        }
+        return false
     }
 
     // MARK: - LoadState
@@ -405,6 +411,10 @@ class MediaViewAdapterBackupThumbnail: MediaViewAdapter {
 
     var mediaView: UIView {
         imageView
+    }
+
+    var isVideo: Bool {
+        attachmentBackupThumbnail.attachment.contentType.isVideo
     }
 
     var isLoaded: Bool {

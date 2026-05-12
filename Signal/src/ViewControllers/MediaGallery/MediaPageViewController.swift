@@ -296,7 +296,7 @@ class MediaPageViewController: UIPageViewController {
         }
 
         let mediaPage = buildGalleryPage(galleryItem: item)
-        mediaPage.shouldAutoPlayVideo = true
+        mediaPage.shouldAutoPlayVideo = item.isVideoReadyToPlay
         setViewControllers([mediaPage], direction: direction, animated: animated) { _ in
             self.didTransitionToNewPage(animated: animated, direction: direction)
         }

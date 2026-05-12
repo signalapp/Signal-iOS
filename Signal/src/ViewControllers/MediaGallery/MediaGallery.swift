@@ -88,12 +88,17 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     var isVideo: Bool {
         switch referencedAttachment.attachment.contentType {
         case .video:
-            // For now, if the video isn't a stream, don't treat it as a video.
-            if referencedAttachment.asReferencedStream == nil {
-                return false
-            }
-            return renderingFlag != .shouldLoop
+            return true
         case .file, .image, .audio:
+            return false
+        }
+    }
+
+    var isVideoReadyToPlay: Bool {
+        switch referencedAttachment.attachment.contentType {
+        case .video where referencedAttachment.asReferencedStream != nil:
+            return renderingFlag != .shouldLoop
+        case .file, .image, .audio, .video:
             return false
         }
     }

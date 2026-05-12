@@ -59,8 +59,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
     }
 
     private func configureVideoPlaybackControls() {
-        guard videoPlayerView != nil else {
-            owsFailBeta("No videoPlayer")
+        guard isVideo else {
             return
         }
 
