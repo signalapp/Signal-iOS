@@ -43,6 +43,14 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
         CVComponentViewCollapseSet()
     }
 
+    override func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
+        guard let componentView = componentView as? CVComponentViewCollapseSet else {
+            owsFailDebug("Unexpected componentView.")
+            return nil
+        }
+        return componentView.wallpaperBlurView
+    }
+
     func configureForRendering(
         componentView: CVComponentView,
         cellMeasurement: CVCellMeasurement,
@@ -50,32 +58,23 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
     ) {
         guard let componentView = componentView as? CVComponentViewCollapseSet else {
             owsFailDebug("Unexpected componentView.")
+            componentView.reset()
             return
         }
 
+        let hasWallpaper = conversationStyle.hasWallpaper
+        let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
         let isReusing = componentView.rootView.superview != nil
-            && componentView.button.superview != nil
+            && componentView.label.superview != nil
+            && !wallpaperModeHasChanged
 
         if !isReusing {
             componentView.reset()
         }
 
-        // TODO: Add icons
+        componentView.hasWallpaper = hasWallpaper
 
-        var config = UIButton.Configuration.gray()
-        config.title = buttonTitleString
-        config.baseForegroundColor = .Signal.label
-        config.baseBackgroundColor = conversationStyle.hasWallpaper
-            ? .Signal.MaterialBase.button
-            : .Signal.secondaryFill
-        config.contentInsets = buttonContentInsets
-        config.titleTextAttributesTransformer = .defaultFont(buttonFont)
-        componentView.button.configuration = config
-        componentView.button.isUserInteractionEnabled = false
-
-        if let buttonSize = cellMeasurement.size(key: Self.measurementKey_button) {
-            componentView.button.layer.cornerRadius = buttonSize.height / 2
-        }
+        labelConfig.applyForRendering(label: componentView.label)
 
         if isReusing {
             componentView.outerStack.configureForReuse(
@@ -88,12 +87,46 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
                 config: outerStackConfig,
                 cellMeasurement: cellMeasurement,
                 measurementKey: Self.measurementKey_outerStack,
-                subviews: [componentView.button],
+                subviews: [componentView.label],
             )
+
+            let bubbleView: UIView
+            if hasWallpaper {
+                let wallpaperBlurView = componentView.ensureWallpaperBlurView()
+                configureWallpaperBlurView(
+                    wallpaperBlurView: wallpaperBlurView,
+                    componentDelegate: componentDelegate,
+                    bubbleConfig: BubbleConfiguration(
+                        corners: .capsule(maxRadius: 16),
+                        stroke: ConversationStyle.bubbleStroke(isDarkThemeEnabled: isDarkThemeEnabled),
+                    ),
+                )
+                bubbleView = wallpaperBlurView
+            } else {
+                let solidBackgroundView = componentView.solidBackgroundView
+                solidBackgroundView.layer.cornerRadius = 16
+                solidBackgroundView.backgroundColor = .Signal.secondaryFill
+                bubbleView = solidBackgroundView
+            }
+            componentView.outerStack.addSubview(bubbleView)
+            componentView.outerStack.sendSubviewToBack(bubbleView)
+            // This seemed easier than adding an entirely new ManualStackView
+            // just to constrain the label and background to
+            componentView.outerStack.addLayoutBlock { [label = componentView.label] _ in
+                bubbleView.frame = label.frame.inset(by: Self.backgroundLayoutInsets)
+            }
+        }
+
+        if
+            hasWallpaper,
+            let wallpaperBlurView = componentView.wallpaperBlurView
+        {
+            wallpaperBlurView.applyLayout()
+            wallpaperBlurView.updateIfNecessary()
         }
 
         componentView.outerStack.isAccessibilityElement = true
-        componentView.outerStack.accessibilityLabel = buttonTitleString
+        componentView.outerStack.accessibilityLabel = titleString
         componentView.outerStack.accessibilityTraits = .button
         componentView.outerStack.accessibilityHint = collapseSet.isExpanded
             ? OWSLocalizedString(
@@ -121,7 +154,6 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
     // MARK: - Measurement
 
     fileprivate static let measurementKey_outerStack = "CVComponentCollapseSet.outerStack"
-    fileprivate static let measurementKey_button = "CVComponentCollapseSet.button"
 
     func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
@@ -129,14 +161,12 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
             0,
             maxWidth - outerStackConfig.layoutMargins.totalWidth,
         )
-        let labelSize = CVText.measureLabel(config: buttonLabelConfig, maxWidth: availableWidth)
-        let buttonSize = labelSize + buttonContentInsets.asSize
-        measurementBuilder.setSize(key: Self.measurementKey_button, size: buttonSize)
+        let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: availableWidth)
         let outerMeasurement = ManualStackView.measure(
             config: outerStackConfig,
             measurementBuilder: measurementBuilder,
             measurementKey: Self.measurementKey_outerStack,
-            subviewInfos: [buttonSize.asManualSubviewInfo(hasFixedWidth: true)],
+            subviewInfos: [labelSize.asManualSubviewInfo(hasFixedWidth: true)],
         )
         return outerMeasurement.measuredSize
     }
@@ -149,48 +179,95 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
             alignment: .center,
             spacing: 0,
             layoutMargins: UIEdgeInsets(
-                top: 4,
-                leading: conversationStyle.fullWidthGutterLeading,
-                bottom: 4,
-                trailing: conversationStyle.fullWidthGutterTrailing,
+                top: 4 + Self.labelContentInsets.top,
+                leading: conversationStyle.fullWidthGutterLeading + Self.labelContentInsets.leading,
+                bottom: 4 + Self.labelContentInsets.bottom,
+                trailing: conversationStyle.fullWidthGutterTrailing + Self.labelContentInsets.trailing,
             ),
+        )
+    }
+
+    private static var backgroundLayoutInsets: UIEdgeInsets {
+        UIEdgeInsets(
+            top: -labelContentInsets.top,
+            leading: -labelContentInsets.leading,
+            bottom: -labelContentInsets.bottom,
+            trailing: -labelContentInsets.trailing,
         )
     }
 
     // MARK: - Content
 
-    private var buttonFont: UIFont { .dynamicTypeFootnote.medium() }
+    private var labelFont: UIFont { .dynamicTypeFootnote.medium() }
 
-    private var buttonContentInsets: NSDirectionalEdgeInsets {
-        NSDirectionalEdgeInsets(hMargin: 10, vMargin: 5)
+    private static var labelContentInsets: NSDirectionalEdgeInsets {
+        NSDirectionalEdgeInsets(hMargin: 14, vMargin: 5)
     }
 
-    private var buttonLabelConfig: CVLabelConfig {
-        CVLabelConfig.unstyledText(
-            buttonTitleString,
-            font: buttonFont,
+    private var leadingIcon: SignalSymbol {
+        switch collapseSet.collapseSetType {
+        case .groupUpdates: return .group
+        case .chatUpdates: return .thread
+        case .callEvents: return .phone
+        case .timerChanges: return .timer
+        }
+    }
+
+    private var labelConfig: CVLabelConfig {
+        CVLabelConfig(
+            text: .attributedText(titleAttributedString),
+            displayConfig: .forUnstyledText(font: labelFont, textColor: .Signal.label),
+            font: labelFont,
             textColor: .Signal.label,
+            numberOfLines: 0,
+            lineBreakMode: .byWordWrapping,
             textAlignment: .center,
         )
     }
 
-    private var buttonTitleString: String {
-        var label = summaryLabel(
+    private var titleAttributedString: NSAttributedString {
+        let labelText = summaryLabel(
             count: collapseSet.collapsedInteractions.count,
             type: collapseSet.collapseSetType,
+            finalTimerDescription: collapseSet.finalTimerDescription,
         )
-        // TODO: Localize this more rigorously
-        if let timerDesc = collapseSet.finalTimerDescription {
-            label += " · " + timerDesc
-        }
-        // TODO: Use proper symbols
-        let chevron = collapseSet.isExpanded ? "\u{25B4}" : "\u{25BE}" // ▴ or ▾
-        return label + " " + chevron
+
+        let nbsp = SignalSymbol.LeadingCharacter.nonBreakingSpace.rawValue
+        let chevron: SignalSymbol = collapseSet.isExpanded ? .chevronUp : .chevronDown
+
+        let result = NSMutableAttributedString()
+        result.append(leadingIcon.attributedString(
+            for: .footnote,
+            clamped: false,
+            attributes: [.foregroundColor: UIColor.Signal.label],
+        ))
+        result.append(NSAttributedString(
+            string: "\(nbsp)\(labelText)\(nbsp)",
+            attributes: [
+                .font: labelFont,
+                .foregroundColor: UIColor.Signal.label,
+            ],
+        ))
+        result.append(chevron.attributedString(
+            for: .footnote,
+            clamped: false,
+            attributes: [.foregroundColor: UIColor.Signal.label],
+        ))
+        return result
+    }
+
+    private var titleString: String {
+        summaryLabel(
+            count: collapseSet.collapsedInteractions.count,
+            type: collapseSet.collapseSetType,
+            finalTimerDescription: collapseSet.finalTimerDescription,
+        )
     }
 
     private func summaryLabel(
         count: Int,
         type: CollapseSetInteraction.MessagesType,
+        finalTimerDescription: String? = nil,
     ) -> String {
         switch type {
         case .groupUpdates:
@@ -212,13 +289,21 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
                 count,
             )
         case .timerChanges:
+            let finalTimer: String
+            if let finalTimerDescription {
+                finalTimer = finalTimerDescription
+            } else {
+                owsFailBeta("disappearing message timer collapse set does not have final timer description")
+                finalTimer = ""
+            }
             return String(
                 format: OWSLocalizedString(
-                    "COLLAPSE_SET_TIMER_CHANGES_%d",
+                    "COLLAPSE_SET_TIMER_CHANGES_WITH_FINAL_TIMER_%d",
                     tableName: "PluralAware",
-                    comment: "Label for a collapsed group of disappearing message timer changes. Embeds {{number of events}}.",
+                    comment: "Label for collapsed disappearing message timer changes showing the final timer value. Embeds {{number of events}} and {{timer description}}.",
                 ),
                 count,
+                finalTimer,
             )
         case .callEvents:
             return String(
@@ -237,7 +322,20 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
     class CVComponentViewCollapseSet: NSObject, CVComponentView {
 
         fileprivate let outerStack = ManualStackView(name: "collapseSet.outerStack")
-        fileprivate let button = UIButton(configuration: .gray())
+        fileprivate let label = CVLabel()
+        fileprivate let solidBackgroundView = UIView()
+
+        fileprivate var wallpaperBlurView: CVWallpaperBlurView?
+        fileprivate func ensureWallpaperBlurView() -> CVWallpaperBlurView {
+            if let wallpaperBlurView = self.wallpaperBlurView {
+                return wallpaperBlurView
+            }
+            let wallpaperBlurView = CVWallpaperBlurView()
+            self.wallpaperBlurView = wallpaperBlurView
+            return wallpaperBlurView
+        }
+
+        fileprivate var hasWallpaper = false
 
         var isDedicatedCellView = false
 
@@ -246,7 +344,11 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
         func setIsCellVisible(_ isCellVisible: Bool) {}
 
         func reset() {
-            button.configuration?.title = nil
+            label.reset()
+            solidBackgroundView.backgroundColor = nil
+            wallpaperBlurView?.removeFromSuperview()
+            wallpaperBlurView = nil
+            hasWallpaper = false
             outerStack.reset()
         }
     }
