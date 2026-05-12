@@ -494,6 +494,7 @@ public struct CVComponentState: Equatable {
             let mutualGroupsText: NSAttributedString?
             let threadType: SafetyTipsType
             let shouldShowSafetyTipsButton: Bool
+            let isOfficialChat: Bool
         }
 
         let avatarDataSource: ConversationAvatarDataSource?

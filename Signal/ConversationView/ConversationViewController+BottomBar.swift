@@ -22,6 +22,7 @@ enum CVCBottomViewType: Equatable {
     case notRegistered
     case notLinked
     case groupEnded
+    case releaseNotes
 }
 
 protocol ConversationBottomBar: UIView {
@@ -77,6 +78,9 @@ public extension ConversationViewController {
                 return .selection
             case .normal:
                 break
+            }
+            if thread.isReleaseNotesThread {
+                return .releaseNotes
             }
             if appExpiry.isExpired(now: Date()) {
                 return .appExpired
@@ -207,6 +211,13 @@ public extension ConversationViewController {
             )
             requestView = groupEndedView
             bottomView = groupEndedView
+        case .releaseNotes:
+            let releaseNotesView = BlockingErrorBottomPanelView(
+                text: NSAttributedString(string: OWSLocalizedString("RELEASE_NOTES_BOTTOM_BAR_LABEL", comment: "Bottom bar label for the release notes thread")),
+                onTap: {},
+            )
+            requestView = releaseNotesView
+            bottomView = releaseNotesView
         }
 
         bottomBarContainer.removeAllSubviews()

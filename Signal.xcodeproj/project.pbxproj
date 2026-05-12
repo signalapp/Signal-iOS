@@ -64,6 +64,7 @@
 		045B40922ECE406A002D3F9A /* ConversationViewController+PinnedMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B40912ECE4060002D3F9A /* ConversationViewController+PinnedMessages.swift */; };
 		045B40952ECF98C1002D3F9A /* PinnedMessagesDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B40942ECF98BB002D3F9A /* PinnedMessagesDetailsViewController.swift */; };
 		046926092E8EBAAE00B1FC74 /* TSInfoMessage+Polls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */; };
+		0477BE322FA4FC41002F9B47 /* TSReleaseNotesThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */; };
 		047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */; };
 		0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */; };
 		0484CECE2F44B7BE009AB2CB /* AdminDeleteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */; };
@@ -4217,6 +4218,7 @@
 		045B40912ECE4060002D3F9A /* ConversationViewController+PinnedMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+PinnedMessages.swift"; sourceTree = "<group>"; };
 		045B40942ECF98BB002D3F9A /* PinnedMessagesDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessagesDetailsViewController.swift; sourceTree = "<group>"; };
 		046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Polls.swift"; sourceTree = "<group>"; };
+		0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSReleaseNotesThread.swift; sourceTree = "<group>"; };
 		047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphoneTests.swift; sourceTree = "<group>"; };
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledNotificationMegaphone.swift; sourceTree = "<group>"; };
 		0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDeleteRecord.swift; sourceTree = "<group>"; };
@@ -15165,6 +15167,7 @@
 				F9C5C9EF289453B100548EEE /* TSGroupThread+OWS.swift */,
 				880FB40528CD205F00FA1C10 /* TSGroupThread.swift */,
 				F9C5C9E5289453B100548EEE /* TSPrivateStoryThread.swift */,
+				0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */,
 				F9C5C9E9289453B100548EEE /* TSThread+OWS.swift */,
 			);
 			path = Threads;
@@ -20052,6 +20055,7 @@
 				F9C5CCCB289453B300548EEE /* TSPrivateStoryThread.swift in Sources */,
 				F9C5CBE4289453B300548EEE /* TSQuotedMessage.m in Sources */,
 				6615553F2ABA5A7500AA302B /* TSRegistrationState.swift in Sources */,
+				0477BE322FA4FC41002F9B47 /* TSReleaseNotesThread.swift in Sources */,
 				66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */,
 				6691E7EF2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift in Sources */,
 				F9C5CCCF289453B300548EEE /* TSThread+OWS.swift in Sources */,

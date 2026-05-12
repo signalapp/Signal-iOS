@@ -39,6 +39,11 @@ class DebugUIMisc: DebugUIPage {
                 let viewController = LineWrappingStackViewTestController()
                 UIApplication.shared.frontmostViewController!.present(viewController, animated: true)
             }),
+            OWSTableItem(title: "Create Release Notes Thread", actionBlock: {
+                let _ = SSKEnvironment.shared.databaseStorageRef.write { tx in
+                    TSReleaseNotesThread.createReleaseNotes(transaction: tx)
+                }
+            }),
         ]
         return OWSTableSection(title: name, items: items)
     }

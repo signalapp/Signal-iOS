@@ -151,7 +151,12 @@ class ConversationHeaderView: UIView {
 
     func configure(threadViewModel: ThreadViewModel) {
         avatarView.updateWithSneakyTransactionIfNecessary { config in
-            config.dataSource = .thread(threadViewModel.threadRecord)
+            if threadViewModel.threadRecord.isReleaseNotesThread {
+                config.dataSource = .asset(avatar: AvatarBuilder.releaseNotesIcon(), badge: nil)
+            } else {
+                config.dataSource = .thread(threadViewModel.threadRecord)
+            }
+
             config.storyConfiguration = .autoUpdate()
             config.applyConfigurationSynchronously()
         }

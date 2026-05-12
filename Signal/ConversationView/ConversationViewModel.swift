@@ -54,10 +54,10 @@ class ConversationViewModel {
                 return false
             }
             return !identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx)
-
         case let contactThread as TSContactThread:
             return identityManager.verificationState(for: contactThread.contactAddress, tx: tx) == .verified
-
+        case is TSReleaseNotesThread:
+            return false
         default:
             owsFailDebug("Showing conversation for unexpected thread type.")
             return false

@@ -178,6 +178,20 @@ extension UIColor.Signal {
         )
     }
 
+    public static var officialLabel: UIColor {
+        UIColor(
+            light: UIColor(rgbHex: 0x2934FD),
+            dark: UIColor(rgbHex: 0xC5C7F5),
+        )
+    }
+
+    public static var officialLabelBackground: UIColor {
+        UIColor(
+            light: UIColor(rgbHex: 0x2934FD).withAlphaComponent(0.12),
+            dark: UIColor(rgbHex: 0x424585),
+        )
+    }
+
     // MARK: Background
 
     public static var background: UIColor {

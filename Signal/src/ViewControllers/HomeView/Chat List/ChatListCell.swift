@@ -360,7 +360,11 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         owsAssertDebug(avatarView == nil, "ChatListCell.configure without prior reset called")
         avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .noteToSelf, useAutolayout: true)
         avatarView?.updateWithSneakyTransactionIfNecessary({ config in
-            config.dataSource = .thread(configuration.thread)
+            if configuration.thread.isReleaseNotesThread {
+                config.dataSource = .asset(avatar: AvatarBuilder.releaseNotesIcon(), badge: nil)
+            } else {
+                config.dataSource = .thread(configuration.thread)
+            }
             if asyncAvatarLoadingAllowed, cellContentToken.shouldLoadAvatarAsync {
                 config.usePlaceholderImages()
             } else {

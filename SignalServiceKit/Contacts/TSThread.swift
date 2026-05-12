@@ -30,6 +30,7 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         case SDSRecordType.contactThread.rawValue: TSContactThread.self
         case SDSRecordType.groupThread.rawValue: TSGroupThread.self
         case SDSRecordType.privateStoryThread.rawValue: TSPrivateStoryThread.self
+        case SDSRecordType.releaseNotesThread.rawValue: TSReleaseNotesThread.self
         default: nil
         }
     }

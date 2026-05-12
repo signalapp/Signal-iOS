@@ -34,6 +34,10 @@ public extension TSThread {
         return groupThread.groupModel.groupsVersion == .V2
     }
 
+    var isReleaseNotesThread: Bool {
+        self is TSReleaseNotesThread
+    }
+
     var groupModelIfGroupThread: TSGroupModel? {
         guard let groupThread = self as? TSGroupThread else {
             return nil

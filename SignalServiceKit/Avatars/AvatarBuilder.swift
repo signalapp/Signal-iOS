@@ -593,6 +593,53 @@ public class AvatarBuilder {
         return formattedAbbreviation
     }
 
+    public static func releaseNotesIcon() -> UIImage? {
+        let iconSize = CGSize(square: 74.0)
+        let embeddedImageSize = CGSize(square: 46.0)
+
+        let image = UIImage(named: "signal-logo-release-notes")!.withTintColor(.white)
+
+        let renderer = UIGraphicsImageRenderer(size: iconSize)
+        let finalImage = renderer.image { context in
+            let rect = CGRect(origin: .zero, size: iconSize)
+            let circlePath = UIBezierPath(ovalIn: rect)
+
+            context.cgContext.addPath(circlePath.cgPath)
+            context.cgContext.clip()
+
+            let colors = [
+                UIColor(red: 0.23, green: 0.27, blue: 0.99, alpha: 1).cgColor,
+                UIColor(red: 0.12, green: 0.16, blue: 0.99, alpha: 1).cgColor,
+
+            ] as CFArray
+
+            let locations: [CGFloat] = [0.0, 1.0]
+
+            let gradient = CGGradient(
+                colorsSpace: CGColorSpaceCreateDeviceRGB(),
+                colors: colors,
+                locations: locations,
+            )!
+
+            context.cgContext.drawLinearGradient(
+                gradient,
+                start: CGPoint(x: rect.midX, y: rect.minY),
+                end: CGPoint(x: rect.midX, y: rect.maxY),
+                options: [],
+            )
+
+            let centerOffset = iconSize.width / 2 - embeddedImageSize.width / 2
+            let imageRect = CGRect(
+                x: centerOffset,
+                y: centerOffset,
+                width: embeddedImageSize.width,
+                height: embeddedImageSize.height,
+            )
+            image.withRenderingMode(.alwaysTemplate).draw(in: imageRect)
+        }
+        return finalImage
+    }
+
     // MARK: - Content
 
     private enum AvatarContentType: Equatable {

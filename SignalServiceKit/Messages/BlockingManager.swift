@@ -315,6 +315,8 @@ public class BlockingManager {
             return _isGroupIdBlocked(groupThread.groupModel.groupId, tx: transaction)
         } else if thread is TSPrivateStoryThread {
             return false
+        } else if thread.isReleaseNotesThread {
+            return false
         } else {
             owsFailDebug("Invalid thread: \(type(of: thread))")
             return false

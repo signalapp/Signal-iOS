@@ -1385,6 +1385,8 @@ extension ContactManager {
             return .contactThread(displayName(for: thread.contactAddress, tx: tx))
         case let thread as TSGroupThread:
             return .groupThread(thread.groupNameOrDefault)
+        case _ as TSReleaseNotesThread:
+            return .releaseNotes
         default:
             owsFailDebug("Unexpected thread type: \(type(of: thread))")
             return nil
@@ -1421,6 +1423,7 @@ public enum ThreadDisplayName {
     case noteToSelf
     case contactThread(DisplayName)
     case groupThread(String)
+    case releaseNotes
 
     public func resolvedValue() -> String {
         switch self {
@@ -1430,6 +1433,8 @@ public enum ThreadDisplayName {
             return displayName.resolvedValue()
         case .groupThread(let groupName):
             return groupName
+        case .releaseNotes:
+            return OWSLocalizedString("RELEASE_NOTES_CHANNEL_NAME", comment: "Display name for the release notes channel")
         }
     }
 }

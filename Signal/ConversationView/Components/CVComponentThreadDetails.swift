@@ -195,6 +195,16 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                     componentDelegate.didTapNameEducation(type: safetySection.threadType)
                 }
                 innerViews.append(nameNotVerifiedButton)
+            } else if safetySection.isOfficialChat {
+                innerViews.append(UIView.spacer(withHeight: vSpacingNotVerifiedLabel))
+
+                let officialLabel = componentView.officialLabel
+                let officialLabelConfig = officialLabelConfig()
+                officialLabelConfig.applyForRendering(label: officialLabel)
+                officialLabel.backgroundColor = UIColor.Signal.officialLabelBackground
+                officialLabel.layer.cornerRadius = 14
+                officialLabel.layer.masksToBounds = true
+                innerViews.append(officialLabel)
             }
         }
 
@@ -405,6 +415,29 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         )
     }
 
+    private func officialLabelConfig() -> CVLabelConfig {
+        let symbol = SignalSymbol.checkCircle.attributedString(dynamicTypeBaseSize: UIFont.dynamicTypeCalloutClamped.pointSize)
+        let notVerifiedString = NSAttributedString.composed(
+            of: [
+                symbol,
+                SignalSymbol.LeadingCharacter.space.rawValue,
+                OWSLocalizedString("RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL", comment: "Label displayed in thread details of the release notes chat"),
+            ],
+        )
+        return CVLabelConfig(
+            text: .attributedText(notVerifiedString),
+            displayConfig: .forUnstyledText(
+                font: .dynamicTypeCallout.medium(),
+                textColor: UIColor.Signal.officialLabel,
+            ),
+            font: .dynamicTypeCallout.medium(),
+            textColor: UIColor.Signal.officialLabel,
+            numberOfLines: 0,
+            lineBreakMode: .byWordWrapping,
+            textAlignment: .center,
+        )
+    }
+
     private var safetyTipsButtonLabelConfig: CVLabelConfig {
         CVLabelConfig.unstyledText(
             OWSLocalizedString(
@@ -448,6 +481,11 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 threadAssociatedData: threadAssociatedData,
                 transaction: transaction,
                 avatarBuilder: avatarBuilder,
+            )
+        } else if let releaseNotesThread = thread as? TSReleaseNotesThread {
+            return buildComponentState(
+                releaseNotesThread: releaseNotesThread,
+                transaction: transaction,
             )
         } else {
             owsFailDebug("Invalid thread.")
@@ -564,6 +602,30 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         )
     }
 
+    private static func buildComponentState(
+        releaseNotesThread: TSReleaseNotesThread,
+        transaction: DBReadTransaction,
+    ) -> CVComponentState.ThreadDetails {
+
+        let titleText = OWSLocalizedString(
+            "RELEASE_NOTES_CHANNEL_NAME",
+            comment: "Display name for the release notes channel",
+        )
+
+        let safetySection = Self.buildReleaseNotesSafetySection(from: releaseNotesThread, tx: transaction)
+
+        return CVComponentState.ThreadDetails(
+            avatarDataSource: .asset(avatar: AvatarBuilder.releaseNotesIcon(), badge: nil),
+            isAvatarBlurred: false,
+            isAvatarBeingDownloaded: false,
+            titleText: titleText,
+            shouldShowVerifiedBadge: true,
+            shouldShowContactIcon: false,
+            safetySection: safetySection,
+            groupDescriptionText: nil,
+        )
+    }
+
     private let vSpacingTitle: CGFloat = 8
     private let vSpacingNotVerifiedLabel: CGFloat = 6
     private let vSpacingSafetyButton: CGFloat = 16
@@ -622,6 +684,14 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 )
                 let notVerifiedSizeWithPadding = CGSize(width: notVerifiedSize.width + hPaddingNotVerifiedButton * 2, height: notVerifiedSize.height + vPaddingNotVerifiedButton * 2)
                 innerSubviewInfos.append(notVerifiedSizeWithPadding.asManualSubviewInfo)
+            } else if safetySection.isOfficialChat {
+                innerSubviewInfos.append(CGSize(square: vSpacingNotVerifiedLabel).asManualSubviewInfo)
+                let officialLabelSize = CVText.measureLabel(
+                    config: officialLabelConfig(),
+                    maxWidth: maxContentWidth,
+                )
+                let officialLabelSizeWithPadding = CGSize(width: officialLabelSize.width + hPaddingNotVerifiedButton * 2, height: officialLabelSize.height + vPaddingNotVerifiedButton * 2)
+                innerSubviewInfos.append(officialLabelSizeWithPadding.asManualSubviewInfo)
             }
         }
 
@@ -759,6 +829,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate let bioLabel = CVLabel()
 
         fileprivate let profileNamesEducationButton = OWSRoundedButton()
+        fileprivate let officialLabel = CVLabel()
 
         fileprivate let reviewCarefullyLabel = CVLabel()
         fileprivate let detailsButton = CVButton()
@@ -817,6 +888,20 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 }
 
 extension CVComponentThreadDetails {
+    private static func buildReleaseNotesSafetySection(
+        from releaseNotesThread: TSReleaseNotesThread,
+        tx: DBReadTransaction,
+    ) -> CVComponentState.ThreadDetails.SafetySection {
+        return .init(
+            shouldShowProfileNamesEducation: false,
+            detailsText: NSAttributedString(string: OWSLocalizedString("RELEASE_NOTES_DETAILS", comment: "Details text for the thread details view of the release notes channel")),
+            mutualGroupsText: nil,
+            threadType: .contact,
+            shouldShowSafetyTipsButton: false,
+            isOfficialChat: true,
+        )
+    }
+
     private static func buildGroupsSafetySection(
         from groupThread: TSGroupThread,
         threadAssociatedData: ThreadAssociatedData,
@@ -945,6 +1030,7 @@ extension CVComponentThreadDetails {
             mutualGroupsText: nil,
             threadType: .group,
             shouldShowSafetyTipsButton: shouldShowUnknownThreadWarning && groupThread.hasPendingMessageRequest(transaction: tx),
+            isOfficialChat: false,
         )
     }
 
@@ -976,6 +1062,7 @@ extension CVComponentThreadDetails {
                 ),
                 threadType: .contact,
                 shouldShowSafetyTipsButton: false,
+                isOfficialChat: false,
             )
         }
 
@@ -1079,6 +1166,7 @@ extension CVComponentThreadDetails {
             ]),
             threadType: .contact,
             shouldShowSafetyTipsButton: isMessageRequest,
+            isOfficialChat: false,
         )
     }
 }

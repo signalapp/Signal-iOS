@@ -83,6 +83,9 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
                     context.gv1ThreadIds.insert(thread.uniqueThreadIdentifier)
                     // Skip gv1 threads; count as success.
                     result = .success
+                } else if thread.isReleaseNotesThread {
+                    // TODO: [KC] implement release notes in backups
+                    result = .success
                 } else {
                     result = .completeFailure(.fatalArchiveError(.unrecognizedThreadType))
                 }

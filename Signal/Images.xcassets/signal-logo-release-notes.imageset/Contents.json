@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "signal-logo-release-notes.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
