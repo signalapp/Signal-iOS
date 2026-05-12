@@ -256,6 +256,8 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
                 SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: groupThread.groupModel)
             } else if let contactThread = thread as? TSContactThread {
                 SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [contactThread.contactAddress])
+            } else if thread.isReleaseNotesThread {
+                // TODO: sync release notes mute state in storage service
             } else {
                 owsFailDebug("Unexpected thread type")
             }

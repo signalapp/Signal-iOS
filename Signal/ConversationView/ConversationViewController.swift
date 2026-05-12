@@ -365,6 +365,10 @@ public final class ConversationViewController: OWSViewController {
         SSKEnvironment.shared.contactManagerImplRef.requestSystemContactsOnce()
 
         self.updateBarButtonItems()
+
+        if thread.isReleaseNotesThread {
+            self.updateReleaseNotesBarButtonItems()
+        }
         self.updateNavigationTitle()
 
         self.ensureBottomViewType()

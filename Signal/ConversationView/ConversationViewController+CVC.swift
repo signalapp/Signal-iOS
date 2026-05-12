@@ -272,6 +272,10 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
             setHasAppliedFirstLoadIfNecessary()
         }
+
+        if thread.isReleaseNotesThread {
+            updateReleaseNotesBarButtonItems()
+        }
     }
 
     // The more work we put into this method, the greater our

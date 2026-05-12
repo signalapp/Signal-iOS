@@ -74,6 +74,10 @@ extension ConversationViewController {
     public func updateBarButtonItems() {
         AssertIsOnMainThread()
 
+        guard !thread.isReleaseNotesThread else {
+            return
+        }
+
         if #unavailable(iOS 26) {
             // Don't include "Back" text on view controllers pushed above us, just use the arrow.
             // iOS 26 already doesn't show back button text
@@ -180,6 +184,17 @@ extension ConversationViewController {
             navigationItem.rightBarButtonItems = barButtons
             return
         }
+    }
+
+    public func updateReleaseNotesBarButtonItems() {
+        let muteButton = UIBarButtonItem(
+            image: Theme.iconImage(.buttonMute),
+            menu: ConversationSettingsViewController.muteUnmuteMenu(
+                for: threadViewModel,
+                actionExecuted: {},
+            ),
+        )
+        navigationItem.rightBarButtonItem = muteButton
     }
 
     public func updateNavigationBarSubtitleLabel() {
