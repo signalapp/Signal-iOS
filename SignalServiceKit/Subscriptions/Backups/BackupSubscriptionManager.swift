@@ -227,7 +227,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         }
     }
 
-    // MARK: -
+    // MARK: - StoreKit
 
     /// This should never throw, nor be missing.
     private func getPaidTierProduct() async throws -> Product {
@@ -338,7 +338,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         }
     }
 
-    // MARK: -
+    // MARK: - IAPSubscriberData
 
     func getIAPSubscriberData(tx: DBReadTransaction) -> IAPSubscriberData? {
         store.getIAPSubscriberData(tx: tx)
@@ -348,7 +348,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         store.setIAPSubscriberData(iapSubscriberData, tx: tx)
     }
 
-    // MARK: -
+    // MARK: - Subscription Fetch
 
     func fetchAndMaybeDowngradeSubscription() async throws -> Subscription? {
         guard let subscriberID = db.read(block: { store.getIAPSubscriberData(tx: $0)?.subscriberId }) else {
@@ -407,6 +407,16 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         }
     }
 
+    // MARK: - Backup Plan Downgrade
+
+    private enum BackupPlanDowngrade {
+        /// Describes a subscription downgrade to the free tier.
+        case toFreeTier
+        /// Describes a subscription downgrade to "paid, expiring soon". Implies
+        /// that the current subscription is "paid, not expiring soon".
+        case toPaidExpiringSoon(optimizeLocalStorage: Bool)
+    }
+
     /// While we store locally a `BackupPlan`, the ultimate source of truth as
     /// to the state our our Backup subscription/plan is remote. Any time we
     /// fetch that remote state could be the moment we learn that something
@@ -427,11 +437,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     ) {
         let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
 
-        enum Downgrade {
-            case toFreeTier
-            case toPaidExpiringSoon(optimizeLocalStorage: Bool)
-        }
-        let downgrade: Downgrade? = {
+        let downgrade: BackupPlanDowngrade? = {
             /// The value of optimizeLocalStorage, if the current BackupPlan
             /// is .paid. nil otherwise.
             let paidTierOptimizeLocalStorage: Bool?
@@ -503,24 +509,32 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         }()
 
         if let downgrade {
-            let downgradedBackupPlan: BackupPlan = switch downgrade {
-            case .toFreeTier: .free
-            case .toPaidExpiringSoon(let optimizeLocalStorage): .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
-            }
+            downgradeBackupPlan(
+                downgrade: downgrade,
+                tx: tx,
+            )
+        }
+    }
 
-            backupPlanManager.setBackupPlan(downgradedBackupPlan, tx: tx)
+    private func downgradeBackupPlan(
+        downgrade: BackupPlanDowngrade,
+        tx: DBWriteTransaction,
+    ) {
+        switch downgrade {
+        case .toFreeTier:
+            backupPlanManager.setBackupPlan(.free, tx: tx)
 
-            switch downgrade {
-            case .toFreeTier:
-                // Subscription issues no longer relevant!
-                backupSubscriptionIssueStore.setStopWarningIAPSubscriptionAlreadyRedeemed(tx: tx)
-                backupSubscriptionIssueStore.setStopWarningIAPSubscriptionNotFoundLocally(tx: tx)
+            // Subscription issues no longer relevant!
+            backupSubscriptionIssueStore.setStopWarningIAPSubscriptionAlreadyRedeemed(tx: tx)
+            backupSubscriptionIssueStore.setStopWarningIAPSubscriptionNotFoundLocally(tx: tx)
 
-                // Warn that it expired, though.
-                backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionExpired(true, tx: tx)
-            case .toPaidExpiringSoon:
-                break
-            }
+            // Warn that it expired, though.
+            backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionExpired(true, tx: tx)
+        case .toPaidExpiringSoon(let optimizeLocalStorage):
+            backupPlanManager.setBackupPlan(
+                .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage),
+                tx: tx,
+            )
         }
     }
 
@@ -565,15 +579,13 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         }
     }
 
-    // MARK: -
+    // MARK: - Redeem subscription
 
     /// We generally only attempt redemptions 1x/3d, but on occasion we know
     /// that a redemption is necessary and we should bypass that debounce.
     func setRedemptionAttemptIsNecessary(tx: DBWriteTransaction) {
         store.wipeLastRedemptionNecessaryCheck(tx: tx)
     }
-
-    // MARK: - Redeem subscription
 
     /// - Note
     /// `_redeemSubscriptionIfNecessary()` uses persisted state, so latter
@@ -616,11 +628,16 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             // ignore other errors; we want to proceed if we couldn't restore
         }
 
-        let (
+        let backupPlan: BackupPlan
+        let isRegisteredPrimaryDevice: Bool
+        let persistedIAPSubscriberData: IAPSubscriberData?
+        (
+            backupPlan,
             isRegisteredPrimaryDevice,
             persistedIAPSubscriberData,
         ) = db.read { tx in
             return (
+                backupPlanManager.backupPlan(tx: tx),
                 tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
                 store.getIAPSubscriberData(tx: tx),
             )
@@ -696,7 +713,22 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             localIAPSubscriberData = persistedIAPSubscriberData
         } else {
             /// We don't have an active local subscription, nor do we have
-            /// subscription IDs for some other subscription. Nothing to do!
+            /// subscription IDs for some other subscription.
+            switch backupPlan {
+            case .disabled, .disabling, .free, .paidAsTester:
+                break
+            case .paid, .paidExpiringSoon:
+                // This should never happen. And, if we end up thinking we're
+                // paid-tier with no local IAP nothing, we should downgrade to
+                // free since it's likely things are not working.
+                logger.warn("Missing local IAP anything, but have a paid BackupPlan. Downgrading.")
+                await db.awaitableWrite { tx in
+                    downgradeBackupPlan(
+                        downgrade: .toFreeTier,
+                        tx: tx,
+                    )
+                }
+            }
             return
         }
 
