@@ -780,7 +780,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         case .oversizeTextUndownloadable:
             componentDelegate.didTapUndownloadableOversizeText()
             return true
-        default:
+        case .bodyText, .remotelyDeleted, .oversizeTextDownloading:
             break
         }
 

@@ -144,9 +144,13 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
     }
 
     private var hasUnloadedAttachments: Bool {
-
-        if componentState.bodyText == .oversizeTextDownloading {
+        switch componentState.bodyText {
+        case .oversizeTextDownloading:
             return true
+        case .oversizeTextUndownloadable:
+            break
+        case nil, .bodyText, .remotelyDeleted:
+            break
         }
         if
             let audioAttachment = componentState.audioAttachment?.attachment,

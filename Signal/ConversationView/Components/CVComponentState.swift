@@ -179,7 +179,7 @@ public struct CVComponentState: Equatable {
             switch self {
             case .bodyText(let text, _), .oversizeTextUndownloadable(let text):
                 return text
-            default:
+            case .remotelyDeleted, .oversizeTextDownloading:
                 return nil
             }
         }
@@ -188,7 +188,7 @@ public struct CVComponentState: Equatable {
             switch self {
             case .bodyText(let text, _), .oversizeTextUndownloadable(let text):
                 return text.textValue(isTextExpanded: isTextExpanded)
-            default:
+            case .remotelyDeleted, .oversizeTextDownloading:
                 return nil
             }
         }
@@ -197,7 +197,7 @@ public struct CVComponentState: Equatable {
             switch self {
             case .bodyText(let text, _), .oversizeTextUndownloadable(let text):
                 return text.jumbomojiCount
-            default:
+            case .remotelyDeleted, .oversizeTextDownloading:
                 return nil
             }
         }
