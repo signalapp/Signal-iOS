@@ -43,7 +43,7 @@ class BlockingAnnouncementOnlyView: ConversationBottomPanelView {
 
         let label = UILabel()
         label.font = .dynamicTypeSubheadlineClamped
-        label.textColor = .Signal.secondaryLabel
+        label.textColor = .Signal.label
         label.attributedText = attributedString
         label.textAlignment = .center
         label.numberOfLines = 0

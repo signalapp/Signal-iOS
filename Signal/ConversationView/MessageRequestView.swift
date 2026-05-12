@@ -259,7 +259,7 @@ class MessageRequestView: ConversationBottomPanelView {
             return prepareTextView(
                 attributedString: NSAttributedString(string: string, attributes: [
                     .font: UIFont.dynamicTypeSubheadlineClamped,
-                    .foregroundColor: Theme.secondaryTextAndIconColor,
+                    .foregroundColor: UIColor.Signal.label,
                 ]),
                 appendLearnMoreLink: appendLearnMoreLink,
             )
@@ -426,7 +426,7 @@ class MessageRequestView: ConversationBottomPanelView {
         return prepareTextView(
             attributedString: NSAttributedString(string: string, attributes: [
                 .font: UIFont.dynamicTypeSubheadlineClamped,
-                .foregroundColor: Theme.secondaryTextAndIconColor,
+                .foregroundColor: UIColor.Signal.label,
                 .paragraphStyle: centered,
             ]),
             appendLearnMoreLink: false,
@@ -492,7 +492,7 @@ class MessageRequestView: ConversationBottomPanelView {
         }
         let defaultAttributes: AttributedFormatArg.Attributes = [
             .font: UIFont.dynamicTypeSubheadlineClamped,
-            .foregroundColor: Theme.secondaryTextAndIconColor,
+            .foregroundColor: UIColor.Signal.label,
             .paragraphStyle: centered,
         ]
 
@@ -505,13 +505,13 @@ class MessageRequestView: ConversationBottomPanelView {
         centered.alignment = .center
         let defaultAttributes: AttributedFormatArg.Attributes = [
             .font: UIFont.dynamicTypeSubheadlineClamped,
-            .foregroundColor: Theme.secondaryTextAndIconColor,
+            .foregroundColor: UIColor.Signal.label,
             .paragraphStyle: centered,
         ]
 
         let attributesForEmbedded: AttributedFormatArg.Attributes = [
             .font: UIFont.dynamicTypeSubheadlineClamped.semibold(),
-            .foregroundColor: Theme.secondaryTextAndIconColor,
+            .foregroundColor: UIColor.Signal.label,
         ]
 
         let attributedString = NSAttributedString.make(

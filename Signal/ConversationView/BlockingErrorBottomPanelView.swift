@@ -20,7 +20,7 @@ class BlockingErrorBottomPanelView: ConversationBottomPanelView {
 
         let label = UILabel()
         label.font = .dynamicTypeSubheadlineClamped
-        label.textColor = .Signal.secondaryLabel
+        label.textColor = .Signal.label
         label.attributedText = text
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping

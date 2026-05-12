@@ -8,6 +8,10 @@ import SignalUI
 
 class MemberRequestView: ConversationBottomPanelView {
 
+    override var useGlassPanel: Bool {
+        false
+    }
+
     private let thread: TSThread
 
     private weak var fromViewController: UIViewController?
@@ -23,7 +27,7 @@ class MemberRequestView: ConversationBottomPanelView {
 
         let label = UILabel()
         label.font = .dynamicTypeSubheadlineClamped
-        label.textColor = Theme.secondaryTextAndIconColor
+        label.textColor = .Signal.label
         label.text = OWSLocalizedString(
             "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR",
             comment: "Indicator that you have requested to join this group.",

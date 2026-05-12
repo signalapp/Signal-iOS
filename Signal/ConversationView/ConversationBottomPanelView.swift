@@ -12,12 +12,18 @@ class ConversationBottomPanelView: UIView {
         backgroundView.contentView
     }
 
+    /// Sublasses can opt out of using glass panel background with double margins.
+    @available(iOS 26, *)
+    open var useGlassPanel: Bool {
+        true
+    }
+
     /// Subclasses must constrain their content to this layout guide.
     let contentLayoutGuide = UILayoutGuide()
 
-    private static var backgroundViewEffect: UIVisualEffect {
-        guard #available(iOS 26, *) else {
-            return UIBlurEffect(style: .prominent)
+    private var backgroundViewEffect: UIVisualEffect {
+        guard #available(iOS 26, *), useGlassPanel else {
+            return UIBlurEffect(style: .systemThinMaterial)
         }
         // Same as in ConversationInputToolbar.
         let glassEffect = UIGlassEffect(style: .regular)
@@ -26,7 +32,7 @@ class ConversationBottomPanelView: UIView {
         return glassEffect
     }
 
-    private lazy var backgroundView = UIVisualEffectView(effect: ConversationBottomPanelView.backgroundViewEffect)
+    private lazy var backgroundView = UIVisualEffectView(effect: backgroundViewEffect)
 
     // These are constraints defining how much is glass background inset
     // relative to view's leading, trailing and bottom edges.
@@ -45,7 +51,7 @@ class ConversationBottomPanelView: UIView {
 
         addSubview(backgroundView)
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
-        if #available(iOS 26, *) {
+        if #available(iOS 26, *), useGlassPanel {
             // Glass container is transparent and can be constrained to safe area edges.
             let glassContainerView = UIVisualEffectView(effect: UIGlassContainerEffect())
             addSubview(glassContainerView)
