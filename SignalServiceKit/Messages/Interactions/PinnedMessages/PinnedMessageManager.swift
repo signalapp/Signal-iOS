@@ -71,7 +71,7 @@ public class PinnedMessageManager {
             throw OWSAssertionError("Invalid timestamp.")
         }
 
-        guard pinMessageProto.pinDurationSeconds < Int32.max else {
+        guard pinMessageProto.pinDurationSeconds <= Int32.max else {
             throw OWSAssertionError("Invalid timestamp.")
         }
     }
@@ -416,9 +416,9 @@ public class PinnedMessageManager {
             return nil
         }
 
-        var pinDurationSeconds: UInt32?
+        var pinDurationSeconds: Int32?
         if let expiresAt {
-            pinDurationSeconds = UInt32(expiresAt)
+            pinDurationSeconds = Int32(expiresAt)
         }
 
         return OutgoingPinMessage(

@@ -59,8 +59,12 @@ class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
                     return .messageFailure([.archiveFrameError(.pollVoteAuthorSignalRecipientIdMissing, BackupArchive.InteractionUniqueId(interaction: message))])
                 }
 
+                guard vote.voteCount >= 0 else {
+                    return .messageFailure([.archiveFrameError(.pollVoteCountInvalid, BackupArchive.InteractionUniqueId(interaction: message))])
+                }
+
                 pollVoteProto.voterID = voterId.value
-                pollVoteProto.voteCount = vote.voteCount
+                pollVoteProto.voteCount = UInt32(vote.voteCount)
                 pollOptionProto.votes.append(pollVoteProto)
             }
             pollProto.options.append(pollOptionProto)

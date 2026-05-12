@@ -254,6 +254,9 @@ extension BackupArchive {
             /// A poll vote recipient id was not found
             case pollVoteAuthorSignalRecipientIdMissing
 
+            /// A poll vote count was not a valid Int32 value
+            case pollVoteCountInvalid
+
             /// Author Aci for end poll message was invalid
             case endPollUpdateInvalidAuthorAci
 
@@ -381,6 +384,7 @@ extension BackupArchive {
                 .invalidPollVoteRecordDatabaseRow,
                 .pollMessageMissingQuestionBody,
                 .pollVoteAuthorSignalRecipientIdMissing,
+                .pollVoteCountInvalid,
                 .endPollUpdateInvalidAuthorAci,
                 .pollEndMissingQuestion,
                 .pollEndMissingPersistableData,
@@ -455,6 +459,7 @@ extension BackupArchive {
                 .invalidPollVoteRecordDatabaseRow,
                 .pollMessageMissingQuestionBody,
                 .pollVoteAuthorSignalRecipientIdMissing,
+                .pollVoteCountInvalid,
                 .endPollUpdateInvalidAuthorAci,
                 .pollEndMissingQuestion,
                 .pollEndMissingPersistableData,
@@ -838,6 +843,9 @@ extension BackupArchive {
                 /// We expect all authors to have an associated latest vote count, but there wasn't
                 case noPollVoteCountForAuthor
 
+                /// Vote count was not a valid Int32 value
+                case invalidPollVoteCount
+
                 /// The pin message author had an invalid non-contact Address
                 case pinMessageAuthorNotContact
 
@@ -1009,6 +1017,7 @@ extension BackupArchive {
                     .pollVoteAuthorNotContact,
                     .pollVoteCountRepeated,
                     .noPollVoteCountForAuthor,
+                    .invalidPollVoteCount,
                     .pinMessageAuthorNotContact,
                     .invalidNumberOfPinnedMessages,
                     .sentTimestampOverflowedLocalType,
@@ -1124,6 +1133,7 @@ extension BackupArchive {
                     .pollVoteAuthorNotContact,
                     .pollVoteCountRepeated,
                     .noPollVoteCountForAuthor,
+                    .invalidPollVoteCount,
                     .pinMessageAuthorNotContact,
                     .invalidNumberOfPinnedMessages,
                     .sentTimestampOverflowedLocalType,

@@ -24,7 +24,7 @@ public class OutgoingPollVoteMessage: TransientOutgoingMessage {
         guard let voteCount = coder.decodeObject(of: NSNumber.self, forKey: "voteCount") else {
             return nil
         }
-        self.voteCount = voteCount.uint32Value
+        self.voteCount = voteCount.int32Value
         guard let voteOptionIndexes = coder.decodeArrayOfObjects(ofClass: NSNumber.self, forKey: "voteOptionIndexes") else {
             return nil
         }
@@ -63,14 +63,14 @@ public class OutgoingPollVoteMessage: TransientOutgoingMessage {
     let targetPollTimestamp: UInt64
     let targetPollAuthorAci: Aci
     let voteOptionIndexes: [UInt32]
-    let voteCount: UInt32
+    let voteCount: Int32
 
     public init(
         thread: TSThread,
         targetPollTimestamp: UInt64,
         targetPollAuthorAci: Aci,
         voteOptionIndexes: [UInt32],
-        voteCount: UInt32,
+        voteCount: Int32,
         tx: DBReadTransaction,
     ) {
         self.targetPollTimestamp = targetPollTimestamp
@@ -110,7 +110,7 @@ public class OutgoingPollVoteMessage: TransientOutgoingMessage {
 
         pollVoteBuilder.setOptionIndexes(voteOptionIndexes)
 
-        pollVoteBuilder.setVoteCount(voteCount)
+        pollVoteBuilder.setVoteCount(UInt32(clamping: voteCount))
 
         dataMessageBuilder.setPollVote(
             pollVoteBuilder.buildInfallibly(),
@@ -179,7 +179,7 @@ public class OutgoingPollVoteMessage: TransientOutgoingMessage {
             }
 
             try PollStore().revertVoteCount(
-                voteCount: Int32(voteCount),
+                voteCount: voteCount,
                 interactionId: interactionId,
                 voteAuthorId: localRecipientId,
                 transaction: tx,

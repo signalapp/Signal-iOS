@@ -2160,7 +2160,16 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                     )]
                     continue
                 }
-                votes.append(BackupsPollVote(voteAuthorId: voteAuthorId, voteCount: voteProto.voteCount))
+
+                guard voteProto.voteCount <= Int32.max else {
+                    partialErrors += [.restoreFrameError(
+                        .invalidProtoData(.invalidPollVoteCount),
+                        chatItemId,
+                    )]
+                    continue
+                }
+
+                votes.append(BackupsPollVote(voteAuthorId: voteAuthorId, voteCount: Int32(voteProto.voteCount)))
             }
             options.append(BackupsPollOption(text: optionProto.option, votes: votes))
         }

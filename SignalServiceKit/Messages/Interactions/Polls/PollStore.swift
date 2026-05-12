@@ -384,13 +384,20 @@ public class PollStore {
         }
 
         // Include pending here so we don't reuse an already-sent but not-yet-delivered vote count.
-        let newHighestVoteCount = try highestVoteCount(
+
+        let highestVoteCount = try highestVoteCount(
             pollId: pollId,
             voteAuthorId: localRecipientId,
             includePending: true,
             transaction: transaction,
-        ) + 1
+        )
 
+        guard highestVoteCount < Int32.max else {
+            Logger.error("Failed to apply pending vote, highestVoteCount is too large")
+            return nil
+        }
+
+        let newHighestVoteCount = highestVoteCount + 1
         guard
             let optionId = try voteOptionIds(
                 from: [optionIndex],
@@ -569,7 +576,7 @@ extension PollStore {
             var votes: [BackupsPollData.BackupsPollOption.BackupsPollVote] = []
             for voteRow in optionIdToVotes[optionId] ?? [] {
                 if voteRow.voteState == .vote {
-                    votes.append(BackupsPollData.BackupsPollOption.BackupsPollVote(voteAuthorId: voteRow.voteAuthorId, voteCount: UInt32(voteRow.voteCount)))
+                    votes.append(BackupsPollData.BackupsPollOption.BackupsPollVote(voteAuthorId: voteRow.voteAuthorId, voteCount: voteRow.voteCount))
                 }
             }
             optionData.append(BackupsPollData.BackupsPollOption(text: optionRow.option, votes: votes))

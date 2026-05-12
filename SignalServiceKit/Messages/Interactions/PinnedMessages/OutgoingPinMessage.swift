@@ -17,7 +17,7 @@ public class OutgoingPinMessage: TransientOutgoingMessage {
         guard let pinDurationSeconds = coder.decodeObject(of: NSNumber.self, forKey: "pinDurationSeconds") else {
             return nil
         }
-        self.pinDurationSeconds = pinDurationSeconds.uint32Value
+        self.pinDurationSeconds = pinDurationSeconds.int32Value
         guard
             let targetMessageAuthorAciBinary = coder.decodeObject(of: NSData.self, forKey: "targetMessageAuthorAciBinary") as Data?,
             let targetMessageAuthorAci = try? Aci.parseFrom(serviceIdBinary: targetMessageAuthorAciBinary)
@@ -62,14 +62,14 @@ public class OutgoingPinMessage: TransientOutgoingMessage {
 
     public let targetMessageTimestamp: UInt64
     public let targetMessageAuthorAci: Aci
-    public let pinDurationSeconds: UInt32
+    public let pinDurationSeconds: Int32
     private let pinDurationForever: Bool
 
     public init(
         thread: TSThread,
         targetMessageTimestamp: UInt64,
         targetMessageAuthorAciBinary: Aci,
-        pinDurationSeconds: UInt32,
+        pinDurationSeconds: Int32,
         pinDurationForever: Bool,
         messageExpiresInSeconds: UInt32,
         tx: DBReadTransaction,
@@ -123,7 +123,7 @@ public class OutgoingPinMessage: TransientOutgoingMessage {
         pinMessageBuilder.setTargetAuthorAciBinary(targetMessageAuthorAci.serviceIdBinary)
 
         if pinDurationSeconds > 0 {
-            pinMessageBuilder.setPinDurationSeconds(pinDurationSeconds)
+            pinMessageBuilder.setPinDurationSeconds(UInt32(pinDurationSeconds))
         } else if pinDurationForever {
             pinMessageBuilder.setPinDurationForever(pinDurationForever)
         }
@@ -138,7 +138,11 @@ public class OutgoingPinMessage: TransientOutgoingMessage {
     override public func updateWithSendSuccess(tx: DBWriteTransaction) {
         let pinnedMessageManager = DependenciesBridge.shared.pinnedMessageManager
 
-        let expiresAtMs: UInt64? = pinDurationSeconds > 0 ? Date.ows_millisecondTimestamp() + UInt64(pinDurationSeconds * 1000) : nil
+        var expiresAtMs: UInt64?
+        if pinDurationSeconds > 0 {
+            let pinDurationMilliseconds = UInt64(pinDurationSeconds) * 1000
+            expiresAtMs = Date.ows_millisecondTimestamp() + pinDurationMilliseconds
+        }
 
         pinnedMessageManager.applyPinMessageChangeToLocalState(
             targetTimestamp: targetMessageTimestamp,

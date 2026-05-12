@@ -318,7 +318,7 @@ public class PollMessageManager {
         targetPollTimestamp: UInt64,
         targetPollAuthorAci: Aci,
         optionIndexes: [OWSPoll.OptionIndex],
-        voteCount: UInt32,
+        voteCount: Int32,
         threadUniqueId: String,
         tx: DBWriteTransaction,
     ) throws {
@@ -353,7 +353,7 @@ public class PollMessageManager {
             interactionId: interactionId,
             optionsVoted: optionIndexes,
             voteAuthorId: localAuthorRecipientId,
-            voteCount: voteCount,
+            voteCount: UInt32(clamping: voteCount),
             transaction: tx,
         )
 
@@ -442,7 +442,7 @@ public class PollMessageManager {
             targetPollTimestamp: pollInteraction.timestamp,
             targetPollAuthorAci: authorAci,
             voteOptionIndexes: optionIndexVotes,
-            voteCount: UInt32(newHighestVoteCount),
+            voteCount: newHighestVoteCount,
             tx: tx,
         )
     }
@@ -454,7 +454,7 @@ public struct BackupsPollData {
     public struct BackupsPollOption {
         public struct BackupsPollVote {
             let voteAuthorId: SignalRecipient.RowId
-            let voteCount: UInt32
+            let voteCount: Int32
         }
 
         let text: String
@@ -527,7 +527,7 @@ extension PollMessageManager {
         var partialErrors = [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]()
 
         var votesByAuthorId: [Int64: [OWSPoll.OptionIndex]] = [:]
-        var voteCountByAuthorId: [Int64: UInt32] = [:]
+        var voteCountByAuthorId: [Int64: Int32] = [:]
 
         for (index, optionData) in pollBackupData.options.enumerated() {
             for vote in optionData.votes {
@@ -560,7 +560,7 @@ extension PollMessageManager {
                     interactionId: interactionId,
                     optionsVoted: optionIndices,
                     voteAuthorId: voteAuthorId,
-                    voteCount: voteCount,
+                    voteCount: UInt32(clamping: voteCount),
                     transaction: tx,
                 )
             } catch {

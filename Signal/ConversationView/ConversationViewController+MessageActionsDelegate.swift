@@ -318,7 +318,10 @@ extension ConversationViewController: MessageActionsDelegate {
                 let sentTimestamp = Date.ows_millisecondTimestamp()
 
                 if let _pinMessage = pinMessage as? OutgoingPinMessage {
-                    let expiresAtMs: UInt64? = _pinMessage.pinDurationSeconds > 0 ? Date.ows_millisecondTimestamp() + UInt64(_pinMessage.pinDurationSeconds * 1000) : nil
+                    var expiresAtMs: UInt64?
+                    if _pinMessage.pinDurationSeconds > 0 {
+                        expiresAtMs = Date.ows_millisecondTimestamp() + UInt64(_pinMessage.pinDurationSeconds) * 1000
+                    }
 
                     pinnedMessageManager.applyPinMessageChangeToLocalState(
                         targetTimestamp: _pinMessage.targetMessageTimestamp,
