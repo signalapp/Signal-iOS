@@ -230,6 +230,28 @@ extension UILabel {
         return label
     }
 
+    public class func headlineLabel(text: String, semibold: Bool = false) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.textColor = .Signal.label
+        label.font = semibold ? .dynamicTypeHeadline.semibold() : .dynamicTypeSubheadline
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .natural
+        return label
+    }
+
+    public class func subheadlineLabel(text: String) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.textColor = .Signal.label
+        label.font = .dynamicTypeSubheadline
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .natural
+        return label
+    }
+
     public class func explanationTextLabel(text: String) -> UILabel {
         let label = UILabel()
         label.textColor = .Signal.secondaryLabel
