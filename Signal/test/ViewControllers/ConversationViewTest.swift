@@ -22,7 +22,6 @@ class ConversationViewTest: SignalBaseTest {
             viewWidth: 100,
             hasWallpaper: false,
             shouldDimWallpaperInDarkMode: false,
-            isWallpaperPhoto: false,
             chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting,
         )
         let style2 = ConversationStyle(
@@ -31,7 +30,6 @@ class ConversationViewTest: SignalBaseTest {
             viewWidth: 100,
             hasWallpaper: false,
             shouldDimWallpaperInDarkMode: false,
-            isWallpaperPhoto: false,
             chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting,
         )
         let style3 = ConversationStyle(
@@ -40,7 +38,6 @@ class ConversationViewTest: SignalBaseTest {
             viewWidth: 101,
             hasWallpaper: false,
             shouldDimWallpaperInDarkMode: false,
-            isWallpaperPhoto: false,
             chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting,
         )
 
@@ -61,7 +58,6 @@ class ConversationViewTest: SignalBaseTest {
             viewWidth: 100,
             hasWallpaper: false,
             shouldDimWallpaperInDarkMode: false,
-            isWallpaperPhoto: false,
             chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting,
         )
 

@@ -11,19 +11,25 @@ extension Wallpaper {
 
     public static func viewBuilder(for thread: TSThread? = nil, tx: DBReadTransaction) -> WallpaperViewBuilder? {
         AssertIsOnMainThread()
-
         let wallpaperStore = DependenciesBridge.shared.wallpaperStore
-        guard
-            let resolvedWallpaper = wallpaperStore.fetchWallpaperForRendering(
-                for: thread?.uniqueId,
-                tx: tx,
-            )
-        else {
-            return nil
+
+        let wallpaper: Wallpaper
+        if let thread, thread.isReleaseNotesThread {
+            wallpaper = .releaseNotes
+        } else {
+            guard
+                let resolvedWallpaper = wallpaperStore.fetchWallpaperForRendering(
+                    for: thread?.uniqueId,
+                    tx: tx,
+                )
+            else {
+                return nil
+            }
+            wallpaper = resolvedWallpaper
         }
 
         return viewBuilder(
-            for: resolvedWallpaper,
+            for: wallpaper,
             customPhoto: {
                 WallpaperStore.fetchResolvedValue(
                     for: thread,
@@ -51,6 +57,8 @@ extension Wallpaper {
             return .customPhoto(customPhoto, shouldDimInDarkMode: shouldDimInDarkTheme)
         } else if let colorOrGradientSetting = wallpaper.asColorOrGradientSetting {
             return .colorOrGradient(colorOrGradientSetting, shouldDimInDarkMode: shouldDimInDarkTheme)
+        } else if case .releaseNotes = wallpaper {
+            return .releaseNotes
         } else {
             owsFailDebug("Couldn't create wallpaper view builder.")
             return nil
@@ -63,6 +71,7 @@ extension Wallpaper {
 public enum WallpaperViewBuilder {
     case colorOrGradient(ColorOrGradientSetting, shouldDimInDarkMode: Bool)
     case customPhoto(UIImage, shouldDimInDarkMode: Bool)
+    case releaseNotes
 
     public func build() -> WallpaperView {
         switch self {
@@ -77,6 +86,8 @@ public enum WallpaperViewBuilder {
                 )),
                 shouldDimInDarkTheme: shouldDimInDarkMode,
             )
+        case .releaseNotes:
+            return WallpaperView(mode: .releaseNotesView, shouldDimInDarkTheme: false)
         }
     }
 }
@@ -87,6 +98,7 @@ public class WallpaperView {
     fileprivate enum Mode {
         case colorView(UIView)
         case imageView(UIImage)
+        case releaseNotesView
     }
 
     public private(set) var contentView: UIView?
@@ -133,7 +145,17 @@ public class WallpaperView {
                     dimmingView.backgroundColor = .ows_blackAlpha20
                     self.dimmingView = dimmingView
                 }
-
+                return imageView
+            case .releaseNotesView:
+                let image = UIImage(named: "official_wallpaper_reduced")
+                let imageView = UIImageView(image: image)
+                if Theme.isDarkThemeEnabled {
+                    imageView.tintColor = UIColor(rgbHex: 0x272C3C)
+                    imageView.backgroundColor = UIColor(rgbHex: 0x353A49)
+                } else {
+                    imageView.tintColor = UIColor(rgbHex: 0xE3E4E9)
+                    imageView.backgroundColor = UIColor(rgbHex: 0xE8EAF8).withAlphaComponent(0.4)
+                }
                 return imageView
             }
         }()

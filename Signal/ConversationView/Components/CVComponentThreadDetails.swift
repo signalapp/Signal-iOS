@@ -161,10 +161,20 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let groupInfoWrapper = ManualLayoutViewWithLayer(name: "groupWrapper")
 
-        // Blurred background for when there's wallpaper,
+        // Unique background for release notes channel,
+        // blurred background for when there's wallpaper,
         // frame with rounded corners otherwise.
         let cornerRadius: CGFloat = 40
-        if conversationStyle.hasWallpaper {
+        if thread.isReleaseNotesThread {
+            if Theme.isDarkThemeEnabled {
+                groupInfoWrapper.backgroundColor = UIColor(rgbHex: 0x2F3240, alpha: 1)
+            } else {
+                groupInfoWrapper.backgroundColor = UIColor(rgbHex: 0xF6F7FF, alpha: 1)
+            }
+            groupInfoWrapper.layer.cornerRadius = cornerRadius
+            groupInfoWrapper.layer.borderWidth = 2
+            groupInfoWrapper.layer.borderColor = UIColor.Signal.tertiaryFill.cgColor
+        } else if conversationStyle.hasWallpaper {
             let wallpaperBlurView = componentView.ensureWallpaperBlurView()
             configureWallpaperBlurView(
                 wallpaperBlurView: wallpaperBlurView,

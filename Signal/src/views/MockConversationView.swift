@@ -152,7 +152,6 @@ class MockConversationView: UIView {
                 viewWidth: viewWidth,
                 hasWallpaper: hasWallpaper,
                 shouldDimWallpaperInDarkMode: shouldDimWallpaperInDarkMode,
-                isWallpaperPhoto: false,
                 chatColor: chatColor,
             )
             let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)

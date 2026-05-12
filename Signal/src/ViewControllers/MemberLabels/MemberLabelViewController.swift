@@ -300,7 +300,6 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
                 viewWidth: view.width - 44, // stack view padding
                 hasWallpaper: false,
                 shouldDimWallpaperInDarkMode: false,
-                isWallpaperPhoto: false,
                 chatColor: PaletteChatColor.ultramarine.colorSetting,
             )
 

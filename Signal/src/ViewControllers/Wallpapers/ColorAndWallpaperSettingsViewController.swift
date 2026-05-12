@@ -401,6 +401,8 @@ private class MiniPreviewView: UIView {
                 shouldDimWallpaperInDarkMode = shouldDimInDarkMode
             case .customPhoto(_, let shouldDimInDarkMode):
                 shouldDimWallpaperInDarkMode = shouldDimInDarkMode
+            case .releaseNotes:
+                shouldDimWallpaperInDarkMode = false
             }
         } else {
             stackViewContainer = UIView()

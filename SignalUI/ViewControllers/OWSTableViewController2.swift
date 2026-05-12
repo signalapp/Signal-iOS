@@ -94,6 +94,8 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         presentingViewController != nil || traitCollection.userInterfaceLevel == .elevated
     }
 
+    public var overrideCellBackgroundColor: UIColor?
+
     private static let cellIdentifier = "cellIdentifier"
 
     override public init() {
@@ -1026,10 +1028,11 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     }
 
     public var cellBackgroundColor: UIColor {
-        Self.cellBackgroundColor(
-            isUsingPresentedStyle: isUsingPresentedStyle,
-            forceDarkMode: forceDarkMode,
-        )
+        overrideCellBackgroundColor ??
+            Self.cellBackgroundColor(
+                isUsingPresentedStyle: isUsingPresentedStyle,
+                forceDarkMode: forceDarkMode,
+            )
     }
 
     public static func cellBackgroundColor(

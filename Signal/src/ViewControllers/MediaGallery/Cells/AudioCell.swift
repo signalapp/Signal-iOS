@@ -137,7 +137,6 @@ class AudioCell: MediaTileListModeCell {
             viewWidth: contentView.bounds.width,
             hasWallpaper: false,
             shouldDimWallpaperInDarkMode: false,
-            isWallpaperPhoto: false,
             chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting,
         )
         let coreState = CVCoreState(conversationStyle: conversationStyle, mediaCache: audioItem.mediaCache)

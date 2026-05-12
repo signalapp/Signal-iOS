@@ -887,7 +887,9 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
 
     func buildMainHeader() -> UIView {
         let options: ConversationHeaderBuilder.Options
-        if isTerminatedGroup || thread.isReleaseNotesThread {
+        if thread.isReleaseNotesThread {
+            options = [.mute, .search, .noBackground]
+        } else if isTerminatedGroup {
             options = [.mute, .search]
         } else if callRecords.isEmpty {
             options = [.videoCall, .audioCall, .mute, .search, .renderLocalUserAsNoteToSelf]
@@ -920,7 +922,7 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
     }
 
     var canTapThreadName: Bool {
-        !thread.isGroupThread && !thread.isNoteToSelf
+        !thread.isGroupThread && !thread.isNoteToSelf && !thread.isReleaseNotesThread
     }
 
     func didTapThreadName() {

@@ -519,7 +519,6 @@ public class CVLoader: NSObject {
             viewWidth: containerView.width,
             hasWallpaper: false,
             shouldDimWallpaperInDarkMode: false,
-            isWallpaperPhoto: false,
             chatColor: chatColor,
         )
         let coreState = CVCoreState(
@@ -645,7 +644,6 @@ public class CVLoader: NSObject {
             viewWidth: mockViewWidth,
             hasWallpaper: false,
             shouldDimWallpaperInDarkMode: false,
-            isWallpaperPhoto: false,
             chatColor: chatColor,
         )
         let coreState = CVCoreState(

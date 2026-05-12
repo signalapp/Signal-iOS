@@ -23,7 +23,7 @@ extension Wallpaper {
         }
 
         switch self {
-        case .photo:
+        case .photo, .releaseNotes:
             return nil
         // Solid
         case .blush:
@@ -451,6 +451,7 @@ extension Wallpaper {
         case .bisqueGradient: return .tangerine
         // Custom
         case .photo: return nil
+        case .releaseNotes: return nil
         }
     }
 }

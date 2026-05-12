@@ -37,7 +37,6 @@ public struct ConversationStyle {
     public let hasWallpaper: Bool
     // Determines blur effect for incoming message bubbles.
     public let shouldDimWallpaperInDarkMode: Bool
-    public let isWallpaperPhoto: Bool
 
     public let isStandaloneRenderItem: Bool
 
@@ -114,7 +113,6 @@ public struct ConversationStyle {
         viewWidth: CGFloat,
         hasWallpaper: Bool,
         shouldDimWallpaperInDarkMode: Bool,
-        isWallpaperPhoto: Bool,
         chatColor: ColorOrGradientSetting,
         isStandaloneRenderItem: Bool = false,
     ) {
@@ -124,7 +122,6 @@ public struct ConversationStyle {
         self.primaryTextColor = Theme.primaryTextColor
         self.hasWallpaper = hasWallpaper
         self.shouldDimWallpaperInDarkMode = shouldDimWallpaperInDarkMode
-        self.isWallpaperPhoto = isWallpaperPhoto
         self.chatColorSetting = chatColor
         self.chatColorValue = chatColor.asValue
 
@@ -397,7 +394,6 @@ extension ConversationStyle: Equatable {
             lhs.isDarkThemeEnabled == rhs.isDarkThemeEnabled &&
             lhs.hasWallpaper == rhs.hasWallpaper &&
             lhs.shouldDimWallpaperInDarkMode == rhs.shouldDimWallpaperInDarkMode &&
-            lhs.isWallpaperPhoto == rhs.isWallpaperPhoto &&
             lhs.maxMessageWidth == rhs.maxMessageWidth &&
             lhs.maxMediaMessageWidth == rhs.maxMediaMessageWidth &&
             lhs.textInsets == rhs.textInsets &&
@@ -419,7 +415,6 @@ extension ConversationStyle: CustomDebugStringConvertible {
             "dynamicBodyTypePointSize: \(dynamicBodyTypePointSize), " +
             "isDarkThemeEnabled: \(isDarkThemeEnabled), " +
             "hasWallpaper: \(hasWallpaper), " +
-            "isWallpaperPhoto: \(isWallpaperPhoto), " +
             "maxMessageWidth: \(maxMessageWidth), " +
             "maxMediaMessageWidth: \(maxMediaMessageWidth), " +
             "textInsets: \(textInsets), " +

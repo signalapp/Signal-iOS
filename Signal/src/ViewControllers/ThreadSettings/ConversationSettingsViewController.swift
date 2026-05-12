@@ -35,6 +35,8 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     let callRecords: [CallRecord]
     var memberLabelCoordinator: MemberLabelCoordinator?
 
+    let backgroundContainer = CVBackgroundContainer()
+
     var thread: TSThread {
         threadViewModel.threadRecord
     }
@@ -177,6 +179,20 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         reloadThreadAndUpdateContent()
 
         updateNavigationBar()
+
+        if thread.isReleaseNotesThread {
+            // Makes tableView clear so the wallpaper can show through.
+            backgroundStyle = .clear
+
+            if Theme.isDarkThemeEnabled {
+                overrideCellBackgroundColor = UIColor(rgbHex: 0x424757, alpha: 1)
+            }
+
+            let backgroundContainer = self.backgroundContainer
+            view.insertSubview(backgroundContainer, belowSubview: tableView)
+            backgroundContainer.autoPinEdgesToSuperviewEdges()
+            backgroundContainer.set(wallpaperView: WallpaperViewBuilder.releaseNotes.build())
+        }
     }
 
     func updateNavigationBar() {

@@ -241,6 +241,8 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
                 case .failure(let error):
                     return .failure(error)
                 }
+            case .releaseNotes:
+                protoWallpaper = nil
             }
 
             if let protoWallpaper {
@@ -538,6 +540,7 @@ private extension Wallpaper {
     enum BackupRepresentation {
         case wallpaperPreset(BackupProto_ChatStyle.WallpaperPreset)
         case photo
+        case releaseNotes
     }
 
     func asBackupProto() -> BackupRepresentation {
@@ -567,6 +570,7 @@ private extension Wallpaper {
         case .blueGradient: .wallpaperPreset(.gradientSky)
         case .bisqueGradient: .wallpaperPreset(.gradientPeach)
         case .photo: .photo
+        case .releaseNotes: .releaseNotes
         }
     }
 }

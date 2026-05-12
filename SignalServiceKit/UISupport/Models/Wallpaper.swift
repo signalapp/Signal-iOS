@@ -34,5 +34,8 @@ public enum Wallpaper: String, CaseIterable {
     // Custom
     case photo
 
-    public static var defaultWallpapers: [Wallpaper] { allCases.filter { $0 != .photo } }
+    // Release Notes
+    case releaseNotes
+
+    public static var defaultWallpapers: [Wallpaper] { allCases.filter { $0 != .photo && $0 != .releaseNotes } }
 }
