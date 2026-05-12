@@ -303,6 +303,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         // TODO: We might want to treat text that is completely stripped
         // as not present.
         if let oversizeTextAttachment = message.oversizeTextAttachment(transaction: transaction) {
+            // We have a fully downloaded oversize text attachment.
             if let oversizeTextAttachmentStream = oversizeTextAttachment.asStream() {
                 let displayableText = CVComponentState.displayableBodyText(
                     oversizeTextAttachment: oversizeTextAttachmentStream,
@@ -311,21 +312,27 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     transaction: transaction,
                 )
                 return build(displayableText: displayableText)
-            } else if oversizeTextAttachment.asAnyPointer() != nil {
-                return .oversizeTextDownloading
-            } else {
+            }
+
+            // We can't possibly download this; show a terminal error.
+            if oversizeTextAttachment.asAnyPointer() == nil {
                 if let displayableText = bodyDisplayableText() {
                     return .oversizeTextUndownloadable(truncatedBody: displayableText)
-                } else {
-                    return nil
                 }
+                return nil
             }
-        } else if let displayableText = bodyDisplayableText() {
-            return build(displayableText: displayableText)
-        } else {
-            // No body text.
-            return nil
+
+            // It's not downloaded and hasn't failed, so it must be downloading.
+            // TODO: This isn't accurate in some pathological edge cases.
+            return .oversizeTextDownloading
         }
+
+        if let displayableText = bodyDisplayableText() {
+            return build(displayableText: displayableText)
+        }
+
+        // No body text.
+        return nil
     }
 
     public var textMessageFont: UIFont {
