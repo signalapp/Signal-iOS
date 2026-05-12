@@ -103,10 +103,10 @@ public enum CVAttachment: Equatable {
                 isUploading: isUploading,
                 imageMetadata: stream.attachmentStream.imageMetadata(),
             )
-        } else if let pointer = referencedAttachment.asReferencedAnyPointer {
-            return .pointer(pointer, downloadState: pointer.attachmentPointer.downloadState(tx: tx))
         } else if let thumbnail = referencedAttachment.asReferencedBackupThumbnail {
             return .backupThumbnail(thumbnail)
+        } else if let pointer = referencedAttachment.asReferencedAnyPointer {
+            return .pointer(pointer, downloadState: pointer.attachmentPointer.downloadState(tx: tx))
         } else {
             return .undownloadable(referencedAttachment)
         }
