@@ -67,16 +67,14 @@ public class AttachmentPointer {
             owsFailDebug("Checking download state of stream")
             return .enqueuedOrDownloading
         }
-        do {
-            if
-                let record = DependenciesBridge.shared.attachmentDownloadStore.enqueuedDownload(
-                    for: attachment.id,
-                    tx: tx,
-                ),
-                record.minRetryTimestamp ?? 0 <= Date().ows_millisecondsSince1970
-            {
-                return .enqueuedOrDownloading
-            }
+        if
+            let record = DependenciesBridge.shared.attachmentDownloadStore.enqueuedDownload(
+                for: attachment.id,
+                tx: tx,
+            ),
+            record.minRetryTimestamp ?? 0 <= Date().ows_millisecondsSince1970
+        {
+            return .enqueuedOrDownloading
         }
         if lastDownloadAttemptTimestamp != nil {
             return .failed
