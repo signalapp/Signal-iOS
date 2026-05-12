@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UniformTypeIdentifiers
 
 public enum GiphyError: Error {
     case assertionError(description: String)
@@ -25,109 +26,12 @@ extension GiphyError: LocalizedError, UserErrorDescriptionProvider {
     }
 }
 
-// Represents a single Giphy image.
-public class GiphyImageInfo {
+public struct GiphyImageInfo {
+    public static let fileExtension = "mp4"
+    public static let utiType = UTType.mpeg4Movie.identifier
+
     public let giphyId: String
-    private let assets: [GiphyAsset]
-
-    init?(parsing dictionary: [String: Any]) {
-        guard
-            let idString = dictionary["id"] as? String,
-            let renditionDict = (dictionary["images"] as? [String: [String: Any]])
-        else {
-            Logger.warn("Missing required parameters")
-            return nil
-        }
-
-        giphyId = idString
-        assets = renditionDict.flatMap { rendition, dict in
-            GiphyAsset.parsing(renditionString: rendition, definition: dict)
-        }
-
-        if giphyId.isEmpty {
-            Logger.error("Invalid id when parsing image info")
-            return nil
-        }
-        guard isValidImage else {
-            Logger.error("Missing required asset info")
-            return nil
-        }
-    }
-
-    // TODO: We may need to tweak these constants.
-    let kValidPreviewDimensions: ClosedRange<CGFloat> = 60...618
-    let kValidSendingDimensions: ClosedRange<CGFloat> = 101...618
-    let kPreferedPreviewFileSize = Int(256 * 1024)
-    let kPreferedSendingFileSize = Int(3 * 1024 * 1024)
-}
-
-extension GiphyImageInfo {
-
-    public var isValidImage: Bool {
-        [anyOriginalAsset, animatedPreviewAsset, fullSizeAsset]
-            .allSatisfy { $0 != nil }
-    }
-
-    public var animatedPreviewAsset: GiphyAsset? {
-        assets
-            .filter { $0.dimensions.fits(range: kValidPreviewDimensions) }
-            .filter { $0.size > 0 }
-            .bestOption(forTargetSize: kPreferedPreviewFileSize)
-    }
-
-    public var fullSizeAsset: GiphyAsset? {
-        assets
-            .filter { $0.dimensions.fits(range: kValidSendingDimensions) }
-            .filter { $0.size > 0 }
-            .bestOption(forTargetSize: kPreferedSendingFileSize)
-    }
-
-    public var originalAspectRatio: CGFloat {
-        // Only the original rendition has the aspect ratio source of truth
-        anyOriginalAsset.map { $0.dimensions.width / $0.dimensions.height } ?? 1.0
-    }
-
-    private var anyOriginalAsset: GiphyAsset? {
-        assets.first { $0.rendition == .original }
-    }
-}
-
-private extension Sequence where Element == GiphyAsset {
-    // Selects the largest element under the target size, or if not satisfiable,
-    // the smallest element above the target size
-
-    // Given a sequence of assets, returns...
-    // - The largest dimensioned item under the target file size
-    // - If unavailable, the item with the smallest file size over the target
-    func bestOption(forTargetSize targetSize: Int) -> GiphyAsset? {
-        let findLargestUnderBudget = {
-            filter { $0.size <= targetSize }.max {
-                // Order by increasing width. If equal, order by decreasing file size.
-                if $0.dimensions.width != $1.dimensions.width {
-                    return $0.dimensions.width < $1.dimensions.width
-                } else {
-                    return $0.size > $1.size
-                }
-            }
-        }
-
-        let budgetWindow = (targetSize + 1..<Int(OWSMediaUtils.kMaxFileSizeImage))
-        let findSmallestOverBudget = {
-            filter { budgetWindow.contains($0.size) }.min {
-                // Order by increasing file size. If equal, order by decreasing dimension.
-                if $0.size != $1.size {
-                    return $0.size < $1.size
-                } else {
-                    return $0.dimensions.width > $1.dimensions.width
-                }
-            }
-        }
-        return findLargestUnderBudget() ?? findSmallestOverBudget()
-    }
-}
-
-private extension CGSize {
-    func fits<T>(range: T) -> Bool where T: RangeExpression, T.Bound == CGFloat {
-        range.contains(width) && range.contains(height)
-    }
+    public let fullSize: ProxiedContentAssetDescription
+    public let preview: ProxiedContentAssetDescription
+    public let previewAspectRatio: CGFloat
 }

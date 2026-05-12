@@ -20,26 +20,9 @@ protocol ProxiedContentDownloaderDelegate: AnyObject {
 
 // MARK: -
 
-open class ProxiedContentAssetDescription {
+public struct ProxiedContentAssetDescription {
     public let url: NSURL
     public let fileExtension: String
-
-    public init?(
-        url: NSURL,
-        fileExtension: String? = nil,
-    ) {
-        self.url = url
-
-        if let fileExtension {
-            self.fileExtension = fileExtension
-        } else {
-            guard let pathExtension = url.pathExtension else {
-                owsFailDebug("URL has not path extension.")
-                return nil
-            }
-            self.fileExtension = pathExtension
-        }
-    }
 }
 
 // MARK: -

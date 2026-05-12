@@ -69,10 +69,6 @@ class GifPickerCell: UICollectionViewCell {
     var imageInfo: GiphyImageInfo? {
         didSet {
             AssertIsOnMainThread()
-            if imageInfo?.isValidImage == false {
-                owsFailDebug("Invalid image info set on cell")
-                imageInfo = nil
-            }
             ensureCellState()
         }
     }
@@ -98,18 +94,15 @@ class GifPickerCell: UICollectionViewCell {
     }
 
     func requestRenditionForSending() async throws(GiphyError) -> ProxiedContentAsset {
-        guard
-            let imageInfo,
-            let fullSizeAsset = imageInfo.fullSizeAsset
-        else {
-            owsFailDebug("fullSizeAsset was unexpectedly nil")
-            throw GiphyError.assertionError(description: "fullSizeAsset was unexpectedly nil")
+        guard let imageInfo else {
+            owsFailDebug("imageInfo was unexpectedly nil")
+            throw GiphyError.assertionError(description: "imageInfo was unexpectedly nil")
         }
 
         // We don't retain a handle on the asset request, since there will only ever
         // be one selected asset, and we never want to cancel it.
         do {
-            return try await GiphyDownloader.giphyDownloader.requestAsset(assetDescription: fullSizeAsset, priority: .high)
+            return try await GiphyDownloader.giphyDownloader.requestAsset(assetDescription: imageInfo.fullSize, priority: .high)
         } catch {
             // TODO GiphyDownloader API should pass through a useful failing error
             // so we can pass it through here
@@ -147,13 +140,9 @@ class GifPickerCell: UICollectionViewCell {
             // We already have a load in progress, or we've already loaded the asset
             return
         }
-        guard let previewAssetDescription = imageInfo.animatedPreviewAsset else {
-            Logger.warn("could not pick gif rendition: \(imageInfo.giphyId)")
-            return
-        }
 
         previewAssetRequest = GiphyDownloader.giphyDownloader.requestAsset(
-            assetDescription: previewAssetDescription,
+            assetDescription: imageInfo.preview,
             priority: .low,
             success: { [weak self] assetRequest, asset in
                 AssertIsOnMainThread()

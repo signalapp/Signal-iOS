@@ -104,7 +104,7 @@ class GifPickerLayout: UICollectionViewLayout {
             }
             let cellX = columnXs[column]
             let cellWidth = columnWidth
-            let cellHeight = UInt(CGFloat(columnWidth) / imageInfo.originalAspectRatio)
+            let cellHeight = UInt(CGFloat(columnWidth) / imageInfo.previewAspectRatio)
 
             let indexPath = NSIndexPath(row: cellIndex, section: 0)
             let itemAttributes = UICollectionViewLayoutAttributes(forCellWith: indexPath as IndexPath)
