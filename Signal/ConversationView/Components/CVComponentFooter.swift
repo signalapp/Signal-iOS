@@ -160,17 +160,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             innerStack.addSubviewToFillSuperviewEdges(bubbleView)
         }
 
-        if let tapForMoreLabelConfig = self.tapForMoreLabelConfig {
-            let tapForMoreLabel = componentView.tapForMoreLabel
-            tapForMoreLabelConfig.applyForRendering(label: tapForMoreLabel)
-            outerViews.append(tapForMoreLabel)
-        }
-
-        // We always use a stretching spacer.
-        outerViews.append(UIView.hStretchingSpacer())
-        outerViews.append(innerStack)
-
-        let timestampLabel = componentView.timestampLabel
         let textColor: UIColor
         if wasRemotelyDeleted, !conversationStyle.hasWallpaper {
             owsAssertDebug(!isOverlayingMedia)
@@ -182,6 +171,16 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         } else {
             textColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
         }
+
+        if let tapForMoreLabelConfig = self.tapForMoreLabelConfig {
+            let tapForMoreLabel = componentView.tapForMoreLabel
+            tapForMoreLabelConfig.applyForRendering(label: tapForMoreLabel)
+            outerViews.append(tapForMoreLabel)
+        }
+
+        // We always use a stretching spacer.
+        outerViews.append(UIView.hStretchingSpacer())
+        outerViews.append(innerStack)
 
         if isPinnedMessage {
             let pinIconView = componentView.pinnedImageView
@@ -195,6 +194,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             innerViews.append(editedLabel)
         }
 
+        let timestampLabel = componentView.timestampLabel
         timestampLabelConfig(textColor: textColor).applyForRendering(label: timestampLabel)
         innerViews.append(timestampLabel)
 
