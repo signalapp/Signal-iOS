@@ -90,7 +90,7 @@ public enum BuildFlags {
         public static let handleRequests = true
     }
 
-    public static let collapsingChatEvents = build <= .internal
+    public static let collapsingChatEvents = build <= .beta
 }
 
 // MARK: -
