@@ -1252,7 +1252,6 @@
 		66CD25662B0695F400139E17 /* BackupArchiveChatArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25652B0695F400139E17 /* BackupArchiveChatArchiver.swift */; };
 		66CD256A2B06963200139E17 /* BackupArchiveStickerPackArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25692B06963200139E17 /* BackupArchiveStickerPackArchiver.swift */; };
 		66CD256E2B06E14F00139E17 /* BackupArchiveContactRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD256D2B06E14F00139E17 /* BackupArchiveContactRecipientArchiver.swift */; };
-		66CD25722B07EE3A00139E17 /* BackupArchive+SharedMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25712B07EE3A00139E17 /* BackupArchive+SharedMap.swift */; };
 		66CD25752B0807BC00139E17 /* BackupArchiveProtoInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25742B0807BC00139E17 /* BackupArchiveProtoInputStream.swift */; };
 		66CD25772B0807C700139E17 /* BackupArchiveProtoOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25762B0807C700139E17 /* BackupArchiveProtoOutputStream.swift */; };
 		66CD25792B0832A400139E17 /* BackupArchiveLocalRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25782B0832A400139E17 /* BackupArchiveLocalRecipientArchiver.swift */; };
@@ -5534,7 +5533,6 @@
 		66CD25652B0695F400139E17 /* BackupArchiveChatArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveChatArchiver.swift; sourceTree = "<group>"; };
 		66CD25692B06963200139E17 /* BackupArchiveStickerPackArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveStickerPackArchiver.swift; sourceTree = "<group>"; };
 		66CD256D2B06E14F00139E17 /* BackupArchiveContactRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveContactRecipientArchiver.swift; sourceTree = "<group>"; };
-		66CD25712B07EE3A00139E17 /* BackupArchive+SharedMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupArchive+SharedMap.swift"; sourceTree = "<group>"; };
 		66CD25742B0807BC00139E17 /* BackupArchiveProtoInputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveProtoInputStream.swift; sourceTree = "<group>"; };
 		66CD25762B0807C700139E17 /* BackupArchiveProtoOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveProtoOutputStream.swift; sourceTree = "<group>"; };
 		66CD25782B0832A400139E17 /* BackupArchiveLocalRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveLocalRecipientArchiver.swift; sourceTree = "<group>"; };
@@ -10762,7 +10760,6 @@
 				66CD255A2B06884700139E17 /* Recipient */,
 				66CD255F2B06888800139E17 /* StickerPack */,
 				662590D02B5B525E001FDCDD /* BackupArchive+Errors.swift */,
-				66CD25712B07EE3A00139E17 /* BackupArchive+SharedMap.swift */,
 				D94D67CC2C9DEF6E0091B485 /* BackupArchivePostFrameRestoreActionManager.swift */,
 				66CD25582B0685E000139E17 /* BackupArchiveProtoStreamWriter.swift */,
 			);
@@ -19023,7 +19020,6 @@
 				663AAF262E0225E100B9C4B8 /* BackupArchive+IncludedContentFilter.swift in Sources */,
 				66CD258D2B0EB3A700139E17 /* BackupArchive+InteractionTypes.swift in Sources */,
 				66CD257D2B0C1DAA00139E17 /* BackupArchive+RecipientContexts.swift in Sources */,
-				66CD25722B07EE3A00139E17 /* BackupArchive+SharedMap.swift in Sources */,
 				665C0D602ADF57D000539A37 /* BackupArchive+Shims.swift in Sources */,
 				661429192D35B9F10043AA22 /* BackupArchive+Timestamp.swift in Sources */,
 				66CD25642B06949C00139E17 /* BackupArchiveAccountDataArchiver.swift in Sources */,

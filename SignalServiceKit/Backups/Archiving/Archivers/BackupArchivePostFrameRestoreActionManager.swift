@@ -6,7 +6,6 @@
 import LibSignalClient
 
 public class BackupArchivePostFrameRestoreActionManager {
-    typealias SharedMap = BackupArchive.SharedMap
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientActions = BackupArchive.RecipientRestoringContext.PostFrameRestoreActions
     typealias ChatId = BackupArchive.ChatId
@@ -44,8 +43,8 @@ public class BackupArchivePostFrameRestoreActionManager {
     // MARK: -
 
     func performPostFrameRestoreActions(
-        recipientActions: SharedMap<RecipientId, RecipientActions>,
-        chatActions: SharedMap<ChatId, ChatActions>,
+        recipientActions: [RecipientId: RecipientActions],
+        chatActions: [ChatId: ChatActions],
         bencher: BackupArchive.RestoreBencher,
         chatItemContext: BackupArchive.ChatItemRestoringContext,
     ) throws {

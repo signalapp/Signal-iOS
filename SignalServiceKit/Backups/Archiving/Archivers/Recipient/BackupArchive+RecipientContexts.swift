@@ -123,13 +123,13 @@ extension BackupArchive {
 
         private var currentRecipientId: RecipientId
         private var releaseNotesChannelRecipientId: RecipientId?
-        private let groupIdMap = SharedMap<GroupId, RecipientId>()
-        private let distributionIdMap = SharedMap<DistributionId, RecipientId>()
-        private let contactAciMap = SharedMap<Aci, RecipientId>()
-        private let contactPniMap = SharedMap<Pni, RecipientId>()
-        private let contactE164Map = SharedMap<E164, RecipientId>()
-        private let recipientDbRowIdMap = SharedMap<SignalRecipient.RowId, RecipientId>()
-        private let callLinkIdMap = SharedMap<CallLinkRecordId, RecipientId>()
+        private var groupIdMap = [GroupId: RecipientId]()
+        private var distributionIdMap = [DistributionId: RecipientId]()
+        private var contactAciMap = [Aci: RecipientId]()
+        private var contactPniMap = [Pni: RecipientId]()
+        private var contactE164Map = [E164: RecipientId]()
+        private var recipientDbRowIdMap = [SignalRecipient.RowId: RecipientId]()
+        private var callLinkIdMap = [CallLinkRecordId: RecipientId]()
 
         init(
             localRecipientId: RecipientId,
@@ -274,13 +274,13 @@ extension BackupArchive {
 
         var localSignalRecipientRowId: SignalRecipient.RowId?
 
-        private let map = SharedMap<RecipientId, Address>()
-        private let recipientDbRowIdCache = SharedMap<RecipientId, SignalRecipient.RowId>()
+        private var map = [RecipientId: Address]()
+        private var recipientDbRowIdCache = [RecipientId: SignalRecipient.RowId]()
         /// We create TSGroupThread (and GroupModel) when we restore the Recipient, NOT the Chat.
         /// By comparison, TSContactThread is created when we restore the Chat frame.
         /// We cache the TSGroupThread here to avoid fetching later when we do restore the Chat.
-        private let groupThreadCache = SharedMap<GroupId, TSGroupThread>()
-        private let callLinkRecordCache = SharedMap<CallLinkRecordId, CallLinkRecord>()
+        private var groupThreadCache = [GroupId: TSGroupThread]()
+        private var callLinkRecordCache = [CallLinkRecordId: CallLinkRecord]()
 
         subscript(_ id: RecipientId) -> Address? {
             get { map[id] }
@@ -330,7 +330,7 @@ extension BackupArchive {
         }
 
         /// Represents actions that should be taken after all `Frame`s have been restored.
-        private(set) var postFrameRestoreActions = SharedMap<RecipientId, PostFrameRestoreActions>()
+        private(set) var postFrameRestoreActions = [RecipientId: PostFrameRestoreActions]()
 
         func setNeedsPostRestoreContactHiddenInfoMessage(recipientId: RecipientId) {
             var actions = postFrameRestoreActions[recipientId] ?? PostFrameRestoreActions()

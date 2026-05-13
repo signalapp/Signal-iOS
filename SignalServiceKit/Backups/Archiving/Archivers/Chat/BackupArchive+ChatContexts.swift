@@ -91,7 +91,7 @@ extension BackupArchive {
         public let recipientContext: RecipientArchivingContext
 
         private var currentChatId = ChatId(value: 1)
-        private let map = SharedMap<ThreadUniqueId, ChatId>()
+        private var map = [ThreadUniqueId: ChatId]()
         public var gv1ThreadIds = Set<ThreadUniqueId>()
 
         public enum CachedThreadInfo {
@@ -102,7 +102,7 @@ extension BackupArchive {
             case noteToSelfThread
         }
 
-        private let threadCache = SharedMap<ChatId, CachedThreadInfo>()
+        private var threadCache = [ChatId: CachedThreadInfo]()
 
         init(
             customChatColorContext: CustomChatColorArchivingContext,
@@ -168,11 +168,11 @@ extension BackupArchive {
         public let customChatColorContext: CustomChatColorRestoringContext
         public let recipientContext: RecipientRestoringContext
 
-        private let recipientToChatMap = SharedMap<RecipientId, ChatId>()
+        private var recipientToChatMap = [RecipientId: ChatId]()
 
-        private let contactThreadMap = SharedMap<ChatId, (Int64, TSContactThread)>()
-        private let groupIdMap = SharedMap<ChatId, (Int64, GroupId)>()
-        private let pinnedThreadIndexMap = SharedMap<ThreadUniqueId, UInt32>()
+        private var contactThreadMap = [ChatId: (Int64, TSContactThread)]()
+        private var groupIdMap = [ChatId: (Int64, GroupId)]()
+        private var pinnedThreadIndexMap = [ThreadUniqueId: UInt32]()
 
         init(
             customChatColorContext: CustomChatColorRestoringContext,
@@ -255,29 +255,25 @@ extension BackupArchive {
         // MARK: Post-Frame Restore
 
         public struct PostFrameRestoreActions {
-            var isPinned: Bool
+            var isPinned: Bool = false
             var lastVisibleInteractionRowId: Int64?
             var hadAnyUnreadMessages: Bool = false
 
             /// Maintained for group chats only.
             /// Maps a group member's aci (including the local user's aci) to the
             /// largest timestamp for messages sent by that member.
-            var groupMemberLastInteractionTimestamp = SharedMap<Aci, UInt64>()
+            var groupMemberLastInteractionTimestamp = [Aci: UInt64]()
 
             var shouldBeMarkedVisible: Bool {
                 isPinned || lastVisibleInteractionRowId != nil
             }
-
-            static var `default`: Self {
-                return .init(isPinned: false, lastVisibleInteractionRowId: nil)
-            }
         }
 
         /// Represents actions that should be taken after all `Frame`s have been restored.
-        private(set) var postFrameRestoreActions = SharedMap<ChatId, PostFrameRestoreActions>()
+        private(set) var postFrameRestoreActions = [ChatId: PostFrameRestoreActions]()
 
         func setChatIsPinned(chatId: ChatId) {
-            var actions = postFrameRestoreActions[chatId] ?? .default
+            var actions = postFrameRestoreActions[chatId] ?? PostFrameRestoreActions()
             actions.isPinned = true
             postFrameRestoreActions[chatId] = actions
         }
@@ -287,7 +283,7 @@ extension BackupArchive {
             wasRead: Bool,
             chatId: ChatId,
         ) {
-            var actions = postFrameRestoreActions[chatId] ?? .default
+            var actions = postFrameRestoreActions[chatId] ?? PostFrameRestoreActions()
             if
                 actions.lastVisibleInteractionRowId == nil
                 // We don't _really_ need to compare as row ids are always
@@ -306,13 +302,14 @@ extension BackupArchive {
             senderAci: Aci,
             timestamp: UInt64,
         ) {
-            let actions = postFrameRestoreActions[chatId] ?? .default
+            var actions = postFrameRestoreActions[chatId] ?? PostFrameRestoreActions()
             let oldTimestamp = actions.groupMemberLastInteractionTimestamp[senderAci]
             if
                 oldTimestamp == nil
                 || oldTimestamp! < timestamp
             {
                 actions.groupMemberLastInteractionTimestamp[senderAci] = timestamp
+                postFrameRestoreActions[chatId] = actions
             }
         }
     }
@@ -348,7 +345,7 @@ extension BackupArchive {
     public class CustomChatColorArchivingContext: ArchivingContext {
 
         private var currentCustomChatColorId = CustomChatColorId(value: 1)
-        private let map = SharedMap<CustomChatColor.Key, CustomChatColorId>()
+        private var map = [CustomChatColor.Key: CustomChatColorId]()
 
         func assignCustomChatColorId(to customChatColorKey: CustomChatColor.Key) -> CustomChatColorId {
             defer {
@@ -365,7 +362,7 @@ extension BackupArchive {
 
     public class CustomChatColorRestoringContext: RestoringContext {
 
-        private let map = SharedMap<CustomChatColorId, CustomChatColor.Key>()
+        private var map = [CustomChatColorId: CustomChatColor.Key]()
 
         let accountDataContext: AccountDataRestoringContext
 
