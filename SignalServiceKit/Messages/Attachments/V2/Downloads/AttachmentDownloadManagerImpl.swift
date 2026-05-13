@@ -1317,10 +1317,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .message(let source):
                 let threadRowId: TSThread.RowId
                 switch source {
-                case .oversizeText:
-                    // These are bodyAttachments that branch based on their MIME type and
-                    // aren't processed as media files.
-                    return false
+                case .oversizeText(let metadata):
+                    threadRowId = metadata.threadRowId
                 case .sticker(let metadata):
                     threadRowId = metadata.threadRowId
                 case .bodyAttachment(let metadata):
