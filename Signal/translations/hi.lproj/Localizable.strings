@@ -656,25 +656,25 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "नई 'की' बनाएं";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "पासवर्ड मैनेजर में सेव करें";
 
 /* Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "अपनी 'रिकवरी की' को सिर्फ़ उसी भरोसेमंद पासवर्ड मैनेजर में स्टोर करें, जो आपको सुरक्षित लगे। Signal इस बारे में कोई सुझाव नहीं देता है कि कौन-सा पासवर्ड मैनेजर आपके लिए सही रहेगा।";
 
 /* Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Save to password manager?";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "पासवर्ड मैनेजर में सेव करना है?";
 
 /* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Recovery Key";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal 'रिकवरी की'";
 
 /* Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "हो सकता है कि आपने कोई पासवर्ड मैनेजर सेटअप न किया हो या फिर आपके मौजूदा पासवर्ड मैनेजर पर यह सुविधा काम न करती हो। अपने फ़ोन की सेटिंग में जाकर अपना पसंदीदा पासवर्ड मैनेजर चुनें।";
 
 /* Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Can't save to password manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "पासवर्ड मैनेजर में सेव नहीं हो पाया";
 
 /* Toast shown after the user successfully saves their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Done. Check your password manager to verify.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "हो गया। वेरिफ़ाई करने के लिए अपना पासवर्ड मैनेजर देखें।";
 
 /* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "आपके अकाउंट और डेटा को रिकवर करने के लिए यह 'की' ज़रूरी है। इस 'की' को सहेजकर रखें। अगर यह खो जाती है, तो आपका अकाउंट रिकवर नहीं हो पाएगा।";
@@ -1643,16 +1643,16 @@
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "वॉइस कॉल से जुड़ें";
 
 /* Second line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_SUBTITLE" = "Recent calls will appear here.";
+"CALLS_TAB_NO_CALLS_SUBTITLE" = "हाल की कॉल यहां दिखेंगी।";
 
 /* Top line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_TITLE" = "No Calls";
+"CALLS_TAB_NO_CALLS_TITLE" = "कोई कॉल नहीं है";
 
 /* Second line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Missed calls will appear here.";
+"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "मिस्ड कॉल यहां दिखेंगी।";
 
 /* Top line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No Missed Calls";
+"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "कोई मिस्ड कॉल नहीं है";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "कॉल पर वापस जाएं";
@@ -1910,10 +1910,10 @@
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "अनरीड से फ़िल्टर करें";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "हाल की चैट यहां दिखेंगी।";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
+"CHAT_LIST_NO_CHATS_TITLE" = "कोई चैट नहीं है";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "चैट";
@@ -3329,7 +3329,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "आपके %1$@ के एकमुश्त iDEAL | Wero डोनेशन की पुष्टि नहीं हो पाई। अपने iDEAL | Wero डोनेशन को मंज़ूरी देने के लिए अपना बैंकिंग ऐप देखें।";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "आपका iDEAL | Wero का रिकरिंग मासिक डोनेशन प्रोसेस नहीं हो सका। पेमेंट करने का कोई और तरीका आज़माएं या फिर ज़्यादा जानकारी के लिए अपने बैंक से संपर्क करें।";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "आपके %1$@ के रिकरिंग iDEAL | Wero डोनेशन की पुष्टि नहीं हो पाई। अपने iDEAL | Wero डोनेशन को मंज़ूरी देने के लिए अपना बैंकिंग ऐप देखें।";
@@ -7475,10 +7475,10 @@
 "REGISTER_RATE_LIMITING_ERROR" = "आपने कई बार कोशिश कर ली है। दोबारा कोशिश करने से पहले, थोड़ी देर इंतज़ार करें।";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "हो सकता है कि आपने अपनी 'रिकवरी की' गलत डाली हो। \n\nरजिस्ट्रेशन करते समय वही फ़ोन नंबर और 'रिकवरी की' इस्तेमाल करें, जो आपने Signal सिक्योर बैकअप चालू करते समय सेव की थी।";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "'रिकवरी की' सही नहीं है";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "इस 'रिकवरी की' वाला कोई बैकअप मौजूद नहीं है। कृपया देख लें कि 'की' सही है और फिर से कोशिश करें।";
@@ -9389,10 +9389,10 @@
 "STORIES_NO_REPLIES_YET" = "अभी तक कोई जवाब नहीं मिला";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+"STORIES_NO_STORIES_SUBTITLE" = "नए अपडेट यहां दिखेंगे।";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_TITLE" = "No Stories";
+"STORIES_NO_STORIES_TITLE" = "कोई स्टोरी नहीं है";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "अब तक कोई व्यू नहीं मिला";
@@ -9497,10 +9497,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "आपने %2$@ की स्टोरी पर %1$@ रिएक्शन दिया है";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "ने आपकी स्टोरी पर %1$@ रिएक्शन दिया";
 
 /* Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ reacted %2$@ to %3$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ ने %3$@ की स्टोरी पर %2$@ वाला रिएक्शन दिया है";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "इन्होंने स्टोरी पर %1$@ रिएक्ट किया है";

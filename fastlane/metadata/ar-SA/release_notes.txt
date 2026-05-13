@@ -1,3 +1,3 @@
-• Now you can disable the default outgoing message sound to give yourself the silent treatment (Signal Settings > Notifications > Sounds > Message Sent Sound).
-• We fixed a bug that made it possible to scroll the message input box even when it was empty. If you still want to scroll something that feels empty, you can ask your friend to send you a panoramic photo from their desert camping trip.
-• This update also introduces several user interface enhancements, including a refined attachment and sticker keyboard on iPad, and layout improvements throughout the app.
+• يُمكنك الآن تعطيل الصوت الافتراضي للرسائل المُرسَلة لتتمتّع بالهدوء (إعدادات سيجنال > الإشعارات > الأصوات > صوت إرسال الرسالة).
+• أصلحنا خطًأ كان يسمح بالتمرير في مربع إدخال الرسالة حتى عندما يكون فارغًا. إذا كُنتَ لا تزال ترغب في تصفُّح شيء يبدو فارغًا، يمكنك أن تطلب من صديقك أن يرسل لك صورة بانورامية من رحلة التخييم في الصحراء.
+• يُقدّم هذا التحديث أيضًا العديد من التحسينات على واجهة المُستخدِم، بما في ذلك لوحة مفاتيح مُحسَّنة لإضافة المرفقات والمُلصَقات على جهاز آيباد، وتحسينات في تصميم التطبيق بشكلٍ عام.

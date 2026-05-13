@@ -2063,13 +2063,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>Состоит в %1$@, %2$@ и ещё %3$ld группе</string>
+			<string>Состоит в %1$@, %2$@ и ещё в %3$ld группе</string>
 			<key>few</key>
-			<string>Состоит в %1$@, %2$@ и ещё %3$ld группах</string>
+			<string>Состоит в %1$@, %2$@ и ещё в %3$ld группах</string>
 			<key>many</key>
-			<string>Состоит в %1$@, %2$@ и ещё %3$ld группах</string>
+			<string>Состоит в %1$@, %2$@ и ещё в %3$ld группах</string>
 			<key>other</key>
-			<string>Состоит в %1$@, %2$@ и ещё %3$ld группы</string>
+			<string>Состоит в %1$@, %2$@ и ещё в %3$ld группы</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld</key>

@@ -1,3 +1,3 @@
-• Now you can disable the default outgoing message sound to give yourself the silent treatment (Signal Settings > Notifications > Sounds > Message Sent Sound).
-• We fixed a bug that made it possible to scroll the message input box even when it was empty. If you still want to scroll something that feels empty, you can ask your friend to send you a panoramic photo from their desert camping trip.
-• This update also introduces several user interface enhancements, including a refined attachment and sticker keyboard on iPad, and layout improvements throughout the app.
+• デフォルトの送信メッセージ音を無効にできます。
+• メッセージの入力欄が空欄でもスクロールできてしまうバグを修正しました。
+• 今回のアップデートでは、ユーザーインターフェースの改良もいくつか実施されています。

@@ -1,3 +1,3 @@
-• Now you can disable the default outgoing message sound to give yourself the silent treatment (Signal Settings > Notifications > Sounds > Message Sent Sound).
-• We fixed a bug that made it possible to scroll the message input box even when it was empty. If you still want to scroll something that feels empty, you can ask your friend to send you a panoramic photo from their desert camping trip.
-• This update also introduces several user interface enhancements, including a refined attachment and sticker keyboard on iPad, and layout improvements throughout the app.
+• 現在你可以停用預設的發送訊息提示聲，讓自己享受片刻寧靜（Signal 設定 > 通知 > 音效 > 訊息已傳送提示聲）。
+• 我們修正了當訊息輸入框為空時仍可被捲動的錯誤。如果你還是想捲動一些看起來空蕩蕩的內容，可以請朋友傳送一張他們在沙漠露營之旅拍的全景照片給你。
+• 本次更新還帶來了多項用戶介面改進，包括 iPad 版上更精緻的附件與貼圖鍵盤，以及整個應用程式的版面配置改良。

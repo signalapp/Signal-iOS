@@ -656,25 +656,25 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Créer une nouvelle clé";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Enregistrer dans le gestionnaire de mots de passe";
 
 /* Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Ne conservez votre clé de récupération que dans un gestionnaire de mots de passe fiable. Signal ne peut pas vous recommander le gestionnaire de mots de passe le plus adapté à vos besoins.";
 
 /* Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Save to password manager?";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Enregistrer dans le gestionnaire de mots de passe ?";
 
 /* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Recovery Key";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Clé de récupération Signal";
 
 /* Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "Vous n'avez peut-être pas configuré de gestionnaire de mots de passe ou celui que vous utilisez n'est peut-être pas compatible avec Signal. Vous pouvez en sélectionner un dans les réglages de votre téléphone.";
 
 /* Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Can't save to password manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Impossible d'enregistrer la clé dans le gestionnaire de mots de passe";
 
 /* Toast shown after the user successfully saves their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Done. Check your password manager to verify.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Terminé. Vérifiez votre gestionnaire de mots de passe.";
 
 /* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "Vous devrez saisir cette clé pour restaurer votre compte et vos données. Conservez-la en lieu sûr. Si vous la perdez, vous ne pourrez pas restaurer votre compte.";
@@ -1643,16 +1643,16 @@
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Rejoindre l'appel vocal";
 
 /* Second line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_SUBTITLE" = "Recent calls will appear here.";
+"CALLS_TAB_NO_CALLS_SUBTITLE" = "Les appels récents s'afficheront ici.";
 
 /* Top line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_TITLE" = "No Calls";
+"CALLS_TAB_NO_CALLS_TITLE" = "Aucun appel";
 
 /* Second line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Missed calls will appear here.";
+"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Les appels manqués s'afficheront ici.";
 
 /* Top line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No Missed Calls";
+"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "Aucun appel manqué";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Revenir à l'appel";
@@ -1910,10 +1910,10 @@
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtre \"Conversations non lues\"";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "Les conversations récentes s'afficheront ici.";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
+"CHAT_LIST_NO_CHATS_TITLE" = "Aucune conversation";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Conversations";
@@ -3329,7 +3329,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Impossible de valider votre don ponctuel iDEAL | Wero de %1$@. Veuillez l'approuver via votre application bancaire.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Impossible de traiter votre don mensuel iDEAL | Wero. Veuillez choisir un autre mode de paiement ou contacter votre banque pour en savoir plus.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Impossible de valider votre don mensuel iDEAL | Wero de %1$@. Veuillez l'approuver via votre application bancaire.";
@@ -7475,10 +7475,10 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Trop grand nombre de tentatives. Veuillez patienter une minute avant de réessayer.";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "Vous avez peut-être mal saisi votre clé de récupération.\n\nVérifiez que vous utilisez bien le même numéro de téléphone, ainsi que la clé de récupération que vous avez enregistrée au moment d'activer les sauvegardes sécurisées Signal.";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Clé de récupération incorrecte";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Aucune sauvegarde n'est associée à cette clé de récupération. Vérifiez que vous utilisez bien la bonne clé, puis réessayez.";
@@ -7973,10 +7973,10 @@
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Messages contenant des liens";
 
 /* Message body describing the review names safety tip. */
-"SAFETY_TIPS_REVIEW_NAMES_BODY" = "Soyez vigilant si vous voyez la mention \"Contact non confirmé\". Sur Signal, les utilisateurs choisissent librement leur nom de profil.";
+"SAFETY_TIPS_REVIEW_NAMES_BODY" = "Soyez vigilant si vous voyez la mention \"Ce nom n'est pas vérifié\". Sur Signal, les utilisateurs choisissent librement leur nom de profil.";
 
 /* Message body describing the review names safety tip in the 'view more' flow. */
-"SAFETY_TIPS_REVIEW_NAMES_BODY_VIEW_MORE" = "Soyez vigilant si vous voyez la mention \"Contact non confirmé\". Sur Signal, les utilisateurs choisissent librement leur nom et photo de profil. Si vous avez des doutes sur l'identité d'un utilisateur, il vaut mieux ignorer sa demande.";
+"SAFETY_TIPS_REVIEW_NAMES_BODY_VIEW_MORE" = "Soyez vigilant si vous voyez la mention \"Ce nom n'est pas vérifié\". Sur Signal, les utilisateurs choisissent librement leurs nom et photo de profil. Si vous avez des doutes sur l'identité d'un utilisateur, il vaut mieux ignorer sa demande.";
 
 /* Message title describing the review names safety tip. */
 "SAFETY_TIPS_REVIEW_NAMES_TITLE" = "Vérifiez le nom et la photo";
@@ -9389,10 +9389,10 @@
 "STORIES_NO_REPLIES_YET" = "Aucune réaction pour le moment";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+"STORIES_NO_STORIES_SUBTITLE" = "Les nouveaux contenus s'afficheront ici.";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_TITLE" = "No Stories";
+"STORIES_NO_STORIES_TITLE" = "Aucune story";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "Aucune vue pour le moment";
@@ -9497,10 +9497,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "Vous avez réagi par %1$@ à la story de %2$@";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "a réagi par %1$@ à votre story";
 
 /* Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ reacted %2$@ to %3$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ a réagi par %2$@ à la story de %3$@";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "avez réagi par %1$@ à une story";
@@ -9776,7 +9776,7 @@
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Membre de %1$@";
 
 /* Label displayed below profiles */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Contact non confirmé";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Ce nom n'est pas vérifié";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Afficher";

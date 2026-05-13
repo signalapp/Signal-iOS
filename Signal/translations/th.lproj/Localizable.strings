@@ -656,25 +656,25 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "สร้างกุญแจใหม่";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "บันทึกไปยังตัวจัดการรหัสผ่าน";
 
 /* Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "โปรดเก็บกุญแจกู้คืนของคุณไว้กับตัวจัดการรหัสผ่านที่คุณมั่นใจว่าปลอดภัยเท่านั้น โดย Signal จะไม่แนะนำตัวจัดการรหัสผ่านที่เหมาะกับคุณตัวใดตัวหนึ่งเป็นพิเศษ";
 
 /* Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Save to password manager?";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "บันทึกไปยังตัวจัดการรหัสผ่านใช่หรือไม่";
 
 /* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Recovery Key";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "กุญแจกู้คืนของ Signal";
 
 /* Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "คุณอาจยังไม่ได้ตั้งค่าตัวจัดการรหัสผ่าน หรือระบบอาจไม่รองรับตัวจัดการรหัสผ่านที่คุณใช้อยู่ โปรดเลือกตัวจัดการรหัสผ่านที่คุณต้องการใช้ในการตั้งค่าโทรศัพท์";
 
 /* Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Can't save to password manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "ไม่สามารถบันทึกไปยังตัวจัดการรหัสผ่าน";
 
 /* Toast shown after the user successfully saves their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Done. Check your password manager to verify.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "บันทึกสำเร็จ ไปที่ตัวจัดการรหัสผ่านของคุณเพื่อตรวจยืนยัน";
 
 /* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "คุณจำเป็นต้องใช้กุญแจนี้ในการกู้คืนบัญชีและข้อมูล โปรดเก็บกุญแจนี้ไว้ในที่ปลอดภัย คุณจะไม่สามารถกู้คืนบัญชีได้หากทำกุญแจหาย";
@@ -1643,16 +1643,16 @@
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "เข้าร่วมการโทรด้วยเสียง";
 
 /* Second line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_SUBTITLE" = "Recent calls will appear here.";
+"CALLS_TAB_NO_CALLS_SUBTITLE" = "การโทรล่าสุดจะปรากฏที่นี่";
 
 /* Top line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_TITLE" = "No Calls";
+"CALLS_TAB_NO_CALLS_TITLE" = "ไม่มีการโทร";
 
 /* Second line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Missed calls will appear here.";
+"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "สายที่ไม่ได้รับจะปรากฏที่นี่";
 
 /* Top line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No Missed Calls";
+"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "ไม่มีสายที่ไม่ได้รับ";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "กลับไปที่สาย";
@@ -1910,10 +1910,10 @@
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "กรองตามแชทที่ยังไม่ได้อ่าน";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "แชทล่าสุดจะปรากฏที่นี่";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
+"CHAT_LIST_NO_CHATS_TITLE" = "ไม่มีแชท";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "แชท";
@@ -3329,7 +3329,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "ไม่สามารถยืนยันการบริจาคครั้งเดียวผ่าน iDEAL | Wero จำนวน %1$@ ของคุณได้ โปรดตรวจสอบแอปธนาคารของคุณเพื่ออนุมัติการบริจาคผ่าน iDEAL | Wero";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "ไม่สามารถดำเนินการบริจาครายเดือนผ่าน iDEAL | Wero ของคุณได้ ลองชำระเงินด้วยวิธีอื่น หรือติดต่อธนาคารเพื่อขอข้อมูลเพิ่มเติม";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "ไม่สามารถยืนยันการบริจาครายเดือนผ่าน iDEAL | Wero จำนวน %1$@ ของคุณได้ โปรดตรวจสอบแอปธนาคารของคุณเพื่ออนุมัติการบริจาคผ่าน iDEAL | Wero";
@@ -7475,10 +7475,10 @@
 "REGISTER_RATE_LIMITING_ERROR" = "คุณลองบ่อยครั้งเกินไป กรุณารอสักนาทีก่อนจะลองใหม่";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "คุณอาจป้อนกุญแจกู้คืนไม่ถูกต้อง\n\nโปรดตรวจสอบให้แน่ใจว่าคุณกำลังลงทะเบียนโดยใช้หมายเลขโทรศัพท์และกุญแจกู้คืนเดียวกันกับที่บันทึกไว้ในตอนที่เปิดใช้งานการสำรองข้อมูลที่ปลอดภัยของ Signal";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "กุญแจกู้คืนไม่ถูกต้อง";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "ไม่พบข้อมูลสำรองที่เชื่อมโยงกับกุญแจกู้คืนนี้ โปรดตรวจสอบให้แน่ใจว่ากุญแจนี้ถูกต้องแล้วลองอีกครั้ง";
@@ -9389,10 +9389,10 @@
 "STORIES_NO_REPLIES_YET" = "ยังไม่มีการตอบกลับ";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+"STORIES_NO_STORIES_SUBTITLE" = "สตอรี่ใหม่จะปรากฏที่นี่";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_TITLE" = "No Stories";
+"STORIES_NO_STORIES_TITLE" = "ไม่มีสตอรี่";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "ยังไม่มีคนดู";
@@ -9497,10 +9497,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "คุณแสดงความรู้สึก %1$@ ต่อสตอรี่ของ %2$@";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "แสดงความรู้สึก %1$@ ต่อสตอรี่ของคุณ";
 
 /* Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ reacted %2$@ to %3$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ แสดงความรู้สึก %2$@ ต่อสตอรี่ของ %3$@";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "แสดงความรู้สึก %1$@ ต่อสตอรี่";

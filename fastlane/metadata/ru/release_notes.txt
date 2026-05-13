@@ -1,3 +1,3 @@
-• Now you can disable the default outgoing message sound to give yourself the silent treatment (Signal Settings > Notifications > Sounds > Message Sent Sound).
-• We fixed a bug that made it possible to scroll the message input box even when it was empty. If you still want to scroll something that feels empty, you can ask your friend to send you a panoramic photo from their desert camping trip.
-• This update also introduces several user interface enhancements, including a refined attachment and sticker keyboard on iPad, and layout improvements throughout the app.
+• Теперь вы можете отключить звук исходящего сообщения по умолчанию, чтобы обеспечить себе режим молчания (Настройки Signal > Уведомления > Звуки > Звук отправки сообщения).
+• Исправлена ошибка, позволявшая прокручивать поле ввода сообщения, даже если оно было пустым. Но если вы всё ещё хотите прокрутить что-то пустое, попросите друга прислать вам панорамное фото пустыни.
+• Это обновление также содержит несколько улучшений пользовательского интерфейса, в том числе усовершенствованную клавиатуру для вложений и стикеров на iPad, а также улучшения компоновки всего приложения.

@@ -1,3 +1,3 @@
-• Now you can disable the default outgoing message sound to give yourself the silent treatment (Signal Settings > Notifications > Sounds > Message Sent Sound).
-• We fixed a bug that made it possible to scroll the message input box even when it was empty. If you still want to scroll something that feels empty, you can ask your friend to send you a panoramic photo from their desert camping trip.
-• This update also introduces several user interface enhancements, including a refined attachment and sticker keyboard on iPad, and layout improvements throughout the app.
+• Le silence est d'or. C'est pourquoi vous pouvez maintenant désactiver le son par défaut des messages sortants (Paramètres Signal > Notifications > Sons > Son des messages sortants).
+• Vous pouviez faire défiler la zone de saisie des messages, même lorsqu'elle était vide ? Ce bug est maintenant corrigé. Si vous avez la nostalgie des grands espaces, vous pouvez toujours demander à votre ami de vous envoyer des photos de son voyage dans le Sahara.
+• Cette mise à jour améliore également l'interface utilisateur. Nous avons notamment optimisé le clavier des pièces jointes et des stickers sur iPad, et peaufiné la mise en page dans toute l'application.

@@ -656,25 +656,25 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Neuen Schlüssel erstellen";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Im Passwortmanager speichern";
 
 /* Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Speichere deinen Wiederherstellungsschlüssel nur in einem sicheren Passwortmanager. Signal gibt keine Empfehlung ab, welcher der passende Passwortmanager für dich ist.";
 
 /* Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Save to password manager?";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Im Passwortmanager speichern?";
 
 /* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Recovery Key";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Wiederherstellungsschlüssel";
 
 /* Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "Möglicherweise hast du noch keinen Passwortmanager eingerichtet, oder dein Passwortmanager wird nicht unterstützt. Du kannst deinen bevorzugten Passwordmanager in den Einstellungen deines Telefons auswählen.";
 
 /* Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Can't save to password manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Kann nicht im Passwortmanager gespeichert werden";
 
 /* Toast shown after the user successfully saves their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Done. Check your password manager to verify.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Fertig. Zum Verifizieren überprüfe bitte deinen Passwortmanager.";
 
 /* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "Dieser Schlüssel wird benötigt, um dein Konto und deine Daten wiederherzustellen. Bewahre diesen Schlüssel sicher auf. Wenn du ihn verlierst, kannst du dein Konto nicht wiederherstellen.";
@@ -1643,16 +1643,16 @@
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Sprachanruf beitreten";
 
 /* Second line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_SUBTITLE" = "Recent calls will appear here.";
+"CALLS_TAB_NO_CALLS_SUBTITLE" = "Die letzten Anrufe werden hier angezeigt.";
 
 /* Top line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_TITLE" = "No Calls";
+"CALLS_TAB_NO_CALLS_TITLE" = "Keine Anrufe";
 
 /* Second line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Missed calls will appear here.";
+"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Verpasste Anrufe werden hier angezeigt.";
 
 /* Top line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No Missed Calls";
+"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "Keine verpassten Anrufe";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Zurück zum Anruf";
@@ -1910,10 +1910,10 @@
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Gefiltert nach: Ungelesen";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "Die letzten Chats werden hier angezeigt.";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
+"CHAT_LIST_NO_CHATS_TITLE" = "Keine Chats";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Chats";
@@ -2828,16 +2828,16 @@
 "DEREGISTRATION_NOTIFICATION" = "Du wurdest auf diesem Gerät von Signal abgemeldet.";
 
 /* Button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_BUTTON" = "Erneut registrieren";
+"DEREGISTRATION_REREGISTER_BUTTON" = "Neu registrieren";
 
 /* Title for prompt that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Telefonnummer erneut registrieren?";
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Telefonnummer neu registrieren?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Dieses Gerät ist nicht mehr registriert. Das liegt wahrscheinlich daran, dass du deine Telefonnummer mit Signal auf einem anderen Gerät registriert hast.";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
-"DEREGISTRATION_WARNING_ACTION_TITLE" = "Gerät erneut registrieren";
+"DEREGISTRATION_WARNING_ACTION_TITLE" = "Gerät neu registrieren";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Zuletzt aktiv: %1$@";
@@ -3329,7 +3329,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Deine einmalige Spende über iDEAL | Wero in Höhe von %1$@ konnte nicht bestätigt werden. Überprüfe deine Banking-App, um deine Spende über iDEAL | Wero zu bestätigen.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Deine regelmäßige monatliche Spende über iDEAL | Wero konnte nicht bearbeitet werden. Versuche es mit einer anderen Zahlungsmethode oder kontaktiere deine Bank für weitere Informationen.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Deine regelmäßige monatliche Spende über iDEAL | Wero in Höhe von %1$@ konnte nicht bestätigt werden. Überprüfe deine Banking-App, um deine Spende über iDEAL | Wero zu bestätigen.";
@@ -3617,7 +3617,7 @@
 "ERROR_SENDING_DELINKED" = "Dein Gerät ist nicht mehr gekoppelt. Bitte kopple es erneut, um weitere Nachrichten zu senden.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Dein Gerät ist nicht mehr registriert. Bitte registriere es erneut, um weitere Nachrichten zu senden.";
+"ERROR_SENDING_DEREGISTERED" = "Dein Gerät ist nicht mehr registriert. Bitte registriere es neu, um weitere Nachrichten zu senden.";
 
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "Deine Signal-Version ist veraltet. Bitte aktualisiere Signal, um weitere Nachrichten zu versenden.";
@@ -5921,7 +5921,7 @@
 "NOT_REGISTERED_BOTTOM" = "Dieses Gerät ist nicht mehr registriert. %1$@, um Signal weiterhin verwenden zu können.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. This value is a tappable link embedded in a larger sentence. */
-"NOT_REGISTERED_BOTTOM_REREGISTER" = "Erneut registrieren";
+"NOT_REGISTERED_BOTTOM_REREGISTER" = "Neu registrieren";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Notiz an mich";
@@ -7454,7 +7454,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Hilfe benötigt?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens 4 Zeichen. Falls du dich an deine PIN nicht erinnerst, musst du für das erneute Registrieren deines Kontos 7 Tage warten. Wenn du Signal Secure Backups aktiviert hast, kannst du mit einem Wiederherstellungsschlüssel fortfahren.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens 4 Zeichen. Falls du dich an deine PIN nicht erinnerst, musst du für das neu Registrieren deines Kontos 7 Tage warten. Wenn du Signal Secure Backups aktiviert hast, kannst du mit einem Wiederherstellungsschlüssel fortfahren.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens 4 Zeichen. Falls du deine PIN vergessen hast, kannst du dich registrieren und dein Konto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen, verlieren. Wenn du Signal Secure Backups aktiviert hast, kannst du mit einem Wiederherstellungsschlüssel fortfahren.";
@@ -7475,10 +7475,10 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Zu viele Versuche. Bitte warte eine Minute vor einem erneuten Versuch.";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "Möglicherweise hast du deinen Wiederherstellungsschlüssel falsch eingegeben. \n\nRegistriere dich unbedingt mit derselben Telefonnummer und demselben Wiederherstellungsschlüssel, den du beim Aktivieren von Signal Secure Backups gespeichert hast.";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Wiederherstellungsschlüssel nicht korrekt";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Diesem Wiederherstellungsschlüssel ist kein Backup zugeordnet. Bitte stelle sicher, dass der Schlüssel stimmt und versuche es dann erneut.";
@@ -7580,7 +7580,7 @@
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Telefonnummer eingeben";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Dein Konto wurde gesperrt, um deine Privatsphäre und Sicherheit zu schützen. Nachdem dein Konto %1$@ lang inaktiv war, kannst du diese Telefonnummer erneut registrieren, ohne dafür deine PIN eingeben zu müssen. Alle Inhalte werden gelöscht.";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Dein Konto wurde gesperrt, um deine Privatsphäre und Sicherheit zu schützen. Nachdem dein Konto %1$@ lang inaktiv war, kannst du diese Telefonnummer neu registrieren, ohne dafür deine PIN eingeben zu müssen. Alle Inhalte werden gelöscht.";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
 "REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Mehr über gesperrte Konten erfahren";
@@ -7778,7 +7778,7 @@
 "REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "Noch %1$@ Versuche. Falls du all deine Versuche aufbrauchst, kannst du eine neue PIN erstellen. Du kannst dich registrieren und dein Konto verwenden, wirst aber einige gespeicherte Einstellungen wie deine Profilinformationen verlieren.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Noch %1$@ Versuche. Falls du alle Versuche aufbrauchst, wird dein Konto für 7 Tage gesperrt. Nach 7 Tagen Inaktivität kannst du dich ohne deine PIN erneut registrieren. Alle Inhalte werden gelöscht.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Noch %1$@ Versuche. Falls du alle Versuche aufbrauchst, wird dein Konto für 7 Tage gesperrt. Nach 7 Tagen Inaktivität kannst du dich ohne deine PIN neu registrieren. Alle Inhalte werden gelöscht.";
 
 /* Configure reactions reset button text */
 "RESET" = "Zurücksetzen";
@@ -8675,7 +8675,7 @@
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Zahlungen nicht aktiviert";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Registriere dich erneut, um Zahlungen zu senden.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Registriere dich neu, um Zahlungen zu senden.";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Nicht registriert";
@@ -9116,7 +9116,7 @@
 "SETTINGS_RELINK_BUTTON" = "Erneut koppeln";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "Erneut registrieren";
+"SETTINGS_REREGISTER_BUTTON" = "Neu registrieren";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Automatische Sperre bei Inaktivität";
@@ -9389,10 +9389,10 @@
 "STORIES_NO_REPLIES_YET" = "Bisher keine Antworten";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+"STORIES_NO_STORIES_SUBTITLE" = "Neue Aktualisierungen werden hier angezeigt.";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_TITLE" = "No Stories";
+"STORIES_NO_STORIES_TITLE" = "Keine Storys";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "Bisher keine Aufrufe";
@@ -9497,10 +9497,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "Du hast mit %1$@ auf die Story von %2$@ reagiert";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Hat mit %1$@ auf deine Story reagiert";
 
 /* Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ reacted %2$@ to %3$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ hat mit %2$@ auf die Story von %3$@ reagiert";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Du hast mit %1$@ auf eine Story reagiert";

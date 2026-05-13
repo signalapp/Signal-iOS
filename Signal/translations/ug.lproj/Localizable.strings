@@ -656,25 +656,25 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "يېڭى ئاچقۇچ قۇرۇڭ";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "پارول باشقۇرغۇچىغا ساقلاڭ";
 
 /* Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "ئەسلىگە كەلتۈرۈش ئاچقۇچىڭىزنى پەقەت ۋە پەقەت بىخەتەر دەپ قارىغان پارول باشقۇرغۇچىدا ساقلاڭ. Signal قايسى پارول باشقۇرغۇچىنىڭ سىزگە ماس كېلىدىغانلىقى توغرىسىدا تەۋسىيە قىلمايدۇ.";
 
 /* Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Save to password manager?";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "پارول باشقۇرغۇچىغا ساقلامسىز؟";
 
 /* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Recovery Key";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal ئەسلىگە كەلتۈرۈش ئاچقۇچى";
 
 /* Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "سىزدە پارول باشقۇرغۇچى ئورنىتىلمىغان، ياكى ئىشلىتىۋاتقان پارول باشقۇرغۇچىڭىزنى قوللىمايدۇ. سىز ئۆزىڭىز خالىغان پارول باشقۇرغۇچىنى تېلىفونىڭىزنىڭ تەڭشىكىدىن تاللىسىڭىز بولىدۇ.";
 
 /* Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Can't save to password manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "پارول باشقۇرغۇچىغا ساقلىغىلى بولمايدۇ";
 
 /* Toast shown after the user successfully saves their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Done. Check your password manager to verify.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "بولدى. دەلىللەش ئۈچۈن پارول باشقۇرغۇچىڭىزنى تەكشۈرۈڭ.";
 
 /* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "بۇ ئاچقۇچ ھېساباتىڭىز ۋە سانلىق مەلۇماتلىرىڭىزنى ئەسلىگە كەلتۈرۈش ئۈچۈن تەلەپ قىلىنىدۇ. بۇ ئاچقۇچنى بىخەتەر جايدا ساقلاڭ. ئەگەر ئۇنى يوقىتىپ قويسىڭىز ، ھېساباتىڭىزنى ئەسلىگە كەلتۈرەلمەيسىز.";
@@ -1643,16 +1643,16 @@
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "ئاۋازلىق چاقىرىققا قوشۇلۇش";
 
 /* Second line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_SUBTITLE" = "Recent calls will appear here.";
+"CALLS_TAB_NO_CALLS_SUBTITLE" = "يېقىنقى چاقىرىقلار بۇ يەردە كۆرۈنىدۇ.";
 
 /* Top line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_TITLE" = "No Calls";
+"CALLS_TAB_NO_CALLS_TITLE" = "چاقىرىقلار يوق";
 
 /* Second line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Missed calls will appear here.";
+"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "ئېلىنمىغان چاقىرىقلار بۇ يەردە كۆرۈنىدۇ.";
 
 /* Top line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No Missed Calls";
+"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "ئېلىنمىغان چاقىرىق يوق";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "چاقىرىققا قايت";
@@ -1910,10 +1910,10 @@
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "ئوقۇلمىغانلارنى سۈزۈش";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "يېقىنقى پاراڭلار بۇ يەردە كۆرۈنىدۇ.";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
+"CHAT_LIST_NO_CHATS_TITLE" = "پاراڭلار يوق";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "پاراڭلار";
@@ -3329,7 +3329,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "سىزنىڭ بىرلا قېتىملىق %1$@ iDEAL | Wero ئىئانىڭىزنى جەزملەشتۈرگىلى بولمىدى. بانكا ئەپىڭىزنى تەكشۈرۈپ iDEAL | Wero ئىئانىڭىزنى تەستىقلاڭ.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "سىزنىڭ ھەر ئايدىكى قەرەللىك iDEAL | Wero ئىئانىڭىزنى بىر تەرەپ قىلغىلى بولمىدى. باشقا پۇل تۆلەش ئۇسۇلىنى سىناپ بېقىڭ ياكى تەپسىلاتى ئۈچۈن بانكا بىلەن ئالاقىلىشىڭ.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "سىزنىڭ ھەر ئايدىكى قەرەللىك %1$@ iDEAL | Wero ئىئانىڭىزنى جەزملەشتۈرەلمىدى. بانكا ئەپىڭىزنى تەكشۈرۈپ iDEAL | Wero ئىئانىڭىزنى تەستىقلاڭ.";
@@ -7475,10 +7475,10 @@
 "REGISTER_RATE_LIMITING_ERROR" = "سىز بەك كۆپ قېتىم سىناپ بولدىڭىز. قايتا سىناپ بېقىشتىن بۇرۇن بىر مىنۇتتەك ساقلاڭ.";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "ئەسلىگە كەلتۈرۈش ئاچقۇچىڭىزنى خاتا كىرگۈزۈپ قويغان ئۇخشايسىز.\n\nتىزىملاتقان تېلېفون نومۇرى بىلەن ئەسلىگە كەلتۈرۈش ئاچقۇچىنىڭ، Signal بىخەتەر زاپاسلاشنى قوزغاتقان ۋاقىتتىكى بىلەن ئوخشاشكىقىغا كاپالەتلىك قىلىڭ.";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "ناتوغرا ئەسلىگە كەلتۈرۈش ئاچقۇچى";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "بۇ ئەسلىگە كەلتۈرۈش ئاچقۇچىغا مۇناسىۋەتلىك زاپاسلاش يوق. ئاچقۇچنىڭ توغرا بولۇشىغا كاپالەتلىك قىلىڭ ھەمدە قايتا سىناڭ.";
@@ -9389,10 +9389,10 @@
 "STORIES_NO_REPLIES_YET" = "تېخىچە جاۋاب يوق";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+"STORIES_NO_STORIES_SUBTITLE" = "يېڭىلانمىلار بۇ يەردە كۆرۈنىدۇ.";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_TITLE" = "No Stories";
+"STORIES_NO_STORIES_TITLE" = "ھېكايىلەر يوق";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "تېخى كۆرۈلمىگەن";
@@ -9497,10 +9497,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "سىز %2$@نىڭ ھېكايىسىگە %1$@ ئارقىلىق ئىنكاس قايتۇردىڭىز";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "ھېكايىڭىزگە %1$@ ئىنكاسى قايتۇرۇلدى";
 
 /* Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ reacted %2$@ to %3$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ بولسا %2$@ ئارقىلىق %3$@ نىڭ ھېكايىسىگە ئىنكاس قايتۇردى";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "ھېكايىگە %1$@ ئىنكاسى قايتۇردى";
