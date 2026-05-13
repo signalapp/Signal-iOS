@@ -23,7 +23,7 @@ class MessageSelectionView: ManualLayoutView {
 
         addLayoutBlock { view in
             guard let selectionView = view as? MessageSelectionView else { return }
-            selectionView.checkmarkIcon.frame = selectionView.selectedView.bounds.insetBy(dx: 2, dy: 2)
+            selectionView.checkmarkIcon.center = selectionView.selectedView.bounds.center
         }
 
         selectedView.isHidden = !isSelected
@@ -41,7 +41,7 @@ class MessageSelectionView: ManualLayoutView {
     private static var emptyCheckmarkStrokeLineWidth: CGFloat { 2 }
 
     private lazy var checkmarkIcon: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "check-20"))
+        let imageView = UIImageView(image: UIImage(named: "check-compact"))
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = .white
         return imageView

@@ -78,7 +78,7 @@ public class ListItemSelectionIndicatorView: UIView {
     }()
 
     private let checkmarkIcon: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "check-20"))
+        let imageView = UIImageView(image: UIImage(named: "check-compact"))
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = .white
         return imageView
