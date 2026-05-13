@@ -626,7 +626,7 @@
 "BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "복구 키는 백업을 복구하는 데 필요한 64자 코드입니다.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "암호 관리자와 같은 안전한 곳에 복구 키를 보관하고 다른 사람과 공유하지 마세요.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "비밀번호 관리자와 같은 안전한 곳에 복구 키를 보관하고 다른 사람과 공유하지 마세요.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
 "BACKUP_ONBOARDING_KEY_INTRO_BULLET_3" = "키를 분실하면 메시지를 복구할 수 없습니다.";
@@ -656,25 +656,25 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "새로운 키 생성";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "비밀번호 관리자에 저장";
 
 /* Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "복구 키는 안전하다고 신뢰할 수 있는 비밀번호 관리자에만 저장하세요. Signal은 특정 비밀번호 관리자를 별도로 추천하지 않습니다.";
 
 /* Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Save to password manager?";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "비밀번호 관리자에 저장할까요?";
 
 /* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Recovery Key";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal 복구 키";
 
 /* Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "비밀번호 관리자를 설정하지 않았거나, 사용 중인 비밀번호 관리자가 지원되지 않습니다. 휴대폰 설정에서 원하는 비밀번호 관리자를 선택해 주세요.";
 
 /* Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Can't save to password manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "비밀번호 관리자에 저장할 수 없어요";
 
 /* Toast shown after the user successfully saves their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Done. Check your password manager to verify.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "설정 완료! 비밀번호 관리자를 확인하여 인증해 주세요.";
 
 /* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "이 키는 계정과 데이터를 복원하는 데 필요합니다. 안전한 곳에 보관해 두세요. 키를 분실하면 계정을 복원할 수 없습니다.";
@@ -1157,7 +1157,7 @@
 "BANK_MANDATE_READ_MORE" = "더 보기";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a subtitle about the payment processor Stripe above that mandate. */
-"BANK_MANDATE_SUBTITLE" = "Stripe에서 Signal에 대한 기부를 처리합니다. Signal은 개인 정보를 수집하거나 저장하지 않습니다.";
+"BANK_MANDATE_SUBTITLE" = "Stripe에서 Signal에 대한 후원을 처리합니다. Signal은 개인정보를 수집하거나 저장하지 않습니다.";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is the title above that mandate. */
 "BANK_MANDATE_TITLE" = "계좌 이체";
@@ -1643,16 +1643,16 @@
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "음성 통화 참여";
 
 /* Second line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_SUBTITLE" = "Recent calls will appear here.";
+"CALLS_TAB_NO_CALLS_SUBTITLE" = "여기에 최근 통화가 표시됩니다.";
 
 /* Top line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_TITLE" = "No Calls";
+"CALLS_TAB_NO_CALLS_TITLE" = "통화 없음";
 
 /* Second line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Missed calls will appear here.";
+"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "여기에 부재중 전화가 표시됩니다.";
 
 /* Top line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No Missed Calls";
+"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "부재중 전화 없음";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "통화로 돌아가기";
@@ -1772,7 +1772,7 @@
 "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER" = "MM/YY";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
-"CARD_DONATION_READ_MORE_SHEET_BODY" = "기부금 처리 과정에서 Signal은 어떠한 개인정보도 수집하거나 저장하지 않습니다.\n\n기부금 결제는 Stripe를 통해 처리되며, Signal은 Stripe에 제공된 정보에 접근하지 않고 이를 저장하거나 보관하지도 않습니다.\n\n또한 기부 내역을 Signal 계정과 연결할 수 없으며, 실제로도 연결되지 않습니다.\n\nSignal을 지지해 주셔서 감사합니다!";
+"CARD_DONATION_READ_MORE_SHEET_BODY" = "후원금 처리 과정에서 Signal은 어떠한 개인정보도 수집하거나 저장하지 않습니다.\n\n후원금 결제는 Stripe를 통해 처리되며, Signal은 Stripe에 제공된 정보에 접근하지 않고 이를 저장하거나 보관하지도 않습니다.\n\n또한 후원 내역을 Signal 계정과 연결할 수 없으며, 실제로도 연결되지 않습니다.\n\nSignal을 지지해 주셔서 감사합니다!";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the title of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_TITLE" = "개인 정보는 비공개로 유지됩니다.";
@@ -1910,10 +1910,10 @@
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "읽지 않은 메시지로 필터링함";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "여기에 최근 대화가 표시됩니다.";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
+"CHAT_LIST_NO_CHATS_TITLE" = "대화 없음";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "대화";
@@ -2581,8 +2581,14 @@
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "메시지 더 불러오는 중…";
 
+/* Label on truncated text messages that's shown while the full contents of a text message are being downloaded. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Loading…";
+
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "더 보기";
+
+/* Button on truncated text messages that they can be tapped to download the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Get Full Message";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "클립보드에 복사됨";
@@ -3001,7 +3007,7 @@
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "프로필에 배지 표시";
 
-/* Title for the proxy confirmation */
+/* Confirmation text displayed in a sheet presented when user taps on Signal Proxy link in chat. */
 "DO_YOU_WANT_TO_USE_PROXY" = "이 프록시 주소를 사용하시겠어요?";
 
 /* Section title for the 'domain fronting country' view. */
@@ -3047,10 +3053,10 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "만료됨";
 
 /* Message for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "보류 중인 기부가 있습니다. 구독을 취소하면 기부가 갱신되지 않지만, 보류 중인 기부는 취소되지 않습니다.";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_MESSAGE" = "아직 대기 중인 후원이 있습니다. 구독 해지 시 다음 후원은 갱신되지 않으나, 진행 중인 대기 건은 취소되지 않습니다.";
 
 /* Title for an action sheet shown when the user tries to cancel their donation subscription, but they have a pending donation. */
-"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "기부 대기 중";
+"DONATE_SCREEN_CANCEL_SUBSCRIPTION_PENDING_DONATION_WARNING_TITLE" = "후원 대기 중";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
 "DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "iDEAL | Wero 후원을 아직 처리 중입니다. 추가 후원을 하시려면 은행 앱에서 해당 결제를 승인한 후 진행해 주세요.";
@@ -3071,7 +3077,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "아직 후원을 처리하는 중입니다. 연결 상태에 따라 몇 분이 소요될 수 있습니다. 추가 후원을 하시려면 해당 후원이 완료되고 나서 진행해 주세요.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "기부를 아직 처리하는 중입니다. 연결에 따라 몇 분이 소요될 수 있습니다. 이 기부가 완료될 때까지 기다렸다가 구독을 업데이트해 주세요.";
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "후원을 아직 처리하는 중입니다. 연결 상태에 따라 몇 분이 소요될 수 있으니, 구독을 업데이트하시려면 후원이 완료되고 나서 진행해 주세요.";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "후원할 금액을 선택하세요.";
@@ -3080,16 +3086,16 @@
 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "후원할 수 있는 최소 금액은 %1$@입니다.";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "기부 승인 대기 중";
+"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "후원 승인 대기 중";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "보류 중인 기부가 있습니다.";
+"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "아직 완료되지 않은 후원이 있어요";
 
 /* Title for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "기부 금액이 너무 큽니다";
+"DONATE_SCREEN_ERROR_TITLE_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "후원금이 한도 금액을 초과했어요";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "처리 중인 기부가 있습니다";
+"DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "아직 처리 중인 후원이 있어요";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "월 정기후원";
@@ -3107,7 +3113,7 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/월";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
-"DONATE_SCREEN_ONE_TIME_CHOICE" = "일회성 기부";
+"DONATE_SCREEN_ONE_TIME_CHOICE" = "일회성 후원";
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "구독 업데이트";
@@ -3116,10 +3122,10 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE" = "계좌 이체를 진행하는 중에 문제가 발생했습니다. %1$@";
 
 /* Title for a sheet explaining that a donation via bank payment has failed. */
-"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_TITLE" = "기부를 처리할 수 없습니다";
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_TITLE" = "후원을 처리하지 못했어요";
 
 /* Title for a sheet explaining that a donation via bank payment is pending. */
-"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "기부 대기 중";
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "후원 대기 중";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
 "DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "1회성 기부가 대기 중입니다. 기부가 완료되면 프로필에 %1$@ 배지를 표시할 수 있습니다.\n\n계좌 이체를 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다.";
@@ -3146,7 +3152,7 @@
 "DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "%1$@ 님의 후원이 만료되어 더 이상 사용할 수 없습니다.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "기부가 만료되었습니다.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "후원이 만료되었습니다.";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "사용함";
@@ -3161,13 +3167,13 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "수신자 선택";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "기부를 확인해 주세요.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "후원 확인 요청";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
 "DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "이 대화에 메시지 자동 삭제 기능이 켜져 있습니다. %1$@ 후 후원 알림 메시지가 사라집니다.";
 
 /* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "일회성 기부";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "일회성 후원";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "결제를 처리하지 못했으며 요금이 청구되지 않았습니다. 다시 시도하세요.";
@@ -3200,7 +3206,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "사용";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "나중에 기부를 사용할 수 있습니다.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "후원 배지는 나중에도 등록하실 수 있어요";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ 님이 나를 대신해 후원했어요";
@@ -3296,7 +3302,7 @@
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "후원하기";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "계속하면 최근 기부가 취소됩니다. 요금이 청구되지는 않지만, 조치를 취할 때까지 은행 앱에 결제 요청이 표시될 수 있습니다. 새 기부를 계속하시겠어요?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "계속 진행하면 최근 후원이 취소됩니다. 결제는 청구되지 않지만 은행 앱에는 별도의 조치를 취하기 전까지 결제 요청 내역이 표시될 수 있습니다. 새로운 후원을 진행하시겠어요?";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "구독 갱신";
@@ -3311,16 +3317,16 @@
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "계좌 이체가 대기 중입니다. 계좌 이체를 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다.";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is being processed. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "기부 대기 중";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "후원 대기 중";
 
 /* Message shown in a sheet explaining that the user's donation has failed because payment failed. Embeds {{ a specific, already-localized string describing the payment failure reason }}. */
-"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_MESSAGE_FORMAT" = "기부를 처리하는 데 문제가 있습니다. %1$@";
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_MESSAGE_FORMAT" = "후원을 처리하는 데 문제가 있습니다. %1$@";
 
 /* Title for a sheet explaining that a payment failed. */
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "후원을 처리하는 중 오류가 발생했어요";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "기부를 확인할 수 없습니다";
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "후원 확인 실패";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "iDEAL | Wero 일회성 후원을 처리하지 못했습니다. 다른 결제 수단을 시도하거나 은행에 자세한 정보를 문의하세요.";
@@ -3329,7 +3335,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "%1$@ iDEAL | Wero 일회성 후원을 확인하지 못했습니다. 은행 앱을 확인하여 iDEAL | Wero 후원을 승인해 주세요.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "iDEAL | Wero 월 정기후원을 처리하지 못했습니다. 다른 결제 수단을 시도하거나 은행에 자세한 정보를 문의하세요.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "%1$@ iDEAL | Wero 월 정기후원을 확인하지 못했습니다. 은행 앱을 확인하여 iDEAL | Wero 후원을 승인해 주세요.";
@@ -3341,10 +3347,10 @@
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE" = "월 정기후원이 취소되었어요";
 
 /* A label describing a donation payment that was made via bank transfer, which is still processing and has not completed. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING" = "기부 대기 중";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING" = "후원 대기 중";
 
 /* A label describing a donation payment that was made by a method other than bank transfer (such as by credit card), which is still processing and has not completed. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "기부를 처리하는 중...";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "후원을 처리하고 있어요";
 
 /* A label describing a donation payment that has failed to process. */
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED" = "후원을 처리하는 중 오류가 발생했어요";
@@ -3356,7 +3362,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "승인 대기 중";
 
 /* A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}. */
-"DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ 일회성 기부";
+"DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ 일회성 후원";
 
 /* Title for the \"donate for a friend\" button on the donation view. */
 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "친구를 대신해 후원하세요.";
@@ -3650,10 +3656,10 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "%1$@ 님과의 안전 번호가 최근 변경되었습니다. 메시지를 보내기 전 안전 번호를 검증해보세요.";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "기부를 사용할 수 없습니다. 연결을 확인하고 다시 시도하세요.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "후원 배지를 사용할 수 없습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "기부를 사용할 수 없습니다.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "후원 배지를 사용할 수 없어요";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "안전 번호 인증 실패";
@@ -3756,9 +3762,6 @@
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "결과 없음";
-
-/* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "검색어 입력";
 
 /* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "설정으로 이동";
@@ -4670,7 +4673,7 @@
 "HOME_VIEW_TOOLBAR_READ_ALL" = "모두 읽음";
 
 /* Fallback title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "기부 확인";
+"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "후원 확인 요청";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}. */
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "정기후원을 설정하려면 '계속'을 탭하여 은행을 통해 %1$@ 청구를 확인해 주세요. 확인이 완료되면 청구 금액은 자동으로 환불되며, 내 계좌에서 월 %2$@ 정기후원이 승인됩니다.";
@@ -6731,7 +6734,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "내 전화번호가 있는 사람은 내가 Signal을 사용 중임을 알 수 있으며, 나와 대화를 시작할 수 있습니다.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "비공개";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "없음";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "내가 메시지를 보내는 사용자 또는 기존 대화 기록이 있는 사용자를 제외하고는 아무도 Signal에서 나를 볼 수 없습니다.";
@@ -6746,7 +6749,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "내가 메시지를 보내는 사람과 그룹에 내 전화번호가 표시됩니다.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY" = "비공개";
+"PHONE_NUMBER_SHARING_NOBODY" = "없음";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "휴대폰 연락처에 내 전화번호를 저장한 사람을 제외하고 다른 사람에게 전화번호가 표시되지 않습니다.";
@@ -7475,10 +7478,10 @@
 "REGISTER_RATE_LIMITING_ERROR" = "너무 많이 시도하셨습니다. 몇 분 후 다시 시도해 주세요.";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "복구 키를 잘못 입력하셨을 수 있습니다. \n\nSignal 안전 백업 활성화 시 저장한 전화번호와 복구 키가 맞는지 확인해 주세요. 이 키가 없으면 백업을 복구할 수 없습니다.";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "잘못된 복구 키";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "이 복구 키와 관련된 백업이 없습니다. 키가 올바른지 확인한 후 다시 시도하세요.";
@@ -7737,6 +7740,24 @@
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "음성 통화를 통해 확인 코드를 보내지 못했습니다. SMS를 통해 대신 받아보세요.";
+
+/* Bottom bar label for the release notes thread */
+"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "The only official chat from Signal";
+
+/* Display name for the release notes channel */
+"RELEASE_NOTES_CHANNEL_NAME" = "Signal";
+
+/* Label displayed in thread details of the release notes chat */
+"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Official Chat";
+
+/* Settings description label for the release notes thread telling a user to keep up to date */
+"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Keep up to date with news & release notes";
+
+/* Details text for the thread details view of the release notes channel */
+"RELEASE_NOTES_DETAILS" = "The only official chat from Signal. Keep up to date with news and release notes";
+
+/* Settings description label for the release notes thread telling a user this is the only official chat */
+"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "The only official chat from Signal";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "지금 해결";
@@ -8258,7 +8279,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "검열 우회는 인터넷에 연결되었을 때만 활성화할 수 있습니다.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "검열 우회는 필수가 아닙니다. Signal 서비스에 연결되어 있다면 필요하지 않습니다.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "이미 Signal에 연결되어 있어 검열 우회 설정을 켤 필요가 없습니다.";
 
 /* Label for the 'advanced pin settings' button. */
 "SETTINGS_ADVANCED_PIN_SETTINGS" = "PIN 고급 설정";
@@ -8363,7 +8384,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "전화번호";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "이 기능을 사용하여 현재 전화번호를 새로운 전화번호로 변경하세요. 변경 후에는 취소할 수 없습니다.\n\n계속하기 전에 새로운 번호로 SNS 또는 전화를 받을 수 있는지 확인하세요.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "현재 전화번호를 새 전화번호로 바꿀 수 있으며, 변경 후에는 되돌릴 수 없습니다.\n\n변경하기 전에, 새 전화번호로 SMS 메시지나 전화를 받을 수 있는지 확인하세요.";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "전화번호 변경";
@@ -8627,7 +8648,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin은 새로운 개인 정보 보호 중심의 디지털 통화입니다.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "모바일 코인 소개";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "MobileCoin 소개";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "MobileCoin을 지갑 주소로 전송하여 Signal에서 사용할 자금을 추가할 수 있습니다.";
@@ -9023,10 +9044,10 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "지갑 주소";
 
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "이 설정을 바꾸려면 '내 전화번호를 볼 수 있는 사람'을 '아무도 보지 못함'으로 설정하세요.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "이 설정을 바꾸려면 '내 전화번호를 볼 수 있는 사람'을 '없음'으로 설정하세요.";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "'번호로 나를 찾을 수 있는 사람'을 '없음'으로 설정하면 Signal에서 다른 사람이 나를 찾기가 어려워집니다.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "'내 전화번호로 나를 찾을 수 있는 사람'을 '없음'으로 설정하면 Signal에서 다른 사람이 나를 찾기가 어려워집니다.";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "계속할까요?";
@@ -9232,6 +9253,9 @@
 /* Shown in the header when the user hasn't provided a custom name for a call. */
 "SIGNAL_CALL" = "Signal 통화";
 
+/* Title for the sheet presented when user taps on Signal Proxy link in chat. */
+"SIGNAL_PROXY" = "Signal Proxy Server";
+
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Signal로 같이 옮겨요! 여기 링크를 클릭하세요.";
 
@@ -9389,10 +9413,10 @@
 "STORIES_NO_REPLIES_YET" = "회신 없음";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+"STORIES_NO_STORIES_SUBTITLE" = "여기에 새 업데이트가 표시됩니다.";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_TITLE" = "No Stories";
+"STORIES_NO_STORIES_TITLE" = "스토리 없음";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "아직 아무도 조회 안 함";
@@ -9497,10 +9521,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "%2$@ 님의 스토리에 %1$@ 이모지로 반응했어요";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "내 스토리에 %1$@ 이모지로 공감했어요";
 
 /* Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ reacted %2$@ to %3$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ 님이 %3$@ 님의 스토리에 %2$@ 이모지로 공감했어요";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "스토리에 %1$@ 이모지로 공감했어요";
@@ -9689,13 +9713,13 @@
 "SUSTAINER_VIEW_PRICING" = "%1$@/월";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "기부를 처리하는 중...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "후원을 처리하고 있어요";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "%1$@ 갱신";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "기부를 아직 처리하는 중입니다. 연결에 따라 몇 분이 소요될 수 있습니다.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "후원을 아직 처리하는 중입니다. 연결 상태에 따라 몇 분이 소요될 수 있습니다.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "구독을 취소했습니다.";
@@ -9977,7 +10001,7 @@
 "USERNAME_EDUCATION_LINK_TITLE" = "QR 코드와 링크";
 
 /* Description of phone number privacy on the username education sheet */
-"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "이 대화에 내 전화번호가 더 이상 표시되지 않습니다. 내 전화번호를 연락처에 저장한 친구는 계속 내 전화번호를 볼 수 있습니다.";
+"USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "대화에 내 전화번호가 더 이상 표시되지 않습니다. 내 전화번호를 연락처에 저장한 친구는 계속 내 전화번호를 볼 수 있습니다.";
 
 /* Title for phone number privacy section of the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "전화번호 보호";

@@ -656,25 +656,25 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Създайте нов ключ";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Запазване в мениджър на пароли";
 
 /* Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Съхранявайте ключа си за възстановяване само в мениджър на пароли, който считате за сигурен. Signal не предоставя препоръки относно това кой мениджър на пароли е подходящ за вас.";
 
 /* Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Save to password manager?";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Запазване в мениджър на пароли?";
 
 /* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Recovery Key";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Ключ за възстановяване на Signal";
 
 /* Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "Възможно е да нямате настроен мениджър на пароли или мениджърът на пароли, който използвате, може да не се поддържа. Можете да изберете мениджъра на пароли, който предпочитате, в настройките на телефона си.";
 
 /* Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Can't save to password manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Неуспешно запазване в мениджър на пароли";
 
 /* Toast shown after the user successfully saves their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Done. Check your password manager to verify.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Готово. Проверете своя мениджър на пароли, за да потвърдите.";
 
 /* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "Този ключ е необходим за възстановяване на акаунта и данните ви. Съхранявайте този ключ на сигурно място. Ако го изгубите, няма да можете да възстановите акаунта си.";
@@ -1643,16 +1643,16 @@
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Присъединяване към гласово обаждане";
 
 /* Second line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_SUBTITLE" = "Recent calls will appear here.";
+"CALLS_TAB_NO_CALLS_SUBTITLE" = "Последните обаждания ще се появяват тук.";
 
 /* Top line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_TITLE" = "No Calls";
+"CALLS_TAB_NO_CALLS_TITLE" = "Няма обаждания";
 
 /* Second line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Missed calls will appear here.";
+"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Пропуснатите обаждания ще се появяват тук.";
 
 /* Top line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No Missed Calls";
+"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "Няма пропуснати обаждания";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Връщане към обаждането";
@@ -1910,10 +1910,10 @@
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Филтриране на непрочетени";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "Последните чатове ще се появят тук.";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
+"CHAT_LIST_NO_CHATS_TITLE" = "Няма чатове";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Чатове";
@@ -2581,8 +2581,14 @@
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Зареждане на повече съобщения…";
 
+/* Label on truncated text messages that's shown while the full contents of a text message are being downloaded. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Loading…";
+
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Прочетете повече";
+
+/* Button on truncated text messages that they can be tapped to download the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Get Full Message";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "Копирано в клипборда";
@@ -3001,7 +3007,7 @@
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Показване на значки в профила";
 
-/* Title for the proxy confirmation */
+/* Confirmation text displayed in a sheet presented when user taps on Signal Proxy link in chat. */
 "DO_YOU_WANT_TO_USE_PROXY" = "Желаеш ли да използваш този прокси адрес?";
 
 /* Section title for the 'domain fronting country' view. */
@@ -3329,7 +3335,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Вашето еднократно дарение от %1$@ през iDEAL | Wero не беше потвърдено успешно. Вижте в приложението на вашата банка, за да одобрите дарението през iDEAL | Wero.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Вашето повтарящо се месечно дарение през iDEAL | Wero не беше обработено успешно. Опитайте с друг платежен метод или се свържете с банката си за повече информация.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Вашето повтарящо се месечно дарение от %1$@ през iDEAL | Wero не беше потвърдено успешно. Вижте в приложението на вашата банка, за да одобрите дарението през iDEAL | Wero.";
@@ -3756,9 +3762,6 @@
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Няма резултати";
-
-/* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Въведете това, което искате да търсите";
 
 /* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "Отидете на настройки";
@@ -7475,10 +7478,10 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Направили сте прекалено много опити. Моля, изчакайте минута, преди да опитате отново.";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "Възможно е да сте въвели своя ключ за възстановяване неправилно. \n\nУверете се, че се регистрирате със същите телефонен номер и ключ за възстановяване, които сте запазили при активирането на „Сигурни резервни копия“ на Signal.";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Неправилен ключ за възстановяване";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Няма резервно копие, свързано с този ключ за възстановяване. Моля, уверете се, че ключът е правилен, и опитайте отново.";
@@ -7737,6 +7740,24 @@
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Не успяхме да ви изпратим код за потвърждение чрез гласово обаждане. Опитайте вместо това да получите кода чрез SMS.";
+
+/* Bottom bar label for the release notes thread */
+"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "The only official chat from Signal";
+
+/* Display name for the release notes channel */
+"RELEASE_NOTES_CHANNEL_NAME" = "Signal";
+
+/* Label displayed in thread details of the release notes chat */
+"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Official Chat";
+
+/* Settings description label for the release notes thread telling a user to keep up to date */
+"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Keep up to date with news & release notes";
+
+/* Details text for the thread details view of the release notes channel */
+"RELEASE_NOTES_DETAILS" = "The only official chat from Signal. Keep up to date with news and release notes";
+
+/* Settings description label for the release notes thread telling a user this is the only official chat */
+"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "The only official chat from Signal";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Коригиране сега";
@@ -9232,6 +9253,9 @@
 /* Shown in the header when the user hasn't provided a custom name for a call. */
 "SIGNAL_CALL" = "Signal обаждане";
 
+/* Title for the sheet presented when user taps on Signal Proxy link in chat. */
+"SIGNAL_PROXY" = "Signal Proxy Server";
+
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Каня те да инсталираш Signal! Ето и линкът:";
 
@@ -9389,10 +9413,10 @@
 "STORIES_NO_REPLIES_YET" = "Все още няма отговори";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+"STORIES_NO_STORIES_SUBTITLE" = "Новите актуализации ще се появяват тук.";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_TITLE" = "No Stories";
+"STORIES_NO_STORIES_TITLE" = "Няма истории";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "Все още няма гледания";
@@ -9497,10 +9521,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "Вие реагирахте с %1$@ на историята на %2$@";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Реагира с %1$@ на историята ви";
 
 /* Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ reacted %2$@ to %3$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ реагира с %2$@ на историята на %3$@";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Реагира на история с %1$@";

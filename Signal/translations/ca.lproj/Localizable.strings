@@ -656,25 +656,25 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Crea una nova clau";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Guardar al gestor de contrasenyes";
 
 /* Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Guarda la teva clau de recuperació només en un gestor de contrasenyes que sàpigues que és segur. Signal no pot fer-te recomanacions sobre quin gestor de contrasenyes és adequat per a tu.";
 
 /* Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Save to password manager?";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Guardar al gestor de contrasenyes?";
 
 /* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Recovery Key";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Clau de recuperació de Signal";
 
 /* Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "És possible que no tinguis configurat un gestor de contrasenyes o el gestor de contrasenyes que utilitzes no és compatible. Pots seleccionar el teu gestor de contrasenyes de preferència des dels ajustos del teu telèfon.";
 
 /* Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Can't save to password manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "No es pot guardar al gestor de contrasenyes";
 
 /* Toast shown after the user successfully saves their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Done. Check your password manager to verify.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Fet. Comprova el teu gestor de contrasenyes per verificar.";
 
 /* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "Aquesta clau és necessària per recuperar el teu compte i les teves dades. Guarda-la en un lloc segur. Si la perds, no podràs recuperar el teu compte.";
@@ -1643,16 +1643,16 @@
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Unir-se a la trucada de veu";
 
 /* Second line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_SUBTITLE" = "Recent calls will appear here.";
+"CALLS_TAB_NO_CALLS_SUBTITLE" = "Les trucades recents apareixeran aquí.";
 
 /* Top line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_TITLE" = "No Calls";
+"CALLS_TAB_NO_CALLS_TITLE" = "Cap trucada";
 
 /* Second line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Missed calls will appear here.";
+"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Les trucades perdudes apareixeran aquí.";
 
 /* Top line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No Missed Calls";
+"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No hi ha trucades perdudes";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Torna a la trucada";
@@ -1910,10 +1910,10 @@
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrar per no llegit(s)";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "Els xats recents apareixeran aquí.";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
+"CHAT_LIST_NO_CHATS_TITLE" = "No hi ha xats";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Xats";
@@ -2581,8 +2581,14 @@
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Carregant més missatges…";
 
+/* Label on truncated text messages that's shown while the full contents of a text message are being downloaded. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Loading…";
+
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Llegiu-ne més.";
+
+/* Button on truncated text messages that they can be tapped to download the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Get Full Message";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "Copiat al porta-retalls";
@@ -3001,7 +3007,7 @@
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Mostra les insígnies en el perfil";
 
-/* Title for the proxy confirmation */
+/* Confirmation text displayed in a sheet presented when user taps on Signal Proxy link in chat. */
 "DO_YOU_WANT_TO_USE_PROXY" = "Voleu usar aquesta adreça intermediària?";
 
 /* Section title for the 'domain fronting country' view. */
@@ -3329,7 +3335,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "No s'ha pogut confirmar la teva donació única de %1$@ a través d'iDEAL | Wero. Comprova la teva app bancària per aprovar la teva donació a través d'iDEAL | Wero.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "No s'ha pogut processar la teva donació mensual recurrent a través d'iDEAL | Wero. Prova un altre mètode de pagament o posa't en contacte amb el teu banc per obtenir-ne més informació.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "No s'ha pogut confirmar la teva donació mensual recurrent de %1$@ a través d'iDEAL | Wero. Comprova la teva app bancària per aprovar la teva donació a través d'iDEAL | Wero.";
@@ -3756,9 +3762,6 @@
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "No hi ha cap resultat.";
-
-/* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Escriviu una cerca";
 
 /* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "Ves a la configuració";
@@ -7475,10 +7478,10 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Ho heu provat massa vegades. Espereu un minut abans de tornar a provar-ho.";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "És possible que hagis introduït incorrectament la teva clau de recuperació.\n\nAssegura't de registrar-te amb el mateix número de telèfon i la clau de recuperació que has guardat en activar les còpies de seguretat segures de Signal.";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Clau de recuperació incorrecta";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "No hi ha cap còpia de seguretat associada amb aquesta clau de recuperació. Assegura't que la clau sigui la correcta i torna-ho a intentar.";
@@ -7737,6 +7740,24 @@
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "No t'hem pogut enviar un codi de verificació per trucada de veu. Prova de rebre el teu codi mitjançant un SMS.";
+
+/* Bottom bar label for the release notes thread */
+"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "The only official chat from Signal";
+
+/* Display name for the release notes channel */
+"RELEASE_NOTES_CHANNEL_NAME" = "Signal";
+
+/* Label displayed in thread details of the release notes chat */
+"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Official Chat";
+
+/* Settings description label for the release notes thread telling a user to keep up to date */
+"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Keep up to date with news & release notes";
+
+/* Details text for the thread details view of the release notes channel */
+"RELEASE_NOTES_DETAILS" = "The only official chat from Signal. Keep up to date with news and release notes";
+
+/* Settings description label for the release notes thread telling a user this is the only official chat */
+"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "The only official chat from Signal";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Reparar-ho ara";
@@ -9232,6 +9253,9 @@
 /* Shown in the header when the user hasn't provided a custom name for a call. */
 "SIGNAL_CALL" = "Trucada de Signal";
 
+/* Title for the sheet presented when user taps on Signal Proxy link in chat. */
+"SIGNAL_PROXY" = "Signal Proxy Server";
+
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Et convide a instal·lar el Signal! Ací tens l'enllaç:";
 
@@ -9389,10 +9413,10 @@
 "STORIES_NO_REPLIES_YET" = "Encara no té respostes";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+"STORIES_NO_STORIES_SUBTITLE" = "Les actualitzacions apareixeran aquí.";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_TITLE" = "No Stories";
+"STORIES_NO_STORIES_TITLE" = "No hi ha històries";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "Encara no té visualitzacions";
@@ -9497,10 +9521,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "Has reaccionat %1$@ a la història de %2$@";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Ha reaccionat %1$@ a la teva història";
 
 /* Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ reacted %2$@ to %3$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ ha reaccionat %2$@ a la història de %3$@";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Ha reaccionat %1$@ a una història";

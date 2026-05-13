@@ -656,25 +656,25 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "创建新密钥";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "保存到密码管理器";
 
 /* Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "请仅将您的恢复密钥储存到您信任的安全密码管理器中。Signal 不会推荐哪款密码管理器适合您。";
 
 /* Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Save to password manager?";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "要保存到密码管理器吗？";
 
 /* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Recovery Key";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal 恢复密钥";
 
 /* Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "您可能未设置密码管理器，或者您使用的密码管理器可能不受支持。您可以在手机设置中选择偏好的密码管理器。";
 
 /* Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Can't save to password manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "无法保存到密码管理器";
 
 /* Toast shown after the user successfully saves their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Done. Check your password manager to verify.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "完成。查看您的密码管理器核实。";
 
 /* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "这是恢复您的账户和数据时所需的密钥，请将其保存在安全的地方。如果密钥丢失，您将无法恢复您的账户。";
@@ -1643,16 +1643,16 @@
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "加入语音通话";
 
 /* Second line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_SUBTITLE" = "Recent calls will appear here.";
+"CALLS_TAB_NO_CALLS_SUBTITLE" = "最近的通话将会在这里显示。";
 
 /* Top line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_TITLE" = "No Calls";
+"CALLS_TAB_NO_CALLS_TITLE" = "没有通话";
 
 /* Second line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Missed calls will appear here.";
+"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "未接来电将会在这里显示。";
 
 /* Top line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No Missed Calls";
+"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "无未接来电";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "回拨";
@@ -1910,10 +1910,10 @@
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "按未读筛选";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "最近的聊天将会在这里显示。";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
+"CHAT_LIST_NO_CHATS_TITLE" = "无聊天";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "聊天";
@@ -2581,8 +2581,14 @@
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "正在加载更多消息……";
 
+/* Label on truncated text messages that's shown while the full contents of a text message are being downloaded. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Loading…";
+
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "查看更多";
+
+/* Button on truncated text messages that they can be tapped to download the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Get Full Message";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "已复制到剪贴板";
@@ -3001,7 +3007,7 @@
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "在个人资料中显示徽章";
 
-/* Title for the proxy confirmation */
+/* Confirmation text displayed in a sheet presented when user taps on Signal Proxy link in chat. */
 "DO_YOU_WANT_TO_USE_PROXY" = "是否使用该代理地址？";
 
 /* Section title for the 'domain fronting country' view. */
@@ -3329,7 +3335,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "您的 %1$@ iDEAL | Wero 单次捐款无法确认。请检查您的银行应用以批准您的 iDEAL | Wero 捐款。";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "您的 iDEAL | Wero 每月定期捐款无法处理。请尝试另一种付款方式或联系您的银行了解详情。";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "您的 %1$@ iDEAL | Wero 每月定期捐款无法确认。请检查您的银行应用以批准您的 iDEAL | Wero 捐款。";
@@ -3756,9 +3762,6 @@
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "无结果";
-
-/* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "输入您的搜索词";
 
 /* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "打开设置";
@@ -7475,10 +7478,10 @@
 "REGISTER_RATE_LIMITING_ERROR" = "您的尝试过于频繁。请等待一分钟后再重试。";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "您输入的恢复密钥可能有误。\n\n请确保您注册时使用的是在启用 Signal 安全备份时所保存的同一手机号码和恢复密钥。";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "恢复密钥不正确";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "此恢复密钥没有关联的备份。请确保密钥正确无误，然后再试一次。";
@@ -7737,6 +7740,24 @@
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "我们无法通过语音通话给您发送验证码。请尝试通过短信进行接收。";
+
+/* Bottom bar label for the release notes thread */
+"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "The only official chat from Signal";
+
+/* Display name for the release notes channel */
+"RELEASE_NOTES_CHANNEL_NAME" = "Signal";
+
+/* Label displayed in thread details of the release notes chat */
+"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Official Chat";
+
+/* Settings description label for the release notes thread telling a user to keep up to date */
+"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Keep up to date with news & release notes";
+
+/* Details text for the thread details view of the release notes channel */
+"RELEASE_NOTES_DETAILS" = "The only official chat from Signal. Keep up to date with news and release notes";
+
+/* Settings description label for the release notes thread telling a user this is the only official chat */
+"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "The only official chat from Signal";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "立刻解决";
@@ -9232,6 +9253,9 @@
 /* Shown in the header when the user hasn't provided a custom name for a call. */
 "SIGNAL_CALL" = "Signal 通话";
 
+/* Title for the sheet presented when user taps on Signal Proxy link in chat. */
+"SIGNAL_PROXY" = "Signal Proxy Server";
+
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "请你下载Signal加密通讯软件！链接：";
 
@@ -9389,10 +9413,10 @@
 "STORIES_NO_REPLIES_YET" = "未有回复";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+"STORIES_NO_STORIES_SUBTITLE" = "新的更新将会在这里显示。";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_TITLE" = "No Stories";
+"STORIES_NO_STORIES_TITLE" = "无动态";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "未有浏览";
@@ -9497,10 +9521,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "您用 %1$@ 回应了 %2$@ 的动态";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "用 %1$@ 回应了您的动态";
 
 /* Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ reacted %2$@ to %3$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ 用 %2$@ 回应了 %3$@ 的动态";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "用 %1$@ 回应了动态";

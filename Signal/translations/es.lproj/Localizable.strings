@@ -368,13 +368,13 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Calidad de archivos multimedia";
 
 /* Notification body shown when media sync to a linked device is complete. */
-"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "Se ha sincronizando Signal con tu dispositivo vinculado";
+"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "Se ha sincronizando Signal con tu dispositivo vinculado.";
 
 /* Notification body shown when media sync to a linked device was interrupted. */
-"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "Abre Signal para continuar la sincronización con tu dispositivo vinculado";
+"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "Abre Signal para continuar la sincronización con tu dispositivo vinculado.";
 
 /* Notification body shown while syncing media to a linked device. */
-"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "Sincronizando Signal con tu dispositivo vinculado";
+"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "Sincronizando Signal con tu dispositivo vinculado…";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Archivo adjunto";
@@ -656,25 +656,25 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Crear nueva clave";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Guardar en el gestor de contraseñas";
 
 /* Message for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager, advising them to only use a password manager they trust. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_MESSAGE" = "Guarda tu clave de recuperación solo en un gestor de contraseñas que sepas que es seguro. Signal no puede recomendarte cuál elegir.";
 
 /* Title for a confirmation sheet shown before saving the user's 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "Save to password manager?";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CONFIRM_TITLE" = "¿Guardar en el gestor de contraseñas?";
 
 /* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Signal Recovery Key";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "Clave de recuperación de Signal";
 
 /* Message for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails, suggesting that they may not have a supported password manager configured. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_MESSAGE" = "Es posible que no tengas un gestor de contraseñas configurado o el gestor de contraseñas que estás usando no sea compatible. Puedes seleccionar tu gestor de contraseñas que prefieras en los ajustes de tu teléfono.";
 
 /* Title for an error sheet shown when saving the user's 'Recovery Key' to a password manager fails. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "Can't save to password manager";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_ERROR_TITLE" = "No se puede guardar en el gestor de contraseñas";
 
 /* Toast shown after the user successfully saves their 'Recovery Key' to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Done. Check your password manager to verify.";
+"BACKUP_RECORD_KEY_PASSWORD_MANAGER_SUCCESS_TOAST" = "Listo. Comprueba tu gestor de contraseñas para completar la verificación.";
 
 /* Subtitle for a view allowing users to record their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "Se necesita esta clave para recuperar tu cuenta y tus datos. Guárdala en un lugar seguro. Si la pierdes, no podrás recuperar tu cuenta.";
@@ -1643,16 +1643,16 @@
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Unirse a la llamada";
 
 /* Second line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_SUBTITLE" = "Recent calls will appear here.";
+"CALLS_TAB_NO_CALLS_SUBTITLE" = "Aquí se mostrarán las llamadas recientes.";
 
 /* Top line of text shown in All Calls when the list is empty. */
-"CALLS_TAB_NO_CALLS_TITLE" = "No Calls";
+"CALLS_TAB_NO_CALLS_TITLE" = "No hay llamadas";
 
 /* Second line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Missed calls will appear here.";
+"CALLS_TAB_NO_MISSED_CALLS_SUBTITLE" = "Aquí se mostrarán las llamadas perdidas.";
 
 /* Top line of text shown in Missed Calls when the list is empty. */
-"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No Missed Calls";
+"CALLS_TAB_NO_MISSED_CALLS_TITLE" = "No hay llamadas perdidas";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Volver a la llamada";
@@ -1910,10 +1910,10 @@
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrado por no leídos";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_SUBTITLE" = "Recent chats will appear here.";
+"CHAT_LIST_NO_CHATS_SUBTITLE" = "Aquí se mostrarán los chats recientes.";
 
 /* Message shown in the chat list when the chat list is empty. */
-"CHAT_LIST_NO_CHATS_TITLE" = "No Chats";
+"CHAT_LIST_NO_CHATS_TITLE" = "No hay chats";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Chats";
@@ -2581,8 +2581,14 @@
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Cargando más mensajes…";
 
+/* Label on truncated text messages that's shown while the full contents of a text message are being downloaded. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Loading…";
+
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Leer más";
+
+/* Button on truncated text messages that they can be tapped to download the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Get Full Message";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "Copiado al portapapeles";
@@ -3001,7 +3007,7 @@
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Mostrar insignias en mi perfil";
 
-/* Title for the proxy confirmation */
+/* Confirmation text displayed in a sheet presented when user taps on Signal Proxy link in chat. */
 "DO_YOU_WANT_TO_USE_PROXY" = "¿Quieres usar esta dirección de proxy?";
 
 /* Section title for the 'domain fronting country' view. */
@@ -3329,7 +3335,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "No se ha podido procesar tu donación puntual de %1$@ a través de iDEAL | Wero. Consulta la aplicación de tu banco para aprobar tu donación a través de iDEAL | Wero.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Your iDEAL | Wero recurring monthly donation couldn’t be processed. Try another payment method or contact your bank for more information.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "No se ha podido procesar tu donación mensual recurrente a través de iDEAL | Wero. Selecciona otro método de pago o contacta con tu banco para obtener más información.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "No se ha podido confirmar tu donación mensual recurrente de %1$@ a través de iDEAL | Wero. Consulta la aplicación de tu banco para aprobar tu donación a través de iDEAL | Wero.";
@@ -3756,9 +3762,6 @@
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "No hay resultados";
-
-/* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Introduce un término de búsqueda";
 
 /* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "Ir a Ajustes";
@@ -4298,16 +4301,16 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Revisar participantes";
 
 /* First bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Ten cuidado con los grupos que se hacen pasar por organizaciones y empresas";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Ten cuidado con los grupos que se hacen pasar por organizaciones y empresas.";
 
 /* Second bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Signal no puede verificar los nombres ni las fotos";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Signal no puede verificar los nombres ni las fotos.";
 
 /* Third bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Signal nunca se pondrá en contacto contigo para pedirte tu código de registro, PIN o clave de recuperación";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Signal nunca se pondrá en contacto contigo para pedirte tu código de registro, PIN o clave de recuperación.";
 
 /* Fourth bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_4" = "No compartas información personal con personas que no conozcas";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_4" = "No compartas información personal con personas que no conozcas.";
 
 /* Header for the explainer sheet for group names */
 "GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "Los <bold>nombres de los grupos</bold> los eligen los participantes del grupo.";
@@ -4913,7 +4916,7 @@
 "KEY_COMMAND_UNARCHIVE" = "Desarchivar chat";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Ponte en contacto con el equipo de asistencia para ayudarnos a solucionar el problema.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Ponte en contacto con el equipo de Asistencia para ayudarnos a solucionar el problema.";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
 "KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Contactar con asistencia";
@@ -5495,7 +5498,7 @@
 "MESSAGE_REQUEST_CONFIRM_ACCEPT_MESSAGE_EMBEDDED_BOLD_TEXT" = "Signal nunca";
 
 /* Title for an action sheet asking the user to confirm if they want to accept a message request */
-"MESSAGE_REQUEST_CONFIRM_ACCEPT_TITLE" = "¿Aceptar la solicitud?";
+"MESSAGE_REQUEST_CONFIRM_ACCEPT_TITLE" = "¿Aceptar solicitud?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Eliminar";
@@ -7214,16 +7217,16 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ ha cambiado su nombre de perfil a \"%2$@\".";
 
 /* First bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Signal no puede verificar los nombres ni las fotos";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Signal no puede verificar los nombres ni las fotos.";
 
 /* Second bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Signal nunca se pondrá en contacto contigo para pedirte tu código de registro, PIN o clave de recuperación";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Signal nunca se pondrá en contacto contigo para pedirte tu código de registro, PIN o clave de recuperación.";
 
 /* Third bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Ten cuidado con las cuentas que se hacen pasar por otras personas";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Ten cuidado con las cuentas que se hacen pasar por otras personas.";
 
 /* Fourth bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_4" = "No compartas información personal con personas que no conozcas";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_4" = "No compartas información personal con personas que no conozcas.";
 
 /* Header for the explainer sheet for profile names */
 "PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "Los <bold>nombres de perfil</bold> en Signal los elige quien crea la cuenta.";
@@ -7475,10 +7478,10 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Lo has intentado demasiadas veces. Espera un minuto antes de intentarlo de nuevo.";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "Es posible que hayas introducido tu clave de recuperación de forma incorrecta.\n\nAsegúrate de registrarte con el mismo número de teléfono y la misma clave de recuperación que guardaste al activar Copias Seguras de Signal.";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Incorrect Recovery Key";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Clave de recuperación incorrecta";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "No hay ninguna copia de seguridad asociada a esta clave de recuperación. Asegúrate de que la clave sea correcta e inténtalo de nuevo.";
@@ -7738,6 +7741,24 @@
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "No hemos podido enviarte la clave de verificación mediante llamada. Intenta recibir tu clave por SMS.";
 
+/* Bottom bar label for the release notes thread */
+"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "The only official chat from Signal";
+
+/* Display name for the release notes channel */
+"RELEASE_NOTES_CHANNEL_NAME" = "Signal";
+
+/* Label displayed in thread details of the release notes chat */
+"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Official Chat";
+
+/* Settings description label for the release notes thread telling a user to keep up to date */
+"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Keep up to date with news & release notes";
+
+/* Details text for the thread details view of the release notes channel */
+"RELEASE_NOTES_DETAILS" = "The only official chat from Signal. Keep up to date with news and release notes";
+
+/* Settings description label for the release notes thread telling a user this is the only official chat */
+"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "The only official chat from Signal";
+
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Corregir ahora";
 
@@ -7955,7 +7976,7 @@
 "SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Ten cuidado con las empresas o agencias gubernamentales que se pongan en contacto contigo. Los mensajes que involucren a entidades como agencias tributarias y empresas de mensajería pueden ser spam.";
 
 /* Message title describing the safety tip about unknown or fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Negocios falsos";
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Empresas falsas";
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "Consejos de seguridad";
@@ -7991,7 +8012,7 @@
 "SAFETY_TIPS_SIGNAL_CHATS_TITLE" = "No respondas a los mensajes de Signal";
 
 /* Message contents for the vague message safety tip. */
-"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Los spammers a menudo te envían un mensaje simple, como \"Hola\", para captar tu atención. Si respondes, es posible que interactúen más.";
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Los spammers a menudo envían un mensaje simple, como \"Hola\", para captar tu atención. Si respondes, es posible que interactúen más.";
 
 /* Message title describing the safety tip about vague messages. */
 "SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Mensajes confusos o irrelevantes";
@@ -8504,7 +8525,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Vídeos";
 
 /* Setting for enabling & disabling the sound effect played when a message is sent. */
-"SETTINGS_MESSAGE_SENT_SOUND" = "Sonido de mensaje enviado";
+"SETTINGS_MESSAGE_SENT_SOUND" = "Sonido de mensajes enviados";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "Mira y comparte cuándo se leen y escriben mensajes. Si lo desactivas, no verás las confirmaciones de lectura ni los indicadores de escritura de nadie.";
@@ -9232,6 +9253,9 @@
 /* Shown in the header when the user hasn't provided a custom name for a call. */
 "SIGNAL_CALL" = "Llamada de Signal";
 
+/* Title for the sheet presented when user taps on Signal Proxy link in chat. */
+"SIGNAL_PROXY" = "Signal Proxy Server";
+
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "¡Te invito a usar Signal! Toca aquí:";
 
@@ -9389,10 +9413,10 @@
 "STORIES_NO_REPLIES_YET" = "Aún no hay respuestas";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_SUBTITLE" = "New updates will appear here.";
+"STORIES_NO_STORIES_SUBTITLE" = "Aquí se mostrarán las nuevas historias.";
 
 /* Message shown in the Stories tab when the list is empty. */
-"STORIES_NO_STORIES_TITLE" = "No Stories";
+"STORIES_NO_STORIES_TITLE" = "No hay historias";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "Aún no hay visualizaciones";
@@ -9497,10 +9521,10 @@
 "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "Has reaccionado con %1$@ a la historia de %2$@";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_SECOND_PERSON" = "Ha reaccionado con %1$@ a tu historia";
 
 /* Text explaining that someone reacted to another person's story. Embeds {{ %1$@ reaction author's name, %2$@ reaction emoji, %3$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ reacted %2$@ to %3$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON_REACTS_TO_THIRD_PERSON" = "%1$@ ha reaccionado con %2$@ a la historia de %3$@";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Has reaccionado con %1$@ a una historia";
