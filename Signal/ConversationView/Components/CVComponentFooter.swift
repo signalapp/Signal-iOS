@@ -22,6 +22,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         case tapForMore
         case undownloadableLongText
         case skippedLongText
+        case downloadingLongText
 
         var shouldShowFooter: Bool {
             switch self {
@@ -32,6 +33,8 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             case .undownloadableLongText:
                 return true
             case .skippedLongText:
+                return true
+            case .downloadingLongText:
                 return true
             }
         }
@@ -175,7 +178,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             textColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
         }
 
-        if let tapForMoreLabelConfig = self.tapForMoreLabelConfig {
+        if let tapForMoreLabelConfig = self.tapForMoreLabelConfig(secondaryTextColor: textColor) {
             let tapForMoreLabel = componentView.tapForMoreLabel
             tapForMoreLabelConfig.applyForRendering(label: tapForMoreLabel)
             outerViews.append(tapForMoreLabel)
@@ -583,7 +586,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         )
     }
 
-    private var tapForMoreLabelConfig: CVLabelConfig? {
+    private func tapForMoreLabelConfig(secondaryTextColor: UIColor) -> CVLabelConfig? {
         switch tapForMoreState {
         case .none:
             return nil
@@ -658,6 +661,20 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 textColor: textColor,
                 textAlignment: .trailing,
             )
+        case .downloadingLongText:
+            guard !wasRemotelyDeleted else {
+                return nil
+            }
+            let text = OWSLocalizedString(
+                "CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING",
+                comment: "Label on truncated text messages that's shown while the full contents of a text message are being downloaded.",
+            )
+            return CVLabelConfig.unstyledText(
+                text,
+                font: UIFont.dynamicTypeSubheadlineClamped.italic(),
+                textColor: secondaryTextColor,
+                textAlignment: .trailing,
+            )
         }
     }
 
@@ -696,7 +713,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         var outerSubviewInfos = [ManualStackSubviewInfo]()
         var innerSubviewInfos = [ManualStackSubviewInfo]()
 
-        if let tapForMoreLabelConfig = self.tapForMoreLabelConfig {
+        if let tapForMoreLabelConfig = self.tapForMoreLabelConfig(secondaryTextColor: .black) {
             var tapForMoreSize = CVText.measureLabel(
                 config: tapForMoreLabelConfig,
                 maxWidth: maxWidth,
@@ -779,7 +796,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         }
 
         switch tapForMoreState {
-        case .none:
+        case .none, .downloadingLongText:
             break
         case .tapForMore, .undownloadableLongText, .skippedLongText:
             let readMoreLabel = componentView.tapForMoreLabel
@@ -787,7 +804,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             if readMoreLabel.bounds.contains(location) {
                 let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
                 switch tapForMoreState {
-                case .none:
+                case .none, .downloadingLongText:
                     break
                 case .tapForMore:
                     componentDelegate.didTapTruncatedTextMessage(itemViewModel)

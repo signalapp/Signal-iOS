@@ -166,7 +166,7 @@ public struct CVComponentState: Equatable {
     enum BodyText: Equatable {
         case bodyText(displayableText: DisplayableText, hasTapForMore: Bool)
 
-        case oversizeTextDownloading
+        case oversizeTextDownloading(truncatedBody: DisplayableText)
 
         case oversizeTextSkipped(truncatedBody: DisplayableText)
 
@@ -178,27 +178,27 @@ public struct CVComponentState: Equatable {
 
         var displayableText: DisplayableText? {
             switch self {
-            case .bodyText(let text, _), .oversizeTextUndownloadable(let text), .oversizeTextSkipped(let text):
+            case .bodyText(let text, _), .oversizeTextUndownloadable(let text), .oversizeTextSkipped(let text), .oversizeTextDownloading(let text):
                 return text
-            case .remotelyDeleted, .oversizeTextDownloading:
+            case .remotelyDeleted:
                 return nil
             }
         }
 
         func textValue(isTextExpanded: Bool) -> CVTextValue? {
             switch self {
-            case .bodyText(let text, _), .oversizeTextUndownloadable(let text), .oversizeTextSkipped(let text):
+            case .bodyText(let text, _), .oversizeTextUndownloadable(let text), .oversizeTextSkipped(let text), .oversizeTextDownloading(let text):
                 return text.textValue(isTextExpanded: isTextExpanded)
-            case .remotelyDeleted, .oversizeTextDownloading:
+            case .remotelyDeleted:
                 return nil
             }
         }
 
         var jumbomojiCount: UInt? {
             switch self {
-            case .bodyText(let text, _), .oversizeTextUndownloadable(let text), .oversizeTextSkipped(let text):
+            case .bodyText(let text, _), .oversizeTextUndownloadable(let text), .oversizeTextSkipped(let text), .oversizeTextDownloading(let text):
                 return text.jumbomojiCount
-            case .remotelyDeleted, .oversizeTextDownloading:
+            case .remotelyDeleted:
                 return nil
             }
         }

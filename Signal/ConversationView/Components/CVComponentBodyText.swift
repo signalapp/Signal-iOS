@@ -334,7 +334,10 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             }
 
             // It's not downloaded and hasn't failed, so it must be downloading.
-            return .oversizeTextDownloading
+            if let displayableText = bodyDisplayableText() {
+                return .oversizeTextDownloading(truncatedBody: displayableText)
+            }
+            return nil
         }
 
         if let displayableText = bodyDisplayableText() {
@@ -474,10 +477,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     public func buildBodyTextLabelConfig() -> CVTextLabel.Config {
         switch bodyText {
-        case .bodyText(let displayableText, _), .oversizeTextUndownloadable(let displayableText), .oversizeTextSkipped(let displayableText):
+        case .bodyText(let displayableText, _), .oversizeTextUndownloadable(let displayableText), .oversizeTextSkipped(let displayableText), .oversizeTextDownloading(let displayableText):
             return bodyTextLabelConfig(textViewConfig: textConfig(displayableText: displayableText))
-        case .oversizeTextDownloading:
-            return bodyTextLabelConfig(labelConfig: labelConfigForOversizeTextDownloading)
         case .remotelyDeleted:
             return bodyTextLabelConfig(textViewConfig: textViewConfigForRemotelyDeleted)
         }
@@ -609,22 +610,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             linkifyStyle: linkifyStyle,
             linkItems: linkItems,
             matchedSearchRanges: [],
-        )
-    }
-
-    private var labelConfigForOversizeTextDownloading: CVLabelConfig {
-        let text = OWSLocalizedString(
-            "MESSAGE_STATUS_DOWNLOADING",
-            comment: "message status while message is downloading.",
-        )
-        return CVLabelConfig(
-            text: .text(text),
-            displayConfig: .forUnstyledText(font: textMessageFont.italic(), textColor: bodyTextColor),
-            font: textMessageFont.italic(),
-            textColor: bodyTextColor,
-            numberOfLines: 0,
-            lineBreakMode: .byWordWrapping,
-            textAlignment: .center,
         )
     }
 
@@ -898,11 +883,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 extension CVComponentBodyText: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         switch bodyText {
-        case .bodyText(let displayableText, _), .oversizeTextUndownloadable(let displayableText), .oversizeTextSkipped(let displayableText):
+        case .bodyText(let displayableText, _), .oversizeTextUndownloadable(let displayableText), .oversizeTextSkipped(let displayableText), .oversizeTextDownloading(let displayableText):
             // NOTE: we use the full text.
             return displayableText.fullTextValue.accessibilityDescription
-        case .oversizeTextDownloading:
-            return labelConfigForOversizeTextDownloading.text.accessibilityDescription
         case .remotelyDeleted:
             return textViewConfigForRemotelyDeleted.text.accessibilityDescription
         }

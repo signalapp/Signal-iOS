@@ -251,6 +251,8 @@ struct CVItemModelBuilder: CVItemBuilding {
             tapForMoreState = .undownloadableLongText
         case .oversizeTextSkipped:
             tapForMoreState = .skippedLongText
+        case .oversizeTextDownloading:
+            tapForMoreState = .downloadingLongText
         default:
             tapForMoreState = .none
         }
