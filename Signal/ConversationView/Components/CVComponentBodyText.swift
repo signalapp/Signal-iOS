@@ -28,6 +28,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 return !hasTapForMore
             case .oversizeTextDownloading:
                 return false
+            case .oversizeTextSkipped:
+                return false
             case .oversizeTextUndownloadable:
                 return false
             case .remotelyDeleted:
@@ -267,6 +269,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     static func buildComponentState(
         message: TSMessage,
+        skippedAttachmentIds: Set<Attachment.IDType>,
         viewStateSnapshot: CVViewStateSnapshot,
         transaction: DBReadTransaction,
     ) throws -> CVComponentState.BodyText? {
@@ -322,8 +325,15 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 return nil
             }
 
+            // We aren't downloading this for some reason; show a download button.
+            if skippedAttachmentIds.contains(oversizeTextAttachment.id) {
+                if let displayableText = bodyDisplayableText() {
+                    return .oversizeTextSkipped(truncatedBody: displayableText)
+                }
+                return nil
+            }
+
             // It's not downloaded and hasn't failed, so it must be downloading.
-            // TODO: This isn't accurate in some pathological edge cases.
             return .oversizeTextDownloading
         }
 
@@ -464,7 +474,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     public func buildBodyTextLabelConfig() -> CVTextLabel.Config {
         switch bodyText {
-        case .bodyText(let displayableText, _), .oversizeTextUndownloadable(let displayableText):
+        case .bodyText(let displayableText, _), .oversizeTextUndownloadable(let displayableText), .oversizeTextSkipped(let displayableText):
             return bodyTextLabelConfig(textViewConfig: textConfig(displayableText: displayableText))
         case .oversizeTextDownloading:
             return bodyTextLabelConfig(labelConfig: labelConfigForOversizeTextDownloading)
@@ -787,6 +797,13 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         case .oversizeTextUndownloadable:
             componentDelegate.didTapUndownloadableOversizeText()
             return true
+        case .oversizeTextSkipped:
+            guard let message = interaction as? TSMessage else {
+                owsFailDebug("invalid interaction")
+                return false
+            }
+            componentDelegate.didTapSkippedDownloads(message)
+            return true
         case .bodyText, .remotelyDeleted, .oversizeTextDownloading:
             break
         }
@@ -881,7 +898,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 extension CVComponentBodyText: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         switch bodyText {
-        case .bodyText(let displayableText, _), .oversizeTextUndownloadable(let displayableText):
+        case .bodyText(let displayableText, _), .oversizeTextUndownloadable(let displayableText), .oversizeTextSkipped(let displayableText):
             // NOTE: we use the full text.
             return displayableText.fullTextValue.accessibilityDescription
         case .oversizeTextDownloading:

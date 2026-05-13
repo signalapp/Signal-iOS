@@ -21,6 +21,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         case none
         case tapForMore
         case undownloadableLongText
+        case skippedLongText
 
         var shouldShowFooter: Bool {
             switch self {
@@ -29,6 +30,8 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             case .tapForMore:
                 return true
             case .undownloadableLongText:
+                return true
+            case .skippedLongText:
                 return true
             }
         }
@@ -602,6 +605,24 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 textColor: conversationStyle.bubbleReadMoreTextColor(message: message),
                 textAlignment: .trailing,
             )
+        case .skippedLongText:
+            guard !wasRemotelyDeleted else {
+                return nil
+            }
+            guard let message = interaction as? TSMessage else {
+                owsFailDebug("Invalid interaction.")
+                return nil
+            }
+            let text = OWSLocalizedString(
+                "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD",
+                comment: "Button on truncated text messages that they can be tapped to download the entire text message.",
+            )
+            return CVLabelConfig.unstyledText(
+                text,
+                font: UIFont.dynamicTypeSubheadlineClamped.semibold(),
+                textColor: conversationStyle.bubbleReadMoreTextColor(message: message),
+                textAlignment: .trailing,
+            )
         case .undownloadableLongText:
             guard !wasRemotelyDeleted else {
                 return nil
@@ -760,7 +781,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         switch tapForMoreState {
         case .none:
             break
-        case .tapForMore, .undownloadableLongText:
+        case .tapForMore, .undownloadableLongText, .skippedLongText:
             let readMoreLabel = componentView.tapForMoreLabel
             let location = sender.location(in: readMoreLabel)
             if readMoreLabel.bounds.contains(location) {
@@ -772,6 +793,12 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                     componentDelegate.didTapTruncatedTextMessage(itemViewModel)
                 case .undownloadableLongText:
                     componentDelegate.didTapUndownloadableOversizeText()
+                case .skippedLongText:
+                    guard let message = interaction as? TSMessage else {
+                        owsFailDebug("invalid interaction")
+                        break
+                    }
+                    componentDelegate.didTapSkippedDownloads(message)
                 }
                 return true
             }

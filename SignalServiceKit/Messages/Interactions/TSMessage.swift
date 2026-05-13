@@ -66,23 +66,23 @@ public extension TSMessage {
         return self.body?.nilIfEmpty
     }
 
-    func skippedAttachments(transaction tx: DBReadTransaction) -> [AttachmentPointer] {
-        let attachments: [Attachment] = allAttachments(transaction: tx).map(\.attachment)
-        let states: [AttachmentDownloadState] = [.failed, .none]
-
-        return attachments.compactMap { attachment -> AttachmentPointer? in
+    func skippedAttachmentIds(tx: DBReadTransaction) -> Set<Attachment.IDType> {
+        var result = Set<Attachment.IDType>()
+        for attachment in allAttachments(transaction: tx).map(\.attachment) {
             guard
                 attachment.asStream() == nil,
                 let attachmentPointer = attachment.asAnyPointer()
             else {
-                return nil
+                continue
             }
-            let downloadState = attachmentPointer.downloadState(tx: tx)
-            guard states.contains(downloadState) else {
-                return nil
+            switch attachmentPointer.downloadState(tx: tx) {
+            case .enqueuedOrDownloading:
+                continue
+            case .failed, .none:
+                result.insert(attachmentPointer.id)
             }
-            return attachmentPointer
         }
+        return result
     }
 
     // MARK: Attachment Deletes

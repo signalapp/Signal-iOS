@@ -166,8 +166,9 @@ public struct CVComponentState: Equatable {
     enum BodyText: Equatable {
         case bodyText(displayableText: DisplayableText, hasTapForMore: Bool)
 
-        // TODO: Should we have oversizeTextFailed?
         case oversizeTextDownloading
+
+        case oversizeTextSkipped(truncatedBody: DisplayableText)
 
         case oversizeTextUndownloadable(truncatedBody: DisplayableText)
 
@@ -177,7 +178,7 @@ public struct CVComponentState: Equatable {
 
         var displayableText: DisplayableText? {
             switch self {
-            case .bodyText(let text, _), .oversizeTextUndownloadable(let text):
+            case .bodyText(let text, _), .oversizeTextUndownloadable(let text), .oversizeTextSkipped(let text):
                 return text
             case .remotelyDeleted, .oversizeTextDownloading:
                 return nil
@@ -186,7 +187,7 @@ public struct CVComponentState: Equatable {
 
         func textValue(isTextExpanded: Bool) -> CVTextValue? {
             switch self {
-            case .bodyText(let text, _), .oversizeTextUndownloadable(let text):
+            case .bodyText(let text, _), .oversizeTextUndownloadable(let text), .oversizeTextSkipped(let text):
                 return text.textValue(isTextExpanded: isTextExpanded)
             case .remotelyDeleted, .oversizeTextDownloading:
                 return nil
@@ -195,7 +196,7 @@ public struct CVComponentState: Equatable {
 
         var jumbomojiCount: UInt? {
             switch self {
-            case .bodyText(let text, _), .oversizeTextUndownloadable(let text):
+            case .bodyText(let text, _), .oversizeTextUndownloadable(let text), .oversizeTextSkipped(let text):
                 return text.jumbomojiCount
             case .remotelyDeleted, .oversizeTextDownloading:
                 return nil
@@ -540,11 +541,15 @@ public struct CVComponentState: Equatable {
     let bottomLabel: String?
 
     struct SkippedDownloads: Equatable {
-        let attachmentPointers: [AttachmentPointer]
+        let attachmentIds: Set<Attachment.IDType>
 
-        static func ==(lhs: CVComponentState.SkippedDownloads, rhs: CVComponentState.SkippedDownloads) -> Bool {
-            return lhs.attachmentPointers.map(\.id) == rhs.attachmentPointers.map(\.id)
+        init?(attachmentIds: Set<Attachment.IDType>) {
+            if attachmentIds.isEmpty {
+                return nil
+            }
+            self.attachmentIds = attachmentIds
         }
+
     }
 
     let skippedDownloads: SkippedDownloads?
@@ -1239,11 +1244,7 @@ private extension CVComponentState.Builder {
         guard let message = interaction as? TSMessage else {
             return nil
         }
-        let attachmentPointers = message.skippedAttachments(transaction: transaction)
-        guard !attachmentPointers.isEmpty else {
-            return nil
-        }
-        return SkippedDownloads(attachmentPointers: attachmentPointers)
+        return SkippedDownloads(attachmentIds: message.skippedAttachmentIds(tx: transaction))
     }
 
     mutating func populateAndBuild(
@@ -1675,6 +1676,7 @@ private extension CVComponentState.Builder {
         }
         bodyText = try CVComponentBodyText.buildComponentState(
             message: message,
+            skippedAttachmentIds: skippedDownloads?.attachmentIds ?? [],
             viewStateSnapshot: viewStateSnapshot,
             transaction: transaction,
         )

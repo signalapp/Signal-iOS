@@ -145,7 +145,7 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
 
     private var hasUnloadedAttachments: Bool {
         switch componentState.bodyText {
-        case .oversizeTextDownloading:
+        case .oversizeTextDownloading, .oversizeTextSkipped:
             return true
         case .oversizeTextUndownloadable:
             break

@@ -1984,7 +1984,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
         }
 
-        if let message = interaction as? TSMessage, nil != componentState.skippedDownloads {
+        if let message = interaction as? TSMessage, componentState.skippedDownloads != nil {
             componentDelegate.didTapSkippedDownloads(message)
             return true
         }
