@@ -31,8 +31,9 @@ struct DisplayableAccountEntropyPool {
                 .uppercased()
                 .map { char in
                     switch char {
-                    case "0": "="
-                    case "O", "o": "#"
+                    // TODO: Reenable this once support is available for all platforms
+                    // case "0": "="
+                    // case "O", "o": "#"
                     default: char
                     }
                 },
