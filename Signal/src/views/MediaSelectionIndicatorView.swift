@@ -18,7 +18,7 @@ class MediaSelectionIndicatorView: UIView {
     }()
 
     private let selectedBadgeView: UIView = {
-        let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "check-circle-fill"))
+        let imageView = UIImageView(image: Theme.iconImage(.checkCircleFill))
         imageView.contentMode = .center
         imageView.tintColor = .ows_accentBlue
 

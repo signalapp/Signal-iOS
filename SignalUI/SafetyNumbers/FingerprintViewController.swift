@@ -605,7 +605,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         }()
 
         private lazy var verifyButtonLeadingViewSuccess: UIImageView = {
-            let imageView = UIImageView(image: UIImage(named: "check-circle-fill")!)
+            let imageView = UIImageView(image: Theme.iconImage(.checkCircleFill))
             imageView.tintColor = .Signal.green
             return imageView
         }()

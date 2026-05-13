@@ -173,7 +173,7 @@ extension StoryContextMenuGenerator {
                 )
             }
             icon = .contextMenuSelect
-            contextualActionImage = "check-circle-fill"
+            contextualActionImage = Theme.iconName(.checkCircleFill)
         } else {
             if useShortTitle {
                 title = OWSLocalizedString(
