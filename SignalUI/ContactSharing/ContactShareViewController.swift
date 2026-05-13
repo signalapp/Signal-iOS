@@ -231,14 +231,7 @@ public class ContactShareViewController: OWSTableViewController2 {
 
         let field: ContactShareField
 
-        private lazy var checkmark: UIImageView = {
-            let checkmark = UIImageView(
-                image: Theme.iconImage(.circle).withTintColor(.ows_gray25, renderingMode: .automatic),
-                highlightedImage: Theme.iconImage(.checkCircleFill).withTintColor(Theme.accentBlueColor, renderingMode: .automatic),
-            )
-            checkmark.autoSetDimensions(to: .square(24))
-            return checkmark
-        }()
+        private lazy var checkmark = ListItemSelectionIndicatorView()
 
         init(field: ContactShareField) {
             self.field = field
@@ -282,7 +275,10 @@ public class ContactShareViewController: OWSTableViewController2 {
         }
 
         class func contactNameCell(for contactName: String) -> UITableViewCell {
-            let checkmark = UIImageView(image: Theme.iconImage(.checkCircleFill).withTintColor(.ows_gray25, renderingMode: .automatic))
+            let checkmark = ListItemSelectionIndicatorView()
+            checkmark.isSelected = true
+            checkmark.isEnabled = false
+
             let nameField = ContactFieldViewHelper.contactFieldView(forContactName: contactName)
 
             let stackView = UIStackView(arrangedSubviews: [checkmark, nameField])
@@ -304,7 +300,7 @@ public class ContactShareViewController: OWSTableViewController2 {
         }
 
         func updateCheckmarkState() {
-            checkmark.isHighlighted = field.isIncluded
+            checkmark.isSelected = field.isIncluded
         }
     }
 }

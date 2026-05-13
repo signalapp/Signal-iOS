@@ -61,6 +61,19 @@ public class ListItemSelectionIndicatorView: UIView {
         updateAppearance(animated: animated)
     }
 
+    private var _isEnabled: Bool = true
+
+    public var isEnabled: Bool {
+        get { _isEnabled }
+        set { setIsEnabled(newValue, animated: false) }
+    }
+
+    public func setIsEnabled(_ isEnabled: Bool, animated: Bool) {
+        guard isEnabled != _isEnabled else { return }
+        _isEnabled = isEnabled
+        updateAppearance(animated: animated)
+    }
+
     // MARK: Appearance
 
     private let unselectedView: UIView = {
@@ -87,5 +100,7 @@ public class ListItemSelectionIndicatorView: UIView {
     private func updateAppearance(animated: Bool) {
         selectedView.setIsHidden(isSelected == false, animated: animated)
         unselectedView.setIsHidden(isSelected, animated: animated)
+
+        selectedView.backgroundColor = isEnabled ? .Signal.accent : .Signal.tertiaryLabel
     }
 }
