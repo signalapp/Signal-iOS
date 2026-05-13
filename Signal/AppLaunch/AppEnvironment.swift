@@ -193,6 +193,50 @@ public class AppEnvironment: NSObject {
             operation: { try await identityKeyMismatchManager.validateLocalPniIdentityKeyIfNecessary() },
         )
 
+        let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
+        cron.scheduleFrequently(
+            mustBeRegistered: true,
+            mustBeConnected: true,
+            operation: { try await backupSubscriptionManager.redeemSubscriptionIfNecessary() },
+            handleResult: {
+                switch $0 {
+                case .success, .failure(is CancellationError):
+                    break
+                case .failure(let error):
+                    Logger.warn("Terminally failed to redeem Backups subscription! \(error)")
+                }
+            },
+        )
+
+        let backupTestFlightEntitlementManager = DependenciesBridge.shared.backupTestFlightEntitlementManager
+        cron.scheduleFrequently(
+            mustBeRegistered: true,
+            mustBeConnected: true,
+            operation: { try await backupTestFlightEntitlementManager.renewEntitlementIfNecessary() },
+            handleResult: {
+                switch $0 {
+                case .success, .failure(is CancellationError):
+                    break
+                case .failure(let error):
+                    Logger.warn("Terminally failed to redeem Backups TestFlight subscription! \(error)")
+                }
+            },
+        )
+
+        cron.scheduleFrequently(
+            mustBeRegistered: true,
+            mustBeConnected: true,
+            operation: { try await DonationSubscriptionManager.redeemSubscriptionIfNecessary() },
+            handleResult: {
+                switch $0 {
+                case .success, .failure(is CancellationError):
+                    break
+                case .failure(let error):
+                    Logger.warn("Terminally failed to redeem Donations subscription! \(error)")
+                }
+            },
+        )
+
         appReadiness.runNowOrWhenAppWillBecomeReady {
             self.badgeManager.startObservingChanges(in: DependenciesBridge.shared.databaseChangeObserver)
             self.appIconBadgeUpdater.startObserving()
@@ -203,8 +247,6 @@ public class AppEnvironment: NSObject {
             let attachmentBackfillManager = DependenciesBridge.shared.attachmentBackfillManager
             let backupExportJobRunner = DependenciesBridge.shared.backupExportJobRunner
             let backupIdService = DependenciesBridge.shared.backupIdService
-            let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
-            let backupTestFlightEntitlementManager = DependenciesBridge.shared.backupTestFlightEntitlementManager
             let callRecordStore = DependenciesBridge.shared.callRecordStore
             let callRecordQuerier = DependenciesBridge.shared.callRecordQuerier
             let db = DependenciesBridge.shared.db
@@ -304,31 +346,6 @@ public class AppEnvironment: NSObject {
 
             Task {
                 await self.avatarHistoryManager.cleanupOrphanedImages()
-            }
-
-            Task {
-                do {
-                    try await backupSubscriptionManager.redeemSubscriptionIfNecessary()
-                } catch {
-                    owsFailDebug("Failed to redeem Backup subscription in launch job: \(error)")
-                }
-            }
-
-            Task {
-                do {
-                    try await backupTestFlightEntitlementManager.renewEntitlementIfNecessary()
-                } catch {
-                    owsFailDebug("Failed to renew Backup entitlement for TestFlight in launch job: \(error)")
-                }
-            }
-
-            Task {
-                await DonationSubscriptionManager.performMigrationToStorageServiceIfNecessary()
-                do {
-                    try await DonationSubscriptionManager.redeemSubscriptionIfNecessary()
-                } catch {
-                    owsFailDebug("Failed to redeem subscription in launch job: \(error)")
-                }
             }
         }
     }

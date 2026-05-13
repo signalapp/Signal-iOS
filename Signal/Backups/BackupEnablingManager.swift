@@ -263,7 +263,10 @@ final class BackupEnablingManager {
 
     private func enablePaidPlanWithoutStoreKit() async throws(SheetDisplayableError) {
         do {
-            try await backupTestFlightEntitlementManager.acquireEntitlement()
+            await db.awaitableWrite { tx in
+                backupTestFlightEntitlementManager.setRenewEntitlementIsNecessary(tx: tx)
+            }
+            try await backupTestFlightEntitlementManager.renewEntitlementIfNecessary()
         } catch where error.isNetworkFailureOrTimeout {
             throw .networkError
         } catch {

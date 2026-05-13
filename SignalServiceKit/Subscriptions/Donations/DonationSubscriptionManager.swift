@@ -64,27 +64,6 @@ public extension Notification.Name {
 /// similar things but designed around In-App Payments (StoreKit) and paid-tier
 /// Backups.
 public enum DonationSubscriptionManager {
-    public static func performMigrationToStorageServiceIfNecessary() async {
-        let hasMigratedToStorageService = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            subscriptionKVS.getBool(hasMigratedToStorageServiceKey, defaultValue: false, transaction: transaction)
-        }
-
-        guard !hasMigratedToStorageService else { return }
-
-        Logger.info("[Donations] Migrating to storage service")
-
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            subscriptionKVS.setBool(true, key: hasMigratedToStorageServiceKey, transaction: transaction)
-
-            let localProfile = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: transaction)
-            let displayBadgesOnProfile = localProfile?.badges.count == localProfile?.visibleBadges.count
-            setDisplayBadgesOnProfile(displayBadgesOnProfile, transaction: transaction)
-        }
-
-        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
-    }
-
-    // MARK: -
 
     private static var receiptCredentialRedemptionJobQueue: DonationReceiptCredentialRedemptionJobQueue {
         SSKEnvironment.shared.donationReceiptCredentialRedemptionJobQueue
@@ -108,7 +87,6 @@ public enum DonationSubscriptionManager {
     fileprivate static let mostRecentlyExpiredGiftBadgeIDKey = "mostRecentlyExpiredGiftBadgeIDKey"
     fileprivate static let showExpirySheetOnHomeScreenKey = "showExpirySheetOnHomeScreenKey"
     fileprivate static let mostRecentSubscriptionPaymentMethodKey = "mostRecentSubscriptionPaymentMethod"
-    fileprivate static let hasMigratedToStorageServiceKey = "hasMigratedToStorageServiceKey"
 
     // MARK: -
 

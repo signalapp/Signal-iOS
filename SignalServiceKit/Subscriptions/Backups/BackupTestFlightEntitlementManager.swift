@@ -9,8 +9,6 @@ import DeviceCheck
 /// Responsible for managing paid-tier Backup entitlements for TestFlight users,
 /// who aren't able to use StoreKit or perform real-money transactions.
 public protocol BackupTestFlightEntitlementManager {
-    func acquireEntitlement() async throws
-
     func setRenewEntitlementIsNecessary(tx: DBWriteTransaction)
     func renewEntitlementIfNecessary() async throws
 }
@@ -62,13 +60,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
 
     // MARK: -
 
-    func acquireEntitlement() async throws {
-        try await serialTaskQueue.run {
-            try await _acquireEntitlement()
-        }
-    }
-
-    private func _acquireEntitlement() async throws {
+    private func acquireEntitlement() async throws {
         owsPrecondition(BuildFlags.Backups.avoidStoreKitForTesters)
 
         guard TSConstants.isUsingProductionService else {
@@ -109,6 +101,12 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
     }
 
     func renewEntitlementIfNecessary() async throws {
+        try await serialTaskQueue.run {
+            try await _renewEntitlementIfNecessary()
+        }
+    }
+
+    private func _renewEntitlementIfNecessary() async throws {
         let (
             isRegisteredPrimaryDevice,
             isCurrentlyTesterBuild,
