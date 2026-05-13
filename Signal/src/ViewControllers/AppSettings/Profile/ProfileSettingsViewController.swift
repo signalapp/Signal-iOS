@@ -116,7 +116,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         let localProfile: OWSUserProfile
         (localProfile, displayBadgesOnProfile) = databaseStorage.read { tx in (
             profileManager.localUserProfile(tx: tx)!,
-            DonationSubscriptionManager.displayBadgesOnProfile(transaction: tx),
+            DependenciesBridge.shared.donationSubscriptionManager.displayBadgesOnProfile(tx: tx),
         ) }
 
         allBadges = localProfile.badges
@@ -725,10 +725,10 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                     }
                     try await updatePromise.awaitable()
                     await databaseStorage.awaitableWrite { transaction in
-                        DonationSubscriptionManager.setDisplayBadgesOnProfile(
+                        DependenciesBridge.shared.donationSubscriptionManager.setDisplayBadgesOnProfile(
                             displayBadgesOnProfile,
                             updateStorageService: true,
-                            transaction: transaction,
+                            tx: transaction,
                         )
                     }
                 } catch {

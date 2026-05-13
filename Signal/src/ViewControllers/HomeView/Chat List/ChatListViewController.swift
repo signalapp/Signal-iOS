@@ -376,7 +376,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             backupExportJobRunner: DependenciesBridge.shared.backupExportJobRunner,
             backupSubscriptionIssueStore: BackupSubscriptionIssueStore(),
             donationReceiptCredentialResultStore: DependenciesBridge.shared.donationReceiptCredentialResultStore,
-            donationSubscriptionManager: DonationSubscriptionManager.self,
+            donationSubscriptionManager: DependenciesBridge.shared.donationSubscriptionManager,
             db: DependenciesBridge.shared.db,
             keyTransparencyStore: KeyTransparencyStore(),
             networkManager: SSKEnvironment.shared.networkManagerRef,

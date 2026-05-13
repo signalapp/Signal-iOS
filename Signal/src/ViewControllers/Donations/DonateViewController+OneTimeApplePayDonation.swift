@@ -47,7 +47,7 @@ extension DonateViewController {
                     from: self,
                     operation: {
                         try await DonationViewsUtil.waitForRedemption(paymentMethod: .applePay) {
-                            try await DonationSubscriptionManager.requestAndRedeemReceipt(
+                            try await DependenciesBridge.shared.donationSubscriptionManager.requestAndRedeemReceipt(
                                 boostPaymentIntentId: confirmedIntent.paymentIntentId,
                                 amount: amount,
                                 paymentProcessor: .stripe,

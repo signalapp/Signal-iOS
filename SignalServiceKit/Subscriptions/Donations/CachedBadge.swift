@@ -47,7 +47,7 @@ public final class CachedBadge: Equatable {
             }
             // Otherwise, kick off a new fetch.
             let fetchPromise: Promise<Value> = Promise.wrapAsync {
-                try await DonationSubscriptionManager.getOneTimeBadge(level: self.badgeLevel)
+                try await DependenciesBridge.shared.donationSubscriptionManager.getOneTimeBadge(level: self.badgeLevel)
             }.then { profileBadge -> Promise<Value> in
                 switch profileBadge {
                 case .none:

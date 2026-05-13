@@ -74,7 +74,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     private func loadData() async -> State {
         do {
             Logger.info("[Gifting] Fetching donation configuration...")
-            let donationConfiguration = try await DonationSubscriptionManager.fetchDonationConfiguration()
+            let donationConfiguration = try await DependenciesBridge.shared.donationSubscriptionManager.fetchDonationConfiguration()
             Logger.info("[Gifting] Populating badge assets...")
             let giftBadge = donationConfiguration.gift.badge
             try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(giftBadge)

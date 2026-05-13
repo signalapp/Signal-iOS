@@ -51,6 +51,7 @@ public class DonationReceiptCredentialRedemptionJobQueue {
         dateProvider: @escaping DateProvider,
         db: any DB,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
+        donationSubscriptionManager: DonationSubscriptionManager,
         networkManager: NetworkManager,
         profileManager: ProfileManager,
         reachabilityManager: SSKReachabilityManager,
@@ -60,6 +61,7 @@ public class DonationReceiptCredentialRedemptionJobQueue {
             dateProvider: dateProvider,
             db: db,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
+            donationSubscriptionManager: donationSubscriptionManager,
             logger: .donations,
             networkManager: networkManager,
             profileManager: profileManager,
@@ -222,6 +224,7 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
     private let dateProvider: DateProvider
     private let db: DB
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
+    private let donationSubscriptionManager: DonationSubscriptionManager
     private let logger: PrefixedLogger
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
@@ -231,6 +234,7 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
         dateProvider: @escaping DateProvider,
         db: DB,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
+        donationSubscriptionManager: DonationSubscriptionManager,
         logger: PrefixedLogger,
         networkManager: NetworkManager,
         profileManager: ProfileManager,
@@ -239,6 +243,7 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
         self.dateProvider = dateProvider
         self.db = db
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
+        self.donationSubscriptionManager = donationSubscriptionManager
         self.logger = logger
         self.networkManager = networkManager
         self.profileManager = profileManager
@@ -253,6 +258,7 @@ private class DonationReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFact
             dateProvider: dateProvider,
             db: db,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
+            donationSubscriptionManager: donationSubscriptionManager,
             networkManager: networkManager,
             profileManager: profileManager,
             tsAccountManager: tsAccountManager,
@@ -268,6 +274,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
     private let dateProvider: DateProvider
     private let db: DB
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
+    private let donationSubscriptionManager: DonationSubscriptionManager
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
     private let receiptCredentialManager: ReceiptCredentialManager
@@ -281,6 +288,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         dateProvider: @escaping DateProvider,
         db: DB,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
+        donationSubscriptionManager: DonationSubscriptionManager,
         networkManager: NetworkManager,
         profileManager: ProfileManager,
         tsAccountManager: TSAccountManager,
@@ -290,6 +298,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         self.dateProvider = dateProvider
         self.db = db
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
+        self.donationSubscriptionManager = donationSubscriptionManager
         self.networkManager = networkManager
         self.profileManager = profileManager
         self.receiptCredentialManager = ReceiptCredentialManager(
@@ -616,7 +625,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
             }
         }
 
-        try await DonationSubscriptionManager.redeemReceiptCredentialPresentation(
+        try await donationSubscriptionManager.redeemReceiptCredentialPresentation(
             receiptCredentialPresentation: receiptCredentialPresentation,
         )
 
@@ -671,9 +680,9 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
     private func loadBadge(paymentType: PaymentType) async throws -> ProfileBadge {
         switch paymentType {
         case .oneTimeBoost:
-            return try await DonationSubscriptionManager.getBoostBadge()
+            return try await donationSubscriptionManager.getBoostBadge()
         case let .recurringSubscription(_, targetSubscriptionLevel, _, _):
-            return try await DonationSubscriptionManager.getSubscriptionBadge(subscriptionLevel: targetSubscriptionLevel)
+            return try await donationSubscriptionManager.getSubscriptionBadge(subscriptionLevel: targetSubscriptionLevel)
         }
     }
 

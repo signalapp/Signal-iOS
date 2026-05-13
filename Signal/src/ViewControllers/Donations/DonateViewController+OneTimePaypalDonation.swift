@@ -83,7 +83,7 @@ extension DonateViewController {
         )
 
         try await DonationViewsUtil.waitForRedemption(paymentMethod: .paypal) {
-            try await DonationSubscriptionManager.requestAndRedeemReceipt(
+            try await DependenciesBridge.shared.donationSubscriptionManager.requestAndRedeemReceipt(
                 boostPaymentIntentId: paymentIntentId,
                 amount: amount,
                 paymentProcessor: .braintree,

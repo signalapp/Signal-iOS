@@ -110,6 +110,7 @@ public class DependenciesBridge {
     public let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     public let disappearingMessagesExpirationJob: DisappearingMessagesExpirationJob
     public let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
+    public let donationSubscriptionManager: DonationSubscriptionManager
     public let editManager: EditManager
     public let editMessageStore: EditMessageStore
     public let externalPendingIDEALDonationStore: ExternalPendingIDEALDonationStore
@@ -252,6 +253,7 @@ public class DependenciesBridge {
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         disappearingMessagesExpirationJob: DisappearingMessagesExpirationJob,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
+        donationSubscriptionManager: DonationSubscriptionManager,
         editManager: EditManager,
         editMessageStore: EditMessageStore,
         externalPendingIDEALDonationStore: ExternalPendingIDEALDonationStore,
@@ -393,6 +395,7 @@ public class DependenciesBridge {
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.disappearingMessagesExpirationJob = disappearingMessagesExpirationJob
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
+        self.donationSubscriptionManager = donationSubscriptionManager
         self.editManager = editManager
         self.editMessageStore = editMessageStore
         self.externalPendingIDEALDonationStore = externalPendingIDEALDonationStore

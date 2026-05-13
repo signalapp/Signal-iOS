@@ -78,13 +78,13 @@ extension DonateViewController {
             wrappedAsyncBlock: {
                 if let existingSubscriberId = monthly.subscriberID {
                     Logger.info("[Donations] Cancelling existing subscription")
-                    try await DonationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
+                    try await DependenciesBridge.shared.donationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
                 } else {
                     Logger.info("[Donations] No existing subscription to cancel")
                 }
 
                 Logger.info("[Donations] Preparing new monthly subscription with PayPal")
-                let subscriberId = try await DonationSubscriptionManager.prepareNewSubscription(
+                let subscriberId = try await DependenciesBridge.shared.donationSubscriptionManager.prepareNewSubscription(
                     currencyCode: monthly.selectedCurrencyCode,
                 )
 
@@ -107,7 +107,7 @@ extension DonateViewController {
             from: self,
             operation: {
                 Logger.info("[Donations] Finalizing new subscription for PayPal donation")
-                _ = try await DonationSubscriptionManager.finalizeNewSubscription(
+                _ = try await DependenciesBridge.shared.donationSubscriptionManager.finalizeNewSubscription(
                     forSubscriberId: subscriberId,
                     paymentType: .paypal(paymentMethodId: paymentMethodId),
                     subscription: selectedSubscriptionLevel,
@@ -116,7 +116,7 @@ extension DonateViewController {
 
                 Logger.info("[Donations] Redeeming monthly receipt for PayPal donation")
                 try await DonationViewsUtil.waitForRedemption(paymentMethod: .paypal) {
-                    try await DonationSubscriptionManager.requestAndRedeemReceipt(
+                    try await DependenciesBridge.shared.donationSubscriptionManager.requestAndRedeemReceipt(
                         subscriberId: subscriberId,
                         subscriptionLevel: selectedSubscriptionLevel.level,
                         priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,

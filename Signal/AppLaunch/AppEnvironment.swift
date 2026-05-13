@@ -223,10 +223,11 @@ public class AppEnvironment: NSObject {
             },
         )
 
+        let donationSubscriptionManager = DependenciesBridge.shared.donationSubscriptionManager
         cron.scheduleFrequently(
             mustBeRegistered: true,
             mustBeConnected: true,
-            operation: { try await DonationSubscriptionManager.redeemSubscriptionIfNecessary() },
+            operation: { try await donationSubscriptionManager.redeemSubscriptionIfNecessary() },
             handleResult: {
                 switch $0 {
                 case .success, .failure(is CancellationError):

@@ -1232,6 +1232,15 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let donationReceiptCredentialResultStore = DonationReceiptCredentialResultStore()
+        let donationSubscriptionManager = DonationSubscriptionManager(
+            db: db,
+            donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
+            networkManager: networkManager,
+            profileManager: profileManager,
+            storageServiceManager: storageServiceManager,
+            subscriptionConfigManager: subscriptionConfigManager,
+            tsAccountManager: tsAccountManager,
+        )
 
         let usernameApiClient = UsernameApiClientImpl(
             networkManager: networkManager,
@@ -1452,7 +1461,7 @@ extension AppSetup.GlobalsContinuation {
                 callServiceSettingsStore: CallServiceSettingsStore(),
                 chatStyleArchiver: backupChatStyleArchiver,
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
-                donationSubscriptionManager: BackupArchive.Wrappers.DonationSubscriptionManager(),
+                donationSubscriptionManager: BackupArchive.Wrappers.DonationSubscriptionManager(donationSubscriptionManager),
                 imageQuality: BackupArchive.Wrappers.ImageQuality(),
                 keyTransparencyManager: keyTransparencyManager,
                 keyTransparencyStore: keyTransparencyStore,
@@ -1743,6 +1752,7 @@ extension AppSetup.GlobalsContinuation {
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             disappearingMessagesExpirationJob: disappearingMessagesExpirationJob,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
+            donationSubscriptionManager: donationSubscriptionManager,
             editManager: editManager,
             editMessageStore: editMessageStore,
             externalPendingIDEALDonationStore: externalPendingIDEALDonationStore,
@@ -1866,6 +1876,7 @@ extension AppSetup.GlobalsContinuation {
             dateProvider: dateProvider,
             db: db,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
+            donationSubscriptionManager: donationSubscriptionManager,
             networkManager: networkManager,
             profileManager: profileManager,
             reachabilityManager: reachabilityManager,

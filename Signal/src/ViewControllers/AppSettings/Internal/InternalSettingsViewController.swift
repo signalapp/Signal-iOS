@@ -246,7 +246,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 TSThread.anyFetchAll(transaction: tx).filter { $0.isGroupThread }.count,
                 TSInteraction.anyCount(transaction: tx),
                 try? Attachment.Record.fetchCount(tx.database),
-                DonationSubscriptionManager.getSubscriberID(transaction: tx),
+                DependenciesBridge.shared.donationSubscriptionManager.getSubscriberID(tx: tx),
                 SSKEnvironment.shared.storageServiceManagerRef.currentManifestVersion(tx: tx),
                 DependenciesBridge.shared.tsAccountManager.getRegistrationId(for: .aci, tx: tx),
                 DependenciesBridge.shared.tsAccountManager.getRegistrationId(for: .pni, tx: tx),

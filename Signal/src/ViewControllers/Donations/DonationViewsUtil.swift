@@ -295,7 +295,7 @@ public enum DonationViewsUtil {
         paymentMethod: DonationPaymentMethod,
     ) async throws {
         return try await DonationViewsUtil.waitForRedemption(paymentMethod: paymentMethod) {
-            try await DonationSubscriptionManager.requestAndRedeemReceipt(
+            try await DependenciesBridge.shared.donationSubscriptionManager.requestAndRedeemReceipt(
                 boostPaymentIntentId: paymentIntentId,
                 amount: amount,
                 paymentProcessor: .stripe,
@@ -313,7 +313,7 @@ public enum DonationViewsUtil {
     ) async throws {
         Logger.info("[Donations] Finalizing new subscription")
 
-        _ = try await DonationSubscriptionManager.finalizeNewSubscription(
+        _ = try await DependenciesBridge.shared.donationSubscriptionManager.finalizeNewSubscription(
             forSubscriberId: subscriberId,
             paymentType: paymentType,
             subscription: newSubscriptionLevel,
@@ -323,7 +323,7 @@ public enum DonationViewsUtil {
         Logger.info("[Donations] Redeeming monthly receipts")
 
         return try await DonationViewsUtil.waitForRedemption(paymentMethod: paymentType.paymentMethod) {
-            try await DonationSubscriptionManager.requestAndRedeemReceipt(
+            try await DependenciesBridge.shared.donationSubscriptionManager.requestAndRedeemReceipt(
                 subscriberId: subscriberId,
                 subscriptionLevel: newSubscriptionLevel.level,
                 priorSubscriptionLevel: priorSubscriptionLevel?.level,

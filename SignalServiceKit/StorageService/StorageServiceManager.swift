@@ -2163,6 +2163,7 @@ class StorageServiceOperation {
                 avatarDefaultColorManager: DependenciesBridge.shared.avatarDefaultColorManager,
                 backupPlanManager: DependenciesBridge.shared.backupPlanManager,
                 backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
+                donationSubscriptionManager: DependenciesBridge.shared.donationSubscriptionManager,
                 dmConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
                 linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
                 localUsernameManager: DependenciesBridge.shared.localUsernameManager,

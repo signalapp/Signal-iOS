@@ -2006,7 +2006,7 @@ private extension CVComponentState.Builder {
         self.giftBadge = GiftBadge(
             messageUniqueId: messageUniqueId,
             otherUserShortName: threadViewModel.shortName ?? threadViewModel.name,
-            cachedBadge: DonationSubscriptionManager.getCachedBadge(level: .giftBadge(level)),
+            cachedBadge: DependenciesBridge.shared.donationSubscriptionManager.getCachedBadge(level: .giftBadge(level)),
             expirationDate: expirationDate,
             redemptionState: giftBadge.redemptionState,
         )

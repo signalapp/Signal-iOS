@@ -51,7 +51,7 @@ class ChatListFYISheetCoordinator {
     private let backupExportJobRunner: BackupExportJobRunner
     private let backupSubscriptionIssueStore: BackupSubscriptionIssueStore
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
-    private let donationSubscriptionManager: DonationSubscriptionManager.Type
+    private let donationSubscriptionManager: DonationSubscriptionManager
     private let db: DB
     private let keyTransparencyStore: KeyTransparencyStore
     private let networkManager: NetworkManager
@@ -61,7 +61,7 @@ class ChatListFYISheetCoordinator {
         backupExportJobRunner: BackupExportJobRunner,
         backupSubscriptionIssueStore: BackupSubscriptionIssueStore,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
-        donationSubscriptionManager: DonationSubscriptionManager.Type,
+        donationSubscriptionManager: DonationSubscriptionManager,
         db: DB,
         keyTransparencyStore: KeyTransparencyStore,
         networkManager: NetworkManager,
@@ -104,13 +104,13 @@ class ChatListFYISheetCoordinator {
         } else if let sheet = shouldShowBadgeIssueSheet(errorMode: .recurringSubscriptionRenewal, tx: tx) {
             return sheet
         } else if
-            let expiredBadgeID = donationSubscriptionManager.mostRecentlyExpiredBadgeID(transaction: tx),
-            donationSubscriptionManager.showExpirySheetOnHomeScreenKey(transaction: tx)
+            let expiredBadgeID = donationSubscriptionManager.mostRecentlyExpiredBadgeID(tx: tx),
+            donationSubscriptionManager.showExpirySheetOnHomeScreenKey(tx: tx)
         {
             return .badgeExpiration(FYISheet.BadgeExpiration(
                 expiredBadgeID: expiredBadgeID,
-                donationSubscriberID: donationSubscriptionManager.getSubscriberID(transaction: tx),
-                mostRecentSubscriptionPaymentMethod: donationSubscriptionManager.getMostRecentSubscriptionPaymentMethod(transaction: tx),
+                donationSubscriberID: donationSubscriptionManager.getSubscriberID(tx: tx),
+                mostRecentSubscriptionPaymentMethod: donationSubscriptionManager.getMostRecentSubscriptionPaymentMethod(tx: tx),
                 probablyHasCurrentSubscription: donationSubscriptionManager.probablyHasCurrentSubscription(tx: tx),
             ))
         } else if backupSubscriptionIssueStore.shouldWarnIAPSubscriptionExpired(tx: tx) {
@@ -335,7 +335,7 @@ class ChatListFYISheetCoordinator {
             await chatListViewController.awaitablePresent(badgeIssueSheet, animated: true)
 
             await db.awaitableWrite { tx in
-                donationSubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: tx)
+                donationSubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, tx: tx)
             }
         } else if SubscriptionBadgeIds.contains(expiredBadgeID) {
             /// We expect to show an error sheet when the subscription fails to
@@ -390,7 +390,7 @@ class ChatListFYISheetCoordinator {
             }
 
             await db.awaitableWrite { tx in
-                donationSubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: tx)
+                donationSubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, tx: tx)
             }
         }
     }

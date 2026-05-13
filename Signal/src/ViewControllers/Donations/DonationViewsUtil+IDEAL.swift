@@ -219,7 +219,7 @@ extension DonationViewsUtil {
     ) async throws -> ProfileBadge? {
         switch donationType {
         case .oneTime:
-            switch try await DonationSubscriptionManager.getCachedBadge(level: .boostBadge).fetchIfNeeded().awaitable() {
+            switch try await DependenciesBridge.shared.donationSubscriptionManager.getCachedBadge(level: .boostBadge).fetchIfNeeded().awaitable() {
             case .notFound:
                 return nil
             case let .profileBadge(profileBadge):

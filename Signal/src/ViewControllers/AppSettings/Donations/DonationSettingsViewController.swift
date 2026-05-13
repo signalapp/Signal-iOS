@@ -120,7 +120,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didLongPressAvatar(sender: UIGestureRecognizer) {
-        let subscriberID = SSKEnvironment.shared.databaseStorageRef.read { DonationSubscriptionManager.getSubscriberID(transaction: $0) }
+        let subscriberID = SSKEnvironment.shared.databaseStorageRef.read { DependenciesBridge.shared.donationSubscriptionManager.getSubscriberID(tx: $0) }
         guard let subscriberID else { return }
 
         UIPasteboard.general.string = subscriberID.asBase64Url
@@ -163,7 +163,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             let resultStore = DependenciesBridge.shared.donationReceiptCredentialResultStore
 
             return (
-                subscriberID: DonationSubscriptionManager.getSubscriberID(transaction: tx),
+                subscriberID: DependenciesBridge.shared.donationSubscriptionManager.getSubscriberID(tx: tx),
                 hasEverRedeemedRecurringSubscriptionBadge: resultStore.getRedemptionSuccessForAnyRecurringSubscription(tx: tx) != nil,
                 recurringSubscriptionReceiptCredentialRequestError: resultStore.getRequestErrorForAnyRecurringSubscription(tx: tx),
                 oneTimeBoostReceiptCredentialRequestError: resultStore.getRequestError(errorMode: .oneTimeBoost, tx: tx),
@@ -175,7 +175,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         }
 
         async let currentSubscription = DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
-        async let donationConfiguration = DonationSubscriptionManager.fetchDonationConfiguration()
+        async let donationConfiguration = DependenciesBridge.shared.donationSubscriptionManager.fetchDonationConfiguration()
 
         do {
             let subscriptionStatus: State.SubscriptionStatus
@@ -451,7 +451,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     static func shouldShowExpiredGiftBadgeSheetWithSneakyTransaction() -> Bool {
         let expiredGiftBadgeID = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            DonationSubscriptionManager.mostRecentlyExpiredGiftBadgeID(transaction: transaction)
+            DependenciesBridge.shared.donationSubscriptionManager.mostRecentlyExpiredGiftBadgeID(tx: transaction)
         }
         guard let expiredGiftBadgeID, GiftBadgeIds.contains(expiredGiftBadgeID) else {
             return false
@@ -465,7 +465,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         }
         Logger.info("[Gifting] Preparing to show gift badge expiration sheet...")
         firstly {
-            DonationSubscriptionManager.getCachedBadge(level: .giftBadge(.signalGift)).fetchIfNeeded()
+            DependenciesBridge.shared.donationSubscriptionManager.getCachedBadge(level: .giftBadge(.signalGift)).fetchIfNeeded()
         }.done { [weak self] cachedValue in
             guard let self else { return }
             guard UIApplication.shared.frontmostViewController == self else { return }
@@ -473,12 +473,12 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 // The server confirmed this badge doesn't exist. This shouldn't happen,
                 // but clear the flag so that we don't keep trying.
                 Logger.warn("[Gifting] Clearing expired badge ID because the server said it didn't exist")
-                DonationSubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
+                DependenciesBridge.shared.donationSubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
                 return
             }
 
             let hasCurrentSubscription = SSKEnvironment.shared.databaseStorageRef.read { tx -> Bool in
-                return DonationSubscriptionManager.probablyHasCurrentSubscription(tx: tx)
+                return DependenciesBridge.shared.donationSubscriptionManager.probablyHasCurrentSubscription(tx: tx)
             }
             Logger.info("[Gifting] Showing badge gift expiration sheet (hasCurrentSubscription: \(hasCurrentSubscription))")
             let sheet = BadgeIssueSheet(badge: profileBadge, mode: .giftBadgeExpired(hasCurrentSubscription: hasCurrentSubscription))
@@ -486,7 +486,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             self.present(sheet, animated: true)
 
             // We've shown it, so don't show it again.
-            DonationSubscriptionManager.clearMostRecentlyExpiredGiftBadgeIDWithSneakyTransaction()
+            DependenciesBridge.shared.donationSubscriptionManager.clearMostRecentlyExpiredGiftBadgeIDWithSneakyTransaction()
         }.cauterize()
     }
 
@@ -728,10 +728,10 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
             }
 
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                DonationSubscriptionManager.setDisplayBadgesOnProfile(
+                DependenciesBridge.shared.donationSubscriptionManager.setDisplayBadgesOnProfile(
                     displayBadgesOnProfile,
                     updateStorageService: true,
-                    transaction: tx,
+                    tx: tx,
                 )
             }
         } catch {

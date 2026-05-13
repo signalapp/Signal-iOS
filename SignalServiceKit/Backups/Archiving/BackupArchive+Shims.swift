@@ -125,36 +125,42 @@ public protocol _MessageBackup_DonationSubscriptionManagerShim {
 }
 
 public class _MessageBackup_DonationSubscriptionManagerWrapper: _MessageBackup_DonationSubscriptionManagerShim {
+    private let donationSubscriptionManager: DonationSubscriptionManager
+
+    public init(_ donationSubscriptionManager: DonationSubscriptionManager) {
+        self.donationSubscriptionManager = donationSubscriptionManager
+    }
+
     public func displayBadgesOnProfile(tx: DBReadTransaction) -> Bool {
-        DonationSubscriptionManager.displayBadgesOnProfile(transaction: tx)
+        donationSubscriptionManager.displayBadgesOnProfile(tx: tx)
     }
 
     public func setDisplayBadgesOnProfile(value: Bool, tx: DBWriteTransaction) {
-        DonationSubscriptionManager.setDisplayBadgesOnProfile(value, updateStorageService: false, transaction: tx)
+        donationSubscriptionManager.setDisplayBadgesOnProfile(value, updateStorageService: false, tx: tx)
     }
 
     public func getSubscriberID(tx: DBReadTransaction) -> Data? {
-        DonationSubscriptionManager.getSubscriberID(transaction: tx)
+        donationSubscriptionManager.getSubscriberID(tx: tx)
     }
 
     public func setSubscriberID(subscriberID: Data, tx: DBWriteTransaction) {
-        DonationSubscriptionManager.setSubscriberID(subscriberID, transaction: tx)
+        donationSubscriptionManager.setSubscriberID(subscriberID, tx: tx)
     }
 
     public func getSubscriberCurrencyCode(tx: DBReadTransaction) -> String? {
-        DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: tx)
+        donationSubscriptionManager.getSubscriberCurrencyCode(tx: tx)
     }
 
     public func setSubscriberCurrencyCode(currencyCode: Currency.Code?, tx: DBWriteTransaction) {
-        DonationSubscriptionManager.setSubscriberCurrencyCode(currencyCode, transaction: tx)
+        donationSubscriptionManager.setSubscriberCurrencyCode(currencyCode, tx: tx)
     }
 
     public func userManuallyCancelledSubscription(tx: DBReadTransaction) -> Bool {
-        DonationSubscriptionManager.userManuallyCancelledSubscription(transaction: tx)
+        donationSubscriptionManager.userManuallyCancelledSubscription(tx: tx)
     }
 
     public func setUserManuallyCancelledSubscription(value: Bool, tx: DBWriteTransaction) {
-        DonationSubscriptionManager.setUserManuallyCancelledSubscription(value, updateStorageService: false, transaction: tx)
+        donationSubscriptionManager.setUserManuallyCancelledSubscription(value, updateStorageService: false, tx: tx)
     }
 }
 

@@ -1168,9 +1168,9 @@ extension OWSUserProfile {
         }
 
         if case .localUser = internalAddress, case .setTo = changes.badges {
-            DonationSubscriptionManager.reconcileBadgeStates(
+            DependenciesBridge.shared.donationSubscriptionManager.reconcileBadgeStates(
                 currentLocalUserProfile: newInstance,
-                transaction: tx,
+                tx: tx,
             )
         }
 

@@ -1194,6 +1194,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let avatarDefaultColorManager: AvatarDefaultColorManager
     private let backupPlanManager: BackupPlanManager
     private let backupSubscriptionManager: BackupSubscriptionManager
+    private let donationSubscriptionManager: DonationSubscriptionManager
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let linkPreviewSettingStore: LinkPreviewSettingStore
     private let localUsernameManager: LocalUsernameManager
@@ -1221,6 +1222,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         avatarDefaultColorManager: AvatarDefaultColorManager,
         backupPlanManager: BackupPlanManager,
         backupSubscriptionManager: BackupSubscriptionManager,
+        donationSubscriptionManager: DonationSubscriptionManager,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         linkPreviewSettingStore: LinkPreviewSettingStore,
         localUsernameManager: LocalUsernameManager,
@@ -1248,6 +1250,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.avatarDefaultColorManager = avatarDefaultColorManager
         self.backupPlanManager = backupPlanManager
         self.backupSubscriptionManager = backupSubscriptionManager
+        self.donationSubscriptionManager = donationSubscriptionManager
         self.dmConfigurationStore = dmConfigurationStore
         self.linkPreviewSettingStore = linkPreviewSettingStore
         self.localUsernameManager = localUsernameManager
@@ -1377,13 +1380,13 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         }
 
         if
-            let donationSubscriberID = DonationSubscriptionManager.getSubscriberID(transaction: transaction),
-            let donationSubscriberCurrencyCode = DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: transaction)
+            let donationSubscriberID = donationSubscriptionManager.getSubscriberID(tx: transaction),
+            let donationSubscriberCurrencyCode = donationSubscriptionManager.getSubscriberCurrencyCode(tx: transaction)
         {
             builder.setDonorSubscriberID(donationSubscriberID)
             builder.setDonorSubscriberCurrencyCode(donationSubscriberCurrencyCode)
         }
-        builder.setDonorSubscriptionManuallyCancelled(DonationSubscriptionManager.userManuallyCancelledSubscription(transaction: transaction))
+        builder.setDonorSubscriptionManuallyCancelled(donationSubscriptionManager.userManuallyCancelledSubscription(tx: transaction))
 
         if let backupSubscriberData = backupSubscriptionManager.getIAPSubscriberData(tx: transaction) {
             var subscriberDataBuilder = StorageServiceProtoAccountRecordIAPSubscriberData.builder()
@@ -1404,7 +1407,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         builder.setReadOnboardingStory(systemStoryManager.isOnboardingStoryRead(transaction: transaction))
         builder.setViewedOnboardingStory(systemStoryManager.isOnboardingStoryViewed(transaction: transaction))
 
-        builder.setDisplayBadgesOnProfile(DonationSubscriptionManager.displayBadgesOnProfile(transaction: transaction))
+        builder.setDisplayBadgesOnProfile(donationSubscriptionManager.displayBadgesOnProfile(tx: transaction))
 
         builder.setKeepMutedChatsArchived(SSKPreferences.shouldKeepMutedChatsArchived(transaction: transaction))
 
@@ -1686,21 +1689,21 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             let donationSubscriberId = record.donorSubscriberID,
             let donationSubscriberCurrencyCode = record.donorSubscriberCurrencyCode
         {
-            if donationSubscriberId != DonationSubscriptionManager.getSubscriberID(transaction: transaction) {
-                DonationSubscriptionManager.setSubscriberID(donationSubscriberId, transaction: transaction)
+            if donationSubscriberId != donationSubscriptionManager.getSubscriberID(tx: transaction) {
+                donationSubscriptionManager.setSubscriberID(donationSubscriberId, tx: transaction)
             }
 
-            if donationSubscriberCurrencyCode != DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
-                DonationSubscriptionManager.setSubscriberCurrencyCode(donationSubscriberCurrencyCode, transaction: transaction)
+            if donationSubscriberCurrencyCode != donationSubscriptionManager.getSubscriberCurrencyCode(tx: transaction) {
+                donationSubscriptionManager.setSubscriberCurrencyCode(donationSubscriberCurrencyCode, tx: transaction)
             }
         }
 
-        let localDonationSubscriptionManuallyCancelled = DonationSubscriptionManager.userManuallyCancelledSubscription(transaction: transaction)
+        let localDonationSubscriptionManuallyCancelled = donationSubscriptionManager.userManuallyCancelledSubscription(tx: transaction)
         if localDonationSubscriptionManuallyCancelled != record.donorSubscriptionManuallyCancelled {
-            DonationSubscriptionManager.setUserManuallyCancelledSubscription(
+            donationSubscriptionManager.setUserManuallyCancelledSubscription(
                 record.donorSubscriptionManuallyCancelled,
                 updateStorageService: false,
-                transaction: transaction,
+                tx: transaction,
             )
         }
 
@@ -1728,12 +1731,12 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             )
         }
 
-        let localDisplayBadgesOnProfile = DonationSubscriptionManager.displayBadgesOnProfile(transaction: transaction)
+        let localDisplayBadgesOnProfile = donationSubscriptionManager.displayBadgesOnProfile(tx: transaction)
         if localDisplayBadgesOnProfile != record.displayBadgesOnProfile {
-            DonationSubscriptionManager.setDisplayBadgesOnProfile(
+            donationSubscriptionManager.setDisplayBadgesOnProfile(
                 record.displayBadgesOnProfile,
                 updateStorageService: false,
-                transaction: transaction,
+                tx: transaction,
             )
         }
 

@@ -386,13 +386,13 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
     private func deleteDonationSubscriptionIfNecessary() async throws {
         let activeSubscriptionId = SSKEnvironment.shared.databaseStorageRef.read {
-            DonationSubscriptionManager.getSubscriberID(transaction: $0)
+            DependenciesBridge.shared.donationSubscriptionManager.getSubscriberID(tx: $0)
         }
         guard let activeSubscriptionId else {
             return
         }
         Logger.info("Found subscriber ID. Canceling subscription...")
-        return try await DonationSubscriptionManager.cancelSubscription(for: activeSubscriptionId)
+        return try await DependenciesBridge.shared.donationSubscriptionManager.cancelSubscription(for: activeSubscriptionId)
     }
 
     private func leaveGroups() async throws {
