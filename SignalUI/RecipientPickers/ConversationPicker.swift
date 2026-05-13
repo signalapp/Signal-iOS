@@ -1370,21 +1370,21 @@ class ConversationPickerCell: ContactTableViewCell {
             )
         }
 
-        let timerView = DisappearingTimerConfigurationView(durationSeconds: disappearingMessagesConfig.durationSeconds)
-        timerView.tintColor = .Signal.secondaryLabel
+        let timerView = DisappearingMessagesChatIndicatorView(durationSeconds: disappearingMessagesConfig.durationSeconds)
+        let timerSize = timerView.systemLayoutSizeFitting(.init(square: .greatestFiniteMagnitude))
 
         let stackView = ManualStackView(name: "stackView")
         let stackConfig = OWSStackView.Config(
             axis: .horizontal,
             alignment: .center,
-            spacing: 0,
+            spacing: 16,
             layoutMargins: .zero,
         )
         let stackMeasurement = stackView.configure(
             config: stackConfig,
             subviews: [timerView, selectionWrapper],
             subviewInfos: [
-                timerView.intrinsicContentSize.asManualSubviewInfo,
+                timerSize.asManualSubviewInfo,
                 selectionView.intrinsicContentSize.asManualSubviewInfo,
             ],
         )
@@ -1572,80 +1572,5 @@ extension ConversationPickerViewController: ContactsViewHelperObserver {
     public func contactsViewHelperDidUpdateContacts() {
         /// Triggers subsequent call to `updateTableContents`.
         self.conversationCollection = self.buildConversationCollection(sectionOptions: sectionOptions)
-    }
-}
-
-// MARK: -
-
-public class DisappearingTimerConfigurationView: UIView {
-
-    private let imageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "timer"))
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-
-    private let label: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 10)
-        label.textAlignment = .center
-        label.minimumScaleFactor = 0.5
-        return label
-    }()
-
-    public required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    public init(durationSeconds: UInt32) {
-        super.init(frame: CGRect.zero)
-
-        directionalLayoutMargins = .init(hMargin: 4, vMargin: 6)
-        sizeToFit()
-
-        label.text = DateUtil.formatDuration(seconds: durationSeconds, useShortFormat: true)
-
-        applyTintColor()
-
-        // Layout
-        addSubview(imageView)
-        addSubview(label)
-
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        label.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
-            imageView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
-
-            label.topAnchor.constraint(equalTo: imageView.bottomAnchor),
-            label.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-            label.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
-            label.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
-        ])
-
-        // Accessibility
-        accessibilityLabel = OWSLocalizedString("DISAPPEARING_MESSAGES_LABEL", comment: "Accessibility label for disappearing messages")
-        let hintFormatString = OWSLocalizedString("DISAPPEARING_MESSAGES_HINT", comment: "Accessibility hint that contains current timeout information")
-        let durationString = String.formatDurationLossless(durationSeconds: durationSeconds)
-        accessibilityHint = String.nonPluralLocalizedStringWithFormat(hintFormatString, durationString)
-    }
-
-    private static let preferredSize: CGFloat = 44
-
-    override public var intrinsicContentSize: CGSize {
-        .square(Self.preferredSize)
-    }
-
-    override public var tintColor: UIColor! {
-        didSet {
-            applyTintColor()
-        }
-    }
-
-    private func applyTintColor() {
-        imageView.tintColor = tintColor
-        label.textColor = tintColor
     }
 }
