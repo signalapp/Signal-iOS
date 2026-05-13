@@ -29,9 +29,9 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
         return view
     }()
 
-    let selectionButton: SelectionButton = {
-        let button = SelectionButton()
-        button.outlineColor = UIColor(dynamicProvider: { _ in Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_gray22 })
+    let selectionButton: MediaSelectionIndicatorView = {
+        let button = MediaSelectionIndicatorView()
+        button.outlineColor = UIColor(light: .ows_gray22, dark: .ows_gray25)
         button.hidesOutlineWhenSelected = true
         return button
     }()

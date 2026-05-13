@@ -69,7 +69,7 @@ class PhotoGridViewCell: UICollectionViewCell {
 
     private var durationLabel: UILabel?
     private var durationLabelBackground: UIView?
-    private let selectionButton = SelectionButton()
+    private let selectionButton = MediaSelectionIndicatorView()
 
     private let highlightedMaskView: UIView
     private let selectedMaskView: UIView

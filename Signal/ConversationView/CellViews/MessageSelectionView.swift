@@ -18,13 +18,8 @@ class MessageSelectionView: ManualLayoutView {
     init() {
         super.init(name: "MessageSelectionView")
 
-        // `checkCircleFill` has some margins baked and needs to be 24 x 24 pts.
         addSubviewToCenterOnSuperview(selectedView, size: .square(Self.circleDiameter))
-
-        // This view has a centered stroke and needs to be made smaller by
-        // the amount of space baked into the `checkCircleFill` and half of the stroke line width.
-        let ringDiameter = Self.circleDiameter - Self.emptyCheckmarkStrokeLineWidth / 2 - 1
-        addSubviewToCenterOnSuperview(unselectedView, size: .square(ringDiameter))
+        addSubviewToCenterOnSuperview(unselectedView, size: .square(Self.circleDiameter))
 
         addLayoutBlock { view in
             guard let selectionView = view as? MessageSelectionView else { return }
@@ -69,60 +64,5 @@ class MessageSelectionView: ManualLayoutView {
 
         selectedView.backgroundColor = conversationStyle.chatColorValue.asChatUIElementTintColor()
         unselectedView.tintColor = UIColor.Signal.tertiaryLabel
-    }
-
-    private class RingView: UIView {
-
-        override class var layerClass: AnyClass {
-            CAShapeLayer.self
-        }
-
-        private var shapeLayer: CAShapeLayer { layer as! CAShapeLayer }
-
-        var lineWidth: CGFloat {
-            get {
-                shapeLayer.lineWidth
-            }
-            set {
-                shapeLayer.lineWidth = newValue
-            }
-        }
-
-        override init(frame: CGRect) {
-            super.init(frame: frame)
-
-            shapeLayer.fillColor = UIColor.clear.cgColor
-        }
-
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-
-        override var frame: CGRect {
-            didSet {
-                if bounds.size != oldValue.size {
-                    updatePath()
-                }
-            }
-        }
-
-        override var tintColor: UIColor! {
-            didSet {
-                updateColor()
-            }
-        }
-
-        override func tintColorDidChange() {
-            super.tintColorDidChange()
-            updateColor()
-        }
-
-        private func updatePath() {
-            shapeLayer.path = UIBezierPath(ovalIn: layer.bounds).cgPath
-        }
-
-        private func updateColor() {
-            shapeLayer.strokeColor = tintColor?.cgColor
-        }
     }
 }

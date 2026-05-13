@@ -1285,12 +1285,11 @@ class ConversationPickerCell: ContactTableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        applySelection()
+        applySelection(animated: animated)
     }
 
-    private func applySelection() {
-        selectedBadgeView.isHidden = !self.isSelected
-        unselectedBadgeView.isHidden = self.isSelected
+    private func applySelection(animated: Bool) {
+        selectionView.setIsSelected(isSelected, animated: animated)
     }
 
     // MARK: - ContactTableViewCell
@@ -1342,11 +1341,8 @@ class ConversationPickerCell: ContactTableViewCell {
 
         super.configure(configuration: configuration, transaction: transaction)
 
-        // Apply theme.
-        unselectedBadgeView.layer.borderColor = Theme.primaryIconColor.cgColor
-
         selectionStyle = .none
-        applySelection()
+        applySelection(animated: false)
     }
 
     var showsSelectionUI: Bool = true {
@@ -1357,19 +1353,7 @@ class ConversationPickerCell: ContactTableViewCell {
 
     // MARK: - Subviews
 
-    let selectionBadgeSize = CGSize(square: 24)
-
-    lazy var selectionView: UIView = {
-        let container = UIView()
-
-        container.addSubview(unselectedBadgeView)
-        unselectedBadgeView.autoPinEdgesToSuperviewEdges()
-
-        container.addSubview(selectedBadgeView)
-        selectedBadgeView.autoPinEdgesToSuperviewEdges()
-
-        return container
-    }()
+    private lazy var selectionView = ListItemSelectionIndicatorView()
 
     func buildAccessoryView(disappearingMessagesConfig: DisappearingMessagesConfigurationRecord?) -> ContactCellAccessoryView {
 
@@ -1382,13 +1366,12 @@ class ConversationPickerCell: ContactTableViewCell {
         else {
             return ContactCellAccessoryView(
                 accessoryView: selectionWrapper,
-                size: selectionBadgeSize,
+                size: selectionView.intrinsicContentSize,
             )
         }
 
         let timerView = DisappearingTimerConfigurationView(durationSeconds: disappearingMessagesConfig.durationSeconds)
-        timerView.tintColor = .ows_middleGray
-        let timerSize = CGSize(square: 44)
+        timerView.tintColor = .Signal.secondaryLabel
 
         let stackView = ManualStackView(name: "stackView")
         let stackConfig = OWSStackView.Config(
@@ -1401,25 +1384,13 @@ class ConversationPickerCell: ContactTableViewCell {
             config: stackConfig,
             subviews: [timerView, selectionWrapper],
             subviewInfos: [
-                timerSize.asManualSubviewInfo,
-                selectionBadgeSize.asManualSubviewInfo,
+                timerView.intrinsicContentSize.asManualSubviewInfo,
+                selectionView.intrinsicContentSize.asManualSubviewInfo,
             ],
         )
         let stackSize = stackMeasurement.measuredSize
         return ContactCellAccessoryView(accessoryView: stackView, size: stackSize)
     }
-
-    lazy var unselectedBadgeView: UIView = {
-        let imageView = UIImageView(image: Theme.iconImage(.circle))
-        imageView.tintColor = .ows_gray25
-        return imageView
-    }()
-
-    lazy var selectedBadgeView: UIView = {
-        let imageView = UIImageView(image: Theme.iconImage(.checkCircleFill))
-        imageView.tintColor = Theme.accentBlueColor
-        return imageView
-    }()
 }
 
 // MARK: -
@@ -1601,5 +1572,80 @@ extension ConversationPickerViewController: ContactsViewHelperObserver {
     public func contactsViewHelperDidUpdateContacts() {
         /// Triggers subsequent call to `updateTableContents`.
         self.conversationCollection = self.buildConversationCollection(sectionOptions: sectionOptions)
+    }
+}
+
+// MARK: -
+
+public class DisappearingTimerConfigurationView: UIView {
+
+    private let imageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "timer"))
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+
+    private let label: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.textAlignment = .center
+        label.minimumScaleFactor = 0.5
+        return label
+    }()
+
+    public required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    public init(durationSeconds: UInt32) {
+        super.init(frame: CGRect.zero)
+
+        directionalLayoutMargins = .init(hMargin: 4, vMargin: 6)
+        sizeToFit()
+
+        label.text = DateUtil.formatDuration(seconds: durationSeconds, useShortFormat: true)
+
+        applyTintColor()
+
+        // Layout
+        addSubview(imageView)
+        addSubview(label)
+
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+
+            label.topAnchor.constraint(equalTo: imageView.bottomAnchor),
+            label.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+            label.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+        ])
+
+        // Accessibility
+        accessibilityLabel = OWSLocalizedString("DISAPPEARING_MESSAGES_LABEL", comment: "Accessibility label for disappearing messages")
+        let hintFormatString = OWSLocalizedString("DISAPPEARING_MESSAGES_HINT", comment: "Accessibility hint that contains current timeout information")
+        let durationString = String.formatDurationLossless(durationSeconds: durationSeconds)
+        accessibilityHint = String.nonPluralLocalizedStringWithFormat(hintFormatString, durationString)
+    }
+
+    private static let preferredSize: CGFloat = 44
+
+    override public var intrinsicContentSize: CGSize {
+        .square(Self.preferredSize)
+    }
+
+    override public var tintColor: UIColor! {
+        didSet {
+            applyTintColor()
+        }
+    }
+
+    private func applyTintColor() {
+        imageView.tintColor = tintColor
+        label.textColor = tintColor
     }
 }
