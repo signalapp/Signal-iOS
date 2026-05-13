@@ -58,27 +58,47 @@ class CollapseSetInteraction: TSInteraction {
     ) -> String? {
         guard
             type == .timerChanges,
-            let last = interactions.last as? TSInfoMessage,
-            let wrapper = last.infoMessageUserInfo?[.groupUpdateItems] as? TSInfoMessage.PersistableGroupUpdateItemsWrapper,
-            let item = wrapper.updateItems.last
+            let last = interactions.last as? TSInfoMessage
         else {
             return nil
         }
 
-        switch item {
-        case .disappearingMessagesEnabledByLocalUser(let durationMs),
-             .disappearingMessagesEnabledByUnknownUser(let durationMs),
-             .disappearingMessagesEnabledByOtherUser(_, let durationMs):
-            return String.formatDurationLossless(durationSeconds: UInt32(durationMs / 1000))
-        case .disappearingMessagesDisabledByLocalUser,
-             .disappearingMessagesDisabledByOtherUser,
-             .disappearingMessagesDisabledByUnknownUser:
-            return OWSLocalizedString(
+        // Group info message
+        if
+            let wrapper = last.infoMessageUserInfo?[.groupUpdateItems] as? TSInfoMessage.PersistableGroupUpdateItemsWrapper,
+            let item = wrapper.updateItems.last
+        {
+            switch item {
+            case .disappearingMessagesEnabledByLocalUser(let durationMs),
+                 .disappearingMessagesEnabledByUnknownUser(let durationMs),
+                 .disappearingMessagesEnabledByOtherUser(_, let durationMs):
+                return timerDescription(durationSeconds: UInt32(clamping: durationMs / 1000))
+            case .disappearingMessagesDisabledByLocalUser,
+                 .disappearingMessagesDisabledByOtherUser,
+                 .disappearingMessagesDisabledByUnknownUser:
+                return timerDescription(durationSeconds: nil)
+            default:
+                return nil
+            }
+        }
+
+        // Individual info message
+        if let infoMessage = last as? OWSDisappearingConfigurationUpdateInfoMessage {
+            return timerDescription(durationSeconds: infoMessage.configurationDurationSeconds)
+        }
+
+        return nil
+    }
+
+    /// Disappearing message timer description. `nil` means disabled timer.
+    private static func timerDescription(durationSeconds: UInt32?) -> String {
+        if let durationSeconds, durationSeconds > 0 {
+            String.formatDurationLossless(durationSeconds: durationSeconds)
+        } else {
+            OWSLocalizedString(
                 "COLLAPSE_SET_TIMER_DISABLED",
                 comment: "Short label shown in a collapsed timer-changes set indicating the timer is now disabled.",
             )
-        default:
-            return nil
         }
     }
 

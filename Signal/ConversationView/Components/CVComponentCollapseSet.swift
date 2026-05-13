@@ -293,7 +293,7 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
             if let finalTimerDescription {
                 finalTimer = finalTimerDescription
             } else {
-                owsFailBeta("disappearing message timer collapse set does not have final timer description")
+                owsFailDebug("disappearing message timer collapse set does not have final timer description")
                 finalTimer = ""
             }
             return String(
