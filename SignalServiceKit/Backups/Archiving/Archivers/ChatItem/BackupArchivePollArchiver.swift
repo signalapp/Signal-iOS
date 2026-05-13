@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 
 class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
 
     private let pollManager: PollMessageManager
     private let db: DB
@@ -56,11 +56,11 @@ class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
             for vote in option.votes {
                 var pollVoteProto = BackupProto_Poll.PollOption.PollVote()
                 guard let voterId = context.recipientContext.recipientId(forRecipientDbRowId: vote.voteAuthorId) else {
-                    return .messageFailure([.archiveFrameError(.pollVoteAuthorSignalRecipientIdMissing, BackupArchive.InteractionUniqueId(interaction: message))])
+                    return .messageFailure([.archiveFrameError(.pollVoteAuthorSignalRecipientIdMissing)])
                 }
 
                 guard vote.voteCount >= 0 else {
-                    return .messageFailure([.archiveFrameError(.pollVoteCountInvalid, BackupArchive.InteractionUniqueId(interaction: message))])
+                    return .messageFailure([.archiveFrameError(.pollVoteCountInvalid)])
                 }
 
                 pollVoteProto.voterID = voterId.value
@@ -105,14 +105,12 @@ class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
 
     func restorePoll(
         _ poll: RestoredMessageBody.Poll,
-        chatItemId: BackupArchive.ChatItemId,
         message: TSMessage,
         context: BackupArchive.RecipientRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<Void> {
         let restorePollResult = pollManager.restorePollFromBackup(
             pollBackupData: poll.poll,
             message: message,
-            chatItemId: chatItemId,
             tx: context.tx,
         )
 

@@ -528,8 +528,7 @@ extension PollStore {
         message: TSMessage,
         interactionId: Int64,
         transaction: DBReadTransaction,
-    ) -> BackupArchive.ArchiveSingleFrameResult<BackupsPollData, BackupArchive.InteractionUniqueId> {
-        let interactionUniqueId = BackupArchive.InteractionUniqueId(interaction: message)
+    ) -> BackupArchive.ArchiveSingleFrameResult<BackupsPollData> {
         var poll: PollRecord
         var pollId: Int64
         do {
@@ -539,12 +538,12 @@ extension PollStore {
                     .fetchOne(transaction.database),
                 let wrappedPollId = wrappedPoll.id
             else {
-                return .failure(.archiveFrameError(.pollMissing, interactionUniqueId))
+                return .failure(.archiveFrameError(.pollMissing))
             }
             poll = wrappedPoll
             pollId = wrappedPollId
         } catch {
-            return .failure(.archiveFrameError(.invalidPollRecordDatabaseRow, interactionUniqueId))
+            return .failure(.archiveFrameError(.invalidPollRecordDatabaseRow))
         }
 
         var optionRows: [PollOptionRecord]
@@ -553,7 +552,7 @@ extension PollStore {
                 .filter(PollOptionRecord.Columns.pollId == pollId)
                 .fetchAll(transaction.database)
         } catch {
-            return .failure(.archiveFrameError(.invalidPollOptionRecordDatabaseRow, interactionUniqueId))
+            return .failure(.archiveFrameError(.invalidPollOptionRecordDatabaseRow))
         }
 
         var voteRows: [PollVoteRecord]
@@ -563,7 +562,7 @@ extension PollStore {
                 .filter(optionRowIds.contains(PollVoteRecord.Columns.optionId))
                 .fetchAll(transaction.database)
         } catch {
-            return .failure(.archiveFrameError(.invalidPollVoteRecordDatabaseRow, interactionUniqueId))
+            return .failure(.archiveFrameError(.invalidPollVoteRecordDatabaseRow))
         }
 
         let optionIdToVotes = Dictionary(grouping: voteRows, by: { $0.optionId })
@@ -571,7 +570,7 @@ extension PollStore {
         var optionData: [BackupsPollData.BackupsPollOption] = []
         for optionRow in optionRows {
             guard let optionId = optionRow.id else {
-                return .failure(.archiveFrameError(.pollOptionIdMissing, interactionUniqueId))
+                return .failure(.archiveFrameError(.pollOptionIdMissing))
             }
             var votes: [BackupsPollData.BackupsPollOption.BackupsPollVote] = []
             for voteRow in optionIdToVotes[optionId] ?? [] {

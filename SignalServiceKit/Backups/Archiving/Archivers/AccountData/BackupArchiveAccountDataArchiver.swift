@@ -6,46 +6,8 @@
 import LibSignalClient
 
 extension BackupArchive {
-    /// An identifier for the ``BackupProto_AccountData`` backup frame.
-    ///
-    /// Uses a singleton pattern, as there is only ever one account data frame
-    /// in a backup.
-    public struct AccountDataId: BackupArchive.LoggableId {
-        static let localUser = AccountDataId()
-
-        static func forCustomChatColorError(chatColorId: CustomChatColorId) -> Self {
-            return .init(chatColorId)
-        }
-
-        /// Since custom chat colors are included in account data, errors can be nested
-        /// with an account data -> chat color id
-        private let chatColorId: CustomChatColorId?
-
-        private init(_ chatColorId: CustomChatColorId? = nil) {
-            self.chatColorId = chatColorId
-        }
-
-        // MARK: BackupArchive.LoggableId
-
-        public var typeLogString: String {
-            if chatColorId != nil {
-                return "BackupProto_AccountData_CustomChatColor"
-            } else {
-                return "BackupProto_AccountData"
-            }
-        }
-
-        public var idLogString: String {
-            if let chatColorId {
-                return "localUser_\(chatColorId.value)"
-            } else {
-                return "localUser"
-            }
-        }
-    }
-
-    public typealias ArchiveAccountDataResult = ArchiveSingleFrameResult<Void, AccountDataId>
-    public typealias RestoreAccountDataResult = RestoreFrameResult<BackupArchive.AccountDataId>
+    public typealias ArchiveAccountDataResult = ArchiveSingleFrameResult<Void>
+    public typealias RestoreAccountDataResult = RestoreFrameResult
 }
 
 /// Archives the ``BackupProto_AccountData`` frame.
@@ -146,10 +108,10 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     ) -> BackupArchive.ArchiveAccountDataResult {
         return context.bencher.processFrame { frameBencher in
             guard let localProfile = profileManager.getUserProfileForLocalUser(tx: context.tx) else {
-                return .failure(.archiveFrameError(.missingLocalProfile, .localUser))
+                return .failure(.archiveFrameError(.missingLocalProfile))
             }
             guard let profileKeyData = localProfile.profileKey?.keyData else {
-                return .failure(.archiveFrameError(.missingLocalProfileKey, .localUser))
+                return .failure(.archiveFrameError(.missingLocalProfileKey))
             }
 
             var accountData = BackupProto_AccountData()
@@ -215,9 +177,8 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                 accountData.iosSpecificSettings = iosSpecificSettings
             }
 
-            let error = Self.writeFrameToStream(
+            let error: BackupArchive.ArchiveFrameError? = Self.writeFrameToStream(
                 stream,
-                objectId: BackupArchive.AccountDataId.localUser,
                 frameBencher: frameBencher,
             ) {
                 var frame = BackupProto_Frame()
@@ -251,7 +212,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
 
     private func buildAccountSettingsProto(
         context: BackupArchive.CustomChatColorArchivingContext,
-    ) -> BackupArchive.ArchiveSingleFrameResult<BackupProto_AccountData.AccountSettings, BackupArchive.AccountDataId> {
+    ) -> BackupArchive.ArchiveSingleFrameResult<BackupProto_AccountData.AccountSettings> {
 
         // Fetch all the account settings
         let readReceipts = receiptManager.areReadReceiptsEnabled(tx: context.tx)
@@ -388,13 +349,10 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         chatItemContext: BackupArchive.ChatItemRestoringContext,
     ) -> BackupArchive.RestoreAccountDataResult {
         guard let profileKey = Aes256Key(data: accountData.profileKey) else {
-            return .failure([.restoreFrameError(
-                .invalidProtoData(.invalidLocalProfileKey),
-                .localUser,
-            )])
+            return .failure([.restoreFrameError(.invalidProtoData(.invalidLocalProfileKey))])
         }
 
-        var partialErrors = [BackupArchive.RestoreFrameError<BackupArchive.AccountDataId>]()
+        var partialErrors = [BackupArchive.RestoreFrameError]()
 
         // Given name and profile key are required for the local profile. The
         // rest are optional.
@@ -445,10 +403,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                 UInt8(exactly: accountData.accountSettings.backupTier)
                     .map(BackupLevel.init(rawValue:))
             else {
-                return .failure([.restoreFrameError(
-                    .invalidProtoData(.invalidBackupTier),
-                    .localUser,
-                )])
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidBackupTier))])
             }
             backupLevel = parsedLevel
         } else {
@@ -672,7 +627,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             {
                 localUsernameManager.setLocalUsername(username: username, usernameLink: linkData, tx: context.tx)
             } else {
-                return .failure([.restoreFrameError(.invalidProtoData(.invalidLocalUsernameLink), .localUser)])
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidLocalUsernameLink))])
             }
 
             localUsernameManager.setUsernameLinkQRCodeColor(color: usernameLink.color.qrCodeColor, tx: context.tx)

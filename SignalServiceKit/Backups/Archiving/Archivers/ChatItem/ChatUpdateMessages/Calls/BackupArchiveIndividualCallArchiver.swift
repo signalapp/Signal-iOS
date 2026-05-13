@@ -88,7 +88,7 @@ final class BackupArchiveIndividualCallArchiver {
             }
         }()
 
-        var partialErrors = [BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>]()
+        var partialErrors = [BackupArchive.ArchiveFrameError]()
 
         /// Prefer the call record timestamp if available, since it'll have the
         /// more accurate timestamp. (In practice this won't matter, since for
@@ -160,10 +160,7 @@ final class BackupArchiveIndividualCallArchiver {
         case .contact(let _contactThread):
             contactThread = _contactThread
         case .groupV2:
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.individualCallNotInContactThread),
-                chatItem.id,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.individualCallNotInContactThread))])
         }
 
         let callRecordDirection: CallRecord.CallDirection
@@ -246,7 +243,7 @@ final class BackupArchiveIndividualCallArchiver {
                 context: context,
             )
         } catch let error {
-            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error))])
         }
 
         if individualCall.hasCallID {
@@ -269,7 +266,7 @@ final class BackupArchiveIndividualCallArchiver {
                     try callRecordStore.markAsRead(callRecord: callRecord, tx: context.tx)
                 }
             } catch {
-                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error))])
             }
         }
 

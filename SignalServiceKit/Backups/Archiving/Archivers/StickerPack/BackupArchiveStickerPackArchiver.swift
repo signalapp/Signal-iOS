@@ -7,20 +7,11 @@ import GRDB
 
 public extension BackupArchive {
     /// An identifier for a ``BackupProto_StickerPack`` backup frame.
-    struct StickerPackId: BackupArchive.LoggableId {
+    struct StickerPackId {
         let value: Data
 
         init(_ value: Data) {
             self.value = value
-        }
-
-        // MARK: BackupArchive.LoggableId
-
-        public var typeLogString: String { "BackupProto_StickPack" }
-        public var idLogString: String {
-            /// Since sticker pack IDs are a cross-client identifier, we don't
-            /// want to log them directly.
-            return "\(value.hashValue)"
         }
     }
 }
@@ -29,9 +20,9 @@ public extension BackupArchive {
 
 public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
     typealias StickerPackId = BackupArchive.StickerPackId
-    typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult<StickerPackId>
-    typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<StickerPackId>
-    typealias RestoreFrameResult = BackupArchive.RestoreFrameResult<StickerPackId>
+    typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult
+    typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
+    typealias RestoreFrameResult = BackupArchive.RestoreFrameResult
 
     private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
 
@@ -67,7 +58,6 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
                 guard !handledPacks.contains(installedStickerPack.packId) else { return }
                 let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
                     stream,
-                    objectId: StickerPackId(installedStickerPack.packId),
                     frameBencher: frameBencher,
                 ) {
                     var stickerPack = BackupProto_StickerPack()
@@ -123,7 +113,6 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
                     guard !handledPacks.contains(record.packId) else { return }
                     let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
                         stream,
-                        objectId: StickerPackId(record.packId),
                         frameBencher: frameBencher,
                     ) {
                         var stickerPack = BackupProto_StickerPack()
@@ -173,7 +162,7 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
                 tx: context.tx,
             )
         } catch {
-            return .failure([.restoreFrameError(.databaseInsertionFailed(error), StickerPackId(stickerPack.packID))])
+            return .failure([.restoreFrameError(.databaseInsertionFailed(error))])
         }
         return .success
     }

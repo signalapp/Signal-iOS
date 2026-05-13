@@ -229,10 +229,7 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
             case .updateMessage(let updateMessage):
                 chatUpdateMessage = updateMessage
             default:
-                return .messageFailure([.restoreFrameError(
-                    .developerError(OWSAssertionError("Non-chat update!")),
-                    chatItem.id,
-                )])
+                return .messageFailure([.restoreFrameError(.developerError(OWSAssertionError("Non-chat update!")))])
             }
         }
 

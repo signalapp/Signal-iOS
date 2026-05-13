@@ -12,11 +12,11 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
 
-    typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult<RecipientAppId>
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<RecipientAppId>
+    typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
 
-    typealias RestoreFrameResult = BackupArchive.RestoreFrameResult<RecipientId>
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<RecipientId>
+    typealias RestoreFrameResult = BackupArchive.RestoreFrameResult
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let avatarDefaultColorManager: AvatarDefaultColorManager
     private let avatarFetcher: BackupArchiveAvatarFetcher
@@ -88,7 +88,6 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         ) {
             let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
                 stream,
-                objectId: .contact(contactAddress),
                 frameBencher: frameBencher,
                 frameBuilder: {
                     let recipientAddress = contactAddress.asArchivingAddress()
@@ -167,10 +166,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                         context: context,
                     ).isHidden
                 } catch let error {
-                    errors.append(.archiveFrameError(
-                        .unableToReadStoryContextAssociatedData(error),
-                        .contact(contactAddress),
-                    ))
+                    errors.append(.archiveFrameError(.unableToReadStoryContextAssociatedData(error)))
                 }
             }
 
@@ -180,10 +176,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     .filter(Column(OWSRecipientIdentity.CodingKeys.uniqueId) == recipient.uniqueId)
                     .fetchOne(context.tx.database)
             } catch let error {
-                errors.append(.archiveFrameError(
-                    .unableToFetchRecipientIdentity(error),
-                    .contact(contactAddress),
-                ))
+                errors.append(.archiveFrameError(.unableToFetchRecipientIdentity(error)))
                 return
             }
 
@@ -410,12 +403,11 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
     /// to find a Recipient for the thread's address; in other words there was not a
     /// corresponding recipient that we archived earlier.
     func archiveContactRecipientForOrphanedContactThread(
-        _ contactThread: TSContactThread,
         address: BackupArchive.ContactAddress,
         stream: BackupArchiveProtoOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.ChatArchivingContext,
-    ) -> BackupArchive.ArchiveSingleFrameResult<RecipientId, BackupArchive.ThreadUniqueId> {
+    ) -> BackupArchive.ArchiveSingleFrameResult<RecipientId> {
         let existingRecipient = recipientStore.fetchRecipient(
             for: address,
             tx: context.tx,
@@ -423,10 +415,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         // If we have an existing recipient, this is an error. It means we
         // _should_ have found the recipient on the context, but did not.
         guard existingRecipient == nil else {
-            return .failure(.archiveFrameError(
-                .referencedRecipientIdMissing(address.asArchivingAddress()),
-                .init(thread: contactThread),
-            ))
+            return .failure(.archiveFrameError(.referencedRecipientIdMissing(address.asArchivingAddress())))
         }
 
         // We don't know if they're registered; if we did there
@@ -460,10 +449,9 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         let recipientAddress = address.asArchivingAddress()
         let recipientId = context.recipientContext.assignRecipientId(to: recipientAddress)
 
-        let maybeError: BackupArchive.ArchiveFrameError<BackupArchive.ThreadUniqueId>?
+        let maybeError: BackupArchive.ArchiveFrameError?
         maybeError = Self.writeFrameToStream(
             stream,
-            objectId: .init(thread: contactThread),
             frameBencher: frameBencher,
             frameBuilder: {
                 var recipient = BackupProto_Recipient()
@@ -582,7 +570,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             _ error: RestoreFrameError.ErrorType,
             line: UInt = #line,
         ) -> RestoreFrameResult {
-            return .failure([.restoreFrameError(error, recipient.recipientId, line: line)])
+            return .failure([.restoreFrameError(error, line: line)])
         }
 
         let isRegistered: Bool
@@ -701,7 +689,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             )
             recipientStore.didInsertRecipient(recipient, tx: context.tx)
         } catch {
-            return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId)])
+            return .failure([.restoreFrameError(.databaseInsertionFailed(error))])
         }
         context.setRecipientDbRowId(recipient.id, forBackupRecipientId: recipientProto.recipientId)
 
@@ -724,7 +712,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     // 'keyBytes', which drops the keyType prefix
                     .publicKey.keyBytes
             } catch {
-                return .failure([.restoreFrameError(.invalidProtoData(.invalidContactIdentityKey), recipientProto.recipientId)])
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidContactIdentityKey))])
             }
 
             let verificationState: OWSVerificationState
@@ -752,10 +740,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             do {
                 try identity.insert(context.tx.database)
             } catch {
-                return .failure([.restoreFrameError(
-                    .databaseInsertionFailed(error),
-                    recipientProto.recipientId,
-                )])
+                return .failure([.restoreFrameError(.databaseInsertionFailed(error))])
             }
         }
 
@@ -811,7 +796,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             return restoreFrameError(.databaseInsertionFailed(error))
         }
 
-        var partialErrors = [BackupArchive.RestoreFrameError<RecipientId>]()
+        var partialErrors = [BackupArchive.RestoreFrameError]()
 
         // We only need to active hide, since unhidden is the default.
         if contactProto.hideStory, let aci = backupContactAddress.aci {
@@ -823,7 +808,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                 )
             } catch let error {
                 // Don't fail entirely; the story will just be unhidden.
-                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId))
+                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error)))
             }
         }
 
@@ -870,7 +855,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     tx: context.tx,
                 )
             } catch let error {
-                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId))
+                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error)))
             }
         }
 

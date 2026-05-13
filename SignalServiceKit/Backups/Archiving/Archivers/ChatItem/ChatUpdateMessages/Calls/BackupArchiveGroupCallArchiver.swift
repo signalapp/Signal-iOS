@@ -49,17 +49,14 @@ final class BackupArchiveGroupCallArchiver {
             case .group(.ringingMissed): groupCallState = .missed
             case .group(.ringingMissedNotificationProfile): groupCallState = .missedNotificationProfile
             case .individual, .callLink:
-                return .messageFailure([.archiveFrameError(
-                    .groupCallRecordHadInvalidCallStatus,
-                    BackupArchive.InteractionUniqueId(interaction: groupCallInteraction),
-                )])
+                return .messageFailure([.archiveFrameError(.groupCallRecordHadInvalidCallStatus)])
             }
         } else {
             // This call predates the introduction of call records.
             groupCallState = .generic
         }
 
-        var partialErrors = [BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>]()
+        var partialErrors = [BackupArchive.ArchiveFrameError]()
 
         /// The call record will store the best record of when the call began,
         /// since we update its timestamp if we learn the group call started
@@ -157,17 +154,13 @@ final class BackupArchiveGroupCallArchiver {
         case .groupV2(let _groupThread):
             groupThread = _groupThread
         case .contact:
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.groupCallNotInGroupThread),
-                chatItem.id,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.groupCallNotInGroupThread))])
         }
 
         let startedCallAci: Aci?
         if groupCall.hasStartedCallRecipientID {
             switch context.recipientContext.getAci(
                 recipientId: BackupArchive.RecipientId(value: groupCall.startedCallRecipientID),
-                forChatItemId: chatItem.id,
             ) {
             case .found(let aci): startedCallAci = aci
             case .missing(let restoreFrameError): return .messageFailure([restoreFrameError])
@@ -194,7 +187,7 @@ final class BackupArchiveGroupCallArchiver {
                 context: context,
             )
         } catch let error {
-            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error))])
         }
 
         if groupCall.hasCallID {
@@ -235,7 +228,6 @@ final class BackupArchiveGroupCallArchiver {
             if groupCall.hasRingerRecipientID {
                 switch context.recipientContext.getAci(
                     recipientId: BackupArchive.RecipientId(value: groupCall.ringerRecipientID),
-                    forChatItemId: chatItem.id,
                 ) {
                 case .found(let aci): groupCallRingerAci = aci
                 case .missing(let restoreFrameError): return .messageFailure([restoreFrameError])
@@ -269,7 +261,7 @@ final class BackupArchiveGroupCallArchiver {
                     try callRecordStore.markAsRead(callRecord: callRecord, tx: context.tx)
                 }
             } catch {
-                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error))])
             }
         }
 
@@ -280,18 +272,14 @@ final class BackupArchiveGroupCallArchiver {
 private extension BackupArchive.RecipientRestoringContext {
     enum RecipientIdResult {
         case found(Aci)
-        case missing(BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>)
+        case missing(BackupArchive.RestoreFrameError)
     }
 
     func getAci(
         recipientId: BackupArchive.RecipientId,
-        forChatItemId chatItemId: BackupArchive.ChatItemId,
     ) -> RecipientIdResult {
         guard let recipientAddress: Address = self[recipientId] else {
-            return .missing(.restoreFrameError(
-                .invalidProtoData(.recipientIdNotFound(recipientId)),
-                chatItemId,
-            ))
+            return .missing(.restoreFrameError(.invalidProtoData(.recipientIdNotFound(recipientId))))
         }
 
         switch recipientAddress {
@@ -301,10 +289,7 @@ private extension BackupArchive.RecipientRestoringContext {
             guard let aci = contactAddress.aci else { fallthrough }
             return .found(aci)
         case .group, .distributionList, .releaseNotesChannel, .callLink:
-            return .missing(.restoreFrameError(
-                .invalidProtoData(.groupCallRecipientIdNotAnAci(recipientId)),
-                chatItemId,
-            ))
+            return .missing(.restoreFrameError(.invalidProtoData(.groupCallRecipientIdNotAnAci(recipientId))))
         }
     }
 }

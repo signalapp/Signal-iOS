@@ -6,8 +6,8 @@
 import LibSignalClient
 
 class BackupArchiveTSIncomingMessageArchiver {
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let contentsArchiver: BackupArchiveTSMessageContentsArchiver
     private let editHistoryArchiver: BackupArchiveTSMessageEditHistoryArchiver<TSIncomingMessage>
@@ -114,12 +114,11 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             )
         else {
             // This is an invalid message.
-            return .messageFailure([.archiveFrameError(.invalidIncomingMessageAuthor, incomingMessage.uniqueInteractionId)])
+            return .messageFailure([.archiveFrameError(.invalidIncomingMessageAuthor)])
         }
         guard let author = context.recipientContext[authorAddress.asArchivingAddress()] else {
             return .messageFailure([.archiveFrameError(
                 .referencedRecipientIdMissing(authorAddress.asArchivingAddress()),
-                incomingMessage.uniqueInteractionId,
             )])
         }
 
@@ -155,10 +154,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             // but have been observed in real-world databases.
             // If we encounter these, fudge them a bit and pretend
             // they were outgoing messages.
-            partialErrors.append(.archiveFrameError(
-                .incomingMessageFromSelf,
-                incomingMessage.uniqueInteractionId,
-            ))
+            partialErrors.append(.archiveFrameError(.incomingMessageFromSelf))
             let pair = buildSwizzledOutgoingNoteToSelfMessage()
             directionalDetails = pair.0
             detailsAuthor = pair.1
@@ -167,10 +163,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             // 1. Messages not from self are not allowed in note to self
             // 2. Incoming messages from self are not allowed in general
             // So we swizzle this into an outgoing message from self.
-            partialErrors.append(.archiveFrameError(
-                .nonSelfAuthorInNoteToSelf,
-                incomingMessage.uniqueInteractionId,
-            ))
+            partialErrors.append(.archiveFrameError(.nonSelfAuthorInNoteToSelf))
             let pair = buildSwizzledOutgoingNoteToSelfMessage()
             directionalDetails = pair.0
             detailsAuthor = pair.1
@@ -283,7 +276,6 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
         case .outgoing, .directionless:
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.revisionOfIncomingMessageMissingIncomingDetails),
-                chatItem.id,
             )])
         case nil:
             return .unrecognizedEnum(BackupArchive.UnrecognizedEnumError(
@@ -305,19 +297,13 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
                 fallthrough
             }
         default:
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.incomingMessageNotFromAciOrE164),
-                chatItem.id,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.incomingMessageNotFromAciOrE164))])
         }
 
         let expiresInSeconds: UInt32
         if chatItem.hasExpiresInMs {
             guard let _expiresInSeconds: UInt32 = .msToSecs(chatItem.expiresInMs) else {
-                return .messageFailure([.restoreFrameError(
-                    .invalidProtoData(.expirationTimerOverflowedLocalType),
-                    chatItem.id,
-                )])
+                return .messageFailure([.restoreFrameError(.invalidProtoData(.expirationTimerOverflowedLocalType))])
             }
             expiresInSeconds = _expiresInSeconds
         } else {
@@ -362,7 +348,6 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
         switch contentsArchiver
             .restoreContents(
                 chatItemItem,
-                chatItemId: chatItem.id,
                 chatThread: chatThread,
                 context: context,
             )
@@ -468,7 +453,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
                 context: context,
             )
         } catch let error {
-            return .messageFailure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            return .messageFailure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error))])
         }
 
         if authorAci == nil {
@@ -479,7 +464,6 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             .restoreDownstreamObjects(
                 message: incomingMessage,
                 thread: chatThread,
-                chatItemId: chatItem.id,
                 pinDetails: chatItem.hasPinDetails ? chatItem.pinDetails : nil,
                 restoredContents: contents,
                 context: context,
@@ -513,10 +497,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
         } catch {
             return .partialRestore(
                 incomingMessage,
-                [.restoreFrameError(
-                    .databaseInsertionFailed(error),
-                    chatItem.id,
-                )] + partialErrors,
+                [.restoreFrameError(.databaseInsertionFailed(error))] + partialErrors,
             )
         }
 

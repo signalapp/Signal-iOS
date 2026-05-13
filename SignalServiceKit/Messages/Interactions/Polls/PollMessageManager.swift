@@ -484,9 +484,9 @@ extension PollMessageManager {
         message: TSMessage,
         messageRowId: Int64,
         tx: DBReadTransaction,
-    ) -> BackupArchive.ArchiveSingleFrameResult<BackupsPollData, BackupArchive.InteractionUniqueId> {
+    ) -> BackupArchive.ArchiveSingleFrameResult<BackupsPollData> {
         guard let question = message.body?.nilIfEmpty else {
-            return .failure(.archiveFrameError(.pollMessageMissingQuestionBody, BackupArchive.InteractionUniqueId(interaction: message)))
+            return .failure(.archiveFrameError(.pollMessageMissingQuestionBody))
         }
 
         return pollStore.backupPollData(
@@ -500,14 +500,10 @@ extension PollMessageManager {
     public func restorePollFromBackup(
         pollBackupData: BackupsPollData,
         message: TSMessage,
-        chatItemId: BackupArchive.ChatItemId,
         tx: DBWriteTransaction,
-    ) -> BackupArchive.RestoreFrameResult<BackupArchive.ChatItemId> {
+    ) -> BackupArchive.RestoreFrameResult {
         guard let interactionId = message.grdbId?.int64Value else {
-            return .failure([.restoreFrameError(
-                .databaseModelMissingRowId(modelClass: type(of: message)),
-                chatItemId,
-            )])
+            return .failure([.restoreFrameError(.databaseModelMissingRowId(modelClass: type(of: message)))])
         }
 
         do {
@@ -518,13 +514,10 @@ extension PollMessageManager {
                 transaction: tx,
             )
         } catch {
-            return .failure([.restoreFrameError(
-                .pollCreateFailedToInsertInDatabase,
-                chatItemId,
-            )])
+            return .failure([.restoreFrameError(.pollCreateFailedToInsertInDatabase)])
         }
 
-        var partialErrors = [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]()
+        var partialErrors = [BackupArchive.RestoreFrameError]()
 
         var votesByAuthorId: [Int64: [OWSPoll.OptionIndex]] = [:]
         var voteCountByAuthorId: [Int64: Int32] = [:]
@@ -534,10 +527,7 @@ extension PollMessageManager {
                 votesByAuthorId[vote.voteAuthorId, default: []].append(OWSPoll.OptionIndex(index))
                 if let currentVoteCount = voteCountByAuthorId[vote.voteAuthorId] {
                     if vote.voteCount != currentVoteCount {
-                        partialErrors += [.restoreFrameError(
-                            .invalidProtoData(.pollVoteCountRepeated),
-                            chatItemId,
-                        )]
+                        partialErrors += [.restoreFrameError(.invalidProtoData(.pollVoteCountRepeated))]
                         continue
                     }
                 } else {
@@ -548,10 +538,7 @@ extension PollMessageManager {
 
         for (voteAuthorId, optionIndices) in votesByAuthorId {
             guard let voteCount = voteCountByAuthorId[voteAuthorId] else {
-                partialErrors += [.restoreFrameError(
-                    .invalidProtoData(.noPollVoteCountForAuthor),
-                    chatItemId,
-                )]
+                partialErrors += [.restoreFrameError(.invalidProtoData(.noPollVoteCountForAuthor))]
                 continue
             }
 
@@ -564,10 +551,7 @@ extension PollMessageManager {
                     transaction: tx,
                 )
             } catch {
-                partialErrors += [.restoreFrameError(
-                    .pollVoteFailedToInsertInDatabase,
-                    chatItemId,
-                )]
+                partialErrors += [.restoreFrameError(.pollVoteFailedToInsertInDatabase)]
             }
         }
 
@@ -576,10 +560,7 @@ extension PollMessageManager {
                 try pollStore.terminatePoll(interactionId: interactionId, transaction: tx)
             }
         } catch {
-            partialErrors += [.restoreFrameError(
-                .pollTerminateFailedToInsertInDatabase,
-                chatItemId,
-            )]
+            partialErrors += [.restoreFrameError(.pollTerminateFailedToInsertInDatabase)]
         }
 
         if partialErrors.isEmpty {

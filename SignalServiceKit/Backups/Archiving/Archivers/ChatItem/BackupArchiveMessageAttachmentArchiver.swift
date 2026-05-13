@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 
 class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
@@ -102,13 +102,12 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
     func restoreBodyAttachments(
         _ attachments: [BackupProto_MessageAttachment],
-        chatItemId: BackupArchive.ChatItemId,
         messageRowId: Int64,
         message: TSMessage,
         thread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<Void> {
-        var uuidErrors = [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>.ErrorType.InvalidProtoDataError]()
+        var uuidErrors = [BackupArchive.RestoreFrameError.ErrorType.InvalidProtoDataError]()
         let withUnwrappedUUIDs: [(BackupProto_MessageAttachment, UUID?)]
         withUnwrappedUUIDs = attachments.map { attachment in
             if attachment.hasClientUuid {
@@ -123,7 +122,7 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
         }
         guard uuidErrors.isEmpty else {
             return .messageFailure(uuidErrors.map {
-                .restoreFrameError(.invalidProtoData($0), chatItemId)
+                .restoreFrameError(.invalidProtoData($0))
             })
         }
 
@@ -146,14 +145,12 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
         return restoreAttachments(
             ownedAttachments,
-            chatItemId: chatItemId,
             context: context,
         )
     }
 
     func restoreOversizeTextAttachment(
         _ attachment: BackupProto_FilePointer,
-        chatItemId: BackupArchive.ChatItemId,
         messageRowId: Int64,
         message: TSMessage,
         thread: BackupArchive.ChatThread,
@@ -175,14 +172,12 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
         return restoreAttachments(
             [ownedAttachment],
-            chatItemId: chatItemId,
             context: context,
         )
     }
 
     func restoreQuotedReplyThumbnailAttachment(
         _ attachment: BackupProto_MessageAttachment,
-        chatItemId: BackupArchive.ChatItemId,
         messageRowId: Int64,
         message: TSMessage,
         thread: BackupArchive.ChatThread,
@@ -191,10 +186,7 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
         let clientUUID: UUID?
         if attachment.hasClientUuid {
             guard let uuid = UUID(data: attachment.clientUuid) else {
-                return .messageFailure([.restoreFrameError(
-                    .invalidProtoData(.invalidAttachmentClientUUID),
-                    chatItemId,
-                )])
+                return .messageFailure([.restoreFrameError(.invalidProtoData(.invalidAttachmentClientUUID))])
             }
             clientUUID = uuid
         } else {
@@ -215,14 +207,12 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
         return restoreAttachments(
             [ownedAttachment],
-            chatItemId: chatItemId,
             context: context,
         )
     }
 
     func restoreLinkPreviewAttachment(
         _ attachment: BackupProto_FilePointer,
-        chatItemId: BackupArchive.ChatItemId,
         messageRowId: Int64,
         message: TSMessage,
         thread: BackupArchive.ChatThread,
@@ -244,14 +234,12 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
         return restoreAttachments(
             [ownedAttachment],
-            chatItemId: chatItemId,
             context: context,
         )
     }
 
     func restoreContactAvatarAttachment(
         _ attachment: BackupProto_FilePointer,
-        chatItemId: BackupArchive.ChatItemId,
         messageRowId: Int64,
         message: TSMessage,
         thread: BackupArchive.ChatThread,
@@ -273,7 +261,6 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
         return restoreAttachments(
             [ownedAttachment],
-            chatItemId: chatItemId,
             context: context,
         )
     }
@@ -282,7 +269,6 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
         _ attachment: BackupProto_FilePointer,
         stickerPackId: Data,
         stickerId: UInt32,
-        chatItemId: BackupArchive.ChatItemId,
         messageRowId: Int64,
         message: TSMessage,
         thread: BackupArchive.ChatThread,
@@ -306,19 +292,17 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
         return restoreAttachments(
             [ownedAttachment],
-            chatItemId: chatItemId,
             context: context,
         )
     }
 
     private func restoreAttachments(
         _ attachments: [OwnedAttachmentBackupPointerProto],
-        chatItemId: BackupArchive.ChatItemId,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<Void> {
         // Whether we're free or paid this should be set when we restored the account data frame.
         guard let uploadEra = context.chatContext.customChatColorContext.accountDataContext.uploadEra else {
-            return .messageFailure([.restoreFrameError(.invalidProtoData(.accountDataNotFound), chatItemId)])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.accountDataNotFound))])
         }
 
         for attachment in attachments {
@@ -347,17 +331,11 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
             results = attachmentStore.fetchReferencedAttachments(owners: attachments.map(\.owner.id), tx: context.tx)
         }
         if results.isEmpty, !attachments.isEmpty {
-            return .messageFailure([.restoreFrameError(
-                .failedToCreateAttachment,
-                chatItemId,
-            )])
+            return .messageFailure([.restoreFrameError(.failedToCreateAttachment)])
         }
 
         guard let backupPlan = context.accountDataContext.backupPlan else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.accountDataNotFound),
-                chatItemId,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.accountDataNotFound))])
         }
 
         for referencedAttachment in results {

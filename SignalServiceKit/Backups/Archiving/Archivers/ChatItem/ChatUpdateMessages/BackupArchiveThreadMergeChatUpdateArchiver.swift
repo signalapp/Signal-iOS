@@ -8,8 +8,8 @@ final class BackupArchiveThreadMergeChatUpdateArchiver {
     typealias ArchiveChatUpdateMessageResult = BackupArchive.ArchiveInteractionResult<Details>
     typealias RestoreChatUpdateMessageResult = BackupArchive.RestoreInteractionResult<Void>
 
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let interactionStore: BackupArchiveInteractionStore
 
@@ -28,11 +28,7 @@ final class BackupArchiveThreadMergeChatUpdateArchiver {
             _ errorType: ArchiveFrameError.ErrorType,
             line: UInt = #line,
         ) -> ArchiveChatUpdateMessageResult {
-            return .messageFailure([.archiveFrameError(
-                errorType,
-                infoMessage.uniqueInteractionId,
-                line: line,
-            )])
+            return .messageFailure([.archiveFrameError(errorType, line: line)])
         }
 
         guard
@@ -90,11 +86,7 @@ final class BackupArchiveThreadMergeChatUpdateArchiver {
             _ error: RestoreFrameError.ErrorType.InvalidProtoDataError,
             line: UInt = #line,
         ) -> RestoreChatUpdateMessageResult {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(error),
-                chatItem.id,
-                line: line,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(error), line: line)])
         }
 
         guard let previousE164 = E164(threadMergeUpdateProto.previousE164) else {
@@ -119,7 +111,7 @@ final class BackupArchiveThreadMergeChatUpdateArchiver {
                 context: context,
             )
         } catch let error {
-            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error))])
         }
 
         return .success(())

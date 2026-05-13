@@ -10,8 +10,8 @@ final class BackupArchivePinMessageChatUpdateArchiver {
     typealias ArchiveChatUpdateMessageResult = BackupArchive.ArchiveInteractionResult<Details>
     typealias RestoreChatUpdateMessageResult = BackupArchive.RestoreInteractionResult<Void>
 
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let interactionStore: BackupArchiveInteractionStore
 
@@ -30,11 +30,7 @@ final class BackupArchivePinMessageChatUpdateArchiver {
             _ errorType: ArchiveFrameError.ErrorType,
             line: UInt = #line,
         ) -> ArchiveChatUpdateMessageResult {
-            return .messageFailure([.archiveFrameError(
-                errorType,
-                infoMessage.uniqueInteractionId,
-                line: line,
-            )])
+            return .messageFailure([.archiveFrameError(errorType, line: line)])
         }
 
         guard let pinMessageItem: PersistablePinnedMessageItem = infoMessage.infoMessageValue(forKey: .pinnedMessage) else {
@@ -85,8 +81,8 @@ final class BackupArchivePinMessageChatUpdateArchiver {
         chatThread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreChatUpdateMessageResult {
-        func aciForRecipientId(recipientId: BackupArchive.RecipientId, partialErrors: inout [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]) -> Aci? {
-            var partialErrors = [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]()
+        func aciForRecipientId(recipientId: BackupArchive.RecipientId, partialErrors: inout [BackupArchive.RestoreFrameError]) -> Aci? {
+            var partialErrors = [BackupArchive.RestoreFrameError]()
 
             let authorAddress: BackupArchive.InteropAddress
             switch context.recipientContext[recipientId] {
@@ -94,32 +90,23 @@ final class BackupArchivePinMessageChatUpdateArchiver {
                 authorAddress = context.recipientContext.localIdentifiers.aciAddress
             case .none, .group, .distributionList, .releaseNotesChannel, .callLink:
                 // Groups and distribution lists cannot be an authors of a message!
-                partialErrors.append(.restoreFrameError(
-                    .invalidProtoData(.pinMessageAuthorNotContact),
-                    chatItem.id,
-                ))
+                partialErrors.append(.restoreFrameError(.invalidProtoData(.pinMessageAuthorNotContact)))
                 return nil
             case .contact(let contactAddress):
                 guard contactAddress.aci != nil || contactAddress.e164 != nil else {
-                    partialErrors.append(.restoreFrameError(
-                        .invalidProtoData(.incomingMessageNotFromAciOrE164),
-                        chatItem.id,
-                    ))
+                    partialErrors.append(.restoreFrameError(.invalidProtoData(.incomingMessageNotFromAciOrE164)))
                     return nil
                 }
                 authorAddress = contactAddress.asInteropAddress()
             }
             guard let authorAci = authorAddress.aci else {
-                partialErrors.append(.restoreFrameError(
-                    .invalidProtoData(.recipientIdNotFound(recipientId)),
-                    chatItem.id,
-                ))
+                partialErrors.append(.restoreFrameError(.invalidProtoData(.recipientIdNotFound(recipientId))))
                 return nil
             }
             return authorAci
         }
 
-        var partialErrors = [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]()
+        var partialErrors = [BackupArchive.RestoreFrameError]()
         let pinAuthorAci = aciForRecipientId(
             recipientId: BackupArchive.RecipientId(value: chatItem.authorID),
             partialErrors: &partialErrors,
@@ -134,7 +121,7 @@ final class BackupArchivePinMessageChatUpdateArchiver {
         }
 
         guard BackupArchive.Timestamps.isValid(pinMessageChatUpdateProto.targetSentTimestamp) else {
-            return .messageFailure([.restoreFrameError(.invalidProtoData(.sentTimestampOverflowedLocalType), chatItem.id)])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.sentTimestampOverflowedLocalType))])
         }
 
         var userInfoForNewMessage: [InfoMessageUserInfoKey: Any] = [:]
@@ -159,7 +146,7 @@ final class BackupArchivePinMessageChatUpdateArchiver {
                 context: context,
             )
         } catch let error {
-            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error))])
         }
 
         return .success(())

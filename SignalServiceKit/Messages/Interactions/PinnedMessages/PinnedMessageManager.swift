@@ -531,17 +531,16 @@ public class PinnedMessageManager {
         message: TSMessage,
         threadId: Int64,
         pinDetails: PinMessageDetails,
-        chatItemId: BackupArchive.ChatItemId,
         tx: DBWriteTransaction,
-    ) -> BackupArchive.RestoreFrameResult<BackupArchive.ChatItemId> {
+    ) -> BackupArchive.RestoreFrameResult {
         guard let interactionId = message.sqliteRowId else {
-            return .failure([.restoreFrameError(.databaseModelMissingRowId(modelClass: TSMessage.self), chatItemId)])
+            return .failure([.restoreFrameError(.databaseModelMissingRowId(modelClass: TSMessage.self))])
         }
 
         // check if there's already max limit and throw if so
         let numExistingPins = numberOfPinnedMessagesForThread(threadId: threadId, tx: tx)
         guard numExistingPins < RemoteConfig.current.pinnedMessageLimit else {
-            return .partialRestore([.restoreFrameError(.invalidProtoData(.invalidNumberOfPinnedMessages), chatItemId)])
+            return .partialRestore([.restoreFrameError(.invalidProtoData(.invalidNumberOfPinnedMessages))])
         }
 
         failIfThrows {

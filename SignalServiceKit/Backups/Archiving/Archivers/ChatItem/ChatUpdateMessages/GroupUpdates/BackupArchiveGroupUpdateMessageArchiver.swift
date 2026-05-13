@@ -11,7 +11,7 @@ final class BackupArchiveGroupUpdateMessageArchiver {
     typealias ArchiveChatUpdateMessageResult = BackupArchive.ArchiveInteractionResult<Details>
     typealias RestoreChatUpdateMessageResult = BackupArchive.RestoreInteractionResult<Void>
 
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
     private typealias PersistableGroupUpdateItem = TSInfoMessage.PersistableGroupUpdateItem
 
     private let groupUpdateBuilder: GroupUpdateItemBuilder
@@ -167,7 +167,7 @@ final class BackupArchiveGroupUpdateMessageArchiver {
                 // Its ok; we just skipped everything.
                 return .skippableInteraction(.skippableGroupUpdate(latestSkipError))
             }
-            return .messageFailure(partialErrors + [.archiveFrameError(.emptyGroupUpdate, interactionId)])
+            return .messageFailure(partialErrors + [.archiveFrameError(.emptyGroupUpdate)])
         }
 
         var groupChangeChatUpdate = BackupProto_GroupChangeChatUpdate()
@@ -189,22 +189,18 @@ final class BackupArchiveGroupUpdateMessageArchiver {
         let groupThread: TSGroupThread
         switch chatThread.threadType {
         case .contact:
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.groupUpdateMessageInNonGroupChat),
-                chatItem.id,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.groupUpdateMessageInNonGroupChat))])
         case .groupV2(let _groupThread):
             groupThread = _groupThread
         }
 
-        var partialErrors = [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]()
+        var partialErrors = [BackupArchive.RestoreFrameError]()
 
         let result = BackupArchiveGroupUpdateProtoToSwiftConverter
             .restoreGroupUpdates(
                 groupUpdates: groupUpdate.updates,
                 localUserAci: context.recipientContext.localIdentifiers.aci,
                 partialErrors: &partialErrors,
-                chatItemId: chatItem.id,
             )
         var persistableUpdates: [PersistableGroupUpdateItem]
         switch result.bubbleUp(Void.self, partialErrors: &partialErrors) {
@@ -216,10 +212,7 @@ final class BackupArchiveGroupUpdateMessageArchiver {
 
         guard persistableUpdates.isEmpty.negated else {
             // We can't have an empty array of updates!
-            return .messageFailure(partialErrors + [.restoreFrameError(
-                .invalidProtoData(.emptyGroupUpdates),
-                chatItem.id,
-            )])
+            return .messageFailure(partialErrors + [.restoreFrameError(.invalidProtoData(.emptyGroupUpdates))])
         }
 
         guard persistableUpdates.isEmpty.negated else {
@@ -247,7 +240,7 @@ final class BackupArchiveGroupUpdateMessageArchiver {
                 context: context,
             )
         } catch let error {
-            return .messageFailure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            return .messageFailure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error))])
         }
 
         if partialErrors.isEmpty {

@@ -978,7 +978,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 frameErrors.append(LoggableErrorAndProto(
                     error: BackupArchive.RestoreFrameError.restoreFrameError(
                         .invalidProtoData(.missingBackupInfoHeader),
-                        BackupArchive.BackupInfoId(),
                     ),
                     wasFrameDropped: true,
                 ))
@@ -991,7 +990,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 frameErrors.append(LoggableErrorAndProto(
                     error: BackupArchive.RestoreFrameError.restoreFrameError(
                         .invalidProtoData(.unsupportedBackupInfoVersion),
-                        BackupArchive.BackupInfoId(),
                     ),
                     wasFrameDropped: true,
                     protoFrame: backupInfo,
@@ -1005,7 +1003,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 frameErrors.append(LoggableErrorAndProto(
                     error: BackupArchive.RestoreFrameError.restoreFrameError(
                         .invalidProtoData(.invalidMediaRootBackupKey),
-                        BackupArchive.BackupInfoId(),
                     ),
                     wasFrameDropped: true,
                     protoFrame: backupInfo,
@@ -1144,7 +1141,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
                         switch frameItem {
                         case .recipient(let recipient):
-                            let recipientResult: BackupArchive.RestoreFrameResult<BackupArchive.RecipientId>
+                            let recipientResult: BackupArchive.RestoreFrameResult
                             switch recipient.destination {
                             case nil:
                                 recipientResult = .unrecognizedEnum(BackupArchive.UnrecognizedEnumError(

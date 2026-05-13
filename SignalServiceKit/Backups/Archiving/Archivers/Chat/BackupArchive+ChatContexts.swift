@@ -8,7 +8,7 @@ import LibSignalClient
 
 extension BackupArchive {
 
-    public struct ChatId: Hashable, BackupArchive.LoggableId {
+    public struct ChatId: Hashable {
         let value: UInt64
 
         public init(value: UInt64) {
@@ -22,11 +22,6 @@ extension BackupArchive {
         fileprivate init(chatItem: BackupProto_ChatItem) {
             self.init(value: chatItem.chatID)
         }
-
-        // MARK: BackupArchive.LoggableId
-
-        public var typeLogString: String { "BackupProto_Chat" }
-        public var idLogString: String { "\(value)" }
     }
 
     /// Chats only exist for group (v2) and contact threads, not story threads.
@@ -51,7 +46,7 @@ extension BackupArchive {
         }
     }
 
-    public struct ThreadUniqueId: Hashable, BackupArchive.LoggableId {
+    public struct ThreadUniqueId: Hashable {
         let value: String
 
         public init(value: String) {
@@ -69,11 +64,6 @@ extension BackupArchive {
         fileprivate init(interaction: TSInteraction) {
             self.init(value: interaction.uniqueThreadId)
         }
-
-        // MARK: BackupArchive.LoggableId
-
-        public var typeLogString: String { "TSThread" }
-        public var idLogString: String { value }
     }
 
     /**
@@ -316,7 +306,7 @@ extension BackupArchive {
 
     // MARK: Custom Chat Colors
 
-    public struct CustomChatColorId: Hashable, BackupArchive.LoggableId {
+    public struct CustomChatColorId: Hashable {
         let value: UInt64
 
         public init(value: UInt64) {
@@ -326,11 +316,6 @@ extension BackupArchive {
         fileprivate init(customChatColor: BackupProto_ChatStyle.CustomChatColor) {
             self.init(value: customChatColor.id)
         }
-
-        // MARK: BackupArchive.LoggableId
-
-        public var typeLogString: String { "BackupProto_ChatStyle.CustomChatColor" }
-        public var idLogString: String { "\(value)" }
     }
 
     /**
@@ -425,11 +410,4 @@ extension TSInteraction {
     public var uniqueThreadIdentifier: BackupArchive.ThreadUniqueId {
         return BackupArchive.ThreadUniqueId(interaction: self)
     }
-}
-
-extension CustomChatColor.Key: BackupArchive.LoggableId {
-
-    public var typeLogString: String { "CustomChatColor.Key" }
-
-    public var idLogString: String { rawValue }
 }

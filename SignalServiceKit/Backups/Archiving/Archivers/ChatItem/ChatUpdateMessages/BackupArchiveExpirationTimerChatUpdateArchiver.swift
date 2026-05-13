@@ -15,8 +15,8 @@ final class BackupArchiveExpirationTimerChatUpdateArchiver {
     typealias ArchiveChatUpdateMessageResult = BackupArchive.ArchiveInteractionResult<Details>
     typealias RestoreChatUpdateMessageResult = BackupArchive.RestoreInteractionResult<Void>
 
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let contactManager: BackupArchive.Shims.ContactManager
     private let groupUpdateArchiver: BackupArchiveGroupUpdateMessageArchiver
@@ -43,11 +43,7 @@ final class BackupArchiveExpirationTimerChatUpdateArchiver {
             _ errorType: ArchiveFrameError.ErrorType,
             line: UInt = #line,
         ) -> ArchiveChatUpdateMessageResult {
-            return .messageFailure([.archiveFrameError(
-                errorType,
-                infoMessage.uniqueInteractionId,
-                line: line,
-            )])
+            return .messageFailure([.archiveFrameError(errorType, line: line)])
         }
 
         guard let dmUpdateInfoMessage = infoMessage as? OWSDisappearingConfigurationUpdateInfoMessage else {
@@ -157,11 +153,7 @@ final class BackupArchiveExpirationTimerChatUpdateArchiver {
             _ error: RestoreFrameError.ErrorType.InvalidProtoDataError,
             line: UInt = #line,
         ) -> RestoreChatUpdateMessageResult {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(error),
-                chatItem.id,
-                line: line,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(error), line: line)])
         }
 
         let contactThread: TSContactThread
@@ -202,7 +194,7 @@ final class BackupArchiveExpirationTimerChatUpdateArchiver {
                 context: context,
             )
         } catch let error {
-            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error))])
         }
 
         return .success(())

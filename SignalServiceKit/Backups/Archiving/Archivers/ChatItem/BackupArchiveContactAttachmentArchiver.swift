@@ -6,9 +6,9 @@
 import Foundation
 
 class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
     typealias RestoreInteractionResult = BackupArchive.RestoreInteractionResult
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let attachmentsArchiver: BackupArchiveMessageAttachmentArchiver
 
@@ -228,7 +228,6 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
     func restoreContact(
         _ contactProto: BackupProto_ContactAttachment,
-        chatItemId: BackupArchive.ChatItemId,
     ) -> RestoreInteractionResult<OWSContact> {
         var partialErrors = [RestoreFrameError]()
 
@@ -267,7 +266,6 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
             switch self
                 .restoreContactPhoneNumber(
                     proto: phoneNumberProto,
-                    chatItemId: chatItemId,
                 )
                 .bubbleUp(OWSContact.self, partialErrors: &partialErrors)
             {
@@ -283,7 +281,6 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
             switch self
                 .restoreContactEmail(
                     proto: emailProto,
-                    chatItemId: chatItemId,
                 )
                 .bubbleUp(OWSContact.self, partialErrors: &partialErrors)
             {
@@ -299,7 +296,6 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
             switch self
                 .restoreContactAddress(
                     proto: addressProto,
-                    chatItemId: chatItemId,
                 )
                 .bubbleUp(OWSContact.self, partialErrors: &partialErrors)
             {
@@ -323,12 +319,10 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
     private func restoreContactPhoneNumber(
         proto: BackupProto_ContactAttachment.Phone,
-        chatItemId: BackupArchive.ChatItemId,
     ) -> RestoreInteractionResult<OWSContactPhoneNumber?> {
         guard let phoneNumber = proto.value.strippedOrNil else {
             return .partialRestore(nil, [.restoreFrameError(
                 .invalidProtoData(.contactAttachmentPhoneNumberMissingValue),
-                chatItemId,
             )])
         }
 
@@ -355,13 +349,9 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
     private func restoreContactEmail(
         proto: BackupProto_ContactAttachment.Email,
-        chatItemId: BackupArchive.ChatItemId,
     ) -> RestoreInteractionResult<OWSContactEmail?> {
         guard let email = proto.value.strippedOrNil else {
-            return .partialRestore(nil, [.restoreFrameError(
-                .invalidProtoData(.contactAttachmentEmailMissingValue),
-                chatItemId,
-            )])
+            return .partialRestore(nil, [.restoreFrameError(.invalidProtoData(.contactAttachmentEmailMissingValue))])
         }
 
         let type: OWSContactEmail.`Type`
@@ -387,7 +377,6 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
     private func restoreContactAddress(
         proto: BackupProto_ContactAttachment.PostalAddress,
-        chatItemId: BackupArchive.ChatItemId,
     ) -> RestoreInteractionResult<OWSContactAddress?> {
         let type: OWSContactAddress.`Type`
         switch proto.type {
@@ -422,10 +411,7 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
             || address.postcode?.isEmpty == false
             || address.country?.isEmpty == false
         else {
-            return .partialRestore(nil, [.restoreFrameError(
-                .invalidProtoData(.contactAttachmentEmptyAddress),
-                chatItemId,
-            )])
+            return .partialRestore(nil, [.restoreFrameError(.invalidProtoData(.contactAttachmentEmptyAddress))])
         }
 
         return .success(address)

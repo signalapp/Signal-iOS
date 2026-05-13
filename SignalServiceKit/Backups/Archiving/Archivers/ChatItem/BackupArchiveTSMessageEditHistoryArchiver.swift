@@ -60,8 +60,8 @@ extension BackupArchive {
 final class BackupArchiveTSMessageEditHistoryArchiver<MessageType: TSMessage> {
     typealias Details = BackupArchive.InteractionArchiveDetails
 
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let editMessageStore: EditMessageStore
 
@@ -190,10 +190,7 @@ final class BackupArchiveTSMessageEditHistoryArchiver<MessageType: TSMessage> {
 
         // Short-circuit if this message type shouldn't have edit history.
         if let illegalRevisionType = areRevisionsLegal(latestRevisionDetails) {
-            return .partialFailure((), [.archiveFrameError(
-                .revisionsPresentOnUnexpectedMessage(illegalRevisionType),
-                latestRevisionMessage.uniqueInteractionId,
-            )])
+            return .partialFailure((), [.archiveFrameError(.revisionsPresentOnUnexpectedMessage(illegalRevisionType))])
         }
 
         var partialErrors = [ArchiveFrameError]()
@@ -208,10 +205,7 @@ final class BackupArchiveTSMessageEditHistoryArchiver<MessageType: TSMessage> {
                 tx: context.tx,
             ).reversed()
         } catch {
-            return .messageFailure([.archiveFrameError(
-                .editHistoryFailedToFetch,
-                latestRevisionMessage.uniqueInteractionId,
-            )])
+            return .messageFailure([.archiveFrameError(.editHistoryFailedToFetch)])
         }
 
         for (editRecord, pastRevisionMessage) in editHistory {
@@ -247,10 +241,7 @@ final class BackupArchiveTSMessageEditHistoryArchiver<MessageType: TSMessage> {
 
             // We have a past revision that's not of a legal type. Skip it.
             if let illegalRevisionType = areRevisionsLegal(pastRevisionDetails) {
-                partialErrors.append(.archiveFrameError(
-                    .revisionWasUnexpectedMessage(illegalRevisionType),
-                    pastRevisionMessage.uniqueInteractionId,
-                ))
+                partialErrors.append(.archiveFrameError(.revisionWasUnexpectedMessage(illegalRevisionType)))
             } else {
                 /// We're iterating the edit history from oldest to newest, so
                 /// the past revision details stored on `latestRevisionDetails`
@@ -362,7 +353,6 @@ private extension TSMessage {
 
         return .messageFailure([.restoreFrameError(
             .developerError(OWSAssertionError("Unexpected TSMessage type instantiated during restore: \(type(of: self))")),
-            chatItemId,
         )])
     }
 }

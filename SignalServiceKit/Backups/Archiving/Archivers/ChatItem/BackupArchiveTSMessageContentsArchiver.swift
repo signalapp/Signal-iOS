@@ -139,8 +139,8 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     typealias ArchiveInteractionResult = BackupArchive.ArchiveInteractionResult
     typealias RestoreInteractionResult = BackupArchive.RestoreInteractionResult
 
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let interactionStore: BackupArchiveInteractionStore
     private let archivedPaymentStore: ArchivedPaymentStore
@@ -315,7 +315,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             tx: context.tx,
         )
         guard let historyItem else {
-            return .messageFailure([.archiveFrameError(.missingPaymentInformation, uniqueInteractionId)])
+            return .messageFailure([.archiveFrameError(.missingPaymentInformation)])
         }
 
         var paymentNotificationProto = BackupProto_PaymentNotification()
@@ -345,7 +345,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 transaction: context.tx,
             ).first
         else {
-            return .messageFailure([.archiveFrameError(.missingPaymentInformation, uniqueInteractionId)])
+            return .messageFailure([.archiveFrameError(.missingPaymentInformation)])
         }
 
         var paymentNotificationProto = BackupProto_PaymentNotification()
@@ -389,10 +389,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         var adminDeletedMessage = BackupProto_AdminDeletedMessage()
         let contact = BackupArchive.ContactAddress(aci: adminDeleteAuthor)
         guard let authorId = context[.contact(contact)] else {
-            return .messageFailure([.archiveFrameError(
-                .referencedRecipientIdMissing(.contact(contact)),
-                adminDeleteTombstone.uniqueInteractionId,
-            )])
+            return .messageFailure([.archiveFrameError(.referencedRecipientIdMissing(.contact(contact)))])
         }
 
         adminDeletedMessage.adminID = authorId.value
@@ -569,14 +566,11 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
         guard let authorAddress = quotedMessage.authorAddress.asSingleServiceIdBackupAddress() else {
             // Fail the whole message if we fail archiving a quote.
-            return .messageFailure([.archiveFrameError(.invalidQuoteAuthor, interactionUniqueId)])
+            return .messageFailure([.archiveFrameError(.invalidQuoteAuthor)])
         }
         guard let authorId = context[.contact(authorAddress)] else {
             // Fail the whole message if we fail archiving a quote.
-            return .messageFailure([.archiveFrameError(
-                .referencedRecipientIdMissing(.contact(authorAddress)),
-                interactionUniqueId,
-            )])
+            return .messageFailure([.archiveFrameError(.referencedRecipientIdMissing(.contact(authorAddress)))])
         }
 
         var quote = BackupProto_Quote()
@@ -660,10 +654,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             guard didArchiveText || didArchiveAttachments else {
                 // NORMAL-type quotes must have either text or attachments, lest
                 // they be rejected by the validator.
-                partialErrors.append(.archiveFrameError(
-                    .quoteTypeNormalMissingTextAndAttachments,
-                    interactionUniqueId,
-                ))
+                partialErrors.append(.archiveFrameError(.quoteTypeNormalMissingTextAndAttachments))
 
                 return .partialFailure(nil, partialErrors)
             }
@@ -714,18 +705,12 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             // If we have no url, consider this a partial failure. The message
             // without the link preview is still valid, so just don't set a link preview
             // by returning nil.
-            partialErrors.append(.archiveFrameError(
-                .linkPreviewMissingUrl,
-                interactionUniqueId,
-            ))
+            partialErrors.append(.archiveFrameError(.linkPreviewMissingUrl))
             return .partialFailure(nil, partialErrors)
         }
 
         guard messageBody.contains(url) else {
-            partialErrors.append(.archiveFrameError(
-                .linkPreviewUrlNotInBody,
-                interactionUniqueId,
-            ))
+            partialErrors.append(.archiveFrameError(.linkPreviewUrlNotInBody))
             return .partialFailure(nil, partialErrors)
         }
 
@@ -816,10 +801,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     ) -> ArchiveInteractionResult<ChatItemType> {
         guard let stickerReferencedAttachment else {
             // We can't have a sticker without an attachment.
-            return .messageFailure([.archiveFrameError(
-                .stickerMessageMissingStickerAttachment,
-                message.uniqueInteractionId,
-            )])
+            return .messageFailure([.archiveFrameError(.stickerMessageMissingStickerAttachment)])
         }
 
         var partialErrors = [ArchiveFrameError]()
@@ -910,7 +892,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             else {
                 return .messageFailure(partialErrors + [.archiveFrameError(
                     .unviewedViewOnceMessageUnexpectedAttachmentCount(bodyAttachmentProtos.count),
-                    message.uniqueInteractionId,
                 )])
             }
 
@@ -952,18 +933,12 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             let chatId = context[message.uniqueThreadIdentifier],
             let threadInfo = context[chatId]
         else {
-            return .messageFailure([.archiveFrameError(
-                .referencedThreadIdMissing(message.uniqueThreadIdentifier),
-                interactionUniqueId,
-            )])
+            return .messageFailure([.archiveFrameError(.referencedThreadIdMissing(message.uniqueThreadIdentifier))])
         }
 
         switch threadInfo {
         case .groupThread:
-            return .messageFailure([.archiveFrameError(
-                .storyReplyInGroupThread,
-                interactionUniqueId,
-            )])
+            return .messageFailure([.archiveFrameError(.storyReplyInGroupThread)])
         case .noteToSelfThread:
             // See comment on skippable update enum case.
             return .skippableInteraction(.directStoryReplyInNoteToSelf)
@@ -972,10 +947,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         }
 
         guard !message.isGroupStoryReply else {
-            return .messageFailure([.archiveFrameError(
-                .storyReplyInGroupThread,
-                interactionUniqueId,
-            )])
+            return .messageFailure([.archiveFrameError(.storyReplyInGroupThread)])
         }
 
         var partialErrors = [ArchiveFrameError]()
@@ -990,18 +962,12 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
         if let emoji = message.storyReactionEmoji {
             guard !emoji.isEmpty else {
-                return .messageFailure([.archiveFrameError(
-                    .storyReplyEmptyContents,
-                    interactionUniqueId,
-                )])
+                return .messageFailure([.archiveFrameError(.storyReplyEmptyContents)])
             }
             proto.reply = .emoji(emoji)
         } else if let body = message.body {
             guard !body.isEmpty else {
-                return .messageFailure([.archiveFrameError(
-                    .storyReplyEmptyContents,
-                    interactionUniqueId,
-                )])
+                return .messageFailure([.archiveFrameError(.storyReplyEmptyContents)])
             }
 
             let oversizeTextResult = oversizeTextArchiver.archiveMessageBody(
@@ -1072,7 +1038,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     /// inserting the ``TSMessage``.
     func restoreContents(
         _ chatItemType: ChatItemType,
-        chatItemId: BackupArchive.ChatItemId,
         chatThread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<BackupArchive.RestoredMessageContents> {
@@ -1080,14 +1045,12 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         case .paymentNotification(let paymentNotification):
             return restorePaymentNotification(
                 paymentNotification,
-                chatItemId: chatItemId,
                 thread: chatThread,
                 context: context,
             )
         case .remoteDeletedMessage(let remoteDeletedMessage):
             return restoreRemoteDeleteTombstone(
                 remoteDeletedMessage,
-                chatItemId: chatItemId,
                 chatThread: chatThread,
                 context: context,
             )
@@ -1096,55 +1059,47 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         case .standardMessage(let standardMessage):
             return restoreStandardMessage(
                 standardMessage,
-                chatItemId: chatItemId,
                 chatThread: chatThread,
                 context: context,
             )
         case .contactMessage(let contactMessage):
             return restoreContactMessage(
                 contactMessage,
-                chatItemId: chatItemId,
                 chatThread: chatThread,
                 context: context,
             )
         case .stickerMessage(let stickerMessage):
             return restoreStickerMessage(
                 stickerMessage,
-                chatItemId: chatItemId,
                 chatThread: chatThread,
                 context: context,
             )
         case .giftBadge(let giftBadge):
             return restoreGiftBadge(
                 giftBadge,
-                chatItemId: chatItemId,
                 context: context,
             )
         case .viewOnceMessage(let viewOnceMessage):
             return restoreViewOnceMessage(
                 viewOnceMessage,
-                chatItemId: chatItemId,
                 chatThread: chatThread,
                 context: context,
             )
         case .directStoryReplyMessage(let storyReply):
             return restoreDirectStoryReplyMessage(
                 storyReply,
-                chatItemId: chatItemId,
                 chatThread: chatThread,
                 context: context,
             )
         case .poll(let poll):
             return restorePollMessage(
                 poll,
-                chatItemId: chatItemId,
                 chatThread: chatThread,
                 context: context,
             )
         case .updateMessage:
             return .messageFailure([.restoreFrameError(
                 .developerError(OWSAssertionError("Chat update has no contents to restore!")),
-                chatItemId,
             )])
         }
     }
@@ -1156,16 +1111,12 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     func restoreDownstreamObjects(
         message: TSMessage,
         thread: BackupArchive.ChatThread,
-        chatItemId: BackupArchive.ChatItemId,
         pinDetails: BackupProto_ChatItem.PinDetails?,
         restoredContents: BackupArchive.RestoredMessageContents,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<Void> {
         guard let messageRowId = message.sqliteRowId else {
-            return .messageFailure([.restoreFrameError(
-                .databaseModelMissingRowId(modelClass: type(of: message)),
-                chatItemId,
-            )])
+            return .messageFailure([.restoreFrameError(.databaseModelMissingRowId(modelClass: type(of: message)))])
         }
 
         var downstreamObjectResults = [RestoreInteractionResult<Void>]()
@@ -1173,7 +1124,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         case .archivedPayment(let archivedPayment):
             downstreamObjectResults.append(restoreArchivedPaymentContents(
                 archivedPayment,
-                chatItemId: chatItemId,
                 thread: thread,
                 message: message,
                 context: context,
@@ -1181,7 +1131,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         case .text(let text):
             downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 text.reactions,
-                chatItemId: chatItemId,
                 message: message,
                 context: context.recipientContext,
             ))
@@ -1191,14 +1140,12 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                     messageRowId: messageRowId,
                     message: message,
                     thread: thread,
-                    chatItemId: chatItemId,
                     context: context,
                 ))
             }
             if text.bodyAttachments.isEmpty.negated {
                 downstreamObjectResults.append(attachmentsArchiver.restoreBodyAttachments(
                     text.bodyAttachments,
-                    chatItemId: chatItemId,
                     messageRowId: messageRowId,
                     message: message,
                     thread: thread,
@@ -1208,7 +1155,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             if let quotedMessageThumbnail = text.quotedMessageThumbnail {
                 downstreamObjectResults.append(attachmentsArchiver.restoreQuotedReplyThumbnailAttachment(
                     quotedMessageThumbnail,
-                    chatItemId: chatItemId,
                     messageRowId: messageRowId,
                     message: message,
                     thread: thread,
@@ -1218,7 +1164,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             if let linkPreviewImage = text.linkPreviewImage {
                 downstreamObjectResults.append(attachmentsArchiver.restoreLinkPreviewAttachment(
                     linkPreviewImage,
-                    chatItemId: chatItemId,
                     messageRowId: messageRowId,
                     message: message,
                     thread: thread,
@@ -1228,14 +1173,12 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         case .contactShare(let contactShare):
             downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 contactShare.reactions,
-                chatItemId: chatItemId,
                 message: message,
                 context: context.recipientContext,
             ))
             if let avatarAttachment = contactShare.avatarAttachment {
                 downstreamObjectResults.append(attachmentsArchiver.restoreContactAvatarAttachment(
                     avatarAttachment,
-                    chatItemId: chatItemId,
                     messageRowId: messageRowId,
                     message: message,
                     thread: thread,
@@ -1245,7 +1188,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         case .stickerMessage(let stickerMessage):
             downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 stickerMessage.reactions,
-                chatItemId: chatItemId,
                 message: message,
                 context: context.recipientContext,
             ))
@@ -1253,7 +1195,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 stickerMessage.attachment,
                 stickerPackId: stickerMessage.sticker.packId,
                 stickerId: stickerMessage.sticker.stickerId,
-                chatItemId: chatItemId,
                 messageRowId: messageRowId,
                 message: message,
                 thread: thread,
@@ -1262,7 +1203,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         case .viewOnceMessage(let viewOnceMessage):
             downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 viewOnceMessage.reactions,
-                chatItemId: chatItemId,
                 message: message,
                 context: context.recipientContext,
             ))
@@ -1270,7 +1210,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             case .unviewed(let attachment):
                 downstreamObjectResults.append(attachmentsArchiver.restoreBodyAttachments(
                     [attachment],
-                    chatItemId: chatItemId,
                     messageRowId: messageRowId,
                     message: message,
                     thread: thread,
@@ -1282,7 +1221,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         case .storyReply(let storyReply):
             downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 storyReply.reactions,
-                chatItemId: chatItemId,
                 message: message,
                 context: context.recipientContext,
             ))
@@ -1295,7 +1233,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                         messageRowId: messageRowId,
                         message: message,
                         thread: thread,
-                        chatItemId: chatItemId,
                         context: context,
                     ))
                 }
@@ -1305,7 +1242,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         case .poll(let poll):
             downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 poll.reactions,
-                chatItemId: chatItemId,
                 message: message,
                 context: context.recipientContext,
             ))
@@ -1313,7 +1249,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             downstreamObjectResults.append(
                 pollArchiver.restorePoll(
                     poll,
-                    chatItemId: chatItemId,
                     message: message,
                     context: context.recipientContext,
                 ),
@@ -1323,7 +1258,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 restoreAdminDeleteContents(
                     deleteAuthorId: deleteAuthor,
                     interactionId: messageRowId,
-                    chatItemId: chatItemId,
                     context: context.recipientContext,
                 ),
             )
@@ -1337,7 +1271,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 restorePinMessage(
                     pinDetails: pinDetails,
                     message: message,
-                    chatItemId: chatItemId,
                     chatThread: thread,
                     context: context,
                 ),
@@ -1354,7 +1287,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     private func restoreAdminDeleteContents(
         deleteAuthorId: BackupArchive.RecipientId,
         interactionId: Int64,
-        chatItemId: BackupArchive.ChatItemId,
         context: BackupArchive.RecipientRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<Void> {
         var signalRecipientId: SignalRecipient.RowId?
@@ -1364,14 +1296,11 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         case .contact:
             signalRecipientId = context.recipientDbRowId(forBackupRecipientId: deleteAuthorId)
         default:
-            return .messageFailure([.restoreFrameError(.invalidProtoData(.adminDeleteAuthorNotContact), chatItemId)])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.adminDeleteAuthorNotContact))])
         }
 
         guard let signalRecipientId else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.recipientIdNotFound(deleteAuthorId)),
-                chatItemId,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.recipientIdNotFound(deleteAuthorId)))])
         }
 
         adminDeleteManager.insertAdminDeleteForSignalRecipient(
@@ -1386,7 +1315,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
     private func restoreArchivedPaymentContents(
         _ transaction: BackupArchive.RestoredMessageContents.Payment,
-        chatItemId: BackupArchive.ChatItemId,
         thread: BackupArchive.ChatThread,
         message: TSMessage,
         context: BackupArchive.RestoringContext,
@@ -1401,10 +1329,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             }
         }()
         guard let senderOrRecipientAci else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.paymentNotificationInGroup),
-                chatItemId,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.paymentNotificationInGroup))])
         }
 
         let direction: ArchivedPayment.Direction
@@ -1416,7 +1341,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         default:
             return .messageFailure([.restoreFrameError(
                 .developerError(OWSAssertionError("Invalid message type passed in for paymentRestore")),
-                chatItemId,
             )])
         }
         let archivedPayment = ArchivedPayment.fromBackup(
@@ -1431,7 +1355,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
     private func restorePaymentNotification(
         _ paymentNotification: BackupProto_PaymentNotification,
-        chatItemId: BackupArchive.ChatItemId,
         thread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<BackupArchive.RestoredMessageContents> {
@@ -1468,7 +1391,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
     private func restoreRemoteDeleteTombstone(
         _ remoteDeleteTombstone: BackupProto_RemoteDeletedMessage,
-        chatItemId: BackupArchive.ChatItemId,
         chatThread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<BackupArchive.RestoredMessageContents> {
@@ -1485,7 +1407,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
     private func restoreStandardMessage(
         _ standardMessage: BackupProto_StandardMessage,
-        chatItemId: BackupArchive.ChatItemId,
         chatThread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<BackupArchive.RestoredMessageContents> {
@@ -1497,7 +1418,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             switch self
                 .restoreQuote(
                     standardMessage.quote,
-                    chatItemId: chatItemId,
                     thread: chatThread,
                     context: context,
                 )
@@ -1524,7 +1444,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 .restoreLinkPreview(
                     linkPreviewProto,
                     standardMessage: standardMessage,
-                    chatItemId: chatItemId,
                     context: context,
                 )
                 .bubbleUp(
@@ -1556,10 +1475,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         }
 
         if standardMessage.text.body.isEmpty, standardMessage.attachments.isEmpty {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.emptyStandardMessage),
-                chatItemId,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.emptyStandardMessage))])
         }
         let text = standardMessage.text
 
@@ -1576,7 +1492,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         let messageBodyResult = restoreMessageBody(
             text,
             oversizeTextAttachment: oversizeTextAttachment,
-            chatItemId: chatItemId,
         )
         switch messageBodyResult {
         case .success(let body):
@@ -1621,7 +1536,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     private func restoreMessageBody(
         _ text: BackupProto_Text,
         oversizeTextAttachment: BackupProto_FilePointer?,
-        chatItemId: BackupArchive.ChatItemId,
     ) -> RestoreInteractionResult<RestoredMessageBody?> {
         guard text.body.isEmpty.negated else {
             return .success(nil)
@@ -1630,7 +1544,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             text: text.body,
             bodyRangeProtos: text.bodyRanges,
             oversizeTextAttachment: oversizeTextAttachment,
-            chatItemId: chatItemId,
         )
     }
 
@@ -1638,7 +1551,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         text: String,
         bodyRangeProtos: [BackupProto_BodyRange],
         oversizeTextAttachment: BackupProto_FilePointer?,
-        chatItemId: BackupArchive.ChatItemId,
     ) -> RestoreInteractionResult<RestoredMessageBody?> {
         var partialErrors = [RestoreFrameError]()
         var bodyMentions = [NSRange: Aci]()
@@ -1653,7 +1565,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 guard let mentionAci = try? Aci.parseFrom(serviceIdBinary: aciData) else {
                     partialErrors.append(.restoreFrameError(
                         .invalidProtoData(.invalidAci(protoClass: BackupProto_BodyRange.self)),
-                        chatItemId,
                     ))
                     continue
                 }
@@ -1678,7 +1589,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             case nil:
                 partialErrors.append(.restoreFrameError(
                     .invalidProtoData(.invalidAci(protoClass: BackupProto_BodyRange.self)),
-                    chatItemId,
                 ))
                 continue
             }
@@ -1690,7 +1600,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             text,
             bodyRanges: bodyRanges,
             oversizeTextAttachment: oversizeTextAttachment,
-            chatItemId: chatItemId,
         ).bubbleUp(Optional<RestoredMessageBody>.self, partialErrors: &partialErrors) {
         case .continue(let component):
             restoredBody = component
@@ -1710,7 +1619,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
     private func restoreQuote(
         _ quote: BackupProto_Quote,
-        chatItemId: BackupArchive.ChatItemId,
         thread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<(TSQuotedMessage, BackupProto_MessageAttachment?)> {
@@ -1719,22 +1627,15 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         case .none:
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.recipientIdNotFound(quote.authorRecipientId)),
-                chatItemId,
             )])
         case .localAddress:
             authorAddress = context.recipientContext.localIdentifiers.aciAddress
         case .group, .distributionList, .releaseNotesChannel, .callLink:
             // Groups and distritibution lists cannot be an authors of a message!
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.incomingMessageNotFromAciOrE164),
-                chatItemId,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.incomingMessageNotFromAciOrE164))])
         case .contact(let contactAddress):
             guard contactAddress.aci != nil || contactAddress.e164 != nil else {
-                return .messageFailure([.restoreFrameError(
-                    .invalidProtoData(.incomingMessageNotFromAciOrE164),
-                    chatItemId,
-                )])
+                return .messageFailure([.restoreFrameError(.invalidProtoData(.incomingMessageNotFromAciOrE164))])
             }
             authorAddress = contactAddress.asInteropAddress()
         }
@@ -1767,7 +1668,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                     bodyRangeProtos: quote.text.bodyRanges,
                     // Quotes don't support oversize text
                     oversizeTextAttachment: nil,
-                    chatItemId: chatItemId,
                 )
                 .bubbleUp(
                     (TSQuotedMessage, BackupProto_MessageAttachment?).self,
@@ -1777,10 +1677,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             case .continue(let component):
                 // We drop oversize text for quotes, if any.
                 if component?.oversizeText != nil {
-                    partialErrors.append(.restoreFrameError(
-                        .invalidProtoData(.quotedMessageOversizeText),
-                        chatItemId,
-                    ))
+                    partialErrors.append(.restoreFrameError(.invalidProtoData(.quotedMessageOversizeText)))
                 }
                 quoteBody = component?.inlinedBody
             case .bubbleUpError(let error):
@@ -1840,10 +1737,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             !isGiftBadge,
             !isTargetMessageViewOnce
         {
-            partialErrors.append(.restoreFrameError(
-                .invalidProtoData(.quotedMessageEmptyContent),
-                chatItemId,
-            ))
+            partialErrors.append(.restoreFrameError(.invalidProtoData(.quotedMessageEmptyContent)))
         }
 
         let quotedMessage = TSQuotedMessage(
@@ -1868,20 +1762,13 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     private func restoreLinkPreview(
         _ linkPreviewProto: BackupProto_LinkPreview,
         standardMessage: BackupProto_StandardMessage,
-        chatItemId: BackupArchive.ChatItemId,
         context: BackupArchive.RestoringContext,
     ) -> RestoreInteractionResult<(OWSLinkPreview, BackupProto_FilePointer?)?> {
         guard let url = linkPreviewProto.url.nilIfEmpty else {
-            return .partialRestore(nil, [.restoreFrameError(
-                .invalidProtoData(.linkPreviewEmptyUrl),
-                chatItemId,
-            )])
+            return .partialRestore(nil, [.restoreFrameError(.invalidProtoData(.linkPreviewEmptyUrl))])
         }
         guard standardMessage.text.body.contains(url) else {
-            return .partialRestore(nil, [.restoreFrameError(
-                .invalidProtoData(.linkPreviewUrlNotInBody),
-                chatItemId,
-            )])
+            return .partialRestore(nil, [.restoreFrameError(.invalidProtoData(.linkPreviewUrlNotInBody))])
         }
         let date: Date?
         if linkPreviewProto.hasDate {
@@ -1914,23 +1801,18 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
     private func restoreContactMessage(
         _ contactMessage: BackupProto_ContactMessage,
-        chatItemId: BackupArchive.ChatItemId,
         chatThread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<BackupArchive.RestoredMessageContents> {
         var partialErrors = [RestoreFrameError]()
 
         guard contactMessage.hasContact else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.contactMessageMissingContactAttachment),
-                chatItemId,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.contactMessageMissingContactAttachment))])
         }
         let contactAttachment = contactMessage.contact
 
         let contactResult = contactAttachmentArchiver.restoreContact(
             contactAttachment,
-            chatItemId: chatItemId,
         )
         let contact: OWSContact
         switch contactResult
@@ -1968,7 +1850,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
     private func restoreStickerMessage(
         _ stickerMessage: BackupProto_StickerMessage,
-        chatItemId: BackupArchive.ChatItemId,
         chatThread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<BackupArchive.RestoredMessageContents> {
@@ -1993,7 +1874,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
     private func restoreGiftBadge(
         _ giftBadgeProto: BackupProto_GiftBadge,
-        chatItemId: BackupArchive.ChatItemId,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<BackupArchive.RestoredMessageContents> {
         let giftBadge: OWSGiftBadge
@@ -2033,7 +1913,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
 
     private func restoreViewOnceMessage(
         _ viewOnceMessage: BackupProto_ViewOnceMessage,
-        chatItemId: BackupArchive.ChatItemId,
         chatThread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<BackupArchive.RestoredMessageContents> {
@@ -2056,7 +1935,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     /// up since stories are not backed up.
     private func restoreDirectStoryReplyMessage(
         _ storyReply: BackupProto_DirectStoryReplyMessage,
-        chatItemId: BackupArchive.ChatItemId,
         chatThread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<BackupArchive.RestoredMessageContents> {
@@ -2077,7 +1955,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 .restoreMessageBody(
                     textReply.text,
                     oversizeTextAttachment: oversizeTextAttachment,
-                    chatItemId: chatItemId,
                 )
                 .bubbleUp(
                     BackupArchive.RestoredMessageContents.self,
@@ -2102,10 +1979,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                     restoreErrorType = .invalidProtoData(.directStoryReplyMessageEmpty)
                 }
 
-                return .messageFailure([.restoreFrameError(
-                    restoreErrorType,
-                    chatItemId,
-                )] + partialErrors)
+                return .messageFailure([.restoreFrameError(restoreErrorType)] + partialErrors)
             }
         case .emoji(let string):
             replyType = .emoji(string)
@@ -2129,7 +2003,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     /// Polls
     private func restorePollMessage(
         _ poll: BackupProto_Poll,
-        chatItemId: BackupArchive.ChatItemId,
         chatThread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<BackupArchive.RestoredMessageContents> {
@@ -2147,25 +2020,16 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 case .contact:
                     voteAuthorId = context.recipientContext.recipientDbRowId(forBackupRecipientId: recipientId)
                 default:
-                    partialErrors += [.restoreFrameError(
-                        .invalidProtoData(.pollVoteAuthorNotContact),
-                        chatItemId,
-                    )]
+                    partialErrors += [.restoreFrameError(.invalidProtoData(.pollVoteAuthorNotContact))]
                 }
 
                 guard let voteAuthorId else {
-                    partialErrors += [.restoreFrameError(
-                        .invalidProtoData(.recipientIdNotFound(recipientId)),
-                        chatItemId,
-                    )]
+                    partialErrors += [.restoreFrameError(.invalidProtoData(.recipientIdNotFound(recipientId)))]
                     continue
                 }
 
                 guard voteProto.voteCount <= Int32.max else {
-                    partialErrors += [.restoreFrameError(
-                        .invalidProtoData(.invalidPollVoteCount),
-                        chatItemId,
-                    )]
+                    partialErrors += [.restoreFrameError(.invalidProtoData(.invalidPollVoteCount))]
                     continue
                 }
 
@@ -2188,7 +2052,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 text: poll.question,
                 bodyRangeProtos: [],
                 oversizeTextAttachment: nil,
-                chatItemId: chatItemId,
             )
             .bubbleUp(
                 BackupArchive.RestoredMessageContents.self,
@@ -2197,10 +2060,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         {
         case .continue(let component):
             guard let component else {
-                return .messageFailure([.restoreFrameError(
-                    .invalidProtoData(.pollQuestionEmpty),
-                    chatItemId,
-                )] + partialErrors)
+                return .messageFailure([.restoreFrameError(.invalidProtoData(.pollQuestionEmpty))] + partialErrors)
             }
             pollQuestion = component
         case .bubbleUpError(let error):
@@ -2230,7 +2090,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     private func restorePinMessage(
         pinDetails: BackupProto_ChatItem.PinDetails,
         message: TSMessage,
-        chatItemId: BackupArchive.ChatItemId,
         chatThread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<Void> {
@@ -2244,20 +2103,14 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         }
 
         guard let threadId else {
-            return .messageFailure([.restoreFrameError(
-                .databaseModelMissingRowId(modelClass: TSThread.self),
-                chatItemId,
-            )])
+            return .messageFailure([.restoreFrameError(.databaseModelMissingRowId(modelClass: TSThread.self))])
         }
 
         var expiresAtTimestamp: UInt64?
         switch pinDetails.pinExpiry {
         case .pinExpiresAtTimestamp(let timestamp):
             guard BackupArchive.Timestamps.isValid(timestamp) else {
-                return .partialRestore((), [.restoreFrameError(
-                    .invalidProtoData(.chatItemInvalidDateSent),
-                    chatItemId,
-                )])
+                return .partialRestore((), [.restoreFrameError(.invalidProtoData(.chatItemInvalidDateSent))])
             }
             expiresAtTimestamp = timestamp
         case .pinNeverExpires, .none:
@@ -2265,10 +2118,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         }
 
         guard BackupArchive.Timestamps.isValid(pinDetails.pinnedAtTimestamp) else {
-            return .partialRestore((), [.restoreFrameError(
-                .invalidProtoData(.chatItemInvalidDateSent),
-                chatItemId,
-            )])
+            return .partialRestore((), [.restoreFrameError(.invalidProtoData(.chatItemInvalidDateSent))])
         }
 
         let details = PinMessageDetails(pinnedAtTimestamp: pinDetails.pinnedAtTimestamp, expiresAtTimestamp: expiresAtTimestamp)
@@ -2277,7 +2127,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             message: message,
             threadId: threadId,
             pinDetails: details,
-            chatItemId: chatItemId,
             tx: context.tx,
         )
 

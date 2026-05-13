@@ -9,7 +9,7 @@ import LibSignalClient
 public extension BackupArchive {
 
     /// An identifier for a ``BackupProto_ChatItem`` backup frame.
-    struct ChatItemId: BackupArchive.LoggableId, Hashable {
+    struct ChatItemId: Hashable {
         let value: UInt64
 
         public init(backupProtoChatItem: BackupProto_ChatItem) {
@@ -19,11 +19,6 @@ public extension BackupArchive {
         public init(interaction: TSInteraction) {
             self.value = interaction.timestamp
         }
-
-        // MARK: BackupArchive.LoggableId
-
-        public var typeLogString: String { "BackupProto_ChatItem" }
-        public var idLogString: String { "timestamp: \(value)" }
     }
 }
 
@@ -31,10 +26,10 @@ public extension BackupArchive {
 
 public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
     typealias ChatItemId = BackupArchive.ChatItemId
-    typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult<BackupArchive.InteractionUniqueId>
-    typealias RestoreFrameResult = BackupArchive.RestoreFrameResult<ChatItemId>
+    typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult
+    typealias RestoreFrameResult = BackupArchive.RestoreFrameResult
 
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
 
     private let archivedPaymentStore: ArchivedPaymentStore
     private let attachmentsArchiver: BackupArchiveMessageAttachmentArchiver
@@ -150,10 +145,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
                 do {
                     interaction = try TSInteraction.fromRecord(interactionRecord)
                 } catch let error {
-                    partialFailures.append(.archiveFrameError(
-                        .invalidInteractionDatabaseRow(error),
-                        BackupArchive.InteractionUniqueId(invalidInteractionRecord: interactionRecord),
-                    ))
+                    partialFailures.append(.archiveFrameError(.invalidInteractionDatabaseRow(error)))
                     return true
                 }
 
@@ -227,10 +219,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         }
 
         guard let chatId, let threadInfo else {
-            partialErrors.append(.archiveFrameError(
-                .referencedThreadIdMissing(interaction.uniqueThreadIdentifier),
-                interaction.uniqueInteractionId,
-            ))
+            partialErrors.append(.archiveFrameError(.referencedThreadIdMissing(interaction.uniqueThreadIdentifier)))
             return .partialSuccess(partialErrors)
         }
 
@@ -320,9 +309,8 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         // writing that disallowed content to the stream.
         sanitizeVoiceNotesWithText(details: &details)
 
-        let error = Self.writeFrameToStream(
+        let error: ArchiveFrameError? = Self.writeFrameToStream(
             stream,
-            objectId: interaction.uniqueInteractionId,
             frameBencher: frameBencher,
         ) {
             let chatItem = buildChatItem(
@@ -445,10 +433,10 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreFrameResult {
         func restoreFrameError(
-            _ error: BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>.ErrorType,
+            _ error: BackupArchive.RestoreFrameError.ErrorType,
             line: UInt = #line,
         ) -> RestoreFrameResult {
-            return .failure([.restoreFrameError(error, chatItem.id, line: line)])
+            return .failure([.restoreFrameError(error, line: line)])
         }
 
         switch context.recipientContext[chatItem.authorRecipientId] {

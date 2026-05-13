@@ -44,15 +44,12 @@ extension BackupArchive {
         }
     }
 
-    public struct GroupId: Hashable, BackupArchive.LoggableId {
+    public struct GroupId: Hashable {
         let value: Data
 
         init(groupModel: TSGroupModel) {
             self.value = groupModel.groupId
         }
-
-        public var typeLogString: String { "Group" }
-        public var idLogString: String { value.base64EncodedString() }
     }
 
     public struct DistributionId: Hashable {
@@ -236,7 +233,7 @@ extension BackupArchive {
 
         enum RecipientIdResult {
             case found(BackupArchive.RecipientId)
-            case missing(BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>)
+            case missing(BackupArchive.ArchiveFrameError)
         }
 
         func getRecipientId(
@@ -254,7 +251,6 @@ extension BackupArchive {
 
             return .missing(.archiveFrameError(
                 .referencedRecipientIdMissing(.contact(contactAddress)),
-                BackupArchive.InteractionUniqueId(interaction: interaction),
                 file: file,
                 function: function,
                 line: line,
@@ -342,45 +338,6 @@ extension BackupArchive {
             var actions = postFrameRestoreActions[recipientId] ?? PostFrameRestoreActions()
             actions.hasIncomingMessagesMissingAci = true
             postFrameRestoreActions[recipientId] = actions
-        }
-    }
-}
-
-extension BackupArchive.RecipientId: BackupArchive.LoggableId {
-    public var typeLogString: String { "BackupProto_Recipient" }
-
-    public var idLogString: String { "\(self.value)" }
-}
-
-extension BackupArchive.RecipientArchivingContext.Address: BackupArchive.LoggableId {
-    public var typeLogString: String {
-        switch self {
-        case .releaseNotesChannel:
-            return "ReleaseNotesChannel_Type"
-        case .contact(let address):
-            return address.typeLogString
-        case .group:
-            return "TSGroupThread"
-        case .distributionList:
-            return "TSPrivateStoryThread"
-        case .callLink:
-            return "CallLinkRecord"
-        }
-    }
-
-    public var idLogString: String {
-        switch self {
-        case .releaseNotesChannel:
-            return "ReleaseNotesChannel_ID"
-        case .contact(let contactAddress):
-            return contactAddress.idLogString
-        case .group(let groupId):
-            // Rely on the scrubber to scrub the id.
-            return groupId.idLogString
-        case .distributionList(let distributionId):
-            return distributionId.value.uuidString
-        case .callLink(let callLinkRecordId):
-            return callLinkRecordId.idLogString
         }
     }
 }

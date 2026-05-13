@@ -12,8 +12,8 @@ public class BackupArchiveReleaseNotesRecipientArchiver: BackupArchiveProtoStrea
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
 
-    typealias ArchiveFrameResult = BackupArchive.ArchiveSingleFrameResult<Void, RecipientAppId>
-    typealias RestoreFrameResult = BackupArchive.RestoreFrameResult<RecipientId>
+    typealias ArchiveFrameResult = BackupArchive.ArchiveSingleFrameResult<Void>
+    typealias RestoreFrameResult = BackupArchive.RestoreFrameResult
 
     public init() {}
 
@@ -27,9 +27,8 @@ public class BackupArchiveReleaseNotesRecipientArchiver: BackupArchiveProtoStrea
             let releaseNotesAppId: RecipientAppId = .releaseNotesChannel
             let recipientId = context.assignRecipientId(to: releaseNotesAppId)
 
-            let maybeError = Self.writeFrameToStream(
+            let maybeError: BackupArchive.ArchiveFrameError? = Self.writeFrameToStream(
                 stream,
-                objectId: releaseNotesAppId,
                 frameBencher: frameBencher,
                 frameBuilder: {
                     var recipient = BackupProto_Recipient()

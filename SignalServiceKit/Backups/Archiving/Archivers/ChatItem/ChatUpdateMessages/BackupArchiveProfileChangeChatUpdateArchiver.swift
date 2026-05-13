@@ -8,8 +8,8 @@ final class BackupArchiveProfileChangeChatUpdateArchiver {
     typealias ArchiveChatUpdateMessageResult = BackupArchive.ArchiveInteractionResult<Details>
     typealias RestoreChatUpdateMessageResult = BackupArchive.RestoreInteractionResult<Void>
 
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let interactionStore: BackupArchiveInteractionStore
 
@@ -28,11 +28,7 @@ final class BackupArchiveProfileChangeChatUpdateArchiver {
             _ errorType: ArchiveFrameError.ErrorType,
             line: UInt = #line,
         ) -> ArchiveChatUpdateMessageResult {
-            return .messageFailure([.archiveFrameError(
-                errorType,
-                infoMessage.uniqueInteractionId,
-                line: line,
-            )])
+            return .messageFailure([.archiveFrameError(errorType, line: line)])
         }
 
         guard let profileAddress = infoMessage.profileChangeAddress?.asSingleServiceIdBackupAddress() else {
@@ -84,10 +80,7 @@ final class BackupArchiveProfileChangeChatUpdateArchiver {
             let profileChangeAuthor = context.recipientContext[chatItem.authorRecipientId],
             case .contact(let profileChangeAuthorContactAddress) = profileChangeAuthor
         else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.profileChangeUpdateNotFromContact),
-                chatItem.id,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.profileChangeUpdateNotFromContact))])
         }
 
         let profileChangeInfoMessage: TSInfoMessage = .makeForProfileChange(
@@ -108,7 +101,7 @@ final class BackupArchiveProfileChangeChatUpdateArchiver {
                 context: context,
             )
         } catch let error {
-            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error))])
         }
 
         return .success(())

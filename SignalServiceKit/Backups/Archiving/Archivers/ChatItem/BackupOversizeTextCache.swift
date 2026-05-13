@@ -208,19 +208,15 @@ class BackupArchiveInlinedOversizeTextArchiver {
         _ text: String,
         bodyRanges: MessageBodyRanges,
         oversizeTextAttachment: BackupProto_FilePointer?,
-        chatItemId: BackupArchive.ChatItemId,
     ) -> BackupArchive.RestoreInteractionResult<RestoredMessageBody?> {
-        var partialErrors = [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]()
+        var partialErrors = [BackupArchive.RestoreFrameError]()
 
         var text = text
         let inlinedTextLength = text.lengthOfBytes(using: .utf8)
         if inlinedTextLength > BackupOversizeTextCache.maxTextLengthBytes {
             // It is never allowed to have text beyond this limit inlined,
             // truncate and drop any excess.
-            partialErrors.append(.restoreFrameError(
-                .invalidProtoData(.standardMessageWayTooOversizedBody),
-                chatItemId,
-            ))
+            partialErrors.append(.restoreFrameError(.invalidProtoData(.standardMessageWayTooOversizedBody)))
             text = text.trimToUtf8ByteCount(BackupOversizeTextCache.maxTextLengthBytes)
         }
         let inlinedBody: MessageBody
@@ -236,17 +232,11 @@ class BackupArchiveInlinedOversizeTextArchiver {
         let oversizeText: RestoredMessageBody.OversizeText?
         if let oversizeTextAttachment {
             if text.isEmpty {
-                return .messageFailure([.restoreFrameError(
-                    .invalidProtoData(.longTextStandardMessageMissingBody),
-                    chatItemId,
-                )])
+                return .messageFailure([.restoreFrameError(.invalidProtoData(.longTextStandardMessageMissingBody))])
             } else if inlinedTextLength > OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes {
                 // If we have an oversize text attachment, we are not allowed to _also_
                 // have inlined oversize text (that exceeds the standard body length limit).
-                partialErrors.append(.restoreFrameError(
-                    .invalidProtoData(.longTextStandardMessageWithOversizeBody),
-                    chatItemId,
-                ))
+                partialErrors.append(.restoreFrameError(.invalidProtoData(.longTextStandardMessageWithOversizeBody)))
                 // Drop the pointer; treat the text as inlined.
                 oversizeText = .inlined(text)
             } else {
@@ -280,7 +270,6 @@ class BackupArchiveInlinedOversizeTextArchiver {
         messageRowId: Int64,
         message: TSMessage,
         thread: BackupArchive.ChatThread,
-        chatItemId: BackupArchive.ChatItemId,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<Void> {
         let text: String
@@ -288,7 +277,6 @@ class BackupArchiveInlinedOversizeTextArchiver {
         case .attachmentPointer(let attachmentPointer):
             return attachmentsArchiver.restoreOversizeTextAttachment(
                 attachmentPointer,
-                chatItemId: chatItemId,
                 messageRowId: messageRowId,
                 message: message,
                 thread: thread,
@@ -319,7 +307,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
 
         // Whether we're free or paid this should be set when we restored the account data frame.
         guard let uploadEra = context.uploadEra else {
-            return .messageFailure([.restoreFrameError(.invalidProtoData(.accountDataNotFound), chatItemId)])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.accountDataNotFound))])
         }
 
         attachmentManager.createAttachmentPointer(
@@ -336,19 +324,13 @@ class BackupArchiveInlinedOversizeTextArchiver {
         )
 
         guard let reference else {
-            return .messageFailure([.restoreFrameError(
-                .failedToCreateAttachment,
-                chatItemId,
-            )])
+            return .messageFailure([.restoreFrameError(.failedToCreateAttachment)])
         }
 
         do {
             try self.insert(attachmentId: reference.attachmentRowId, text: text, tx: context.tx)
         } catch {
-            return .messageFailure([.restoreFrameError(
-                .failedToCreateAttachment,
-                chatItemId,
-            )])
+            return .messageFailure([.restoreFrameError(.failedToCreateAttachment)])
         }
 
         return .success(())

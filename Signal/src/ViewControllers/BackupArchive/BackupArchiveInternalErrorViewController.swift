@@ -60,7 +60,7 @@ class BackupArchiveErrorPresenterInternal: BackupArchiveErrorPresenter {
             .map {
                 var text = ($0.typeLogString) + "\n"
                     + "Were frames dropped? \($0.wasFrameDropped)\n"
-                    + "Repeated \($0.errorCount) times, from: \($0.idLogStrings)\n"
+                    + "Repeated \($0.errorCount) times\n"
                     + "Example callsite: \($0.exampleCallsiteString)"
                 if let exampleProtoFrameJson = $0.exampleProtoFrameJson {
                     text.append("\nProto:\n\(exampleProtoFrameJson)")

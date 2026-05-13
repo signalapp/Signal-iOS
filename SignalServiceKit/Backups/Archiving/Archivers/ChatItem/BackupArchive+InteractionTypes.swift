@@ -4,15 +4,13 @@
 //
 
 extension BackupArchive {
-    public struct InteractionUniqueId: BackupArchive.LoggableId, Hashable {
+    public struct InteractionUniqueId: Hashable {
         let value: String
         let timestamp: UInt64
-        let isPoll: Bool
 
         public init(interaction: TSInteraction) {
             self.value = interaction.uniqueId
             self.timestamp = interaction.timestamp
-            self.isPoll = (interaction as? TSMessage)?.isPoll ?? false
         }
 
         /// Constructs an ID for an `InteractionRecord` from which constructing
@@ -20,19 +18,7 @@ extension BackupArchive {
         public init(invalidInteractionRecord: InteractionRecord) {
             self.value = invalidInteractionRecord.uniqueId
             self.timestamp = invalidInteractionRecord.timestamp
-            self.isPoll = invalidInteractionRecord.isPoll ?? false
         }
-
-        // MARK: BackupArchive.LoggableId
-
-        public var typeLogString: String {
-            if isPoll {
-                return "TSInteraction_Poll"
-            }
-            return "TSInteraction"
-        }
-
-        public var idLogString: String { "\(value):\(timestamp)" }
     }
 }
 
@@ -44,10 +30,6 @@ extension BackupProto_ChatItem {
 
 extension TSInteraction {
     var uniqueInteractionId: BackupArchive.InteractionUniqueId {
-        return .init(interaction: self)
-    }
-
-    var chatItemId: BackupArchive.ChatItemId {
         return .init(interaction: self)
     }
 }
@@ -156,7 +138,6 @@ extension BackupArchive {
                 guard let recipientId = context[.contact(contactAddress)] else {
                     return .messageFailure([.archiveFrameError(
                         .referencedRecipientIdMissing(.contact(contactAddress)),
-                        interactionUniqueId,
                     )])
                 }
                 authorRecipientId = recipientId
@@ -165,7 +146,7 @@ extension BackupArchive {
                 }
             }
 
-            var partialErrors = [BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>]()
+            var partialErrors = [BackupArchive.ArchiveFrameError]()
             for timestamp in [dateCreated, expireStartDate, expiresInMs] {
                 switch BackupArchive.Timestamps.validateTimestamp(timestamp).bubbleUp(Self.self, partialErrors: &partialErrors) {
                 case .continue:
@@ -195,10 +176,7 @@ extension BackupArchive {
                     // which is more trustworthy.
                     authorRecipientId = threadRecipientId
                     // Add a partial error so we log these.
-                    partialErrors.append(.archiveFrameError(
-                        .messageFromOtherRecipientInContactThread,
-                        interactionUniqueId,
-                    ))
+                    partialErrors.append(.archiveFrameError(.messageFromOtherRecipientInContactThread))
                 }
             }
 
@@ -359,10 +337,10 @@ extension BackupArchive {
 
         /// Some portion of the interaction failed to archive, but we can still archive the rest of it.
         /// e.g. some recipient details are missing, so we archive without that recipient.
-        case partialFailure(Component, [ArchiveFrameError<InteractionUniqueId>])
+        case partialFailure(Component, [ArchiveFrameError])
         /// The entire message failed and should be skipped.
         /// Other messages are unaffected.
-        case messageFailure([ArchiveFrameError<InteractionUniqueId>])
+        case messageFailure([ArchiveFrameError])
         /// Catastrophic failure, which should stop _all_ message archiving.
         case completeFailure(FatalArchivingError)
     }
@@ -374,10 +352,10 @@ extension BackupArchive {
         case unrecognizedEnum(UnrecognizedEnumError)
         /// Some portion of the interaction failed to restore, but we can still restore the rest of it.
         /// e.g. a reaction failed to parse, so we just drop that reaction.
-        case partialRestore(Component, [RestoreFrameError<ChatItemId>])
+        case partialRestore(Component, [RestoreFrameError])
         /// The entire message failed and should be skipped.
         /// Other messages are unaffected.
-        case messageFailure([RestoreFrameError<ChatItemId>])
+        case messageFailure([RestoreFrameError])
     }
 }
 
@@ -421,7 +399,7 @@ extension BackupArchive.ArchiveInteractionResult {
     /// }
     func bubbleUp<ErrorComponentType>(
         _ errorComponentType: ErrorComponentType.Type = Component.self,
-        partialErrors: inout [BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>],
+        partialErrors: inout [BackupArchive.ArchiveFrameError],
     ) -> BubbleUp<Component, ErrorComponentType> {
         switch self {
         case .success(let value):
@@ -485,7 +463,7 @@ extension BackupArchive.RestoreInteractionResult {
     /// }
     func bubbleUp<ErrorComponentType>(
         _ errorComponentType: ErrorComponentType.Type = Component.self,
-        partialErrors: inout [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>],
+        partialErrors: inout [BackupArchive.RestoreFrameError],
     ) -> BubbleUp<Component, ErrorComponentType> {
         switch self {
         case .success(let component):

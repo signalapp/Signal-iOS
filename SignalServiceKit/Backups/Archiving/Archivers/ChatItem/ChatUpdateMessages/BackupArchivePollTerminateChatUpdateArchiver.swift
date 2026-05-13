@@ -10,8 +10,8 @@ final class BackupArchivePollTerminateChatUpdateArchiver {
     typealias ArchiveChatUpdateMessageResult = BackupArchive.ArchiveInteractionResult<Details>
     typealias RestoreChatUpdateMessageResult = BackupArchive.RestoreInteractionResult<Void>
 
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let interactionStore: BackupArchiveInteractionStore
 
@@ -30,11 +30,7 @@ final class BackupArchivePollTerminateChatUpdateArchiver {
             _ errorType: ArchiveFrameError.ErrorType,
             line: UInt = #line,
         ) -> ArchiveChatUpdateMessageResult {
-            return .messageFailure([.archiveFrameError(
-                errorType,
-                infoMessage.uniqueInteractionId,
-                line: line,
-            )])
+            return .messageFailure([.archiveFrameError(errorType, line: line)])
         }
 
         guard let endPollItem: PersistableEndPollItem = infoMessage.infoMessageValue(forKey: .endPoll) else {
@@ -93,11 +89,7 @@ final class BackupArchivePollTerminateChatUpdateArchiver {
             _ error: RestoreFrameError.ErrorType.InvalidProtoDataError,
             line: UInt = #line,
         ) -> RestoreChatUpdateMessageResult {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(error),
-                chatItem.id,
-                line: line,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(error), line: line)])
         }
 
         let recipientId = BackupArchive.RecipientId(value: chatItem.authorID)
@@ -140,7 +132,7 @@ final class BackupArchivePollTerminateChatUpdateArchiver {
                 context: context,
             )
         } catch let error {
-            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error))])
         }
 
         return .success(())

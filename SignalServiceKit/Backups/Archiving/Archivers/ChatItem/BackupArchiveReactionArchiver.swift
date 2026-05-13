@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 
 class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
 
     private let reactionStore: BackupArchiveReactionStore
 
@@ -39,24 +39,18 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
                 )?.asArchivingAddress()
             else {
                 // Skip this reaction.
-                errors.append(.archiveFrameError(.invalidReactionAddress, message.uniqueInteractionId))
+                errors.append(.archiveFrameError(.invalidReactionAddress))
                 continue
             }
 
             guard let authorId = context[authorAddress] else {
-                errors.append(.archiveFrameError(
-                    .referencedRecipientIdMissing(authorAddress),
-                    message.uniqueInteractionId,
-                ))
+                errors.append(.archiveFrameError(.referencedRecipientIdMissing(authorAddress)))
                 continue
             }
 
             let sentAtTimestamp = reaction.sentAtTimestamp
             guard BackupArchive.Timestamps.isValid(sentAtTimestamp) else {
-                errors.append(.archiveFrameError(
-                    .invalidReactionTimestamp,
-                    message.uniqueInteractionId,
-                ))
+                errors.append(.archiveFrameError(.invalidReactionTimestamp))
                 continue
             }
 
@@ -80,11 +74,10 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
 
     func restoreReactions(
         _ reactions: [BackupProto_Reaction],
-        chatItemId: BackupArchive.ChatItemId,
         message: TSMessage,
         context: BackupArchive.RecipientRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<Void> {
-        var reactionErrors = [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]()
+        var reactionErrors = [BackupArchive.RestoreFrameError]()
         for reaction in reactions {
             let reactorAddress = context[reaction.authorRecipientId]
 
@@ -125,23 +118,16 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
                         )
                     }
                 } else {
-                    reactionErrors.append(.restoreFrameError(
-                        .invalidProtoData(.reactionNotFromAciOrE164),
-                        chatItemId,
-                    ))
+                    reactionErrors.append(.restoreFrameError(.invalidProtoData(.reactionNotFromAciOrE164)))
                     continue
                 }
             case .group, .distributionList, .releaseNotesChannel, .callLink:
                 // Referencing a group or distributionList as the author is invalid.
-                reactionErrors.append(.restoreFrameError(
-                    .invalidProtoData(.reactionNotFromAciOrE164),
-                    chatItemId,
-                ))
+                reactionErrors.append(.restoreFrameError(.invalidProtoData(.reactionNotFromAciOrE164)))
                 continue
             case nil:
                 reactionErrors.append(.restoreFrameError(
                     .invalidProtoData(.recipientIdNotFound(reaction.authorRecipientId)),
-                    chatItemId,
                 ))
                 continue
             }
@@ -151,7 +137,7 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
                 break
             case .failure(let insertError):
                 reactionErrors.append(
-                    .restoreFrameError(.databaseInsertionFailed(insertError), chatItemId),
+                    .restoreFrameError(.databaseInsertionFailed(insertError)),
                 )
             }
         }

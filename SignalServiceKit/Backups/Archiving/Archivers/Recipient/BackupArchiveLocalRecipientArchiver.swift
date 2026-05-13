@@ -6,13 +6,10 @@
 import GRDB
 
 extension BackupArchive {
-    public struct LocalRecipientId: BackupArchive.LoggableId {
-        public var typeLogString: String { "Local Recipient" }
-        public var idLogString: String { "" }
-    }
+    public struct LocalRecipientId {}
 
-    public typealias ArchiveLocalRecipientResult = ArchiveSingleFrameResult<RecipientId, LocalRecipientId>
-    public typealias RestoreLocalRecipientResult = RestoreFrameResult<RecipientId>
+    public typealias ArchiveLocalRecipientResult = ArchiveSingleFrameResult<RecipientId>
+    public typealias RestoreLocalRecipientResult = RestoreFrameResult
 }
 
 /// Archiver for the ``BackupProto_Self`` recipient, a.k.a. the local
@@ -55,9 +52,8 @@ public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter
                 )
             }
 
-            let error = Self.writeFrameToStream(
+            let error: BackupArchive.ArchiveFrameError? = Self.writeFrameToStream(
                 stream,
-                objectId: BackupArchive.LocalRecipientId(),
                 frameBencher: frameBencher,
             ) {
                 var selfRecipient = BackupProto_Self()
@@ -105,7 +101,7 @@ public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter
             )
             recipientStore.didInsertRecipient(localSignalRecipient, tx: context.tx)
         } catch {
-            return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId)])
+            return .failure([.restoreFrameError(.databaseInsertionFailed(error))])
         }
 
         context.localSignalRecipientRowId = localSignalRecipient.id
@@ -121,7 +117,7 @@ public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter
                     tx: context.tx,
                 )
             } catch {
-                return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId)])
+                return .failure([.restoreFrameError(.databaseInsertionFailed(error))])
             }
         }
 

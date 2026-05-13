@@ -12,7 +12,7 @@ extension BackupArchive {
     // MARK: - Archiving
 
     /// Error while archiving a single frame.
-    public struct ArchiveFrameError<AppIdType: BackupArchive.LoggableId>: BackupArchive.LoggableError {
+    public struct ArchiveFrameError: BackupArchive.LoggableError {
         public enum ErrorType {
             /// Message types for which edit history is unexpected.
             public enum UnexpectedRevisionsMessageType {
@@ -265,7 +265,6 @@ extension BackupArchive {
         }
 
         private let type: ErrorType
-        private let id: AppIdType
         private let file: StaticString
         private let function: StaticString
         private let line: UInt
@@ -277,27 +276,17 @@ extension BackupArchive {
         /// (namespaced) type name at each site.
         public static func archiveFrameError(
             _ type: ErrorType,
-            _ id: AppIdType,
             file: StaticString = #file,
             function: StaticString = #function,
             line: UInt = #line,
         ) -> ArchiveFrameError {
-            return ArchiveFrameError(type: type, id: id, file: file, function: function, line: line)
+            return ArchiveFrameError(type: type, file: file, function: function, line: line)
         }
 
         // MARK: BackupArchive.LoggableError
 
         public var typeLogString: String {
             return "ArchiveFrameError: \(String(describing: type))"
-        }
-
-        public var idLogString: String {
-            switch type {
-            case .distributionListMissingDistributionId:
-                return "\(id.typeLogString).{ID missing}"
-            default:
-                return "\(id.typeLogString).\(id.idLogString)"
-            }
         }
 
         public var callsiteLogString: String {
@@ -314,12 +303,11 @@ extension BackupArchive {
                 .referencedRecipientIdMissing,
                 .referencedThreadIdMissing,
                 .referencedCustomChatColorMissing,
-                .contactThreadMissingAddress:
-                // Collapse these by the id they refer to, which is in the "type".
-                return idLogString
-            case .incomingMessageFromSelf, .nonSelfAuthorInNoteToSelf, .messageFromOtherRecipientInContactThread:
-                // Collapse these all together.
-                return id.typeLogString
+                .contactThreadMissingAddress,
+                .incomingMessageFromSelf,
+                .nonSelfAuthorInNoteToSelf,
+                .messageFromOtherRecipientInContactThread:
+                return typeLogString
             case
                 .fileIOError,
                 .groupMasterKeyError,
@@ -579,10 +567,6 @@ extension BackupArchive {
             return "FatalArchiveError: \(String(describing: type))"
         }
 
-        public var idLogString: String {
-            return ""
-        }
-
         public var callsiteLogString: String {
             return "\(file):\(function):\(line)"
         }
@@ -599,7 +583,7 @@ extension BackupArchive {
     }
 
     /// Error restoring a frame.
-    public struct RestoreFrameError<ProtoIdType: BackupArchive.LoggableId>: BackupArchive.LoggableError {
+    public struct RestoreFrameError: BackupArchive.LoggableError {
         public enum ErrorType {
             public enum InvalidProtoDataError {
                 /// No ``BackupProto_BackupInfo`` header found.
@@ -895,7 +879,6 @@ extension BackupArchive {
         }
 
         private let type: ErrorType
-        private let id: ProtoIdType
         private let file: StaticString
         private let function: StaticString
         private let line: UInt
@@ -907,20 +890,15 @@ extension BackupArchive {
         /// (namespaced) type name at each site.
         public static func restoreFrameError(
             _ type: ErrorType,
-            _ id: ProtoIdType,
             file: StaticString = #file,
             function: StaticString = #function,
             line: UInt = #line,
         ) -> RestoreFrameError {
-            return RestoreFrameError(type: type, id: id, file: file, function: function, line: line)
+            return RestoreFrameError(type: type, file: file, function: function, line: line)
         }
 
         public var typeLogString: String {
             return "RestoreFrameError: \(String(describing: type))"
-        }
-
-        public var idLogString: String {
-            return "\(id.typeLogString).\(id.idLogString)"
         }
 
         public var callsiteLogString: String {
@@ -941,8 +919,8 @@ extension BackupArchive {
                     .invalidBackupTier:
                     // Collapse these by the id they refer to, which is in the "type".
                     return typeLogString
-                case .customChatColorNotFound(let id):
-                    return id.idLogString
+                case .customChatColorNotFound:
+                    return typeLogString
                 case
                     .invalidAci,
                     .invalidPni,
@@ -1022,8 +1000,7 @@ extension BackupArchive {
                     .invalidNumberOfPinnedMessages,
                     .sentTimestampOverflowedLocalType,
                     .adminDeleteAuthorNotContact:
-                    // Collapse all others by the id of the containing frame.
-                    return idLogString
+                    return typeLogString
                 }
             case .referencedChatThreadNotFound, .referencedGroupThreadNotFound, .failedToCreateAttachment:
                 // Collapse these by the id they refer to, which is in the "type".
@@ -1185,7 +1162,6 @@ extension BackupArchive {
 extension BackupArchive {
     protocol LoggableError {
         var typeLogString: String { get }
-        var idLogString: String { get }
         var callsiteLogString: String { get }
 
         /// We want to collapse certain logs. Imagine a Chat is missing from a backup; we don't
@@ -1250,8 +1226,6 @@ extension BackupArchive {
         return Array(collapsedLogs.orderedValues)
     }
 
-    fileprivate static let maxCollapsedIdLogCount = 10
-
     public struct CollapsedErrorLog {
         private let logger: PrefixedLogger
 
@@ -1259,7 +1233,6 @@ extension BackupArchive {
         public private(set) var exampleCallsiteString: String
         public private(set) var exampleProtoFrameJson: String?
         public private(set) var errorCount: UInt = 0
-        public private(set) var idLogStrings: [String] = []
         public private(set) var wasFrameDropped: Bool
         public private(set) var logLevel: BackupArchive.LogLevel
 
@@ -1281,9 +1254,6 @@ extension BackupArchive {
             if exampleProtoFrameJson == nil, let protoJson = error.protoJson {
                 self.exampleProtoFrameJson = protoJson
             }
-            if idLogStrings.count < BackupArchive.maxCollapsedIdLogCount {
-                idLogStrings.append(error.error.idLogString)
-            }
         }
 
         func log() {
@@ -1291,7 +1261,6 @@ extension BackupArchive {
                 typeLogString + " "
                     + "Dropped frame(s)? \(wasFrameDropped). "
                     + "Repeated \(errorCount) times. "
-                    + "from: \(idLogStrings) "
                     + "example callsite: \(exampleCallsiteString)"
             switch logLevel {
             case .warning:

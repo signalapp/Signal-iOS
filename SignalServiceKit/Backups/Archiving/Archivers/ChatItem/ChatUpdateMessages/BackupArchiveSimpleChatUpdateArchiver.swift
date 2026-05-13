@@ -10,8 +10,8 @@ final class BackupArchiveSimpleChatUpdateArchiver {
     typealias ArchiveChatUpdateMessageResult = BackupArchive.ArchiveInteractionResult<Details>
     typealias RestoreChatUpdateMessageResult = BackupArchive.RestoreInteractionResult<Void>
 
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let logger = PrefixedLogger(prefix: "[Backups]")
 
@@ -32,11 +32,7 @@ final class BackupArchiveSimpleChatUpdateArchiver {
             _ error: ArchiveFrameError.ErrorType,
             line: UInt = #line,
         ) -> ArchiveChatUpdateMessageResult {
-            return .messageFailure([.archiveFrameError(
-                error,
-                infoMessage.uniqueInteractionId,
-                line: line,
-            )])
+            return .messageFailure([.archiveFrameError(error, line: line)])
         }
 
         /// To whom we should attribute this update.
@@ -237,11 +233,7 @@ final class BackupArchiveSimpleChatUpdateArchiver {
             _ error: ArchiveFrameError.ErrorType,
             line: UInt = #line,
         ) -> ArchiveChatUpdateMessageResult {
-            return .messageFailure([.archiveFrameError(
-                error,
-                errorMessage.uniqueInteractionId,
-                line: line,
-            )])
+            return .messageFailure([.archiveFrameError(error, line: line)])
         }
 
         let updateAuthor: Details.AuthorAddress
@@ -324,11 +316,7 @@ final class BackupArchiveSimpleChatUpdateArchiver {
             _ error: RestoreFrameError.ErrorType.InvalidProtoDataError,
             line: UInt = #line,
         ) -> RestoreChatUpdateMessageResult {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(error),
-                chatItem.id,
-                line: line,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(error), line: line)])
         }
 
         enum SimpleChatUpdateInteraction {
@@ -560,7 +548,7 @@ final class BackupArchiveSimpleChatUpdateArchiver {
                     context: context,
                 )
             } catch let error {
-                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error))])
             }
         case .prebuiltInfoMessage(let infoMessage):
             do {
@@ -571,7 +559,7 @@ final class BackupArchiveSimpleChatUpdateArchiver {
                     context: context,
                 )
             } catch let error {
-                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error))])
             }
         case .errorMessage(let errorMessage):
             do {
@@ -582,7 +570,7 @@ final class BackupArchiveSimpleChatUpdateArchiver {
                     context: context,
                 )
             } catch let error {
-                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+                return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error))])
             }
         }
 

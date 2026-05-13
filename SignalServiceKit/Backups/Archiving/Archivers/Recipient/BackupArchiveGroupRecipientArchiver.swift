@@ -17,11 +17,11 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
 
-    typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult<RecipientAppId>
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<RecipientAppId>
+    typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
 
-    typealias RestoreFrameResult = BackupArchive.RestoreFrameResult<RecipientId>
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<RecipientId>
+    typealias RestoreFrameResult = BackupArchive.RestoreFrameResult
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let avatarDefaultColorManager: AvatarDefaultColorManager
     private let avatarFetcher: BackupArchiveAvatarFetcher
@@ -115,7 +115,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
             let groupSecretParams = try GroupSecretParams(contents: groupModel.secretParamsData)
             groupMasterKey = try groupSecretParams.getMasterKey().serialize()
         } catch {
-            errors.append(.archiveFrameError(.groupMasterKeyError(error), groupAppId))
+            errors.append(.archiveFrameError(.groupMasterKeyError(error)))
             return
         }
 
@@ -132,7 +132,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                 context: context,
             ).isHidden
         } catch let error {
-            errors.append(.archiveFrameError(.unableToReadStoryContextAssociatedData(error), groupAppId))
+            errors.append(.archiveFrameError(.unableToReadStoryContextAssociatedData(error)))
         }
         group.storySendMode = { () -> BackupProto_Group.StorySendMode in
             switch groupThread.storyViewMode {
@@ -170,7 +170,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                     let aci = address.aci,
                     let role = groupMembership.role(for: address)
                 else {
-                    errors.append(.archiveFrameError(.missingRequiredGroupMemberParams, groupAppId))
+                    errors.append(.archiveFrameError(.missingRequiredGroupMemberParams))
                     return nil
                 }
 
@@ -182,7 +182,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                     let role = groupMembership.role(for: address),
                     let addedByAci = groupMembership.addedByAci(forInvitedMember: address)
                 else {
-                    errors.append(.archiveFrameError(.missingRequiredGroupMemberParams, groupAppId))
+                    errors.append(.archiveFrameError(.missingRequiredGroupMemberParams))
                     return nil
                 }
 
@@ -200,7 +200,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
             }
             groupSnapshot.membersPendingAdminApproval = groupMembership.requestingMembers.compactMap { address -> BackupProto_Group.MemberPendingAdminApproval? in
                 guard let aci = address.aci else {
-                    errors.append(.archiveFrameError(.missingRequiredGroupMemberParams, groupAppId))
+                    errors.append(.archiveFrameError(.missingRequiredGroupMemberParams))
                     return nil
                 }
 
@@ -225,9 +225,8 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
             return groupSnapshot
         }()
 
-        Self.writeFrameToStream(
+        let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
             stream,
-            objectId: groupAppId,
             frameBencher: frameBencher,
             frameBuilder: {
                 var recipient = BackupProto_Recipient()
@@ -239,7 +238,10 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                 frame.item = .recipient(recipient)
                 return frame
             },
-        ).map { errors.append($0) }
+        )
+        if let maybeError {
+            errors.append(maybeError)
+        }
     }
 
     func restoreGroupRecipientProto(
@@ -251,7 +253,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
             _ error: RestoreFrameError.ErrorType,
             line: UInt = #line,
         ) -> RestoreFrameResult {
-            return .failure([.restoreFrameError(error, recipient.recipientId, line: line)])
+            return .failure([.restoreFrameError(error, line: line)])
         }
 
         // MARK: Assemble the group model
@@ -317,7 +319,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
             )
         }
 
-        var partialErrors = [BackupArchive.RestoreFrameError<RecipientId>]()
+        var partialErrors = [BackupArchive.RestoreFrameError]()
 
         for member in groupSnapshot.members {
             guard let aci = try? Aci.parseFrom(serviceIdBinary: member.userID) else {
@@ -329,7 +331,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                     member.labelString.count <= 24,
                     member.labelEmoji.lengthOfBytes(using: .utf8) <= 48
                 else {
-                    partialErrors.append(.restoreFrameError(.invalidProtoData(.invalidMemberLabel), recipient.recipientId))
+                    partialErrors.append(.restoreFrameError(.invalidProtoData(.invalidMemberLabel)))
                     continue
                 }
                 let emoji: String? = member.labelEmoji.isEmpty ? nil : member.labelEmoji
@@ -424,7 +426,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                 )
             } catch {
                 // Don't fail entirely; colors aren't that important.
-                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId))
+                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error)))
             }
         }
 
@@ -438,7 +440,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                 )
             } catch let error {
                 // Don't fail entirely; the story will just be unhidden.
-                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId))
+                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error)))
             }
         }
 

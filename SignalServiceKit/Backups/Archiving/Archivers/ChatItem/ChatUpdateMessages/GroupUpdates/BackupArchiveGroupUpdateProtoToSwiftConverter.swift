@@ -17,15 +17,13 @@ final class BackupArchiveGroupUpdateProtoToSwiftConverter {
         // We should never be comparing our pni as it can change,
         // we only ever want to compare our unchanging aci.
         localUserAci: Aci,
-        partialErrors: inout [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>],
-        chatItemId: BackupArchive.ChatItemId,
+        partialErrors: inout [BackupArchive.RestoreFrameError],
     ) -> BackupArchive.RestoreInteractionResult<[PersistableGroupUpdateItem]> {
         var persistableUpdates = [PersistableGroupUpdateItem]()
         for updateProto in groupUpdates {
             let result = Self.restoreGroupUpdate(
                 groupUpdate: updateProto,
                 localUserAci: localUserAci,
-                chatItemId: chatItemId,
             )
             switch result.bubbleUp([PersistableGroupUpdateItem].self, partialErrors: &partialErrors) {
             case .continue(let component):
@@ -40,12 +38,11 @@ final class BackupArchiveGroupUpdateProtoToSwiftConverter {
     private static func restoreGroupUpdate(
         groupUpdate: BackupProto_GroupChangeChatUpdate.Update,
         localUserAci: Aci,
-        chatItemId: BackupArchive.ChatItemId,
     ) -> BackupArchive.RestoreInteractionResult<[PersistableGroupUpdateItem]> {
         enum UnwrappedRequiredAci {
             case localUser
             case otherUser(AciUuid)
-            case invalidAci(BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>)
+            case invalidAci(BackupArchive.RestoreFrameError)
         }
         func unwrapRequiredAci<Proto>(
             _ proto: Proto,
@@ -54,10 +51,7 @@ final class BackupArchiveGroupUpdateProtoToSwiftConverter {
             let aciData = proto[keyPath: aciKeyPath]
 
             guard let aci = UUID(data: aciData).map({ Aci(fromUUID: $0) }) else {
-                return .invalidAci(.restoreFrameError(
-                    .invalidProtoData(.invalidAci(protoClass: Proto.self)),
-                    chatItemId,
-                ))
+                return .invalidAci(.restoreFrameError(.invalidProtoData(.invalidAci(protoClass: Proto.self))))
             }
 
             if aci == localUserAci {
@@ -71,7 +65,7 @@ final class BackupArchiveGroupUpdateProtoToSwiftConverter {
             case unknown
             case localUser
             case otherUser(AciUuid)
-            case invalidAci(BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>)
+            case invalidAci(BackupArchive.RestoreFrameError)
         }
         func unwrapOptionalAci<Proto>(
             _ proto: Proto,
@@ -84,10 +78,7 @@ final class BackupArchiveGroupUpdateProtoToSwiftConverter {
             }
 
             guard let aci = UUID(data: aciData).map({ Aci(fromUUID: $0) }) else {
-                return .invalidAci(.restoreFrameError(
-                    .invalidProtoData(.invalidAci(protoClass: Proto.self)),
-                    chatItemId,
-                ))
+                return .invalidAci(.restoreFrameError(.invalidProtoData(.invalidAci(protoClass: Proto.self))))
             }
 
             if aci == localUserAci {
@@ -329,7 +320,6 @@ final class BackupArchiveGroupUpdateProtoToSwiftConverter {
             case .none:
                 return .messageFailure([.restoreFrameError(
                     .invalidProtoData(.invalidServiceId(protoClass: BackupProto_SelfInvitedOtherUserToGroupUpdate.self)),
-                    chatItemId,
                 )])
             }
         case .groupUnknownInviteeUpdate(let proto):
@@ -606,7 +596,6 @@ final class BackupArchiveGroupUpdateProtoToSwiftConverter {
             case .localUser:
                 return .messageFailure([.restoreFrameError(
                     .invalidProtoData(.sequenceOfRequestsAndCancelsWithLocalAci),
-                    chatItemId,
                 )])
             // We assume it is the tail to start out with; if we see a subsequent join request
             // from the same invite then we will mark it as not the tail.

@@ -6,8 +6,8 @@
 import LibSignalClient
 
 class BackupArchiveTSOutgoingMessageArchiver {
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let contentsArchiver: BackupArchiveTSMessageContentsArchiver
     private let editHistoryArchiver: BackupArchiveTSMessageEditHistoryArchiver<TSOutgoingMessage>
@@ -233,17 +233,11 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
 
         for (address, sendState) in message.recipientAddressStates ?? [:] {
             guard let recipientAddress = address.asSingleServiceIdBackupAddress()?.asArchivingAddress() else {
-                perRecipientErrors.append(.archiveFrameError(
-                    .invalidOutgoingMessageRecipient,
-                    message.uniqueInteractionId,
-                ))
+                perRecipientErrors.append(.archiveFrameError(.invalidOutgoingMessageRecipient))
                 continue
             }
             guard let recipientId = recipientContext[recipientAddress] else {
-                perRecipientErrors.append(.archiveFrameError(
-                    .referencedRecipientIdMissing(recipientAddress),
-                    message.uniqueInteractionId,
-                ))
+                perRecipientErrors.append(.archiveFrameError(.referencedRecipientIdMissing(recipientAddress)))
                 continue
             }
 
@@ -346,7 +340,6 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
         case .incoming, .directionless:
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.revisionOfOutgoingMessageMissingOutgoingDetails),
-                chatItem.id,
             )])
         case nil:
             return .unrecognizedEnum(BackupArchive.UnrecognizedEnumError(
@@ -360,7 +353,6 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
         switch contentsArchiver
             .restoreContents(
                 chatItemType,
-                chatItemId: chatItem.id,
                 chatThread: chatThread,
                 context: context,
             )
@@ -411,7 +403,6 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
             .restoreDownstreamObjects(
                 message: outgoingMessage,
                 thread: chatThread,
-                chatItemId: chatItem.id,
                 pinDetails: chatItem.hasPinDetails ? chatItem.pinDetails : nil,
                 restoredContents: contents,
                 context: context,
@@ -447,10 +438,7 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
         } catch {
             return .partialRestore(
                 outgoingMessage,
-                [.restoreFrameError(
-                    .databaseInsertionFailed(error),
-                    chatItem.id,
-                )] + partialErrors,
+                [.restoreFrameError(.databaseInsertionFailed(error))] + partialErrors,
             )
         }
 
@@ -472,19 +460,13 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
         // We don't _really_ need to check the upper limit here because
         // its enforced by the validator, but it doesn't hurt.
         guard SDS.fitsInInt64(chatItem.dateSent), chatItem.dateSent > 0 else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.chatItemInvalidDateSent),
-                chatItem.id,
-            )])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.chatItemInvalidDateSent))])
         }
 
         let expiresInSeconds: UInt32
         if chatItem.hasExpiresInMs {
             guard let _expiresInSeconds: UInt32 = .msToSecs(chatItem.expiresInMs) else {
-                return .messageFailure([.restoreFrameError(
-                    .invalidProtoData(.expirationTimerOverflowedLocalType),
-                    chatItem.id,
-                )])
+                return .messageFailure([.restoreFrameError(.invalidProtoData(.expirationTimerOverflowedLocalType))])
             }
             expiresInSeconds = _expiresInSeconds
         } else {
@@ -505,17 +487,11 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
                 recipientAddress = context.recipientContext.localIdentifiers.aciAddress
             case .none:
                 // Missing recipient! Fail this one recipient but keep going.
-                partialErrors.append(.restoreFrameError(
-                    .invalidProtoData(.recipientIdNotFound(recipientID)),
-                    chatItem.id,
-                ))
+                partialErrors.append(.restoreFrameError(.invalidProtoData(.recipientIdNotFound(recipientID))))
                 continue
             case .group, .distributionList, .releaseNotesChannel, .callLink:
                 // Recipients can only be contacts.
-                partialErrors.append(.restoreFrameError(
-                    .invalidProtoData(.outgoingNonContactMessageRecipient),
-                    chatItem.id,
-                ))
+                partialErrors.append(.restoreFrameError(.invalidProtoData(.outgoingNonContactMessageRecipient)))
                 continue
             }
 
@@ -523,7 +499,6 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
                 let recipientState = recipientState(
                     for: sendStatus,
                     partialErrors: &partialErrors,
-                    chatItemId: chatItem.id,
                 )
             else {
                 continue
@@ -632,14 +607,14 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
                 case .contact(let contactThread):
                     guard let aci = contactThread.contactAddress.aci else {
                         return .messageFailure(
-                            [.restoreFrameError(.invalidProtoData(.directStoryReplyFromNonAci), chatItem.id)]
+                            [.restoreFrameError(.invalidProtoData(.directStoryReplyFromNonAci))]
                                 + partialErrors,
                         )
                     }
                     outgoingMessageBuilder.storyAuthorAci = AciObjC(aci)
                 case .groupV2:
                     return .messageFailure(
-                        [.restoreFrameError(.invalidProtoData(.directStoryReplyInGroupThread), chatItem.id)]
+                        [.restoreFrameError(.invalidProtoData(.directStoryReplyInGroupThread))]
                             + partialErrors,
                     )
                 }
@@ -672,14 +647,13 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
                 context: context,
             )
         } catch let error {
-            return .messageFailure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+            return .messageFailure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error))])
         }
 
         guard outgoingMessage.sqliteRowId != nil else {
             // Failed insert!
             return .messageFailure(partialErrors + [.restoreFrameError(
                 .databaseInsertionFailed(MessageInsertionError()),
-                chatItem.id,
             )])
         }
 
@@ -693,7 +667,6 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
     private func recipientState(
         for sendStatus: BackupProto_SendStatus,
         partialErrors: inout [RestoreFrameError],
-        chatItemId: BackupArchive.ChatItemId,
     ) -> TSOutgoingMessageRecipientState? {
         let recipientStatus: OWSOutgoingMessageRecipientStatus
         var wasSentByUD: Bool = false

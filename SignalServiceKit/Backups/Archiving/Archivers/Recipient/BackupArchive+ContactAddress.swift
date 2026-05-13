@@ -161,19 +161,6 @@ extension BackupArchive.ContactAddress {
     }
 }
 
-extension BackupArchive.ContactAddress: BackupArchive.LoggableId {
-    public var typeLogString: String {
-        return "SignalRecipient"
-    }
-
-    public var idLogString: String {
-        return "aci:\(aci?.logString ?? "?") "
-            + "pni:\(pni?.logString ?? "?") "
-            // Rely on the log scrubber to scrub the e164.
-            + "e164:\(e164?.stringValue ?? "?")"
-    }
-}
-
 extension BackupArchive.InteropAddress {
 
     /// Warning: when using this method, you will get an aci or a pni but not both, even if we

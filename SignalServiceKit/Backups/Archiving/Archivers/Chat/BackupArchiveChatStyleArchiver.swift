@@ -31,8 +31,8 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
 
     func archiveCustomChatColors(
         context: BackupArchive.CustomChatColorArchivingContext,
-    ) -> BackupArchive.ArchiveSingleFrameResult<[BackupProto_ChatStyle.CustomChatColor], BackupArchive.AccountDataId> {
-        var partialErrors = [BackupArchive.ArchiveFrameError<CustomChatColor.Key>]()
+    ) -> BackupArchive.ArchiveSingleFrameResult<[BackupProto_ChatStyle.CustomChatColor]> {
+        var partialErrors = [BackupArchive.ArchiveFrameError]()
         var protos = [BackupProto_ChatStyle.CustomChatColor]()
 
         for (key, customChatColor) in chatColorSettingStore.fetchCustomValues(tx: context.tx) {
@@ -42,20 +42,14 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
             case .themedColor(let color, _):
                 // Themes should be impossible with custom chat colors; add an error
                 // but just take the light theme color and keep going.
-                partialErrors.append(.archiveFrameError(
-                    .themedCustomChatColor,
-                    key,
-                ))
+                partialErrors.append(.archiveFrameError(.themedCustomChatColor))
                 fallthrough
             case .solidColor(let color):
                 protoColor = .solid(color.asARGBHex())
             case .themedGradient(let gradientColor1, let gradientColor2, _, _, let angleRadians):
                 // Themes should be impossible with custom chat colors; add an error
                 // but just take the light theme colors and keep going.
-                partialErrors.append(.archiveFrameError(
-                    .themedCustomChatColor,
-                    key,
-                ))
+                partialErrors.append(.archiveFrameError(.themedCustomChatColor))
                 fallthrough
             case .gradient(let gradientColor1, let gradientColor2, var angleRadians):
                 var gradient = BackupProto_ChatStyle.Gradient()
@@ -103,8 +97,8 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
     func restoreCustomChatColors(
         _ chatColorProtos: [BackupProto_ChatStyle.CustomChatColor],
         context: BackupArchive.CustomChatColorRestoringContext,
-    ) -> BackupArchive.RestoreFrameResult<BackupArchive.AccountDataId> {
-        var partialErrors = [BackupArchive.RestoreFrameError<BackupArchive.AccountDataId>]()
+    ) -> BackupArchive.RestoreFrameResult {
+        var partialErrors = [BackupArchive.RestoreFrameError]()
 
         /// We track a `creationTimestamp` for custom chat colors. In practice
         /// that value isn't used for anything beyond sorting; however, because
@@ -134,10 +128,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
                     let firstColorARGBHex = gradient.colors.first,
                     let lastColorARGBHex = gradient.colors.last
                 else {
-                    partialErrors.append(.restoreFrameError(
-                        .invalidProtoData(.chatStyleGradientSingleOrNoColors),
-                        .forCustomChatColorError(chatColorId: customChatColorId),
-                    ))
+                    partialErrors.append(.restoreFrameError(.invalidProtoData(.chatStyleGradientSingleOrNoColors)))
                     continue
                 }
                 // Angle is in degrees; convert to radians.
@@ -188,31 +179,28 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
     /// should be _unset_ on the settings proto.
     func archiveDefaultChatStyle(
         context: BackupArchive.CustomChatColorArchivingContext,
-    ) -> BackupArchive.ArchiveSingleFrameResult<BackupProto_ChatStyle?, BackupArchive.AccountDataId> {
+    ) -> BackupArchive.ArchiveSingleFrameResult<BackupProto_ChatStyle?> {
         return _archiveChatStyle(
             thread: nil,
             context: context,
-            errorId: .localUser,
         )
     }
 
     func archiveChatStyle(
         thread: BackupArchive.ChatThread,
         context: BackupArchive.CustomChatColorArchivingContext,
-    ) -> BackupArchive.ArchiveSingleFrameResult<BackupProto_ChatStyle?, BackupArchive.ThreadUniqueId> {
+    ) -> BackupArchive.ArchiveSingleFrameResult<BackupProto_ChatStyle?> {
         return _archiveChatStyle(
             thread: thread,
             context: context,
-            errorId: thread.tsThread.uniqueThreadIdentifier,
         )
     }
 
     /// thread = nil for the default global setting
-    private func _archiveChatStyle<IDType>(
+    private func _archiveChatStyle(
         thread: BackupArchive.ChatThread?,
         context: BackupArchive.CustomChatColorArchivingContext,
-        errorId: IDType,
-    ) -> BackupArchive.ArchiveSingleFrameResult<BackupProto_ChatStyle?, IDType> {
+    ) -> BackupArchive.ArchiveSingleFrameResult<BackupProto_ChatStyle?> {
         var proto = BackupProto_ChatStyle()
         // This can never be unset, so we'll default it to "auto". If we have an
         // explicit bubble color, we'll overwrite this below.
@@ -231,7 +219,6 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
             case .photo:
                 switch self.archiveWallpaperAttachment(
                     thread: thread,
-                    errorId: errorId,
                     context: context,
                 ) {
                 case .success(.some(let wallpaperAttachmentProto)):
@@ -268,10 +255,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
                 proto.bubbleColor = .bubbleColorPreset(paletteChatColor.asBackupProto())
             case .custom(let key, _):
                 guard let customColorId = context[key] else {
-                    return .failure(.archiveFrameError(
-                        .referencedCustomChatColorMissing(key),
-                        errorId,
-                    ))
+                    return .failure(.archiveFrameError(.referencedCustomChatColorMissing(key)))
                 }
                 proto.bubbleColor = .customColorID(customColorId.value)
             }
@@ -297,12 +281,11 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
     func restoreDefaultChatStyle(
         _ chatStyleProto: BackupProto_ChatStyle?,
         context: BackupArchive.CustomChatColorRestoringContext,
-    ) -> BackupArchive.RestoreFrameResult<BackupArchive.AccountDataId> {
+    ) -> BackupArchive.RestoreFrameResult {
         return _restoreChatStyle(
             chatStyleProto,
             thread: nil,
             context: context,
-            errorId: .localUser,
         )
     }
 
@@ -310,26 +293,23 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
     func restoreChatStyle(
         _ chatStyleProto: BackupProto_ChatStyle?,
         thread: BackupArchive.ChatThread,
-        chatId: BackupArchive.ChatId,
         context: BackupArchive.CustomChatColorRestoringContext,
-    ) -> BackupArchive.RestoreFrameResult<BackupArchive.ChatId> {
+    ) -> BackupArchive.RestoreFrameResult {
         return _restoreChatStyle(
             chatStyleProto,
             thread: thread,
             context: context,
-            errorId: chatId,
         )
     }
 
     /// - parameter chatStyleProto: Nil if unset in the parent proto (hasFoo is false)
     /// - parameter thread: Nil for the default global setting
-    private func _restoreChatStyle<IDType>(
+    private func _restoreChatStyle(
         _ chatStyleProto: BackupProto_ChatStyle?,
         thread: BackupArchive.ChatThread?,
         context: BackupArchive.CustomChatColorRestoringContext,
-        errorId: IDType,
-    ) -> BackupArchive.RestoreFrameResult<IDType> {
-        var partialErrors = [BackupArchive.RestoreFrameError<IDType>]()
+    ) -> BackupArchive.RestoreFrameResult {
+        var partialErrors = [BackupArchive.RestoreFrameError]()
 
         if let chatStyleProto {
             switch chatStyleProto.bubbleColor {
@@ -354,10 +334,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
             case .customColorID(let customColorIdRaw):
                 let customColorId = BackupArchive.CustomChatColorId(value: customColorIdRaw)
                 guard let customColorKey = context[customColorId] else {
-                    return .failure([.restoreFrameError(
-                        .invalidProtoData(.customChatColorNotFound(customColorId)),
-                        errorId,
-                    )])
+                    return .failure([.restoreFrameError(.invalidProtoData(.customChatColorNotFound(customColorId)))])
                 }
                 guard
                     let customColor = chatColorSettingStore.fetchCustomValue(
@@ -365,10 +342,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
                         tx: context.tx,
                     )
                 else {
-                    return .failure([.restoreFrameError(
-                        .referencedCustomChatColorNotFound(customColorKey),
-                        errorId,
-                    )])
+                    return .failure([.restoreFrameError(.referencedCustomChatColorNotFound(customColorKey))])
                 }
                 chatColorSettingStore.setChatColorSetting(
                     ChatColorSetting.custom(
@@ -416,7 +390,6 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
                 let attachmentResult = restoreWallpaperAttachment(
                     filePointer,
                     thread: thread,
-                    errorId: errorId,
                     context: context,
                 )
                 switch attachmentResult {
@@ -442,11 +415,10 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
 
     // MARK: - Wallpaper Images
 
-    private func archiveWallpaperAttachment<IDType>(
+    private func archiveWallpaperAttachment(
         thread: BackupArchive.ChatThread?,
-        errorId: IDType,
         context: BackupArchive.ArchivingContext,
-    ) -> BackupArchive.ArchiveSingleFrameResult<BackupProto_FilePointer?, IDType> {
+    ) -> BackupArchive.ArchiveSingleFrameResult<BackupProto_FilePointer?> {
         let owner: AttachmentReference.Owner.ID
         if let thread {
             owner = .threadWallpaperImage(threadRowId: thread.threadRowId)
@@ -465,17 +437,13 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
         return .success(referencedAttachment.asBackupFilePointer(context: context))
     }
 
-    private func restoreWallpaperAttachment<IDType>(
+    private func restoreWallpaperAttachment(
         _ attachment: BackupProto_FilePointer,
         thread: BackupArchive.ChatThread?,
-        errorId: IDType,
         context: BackupArchive.CustomChatColorRestoringContext,
-    ) -> BackupArchive.RestoreFrameResult<IDType> {
+    ) -> BackupArchive.RestoreFrameResult {
         guard let uploadEra = context.accountDataContext.uploadEra else {
-            return .failure([.restoreFrameError(
-                .invalidProtoData(.accountDataNotFound),
-                errorId,
-            )])
+            return .failure([.restoreFrameError(.invalidProtoData(.accountDataNotFound))])
         }
 
         let ownedAttachment = OwnedAttachmentBackupPointerProto(
@@ -501,10 +469,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
 
         let results = attachmentStore.fetchReferencedAttachments(owners: [ownedAttachment.owner.id], tx: context.tx)
         if results.isEmpty {
-            return .partialRestore([.restoreFrameError(
-                .failedToCreateAttachment,
-                errorId,
-            )])
+            return .partialRestore([.restoreFrameError(.failedToCreateAttachment)])
         }
 
         guard let backupPlan = context.accountDataContext.backupPlan else {
@@ -512,7 +477,6 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
                 .invalidProtoData(
                     .accountDataNotFound,
                 ),
-                errorId,
             )])
         }
 

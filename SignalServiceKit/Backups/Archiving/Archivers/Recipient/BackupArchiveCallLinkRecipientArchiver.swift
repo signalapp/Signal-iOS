@@ -6,7 +6,7 @@
 import SignalRingRTC
 
 extension BackupArchive {
-    public struct CallLinkRecordId: Hashable, BackupArchive.LoggableId {
+    public struct CallLinkRecordId: Hashable {
         let rowId: Int64
 
         public init(_ callLinkRecord: CallLinkRecord) {
@@ -21,22 +21,17 @@ extension BackupArchive {
                 self.rowId = callLinkRowId
             }
         }
-
-        // MARK: BackupArchive.LoggableId
-
-        public var typeLogString: String { "CallLinkRecord" }
-        public var idLogString: String { "\(rowId)" }
     }
 }
 
 public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWriter {
     typealias CallLinkRecordId = BackupArchive.CallLinkRecordId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
-    typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult<RecipientAppId>
-    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<RecipientAppId>
+    typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult
+    private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
     typealias RecipientId = BackupArchive.RecipientId
-    typealias RestoreFrameResult = BackupArchive.RestoreFrameResult<RecipientId>
-    private typealias RestoreFrameError = BackupArchive.RestoreFrameError<RecipientId>
+    typealias RestoreFrameResult = BackupArchive.RestoreFrameResult
+    private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
     private let callLinkStore: CallLinkRecordStore
 
@@ -99,9 +94,8 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
                     owsAssertDebug(record.revoked != true, "call links should be deleted, not revoked")
 
                     let recipientId = context.assignRecipientId(to: callLinkAppId)
-                    Self.writeFrameToStream(
+                    let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
                         stream,
-                        objectId: callLinkAppId,
                         frameBencher: frameBencher,
                     ) {
                         var recipient = BackupProto_Recipient()
@@ -110,7 +104,10 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
                         var frame = BackupProto_Frame()
                         frame.item = .recipient(recipient)
                         return frame
-                    }.map { errors.append($0) }
+                    }
+                    if let maybeError {
+                        errors.append(maybeError)
+                    }
                 }
             }
         } catch let error as CancellationError {
@@ -135,14 +132,14 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
             _ error: RestoreFrameError.ErrorType,
             line: UInt = #line,
         ) -> RestoreFrameResult {
-            return .failure([.restoreFrameError(error, recipient.recipientId, line: line)])
+            return .failure([.restoreFrameError(error, line: line)])
         }
 
         let rootKey: CallLinkRootKey
         do {
             rootKey = try CallLinkRootKey(callLinkProto.rootKey)
         } catch {
-            return .failure([.restoreFrameError(.invalidProtoData(.callLinkInvalidRootKey), recipient.recipientId)])
+            return .failure([.restoreFrameError(.invalidProtoData(.callLinkInvalidRootKey))])
         }
 
         let adminKey: Data?
@@ -185,7 +182,7 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
             context[recipient.recipientId] = .callLink(callLinkRecordId)
             context[callLinkRecordId] = record
         } catch {
-            return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId)])
+            return .failure([.restoreFrameError(.databaseInsertionFailed(error))])
         }
 
         return .success
