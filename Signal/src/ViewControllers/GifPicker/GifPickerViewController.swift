@@ -109,7 +109,7 @@ protocol GifPickerViewControllerDelegate: AnyObject {
     func gifPickerDidCancel()
 }
 
-class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate, OWSNavigationChildController {
+class GifPickerViewController: OWSViewController, UISearchBarDelegate, UISearchResultsUpdating, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate, OWSNavigationChildController {
 
     // MARK: Properties
 
@@ -129,7 +129,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     weak var delegate: GifPickerViewControllerDelegate?
 
-    let searchBar: UISearchBar
     let layout: GifPickerLayout
     let collectionView: UICollectionView
     var noResultsView: UILabel?
@@ -150,7 +149,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: Initializers
 
     override init() {
-        self.searchBar = UISearchBar()
         self.layout = GifPickerLayout()
         self.collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: self.layout)
 
@@ -225,7 +223,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         super.viewDidAppear(animated)
 
         if !hasEverAppeared {
-            searchBar.becomeFirstResponder()
+            DispatchQueue.main.async {
+                self.navigationItem.searchController?.isActive = true
+                self.navigationItem.searchController?.searchBar.becomeFirstResponder()
+            }
         }
         hasEverAppeared = true
     }
@@ -280,11 +281,11 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         self.collectionView.backgroundColor = backgroundColor
-        self.collectionView.contentInsetAdjustmentBehavior = .never
         self.collectionView.register(GifPickerCell.self, forCellWithReuseIdentifier: kCellReuseIdentifier)
         view.addSubview(self.collectionView)
         self.collectionView.autoPinEdge(toSuperviewSafeArea: .leading)
         self.collectionView.autoPinEdge(toSuperviewSafeArea: .trailing)
+        self.collectionView.autoPinEdge(toSuperviewEdge: .top)
 
         view.addSubview(selectedMaskingView)
         selectedMaskingView.autoPinEdge(.top, to: .top, of: collectionView)
@@ -294,15 +295,16 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         selectedMaskingView.isHidden = true
 
         // Search
-        searchBar.delegate = self
-        searchBar.placeholder = OWSLocalizedString(
-            "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
-            comment: "Placeholder text for the search field in GIF view",
-        )
-        view.addSubview(searchBar)
-        searchBar.autoPinWidthToSuperview()
-        searchBar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        searchBar.autoPinEdge(.bottom, to: .top, of: collectionView)
+        let searchController = UISearchController()
+        searchController.searchBar.delegate = self
+        searchController.searchResultsUpdater = self
+        searchController.automaticallyShowsCancelButton = false
+        searchController.hidesNavigationBarDuringPresentation = false
+        navigationItem.searchController = searchController
+        if #available(iOS 26.0, *) {
+            navigationItem.searchBarPlacementAllowsToolbarIntegration = false
+        }
+        navigationItem.hidesSearchBarWhenScrolling = false
 
         // for iPhoneX devices, extends the black background to the bottom edge of the view.
         let bottomBannerContainer = UIView()
@@ -421,7 +423,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: - UIScrollViewDelegate
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        self.searchBar.resignFirstResponder()
+        self.navigationItem.searchController?.searchBar.resignFirstResponder()
     }
 
     // MARK: - UICollectionViewDataSource
@@ -564,9 +566,16 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         cell.isCellVisible = false
     }
 
-    // MARK: - UISearchBarDelegate
+    // MARK: - UISearchResultsUpdating
 
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    private var previousSearchTerm: String?
+
+    func updateSearchResults(for searchController: UISearchController) {
+        guard searchController.searchBar.text?.nilIfEmpty != previousSearchTerm?.nilIfEmpty else {
+            return
+        }
+        self.previousSearchTerm = searchController.searchBar.text
+
         // Clear error messages immediately.
         if viewMode == .error || viewMode == .noResults {
             viewMode = .idle
@@ -579,16 +588,15 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         })
     }
 
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        self.searchBar.resignFirstResponder()
+    // MARK: - UISearchBarDelegate
 
-        taskQueue.enqueueCancellingPrevious(operation: { @MainActor in
-            await self.tryToSearch(afterDelay: 0)
-        })
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        self.navigationItem.searchController?.searchBar.resignFirstResponder()
     }
 
     private func tryToSearch(afterDelay delay: TimeInterval) async {
-        let query = searchBar.text!.trimmingCharacters(in: .whitespacesAndNewlines)
+        let text = navigationItem.searchController?.searchBar.text ?? ""
+        let query = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
         await loadResults(afterDelay: delay) {
             if query.isEmpty {
@@ -606,7 +614,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     private func loadResults(afterDelay delay: TimeInterval, loadImageInfos: () async throws -> [GiphyImageInfo]) async {
         self.showLoading()
-        self.collectionView.contentOffset = .zero
+        self.collectionView.contentOffset = CGPoint(
+            x: 0,
+            y: -self.collectionView.adjustedContentInset.top,
+        )
         do {
             if delay > 0 {
                 try await Task.sleep(nanoseconds: delay.clampedNanoseconds)
