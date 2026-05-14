@@ -32,9 +32,7 @@ class SettingsHeaderButton: UIView {
 
         // Button
         button.configuration?.image = Theme.iconImage(icon)
-        button.configuration?.imageColorTransformer = UIConfigurationColorTransformer({ _ in
-            return .Signal.label
-        })
+        button.configuration?.baseForegroundColor = .Signal.label
         button.configuration?.contentInsets = .init(top: 13, leading: 26, bottom: 13, trailing: 26)
         button.configuration?.cornerStyle = .capsule
         updateButtonBackgroundColorTransformer()

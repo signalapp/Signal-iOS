@@ -238,19 +238,13 @@ public class PinReminderViewController: OWSViewController {
         ])
 
         // Close button at the top.
-        let buttonConfiguration: UIButton.Configuration
-        var buttonImageColor = UIColor(dynamicProvider: { traits in
-            if traits.userInterfaceStyle == .light {
-                return .ows_gray75
-            } else {
-                return .ows_gray15
-            }
-        })
-        if #available(iOS 26.0, *) {
+        var buttonConfiguration: UIButton.Configuration
+        if #available(iOS 26, *) {
             buttonConfiguration = .prominentClearGlass()
-            buttonImageColor = .Signal.label
+            buttonConfiguration.baseForegroundColor = .Signal.label
         } else {
             buttonConfiguration = .plain()
+            buttonConfiguration.baseForegroundColor = UIColor(light: .ows_gray75, dark: .ows_gray15)
         }
         let dismissButton = UIButton(
             configuration: buttonConfiguration,
@@ -259,7 +253,6 @@ public class PinReminderViewController: OWSViewController {
             },
         )
         dismissButton.configuration?.image = Theme.iconImage(.buttonX)
-        dismissButton.configuration?.imageColorTransformer = .init { _ in buttonImageColor }
         contentView.addSubview(dismissButton)
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
         // 16 or 20 depending on device
