@@ -20,19 +20,19 @@ class WidePhotoCell: MediaTileListModeCell {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
+        label.textColor = .Signal.label
         label.font = .dynamicTypeSubheadlineClamped
         label.adjustsFontForContentSizeCategory = true
         label.setCompressionResistanceVerticalHigh()
-        label.textColor = UIColor(dynamicProvider: { _ in Theme.primaryTextColor })
         return label
     }()
 
     private let subtitleLabel: UILabel = {
         let label = UILabel()
+        label.textColor = .Signal.secondaryLabel
         label.font = .dynamicTypeFootnoteClamped
         label.adjustsFontForContentSizeCategory = true
         label.setCompressionResistanceVerticalHigh()
-        label.textColor = UIColor(dynamicProvider: { _ in Theme.secondaryTextAndIconColor })
         return label
     }()
 

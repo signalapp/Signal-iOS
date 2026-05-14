@@ -29,12 +29,7 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
         return view
     }()
 
-    let selectionButton: MediaSelectionIndicatorView = {
-        let button = MediaSelectionIndicatorView()
-        button.outlineColor = UIColor(light: .ows_gray22, dark: .ows_gray25)
-        button.hidesOutlineWhenSelected = true
-        return button
-    }()
+    let selectionButton = ListItemSelectionIndicatorView()
 
     private let selectedMaskView = UIView()
 
@@ -48,6 +43,8 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
         contentView.addSubview(selectedMaskView)
         contentView.addSubview(selectionButton)
         contentView.addSubview(separator)
+
+        selectionButton.translatesAutoresizingMaskIntoConstraints = false
     }
 
     required init?(coder: NSCoder) {
@@ -68,8 +65,6 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
 
             selectionButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             selectionButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            selectionButton.widthAnchor.constraint(equalToConstant: 24),
-            selectionButton.heightAnchor.constraint(equalToConstant: 24),
 
             separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             separator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
@@ -81,7 +76,6 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
         super.prepareForReuse()
 
         selectedMaskView.isHidden = true
-        selectionButton.reset()
     }
 
     var cellsAbut: Bool { true }
@@ -129,9 +123,7 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
     private func updateSelectionState(animated: Bool) {
         selectedMaskView.isHidden = !isSelected
         selectionButton.isSelected = isSelected
-        if !allowsMultipleSelection {
-            selectionButton.allowsMultipleSelection = false
-        }
+
         if animated {
             UIView.animate(withDuration: 0.2) {
                 self.updateLayoutForSelectionStateChange()
@@ -158,9 +150,7 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
     }
 
     private func didUpdateLayoutForSelectionStateChange() {
-        if allowsMultipleSelection {
-            selectionButton.allowsMultipleSelection = true
-        }
+        selectionButton.isHidden = !allowsMultipleSelection
     }
 
     func makePlaceholder() {
