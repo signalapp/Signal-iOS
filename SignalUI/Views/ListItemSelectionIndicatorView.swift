@@ -38,7 +38,7 @@ public class ListItemSelectionIndicatorView: UIView {
         super.layoutSubviews()
 
         let circleRadius = Self.preferredSize / 2
-        let origin = CGPoint(x: center.x - circleRadius, y: center.y - circleRadius)
+        let origin = CGPoint(x: bounds.center.x - circleRadius, y: bounds.center.y - circleRadius)
         let size = CGSize.square(Self.preferredSize)
         let frame = CGRect(origin: origin, size: size)
         unselectedView.frame = frame
