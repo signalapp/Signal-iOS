@@ -50,7 +50,7 @@ public class DisappearingMessagesChatIndicatorView: UIView {
 
             label.topAnchor.constraint(equalTo: topAnchor),
             label.centerYAnchor.constraint(equalTo: centerYAnchor),
-            label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 6),
+            label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 4),
             label.trailingAnchor.constraint(equalTo: trailingAnchor),
         ])
 
