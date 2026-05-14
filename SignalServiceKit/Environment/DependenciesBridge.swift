@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import LibSignalClient
 
 /// Temporary bridge between [legacy code that uses global accessors for manager instances]
 /// and [new code that expects references to instances to be explicitly passed around].
@@ -131,6 +132,7 @@ public class DependenciesBridge {
     public let interactionStore: InteractionStore
     public let keyTransparencyManager: KeyTransparencyManager
     public let lastVisibleInteractionStore: LastVisibleInteractionStore
+    public let libsignalNet: LibSignalClient.Net
     public let linkAndSyncManager: LinkAndSyncManager
     public let linkPreviewManager: LinkPreviewManager
     public let linkPreviewSettingStore: LinkPreviewSettingStore
@@ -274,6 +276,7 @@ public class DependenciesBridge {
         interactionStore: InteractionStore,
         keyTransparencyManager: KeyTransparencyManager,
         lastVisibleInteractionStore: LastVisibleInteractionStore,
+        libsignalNet: LibSignalClient.Net,
         linkAndSyncManager: LinkAndSyncManager,
         linkPreviewManager: LinkPreviewManager,
         linkPreviewSettingStore: LinkPreviewSettingStore,
@@ -416,6 +419,7 @@ public class DependenciesBridge {
         self.interactionStore = interactionStore
         self.keyTransparencyManager = keyTransparencyManager
         self.lastVisibleInteractionStore = lastVisibleInteractionStore
+        self.libsignalNet = libsignalNet
         self.linkAndSyncManager = linkAndSyncManager
         self.linkPreviewManager = linkPreviewManager
         self.linkPreviewSettingStore = linkPreviewSettingStore

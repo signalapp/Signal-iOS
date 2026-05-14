@@ -1773,6 +1773,7 @@ extension AppSetup.GlobalsContinuation {
             interactionStore: interactionStore,
             keyTransparencyManager: keyTransparencyManager,
             lastVisibleInteractionStore: lastVisibleInteractionStore,
+            libsignalNet: libsignalNet,
             linkAndSyncManager: linkAndSyncManager,
             linkPreviewManager: linkPreviewManager,
             linkPreviewSettingStore: linkPreviewSettingStore,

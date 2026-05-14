@@ -8,7 +8,7 @@
 PROTOC=protoc --proto_path=Specifications
 WRAPPER_SCRIPT=../../Scripts/protos/ProtoWrappers.py --proto-dir=Specifications --verbose
 
-all: registration_protos signal_service_protos provisioning_protos fingerprint_protos websocket_protos signal_ios_protos storage_service_protos groups_protos device_transfer_protos session_record_protos svr_protos mobilecoin_protos backup_protos call_quality_survey_protos
+all: registration_protos signal_service_protos provisioning_protos fingerprint_protos signal_ios_protos storage_service_protos groups_protos device_transfer_protos session_record_protos svr_protos mobilecoin_protos backup_protos call_quality_survey_protos
 
 signal_service_protos: Specifications/SignalService.proto
 	$(PROTOC) --swift_out=Generated SignalService.proto
@@ -20,10 +20,6 @@ provisioning_protos: Specifications/Provisioning.proto
 
 fingerprint_protos: Specifications/FingerprintProtocol.proto
 	$(PROTOC) --swift_out=Generated --swift_opt=Visibility=public --swift_opt=UseAccessLevelOnImports=true FingerprintProtocol.proto
-
-websocket_protos: Specifications/WebSocketResources.proto
-	$(PROTOC) --swift_out=Generated WebSocketResources.proto
-	$(WRAPPER_SCRIPT) --dst-dir=Generated --wrapper-prefix=WebSocketProto --proto-prefix=WebSocketProtos --proto-file=WebSocketResources.proto
 
 signal_ios_protos: Specifications/SignalIOS.proto
 	$(PROTOC) --swift_out=Generated SignalIOS.proto

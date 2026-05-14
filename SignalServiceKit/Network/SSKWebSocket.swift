@@ -60,31 +60,6 @@ public enum WebSocketError: Error {
 
 // MARK: -
 
-public extension SSKWebSocket {
-    func sendResponse(
-        for request: WebSocketProtoWebSocketRequestMessage,
-        status: UInt32,
-        message: String,
-    ) throws {
-        let responseBuilder = WebSocketProtoWebSocketResponseMessage.builder(
-            requestID: request.requestID,
-            status: status,
-        )
-        responseBuilder.setMessage(message)
-        let response = try responseBuilder.build()
-
-        let messageBuilder = WebSocketProtoWebSocketMessage.builder()
-        messageBuilder.setType(.response)
-        messageBuilder.setResponse(response)
-
-        let messageData = try messageBuilder.buildSerializedData()
-
-        write(data: messageData)
-    }
-}
-
-// MARK: -
-
 public protocol SSKWebSocketDelegate: AnyObject {
     func websocketDidConnect(socket: SSKWebSocket)
 

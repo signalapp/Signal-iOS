@@ -47,7 +47,7 @@ extension RegistrationProvisioningMessage: DecryptableProvisioningMessage {
 // MARK: - ProvisioningSocketManager
 
 @MainActor
-public protocol ProvisioningSocketManagerUIDelegate: AnyObject {
+protocol ProvisioningSocketManagerUIDelegate: AnyObject {
     func provisioningSocketManager(
         _ provisioningSocketManager: ProvisioningSocketManager,
         didUpdateProvisioningURL url: URL,
@@ -58,7 +58,7 @@ public protocol ProvisioningSocketManagerUIDelegate: AnyObject {
     )
 }
 
-public class ProvisioningSocketManager: ProvisioningSocketDelegate {
+class ProvisioningSocketManager: ProvisioningConnectionListener {
     private struct DecryptableProvisionEnvelope {
         private let cipher: ProvisioningCipher
         private let encryptedEnvelope: Data
@@ -79,7 +79,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
     private struct ProvisioningCommunicationAttempt {
         /// The socket from which we hope to receive a provisioning envelope
         /// from a primary.
-        let socket: ProvisioningSocket
+        let socket: ProvisioningConnection
         /// The cipher to be used in encrypting the provisioning envelope.
         let cipher: ProvisioningCipher
         /// A continuation waiting for us to fetch the address necessary for
@@ -94,53 +94,58 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
 
     private var awaitProvisionEnvelopeContinuation: AtomicValue<CheckedContinuation<DecryptableProvisionEnvelope, Error>?> = AtomicValue(nil, lock: .init())
 
-    public var delegate: ProvisioningSocketManagerUIDelegate?
+    var delegate: ProvisioningSocketManagerUIDelegate?
 
     private let linkType: DeviceProvisioningURL.LinkType
-    public init(linkType: DeviceProvisioningURL.LinkType) {
+    init(linkType: DeviceProvisioningURL.LinkType) {
         self.linkType = linkType
     }
 
     // Start:
     // rotate the sockets.  Call back to delegate when the socket updates
     // Call back whit
-    public func start() {
+    func start() {
         rotate()
     }
 
-    public func reset() {
+    func reset() {
         stop()
         start()
     }
 
-    public func stop() {
+    func stop() {
         rotationTask?.cancel()
         rotationTask = nil
     }
 
-    // MARK: ProvisioningSocketDelegate
+    // MARK: ProvisioningConnectionListener
 
-    public func provisioningSocket(
-        _ provisioningSocket: ProvisioningSocket,
-        didReceiveProvisioningUuid provisioningAddress: String,
+    func provisioningConnection(
+        _ connection: ProvisioningConnection,
+        didReceiveAddress address: String,
+        sendAck: @escaping () throws -> Void,
     ) {
+        defer { try? sendAck() }
         let continuation = self.activeCommunicationAttempts.update {
-            var communicationAttempt = $0.removeValue(forKey: ObjectIdentifier(provisioningSocket))
+            var communicationAttempt = $0.removeValue(forKey: ObjectIdentifier(connection))
             owsAssertDebug(communicationAttempt != nil)
             let continuation = communicationAttempt?.fetchProvisioningAddressContinuation.take()
-            $0[ObjectIdentifier(provisioningSocket)] = communicationAttempt
+            $0[ObjectIdentifier(connection)] = communicationAttempt
             return continuation
         }
-        continuation?.resume(returning: provisioningAddress)
+        continuation?.resume(returning: address)
     }
 
-    public func provisioningSocket(
-        _ provisioningSocket: ProvisioningSocket,
-        didReceiveEnvelopeData data: Data,
+    func provisioningConnection(
+        _ connection: ProvisioningConnection,
+        didReceiveEnvelope envelope: Data,
+        sendAck: @escaping () throws -> Void,
     ) {
+        defer { try? sendAck() }
+
         let activeCommunicationAttempts = self.activeCommunicationAttempts.get()
 
-        guard let fulfilledCommunicationAttempt = activeCommunicationAttempts[ObjectIdentifier(provisioningSocket)] else {
+        guard let fulfilledCommunicationAttempt = activeCommunicationAttempts[ObjectIdentifier(connection)] else {
             owsFailDebug("invalid socket")
             return
         }
@@ -151,7 +156,9 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
         /// After we get a provisioning message, we don't expect anything
         /// from this or any other socket.
         for (_, obsoleteCommunicationAttempt) in activeCommunicationAttempts {
-            obsoleteCommunicationAttempt.socket.disconnect(code: .normalClosure)
+            Task {
+                _ = try? await obsoleteCommunicationAttempt.socket.disconnect()
+            }
         }
 
         awaitProvisionEnvelopeContinuation.update { existingContinuation in
@@ -161,30 +168,23 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
             }
 
             stop()
-            let envelope = DecryptableProvisionEnvelope(cipher: fulfilledCommunicationAttempt.cipher, data: data)
+            let envelope = DecryptableProvisionEnvelope(cipher: fulfilledCommunicationAttempt.cipher, data: envelope)
             continuation.resume(returning: envelope)
 
             existingContinuation = nil
         }
     }
 
-    public func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didError error: Error) {
-        if
-            let webSocketError = error as? WebSocketError,
-            case .closeError = webSocketError
-        {
-            Logger.info("Provisioning socket closed...")
-        } else {
-            Logger.error("\(error)")
-        }
+    func connectionWasInterrupted(_ connection: ProvisioningConnection, error: (any Error)?) {
+        Logger.warn("\(error as Optional)")
 
         // Remove the socket from the list of active sockets -- we're done with it.
         let communicationAttempt = self.activeCommunicationAttempts.update {
-            return $0.removeValue(forKey: ObjectIdentifier(provisioningSocket))
+            return $0.removeValue(forKey: ObjectIdentifier(connection))
         }
         owsAssertDebug(communicationAttempt != nil)
         // Throw the error via the continuation to avoid stalling if anything is waiting.
-        communicationAttempt?.fetchProvisioningAddressContinuation?.resume(throwing: error)
+        communicationAttempt?.fetchProvisioningAddressContinuation?.resume(throwing: error ?? OWSGenericError("unknown error"))
     }
 
     // MARK: -
@@ -239,11 +239,14 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
     /// A provisioning URL containing information about the now-opened
     /// provisioning socket.
     func openNewProvisioningSocket() async throws -> URL {
+        let libsignalNet = DependenciesBridge.shared.libsignalNet
+
         let ourKeyPair = IdentityKeyPair.generate()
         let cipher = ProvisioningCipher(ourKeyPair: ourKeyPair)
 
+        let socket = try await libsignalNet.connectProvisioning()
+
         let provisioningAddress: String = try await withCheckedThrowingContinuation { continuation in
-            let socket = ProvisioningSocket()
             let newAttempt = ProvisioningCommunicationAttempt(
                 socket: socket,
                 cipher: cipher,
@@ -252,8 +255,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
 
             self.activeCommunicationAttempts.update { $0[ObjectIdentifier(socket)] = newAttempt }
 
-            newAttempt.socket.delegate = self
-            newAttempt.socket.connect()
+            socket.start(listener: self)
         }
 
         return try Self.buildProvisioningUrl(
@@ -263,7 +265,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
         )
     }
 
-    public func waitForMessage<ProvisioningMessage: DecryptableProvisioningMessage>() async throws -> ProvisioningMessage {
+    func waitForMessage<ProvisioningMessage: DecryptableProvisioningMessage>() async throws -> ProvisioningMessage {
         let decryptableProvisionEnvelope: DecryptableProvisionEnvelope = try await withCheckedThrowingContinuation { newContinuation in
             awaitProvisionEnvelopeContinuation.update { existingContinuation in
                 guard existingContinuation == nil else {

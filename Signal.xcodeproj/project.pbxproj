@@ -3812,14 +3812,12 @@
 		F9C5CC94289453B300548EEE /* DeviceTransfer.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9A9289453B100548EEE /* DeviceTransfer.pb.swift */; };
 		F9C5CC95289453B300548EEE /* ProvisioningProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9AA289453B100548EEE /* ProvisioningProto.swift */; };
 		F9C5CC96289453B300548EEE /* SessionRecord.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9AB289453B100548EEE /* SessionRecord.pb.swift */; };
-		F9C5CC97289453B300548EEE /* WebSocketProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9AC289453B100548EEE /* WebSocketProto.swift */; };
 		F9C5CC98289453B300548EEE /* GroupsProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9AD289453B100548EEE /* GroupsProto.swift */; };
 		F9C5CC9A289453B300548EEE /* SignalService.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9AF289453B100548EEE /* SignalService.pb.swift */; };
 		F9C5CC9D289453B300548EEE /* Provisioning.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B2289453B100548EEE /* Provisioning.pb.swift */; };
 		F9C5CC9E289453B300548EEE /* SignalIOSProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B3289453B100548EEE /* SignalIOSProto.swift */; };
 		F9C5CCA0289453B300548EEE /* DeviceTransferProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B5289453B100548EEE /* DeviceTransferProto.swift */; };
 		F9C5CCA1289453B300548EEE /* SSKProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B6289453B100548EEE /* SSKProto.swift */; };
-		F9C5CCA2289453B300548EEE /* WebSocketResources.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B7289453B100548EEE /* WebSocketResources.pb.swift */; };
 		F9C5CCA3289453B300548EEE /* StorageService.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B8289453B100548EEE /* StorageService.pb.swift */; };
 		F9C5CCA4289453B300548EEE /* SSKProto+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B9289453B100548EEE /* SSKProto+OWS.swift */; };
 		F9C5CCAC289453B300548EEE /* PreKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C2289453B100548EEE /* PreKeyManager.swift */; };
@@ -3841,7 +3839,6 @@
 		F9C5CCE4289453B300548EEE /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FE289453B100548EEE /* Contact.swift */; };
 		F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0F289453B100548EEE /* ChunkedInputStream.swift */; };
 		F9C5CCF8289453B300548EEE /* ContactsInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA15289453B100548EEE /* ContactsInputStream.swift */; };
-		F9C5CCFB289453B300548EEE /* ProvisioningSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA18289453B100548EEE /* ProvisioningSocket.swift */; };
 		F9C5CCFD289453B300548EEE /* OWSDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA1A289453B100548EEE /* OWSDevice.swift */; };
 		F9C5CD08289453B300548EEE /* ProvisioningCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA25289453B100548EEE /* ProvisioningCipher.swift */; };
 		F9C5CD13289453B300548EEE /* SDSError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA32289453B100548EEE /* SDSError.swift */; };
@@ -7526,7 +7523,6 @@
 		D9D321812A8FEA9C004FC110 /* SignalService.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = SignalService.proto; sourceTree = "<group>"; };
 		D9D321822A8FEA9C004FC110 /* Provisioning.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = Provisioning.proto; sourceTree = "<group>"; };
 		D9D321842A8FEA9D004FC110 /* svr2.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = svr2.proto; sourceTree = "<group>"; };
-		D9D321852A8FEA9D004FC110 /* WebSocketResources.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = WebSocketResources.proto; sourceTree = "<group>"; };
 		D9D501892F2B16820068EEA5 /* KeyTransparencyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTransparencyManager.swift; sourceTree = "<group>"; };
 		D9DB37EE2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordAssociatedInteraction.swift; sourceTree = "<group>"; };
 		D9DB37F22B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallLogEventSyncMessage.swift; sourceTree = "<group>"; };
@@ -8134,14 +8130,12 @@
 		F9C5C9A9289453B100548EEE /* DeviceTransfer.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceTransfer.pb.swift; sourceTree = "<group>"; };
 		F9C5C9AA289453B100548EEE /* ProvisioningProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningProto.swift; sourceTree = "<group>"; };
 		F9C5C9AB289453B100548EEE /* SessionRecord.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionRecord.pb.swift; sourceTree = "<group>"; };
-		F9C5C9AC289453B100548EEE /* WebSocketProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketProto.swift; sourceTree = "<group>"; };
 		F9C5C9AD289453B100548EEE /* GroupsProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsProto.swift; sourceTree = "<group>"; };
 		F9C5C9AF289453B100548EEE /* SignalService.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalService.pb.swift; sourceTree = "<group>"; };
 		F9C5C9B2289453B100548EEE /* Provisioning.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Provisioning.pb.swift; sourceTree = "<group>"; };
 		F9C5C9B3289453B100548EEE /* SignalIOSProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalIOSProto.swift; sourceTree = "<group>"; };
 		F9C5C9B5289453B100548EEE /* DeviceTransferProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceTransferProto.swift; sourceTree = "<group>"; };
 		F9C5C9B6289453B100548EEE /* SSKProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKProto.swift; sourceTree = "<group>"; };
-		F9C5C9B7289453B100548EEE /* WebSocketResources.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketResources.pb.swift; sourceTree = "<group>"; };
 		F9C5C9B8289453B100548EEE /* StorageService.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageService.pb.swift; sourceTree = "<group>"; };
 		F9C5C9B9289453B100548EEE /* SSKProto+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SSKProto+OWS.swift"; sourceTree = "<group>"; };
 		F9C5C9C2289453B100548EEE /* PreKeyManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreKeyManager.swift; sourceTree = "<group>"; };
@@ -8163,7 +8157,6 @@
 		F9C5C9FE289453B100548EEE /* Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		F9C5CA0F289453B100548EEE /* ChunkedInputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChunkedInputStream.swift; sourceTree = "<group>"; };
 		F9C5CA15289453B100548EEE /* ContactsInputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsInputStream.swift; sourceTree = "<group>"; };
-		F9C5CA18289453B100548EEE /* ProvisioningSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningSocket.swift; sourceTree = "<group>"; };
 		F9C5CA1A289453B100548EEE /* OWSDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDevice.swift; sourceTree = "<group>"; };
 		F9C5CA25289453B100548EEE /* ProvisioningCipher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningCipher.swift; sourceTree = "<group>"; };
 		F9C5CA32289453B100548EEE /* SDSError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSError.swift; sourceTree = "<group>"; };
@@ -13987,7 +13980,6 @@
 				D9D321812A8FEA9C004FC110 /* SignalService.proto */,
 				D9D321802A8FEA9C004FC110 /* StorageService.proto */,
 				D9D321842A8FEA9D004FC110 /* svr2.proto */,
-				D9D321852A8FEA9D004FC110 /* WebSocketResources.proto */,
 			);
 			path = Specifications;
 			sourceTree = "<group>";
@@ -15058,8 +15050,6 @@
 				F9C5C9B8289453B100548EEE /* StorageService.pb.swift */,
 				F9C5C9A7289453B100548EEE /* StorageServiceProto.swift */,
 				662C44082A1567E4001F83E2 /* svr2.pb.swift */,
-				F9C5C9AC289453B100548EEE /* WebSocketProto.swift */,
-				F9C5C9B7289453B100548EEE /* WebSocketResources.pb.swift */,
 			);
 			path = Generated;
 			sourceTree = "<group>";
@@ -15186,7 +15176,6 @@
 				F9C5CAE7289453B200548EEE /* OWSDeviceService.swift */,
 				D9C0AE632BD7103100FCB05E /* OWSDeviceStore.swift */,
 				F9C5CA25289453B100548EEE /* ProvisioningCipher.swift */,
-				F9C5CA18289453B100548EEE /* ProvisioningSocket.swift */,
 				C180878B2D763D4800B16D1E /* RegistrationProvisioningMessage.swift */,
 			);
 			path = Devices;
@@ -19751,7 +19740,6 @@
 				F9C5CC95289453B300548EEE /* ProvisioningProto.swift in Sources */,
 				66CDB7632AFC5E24009A36EC /* ProvisioningRequestFactory.swift in Sources */,
 				66CDB7652AFC5E74009A36EC /* ProvisioningServiceResponses.swift in Sources */,
-				F9C5CCFB289453B300548EEE /* ProvisioningSocket.swift in Sources */,
 				F9C5CD97289453B300548EEE /* ProxiedContentDownloader.swift in Sources */,
 				720547F72B9C98C600E2CF2F /* ProximityMonitoringManager.swift in Sources */,
 				503B47222AF0569B00978266 /* PublicKey.swift in Sources */,
@@ -20117,8 +20105,6 @@
 				F9C5CE50289453B400548EEE /* Weak.swift in Sources */,
 				F9C5CDFB289453B400548EEE /* WeakTimer.swift in Sources */,
 				500824CE292737FC005A5DC0 /* WebSocketPromise.swift in Sources */,
-				F9C5CC97289453B300548EEE /* WebSocketProto.swift in Sources */,
-				F9C5CCA2289453B300548EEE /* WebSocketResources.pb.swift in Sources */,
 				66533E3729B7B56000E8D928 /* WhoAmIManager.swift in Sources */,
 				72454E802C9BCEA80084B483 /* YDBStorage.swift in Sources */,
 				724D47B02B97BE13001BE973 /* ZkParamsMigrator.swift in Sources */,
