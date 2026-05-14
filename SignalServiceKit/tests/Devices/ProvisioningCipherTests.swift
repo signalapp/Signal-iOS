@@ -152,12 +152,9 @@ final class ProvisioningCipherTests {
 
     @Test
     func testEncrypt() throws {
-        let cipher = ProvisioningCipher(
-            ourKeyPair: knownKeyPair.identityKeyPair,
-            initializationVector: knownInitializationVector,
-        )
+        let cipher = ProvisioningCipher(ourKeyPair: knownKeyPair.identityKeyPair)
 
-        let actualOutput = try cipher.encrypt(knownData, theirPublicKey: knownPublicKey)
+        let actualOutput = try cipher.encrypt(knownData, initializationVector: knownInitializationVector, theirPublicKey: knownPublicKey)
 
         let expectedOutput = Data([
             0x01,
@@ -234,12 +231,9 @@ final class ProvisioningCipherTests {
     func testPadding() throws {
         let count: UInt = 16
         for i in 0...count {
-            let cipher = ProvisioningCipher(
-                ourKeyPair: knownKeyPair.identityKeyPair,
-                initializationVector: knownInitializationVector,
-            )
+            let cipher = ProvisioningCipher(ourKeyPair: knownKeyPair.identityKeyPair)
 
-            _ = try cipher.encrypt(Randomness.generateRandomBytes(i), theirPublicKey: knownPublicKey)
+            _ = try cipher.encrypt(Randomness.generateRandomBytes(i), initializationVector: knownInitializationVector, theirPublicKey: knownPublicKey)
         }
     }
 }

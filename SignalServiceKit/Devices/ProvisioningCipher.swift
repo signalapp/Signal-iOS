@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import CommonCrypto
+public import CommonCrypto
 import CryptoKit
 public import LibSignalClient
 
@@ -21,21 +21,20 @@ public class ProvisioningCipher {
     }
 
     private let ourKeyPair: IdentityKeyPair
-    private let initializationVector: Data
 
     public var ourPublicKey: PublicKey {
         return ourKeyPair.publicKey
     }
 
-    public init(
-        ourKeyPair: IdentityKeyPair = IdentityKeyPair.generate(),
-        initializationVector: Data? = nil,
-    ) {
+    public init(ourKeyPair: IdentityKeyPair) {
         self.ourKeyPair = ourKeyPair
-        self.initializationVector = initializationVector ?? Randomness.generateRandomBytes(UInt(kCCBlockSizeAES128))
     }
 
-    public func encrypt(_ data: Data, theirPublicKey: PublicKey) throws -> Data {
+    public func encrypt(
+        _ data: Data,
+        initializationVector: Data = Randomness.generateRandomBytes(UInt(kCCBlockSizeAES128)),
+        theirPublicKey: PublicKey,
+    ) throws -> Data {
         let sharedSecret = self.ourKeyPair.privateKey.keyAgreement(with: theirPublicKey)
 
         let infoData = Constants.info

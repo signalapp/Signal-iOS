@@ -274,7 +274,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
         let provisioningUrlParams: ProvisioningUrlParams = try await withCheckedThrowingContinuation { paramsContinuation in
             let newAttempt = ProvisioningUrlCommunicationAttempt(
                 socket: ProvisioningSocket(),
-                cipher: ProvisioningCipher(),
+                cipher: ProvisioningCipher(ourKeyPair: IdentityKeyPair.generate()),
                 fetchProvisioningUrlParamsContinuation: paramsContinuation,
             )
 
