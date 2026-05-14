@@ -59,11 +59,6 @@ public protocol ProvisioningSocketManagerUIDelegate: AnyObject {
 }
 
 public class ProvisioningSocketManager: ProvisioningSocketDelegate {
-    private struct ProvisioningUrlParams {
-        let uuid: String
-        let cipher: ProvisioningCipher
-    }
-
     private struct DecryptableProvisionEnvelope {
         private let cipher: ProvisioningCipher
         private let encryptedEnvelope: Data
@@ -87,12 +82,12 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
         let socket: ProvisioningSocket
         /// The cipher to be used in encrypting the provisioning envelope.
         let cipher: ProvisioningCipher
-        /// A continuation waiting for us to fetch the parameters necessary for
+        /// A continuation waiting for us to fetch the address necessary for
         /// us to construct a provisioning URL, which we will present to the
         /// primary via QR code. The provisioning URL will contain the necessary
         /// data for the primary to send us a provisioning envelope over our
         /// provisioning socket, via the server.
-        var fetchProvisioningUrlParamsContinuation: CheckedContinuation<ProvisioningUrlParams, Error>?
+        var fetchProvisioningAddressContinuation: CheckedContinuation<String, Error>?
     }
 
     private var urlCommunicationAttempts: AtomicValue<[ProvisioningUrlCommunicationAttempt]> = AtomicValue([], lock: .init())
@@ -126,29 +121,19 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
 
     public func provisioningSocket(
         _ provisioningSocket: ProvisioningSocket,
-        didReceiveProvisioningUuid provisioningUuid: String,
+        didReceiveProvisioningUuid provisioningAddress: String,
     ) {
         urlCommunicationAttempts.update { attempts in
             let matchingAttemptIndex = attempts.firstIndex {
                 $0.socket.id == provisioningSocket.id
             }
 
-            guard
-                let matchingAttemptIndex,
-                let fetchParamsContinuation = attempts[matchingAttemptIndex].fetchProvisioningUrlParamsContinuation
-            else {
-                owsFailDebug("Got provisioning UUID for unknown socket!")
+            guard let matchingAttemptIndex else {
+                owsFailDebug("Got provisioning address for unknown socket!")
                 return
             }
 
-            attempts[matchingAttemptIndex].fetchProvisioningUrlParamsContinuation = nil
-
-            fetchParamsContinuation.resume(
-                returning: ProvisioningUrlParams(
-                    uuid: provisioningUuid,
-                    cipher: attempts[matchingAttemptIndex].cipher,
-                ),
-            )
+            attempts[matchingAttemptIndex].fetchProvisioningAddressContinuation.take()?.resume(returning: provisioningAddress)
         }
     }
 
@@ -215,8 +200,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
                 return
             }
 
-            attempts[matchingAttemptIndex].fetchProvisioningUrlParamsContinuation?.resume(throwing: error)
-            attempts[matchingAttemptIndex].fetchProvisioningUrlParamsContinuation = nil
+            attempts[matchingAttemptIndex].fetchProvisioningAddressContinuation.take()?.resume(throwing: error)
         }
     }
 
@@ -224,7 +208,8 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
 
     private static func buildProvisioningUrl(
         type: DeviceProvisioningURL.LinkType,
-        params: ProvisioningUrlParams,
+        address: String,
+        publicKey: PublicKey,
     ) throws -> URL {
 
         let shouldLinkAndSync: Bool = {
@@ -257,8 +242,8 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
 
         return try DeviceProvisioningURL(
             type: type,
-            ephemeralDeviceId: params.uuid,
-            publicKey: params.cipher.ourPublicKey,
+            ephemeralDeviceId: address,
+            publicKey: publicKey,
             capabilities: capabilities,
         ).buildUrl()
     }
@@ -271,11 +256,14 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
     /// A provisioning URL containing information about the now-opened
     /// provisioning socket.
     func openNewProvisioningSocket() async throws -> URL {
-        let provisioningUrlParams: ProvisioningUrlParams = try await withCheckedThrowingContinuation { paramsContinuation in
+        let ourKeyPair = IdentityKeyPair.generate()
+        let cipher = ProvisioningCipher(ourKeyPair: ourKeyPair)
+
+        let provisioningAddress: String = try await withCheckedThrowingContinuation { continuation in
             let newAttempt = ProvisioningUrlCommunicationAttempt(
                 socket: ProvisioningSocket(),
-                cipher: ProvisioningCipher(ourKeyPair: IdentityKeyPair.generate()),
-                fetchProvisioningUrlParamsContinuation: paramsContinuation,
+                cipher: cipher,
+                fetchProvisioningAddressContinuation: continuation,
             )
 
             urlCommunicationAttempts.update { $0.append(newAttempt) }
@@ -284,7 +272,11 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
             newAttempt.socket.connect()
         }
 
-        return try Self.buildProvisioningUrl(type: linkType, params: provisioningUrlParams)
+        return try Self.buildProvisioningUrl(
+            type: linkType,
+            address: provisioningAddress,
+            publicKey: ourKeyPair.publicKey,
+        )
     }
 
     public func waitForMessage<ProvisioningMessage: DecryptableProvisioningMessage>() async throws -> ProvisioningMessage {
