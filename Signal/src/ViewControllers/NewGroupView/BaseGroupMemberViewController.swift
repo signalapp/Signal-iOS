@@ -189,9 +189,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient, transaction: transaction)
     }
 
-    public func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String? { nil }
-
-    public func memberViewCustomIconColorForPickedMember(_ recipient: PickedRecipient) -> UIColor? { nil }
+    public func memberViewCustomIndicatorForPickedMember(_ recipient: PickedRecipient) -> UIView? { nil }
 
     public func memberViewDismiss() {
         guard let groupMemberViewDelegate else {

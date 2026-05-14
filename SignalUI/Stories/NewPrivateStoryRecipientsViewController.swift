@@ -96,9 +96,7 @@ extension NewPrivateStoryRecipientsViewController: MemberViewDelegate {
 
     public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: DBReadTransaction) -> Bool { false }
 
-    public func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String? { nil }
-
-    public func memberViewCustomIconColorForPickedMember(_ recipient: PickedRecipient) -> UIColor? { nil }
+    public func memberViewCustomIndicatorForPickedMember(_ recipient: PickedRecipient) -> UIView? { nil }
 
     public func memberViewDismiss() {
         dismiss(animated: true)

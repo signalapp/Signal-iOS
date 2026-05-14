@@ -33,9 +33,7 @@ public protocol MemberViewDelegate: AnyObject {
         transaction: DBReadTransaction,
     ) -> Bool
 
-    func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String?
-
-    func memberViewCustomIconColorForPickedMember(_ recipient: PickedRecipient) -> UIColor?
+    func memberViewCustomIndicatorForPickedMember(_ recipient: PickedRecipient) -> UIView?
 
     func memberViewDismiss()
 }
@@ -423,18 +421,27 @@ extension BaseMemberViewController: RecipientPickerDelegate {
             transaction: transaction,
         )
 
-        let pickedIconName = memberViewDelegate.memberViewCustomIconNameForPickedMember(recipient) ?? Theme.iconName(.checkCircleFill)
-        let pickedIconColor = memberViewDelegate.memberViewCustomIconColorForPickedMember(recipient) ?? Theme.accentBlueColor
-
-        let imageView = CVImageView()
+        let accessoryView: UIView
         if isPreExistingMember {
-            imageView.setTemplateImageName(pickedIconName, tintColor: Theme.washColor)
+            let indicatorView = ListItemSelectionIndicatorView()
+            indicatorView.isSelected = true
+            indicatorView.isEnabled = false
+
+            accessoryView = indicatorView
         } else if isCurrentMember {
-            imageView.setTemplateImageName(pickedIconName, tintColor: pickedIconColor)
+            if let customIndicatorView = memberViewDelegate.memberViewCustomIndicatorForPickedMember(recipient) {
+                accessoryView = customIndicatorView
+            } else {
+                let indicatorView = ListItemSelectionIndicatorView()
+                indicatorView.isSelected = true
+
+                accessoryView = indicatorView
+            }
         } else {
-            imageView.setTemplateImageName(Theme.iconName(.circle), tintColor: .ows_gray25)
+            accessoryView = ListItemSelectionIndicatorView()
         }
-        return ContactCellAccessoryView(accessoryView: imageView, size: .square(24))
+        let accessoryViewWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(accessoryView)
+        return ContactCellAccessoryView(accessoryView: accessoryViewWrapper, size: .square(24))
     }
 
     public func recipientPicker(

@@ -154,12 +154,12 @@ extension SelectMyStoryRecipientsViewController: MemberViewDelegate {
 
     public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: DBReadTransaction) -> Bool { false }
 
-    public func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String? {
-        mode == .blockList ? "x-circle-fill" : nil
-    }
+    public func memberViewCustomIndicatorForPickedMember(_ recipient: PickedRecipient) -> UIView? {
+        guard mode == .blockList else { return nil }
 
-    public func memberViewCustomIconColorForPickedMember(_ recipient: PickedRecipient) -> UIColor? {
-        mode == .blockList ? .ows_accentRed : nil
+        let indicatorImage = UIImageView(image: UIImage(named: "x-circle-fill"))
+        indicatorImage.tintColor = .Signal.red
+        return indicatorImage
     }
 
     public func memberViewDismiss() {
