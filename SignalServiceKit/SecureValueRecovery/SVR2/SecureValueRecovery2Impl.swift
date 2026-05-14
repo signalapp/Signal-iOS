@@ -225,7 +225,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
             // Record that the master key needs to be backed up.
             localStorage.setNeedsMasterKeyBackup(true, transaction)
-            _ = backupMasterKey(pin: pin, masterKey: newMasterKey, authMethod: .implicit)
+            transaction.addSyncCompletion {
+                _ = self.backupMasterKey(pin: pin, masterKey: newMasterKey, authMethod: .implicit)
+            }
         }
     }
 
