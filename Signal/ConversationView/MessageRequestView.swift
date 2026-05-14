@@ -101,6 +101,12 @@ class MessageRequestView: ConversationBottomPanelView {
 
     weak var delegate: MessageRequestDelegate?
 
+    // MARK: - ConversationBottomPanelView
+
+    override var useGlassPanel: Bool {
+        false
+    }
+
     init(threadViewModel: ThreadViewModel) {
         let thread = threadViewModel.threadRecord
         self.thread = thread
