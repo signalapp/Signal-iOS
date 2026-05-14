@@ -233,13 +233,14 @@ public class TSConstantsStaging: TSConstantsProtocol {
     public let storageServiceCensorshipPrefix = "storage-staging"
     public let svr2CensorshipPrefix = "svr2-staging"
 
-    public let svr2Enclave = MrEnclave("97f151f6ed078edbbfd72fa9cae694dcc08353f1f5e8d9ccd79a971b10ffc535")
+    public let svr2Enclave = MrEnclave("3c699f4975aaa3d172c0aad042f94f031b2b03e10b9c19a45116a01693d83302")
 
     // An array of previously used enclaves that we should try and restore
     // key material from during registration. These must be ordered from
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
     public let svr2PreviousEnclaves: [MrEnclave] = [
+        MrEnclave("97f151f6ed078edbbfd72fa9cae694dcc08353f1f5e8d9ccd79a971b10ffc535"),
         MrEnclave("a75542d82da9f6914a1e31f8a7407053b99cc99a0e7291d8fbd394253e19b036"),
     ]
 
