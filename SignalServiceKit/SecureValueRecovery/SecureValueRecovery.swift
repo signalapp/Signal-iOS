@@ -125,15 +125,8 @@ public protocol SecureValueRecovery {
     /// Loads the users key, if any, from the SVR into the database.
     func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>
 
-    /// Loads the users key, if any, from the SVR into the database, then backs them up again.
-    func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>
-
     /// Backs up the user's master key to SVR.
     func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) -> Promise<MasterKey>
-
-    /// Remove the keys locally from the device and from the SVR,
-    /// they will not be able to be restored.
-    func deleteKeys() -> Promise<Void>
 
     func warmCaches()
 
