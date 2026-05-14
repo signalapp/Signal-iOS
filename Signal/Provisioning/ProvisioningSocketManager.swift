@@ -76,7 +76,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
     }
 
     /// Represents an attempt to communicate with the primary.
-    private struct ProvisioningUrlCommunicationAttempt {
+    private struct ProvisioningCommunicationAttempt {
         /// The socket from which we hope to receive a provisioning envelope
         /// from a primary.
         let socket: ProvisioningSocket
@@ -90,7 +90,8 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
         var fetchProvisioningAddressContinuation: CheckedContinuation<String, Error>?
     }
 
-    private var urlCommunicationAttempts: AtomicValue<[ProvisioningUrlCommunicationAttempt]> = AtomicValue([], lock: .init())
+    private let activeCommunicationAttempts = AtomicValue<[ObjectIdentifier: ProvisioningCommunicationAttempt]>([:], lock: .init())
+
     private var awaitProvisionEnvelopeContinuation: AtomicValue<CheckedContinuation<DecryptableProvisionEnvelope, Error>?> = AtomicValue(nil, lock: .init())
 
     public var delegate: ProvisioningSocketManagerUIDelegate?
@@ -123,47 +124,34 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
         _ provisioningSocket: ProvisioningSocket,
         didReceiveProvisioningUuid provisioningAddress: String,
     ) {
-        urlCommunicationAttempts.update { attempts in
-            let matchingAttemptIndex = attempts.firstIndex {
-                $0.socket.id == provisioningSocket.id
-            }
-
-            guard let matchingAttemptIndex else {
-                owsFailDebug("Got provisioning address for unknown socket!")
-                return
-            }
-
-            attempts[matchingAttemptIndex].fetchProvisioningAddressContinuation.take()?.resume(returning: provisioningAddress)
+        let continuation = self.activeCommunicationAttempts.update {
+            var communicationAttempt = $0.removeValue(forKey: ObjectIdentifier(provisioningSocket))
+            owsAssertDebug(communicationAttempt != nil)
+            let continuation = communicationAttempt?.fetchProvisioningAddressContinuation.take()
+            $0[ObjectIdentifier(provisioningSocket)] = communicationAttempt
+            return continuation
         }
+        continuation?.resume(returning: provisioningAddress)
     }
 
     public func provisioningSocket(
         _ provisioningSocket: ProvisioningSocket,
         didReceiveEnvelopeData data: Data,
     ) {
-        var cipherForSocket: ProvisioningCipher?
+        let activeCommunicationAttempts = self.activeCommunicationAttempts.get()
 
+        guard let fulfilledCommunicationAttempt = activeCommunicationAttempts[ObjectIdentifier(provisioningSocket)] else {
+            owsFailDebug("invalid socket")
+            return
+        }
         /// We've gotten a provisioning message, from one of our attempts'
         /// sockets. (We don't care which one – it's whichever one the primary
         /// scanned and sent an envelope through!)
-        for attempt in urlCommunicationAttempts.get() {
-            /// After we get a provisioning message, we don't expect anything
-            /// from this or any other socket.
-            attempt.socket.disconnect(code: .normalClosure)
 
-            if provisioningSocket.id == attempt.socket.id {
-                owsAssertDebug(
-                    cipherForSocket == nil,
-                    "Extracting cipher, but unexpectedly already set from previous match!",
-                )
-
-                cipherForSocket = attempt.cipher
-            }
-        }
-
-        guard let cipherForSocket else {
-            owsFailDebug("Missing cipher for socket that received envelope!")
-            return
+        /// After we get a provisioning message, we don't expect anything
+        /// from this or any other socket.
+        for (_, obsoleteCommunicationAttempt) in activeCommunicationAttempts {
+            obsoleteCommunicationAttempt.socket.disconnect(code: .normalClosure)
         }
 
         awaitProvisionEnvelopeContinuation.update { existingContinuation in
@@ -173,7 +161,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
             }
 
             stop()
-            let envelope = DecryptableProvisionEnvelope(cipher: cipherForSocket, data: data)
+            let envelope = DecryptableProvisionEnvelope(cipher: fulfilledCommunicationAttempt.cipher, data: data)
             continuation.resume(returning: envelope)
 
             existingContinuation = nil
@@ -190,18 +178,13 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
             Logger.error("\(error)")
         }
 
-        urlCommunicationAttempts.update { attempts in
-            let matchingAttemptIndex = attempts.firstIndex {
-                $0.socket.id == provisioningSocket.id
-            }
-
-            guard let matchingAttemptIndex else {
-                owsFailDebug("Got provisioning UUID for unknown socket!")
-                return
-            }
-
-            attempts[matchingAttemptIndex].fetchProvisioningAddressContinuation.take()?.resume(throwing: error)
+        // Remove the socket from the list of active sockets -- we're done with it.
+        let communicationAttempt = self.activeCommunicationAttempts.update {
+            return $0.removeValue(forKey: ObjectIdentifier(provisioningSocket))
         }
+        owsAssertDebug(communicationAttempt != nil)
+        // Throw the error via the continuation to avoid stalling if anything is waiting.
+        communicationAttempt?.fetchProvisioningAddressContinuation?.resume(throwing: error)
     }
 
     // MARK: -
@@ -260,13 +243,14 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
         let cipher = ProvisioningCipher(ourKeyPair: ourKeyPair)
 
         let provisioningAddress: String = try await withCheckedThrowingContinuation { continuation in
-            let newAttempt = ProvisioningUrlCommunicationAttempt(
-                socket: ProvisioningSocket(),
+            let socket = ProvisioningSocket()
+            let newAttempt = ProvisioningCommunicationAttempt(
+                socket: socket,
                 cipher: cipher,
                 fetchProvisioningAddressContinuation: continuation,
             )
 
-            urlCommunicationAttempts.update { $0.append(newAttempt) }
+            self.activeCommunicationAttempts.update { $0[ObjectIdentifier(socket)] = newAttempt }
 
             newAttempt.socket.delegate = self
             newAttempt.socket.connect()

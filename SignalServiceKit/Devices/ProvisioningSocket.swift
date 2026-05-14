@@ -14,7 +14,6 @@ public protocol ProvisioningSocketDelegate: AnyObject {
 // MARK: -
 
 public class ProvisioningSocket {
-    public let id = UUID()
     public weak var delegate: ProvisioningSocketDelegate?
 
     let socket: SSKWebSocket
