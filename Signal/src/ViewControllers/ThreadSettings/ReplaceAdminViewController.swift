@@ -85,10 +85,6 @@ class ReplaceAdminViewController: OWSTableViewController2 {
 
                     SSKEnvironment.shared.databaseStorageRef.read { transaction in
                         let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
-                        let imageView = CVImageView()
-                        imageView.setTemplateImageName(Theme.iconName(.circle), tintColor: .ows_gray25)
-                        configuration.accessoryView = ContactCellAccessoryView(accessoryView: imageView, size: .square(24))
-
                         cell.configure(configuration: configuration, transaction: transaction)
                     }
 
