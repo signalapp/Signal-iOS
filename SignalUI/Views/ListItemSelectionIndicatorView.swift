@@ -15,6 +15,13 @@ public class ListItemSelectionIndicatorView: UIView {
 
         directionalLayoutMargins = .init(margin: 1)
 
+        // Because it is often paired with UILabels, we want to make
+        // this view as compact and as compression resistant as possible.
+        setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        setContentHuggingPriority(.defaultHigh, for: .vertical)
+        setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        setContentCompressionResistancePriority(.required - 10, for: .vertical)
+
         sizeToFit()
 
         addSubview(unselectedView)

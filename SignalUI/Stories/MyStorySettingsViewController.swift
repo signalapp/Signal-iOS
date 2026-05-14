@@ -107,7 +107,7 @@ private class MyStorySettingsDataSource: NSObject {
             let footerTextView = makeWhoCanViewThisTextView(for: style)
             let footerContainer = UIView()
             footerContainer.addSubview(footerTextView)
-            footerTextView.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 32, vMargin: 16))
+            footerTextView.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 16, vMargin: 16))
             visibilitySection.customFooterView = footerContainer
         }
         contents.add(visibilitySection)
@@ -280,17 +280,9 @@ private class MyStorySettingsDataSource: NSObject {
             hStack.autoSetDimension(.height, toSize: 35, relation: .greaterThanOrEqual)
             hStack.autoPinHeightToSuperview(withMargin: 6)
 
-            let imageView = UIImageView()
-            imageView.contentMode = .center
-            imageView.autoSetDimension(.width, toSize: 24)
-            if isSelected {
-                imageView.image = Theme.iconImage(.checkCircleFill)
-                imageView.tintColor = Theme.accentBlueColor
-            } else {
-                imageView.image = Theme.iconImage(.circle)
-                imageView.tintColor = .ows_gray25
-            }
-            hStack.addArrangedSubview(imageView)
+            let selectionIndicator = ListItemSelectionIndicatorView()
+            selectionIndicator.isSelected = isSelected
+            hStack.addArrangedSubview(selectionIndicator)
 
             let vStack = UIStackView()
             vStack.axis = .vertical
@@ -300,7 +292,7 @@ private class MyStorySettingsDataSource: NSObject {
             titleLabel.text = title
             titleLabel.numberOfLines = 0
             titleLabel.font = .dynamicTypeBodyClamped
-            titleLabel.textColor = Theme.primaryTextColor
+            titleLabel.textColor = .Signal.label
             vStack.addArrangedSubview(titleLabel)
 
             if let detailText = detailText?.nilIfEmpty {
@@ -308,7 +300,7 @@ private class MyStorySettingsDataSource: NSObject {
                 detailLabel.text = detailText
                 detailLabel.numberOfLines = 0
                 detailLabel.font = .dynamicTypeCaption1Clamped
-                detailLabel.textColor = Theme.secondaryTextAndIconColor
+                detailLabel.textColor = .Signal.secondaryLabel
                 vStack.addArrangedSubview(detailLabel)
             }
 
@@ -316,12 +308,18 @@ private class MyStorySettingsDataSource: NSObject {
             case .none:
                 break
             case .button(let title, let action):
-                let button = OWSButton(block: action)
-                button.setTitle(title, for: .normal)
-                button.setTitleColor(Theme.primaryTextColor, for: .normal)
-                button.setTitleColor(Theme.primaryTextColor.withAlphaComponent(0.6), for: .highlighted)
-                button.titleLabel?.font = .dynamicTypeSubheadlineClamped.semibold()
+                let button = UIButton(
+                    configuration: .plain(),
+                    primaryAction: UIAction { _ in
+                        action()
+                    },
+                )
+                button.configuration?.title = title
+                button.configuration?.attributedTitle?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
+                button.configuration?.contentInsets.trailing = 0
+                button.tintColor = .Signal.label
                 button.sizeToFit()
+
                 cell.accessoryView = button
             case .disclosure:
                 cell.accessoryType = .disclosureIndicator
@@ -335,7 +333,7 @@ private class MyStorySettingsDataSource: NSObject {
 
         let titleLabel = UILabel()
         let subtitleView: LinkingTextView
-        let doneButton = UIButton()
+        let doneButton = UIButton(configuration: .plain())
 
         init(frame: CGRect, dataSource: MyStorySettingsDataSource) {
             subtitleView = dataSource.makeWhoCanViewThisTextView(for: .sheet)
@@ -348,16 +346,20 @@ private class MyStorySettingsDataSource: NSObject {
             )
             titleLabel.textAlignment = .center
             titleLabel.font = .dynamicTypeHeadline.semibold()
-            titleLabel.textColor = Theme.primaryTextColor
+            titleLabel.textColor = .Signal.label
             addSubview(titleLabel)
 
             addSubview(subtitleView)
 
-            doneButton.setTitle(CommonStrings.doneButton, for: .normal)
-            doneButton.titleLabel?.font = .dynamicTypeHeadline.semibold()
-            doneButton.setTitleColor(Theme.primaryTextColor, for: .normal)
-            doneButton.setTitleColor(Theme.primaryTextColor.withAlphaComponent(0.5), for: .disabled)
-            doneButton.addTarget(dataSource, action: #selector(didTapDoneButton), for: .touchUpInside)
+            doneButton.tintColor = .Signal.label
+            doneButton.configuration?.title = CommonStrings.doneButton
+            doneButton.configuration?.attributedTitle?.font = .dynamicTypeHeadline.semibold()
+            doneButton.addAction(
+                UIAction { _ in
+                    dataSource.didTapDoneButton()
+                },
+                for: .primaryActionTriggered,
+            )
             addSubview(doneButton)
 
             doneButton.autoPinTrailing(toEdgeOf: self, offset: -16)
@@ -408,17 +410,16 @@ private class MyStorySettingsDataSource: NSObject {
             learnMoreString,
         ]).styled(
             with: .font(.dynamicTypeCaption1Clamped),
-            .color(Theme.secondaryTextAndIconColor),
+            .color(.Signal.secondaryLabel),
             .alignment(textAlignment),
         )
-        textView.linkTextAttributes = [.foregroundColor: Theme.primaryTextColor]
+        textView.linkTextAttributes = [.foregroundColor: UIColor.Signal.label]
 
         textView.delegate = self
 
         return textView
     }
 
-    @objc
     private func didTapDoneButton() {
         delegate?.dismiss(animated: true)
     }
