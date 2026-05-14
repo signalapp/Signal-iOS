@@ -31,7 +31,7 @@ class SettingsHeaderButton: UIView {
         ])
 
         // Button
-        button.configuration?.image = UIImage(named: Theme.iconName(icon))
+        button.configuration?.image = Theme.iconImage(icon)
         button.configuration?.imageColorTransformer = UIConfigurationColorTransformer({ _ in
             return .Signal.label
         })

@@ -329,7 +329,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                 avatarImage = dataSource.fetchCachedImage(configuration: configuration, transaction: readTx)
                 badgeImage = dataSource.fetchBadge(configuration: configuration, transaction: readTx)
             } else {
-                avatarImage = UIImage(named: Theme.iconName(.profilePlaceholder))
+                avatarImage = Theme.iconImage(.profilePlaceholder)
             }
         }
         updateViewContent(avatarImage: avatarImage, primaryBadgeImage: badgeImage)
