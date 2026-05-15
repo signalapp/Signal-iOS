@@ -504,7 +504,6 @@
 		45069FC629D3A7C800D0DD14 /* WideMediaTileViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FC529D3A7C800D0DD14 /* WideMediaTileViewLayout.swift */; };
 		45069FC829D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FC729D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift */; };
 		45069FCA29D4FFBB00D0DD14 /* MediaTileDateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FC929D4FFBB00D0DD14 /* MediaTileDateFormatter.swift */; };
-		45069FCE29D64CB300D0DD14 /* MediaSelectionIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FCD29D64CB300D0DD14 /* MediaSelectionIndicatorView.swift */; };
 		450B0FC929FB301700B9A458 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450B0FC829FB301700B9A458 /* AudioMessageView.swift */; };
 		45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */; };
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
@@ -1518,7 +1517,7 @@
 		768FC7B42F316CF800707F72 /* CVDimmableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768FC7B32F316CEF00707F72 /* CVDimmableView.swift */; };
 		768FC7B62F32A0B000707F72 /* UIImage+Blur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768FC7B52F32A0AB00707F72 /* UIImage+Blur.swift */; };
 		7694C9172FB51AA4006E727F /* DisappearingMessagesChatIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7694C9162FB51AA4006E727F /* DisappearingMessagesChatIndicatorView.swift */; };
-		76964AFB2FB4035D007130BE /* ListItemSelectionIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76964AFA2FB4034C007130BE /* ListItemSelectionIndicatorView.swift */; };
+		76964AFB2FB4035D007130BE /* SelectionIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76964AFA2FB4034C007130BE /* SelectionIndicatorView.swift */; };
 		76995F15283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76995F14283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift */; };
 		76A066EA2EA99D1F009B3ED5 /* ConversationInputToolbar+VoiceMemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A066E92EA99D0E009B3ED5 /* ConversationInputToolbar+VoiceMemo.swift */; };
 		76A2EB1028B578B800A29C24 /* MediaTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A2EB0F28B578B800A29C24 /* MediaTextView.swift */; };
@@ -4717,7 +4716,6 @@
 		45069FC529D3A7C800D0DD14 /* WideMediaTileViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WideMediaTileViewLayout.swift; sourceTree = "<group>"; };
 		45069FC729D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquareMediaTileViewLayout.swift; sourceTree = "<group>"; };
 		45069FC929D4FFBB00D0DD14 /* MediaTileDateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTileDateFormatter.swift; sourceTree = "<group>"; };
-		45069FCD29D64CB300D0DD14 /* MediaSelectionIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSelectionIndicatorView.swift; sourceTree = "<group>"; };
 		450B0FC829FB301700B9A458 /* AudioMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessageView.swift; sourceTree = "<group>"; };
 		45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadReplyInfo.swift; sourceTree = "<group>"; };
 		451764291DE939FD00EDB8B9 /* ContactCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
@@ -5720,7 +5718,7 @@
 		768FC7B32F316CEF00707F72 /* CVDimmableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVDimmableView.swift; sourceTree = "<group>"; };
 		768FC7B52F32A0AB00707F72 /* UIImage+Blur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Blur.swift"; sourceTree = "<group>"; };
 		7694C9162FB51AA4006E727F /* DisappearingMessagesChatIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisappearingMessagesChatIndicatorView.swift; sourceTree = "<group>"; };
-		76964AFA2FB4034C007130BE /* ListItemSelectionIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItemSelectionIndicatorView.swift; sourceTree = "<group>"; };
+		76964AFA2FB4034C007130BE /* SelectionIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionIndicatorView.swift; sourceTree = "<group>"; };
 		76995F14283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+StrokeWidthSlider.swift"; sourceTree = "<group>"; };
 		76A066E92EA99D0E009B3ED5 /* ConversationInputToolbar+VoiceMemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationInputToolbar+VoiceMemo.swift"; sourceTree = "<group>"; };
 		76A2EB0F28B578B800A29C24 /* MediaTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTextView.swift; sourceTree = "<group>"; };
@@ -9139,7 +9137,6 @@
 				34A95546271B510400B05242 /* GradientView.swift */,
 				66F98DE52DBBED68009F1A86 /* LineWrappingStackView.swift */,
 				34A95529271B510400B05242 /* LinkingTextView.swift */,
-				76964AFA2FB4034C007130BE /* ListItemSelectionIndicatorView.swift */,
 				34A9552F271B510400B05242 /* LoopingVideoView.swift */,
 				34A9551D271B510400B05242 /* ManualLayoutView.swift */,
 				34A9550C271B510400B05242 /* ManualStackView.swift */,
@@ -9160,6 +9157,7 @@
 				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
 				763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */,
 				766BCA7C29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift */,
+				76964AFA2FB4034C007130BE /* SelectionIndicatorView.swift */,
 				885275BF27E26775003F2F9B /* TextAttachmentView.swift */,
 				764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */,
 				34A9553E271B510400B05242 /* TextViewWithPlaceholder.swift */,
@@ -11169,7 +11167,6 @@
 				32AC5CE6255B51E900829BD8 /* JoinGroupCallPill.swift */,
 				88A941982409A391000E9700 /* LottieToggleButton.swift */,
 				45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */,
-				45069FCD29D64CB300D0DD14 /* MediaSelectionIndicatorView.swift */,
 				45069FC929D4FFBB00D0DD14 /* MediaTileDateFormatter.swift */,
 				8829883A25B9FD6700DEE1E3 /* MockConversationView.swift */,
 				3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */,
@@ -17857,7 +17854,6 @@
 				5003BB3F299DA0F10037159B /* LinkPreviewFetchState.swift in Sources */,
 				3402AA77271D9E180084CBAE /* LinkPreviewState.swift in Sources */,
 				3402AA6D271D9E180084CBAE /* LinkPreviewView.swift in Sources */,
-				76964AFB2FB4035D007130BE /* ListItemSelectionIndicatorView.swift in Sources */,
 				3402AA8C271D9E180084CBAE /* LoopingVideoView.swift in Sources */,
 				3402AA9C271D9E180084CBAE /* ManualLayoutView.swift in Sources */,
 				3402AA8D271D9E180084CBAE /* ManualStackView.swift in Sources */,
@@ -17932,6 +17928,7 @@
 				B9488E752CDED27200C1294B /* ScrollOffset.swift in Sources */,
 				50597BBF2B97D629004681E1 /* SearchableNameFinder.swift in Sources */,
 				66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */,
+				76964AFB2FB4035D007130BE /* SelectionIndicatorView.swift in Sources */,
 				66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */,
 				504861AA2EEB4D0D00B13C49 /* SendableAttachment.swift in Sources */,
 				D9791BB92EAA84830016AA5A /* SheetDisplayableError.swift in Sources */,
@@ -18537,7 +18534,6 @@
 				76BB06FA29AD84DB00978856 /* MediaItemViewController.swift in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
 				4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */,
-				45069FCE29D64CB300D0DD14 /* MediaSelectionIndicatorView.swift in Sources */,
 				45069FCA29D4FFBB00D0DD14 /* MediaTileDateFormatter.swift in Sources */,
 				45D9784229F0B50000BBB3C0 /* MediaTileListModeCell.swift in Sources */,
 				45CADA8B298DD2B4009EBDF5 /* MediaTileScrollFlag.swift in Sources */,

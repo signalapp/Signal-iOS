@@ -423,7 +423,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
 
         let accessoryView: UIView
         if isPreExistingMember {
-            let indicatorView = ListItemSelectionIndicatorView()
+            let indicatorView = SelectionIndicatorView()
             indicatorView.isSelected = true
             indicatorView.isEnabled = false
 
@@ -432,13 +432,13 @@ extension BaseMemberViewController: RecipientPickerDelegate {
             if let customIndicatorView = memberViewDelegate.memberViewCustomIndicatorForPickedMember(recipient) {
                 accessoryView = customIndicatorView
             } else {
-                let indicatorView = ListItemSelectionIndicatorView()
+                let indicatorView = SelectionIndicatorView()
                 indicatorView.isSelected = true
 
                 accessoryView = indicatorView
             }
         } else {
-            accessoryView = ListItemSelectionIndicatorView()
+            accessoryView = SelectionIndicatorView()
         }
         let accessoryViewWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(accessoryView)
         return ContactCellAccessoryView(accessoryView: accessoryViewWrapper, size: .square(24))

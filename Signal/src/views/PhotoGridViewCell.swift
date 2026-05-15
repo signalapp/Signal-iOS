@@ -69,7 +69,7 @@ class PhotoGridViewCell: UICollectionViewCell {
 
     private var durationLabel: UILabel?
     private var durationLabelBackground: UIView?
-    private let selectionButton = MediaSelectionIndicatorView()
+    private let selectionIndicator = SelectionIndicatorView(style: .media)
 
     private let highlightedMaskView: UIView
     private let selectedMaskView: UIView
@@ -117,14 +117,14 @@ class PhotoGridViewCell: UICollectionViewCell {
         contentView.addSubview(imageView)
         contentView.addSubview(highlightedMaskView)
         contentView.addSubview(selectedMaskView)
-        contentView.addSubview(selectionButton)
+        contentView.addSubview(selectionIndicator)
 
         imageView.autoPinEdgesToSuperviewEdges()
         highlightedMaskView.autoPinEdgesToSuperviewEdges()
         selectedMaskView.autoPinEdgesToSuperviewEdges()
 
-        selectionButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 5)
-        selectionButton.autoPinEdge(toSuperviewEdge: .top, withInset: 5)
+        selectionIndicator.autoPinEdge(toSuperviewEdge: .trailing, withInset: 5)
+        selectionIndicator.autoPinEdge(toSuperviewEdge: .top, withInset: 5)
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -134,8 +134,8 @@ class PhotoGridViewCell: UICollectionViewCell {
 
     private func updateSelectionState() {
         selectedMaskView.isHidden = !isSelected
-        selectionButton.isSelected = isSelected
-        selectionButton.allowsMultipleSelection = allowsMultipleSelection
+        selectionIndicator.isSelected = isSelected
+        selectionIndicator.isHidden = allowsMultipleSelection == false
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -279,7 +279,6 @@ class PhotoGridViewCell: UICollectionViewCell {
         durationLabelBackground?.isHidden = true
         highlightedMaskView.isHidden = true
         selectedMaskView.isHidden = true
-        selectionButton.reset()
     }
 
     func mediaPresentationContext(collectionView: UICollectionView, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {

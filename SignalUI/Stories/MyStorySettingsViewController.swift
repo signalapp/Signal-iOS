@@ -280,7 +280,7 @@ private class MyStorySettingsDataSource: NSObject {
             hStack.autoSetDimension(.height, toSize: 35, relation: .greaterThanOrEqual)
             hStack.autoPinHeightToSuperview(withMargin: 6)
 
-            let selectionIndicator = ListItemSelectionIndicatorView()
+            let selectionIndicator = SelectionIndicatorView()
             selectionIndicator.isSelected = isSelected
             hStack.addArrangedSubview(selectionIndicator)
 

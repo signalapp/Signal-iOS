@@ -29,7 +29,7 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
         return view
     }()
 
-    let selectionButton = ListItemSelectionIndicatorView()
+    let selectionButton = SelectionIndicatorView()
 
     private let selectedMaskView = UIView()
 

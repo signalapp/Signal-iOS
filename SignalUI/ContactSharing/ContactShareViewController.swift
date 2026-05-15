@@ -231,7 +231,7 @@ public class ContactShareViewController: OWSTableViewController2 {
 
         let field: ContactShareField
 
-        private lazy var checkmark = ListItemSelectionIndicatorView()
+        private lazy var checkmark = SelectionIndicatorView()
 
         init(field: ContactShareField) {
             self.field = field
@@ -275,7 +275,7 @@ public class ContactShareViewController: OWSTableViewController2 {
         }
 
         class func contactNameCell(for contactName: String) -> UITableViewCell {
-            let checkmark = ListItemSelectionIndicatorView()
+            let checkmark = SelectionIndicatorView()
             checkmark.isSelected = true
             checkmark.isEnabled = false
 

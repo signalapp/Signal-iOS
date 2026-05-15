@@ -150,6 +150,14 @@ public class RingView: UIView {
         }
     }
 
+    override public var bounds: CGRect {
+        didSet {
+            if bounds.size != oldValue.size {
+                updatePath()
+            }
+        }
+    }
+
     override public var tintColor: UIColor! {
         didSet {
             updateColor()

@@ -1353,7 +1353,7 @@ class ConversationPickerCell: ContactTableViewCell {
 
     // MARK: - Subviews
 
-    private lazy var selectionView = ListItemSelectionIndicatorView()
+    private lazy var selectionView = SelectionIndicatorView()
 
     func buildAccessoryView(disappearingMessagesConfig: DisappearingMessagesConfigurationRecord?) -> ContactCellAccessoryView {
 
