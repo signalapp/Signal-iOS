@@ -122,7 +122,7 @@ struct SVR2ConcurrencyTests {
         // backup to open a new connection. We can reduce the likelihood of hitting
         // this race condition by pausing temporarily here; note that we already
         // wait for 100ms at the end of the test for the connection to close.
-        try await Task.sleep(nanoseconds: 0.2.clampedNanoseconds)
+        try await Task.sleep(nanoseconds: 3.clampedNanoseconds)
 
         firstExposeFuture.resolve(exposeResponse())
         secondBackupFuture.resolve(backupResponse())
@@ -205,7 +205,7 @@ struct SVR2ConcurrencyTests {
         // Additionally, the following lines must wait until both of the above
         // requests have queued up their backup requests to ensure both of those
         // run before either of them issues an expose.
-        try await Task.sleep(nanoseconds: 0.2.clampedNanoseconds)
+        try await Task.sleep(nanoseconds: 3.clampedNanoseconds)
 
         firstBackupFuture.resolve(backupResponse())
         secondBackupFuture.resolve(backupResponse())
@@ -284,7 +284,7 @@ struct SVR2ConcurrencyTests {
 
         // See above. In this case, we want both `backupMasterKey` calls to acquire
         // the same shared connection so they see the same errors.
-        try await Task.sleep(nanoseconds: 0.2.clampedNanoseconds)
+        try await Task.sleep(nanoseconds: 3.clampedNanoseconds)
 
         let firstBackupError = WebSocketError.closeError(statusCode: 400, closeReason: nil)
         firstBackupFuture.reject(firstBackupError)
