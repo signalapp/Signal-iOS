@@ -22,8 +22,11 @@ class ConversationBottomPanelView: UIView {
     let contentLayoutGuide = UILayoutGuide()
 
     private var backgroundViewEffect: UIVisualEffect {
-        guard #available(iOS 26, *), useGlassPanel else {
+        if UIAccessibility.isReduceTransparencyEnabled {
             return UIBlurEffect(style: .systemThinMaterial)
+        }
+        guard #available(iOS 26, *), useGlassPanel else {
+            return Theme.barBlurEffect
         }
         // Same as in ConversationInputToolbar.
         let glassEffect = UIGlassEffect(style: .regular)
@@ -123,6 +126,19 @@ class ConversationBottomPanelView: UIView {
                     constant: UIDevice.current.hasIPhoneXNotch ? 0 : -12,
                 ),
             ])
+
+            // Alter the visual effect view's tint to match our background color
+            // so the bottom panel, when over a solid color background matching UIColor.Signal.background,
+            // exactly matches the background color. This is brittle, but there is no way to get
+            // this behavior from UIVisualEffectView otherwise.
+            if
+                !UIAccessibility.isReduceTransparencyEnabled,
+                let tintingView = backgroundView.subviews.first(where: {
+                    String(describing: type(of: $0)) == "_UIVisualEffectSubview"
+                })
+            {
+                tintingView.backgroundColor = UIColor.Signal.background.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+            }
         }
     }
 

@@ -473,13 +473,33 @@ class MessageRequestView: ConversationBottomPanelView {
 
     // MARK: -
 
+    private func buttonConfiguration(title: String) -> UIButton.Configuration {
+        var configuration: UIButton.Configuration
+        if #available(iOS 26, *) {
+            configuration = .prominentGlass()
+            configuration.baseForegroundColor = .Signal.label
+        } else {
+            configuration = .plain()
+            configuration.baseForegroundColor = .Signal.accent
+        }
+        configuration.titleAlignment = .center
+        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
+        configuration.baseBackgroundColor = .clear
+        if #available(iOS 26, *) {
+            configuration.cornerStyle = .capsule
+        }
+        configuration.title = title
+        configuration.contentInsets = NSDirectionalEdgeInsets(hMargin: 12, vMargin: 8)
+        return configuration
+    }
+
     private func prepareButton(
         title: String,
         destructive: Bool = false,
         actionBlock: @escaping () -> Void,
     ) -> UIButton {
         let button = UIButton(
-            configuration: .mediumSecondary(title: title),
+            configuration: buttonConfiguration(title: title),
             primaryAction: UIAction { _ in
                 actionBlock()
             },
