@@ -123,101 +123,114 @@ class StoryContextOnboardingOverlayView: UIView {
         vStack.alignment = .center
         vStack.distribution = .equalSpacing
         vStack.spacing = 42
+        vStack.translatesAutoresizingMaskIntoConstraints = false
 
         animationViews = []
 
         for asset in assets {
-            let imageContainer = UIView()
-
             let animationView = LottieAnimationView(name: asset.lottieName)
             animationView.loopMode = .playOnce
             animationView.backgroundBehavior = .forceFinish
-            animationView.autoSetDimensions(to: .square(54))
 
+            let imageContainer = UIView()
             imageContainer.addSubview(animationView)
+            animationView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                animationView.widthAnchor.constraint(equalToConstant: 54),
+                animationView.heightAnchor.constraint(equalTo: animationView.widthAnchor),
 
-            imageContainer.autoPinHeight(toHeightOf: animationView)
-            imageContainer.autoPinWidth(toWidthOf: animationView)
-            animationView.autoVCenterInSuperview()
-            animationView.autoAlignAxis(.vertical, toSameAxisOf: imageContainer)
+                animationView.topAnchor.constraint(equalTo: imageContainer.topAnchor),
+                animationView.leadingAnchor.constraint(equalTo: imageContainer.leadingAnchor),
+                animationView.trailingAnchor.constraint(equalTo: imageContainer.trailingAnchor),
+                animationView.bottomAnchor.constraint(equalTo: imageContainer.bottomAnchor),
+            ])
 
             let label = UILabel()
-            label.textColor = .ows_gray05
+            label.textColor = .Signal.label
             label.font = .dynamicTypeBodyClamped
             label.text = asset.text
             label.numberOfLines = 0
             label.textAlignment = .center
             label.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
-            let innerVStack = UIStackView()
+            let innerVStack = UIStackView(arrangedSubviews: [imageContainer, label])
             innerVStack.axis = .vertical
             innerVStack.alignment = .center
-            innerVStack.distribution = .equalSpacing
             innerVStack.spacing = 12
-            innerVStack.addArrangedSubviews([imageContainer, label])
 
             vStack.addArrangedSubview(innerVStack)
-
             animationViews.append(animationView)
         }
 
-        let confirmButtonContainer = ManualLayoutView(name: "confirm_button")
-        confirmButtonContainer.shouldDeactivateConstraints = false
-
-        confirmButtonContainer.translatesAutoresizingMaskIntoConstraints = false
-        let confirmButton = OWSButton()
-        confirmButton.translatesAutoresizingMaskIntoConstraints = false
-        confirmButton.setTitle(
-            OWSLocalizedString(
-                "STORY_VIEWER_ONBOARDING_CONFIRMATION",
-                comment: "Confirmation text shown the first time the user opens the story viewer to dismiss instructions.",
-            ),
-            for: .normal,
+        let confirmButtonTitle = NSLocalizedString(
+            "STORY_VIEWER_ONBOARDING_CONFIRMATION",
+            comment: "Confirmation text shown the first time the user opens the story viewer to dismiss instructions.",
         )
-        confirmButton.titleLabel?.font = .dynamicTypeSubheadlineClamped.semibold()
-        confirmButton.backgroundColor = .ows_white
-        confirmButton.setTitleColor(.ows_black, for: .normal)
-        confirmButton.ows_contentEdgeInsets = UIEdgeInsets(hMargin: 23, vMargin: 8)
-        confirmButton.block = { [weak self] in
-            self?.dismiss()
+        var confirmButtonConfiguration: UIButton.Configuration
+        if #available(iOS 26, *) {
+            confirmButtonConfiguration = .largeSecondary(title: confirmButtonTitle)
+        } else {
+            confirmButtonConfiguration = UIButton.Configuration.bordered()
+            confirmButtonConfiguration.baseForegroundColor = .black
+            confirmButtonConfiguration.baseBackgroundColor = .white
+            confirmButtonConfiguration.title = confirmButtonTitle
+            confirmButtonConfiguration.attributedTitle?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
+            confirmButtonConfiguration.contentInsets = .init(hMargin: 24, vMargin: 8)
+            confirmButtonConfiguration.cornerStyle = .capsule
         }
 
-        confirmButtonContainer.addSubview(confirmButton) { view in
-            confirmButton.layer.cornerRadius = confirmButton.height / 2
-        }
-        confirmButton.autoPinEdges(toEdgesOf: confirmButtonContainer)
+        let confirmButton = UIButton(
+            configuration: confirmButtonConfiguration,
+            primaryAction: UIAction { [weak self] _ in
+                self?.dismiss()
+            },
+        )
+        confirmButton.translatesAutoresizingMaskIntoConstraints = false
 
-        let closeButton = OWSButton()
-        closeButton.setImage(Theme.iconImage(.buttonX).withTintColor(.ows_white, renderingMode: .alwaysOriginal), for: .normal)
-        closeButton.contentMode = .center
-        closeButton.block = { [weak self] in
-            guard let self else { return }
-            self.delegate?.storyContextOnboardingOverlayWantsToExitStoryViewer(self)
-        }
+        let closeButton = UIButton(
+            configuration: .round(themeIcon: .buttonX),
+            primaryAction: UIAction { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.storyContextOnboardingOverlayWantsToExitStoryViewer(self)
+            },
+        )
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+
         blurView.contentView.addSubview(closeButton)
         blurView.contentView.addSubview(vStack)
-        blurView.contentView.addSubview(confirmButtonContainer)
+        blurView.contentView.addSubview(confirmButton)
 
         let vStackLayoutGuide = UILayoutGuide()
         blurView.contentView.addLayoutGuide(vStackLayoutGuide)
 
-        confirmButtonContainer.autoHCenterInSuperview()
-        confirmButtonContainer.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 32)
-
-        vStack.autoPinEdge(.leading, to: .leading, of: blurView, withOffset: 12)
-        vStack.autoPinEdge(.trailing, to: .trailing, of: blurView, withOffset: -12)
-        vStack.autoPinEdge(.top, to: .bottom, of: closeButton, withOffset: 12, relation: .greaterThanOrEqual)
-        vStack.autoPinEdge(.bottom, to: .top, of: confirmButtonContainer, withOffset: -42, relation: .lessThanOrEqual)
-
+        let horizontalMargin = OWSTableViewController2.defaultHOuterMargin
+        var closeButtonMargin = horizontalMargin
+        if #unavailable(iOS 26), let buttonConfiguration = closeButton.configuration {
+            // Button has no background so decrease margin by its content inset amount (should be equal on all sides).
+            closeButtonMargin -= buttonConfiguration.contentInsets.leading
+        }
         NSLayoutConstraint.activate([
+            closeButton.topAnchor.constraint(equalTo: blurView.topAnchor, constant: closeButtonMargin),
+            closeButton.trailingAnchor.constraint(equalTo: blurView.trailingAnchor, constant: -closeButtonMargin),
+
             vStackLayoutGuide.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 12),
-            vStackLayoutGuide.bottomAnchor.constraint(equalTo: confirmButtonContainer.topAnchor, constant: -42),
+            vStackLayoutGuide.leadingAnchor.constraint(equalTo: blurView.leadingAnchor, constant: horizontalMargin),
+            vStackLayoutGuide.trailingAnchor.constraint(equalTo: blurView.trailingAnchor, constant: -horizontalMargin),
+            vStackLayoutGuide.bottomAnchor.constraint(equalTo: confirmButton.topAnchor, constant: -42),
+
+            vStack.topAnchor.constraint(greaterThanOrEqualTo: vStackLayoutGuide.topAnchor),
             vStack.centerYAnchor.constraint(equalTo: vStackLayoutGuide.centerYAnchor),
+            vStack.leadingAnchor.constraint(equalTo: vStackLayoutGuide.leadingAnchor),
+            vStack.trailingAnchor.constraint(equalTo: vStackLayoutGuide.trailingAnchor),
+
+            confirmButton.centerXAnchor.constraint(equalTo: blurView.centerXAnchor),
+            confirmButton.bottomAnchor.constraint(equalTo: blurView.safeAreaLayoutGuide.bottomAnchor, constant: -32),
         ])
 
-        closeButton.autoSetDimensions(to: .square(42))
-        closeButton.autoPinEdge(toSuperviewEdge: .top, withInset: 20)
-        closeButton.autoPinEdge(toSuperviewEdge: .leading, withInset: 20)
+        // When using glass button make it generously wide - at least 44% of the screen width.
+        if #available(iOS 26, *) {
+            confirmButton.widthAnchor.constraint(greaterThanOrEqualTo: blurView.widthAnchor, multiplier: 0.44).isActive = true
+        }
     }
 
     private func startAnimations() {

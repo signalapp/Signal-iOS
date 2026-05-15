@@ -252,6 +252,20 @@ public extension UIButton.Configuration {
         configuration.background.backgroundColor = .Signal.secondaryFill
         return configuration
     }
+
+    static func round(themeIcon: ThemeIcon) -> Self {
+        var configuration: UIButton.Configuration
+        if #available(iOS 26, *) {
+            configuration = .glass()
+            configuration.cornerStyle = .capsule
+        } else {
+            configuration = .plain()
+        }
+        configuration.image = Theme.iconImage(themeIcon)
+        configuration.baseForegroundColor = .Signal.label
+        configuration.contentInsets = .init(margin: 10) // 44 dp wide and tall if icon is a standard 24x24
+        return configuration
+    }
 }
 
 // MARK: - UIBarButtonItem
