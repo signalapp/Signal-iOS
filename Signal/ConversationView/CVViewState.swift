@@ -149,6 +149,8 @@ public class CVViewState: NSObject {
 
     var unwrappedGiftMessageIds = Set<String>()
 
+    // MARK: - Collapse Sets
+
     /// The set of collapse set IDs that have been expanded by the user.
     /// Resets to empty when leaving the conversation.
     var expandedCollapseSets = Set<String>()

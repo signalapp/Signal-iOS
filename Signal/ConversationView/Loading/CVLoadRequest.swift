@@ -87,6 +87,7 @@ struct CVLoadRequest {
     let canReuseInteractionModels: Bool
     let canReuseComponentStates: Bool
     let didReset: Bool
+    let preferredScrollContinuityAnchorInteractionId: String?
 
     var isInitialLoad: Bool {
         switch loadType {
@@ -147,6 +148,7 @@ struct CVLoadRequest {
         private var canReuseInteractionModels = true
         private var canReuseComponentStates = true
         private var didReset = false
+        private var preferredScrollContinuityAnchorInteractionId: String?
 
         mutating func reload(
             updatedInteractionIds: Set<String>,
@@ -232,6 +234,13 @@ struct CVLoadRequest {
             shouldLoad = true
         }
 
+        mutating func reload(preferredScrollContinuityAnchorInteractionId: String) {
+            AssertIsOnMainThread()
+
+            self.preferredScrollContinuityAnchorInteractionId = preferredScrollContinuityAnchorInteractionId
+            reload()
+        }
+
         mutating func reloadWithoutCaches() {
             reload(canReuseInteractionModels: false, canReuseComponentStates: false, didReset: true)
         }
@@ -265,6 +274,7 @@ struct CVLoadRequest {
                 canReuseInteractionModels: canReuseInteractionModels,
                 canReuseComponentStates: canReuseComponentStates,
                 didReset: didReset,
+                preferredScrollContinuityAnchorInteractionId: preferredScrollContinuityAnchorInteractionId,
             )
         }
     }

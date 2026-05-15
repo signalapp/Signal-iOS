@@ -32,7 +32,9 @@ extension ConversationViewController: CVComponentDelegate {
         } else {
             viewState.expandedCollapseSets.insert(collapseSetId)
         }
-        loadCoordinator.enqueueReload()
+        loadCoordinator.enqueueReload(
+            preferredScrollContinuityAnchorInteractionId: collapseSetId,
+        )
     }
 
     // MARK: - Double-Tap

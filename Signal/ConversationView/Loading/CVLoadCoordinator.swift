@@ -11,7 +11,7 @@ import UIKit
 protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
     var viewState: CVViewState { get }
 
-    func willUpdateWithNewRenderState(_ renderState: CVRenderState) -> CVUpdateToken
+    func willUpdateWithNewRenderState(_ update: CVUpdate) -> CVUpdateToken
 
     func updateWithNewRenderState(
         update: CVUpdate,
@@ -385,6 +385,13 @@ public class CVLoadCoordinator: NSObject {
         loadIfNecessary()
     }
 
+    public func enqueueReload(preferredScrollContinuityAnchorInteractionId: String) {
+        loadRequestBuilder.reload(
+            preferredScrollContinuityAnchorInteractionId: preferredScrollContinuityAnchorInteractionId,
+        )
+        loadIfNecessary()
+    }
+
     public func enqueueReload(scrollAction: CVScrollAction) {
         loadRequestBuilder.reload(scrollAction: scrollAction)
         loadIfNecessary()
@@ -616,7 +623,7 @@ public class CVLoadCoordinator: NSObject {
         }
 
         let renderState = update.renderState
-        let updateToken = delegate.willUpdateWithNewRenderState(renderState)
+        let updateToken = delegate.willUpdateWithNewRenderState(update)
 
         self.renderState = renderState
 

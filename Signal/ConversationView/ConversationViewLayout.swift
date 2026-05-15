@@ -893,6 +893,21 @@ public class ConversationViewLayout: UICollectionViewLayout {
             return contentOffsetAdjustment
         }
 
+        if
+            let anchorInteractionId = scrollContinuityToken.anchorInteractionId,
+            let beforeItemLayout = beforeItemLayoutMap[anchorInteractionId],
+            let afterItemLayout = afterItemLayoutMap[anchorInteractionId]
+        {
+            if beforeItemLayout.canBeUsedForContinuity, afterItemLayout.canBeUsedForContinuity {
+                return calculateAdjustment(
+                    beforeItemLayout: beforeItemLayout,
+                    afterItemLayout: afterItemLayout,
+                )
+            } else {
+                owsFailDebug("Invalid scroll continuity anchor.")
+            }
+        }
+
         // Prefer to maintain continuity with visible interactions.
         //
         // Honor the scroll continuity bias. If we prefer continuity with regard
@@ -967,7 +982,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         delegateScrollContinuityMode = .disabled
     }
 
-    public func buildScrollContinuityToken() -> CVScrollContinuityToken {
+    public func buildScrollContinuityToken(preferredAnchorInteractionId: String? = nil) -> CVScrollContinuityToken {
         AssertIsOnMainThread()
 
         let layoutInfo = ensureCurrentLayoutInfo()
@@ -992,6 +1007,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
             layoutInfo: layoutInfo,
             contentOffset: contentOffset,
             visibleUniqueIds: visibleUniqueIds,
+            anchorInteractionId: preferredAnchorInteractionId,
         )
     }
 
@@ -1095,15 +1111,18 @@ public class CVScrollContinuityToken: NSObject {
     fileprivate let layoutInfo: ConversationViewLayout.LayoutInfo
     fileprivate let contentOffset: CGPoint
     fileprivate let visibleUniqueIds: [String]
+    fileprivate let anchorInteractionId: String?
 
     fileprivate init(
         layoutInfo: ConversationViewLayout.LayoutInfo,
         contentOffset: CGPoint,
         visibleUniqueIds: [String],
+        anchorInteractionId: String? = nil,
     ) {
         self.layoutInfo = layoutInfo
         self.contentOffset = contentOffset
         self.visibleUniqueIds = visibleUniqueIds
+        self.anchorInteractionId = anchorInteractionId
     }
 }
 

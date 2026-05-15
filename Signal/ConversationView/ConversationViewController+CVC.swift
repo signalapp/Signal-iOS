@@ -155,7 +155,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         cvCustomAction.messageAction?.block(self)
     }
 
-    func willUpdateWithNewRenderState(_ renderState: CVRenderState) -> CVUpdateToken {
+    func willUpdateWithNewRenderState(_ update: CVUpdate) -> CVUpdateToken {
         AssertIsOnMainThread()
 
         // HACK to work around radar #28167779
@@ -171,7 +171,9 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         // Snapshot CVC layout state before we land the load;
         // we use this to ensure scroll continuity when landing the load.
-        let scrollContinuityToken = layout.buildScrollContinuityToken()
+        let scrollContinuityToken = layout.buildScrollContinuityToken(
+            preferredAnchorInteractionId: update.loadRequest.preferredScrollContinuityAnchorInteractionId,
+        )
 
         // CVC will often use this state to ensure scroll continuity
         // when landing loads, so ensure the value is updated before
