@@ -45,7 +45,8 @@ public class SelectionIndicatorView: UIView {
 
     // MARK: Layout
 
-    private static let preferredSize: CGFloat = 24
+    // For `MessageSelectionView` to use.
+    public static let preferredSize: CGFloat = 24
 
     private static let ringStrokeWidth: CGFloat = 2
 
@@ -114,7 +115,7 @@ public class SelectionIndicatorView: UIView {
 
     // MARK: Appearance
 
-    /// Color that fills the selection ring and is the background for checkmark image.
+    /// Color that fills the selection ring and is the background for checkmark image. Defaut is `UIColor.Signal.accent`.
     public var fillColor: UIColor = .Signal.accent {
         didSet {
             selectedView.backgroundColor = fillColor
@@ -122,10 +123,10 @@ public class SelectionIndicatorView: UIView {
     }
 
     private var effectiveFillColor: UIColor {
-        isEnabled ? fillColor : .Signal.tertiaryLabel
+        isEnabled ? fillColor : unselectedListIndicatorColor
     }
 
-    /// Color for the ckeckmark image and outer ring for media-style indicators.
+    /// Color for the checkmark symbol and outer ring when `style` is `media`. Default is `white`.
     public var strokeColor: UIColor = .white {
         didSet {
             checkmarkIcon.tintColor = strokeColor
@@ -135,11 +136,25 @@ public class SelectionIndicatorView: UIView {
         }
     }
 
+    private var _unselectedColor: UIColor = .Signal.tertiaryLabel
+
+    /// Colors of the emty circle when `style` is `list`. Defaults to `UIColor.Signal.tertiaryLabel`.
+    public var unselectedListIndicatorColor: UIColor! {
+        get { _unselectedColor }
+        set {
+            owsAssertDebug(style == .list, "Invalid access")
+            _unselectedColor = newValue ?? .Signal.tertiaryLabel
+            if case .list = style {
+                innerRing.tintColor = unselectedListIndicatorColor
+            }
+        }
+    }
+
     private lazy var innerRing: UIView = {
         owsAssertDebug(style == .list, "Invalid access")
         let ringView = RingView()
         ringView.lineWidth = SelectionIndicatorView.ringStrokeWidth
-        ringView.tintColor = .Signal.tertiaryLabel
+        ringView.tintColor = unselectedListIndicatorColor
         return ringView
     }()
 
