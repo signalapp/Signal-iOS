@@ -253,10 +253,11 @@ class StoryContextViewController: OWSViewController {
         playbackProgressView.isUserInteractionEnabled = false
 
         if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
+            let cornerRadius: CGFloat = if #available(iOS 26, *) { 40 } else { 18 }
             // iPhone with notch or iPad (views/replies rendered below media, media is in a card)
-            mediaViewContainer.layer.cornerRadius = 18
+            mediaViewContainer.layer.cornerRadius = cornerRadius
             mediaViewContainer.clipsToBounds = true
-            onboardingOverlay.layer.cornerRadius = 18
+            onboardingOverlay.layer.cornerRadius = cornerRadius
             onboardingOverlay.clipsToBounds = true
             repliesAndViewsButton.autoPinEdge(.top, to: .bottom, of: mediaViewContainer)
             playbackProgressView.autoPinEdge(.bottom, to: .top, of: repliesAndViewsButton, withOffset: -OWSTableViewController2.defaultHOuterMargin)

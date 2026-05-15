@@ -50,7 +50,7 @@ class StoryItemMediaView: UIView {
         updateMediaView()
 
         if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
-            layer.cornerRadius = 18
+            layer.cornerRadius = if #available(iOS 26, *) { 40 } else { 18 }
             clipsToBounds = true
         }
 
