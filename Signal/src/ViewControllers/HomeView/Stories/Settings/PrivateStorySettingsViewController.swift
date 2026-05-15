@@ -186,8 +186,8 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
 
         let deleteSection = OWSTableSection()
         contents.add(deleteSection)
-        deleteSection.add(.actionItem(
-            withText: OWSLocalizedString(
+        deleteSection.add(.item(
+            name: OWSLocalizedString(
                 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON",
                 comment: "Button to delete the story on the 'private story settings' view",
             ),
