@@ -8566,6 +8566,12 @@
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
 
+/* Label for 'fresh' button in the payment settings. */
+"SETTINGS_PAYMENTS_REFRESH" = "Fresh";
+
+/* Label for 'information' button in the payment settings. */
+"SETTINGS_PAYMENTS_INFORMATION" = "Information";
+
 /* Label for 'add money' view in the payment settings. */
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Add Funds";
 

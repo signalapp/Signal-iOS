@@ -8563,6 +8563,12 @@
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "সক্রিয় করুন";
 
+/* Label for 'fresh' button in the payment settings. */
+"SETTINGS_PAYMENTS_REFRESH" = "রিফ্রেশ করুন";
+
+/* Label for 'information' button in the payment settings. */
+"SETTINGS_PAYMENTS_INFORMATION" = "তথ্য";
+
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "MobileCoin-এর শর্তাবলী দেখুন";
 

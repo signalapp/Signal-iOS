@@ -8563,6 +8563,12 @@
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "เปิดใช้";
 
+/* Label for 'fresh' button in the payment settings. */
+"SETTINGS_PAYMENTS_REFRESH" = "รีเฟรช";
+
+/* Label for 'information' button in the payment settings. */
+"SETTINGS_PAYMENTS_INFORMATION" = "ข้อมูล";
+
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "ดูเงื่อนไข MobileCoin";
 
