@@ -948,6 +948,8 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
                 buttonLabel.text = buttonText
                 buttonLabel.textColor = .Signal.accent
                 buttonLabel.font = UIFont.dynamicTypeSubheadlineClamped
+                buttonLabel.isAccessibilityElement = true
+                buttonLabel.accessibilityTraits = .link
 
                 let animationView = LottieAnimationView(name: iconName)
                 animationView.contentMode = .scaleAspectFit
