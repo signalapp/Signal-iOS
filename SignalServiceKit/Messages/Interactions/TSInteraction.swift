@@ -127,7 +127,12 @@ extension TSInteraction {
         switch self {
         case let infoMessage as TSInfoMessage:
             switch infoMessage.messageType {
-            case .typePinnedMessage:
+            case
+                .typePinnedMessage,
+                .blockedOtherUser,
+                .blockedGroup,
+                .unblockedOtherUser,
+                .unblockedGroup:
                 return false
             default:
                 return shouldAppearInInbox(transaction: transaction)
