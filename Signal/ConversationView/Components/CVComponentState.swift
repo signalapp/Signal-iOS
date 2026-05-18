@@ -493,6 +493,8 @@ public struct CVComponentState: Equatable {
             let detailsText: NSAttributedString?
             /// For mutual groups, lack thereof and note-to-self description.
             let mutualGroupsText: NSAttributedString?
+            /// Plain text version of mutualGroupsText for VoiceOver (no image attachment).
+            let mutualGroupsAccessibilityText: String?
             let threadType: SafetyTipsType
             let shouldShowSafetyTipsButton: Bool
             let isOfficialChat: Bool

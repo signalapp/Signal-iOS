@@ -249,6 +249,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 innerViews.append(UIView.spacer(withHeight: vSpacingSafetySectionDefault))
                 let mutualGroupsLabelConfig = mutualGroupsLabelConfig(attributedText: mutualGroupsText)
                 mutualGroupsLabelConfig.applyForRendering(label: mutualGroupsLabel)
+                mutualGroupsLabel.accessibilityLabel = safetySection.mutualGroupsAccessibilityText
                 innerViews.append(mutualGroupsLabel)
             }
 
@@ -906,6 +907,7 @@ extension CVComponentThreadDetails {
             shouldShowProfileNamesEducation: false,
             detailsText: NSAttributedString(string: OWSLocalizedString("RELEASE_NOTES_DETAILS", comment: "Details text for the thread details view of the release notes channel")),
             mutualGroupsText: nil,
+            mutualGroupsAccessibilityText: nil,
             threadType: .contact,
             shouldShowSafetyTipsButton: false,
             isOfficialChat: true,
@@ -1038,6 +1040,7 @@ extension CVComponentThreadDetails {
             shouldShowProfileNamesEducation: shouldShowUnknownThreadWarning,
             detailsText: membersAttributedText,
             mutualGroupsText: nil,
+            mutualGroupsAccessibilityText: nil,
             threadType: .group,
             shouldShowSafetyTipsButton: shouldShowUnknownThreadWarning && groupThread.hasPendingMessageRequest(transaction: tx),
             isOfficialChat: false,
@@ -1070,6 +1073,7 @@ extension CVComponentThreadDetails {
                     with: .font(.dynamicTypeSubheadline),
                     .color(UIColor.Signal.label),
                 ),
+                mutualGroupsAccessibilityText: nil,
                 threadType: .contact,
                 shouldShowSafetyTipsButton: false,
                 isOfficialChat: false,
@@ -1174,6 +1178,7 @@ extension CVComponentThreadDetails {
                 "  ",
                 formattedString,
             ]),
+            mutualGroupsAccessibilityText: formattedString,
             threadType: .contact,
             shouldShowSafetyTipsButton: isMessageRequest,
             isOfficialChat: false,
