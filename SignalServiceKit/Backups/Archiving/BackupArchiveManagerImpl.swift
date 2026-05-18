@@ -405,7 +405,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             exportProgress = nil
         }
 
-        try await oversizeTextArchiver.populateTableIncrementally(progress: prepareOversizeTextAttachmentsProgressSink)
+        await oversizeTextArchiver.populateTableIncrementally(progress: prepareOversizeTextAttachmentsProgressSink)
 
         // Before we export, we need to make sure we have an MRBK – the export
         // will refetch this, and throw if it's missing.

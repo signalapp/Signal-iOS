@@ -108,14 +108,14 @@ class BackupArchiveInlinedOversizeTextArchiver {
     /// Populate the BackupOversizeTextCache table with any oversize text attachment streams that weren't
     /// already present. After calling this method, BackupOversizeTextCache can be read for backup export.
     /// Message processing (and sending) should be suspended while this runs, so that new attachments are not created,
-    func populateTableIncrementally(progress: OWSProgressSink?) async throws {
+    func populateTableIncrementally(progress: OWSProgressSink?) async {
         // We can get away with fetching attachment ids in one read then processing in separate
         // writes because no new attachments should be created while backups is running.
         // Worst case, we miss an attachment and the oversized text ends up truncated
         // or as a pointer in the backup.
         var attachmentIdIndex = 0
-        let attachmentIds: [Attachment.IDType] = try db.read { tx in
-            try self.attachmentRowIdsForTablePopulation(tx: tx)
+        let attachmentIds: [Attachment.IDType] = db.read { tx in
+            self.attachmentRowIdsForTablePopulation(tx: tx)
         }
 
         let progressSource: OWSProgressSource?
@@ -132,10 +132,10 @@ class BackupArchiveInlinedOversizeTextArchiver {
             return
         }
 
-        try await TimeGatedBatch.processAll(db: db) { tx in
+        await TimeGatedBatch.processAll(db: db) { tx in
             let batchIds = attachmentIds.dropFirst(attachmentIdIndex).prefix(Self.batchCount)
             attachmentIdIndex += Self.batchCount
-            try self.populateTableIncrementallyBatch(
+            self.populateTableIncrementallyBatch(
                 attachmentIds: batchIds,
                 progress: progressSource,
                 tx: tx,
@@ -327,11 +327,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
             return .messageFailure([.restoreFrameError(.failedToCreateAttachment)])
         }
 
-        do {
-            try self.insert(attachmentId: reference.attachmentRowId, text: text, tx: context.tx)
-        } catch {
-            return .messageFailure([.restoreFrameError(.failedToCreateAttachment)])
-        }
+        insert(attachmentId: reference.attachmentRowId, text: text, tx: context.tx)
 
         return .success(())
     }
@@ -341,11 +337,14 @@ class BackupArchiveInlinedOversizeTextArchiver {
     ) async throws {
         let progressSource: OWSProgressSource?
         if let progress {
-            let unitCount = try db.read { tx in
+            let unitCount = db.read { tx in
                 let minId = kvStore.getInt64(Self.lastRestoredRowIdKey, defaultValue: 0, transaction: tx)
-                return try BackupOversizeTextCache
-                    .filter(Column(BackupOversizeTextCache.CodingKeys.id) > minId)
-                    .fetchCount(tx.database)
+
+                return failIfThrows {
+                    try BackupOversizeTextCache
+                        .filter(Column(BackupOversizeTextCache.CodingKeys.id) > minId)
+                        .fetchCount(tx.database)
+                }
             }
             progressSource = await progress.addSource(withLabel: "OversizedTexts", unitCount: UInt64(max(1, unitCount)))
         } else {
@@ -354,7 +353,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
 
         var finished = false
         while !finished {
-            finished = try await self.finishRestoringOversizedTextAttachmentBatch()
+            finished = await self.finishRestoringOversizedTextAttachmentBatch()
             if let progressSource {
                 let remainingUnitCount = progressSource.totalUnitCount - progressSource.completedUnitCount
                 if remainingUnitCount > 0 {
@@ -367,29 +366,32 @@ class BackupArchiveInlinedOversizeTextArchiver {
     // MARK: - Helpers
 
     private func fetchInlineableOversizedText(attachmentId: Attachment.IDType, tx: DBReadTransaction) throws -> String? {
-        return try BackupOversizeTextCache
-            .filter(Column(BackupOversizeTextCache.CodingKeys.attachmentRowId) == attachmentId)
-            .fetchOne(tx.database)?
-            .text
+        return failIfThrows {
+            try BackupOversizeTextCache
+                .filter(Column(BackupOversizeTextCache.CodingKeys.attachmentRowId) == attachmentId)
+                .fetchOne(tx.database)
+        }?.text
     }
 
     @discardableResult
-    private func insert(attachmentId: Attachment.IDType, text: String, tx: DBWriteTransaction) throws -> BackupOversizeTextCache.IDType {
+    private func insert(attachmentId: Attachment.IDType, text: String, tx: DBWriteTransaction) -> BackupOversizeTextCache.IDType {
         var text = text
         if text.lengthOfBytes(using: .utf8) > BackupOversizeTextCache.maxTextLengthBytes {
             logger.error("Oversized backup text too long! Truncating...")
             text = text.trimToUtf8ByteCount(BackupOversizeTextCache.maxTextLengthBytes)
         }
         var record = BackupOversizeTextCache(id: nil, attachmentRowId: attachmentId, text: text)
-        try record.insert(tx.database)
+        failIfThrows {
+            try record.insert(tx.database)
+        }
         return record.id!
     }
 
     // Work in batches of 50 so we can make (and commit) incremental progress.
     static let batchCount = 50
 
-    private func attachmentRowIdsForTablePopulation(tx: DBReadTransaction) throws -> [Attachment.IDType] {
-        return try Attachment.Record
+    private func attachmentRowIdsForTablePopulation(tx: DBReadTransaction) -> [Attachment.IDType] {
+        let query = Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.contentType) == Attachment.ContentType.file.rawValue)
             .filter(Column(Attachment.Record.CodingKeys.mimeType) == MimeType.textXSignalPlain.rawValue)
             .filter(Column(Attachment.Record.CodingKeys.localRelativeFilePath) != nil)
@@ -403,8 +405,12 @@ class BackupArchiveInlinedOversizeTextArchiver {
                     )
                     .exists(),
             )
-            .select(Column(Attachment.Record.CodingKeys.sqliteId))
-            .fetchAll(tx.database)
+
+        return failIfThrows {
+            try query
+                .select(Column(Attachment.Record.CodingKeys.sqliteId))
+                .fetchAll(tx.database)
+        }
     }
 
     // Returns number of rows processed. Returns 0 if finished.
@@ -412,7 +418,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
         attachmentIds: ArraySlice<Attachment.IDType>,
         progress: OWSProgressSource?,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         var maxRecordId: BackupOversizeTextCache.IDType = 0
         for attachmentId in attachmentIds {
             guard let stream = attachmentStore.fetch(id: attachmentId, tx: tx)?.asStream() else {
@@ -423,7 +429,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
 
             // If the attachment fails to decrypt, skip this record.
             if let text = try? stream.decryptedLongText() {
-                let recordId = try self.insert(attachmentId: stream.id, text: text, tx: tx)
+                let recordId = self.insert(attachmentId: stream.id, text: text, tx: tx)
                 maxRecordId = max(maxRecordId, recordId)
             } else {
                 logger.error("Failed to decrypt long text! Skipping.")
@@ -438,35 +444,41 @@ class BackupArchiveInlinedOversizeTextArchiver {
     }
 
     // Returns true if done (no more rows to restore)
-    private func finishRestoringOversizedTextAttachmentBatch() async throws -> Bool {
-        let records = try db.read { tx in
+    private func finishRestoringOversizedTextAttachmentBatch() async -> Bool {
+        let records = db.read { tx in
             let minId = kvStore.getInt64(Self.lastRestoredRowIdKey, defaultValue: 0, transaction: tx)
-            return try BackupOversizeTextCache
+            let query = BackupOversizeTextCache
                 .filter(Column(BackupOversizeTextCache.CodingKeys.id) > minId)
                 .order(Column(BackupOversizeTextCache.CodingKeys.id).asc)
                 .limit(Self.batchCount)
-                .fetchAll(tx.database)
+
+            return failIfThrows {
+                try query.fetchAll(tx.database)
+            }
         }
         if records.isEmpty {
             return true
         }
-        var cacheIdToAttachmentId = [BackupOversizeTextCache.IDType: Attachment.IDType]()
-        var attachmentIdToCacheIds = [Attachment.IDType: [BackupOversizeTextCache.IDType]]()
+        var attachmentIds = [BackupOversizeTextCache.IDType: Attachment.IDType]()
         var messageBodies = [BackupOversizeTextCache.IDType: MessageBody]()
-        for record in records {
-            cacheIdToAttachmentId[record.id!] = record.attachmentRowId
-            var cacheIds = attachmentIdToCacheIds[record.attachmentRowId] ?? []
-            cacheIds.append(record.id!)
-            attachmentIdToCacheIds[record.attachmentRowId] = cacheIds
-            messageBodies[record.id!] = MessageBody(text: record.text, ranges: .empty)
-        }
-
         var attachmentKeys = [BackupOversizeTextCache.IDType: AttachmentKey]()
-        try db.read { tx in
-            for attachment in attachmentStore.fetch(ids: Array(attachmentIdToCacheIds.keys), tx: tx) {
-                for recordId in attachmentIdToCacheIds[attachment.id] ?? [] {
-                    attachmentKeys[recordId] = try AttachmentKey(combinedKey: attachment.encryptionKey)
+
+        db.read { tx in
+            for record in records {
+                let recordRowId = record.id!
+                let attachmentRowId = record.attachmentRowId
+
+                guard
+                    let attachment = attachmentStore.fetch(id: attachmentRowId, tx: tx),
+                    let attachmentKey = try? AttachmentKey(combinedKey: attachment.encryptionKey)
+                else {
+                    owsFailDebug("Attachment missing or with invalid key!")
+                    continue
                 }
+
+                attachmentIds[recordRowId] = record.attachmentRowId
+                messageBodies[recordRowId] = MessageBody(text: record.text, ranges: .empty)
+                attachmentKeys[recordRowId] = attachmentKey
             }
         }
 
@@ -488,7 +500,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
                         owsFailDebug("Got oversize text thats fits a normal message?")
                         continue
                     }
-                    guard let attachmentId = cacheIdToAttachmentId[recordId] else {
+                    guard let attachmentId = attachmentIds[recordId] else {
                         owsFailDebug("Missing attachment id")
                         continue
                     }
