@@ -38,6 +38,20 @@ class ContextMenuButton: UIButton {
         setActions(actions: [])
     }
 
+    /// Creates an empty context menu button. Callers should subsequently call
+    /// ``setActions(actions:)`` manually to populate the button.
+    init(
+        configuration: UIButton.Configuration,
+        onWillDisplayContextMenu: @escaping () -> Void = {},
+        onDidDismissContextMenu: @escaping () -> Void = {},
+    ) {
+        self.onWillDisplayContextMenu = onWillDisplayContextMenu
+        self.onDidDismissContextMenu = onDidDismissContextMenu
+        super.init(frame: .zero)
+        self.configuration = configuration
+        setActions(actions: [])
+    }
+
     /// Set the actions for this button's context menu.
     func setActions(actions: [UIMenuElement]) {
         showsMenuAsPrimaryAction = true

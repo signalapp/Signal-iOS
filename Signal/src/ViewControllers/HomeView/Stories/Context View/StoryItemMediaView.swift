@@ -21,7 +21,7 @@ protocol StoryItemMediaViewDelegate: AnyObject {
     var context: StoryContext { get }
 }
 
-class StoryItemMediaView: UIView {
+class StoryItemMediaView: UIView, VideoPlayerDelegate {
     weak var delegate: StoryItemMediaViewDelegate?
     private(set) var item: StoryItem
 
@@ -353,12 +353,11 @@ class StoryItemMediaView: UIView {
         {
             // For private stories, other than "My Story", render the name of the story
 
-            let contextIcon = UIImageView()
-            contextIcon.setTemplateImageName("stories-fill-compact", tintColor: Theme.darkThemePrimaryColor)
-            contextIcon.autoSetDimensions(to: .square(16))
+            let contextIcon = UIImageView(image: UIImage(named: "stories-fill-compact"))
+            contextIcon.tintColor = .Signal.label
 
             let contextNameLabel = UILabel()
-            contextNameLabel.textColor = Theme.darkThemePrimaryColor
+            contextNameLabel.textColor = .Signal.label
             contextNameLabel.font = .dynamicTypeFootnote
             contextNameLabel.text = privateStoryThread.name
 
@@ -379,7 +378,7 @@ class StoryItemMediaView: UIView {
             metadataStackView = nameHStack
         }
 
-        let contextButtonSize: CGFloat = 42
+        let contextButtonSize: CGSize = contextButton.systemLayoutSizeFitting(CGSize(square: .greatestFiniteMagnitude))
 
         authorRow.removeAllSubviews()
         authorRow.addArrangedSubviews([
@@ -387,27 +386,28 @@ class StoryItemMediaView: UIView {
             .spacer(withWidth: 12),
             metadataStackView,
             .hStretchingSpacer(),
-            .spacer(withWidth: contextButtonSize),
+            .spacer(withWidth: contextButtonSize.width + 12), // 12 dp spacing between text and context button
         ])
         authorRow.axis = .horizontal
         authorRow.alignment = .center
 
         self.contextButton = contextButton
-        contextButton.tintColor = Theme.darkThemePrimaryColor
-        contextButton.setImage(Theme.iconImage(.buttonMore), for: .normal)
-        contextButton.contentMode = .center
-
         authorRow.addSubview(contextButton)
-        contextButton.autoSetDimensions(to: .square(contextButtonSize))
-        contextButton.autoPinEdge(toSuperviewEdge: .trailing)
+        contextButton.setCompressionResistanceHigh()
+        contextButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
+            // Perhaps because of the way ContextButton is created,
+            // it can't size itself properly and needs to be explicitly sized.
+            contextButton.widthAnchor.constraint(equalToConstant: contextButtonSize.width),
+            contextButton.heightAnchor.constraint(equalToConstant: contextButtonSize.height),
+            contextButton.trailingAnchor.constraint(equalTo: authorRow.trailingAnchor),
             contextButton.centerYAnchor.constraint(equalTo: authorRow.centerYAnchor),
         ])
 
         timestampLabel.setCompressionResistanceHorizontalHigh()
         timestampLabel.setContentHuggingHorizontalHigh()
         timestampLabel.font = .dynamicTypeFootnote
-        timestampLabel.textColor = Theme.darkThemePrimaryColor
+        timestampLabel.textColor = .Signal.label
         timestampLabel.alpha = 0.8
         updateTimestampText()
     }
@@ -469,7 +469,7 @@ class StoryItemMediaView: UIView {
 
     private func buildNameLabel(transaction: DBReadTransaction) -> UIView {
         let label = UILabel()
-        label.textColor = Theme.darkThemePrimaryColor
+        label.textColor = .Signal.label
         label.font = UIFont.dynamicTypeSubheadline.semibold()
         label.text = StoryUtil.authorDisplayName(
             for: item.message,
@@ -505,7 +505,7 @@ class StoryItemMediaView: UIView {
             super.init(frame: .zero)
             spoilerConfig.animationManager = spoilerState.animationManager
 
-            super.textColor = Theme.darkThemePrimaryColor
+            super.textColor = .Signal.label
 
             super.layer.shadowRadius = 48
             super.layer.shadowOpacity = 0.8
@@ -1054,6 +1054,12 @@ class StoryItemMediaView: UIView {
         // TODO: Error state
         return UIView()
     }
+
+    // MARK: - VideoPlayerDelegate
+
+    func videoPlayerDidPlayToCompletion(_ videoPlayer: VideoPlayer) {
+        videoPlayerLoopCount += 1
+    }
 }
 
 class StoryItem: NSObject {
@@ -1115,9 +1121,6 @@ class StoryItem: NSObject {
             return nil
         }
     }
-}
-
-extension StoryItem {
 
     // MARK: - Downloading
 
@@ -1146,11 +1149,5 @@ extension StoryItem {
         case .stream, .text:
             return false
         }
-    }
-}
-
-extension StoryItemMediaView: VideoPlayerDelegate {
-    func videoPlayerDidPlayToCompletion(_ videoPlayer: VideoPlayer) {
-        videoPlayerLoopCount += 1
     }
 }
