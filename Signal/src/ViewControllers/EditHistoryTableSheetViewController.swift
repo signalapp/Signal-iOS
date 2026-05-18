@@ -47,36 +47,33 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        do {
-            try self.database.write { tx in
 
-                guard
-                    let thread = TSThread.fetchViaCache(
-                        uniqueId: message.uniqueThreadId,
-                        transaction: tx,
-                    ) else { return }
-
-                try self.editManager.markEditRevisionsAsRead(
-                    for: self.message,
-                    thread: thread,
-                    tx: tx,
+        database.write { tx in
+            guard
+                let thread = TSThread.fetchViaCache(
+                    uniqueId: message.uniqueThreadId,
+                    transaction: tx,
                 )
-            }
-        } catch {
-            owsFailDebug("Failed to update edit read state")
+            else { return }
+
+            editManager.markEditRevisionsAsRead(
+                for: self.message,
+                thread: thread,
+                tx: tx,
+            )
         }
     }
 
     // MARK: - Table Update
 
-    private func loadEditHistory() throws {
-        let messageStillExists = try database.read { tx in
+    private func loadEditHistory() {
+        let messageStillExists = database.read { tx in
             guard let newMessage = TSInteraction.fetchViaCache(uniqueId: message.uniqueId, transaction: tx) as? TSMessage else {
                 return false
             }
             message = newMessage
 
-            let edits: [TSMessage] = try DependenciesBridge.shared.editMessageStore.findEditHistory(
+            let edits: [TSMessage] = DependenciesBridge.shared.editMessageStore.findEditHistory(
                 forMostRecentRevision: message,
                 tx: tx,
             ).compactMap { $0.message }
@@ -125,11 +122,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
     }
 
     override func tableContents() -> OWSTableContents {
-        do {
-            try loadEditHistory()
-        } catch {
-            owsFailDebug("Error reading edit history: \(error)")
-        }
+        loadEditHistory()
 
         let contents = OWSTableContents()
 

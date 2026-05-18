@@ -91,7 +91,7 @@ public protocol EditManager {
         for edit: TSMessage,
         thread: TSThread,
         tx: DBWriteTransaction,
-    ) throws
+    )
 }
 
 public extension TSMessage {

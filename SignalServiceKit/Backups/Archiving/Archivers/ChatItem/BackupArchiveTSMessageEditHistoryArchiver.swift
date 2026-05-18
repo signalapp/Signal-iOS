@@ -198,15 +198,10 @@ final class BackupArchiveTSMessageEditHistoryArchiver<MessageType: TSMessage> {
         /// The edit history, from oldest revision to newest. This ordering
         /// matches the expected ordering for `revisions` on a `ChatItem`, but
         /// is reverse of what we get from `editMessageStore`.
-        let editHistory: [(EditRecord, MessageType?)]
-        do {
-            editHistory = try editMessageStore.findEditHistory(
-                forMostRecentRevision: latestRevisionMessage,
-                tx: context.tx,
-            ).reversed()
-        } catch {
-            return .messageFailure([.archiveFrameError(.editHistoryFailedToFetch)])
-        }
+        let editHistory: [(EditRecord, MessageType?)] = editMessageStore.findEditHistory(
+            forMostRecentRevision: latestRevisionMessage,
+            tx: context.tx,
+        ).reversed()
 
         for (editRecord, pastRevisionMessage) in editHistory {
             guard let pastRevisionMessage else { continue }

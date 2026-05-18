@@ -334,11 +334,7 @@ public class EditManagerImpl: EditManager {
             pastRevisionId: priorRevisionRowId,
             read: editTargetWrapper.wasRead,
         )
-        do {
-            try context.editMessageStore.insert(editRecord, tx: tx)
-        } catch {
-            owsFailDebug("Unexpected edit record insertion error \(error)")
-        }
+        context.editMessageStore.insert(editRecord, tx: tx)
 
         return latestRevisionMessage
     }
@@ -451,8 +447,8 @@ public class EditManagerImpl: EditManager {
         for edit: TSMessage,
         thread: TSThread,
         tx: DBWriteTransaction,
-    ) throws {
-        try context.editMessageStore
+    ) {
+        context.editMessageStore
             .findEditHistory(forMostRecentRevision: edit, tx: tx)
             .lazy
             .filter { !$0.record.read }
@@ -461,7 +457,7 @@ public class EditManagerImpl: EditManager {
                 var record: EditRecord = item.0
 
                 record.read = true
-                try self.context.editMessageStore.update(record, tx: tx)
+                self.context.editMessageStore.update(record, tx: tx)
 
                 self.context.receiptManagerShim.messageWasRead(
                     message,

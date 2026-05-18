@@ -418,28 +418,21 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
             return error
         }
 
-        do {
-            let editRecord: EditRecord?
-            switch revisionType {
-            case .latestRevision:
-                editRecord = nil
-            case .pastRevision(let latestRevisionMessage):
-                // Outgoing messages, and their edits, are implicitly read.
-                editRecord = EditRecord(
-                    latestRevisionId: latestRevisionMessage.sqliteRowId!,
-                    pastRevisionId: outgoingMessage.sqliteRowId!,
-                    read: true,
-                )
-            }
-
-            if let editRecord {
-                try editMessageStore.insert(editRecord, tx: context.tx)
-            }
-        } catch {
-            return .partialRestore(
-                outgoingMessage,
-                [.restoreFrameError(.databaseInsertionFailed(error))] + partialErrors,
+        let editRecord: EditRecord?
+        switch revisionType {
+        case .latestRevision:
+            editRecord = nil
+        case .pastRevision(let latestRevisionMessage):
+            // Outgoing messages, and their edits, are implicitly read.
+            editRecord = EditRecord(
+                latestRevisionId: latestRevisionMessage.sqliteRowId!,
+                pastRevisionId: outgoingMessage.sqliteRowId!,
+                read: true,
             )
+        }
+
+        if let editRecord {
+            editMessageStore.insert(editRecord, tx: context.tx)
         }
 
         if partialErrors.isEmpty {

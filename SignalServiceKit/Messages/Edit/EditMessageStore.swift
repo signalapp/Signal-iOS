@@ -130,7 +130,7 @@ public struct EditMessageStore {
     public func findEditHistory<MessageType: TSMessage>(
         forMostRecentRevision message: MessageType,
         tx: DBReadTransaction,
-    ) throws -> [(record: EditRecord, message: MessageType?)] {
+    ) -> [(record: EditRecord, message: MessageType?)] {
         /// By ordering DESC on `pastRevisionId`, we end up ordering edits
         /// newest-to-oldest. That's because the highest `pastRevisionId` refers
         /// to the most-recently-inserted revision, or newest edit.
@@ -142,11 +142,13 @@ public struct EditMessageStore {
 
         let arguments: StatementArguments = [message.grdbId]
 
-        let records = try EditRecord.fetchAll(
-            tx.database,
-            sql: recordSQL,
-            arguments: arguments,
-        )
+        let records = failIfThrows {
+            return try EditRecord.fetchAll(
+                tx.database,
+                sql: recordSQL,
+                arguments: arguments,
+            )
+        }
 
         return records.map { record -> (EditRecord, MessageType?) in
             let interaction = InteractionFinder.fetch(
@@ -182,7 +184,7 @@ public struct EditMessageStore {
     public func findEditRecords(
         relatedTo message: TSMessage,
         tx: DBReadTransaction,
-    ) throws -> [EditRecord] {
+    ) -> [EditRecord] {
         // We need to fetch every EditRecord that references message.grdbId or
         // anything that those EditRecords reference, recursively.
 
@@ -195,10 +197,16 @@ public struct EditMessageStore {
             guard alreadyCheckedRevisionIds.insert(revisionId).inserted else {
                 continue
             }
-            let records = try EditRecord.filter(
+
+            let query = EditRecord.filter(
                 Column(EditRecord.CodingKeys.latestRevisionId) == revisionId
                     || Column(EditRecord.CodingKeys.pastRevisionId) == revisionId,
-            ).fetchAll(tx.database)
+            )
+
+            let records = failIfThrows {
+                try query.fetchAll(tx.database)
+            }
+
             revisionIdsToCheck.append(contentsOf: records.map(\.latestRevisionId))
             revisionIdsToCheck.append(contentsOf: records.map(\.pastRevisionId))
             editRecords.append(contentsOf: records)
@@ -213,14 +221,18 @@ public struct EditMessageStore {
     public func insert(
         _ editRecord: EditRecord,
         tx: DBWriteTransaction,
-    ) throws {
-        try editRecord.insert(tx.database)
+    ) {
+        failIfThrows {
+            try editRecord.insert(tx.database)
+        }
     }
 
     public func update(
         _ editRecord: EditRecord,
         tx: DBWriteTransaction,
-    ) throws {
-        try editRecord.update(tx.database)
+    ) {
+        failIfThrows {
+            try editRecord.update(tx.database)
+        }
     }
 }

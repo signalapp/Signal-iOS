@@ -232,7 +232,7 @@ public extension TSMessage {
     // MARK: - Edits
 
     func removeEdits(transaction: DBWriteTransaction) {
-        try! processRelatedMessageEdits(
+        processRelatedMessageEdits(
             deleteEditRecords: true,
             tx: transaction,
             processMessage: { message in
@@ -266,14 +266,16 @@ public extension TSMessage {
     private func processRelatedMessageEdits(
         deleteEditRecords: Bool,
         tx: DBWriteTransaction,
-        processMessage: (TSMessage) throws -> Void,
-    ) throws {
+        processMessage: (TSMessage) -> Void,
+    ) {
         let editMessageStore = DependenciesBridge.shared.editMessageStore
-        let editRecords = try editMessageStore.findEditRecords(relatedTo: self, tx: tx)
+        let editRecords = editMessageStore.findEditRecords(relatedTo: self, tx: tx)
 
         if deleteEditRecords {
             for editRecord in editRecords {
-                try editRecord.delete(tx.database)
+                failIfThrows {
+                    try editRecord.delete(tx.database)
+                }
             }
         }
 
@@ -293,11 +295,11 @@ public extension TSMessage {
 
         for revisionId in pastRevisionIds.sorted() + latestRevisionIds.sorted() {
             if revisionId == self.sqliteRowId {
-                try processMessage(self)
+                processMessage(self)
             } else {
                 let interaction = InteractionFinder.fetch(rowId: revisionId, transaction: tx)
                 if let message = interaction as? TSMessage {
-                    try processMessage(message)
+                    processMessage(message)
                 }
             }
         }
@@ -487,7 +489,7 @@ public extension TSMessage {
 
     private func markMessageAsRemotelyDeleted(transaction: DBWriteTransaction) {
         // Delete any past edit revisions.
-        try! processRelatedMessageEdits(
+        processRelatedMessageEdits(
             deleteEditRecords: false,
             tx: transaction,
             processMessage: { message in
