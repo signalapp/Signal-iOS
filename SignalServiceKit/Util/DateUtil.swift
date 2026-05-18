@@ -177,6 +177,11 @@ public class DateUtil {
         return timeFormatter.string(from: date)
     }
 
+    public static func formatDateAsTimeForAccessibility(_ date: Date) -> String {
+        let components = Calendar.current.dateComponents([.hour, .minute], from: date)
+        return accessibilityTimeFormatter.string(from: components) ?? timeFormatter.string(from: date)
+    }
+
     // MARK: Formatting for UI
 
     // We might receive a message "from the future" due to a bug or

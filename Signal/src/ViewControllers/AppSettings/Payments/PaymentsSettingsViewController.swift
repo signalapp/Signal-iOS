@@ -500,7 +500,8 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
             )
 
             if let balanceConversionText = Self.buildBalanceConversionText(paymentBalance: paymentBalance) {
-                conversionLabel.text = balanceConversionText
+                conversionLabel.text = balanceConversionText.display
+                conversionLabel.accessibilityLabel = balanceConversionText.accessibility
             } else {
                 conversionStack.alpha = 0
             }
@@ -598,7 +599,7 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
         return button
     }
 
-    private static func buildBalanceConversionText(paymentBalance: PaymentBalance) -> String? {
+    private static func buildBalanceConversionText(paymentBalance: PaymentBalance) -> (display: String, accessibility: String)? {
         let localCurrencyCode = SSKEnvironment.shared.paymentsCurrenciesRef.currentCurrencyCode
         guard let currencyConversionInfo = SSKEnvironment.shared.paymentsCurrenciesRef.conversionInfo(forCurrencyCode: localCurrencyCode) else {
             return nil
@@ -619,11 +620,14 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
         //
         // It is sufficient to format as a time, currency conversions go stale in less than a day.
         let conversionFreshnessString = DateUtil.formatDateAsTime(currencyConversionInfo.conversionDate)
+        let conversionFreshnessAccessibilityString = DateUtil.formatDateAsTimeForAccessibility(currencyConversionInfo.conversionDate)
         let formatString = OWSLocalizedString(
             "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT",
             comment: "Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}..",
         )
-        return String.nonPluralLocalizedStringWithFormat(formatString, fiatAmountString, localCurrencyCode, conversionFreshnessString)
+        let display = String.nonPluralLocalizedStringWithFormat(formatString, fiatAmountString, localCurrencyCode, conversionFreshnessString)
+        let accessibility = String.nonPluralLocalizedStringWithFormat(formatString, fiatAmountString, localCurrencyCode, conversionFreshnessAccessibilityString)
+        return (display: display, accessibility: accessibility)
     }
 
     private func configureHistorySection(

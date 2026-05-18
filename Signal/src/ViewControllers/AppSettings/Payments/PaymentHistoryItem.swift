@@ -44,6 +44,8 @@ public protocol PaymentsHistoryItem {
 
     func statusDescription(isLongForm: Bool) -> String?
 
+    func statusDescriptionForAccessibility(isLongForm: Bool) -> String?
+
     func markAsRead(tx: DBWriteTransaction)
 
     func reload(tx: DBReadTransaction) -> Self?
