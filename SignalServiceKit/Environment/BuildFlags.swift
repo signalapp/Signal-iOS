@@ -71,6 +71,7 @@ public enum BuildFlags {
     }
 
     public enum KeyTransparency {
+        public static let enabled = build <= .beta
         public static let conservativeSelfCheck = build <= .internal
     }
 
