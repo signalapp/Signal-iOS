@@ -393,7 +393,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 withLabel: "Export Backup: Oversize Text Attachments",
                 unitCount: 5,
             )
-            exportProgress = try await .prepare(
+            exportProgress = await .prepare(
                 sink: await progressSink.addChild(
                     withLabel: "Export Backup: Export Frames",
                     unitCount: 95,

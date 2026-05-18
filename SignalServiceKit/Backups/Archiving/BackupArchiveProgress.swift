@@ -14,24 +14,19 @@ public struct BackupArchiveExportProgress {
     public static func prepare(
         sink: OWSProgressSink,
         db: any DB,
-    ) async throws -> Self {
-        var estimatedFrameCount = try db.read { tx in
-            // Get all the major things we iterate over. It doesn't have
-            // to be perfect; we'll skip some of these and besides they're
-            // all weighted evenly. Its just an estimate.
-            return try
-                SignalRecipient.fetchCount(tx.database)
-                + TSThread.fetchCount(tx.database)
-                + InteractionRecord.fetchCount(tx.database)
-                + CallLinkRecord.fetchCount(tx.database)
-                + StickerPackRecord.fetchCount(tx.database)
+    ) async -> Self {
+        let estimatedFrameCount = failIfThrows {
+            try db.read { tx in
+                // Get all the major things we iterate over. It doesn't have
+                // to be perfect; we'll skip some of these and besides they're
+                // all weighted evenly. Its just an estimate.
+                return try SignalRecipient.fetchCount(tx.database)
+                    + TSThread.fetchCount(tx.database)
+                    + InteractionRecord.fetchCount(tx.database)
+                    + CallLinkRecord.fetchCount(tx.database)
+                    + StickerPackRecord.fetchCount(tx.database)
+            }
         }
-        // Add a fixed extra amount for:
-        // * header frame
-        // * self recipient
-        // * account data frame
-        // * release notes channel
-        estimatedFrameCount += 4
 
         let progressSource = await sink.addSource(
             withLabel: "Backup Export",
