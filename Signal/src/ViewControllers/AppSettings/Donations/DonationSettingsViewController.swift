@@ -384,12 +384,19 @@ class DonationSettingsViewController: OWSTableViewController2 {
             ))
         }
 
-        section.add(.disclosureItem(
-            icon: .settingsHelp,
-            withText: OWSLocalizedString(
-                "DONATION_VIEW_DONOR_FAQ",
-                comment: "Title for the 'Donor FAQ' button on the donation screen",
-            ),
+        section.add(OWSTableItem(
+            customCellBlock: {
+                let cell = OWSTableItem.buildCell(
+                    icon: .settingsHelp,
+                    itemName: OWSLocalizedString(
+                        "DONATION_VIEW_DONOR_FAQ",
+                        comment: "Title for the 'Donor FAQ' button on the donation screen",
+                    ),
+                    accessoryType: .disclosureIndicator,
+                )
+                cell.accessibilityTraits = .link
+                return cell
+            },
             actionBlock: { [weak self] in
                 let vc = SFSafariViewController(url: URL.Support.Donations.donorFAQ)
                 self?.present(vc, animated: true, completion: nil)
