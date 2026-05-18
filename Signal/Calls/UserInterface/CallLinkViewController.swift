@@ -14,7 +14,7 @@ final class CallLinkViewController: OWSTableViewController2 {
     override var navbarBackgroundColorOverride: UIColor? { tableBackgroundColor }
 
     private var db: any DB { DependenciesBridge.shared.db }
-    private var callLinkStore: any CallLinkRecordStore { DependenciesBridge.shared.callLinkStore }
+    private var callLinkStore: CallLinkRecordStore { DependenciesBridge.shared.callLinkStore }
 
     private let callLink: CallLink
 
@@ -259,14 +259,10 @@ final class CallLinkViewController: OWSTableViewController2 {
     private func createCallLinkRecord() -> Int64 {
         let rowId = SSKEnvironment.shared.databaseStorageRef.write { tx in
             var callLinkRecord: CallLinkRecord
-            do {
-                (callLinkRecord, _) = try callLinkStore.fetchOrInsert(rootKey: callLink.rootKey, tx: tx)
-                callLinkRecord.adminPasskey = adminPasskey!
-                callLinkRecord.updateState(callLinkState!)
-                try callLinkStore.update(callLinkRecord, tx: tx)
-            } catch {
-                owsFail("Couldn't create CallLinkRecord: \(error)")
-            }
+            (callLinkRecord, _) = callLinkStore.fetchOrInsert(rootKey: callLink.rootKey, tx: tx)
+            callLinkRecord.adminPasskey = adminPasskey!
+            callLinkRecord.updateState(callLinkState!)
+            callLinkStore.update(callLinkRecord, tx: tx)
 
             CallLinkUpdateMessageSender(
                 messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
@@ -333,19 +329,14 @@ final class CallLinkViewController: OWSTableViewController2 {
 extension CallLinkViewController: DatabaseChangeDelegate {
     private func loadStateAndReloadViewIfNeeded(callLinkRowId: Int64) {
         let didChangeVisibleProperty: Bool
-        do {
-            let oldState = self.callLinkState
-            let newState = try self.db.read { tx in try callLinkStore.fetch(rowId: callLinkRowId, tx: tx)?.state }
-            didChangeVisibleProperty = (
-                (oldState == nil) != (newState == nil)
-                    || (oldState?.name != newState?.name)
-                    || (oldState?.requiresAdminApproval != newState?.requiresAdminApproval),
-            )
-            self.callLinkState = newState
-        } catch {
-            owsFailDebug("Couldn't fetch CallLink: \(error)")
-            return
-        }
+        let oldState = self.callLinkState
+        let newState = self.db.read { tx in callLinkStore.fetch(rowId: callLinkRowId, tx: tx)?.state }
+        didChangeVisibleProperty = (
+            (oldState == nil) != (newState == nil)
+                || (oldState?.name != newState?.name)
+                || (oldState?.requiresAdminApproval != newState?.requiresAdminApproval),
+        )
+        self.callLinkState = newState
         if didChangeVisibleProperty, self.isViewLoaded {
             updateContents(shouldReload: true)
         }

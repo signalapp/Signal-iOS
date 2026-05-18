@@ -36,7 +36,7 @@ public protocol CallRecordStore {
     /// Insert the given call record.
     /// - Important
     /// Posts an `.inserted` ``CallRecordStoreNotification``.
-    func insert(callRecord: CallRecord, tx: DBWriteTransaction) throws
+    func insert(callRecord: CallRecord, tx: DBWriteTransaction)
 
     /// Deletes the given call records and creates ``DeletedCallRecord``s
     /// in their place.
@@ -81,7 +81,7 @@ public protocol CallRecordStore {
     func markAsRead(
         callRecord: CallRecord,
         tx: DBWriteTransaction,
-    ) throws
+    )
 
     /// Update the direction of the given call record.
     func updateDirection(
@@ -112,7 +112,7 @@ public protocol CallRecordStore {
         callRecord: CallRecord,
         callEndedTimestamp: UInt64,
         tx: DBWriteTransaction,
-    ) throws
+    )
 
     /// Update all relevant records in response to a thread merge.
     /// - Parameter fromThreadRowId
@@ -143,7 +143,7 @@ public protocol CallRecordStore {
         conversationId: CallRecord.ConversationID,
         limit: Int?,
         tx: DBReadTransaction,
-    ) throws -> [CallRecord]
+    ) -> [CallRecord]
 
     /// Fetch the record referencing the given ``TSInteraction`` SQLite row ID,
     /// if one exists.
@@ -168,15 +168,13 @@ class CallRecordStoreImpl: CallRecordStore {
 
     // MARK: - Protocol methods
 
-    func insert(callRecord: CallRecord, tx: DBWriteTransaction) throws {
-        let insertResult = Result<Void, Error>(catching: { try _insert(callRecord: callRecord, tx: tx) })
+    func insert(callRecord: CallRecord, tx: DBWriteTransaction) {
+        _insert(callRecord: callRecord, tx: tx)
 
         postNotification(
             updateType: .inserted,
             tx: tx,
         )
-
-        try insertResult.get()
     }
 
     private var deletedCallRecordIds = [CallRecord.ID]()
@@ -211,9 +209,11 @@ class CallRecordStoreImpl: CallRecordStore {
         )
     }
 
-    func markAsRead(callRecord: CallRecord, tx: DBWriteTransaction) throws {
+    func markAsRead(callRecord: CallRecord, tx: DBWriteTransaction) {
         callRecord.unreadStatus = .read
-        try callRecord.update(tx.database)
+        failIfThrows {
+            try callRecord.update(tx.database)
+        }
     }
 
     func updateDirection(
@@ -222,10 +222,8 @@ class CallRecordStoreImpl: CallRecordStore {
         tx: DBWriteTransaction,
     ) {
         callRecord.callDirection = newCallDirection
-        do {
+        failIfThrows {
             try callRecord.update(tx.database)
-        } catch let error {
-            owsFailBeta("Failed to update call record: \(error)")
         }
     }
 
@@ -235,10 +233,8 @@ class CallRecordStoreImpl: CallRecordStore {
         tx: DBWriteTransaction,
     ) {
         callRecord.setGroupCallRingerAci(newGroupCallRingerAci)
-        do {
+        failIfThrows {
             try callRecord.update(tx.database)
-        } catch let error {
-            owsFailBeta("Failed to update call record: \(error)")
         }
     }
 
@@ -248,10 +244,8 @@ class CallRecordStoreImpl: CallRecordStore {
         tx: DBWriteTransaction,
     ) {
         callRecord.callBeganTimestamp = callBeganTimestamp
-        do {
+        failIfThrows {
             try callRecord.update(tx.database)
-        } catch let error {
-            owsFailBeta("Failed to update call record: \(error)")
         }
     }
 
@@ -259,9 +253,11 @@ class CallRecordStoreImpl: CallRecordStore {
         callRecord: CallRecord,
         callEndedTimestamp: UInt64,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         callRecord.callEndedTimestamp = callEndedTimestamp
-        try callRecord.update(tx.database)
+        failIfThrows {
+            try callRecord.update(tx.database)
+        }
     }
 
     func updateWithMergedThread(
@@ -299,12 +295,12 @@ class CallRecordStoreImpl: CallRecordStore {
         conversationId: CallRecord.ConversationID,
         limit: Int?,
         tx: DBReadTransaction,
-    ) throws -> [CallRecord] {
+    ) -> [CallRecord] {
         switch conversationId {
         case .thread(let threadRowId):
-            return try fetchAll(columnArgs: [(.threadRowId, threadRowId)], limit: limit, tx: tx)
+            return fetchAll(columnArgs: [(.threadRowId, threadRowId)], limit: limit, tx: tx)
         case .callLink(let callLinkRowId):
-            return try fetchAll(columnArgs: [(.callLinkRowId, callLinkRowId)], limit: limit, tx: tx)
+            return fetchAll(columnArgs: [(.callLinkRowId, callLinkRowId)], limit: limit, tx: tx)
         }
     }
 
@@ -330,21 +326,21 @@ class CallRecordStoreImpl: CallRecordStore {
 
     // MARK: - Mutations (impl)
 
-    func _insert(callRecord: CallRecord, tx: DBWriteTransaction) throws {
-        try callRecord.insert(tx.database)
+    private func _insert(callRecord: CallRecord, tx: DBWriteTransaction) {
+        failIfThrows {
+            try callRecord.insert(tx.database)
+        }
     }
 
-    func _delete(callRecords: [CallRecord], tx: DBWriteTransaction) {
+    private func _delete(callRecords: [CallRecord], tx: DBWriteTransaction) {
         for callRecord in callRecords {
-            do {
+            failIfThrows {
                 try callRecord.delete(tx.database)
-            } catch let error {
-                owsFailBeta("Failed to delete call record: \(error)")
             }
         }
     }
 
-    func _updateCallAndUnreadStatus(
+    private func _updateCallAndUnreadStatus(
         callRecord: CallRecord,
         newCallStatus: CallRecord.CallStatus,
         tx: DBWriteTransaction,
@@ -354,16 +350,14 @@ class CallRecordStoreImpl: CallRecordStore {
 
         callRecord.callStatus = newCallStatus
         callRecord.unreadStatus = CallRecord.CallUnreadStatus(callStatus: newCallStatus)
-        do {
+        failIfThrows {
             try callRecord.update(tx.database)
-        } catch let error {
-            owsFailBeta("Failed to update call record: \(error)")
         }
     }
 
     // MARK: - Queries (impl)
 
-    func _fetch(
+    private func _fetch(
         callId: UInt64,
         conversationId: CallRecord.ConversationID,
         tx: DBReadTransaction,
@@ -394,31 +388,23 @@ class CallRecordStoreImpl: CallRecordStore {
         columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
         tx: DBReadTransaction,
     ) -> CallRecord? {
-        do {
-            let results = try fetchAll(columnArgs: columnArgs, limit: nil, tx: tx)
-            owsAssertDebug(results.count <= 1, "columnArgs must identify a unique row")
-            return results.first
-        } catch {
-            let columns = columnArgs.map { column, _ in column }
-            owsFailBeta("Error fetching CallRecord by \(columns): \(error)")
-            return nil
-        }
+        let results = fetchAll(columnArgs: columnArgs, limit: nil, tx: tx)
+        owsAssertDebug(results.count <= 1, "columnArgs must identify a unique row")
+        return results.first
     }
 
     fileprivate func fetchAll(
         columnArgs: [(CallRecord.CodingKeys, DatabaseValueConvertible)],
         limit: Int?,
         tx: DBReadTransaction,
-    ) throws -> [CallRecord] {
+    ) -> [CallRecord] {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs, limit: limit)
 
-        do {
+        return failIfThrows {
             return try CallRecord.fetchAll(tx.database, SQLRequest(
                 sql: sqlString,
                 arguments: StatementArguments(sqlArgs),
             ))
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 

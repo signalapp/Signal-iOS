@@ -2163,12 +2163,12 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = Data
     typealias RecordType = StorageServiceProtoCallLinkRecord
 
-    let callLinkStore: any CallLinkRecordStore
+    let callLinkStore: CallLinkRecordStore
     private let callRecordDeleteManager: any CallRecordDeleteManager
     private let callRecordStore: any CallRecordStore
 
     init(
-        callLinkStore: any CallLinkRecordStore,
+        callLinkStore: CallLinkRecordStore,
         callRecordDeleteManager: any CallRecordDeleteManager,
         callRecordStore: any CallRecordStore,
     ) {
@@ -2193,13 +2193,7 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
             return nil
         }
         let roomId = rootKey.deriveRoomId()
-        let callLink: CallLinkRecord?
-        do {
-            callLink = try self.callLinkStore.fetch(roomId: roomId, tx: tx)
-        } catch {
-            owsFailDebug("Skipping CallLink that can't be fetched: \(rootKey.description)")
-            return nil
-        }
+        let callLink = self.callLinkStore.fetch(roomId: roomId, tx: tx)
 
         guard let callLink, callLink.adminPasskey != nil || callLink.adminDeletedAtTimestampMs != nil else {
             // We're not an admin, so this link doesn't go in Storage Service.
@@ -2228,24 +2222,20 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
             owsFailDebug("invalid rootKey")
             return .invalid
         }
-        do {
-            var (callLink, _) = try self.callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx)
-            // The earliest deletion timestamp takes precendence when merging.
-            if record.deletedAtTimestampMs > 0 || callLink.adminDeletedAtTimestampMs != nil {
-                self.callRecordDeleteManager.deleteCallRecords(
-                    try self.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: callLink.id), limit: nil, tx: tx),
-                    sendSyncMessageOnDelete: false,
-                    tx: tx,
-                )
-                callLink.markDeleted(atTimestampMs: [record.deletedAtTimestampMs, callLink.adminDeletedAtTimestampMs].compacted().min()!)
-            } else if let adminPasskey = record.adminPasskey?.nilIfEmpty {
-                callLink.adminPasskey = adminPasskey
-                callLink.setNeedsFetch()
-            }
-            try self.callLinkStore.update(callLink, tx: tx)
-        } catch {
-            owsFailDebug("Couldn't merge CallLink \(rootKey.description): \(error)")
+        var (callLink, _) = self.callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx)
+        // The earliest deletion timestamp takes precendence when merging.
+        if record.deletedAtTimestampMs > 0 || callLink.adminDeletedAtTimestampMs != nil {
+            self.callRecordDeleteManager.deleteCallRecords(
+                self.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: callLink.id), limit: nil, tx: tx),
+                sendSyncMessageOnDelete: false,
+                tx: tx,
+            )
+            callLink.markDeleted(atTimestampMs: [record.deletedAtTimestampMs, callLink.adminDeletedAtTimestampMs].compacted().min()!)
+        } else if let adminPasskey = record.adminPasskey?.nilIfEmpty {
+            callLink.adminPasskey = adminPasskey
+            callLink.setNeedsFetch()
         }
+        self.callLinkStore.update(callLink, tx: tx)
         return .merged(needsUpdate: false, rootKey.bytes)
     }
 }

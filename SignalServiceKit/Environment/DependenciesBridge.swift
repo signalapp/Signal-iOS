@@ -87,7 +87,7 @@ public class DependenciesBridge {
     public let backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager
     public let badgeCountFetcher: BadgeCountFetcher
     let blockedRecipientStore: BlockedRecipientStore
-    public let callLinkStore: any CallLinkRecordStore
+    public let callLinkStore: CallLinkRecordStore
     public let callRecordDeleteManager: any CallRecordDeleteManager
     public let callRecordMissedCallManager: CallRecordMissedCallManager
     public let callRecordQuerier: CallRecordQuerier
@@ -231,7 +231,7 @@ public class DependenciesBridge {
         backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager,
         badgeCountFetcher: BadgeCountFetcher,
         blockedRecipientStore: BlockedRecipientStore,
-        callLinkStore: any CallLinkRecordStore,
+        callLinkStore: CallLinkRecordStore,
         callRecordDeleteManager: CallRecordDeleteManager,
         callRecordMissedCallManager: CallRecordMissedCallManager,
         callRecordQuerier: CallRecordQuerier,

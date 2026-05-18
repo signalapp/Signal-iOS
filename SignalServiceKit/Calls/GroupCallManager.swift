@@ -310,17 +310,13 @@ public class GroupCallManager {
         )
 
         logger.info("Creating record for group call discovered via peek.")
-        do {
-            _ = try groupCallRecordManager.createGroupCallRecordForPeek(
-                callId: callId.rawValue,
-                groupCallInteraction: newGroupCallInteraction,
-                groupCallInteractionRowId: interactionRowId,
-                groupThreadRowId: groupThreadRowId,
-                tx: tx,
-            )
-        } catch let error {
-            owsFailBeta("Failed to insert call record: \(error)")
-        }
+        _ = groupCallRecordManager.createGroupCallRecordForPeek(
+            callId: callId.rawValue,
+            groupCallInteraction: newGroupCallInteraction,
+            groupCallInteractionRowId: interactionRowId,
+            groupThreadRowId: groupThreadRowId,
+            tx: tx,
+        )
 
         return newGroupCallInteraction
     }

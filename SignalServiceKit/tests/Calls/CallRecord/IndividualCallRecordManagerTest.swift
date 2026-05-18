@@ -96,11 +96,11 @@ final class IndividualCallRecordManagerTest: XCTestCase {
 
     // MARK: - createOrUpdateRecordForInteraction
 
-    func testCreateOrUpdate_noRecordExists() throws {
+    func testCreateOrUpdate_noRecordExists() {
         let (thread, interaction) = createInteraction()
 
-        try mockDB.write { tx in
-            try individualCallRecordManager.createOrUpdateRecordForInteraction(
+        mockDB.write { tx in
+            individualCallRecordManager.createOrUpdateRecordForInteraction(
                 individualCallInteraction: interaction,
                 individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
@@ -114,7 +114,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 1)
     }
 
-    func testCreateOrUpdate_recordExists() throws {
+    func testCreateOrUpdate_recordExists() {
         let (thread, interaction) = createInteraction(callType: .incomingDeclined)
         let callId = UInt64.maxRandom
 
@@ -129,8 +129,8 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
-        try mockDB.write { tx in
-            try individualCallRecordManager.createOrUpdateRecordForInteraction(
+        mockDB.write { tx in
+            individualCallRecordManager.createOrUpdateRecordForInteraction(
                 individualCallInteraction: interaction,
                 individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
@@ -144,14 +144,14 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 1)
     }
 
-    func testCreateOrUpdate_nothingIfRecordRecentlyDeleted() throws {
+    func testCreateOrUpdate_nothingIfRecordRecentlyDeleted() {
         let (thread, interaction) = createInteraction(callType: .incomingDeclined)
         let callId = UInt64.maxRandom
 
         mockCallRecordStore.fetchMock = { .matchDeleted }
 
-        try mockDB.write { tx in
-            try individualCallRecordManager.createOrUpdateRecordForInteraction(
+        mockDB.write { tx in
+            individualCallRecordManager.createOrUpdateRecordForInteraction(
                 individualCallInteraction: interaction,
                 individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
@@ -167,11 +167,11 @@ final class IndividualCallRecordManagerTest: XCTestCase {
 
     // MARK: - createRecordForInteraction
 
-    func testCreate_noSyncMessage() throws {
+    func testCreate_noSyncMessage() {
         let (thread, interaction) = createInteraction()
 
-        try mockDB.write { tx in
-            _ = try individualCallRecordManager.createRecordForInteraction(
+        mockDB.write { tx in
+            _ = individualCallRecordManager.createRecordForInteraction(
                 individualCallInteraction: interaction,
                 individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
@@ -190,11 +190,11 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         XCTAssertEqual(mockOutgoingSyncMessageManager.syncMessageSendCount, 0)
     }
 
-    func testCreate_syncMessage() throws {
+    func testCreate_syncMessage() {
         let (thread, interaction) = createInteraction()
 
-        try mockDB.write { tx in
-            _ = try individualCallRecordManager.createRecordForInteraction(
+        mockDB.write { tx in
+            _ = individualCallRecordManager.createRecordForInteraction(
                 individualCallInteraction: interaction,
                 individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
@@ -311,9 +311,9 @@ private class SnoopingIndividualCallRecordManagerImpl: IndividualCallRecordManag
     var didAskToCreateRecord: CallRecord.CallStatus.IndividualCallStatus?
     var didAskToUpdateRecord: CallRecord.CallStatus.IndividualCallStatus?
 
-    override func createRecordForInteraction(individualCallInteraction: TSCall, individualCallInteractionRowId: Int64, contactThread: TSContactThread, contactThreadRowId: Int64, callId: UInt64, callType: CallRecord.CallType, callDirection: CallRecord.CallDirection, individualCallStatus: CallRecord.CallStatus.IndividualCallStatus, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) throws -> CallRecord {
+    override func createRecordForInteraction(individualCallInteraction: TSCall, individualCallInteractionRowId: Int64, contactThread: TSContactThread, contactThreadRowId: Int64, callId: UInt64, callType: CallRecord.CallType, callDirection: CallRecord.CallDirection, individualCallStatus: CallRecord.CallStatus.IndividualCallStatus, callEventTimestamp: UInt64, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) -> CallRecord {
         didAskToCreateRecord = individualCallStatus
-        return try super.createRecordForInteraction(individualCallInteraction: individualCallInteraction, individualCallInteractionRowId: individualCallInteractionRowId, contactThread: contactThread, contactThreadRowId: contactThreadRowId, callId: callId, callType: callType, callDirection: callDirection, individualCallStatus: individualCallStatus, callEventTimestamp: callEventTimestamp, shouldSendSyncMessage: shouldSendSyncMessage, tx: tx)
+        return super.createRecordForInteraction(individualCallInteraction: individualCallInteraction, individualCallInteractionRowId: individualCallInteractionRowId, contactThread: contactThread, contactThreadRowId: contactThreadRowId, callId: callId, callType: callType, callDirection: callDirection, individualCallStatus: individualCallStatus, callEventTimestamp: callEventTimestamp, shouldSendSyncMessage: shouldSendSyncMessage, tx: tx)
     }
 
     override func updateRecord(contactThread: TSContactThread, existingCallRecord: CallRecord, newIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {

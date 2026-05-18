@@ -36,7 +36,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let adHocCallRecordManager: any AdHocCallRecordManager
         let badgeManager: BadgeManager
         let blockingManager: BlockingManager
-        let callLinkStore: any CallLinkRecordStore
+        let callLinkStore: CallLinkRecordStore
         let callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue
         let callRecordDeleteManager: any CallRecordDeleteManager
         let callRecordMissedCallManager: CallRecordMissedCallManager
@@ -416,12 +416,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             // because they must first be deleted on the server. (We delete them
             // individually at the end of this method.)
             let callLinksToDelete: [(rootKey: CallLinkRootKey, adminPasskey: Data)]
-            callLinksToDelete = (try? self.deps.callLinkStore.fetchAll(tx: tx).compactMap {
+            callLinksToDelete = self.deps.callLinkStore.fetchAll(tx: tx).compactMap {
                 guard let adminPasskey = $0.adminPasskey else {
                     return nil
                 }
                 return ($0.rootKey, adminPasskey)
-            }) ?? []
+            }
             /// Delete-all should use the timestamp of the most-recent call, at
             /// the time the action was initiated, as the timestamp we delete
             /// before (and include in the outgoing sync message).
@@ -720,7 +720,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             // Query the database separately when starting & ending calls because the
             // row will usually be inserted during the call (ie `rowId` may be nil when
             // starting the call but nonnil when ending the very same call).
-            let rowId = deps.db.read { tx in try? deps.callLinkStore.fetch(roomId: call.callLink.rootKey.deriveRoomId(), tx: tx)?.id }
+            let rowId = deps.db.read { tx in deps.callLinkStore.fetch(roomId: call.callLink.rootKey.deriveRoomId(), tx: tx)?.id }
             guard let rowId else {
                 // If you open the lobby for an ongoing call that you've never joined,
                 // we'll call this method after the peek succeeds. However, you haven't
@@ -1015,13 +1015,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             } else {
                 return nil
             }
-            do {
-                return try deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx) ?? {
-                    owsFail("Couldn't load CallLinkRecord that must exist!")
-                }()
-            } catch {
-                owsFail("Couldn't load CallLinkRecord that must exist: \(error)")
-            }
+            return deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx)
+                .owsFailUnwrap("FOREIGN KEYs mean this must exist.")
         }()
 
         if let callLinkRecord {
@@ -1236,8 +1231,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         } catch CallLinkManagerImpl.PeekError.expired, CallLinkManagerImpl.PeekError.invalid {
             eraId = nil
         }
-        try await deps.db.awaitableWrite { tx in
-            try deps.adHocCallRecordManager.handlePeekResult(eraId: eraId, rootKey: rootKey, tx: tx)
+        await deps.db.awaitableWrite { tx in
+            deps.adHocCallRecordManager.handlePeekResult(eraId: eraId, rootKey: rootKey, tx: tx)
         }
     }
 
@@ -2051,15 +2046,9 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             guard let callLinkRowId else {
                 return false
             }
-            do {
-                let callLinkRecord = try self.deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx) ?? {
-                    throw OWSAssertionError("Couldn't fetch CallLink that must exist.")
-                }()
-                return callLinkRecord.adminPasskey != nil
-            } catch {
-                owsFailDebug("\(error)")
-                return false
-            }
+            let callLinkRecord = self.deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx)
+                .owsFailUnwrap("FOREIGN KEYs mean this must exist.")
+            return callLinkRecord.adminPasskey != nil
         }
     }
 
@@ -2069,18 +2058,17 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         // First, delete everything that's local only. This includes thread-based
         // calls & any call link calls for which we're not the admin. These
         // deletions never fail (except for db corruption-level failures).
-        callLinksToDelete = try await deps.databaseStorage.awaitableWrite { tx in
+        callLinksToDelete = await deps.databaseStorage.awaitableWrite { tx in
             var callLinksToDelete = [(rootKey: CallLinkRootKey, adminPasskey: Data)]()
             var callRecordIdsWithInteractions = [CallRecord.ID]()
             for modelReferences in modelReferenceses {
                 if let callLinkRowId = modelReferences.callLinkRowId {
-                    let callLinkRecord = try self.deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx) ?? {
-                        throw OWSAssertionError("Couldn't fetch CallLink that must exist.")
-                    }()
+                    let callLinkRecord = self.deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx)
+                        .owsFailUnwrap("FOREIGN KEYs mean this must exist.")
                     if let adminPasskey = callLinkRecord.adminPasskey {
                         callLinksToDelete.append((callLinkRecord.rootKey, adminPasskey))
                     } else {
-                        try self.deleteCallRecords(forCallLinkRowId: callLinkRecord.id, tx: tx)
+                        self.deleteCallRecords(forCallLinkRowId: callLinkRecord.id, tx: tx)
                     }
                 } else {
                     callRecordIdsWithInteractions.append(contentsOf: modelReferences.callRecordRowIds)
@@ -2107,8 +2095,8 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         try await deleteCallLinks(callLinksToDelete: callLinksToDelete)
     }
 
-    private nonisolated func deleteCallRecords(forCallLinkRowId callLinkRowId: Int64, tx: DBWriteTransaction) throws {
-        let callRecords = try deps.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: callLinkRowId), limit: nil, tx: tx)
+    private nonisolated func deleteCallRecords(forCallLinkRowId callLinkRowId: Int64, tx: DBWriteTransaction) {
+        let callRecords = deps.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: callLinkRowId), limit: nil, tx: tx)
         deps.callRecordDeleteManager.deleteCallRecords(callRecords, sendSyncMessageOnDelete: true, tx: tx)
     }
 
@@ -2202,13 +2190,8 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
 
     private func showCallInfo(forRootKey rootKey: CallLinkRootKey, callRecords: [CallRecord]) {
         let callLinkRecord = deps.db.read { tx -> CallLinkRecord in
-            do {
-                return try deps.callLinkStore.fetch(roomId: rootKey.deriveRoomId(), tx: tx) ?? {
-                    owsFail("Can't fetch CallLinkRecord that must exist.")
-                }()
-            } catch {
-                owsFail("Can't fetch CallLinkRecord: \(error)")
-            }
+            return deps.callLinkStore.fetch(roomId: rootKey.deriveRoomId(), tx: tx)
+                .owsFailUnwrap("FOREIGN KEYs mean this must exist.")
         }
         showCallInfo(viewController: CallLinkViewController.forExisting(callLinkRecord: callLinkRecord, callRecords: callRecords))
     }

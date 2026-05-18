@@ -141,8 +141,6 @@ public class BackupArchiveAdHocCallArchiver: BackupArchiveProtoStreamWriter {
         _ adHocCall: BackupProto_AdHocCall,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreFrameResult {
-        var partialErrors = [BackupArchive.RestoreFrameError]()
-
         let callId = AdHocCallId(adHocCall: adHocCall)
 
         let state: CallRecord.CallStatus.CallLinkCallStatus
@@ -169,30 +167,16 @@ public class BackupArchiveAdHocCallArchiver: BackupArchiveProtoStreamWriter {
         )
 
         if let callLinkRecord = context.recipientContext[callLinkRecordId] {
-            do {
-                var callLinkRecord = callLinkRecord
-                callLinkRecord.didInsertCallRecord()
-                try callLinkRecordStore.update(callLinkRecord, tx: context.tx)
-            } catch {
-                partialErrors.append(
-                    .restoreFrameError(.databaseInsertionFailed(error)),
-                )
-            }
+            var callLinkRecord = callLinkRecord
+            callLinkRecord.didInsertCallRecord()
+            callLinkRecordStore.update(callLinkRecord, tx: context.tx)
         }
 
-        do {
-            try callRecordStore.insert(
-                callRecord: adHocCallRecord,
-                tx: context.tx,
-            )
-        } catch {
-            return .failure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error))])
-        }
+        callRecordStore.insert(
+            callRecord: adHocCallRecord,
+            tx: context.tx,
+        )
 
-        if partialErrors.isEmpty {
-            return .success
-        } else {
-            return .partialRestore(partialErrors)
-        }
+        return .success
     }
 }

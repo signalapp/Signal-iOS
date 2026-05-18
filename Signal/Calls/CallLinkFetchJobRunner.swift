@@ -8,12 +8,12 @@ import SignalServiceKit
 
 /// Refreshes call links that need to be updated.
 actor CallLinkFetchJobRunner: DatabaseChangeDelegate {
-    private let callLinkStore: any CallLinkRecordStore
+    private let callLinkStore: CallLinkRecordStore
     private let callLinkStateUpdater: CallLinkStateUpdater
     private let db: any DB
 
     init(
-        callLinkStore: any CallLinkRecordStore,
+        callLinkStore: CallLinkRecordStore,
         callLinkStateUpdater: CallLinkStateUpdater,
         db: any DB,
     ) {
@@ -52,13 +52,8 @@ actor CallLinkFetchJobRunner: DatabaseChangeDelegate {
 
         var sequentialFailureCount = 0
         while true {
-            let callLinkToFetch: CallLinkRecord?
-            do {
-                callLinkToFetch = try db.read(block: callLinkStore.fetchAnyPendingRecord(tx:))
-            } catch {
-                owsFailDebug("Can't fetch pending record: \(error)")
-                mightHavePendingFetch = false
-                return
+            let callLinkToFetch = db.read { tx in
+                callLinkStore.fetchAnyPendingRecord(tx: tx)
             }
             guard let callLinkToFetch else {
                 // Nothing to fetch.

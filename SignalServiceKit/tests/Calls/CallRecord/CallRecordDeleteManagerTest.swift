@@ -31,7 +31,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
 
         // We never call .start() on this job, so this is a no-op instance.
         mockDeletedCallRecordExpirationJob = DeletedCallRecordExpirationJob(
-            callLinkStore: MockCallLinkRecordStore(),
+            callLinkStore: CallLinkRecordStore(),
             dateProvider: { Date() },
             db: mockDB,
             deletedCallRecordStore: mockDeletedCallRecordStore,

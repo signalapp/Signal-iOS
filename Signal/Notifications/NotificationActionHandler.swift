@@ -330,7 +330,7 @@ public class NotificationActionHandler {
             if let callLinkRoomId {
                 return SSKEnvironment.shared.databaseStorageRef.read { tx in
                     let callLinkStore = DependenciesBridge.shared.callLinkStore
-                    if let callLinkRecord = try? callLinkStore.fetch(roomId: callLinkRoomId, tx: tx) {
+                    if let callLinkRecord = callLinkStore.fetch(roomId: callLinkRoomId, tx: tx) {
                         return .callLink(CallLink(rootKey: callLinkRecord.rootKey))
                     }
                     return nil

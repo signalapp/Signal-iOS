@@ -9,7 +9,7 @@ import SignalServiceKit
 
 final class AdHocCallStateObserver {
     private let adHocCallRecordManager: any AdHocCallRecordManager
-    private let callLinkStore: any CallLinkRecordStore
+    private let callLinkStore: CallLinkRecordStore
     private let db: any DB
     private let messageSenderJobQueue: MessageSenderJobQueue
 
@@ -32,7 +32,7 @@ final class AdHocCallStateObserver {
     init(
         callLinkCall: CallLinkCall,
         adHocCallRecordManager: any AdHocCallRecordManager,
-        callLinkStore: any CallLinkRecordStore,
+        callLinkStore: CallLinkRecordStore,
         messageSenderJobQueue: MessageSenderJobQueue,
         db: any DB,
     ) {
@@ -62,33 +62,29 @@ final class AdHocCallStateObserver {
         }
         self.furthestJoinLevel = joinLevel
         db.write { tx in
-            do {
-                let rootKey = callLinkCall.callLink.rootKey
-                var (callLink, inserted) = try callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx)
-                if inserted {
-                    callLink.updateState(callLinkCall.callLinkState)
-                    try callLinkStore.update(callLink, tx: tx)
-                }
-                if callLink.adminPasskey == nil, !callLink.isDeleted {
-                    let updateSender = CallLinkUpdateMessageSender(messageSenderJobQueue: messageSenderJobQueue)
-                    updateSender.sendCallLinkUpdateMessage(rootKey: rootKey, adminPasskey: nil, tx: tx)
-                }
-                try adHocCallRecordManager.createOrUpdateRecord(
-                    callId: callIdFromEra(eraId),
-                    callLink: callLink,
-                    status: { () -> CallRecord.CallStatus.CallLinkCallStatus in
-                        switch joinLevel {
-                        case .attempted: return .generic
-                        case .joined: return .joined
-                        }
-                    }(),
-                    timestamp: Date.ows_millisecondTimestamp(),
-                    shouldSendSyncMessge: true,
-                    tx: tx,
-                )
-            } catch {
-                owsFailDebug("Couldn't update CallRecord: \(error)")
+            let rootKey = callLinkCall.callLink.rootKey
+            var (callLink, inserted) = callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx)
+            if inserted {
+                callLink.updateState(callLinkCall.callLinkState)
+                callLinkStore.update(callLink, tx: tx)
             }
+            if callLink.adminPasskey == nil, !callLink.isDeleted {
+                let updateSender = CallLinkUpdateMessageSender(messageSenderJobQueue: messageSenderJobQueue)
+                updateSender.sendCallLinkUpdateMessage(rootKey: rootKey, adminPasskey: nil, tx: tx)
+            }
+            adHocCallRecordManager.createOrUpdateRecord(
+                callId: callIdFromEra(eraId),
+                callLink: callLink,
+                status: { () -> CallRecord.CallStatus.CallLinkCallStatus in
+                    switch joinLevel {
+                    case .attempted: return .generic
+                    case .joined: return .joined
+                    }
+                }(),
+                timestamp: Date.ows_millisecondTimestamp(),
+                shouldSendSyncMessge: true,
+                tx: tx,
+            )
         }
     }
 
@@ -105,15 +101,11 @@ final class AdHocCallStateObserver {
         }
         self.activeEraId = .some(peekInfo.eraId)
         db.write { tx in
-            do {
-                try adHocCallRecordManager.handlePeekResult(
-                    eraId: peekInfo.eraId,
-                    rootKey: self.callLinkCall.callLink.rootKey,
-                    tx: tx,
-                )
-            } catch {
-                owsFailDebug("\(error)")
-            }
+            adHocCallRecordManager.handlePeekResult(
+                eraId: peekInfo.eraId,
+                rootKey: self.callLinkCall.callLink.rootKey,
+                tx: tx,
+            )
         }
     }
 }

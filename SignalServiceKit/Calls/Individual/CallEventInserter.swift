@@ -235,17 +235,13 @@ public class CallEventInserter {
             return
         }
 
-        do {
-            try individualCallRecordManager.createOrUpdateRecordForInteraction(
-                individualCallInteraction: callInteraction,
-                individualCallInteractionRowId: callInteractionRowId,
-                contactThread: thread,
-                contactThreadRowId: threadRowId,
-                callId: callId,
-                tx: tx,
-            )
-        } catch let error {
-            owsFailBeta("Failed to insert call record: \(error)")
-        }
+        individualCallRecordManager.createOrUpdateRecordForInteraction(
+            individualCallInteraction: callInteraction,
+            individualCallInteractionRowId: callInteractionRowId,
+            contactThread: thread,
+            contactThreadRowId: threadRowId,
+            callId: callId,
+            tx: tx,
+        )
     }
 }

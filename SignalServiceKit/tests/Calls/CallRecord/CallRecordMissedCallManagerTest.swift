@@ -247,11 +247,11 @@ private extension CallRecord {
 }
 
 private class MockConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter {
-    func hydrate(conversationId: Data, callId: UInt64, tx: DBReadTransaction) throws -> CallRecord? {
+    func hydrate(conversationId: Data, callId: UInt64, tx: DBReadTransaction) -> CallRecord? {
         owsFail("Not implemented!")
     }
 
-    func getConversationId(callRecord: CallRecord, tx: DBReadTransaction) throws -> Data {
+    func getConversationId(callRecord: CallRecord, tx: DBReadTransaction) -> Data {
         return Aci.randomForTesting().serviceIdBinary
     }
 }

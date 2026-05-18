@@ -42,7 +42,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
 
         incomingSyncMessageManager = IncomingCallEventSyncMessageManagerImpl(
             adHocCallRecordManager: MockAdHocCallRecordManager(),
-            callLinkStore: MockCallLinkRecordStore(),
+            callLinkStore: CallLinkRecordStore(),
             callRecordStore: mockCallRecordStore,
             callRecordDeleteManager: mockCallRecordDeleteManager,
             groupCallRecordManager: mockGroupCallRecordManager,

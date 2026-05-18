@@ -19,7 +19,7 @@ import GRDB
 /// "multiple records with the same expiration time" is equivalent to "multiple
 /// records with the same `deletedAtTimestamp`.
 public final class DeletedCallRecordExpirationJob: ExpirationJob<DeletedCallRecord> {
-    private let callLinkStore: any CallLinkRecordStore
+    private let callLinkStore: CallLinkRecordStore
     private let deletedCallRecordStore: DeletedCallRecordStore
 
     init(
@@ -57,15 +57,11 @@ public final class DeletedCallRecordExpirationJob: ExpirationJob<DeletedCallReco
             tx: tx,
         )
 
-        do {
-            try deleteCallLinkIfNeeded(conversationId: deletedCallRecord.conversationId, tx: tx)
-        } catch {
-            owsFailDebug("\(error)")
-        }
+        deleteCallLinkIfNeeded(conversationId: deletedCallRecord.conversationId, tx: tx)
     }
 
     /// Removes the ``CallLinkRecord`` if there are no more references.
-    private func deleteCallLinkIfNeeded(conversationId: CallRecord.ConversationID, tx: DBWriteTransaction) throws {
+    private func deleteCallLinkIfNeeded(conversationId: CallRecord.ConversationID, tx: DBWriteTransaction) {
         let callLinkRowId: Int64
         switch conversationId {
         case .thread:
@@ -73,17 +69,12 @@ public final class DeletedCallRecordExpirationJob: ExpirationJob<DeletedCallReco
         case .callLink(let callLinkRowId2):
             callLinkRowId = callLinkRowId2
         }
-        let callLinkRecord = try callLinkStore.fetch(rowId: callLinkRowId, tx: tx) ?? {
-            throw OWSAssertionError("Must be able to find call link.")
-        }()
+        let callLinkRecord = callLinkStore.fetch(rowId: callLinkRowId, tx: tx)
+            .owsFailUnwrap("FOREIGN KEYs mean this must exist.")
         if callLinkRecord.isDeleted {
             // We can't delete this until Storage Service is done with it.
             return
         }
-        do {
-            try callLinkStore.delete(callLinkRecord, tx: tx)
-        } catch DatabaseError.SQLITE_CONSTRAINT {
-            // We'll delete it later -- something else is still using it.
-        }
+        callLinkStore.deleteIfPossible(callLinkRecord, tx: tx)
     }
 }

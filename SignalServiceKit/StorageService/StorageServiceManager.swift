@@ -682,22 +682,21 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     private func cleanUpDeletedCallLinks() async {
         let callLinkStore = DependenciesBridge.shared.callLinkStore
+        let db = DependenciesBridge.shared.db
         let deletionThresholdMs = Date.ows_millisecondTimestamp() - RemoteConfig.current.messageQueueTimeMs
-        do {
-            let callLinkRecords = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-                try callLinkStore.fetchWhere(adminDeletedAtTimestampMsIsLessThan: deletionThresholdMs, tx: tx)
-            }
-            if !callLinkRecords.isEmpty {
-                Logger.info("Cleaning up \(callLinkRecords.count) call links that were deleted a while ago.")
-                try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                    for callLinkRecord in callLinkRecords {
-                        try callLinkStore.delete(callLinkRecord, tx: tx)
-                    }
+
+        let callLinkRecords = db.read { tx in
+            callLinkStore.fetchWhere(adminDeletedAtTimestampMsIsLessThan: deletionThresholdMs, tx: tx)
+        }
+
+        if !callLinkRecords.isEmpty {
+            Logger.info("Cleaning up \(callLinkRecords.count) call links that were deleted a while ago.")
+            await db.awaitableWrite { tx in
+                for callLinkRecord in callLinkRecords {
+                    callLinkStore.deleteIfPossible(callLinkRecord, tx: tx)
                 }
-                recordPendingUpdates(callLinkRootKeys: callLinkRecords.map(\.rootKey))
             }
-        } catch {
-            owsFailDebug("Couldn't clean up deleted call links: \(error)")
+            recordPendingUpdates(callLinkRootKeys: callLinkRecords.map(\.rootKey))
         }
     }
 }
@@ -1370,12 +1369,8 @@ class StorageServiceOperation {
 
             let callLinkUpdater = buildCallLinkUpdater()
             let callLinkStore = callLinkUpdater.recordUpdater.callLinkStore
-            do {
-                try callLinkStore.fetchAll(tx: transaction).forEach {
-                    createRecord(localId: $0.rootKey.bytes, stateUpdater: callLinkUpdater)
-                }
-            } catch {
-                owsFailDebug("Couldn't add CallLinks to manifest: \(error)")
+            callLinkStore.fetchAll(tx: transaction).forEach {
+                createRecord(localId: $0.rootKey.bytes, stateUpdater: callLinkUpdater)
             }
         }
 
@@ -1699,7 +1694,7 @@ class StorageServiceOperation {
                     let callLinkStore = DependenciesBridge.shared.callLinkStore
                     guard
                         let callLinkRootKey = try? CallLinkRootKey(callLinkRootKeyData),
-                        let callLinkRecord = try? callLinkStore.fetch(roomId: callLinkRootKey.deriveRoomId(), tx: transaction),
+                        let callLinkRecord = callLinkStore.fetch(roomId: callLinkRootKey.deriveRoomId(), tx: transaction),
                         callLinkRecord.adminPasskey != nil
                     else {
                         continue

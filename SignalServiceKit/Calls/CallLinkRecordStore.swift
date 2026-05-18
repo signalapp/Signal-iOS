@@ -7,49 +7,20 @@ import Foundation
 import GRDB
 public import SignalRingRTC
 
-public protocol CallLinkRecordStore {
-    func fetch(rowId: Int64, tx: DBReadTransaction) throws -> CallLinkRecord?
-    func fetch(roomId: Data, tx: DBReadTransaction) throws -> CallLinkRecord?
-    func insertFromBackup(
-        rootKey: CallLinkRootKey,
-        adminPasskey: Data?,
-        name: String?,
-        restrictions: CallLinkRecord.Restrictions?,
-        revoked: Bool?,
-        expiration: Int64?,
-        isUpcoming: Bool?,
-        tx: DBWriteTransaction,
-    ) throws -> CallLinkRecord
-    func fetchOrInsert(rootKey: CallLinkRootKey, tx: DBWriteTransaction) throws -> (record: CallLinkRecord, inserted: Bool)
-
-    func update(_ callLinkRecord: CallLinkRecord, tx: DBWriteTransaction) throws
-    func delete(_ callLinkRecord: CallLinkRecord, tx: DBWriteTransaction) throws
-
-    func fetchAll(tx: DBReadTransaction) throws -> [CallLinkRecord]
-    func enumerateAll(tx: DBReadTransaction, block: (CallLinkRecord) throws -> Void) throws
-    func fetchUpcoming(earlierThan expirationTimestamp: Date?, limit: Int, tx: DBReadTransaction) throws -> [CallLinkRecord]
-    func fetchWhere(adminDeletedAtTimestampMsIsLessThan thresholdMs: UInt64, tx: DBReadTransaction) throws -> [CallLinkRecord]
-    func fetchAnyPendingRecord(tx: DBReadTransaction) throws -> CallLinkRecord?
-}
-
-public class CallLinkRecordStoreImpl: CallLinkRecordStore {
+public struct CallLinkRecordStore {
     public init() {}
 
-    public func fetch(rowId: Int64, tx: DBReadTransaction) throws -> CallLinkRecord? {
+    public func fetch(rowId: Int64, tx: DBReadTransaction) -> CallLinkRecord? {
         let db = tx.database
-        do {
+        return failIfThrows {
             return try CallLinkRecord.fetchOne(db, key: rowId)
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 
-    public func fetch(roomId: Data, tx: DBReadTransaction) throws -> CallLinkRecord? {
+    public func fetch(roomId: Data, tx: DBReadTransaction) -> CallLinkRecord? {
         let db = tx.database
-        do {
+        return failIfThrows {
             return try CallLinkRecord.filter(Column(CallLinkRecord.CodingKeys.roomId) == roomId).fetchOne(db)
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 
@@ -75,37 +46,46 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
         )
     }
 
-    public func fetchOrInsert(rootKey: CallLinkRootKey, tx: DBWriteTransaction) throws -> (record: CallLinkRecord, inserted: Bool) {
-        if let existingRecord = try fetch(roomId: rootKey.deriveRoomId(), tx: tx) {
+    public func fetchOrInsert(rootKey: CallLinkRootKey, tx: DBWriteTransaction) -> (record: CallLinkRecord, inserted: Bool) {
+        if let existingRecord = fetch(roomId: rootKey.deriveRoomId(), tx: tx) {
             return (existingRecord, false)
         }
-        return (try CallLinkRecord.insertRecord(rootKey: rootKey, tx: tx), true)
+        return failIfThrows {
+            return (
+                try CallLinkRecord.insertRecord(rootKey: rootKey, tx: tx),
+                true,
+            )
+        }
     }
 
-    public func update(_ callLinkRecord: CallLinkRecord, tx: DBWriteTransaction) throws {
+    public func update(_ callLinkRecord: CallLinkRecord, tx: DBWriteTransaction) {
         let db = tx.database
-        do {
+        failIfThrows {
             try callLinkRecord.update(db)
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 
-    public func delete(_ callLinkRecord: CallLinkRecord, tx: DBWriteTransaction) throws {
+    /// Delete the given `CallLinkRecord`, unless someone still has a reference
+    /// to it.
+    /// - Returns Whether or not a record was deleted.
+    @discardableResult
+    public func deleteIfPossible(_ callLinkRecord: CallLinkRecord, tx: DBWriteTransaction) -> Bool {
         let db = tx.database
-        do {
-            try callLinkRecord.delete(db)
-        } catch {
-            throw error.grdbErrorForLogging
+        return failIfThrows {
+            do {
+                try callLinkRecord.delete(db)
+                return true
+            } catch DatabaseError.SQLITE_CONSTRAINT {
+                // We'll delete it later -- something else is still using it.
+                return false
+            }
         }
     }
 
-    public func fetchAll(tx: DBReadTransaction) throws -> [CallLinkRecord] {
+    public func fetchAll(tx: DBReadTransaction) -> [CallLinkRecord] {
         let db = tx.database
-        do {
+        return failIfThrows {
             return try CallLinkRecord.fetchAll(db)
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 
@@ -120,9 +100,9 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
         }
     }
 
-    public func fetchUpcoming(earlierThan expirationTimestamp: Date?, limit: Int, tx: DBReadTransaction) throws -> [CallLinkRecord] {
+    public func fetchUpcoming(earlierThan expirationTimestamp: Date?, limit: Int, tx: DBReadTransaction) -> [CallLinkRecord] {
         let db = tx.database
-        do {
+        return failIfThrows {
             let isUpcomingColumn = Column(CallLinkRecord.CodingKeys.isUpcoming)
             let expirationColumn = Column(CallLinkRecord.CodingKeys.expiration)
 
@@ -131,44 +111,20 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
                 baseQuery = baseQuery.filter(expirationColumn < expirationTimestamp)
             }
             return try baseQuery.fetchAll(db)
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 
-    public func fetchWhere(adminDeletedAtTimestampMsIsLessThan thresholdMs: UInt64, tx: DBReadTransaction) throws -> [CallLinkRecord] {
+    public func fetchWhere(adminDeletedAtTimestampMsIsLessThan thresholdMs: UInt64, tx: DBReadTransaction) -> [CallLinkRecord] {
         let db = tx.database
-        do {
+        return failIfThrows {
             return try CallLinkRecord.filter(Column(CallLinkRecord.CodingKeys.adminDeletedAtTimestampMs) < Int64(bitPattern: thresholdMs)).fetchAll(db)
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 
-    public func fetchAnyPendingRecord(tx: DBReadTransaction) throws -> CallLinkRecord? {
+    public func fetchAnyPendingRecord(tx: DBReadTransaction) -> CallLinkRecord? {
         let db = tx.database
-        do {
+        return failIfThrows {
             return try CallLinkRecord.filter(Column(CallLinkRecord.CodingKeys.pendingFetchCounter) > 0).fetchOne(db)
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 }
-
-#if TESTABLE_BUILD
-
-final class MockCallLinkRecordStore: CallLinkRecordStore {
-    func fetch(rowId: Int64, tx: DBReadTransaction) throws -> CallLinkRecord? { fatalError() }
-    func fetch(roomId: Data, tx: DBReadTransaction) throws -> CallLinkRecord? { fatalError() }
-    func insertFromBackup(rootKey: CallLinkRootKey, adminPasskey: Data?, name: String?, restrictions: CallLinkRecord.Restrictions?, revoked: Bool?, expiration: Int64?, isUpcoming: Bool?, tx: DBWriteTransaction) throws -> CallLinkRecord { fatalError() }
-    func fetchOrInsert(rootKey: CallLinkRootKey, tx: DBWriteTransaction) throws -> (record: CallLinkRecord, inserted: Bool) { fatalError() }
-    func update(_ callLinkRecord: CallLinkRecord, tx: DBWriteTransaction) throws { fatalError() }
-    func delete(_ callLinkRecord: CallLinkRecord, tx: DBWriteTransaction) throws { fatalError() }
-    func fetchAll(tx: DBReadTransaction) throws -> [CallLinkRecord] { fatalError() }
-    func enumerateAll(tx: DBReadTransaction, block: (CallLinkRecord) throws -> Void) throws { fatalError() }
-    func fetchUpcoming(earlierThan expirationTimestamp: Date?, limit: Int, tx: DBReadTransaction) throws -> [CallLinkRecord] { fatalError() }
-    func fetchWhere(adminDeletedAtTimestampMsIsLessThan thresholdMs: UInt64, tx: DBReadTransaction) throws -> [CallLinkRecord] { fatalError() }
-    func fetchAnyPendingRecord(tx: DBReadTransaction) throws -> CallLinkRecord? { fatalError() }
-}
-
-#endif

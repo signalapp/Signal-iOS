@@ -49,7 +49,7 @@ extension CallsListViewController {
             case newer
         }
 
-        private let callLinkStore: any CallLinkRecordStore
+        private let callLinkStore: CallLinkRecordStore
         private let callRecordLoader: CallRecordLoader
         private let callViewModelForCallRecords: CallViewModelForCallRecords
         private let callViewModelForUpcomingCallLink: CallViewModelForUpcomingCallLink
@@ -59,7 +59,7 @@ extension CallsListViewController {
         private let maxCoalescedCallsInOneViewModel: Int
 
         init(
-            callLinkStore: any CallLinkRecordStore,
+            callLinkStore: CallLinkRecordStore,
             callRecordLoader: CallRecordLoader,
             callViewModelForCallRecords: @escaping CallViewModelForCallRecords,
             callViewModelForUpcomingCallLink: @escaping CallViewModelForUpcomingCallLink,
@@ -233,13 +233,7 @@ extension CallsListViewController {
             guard shouldFetchUpcomingCallLinks else {
                 return
             }
-            let upcomingCallLinks: [CallLinkRecord]
-            do {
-                upcomingCallLinks = try callLinkStore.fetchUpcoming(earlierThan: nil, limit: 2048, tx: tx)
-            } catch {
-                Logger.warn("Couldn't fetch call links to show on the calls tab: \(error)")
-                return
-            }
+            let upcomingCallLinks = callLinkStore.fetchUpcoming(earlierThan: nil, limit: 2048, tx: tx)
             self.upcomingCallLinkReferences = upcomingCallLinks.map {
                 return UpcomingCallLinkReference(callLinkRowId: $0.id)
             }

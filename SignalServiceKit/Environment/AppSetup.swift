@@ -794,7 +794,7 @@ extension AppSetup.GlobalsContinuation {
             dateProvider: { Date() },
         )
 
-        let callLinkStore = CallLinkRecordStoreImpl()
+        let callLinkStore = CallLinkRecordStore()
         let deletedCallRecordStore = DeletedCallRecordStoreImpl()
         let deletedCallRecordExpirationJob = DeletedCallRecordExpirationJob(
             callLinkStore: callLinkStore,

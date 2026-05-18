@@ -18,7 +18,7 @@ protocol IncomingCallEventSyncMessageManager {
 
 final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessageManager {
     private let adHocCallRecordManager: any AdHocCallRecordManager
-    private let callLinkStore: any CallLinkRecordStore
+    private let callLinkStore: CallLinkRecordStore
     private let callRecordStore: CallRecordStore
     private let callRecordDeleteManager: CallRecordDeleteManager
     private let groupCallRecordManager: GroupCallRecordManager
@@ -31,7 +31,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
 
     init(
         adHocCallRecordManager: any AdHocCallRecordManager,
-        callLinkStore: any CallLinkRecordStore,
+        callLinkStore: CallLinkRecordStore,
         callRecordStore: CallRecordStore,
         callRecordDeleteManager: CallRecordDeleteManager,
         groupCallRecordManager: GroupCallRecordManager,
@@ -315,7 +315,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
             }
 
         case .adHoc(let roomId):
-            guard let callLinkRecord = callLinkRecord(forRoomId: roomId, tx: tx) else {
+            guard let callLinkRecord = callLinkStore.fetch(roomId: roomId, tx: tx) else {
                 logger.error("Missing call link record for incoming call event sync message!")
                 return
             }
@@ -340,28 +340,14 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
                 newStatus = .generic
             }
 
-            do {
-                try adHocCallRecordManager.createOrUpdateRecord(
-                    callId: callId,
-                    callLink: callLinkRecord,
-                    status: newStatus,
-                    timestamp: callTimestamp,
-                    shouldSendSyncMessge: false,
-                    tx: tx,
-                )
-            } catch {
-                owsFailDebug("\(error)")
-                return
-            }
-        }
-    }
-
-    private func callLinkRecord(forRoomId roomId: Data, tx: DBReadTransaction) -> CallLinkRecord? {
-        do {
-            return try callLinkStore.fetch(roomId: roomId, tx: tx)
-        } catch {
-            CallRecordLogger.shared.error("Couldn't fetch CallLinkRecord: \(error)")
-            return nil
+            adHocCallRecordManager.createOrUpdateRecord(
+                callId: callId,
+                callLink: callLinkRecord,
+                status: newStatus,
+                timestamp: callTimestamp,
+                shouldSendSyncMessge: false,
+                tx: tx,
+            )
         }
     }
 }
@@ -469,24 +455,20 @@ private extension IncomingCallEventSyncMessageManagerImpl {
             owsFail("Missing SQLite row ID for just-inserted interaction!")
         }
 
-        do {
-            _ = try individualCallRecordManager.createRecordForInteraction(
-                individualCallInteraction: newIndividualCallInteraction,
-                individualCallInteractionRowId: interactionRowId,
-                contactThread: contactThread,
-                contactThreadRowId: contactThreadRowId,
-                callId: callId,
-                callType: callType,
-                callDirection: callDirection,
-                individualCallStatus: individualCallStatus,
-                // The interaction's timestamp is the call event's timestamp.
-                callEventTimestamp: newIndividualCallInteraction.timestamp,
-                shouldSendSyncMessage: false,
-                tx: tx,
-            )
-        } catch let error {
-            owsFailBeta("Failed to insert call record: \(error)")
-        }
+        _ = individualCallRecordManager.createRecordForInteraction(
+            individualCallInteraction: newIndividualCallInteraction,
+            individualCallInteractionRowId: interactionRowId,
+            contactThread: contactThread,
+            contactThreadRowId: contactThreadRowId,
+            callId: callId,
+            callType: callType,
+            callDirection: callDirection,
+            individualCallStatus: individualCallStatus,
+            // The interaction's timestamp is the call event's timestamp.
+            callEventTimestamp: newIndividualCallInteraction.timestamp,
+            shouldSendSyncMessage: false,
+            tx: tx,
+        )
 
         markThingsAsReadForIncomingSyncMessage(
             callInteraction: newIndividualCallInteraction,
@@ -544,22 +526,18 @@ private extension IncomingCallEventSyncMessageManagerImpl {
             tx: tx,
         )
 
-        do {
-            _ = try groupCallRecordManager.createGroupCallRecord(
-                callId: callId,
-                groupCallInteraction: newGroupCallInteraction,
-                groupCallInteractionRowId: interactionRowId,
-                groupThreadRowId: groupThreadRowId,
-                callDirection: callDirection,
-                groupCallStatus: groupCallStatus,
-                groupCallRingerAci: nil,
-                callEventTimestamp: callEventTimestamp,
-                shouldSendSyncMessage: false,
-                tx: tx,
-            )
-        } catch let error {
-            owsFailBeta("Failed to insert call record: \(error)")
-        }
+        _ = groupCallRecordManager.createGroupCallRecord(
+            callId: callId,
+            groupCallInteraction: newGroupCallInteraction,
+            groupCallInteractionRowId: interactionRowId,
+            groupThreadRowId: groupThreadRowId,
+            callDirection: callDirection,
+            groupCallStatus: groupCallStatus,
+            groupCallRingerAci: nil,
+            callEventTimestamp: callEventTimestamp,
+            shouldSendSyncMessage: false,
+            tx: tx,
+        )
 
         markThingsAsReadForIncomingSyncMessage(
             callInteraction: newGroupCallInteraction,

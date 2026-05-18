@@ -27,7 +27,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     private var adHocCallRecordManager: any AdHocCallRecordManager { DependenciesBridge.shared.adHocCallRecordManager }
     private let appReadiness: AppReadiness
     private var audioSession: AudioSession { SUIEnvironment.shared.audioSessionRef }
-    private var callLinkStore: any CallLinkRecordStore { DependenciesBridge.shared.callLinkStore }
+    private var callLinkStore: CallLinkRecordStore { DependenciesBridge.shared.callLinkStore }
     private var chatConnectionManager: any ChatConnectionManager { DependenciesBridge.shared.chatConnectionManager }
     let authCredentialManager: any AuthCredentialManager
     private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
@@ -91,7 +91,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         appReadiness: AppReadiness,
         authCredentialManager: any AuthCredentialManager,
         callLinkPublicParams: GenericServerPublicParams,
-        callLinkStore: any CallLinkRecordStore,
+        callLinkStore: CallLinkRecordStore,
         callRecordDeleteManager: any CallRecordDeleteManager,
         callRecordStore: any CallRecordStore,
         callServiceSettingsStore: CallServiceSettingsStore,
@@ -658,8 +658,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
         let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
-        let (adminPasskey, isDeleted) = try databaseStorage.read { tx -> (Data?, Bool) in
-            let callLinkRecord = try callLinkStore.fetch(roomId: callLink.rootKey.deriveRoomId(), tx: tx)
+        let (adminPasskey, isDeleted) = databaseStorage.read { tx -> (Data?, Bool) in
+            let callLinkRecord = callLinkStore.fetch(roomId: callLink.rootKey.deriveRoomId(), tx: tx)
             return (callLinkRecord?.adminPasskey, callLinkRecord?.isDeleted == true)
         }
         let serverPublicParams = CallService.serverPublicParams()

@@ -12,7 +12,7 @@ public protocol CallRecordSyncMessageConversationIdAdapter {
         conversationId: Data,
         callId: UInt64,
         tx: DBReadTransaction,
-    ) throws -> CallRecord?
+    ) -> CallRecord?
 
     /// Generates a conversation ID for use in call-related sync messages, from
     /// a ``CallRecord``.
@@ -24,13 +24,13 @@ public protocol CallRecordSyncMessageConversationIdAdapter {
 
 class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConversationIdAdapter {
 
-    private let callLinkStore: any CallLinkRecordStore
+    private let callLinkStore: CallLinkRecordStore
     private let callRecordStore: CallRecordStore
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let threadStore: ThreadStore
 
     init(
-        callLinkStore: any CallLinkRecordStore,
+        callLinkStore: CallLinkRecordStore,
         callRecordStore: CallRecordStore,
         recipientDatabaseTable: RecipientDatabaseTable,
         threadStore: ThreadStore,
@@ -47,13 +47,13 @@ class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConve
         conversationId: Data,
         callId: UInt64,
         tx: DBReadTransaction,
-    ) throws -> CallRecord? {
-        return try parse(conversationId: conversationId, tx: tx).flatMap {
+    ) -> CallRecord? {
+        return parse(conversationId: conversationId, tx: tx).flatMap {
             return callRecordStore.fetch(callId: callId, conversationId: $0, tx: tx).unwrapped
         }
     }
 
-    private func parse(conversationId: Data, tx: DBReadTransaction) throws -> CallRecord.ConversationID? {
+    private func parse(conversationId: Data, tx: DBReadTransaction) -> CallRecord.ConversationID? {
         if let serviceId = try? ServiceId.parseFrom(serviceIdBinary: conversationId) {
             guard
                 let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx),
@@ -69,7 +69,7 @@ class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConve
         {
             return .thread(threadRowId: groupThread.sqliteRowId!)
         }
-        if let callLinkRecord = try callLinkStore.fetch(roomId: conversationId, tx: tx) {
+        if let callLinkRecord = callLinkStore.fetch(roomId: conversationId, tx: tx) {
             return .callLink(callLinkRowId: callLinkRecord.id)
         }
         return nil
@@ -93,7 +93,7 @@ class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConve
                 throw OWSAssertionError("Unexpected thread type for call record!")
             }
         case .callLink(let callLinkRowId):
-            guard let callLinkRecord = try callLinkStore.fetch(rowId: callLinkRowId, tx: tx) else {
+            guard let callLinkRecord = callLinkStore.fetch(rowId: callLinkRowId, tx: tx) else {
                 throw OWSAssertionError("Missing CallLinkRecord - how did we get here?")
             }
             return callLinkRecord.roomId

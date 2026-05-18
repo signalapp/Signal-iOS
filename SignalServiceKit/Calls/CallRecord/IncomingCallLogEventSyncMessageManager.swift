@@ -41,15 +41,11 @@ class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessag
         /// timestamp embedded in the sync message.
         let referencedCallRecord: CallRecord? = {
             if let callIdentifiers = incomingSyncMessage.anchorCallIdentifiers {
-                do {
-                    return try callRecordConversationIdAdapter.hydrate(
-                        conversationId: callIdentifiers.conversationId,
-                        callId: callIdentifiers.callId,
-                        tx: tx,
-                    )
-                } catch {
-                    owsFailDebug("\(error)")
-                }
+                return callRecordConversationIdAdapter.hydrate(
+                    conversationId: callIdentifiers.conversationId,
+                    callId: callIdentifiers.callId,
+                    tx: tx,
+                )
             }
             return nil
         }()

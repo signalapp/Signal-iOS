@@ -66,7 +66,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         maxCoalescedCallsInOneViewModel: Int = 100,
     ) {
         viewModelLoader = ViewModelLoader(
-            callLinkStore: CallLinkRecordStoreImpl(),
+            callLinkStore: CallLinkRecordStore(),
             callRecordLoader: mockCallRecordLoader,
             callViewModelForCallRecords: { self.callViewModelForCallRecords($0, $1) },
             callViewModelForUpcomingCallLink: { _, _ in owsFail("Not implemented.") },

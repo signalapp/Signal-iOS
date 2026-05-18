@@ -18,7 +18,7 @@ actor CallLinkStateUpdater {
     private let authCredentialManager: any AuthCredentialManager
     private let callLinkFetcher: CallLinkFetcherImpl
     private let callLinkManager: any CallLinkManager
-    private let callLinkStore: any CallLinkRecordStore
+    private let callLinkStore: CallLinkRecordStore
     private let callRecordDeleteManager: any CallRecordDeleteManager
     private let callRecordStore: any CallRecordStore
     private let db: any DB
@@ -30,7 +30,7 @@ actor CallLinkStateUpdater {
         authCredentialManager: any AuthCredentialManager,
         callLinkFetcher: CallLinkFetcherImpl,
         callLinkManager: any CallLinkManager,
-        callLinkStore: any CallLinkRecordStore,
+        callLinkStore: CallLinkRecordStore,
         callRecordDeleteManager: any CallRecordDeleteManager,
         callRecordStore: any CallRecordStore,
         db: any DB,
@@ -90,8 +90,8 @@ actor CallLinkStateUpdater {
         }
 
         let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
-        let oldRecord = try db.read { tx -> CallLinkRecord? in
-            return try callLinkStore.fetch(roomId: roomId, tx: tx)
+        let oldRecord = db.read { tx -> CallLinkRecord? in
+            return callLinkStore.fetch(roomId: roomId, tx: tx)
         }
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: registeredState.localIdentifiers)
         let updateResult = await Result { try await updateAndFetch(authCredential) }
@@ -113,8 +113,8 @@ actor CallLinkStateUpdater {
             throw error
         }
 
-        try await db.awaitableWrite { tx in
-            if var newRecord = try self.callLinkStore.fetch(roomId: roomId, tx: tx) {
+        await db.awaitableWrite { tx in
+            if var newRecord = self.callLinkStore.fetch(roomId: roomId, tx: tx) {
                 if !newRecord.isDeleted {
                     switch updateAction {
                     case .update(let newState):
@@ -123,7 +123,7 @@ actor CallLinkStateUpdater {
                         break
                     case .delete:
                         newRecord.markDeleted(atTimestampMs: Date.ows_millisecondTimestamp())
-                        try self.callRecordDeleteManager.deleteCallRecords(
+                        self.callRecordDeleteManager.deleteCallRecords(
                             self.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: newRecord.id), limit: nil, tx: tx),
                             sendSyncMessageOnDelete: true,
                             tx: tx,
@@ -133,7 +133,7 @@ actor CallLinkStateUpdater {
                 if newRecord.pendingFetchCounter == oldRecord?.pendingFetchCounter {
                     newRecord.clearNeedsFetch()
                 }
-                try self.callLinkStore.update(newRecord, tx: tx)
+                self.callLinkStore.update(newRecord, tx: tx)
             }
         }
 

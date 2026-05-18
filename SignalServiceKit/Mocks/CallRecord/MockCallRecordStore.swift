@@ -33,7 +33,7 @@ class MockCallRecordStore: CallRecordStore {
         return .matchNotFound
     }
 
-    func fetchExisting(conversationId: CallRecord.ConversationID, limit: Int?, tx: DBReadTransaction) throws -> [CallRecord] {
+    func fetchExisting(conversationId: CallRecord.ConversationID, limit: Int?, tx: DBReadTransaction) -> [CallRecord] {
         fatalError()
     }
 
