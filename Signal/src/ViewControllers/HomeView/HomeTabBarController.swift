@@ -303,10 +303,14 @@ extension HomeTabBarController: BadgeObserver {
 
         if #available(iOS 18, *), UIDevice.current.isIPad {
             uiTab(for: .chatList).badgeValue = stringify(badgeCount.unreadChatCount)
+            uiTab(for: .chatList).accessibilityValue = stringify(badgeCount.unreadChatCount)
             uiTab(for: .calls).badgeValue = stringify(badgeCount.unreadCallsCount)
+            uiTab(for: .calls).accessibilityValue = stringify(badgeCount.unreadCallsCount)
         } else {
             chatListTabBarItem.badgeValue = stringify(badgeCount.unreadChatCount)
+            chatListTabBarItem.accessibilityValue = stringify(badgeCount.unreadChatCount)
             callsListTabBarItem.badgeValue = stringify(badgeCount.unreadCallsCount)
+            callsListTabBarItem.accessibilityValue = stringify(badgeCount.unreadCallsCount)
         }
     }
 }
