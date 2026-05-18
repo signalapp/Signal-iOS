@@ -21,7 +21,7 @@ public class GroupTableViewCell: UITableViewCell {
 
         // Font config
         nameLabel.font = .dynamicTypeBody
-        subtitleLabel.font = .regularFont(ofSize: 11)
+        subtitleLabel.font = .dynamicTypeCaption2
 
         // Layout
 
