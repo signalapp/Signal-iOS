@@ -41,12 +41,10 @@ final class BackupArchiveThreadMergeChatUpdateArchiver {
         let mergedContactAddress: BackupArchive.ContactAddress
         switch threadInfo {
         case .noteToSelfThread:
-            mergedContactAddress = context.recipientContext.localRecipientAddress
+            return .skippableInteraction(.threadMergeInNoteToSelf)
+        case .contactThread(.some(let contactAddress)) where contactAddress.aci == nil:
+            return .skippableInteraction(.threadMergeWithoutAciAuthor)
         case .contactThread(.some(let contactAddress)):
-            if contactAddress.aci == nil {
-                return .skippableInteraction(.threadMergeWithoutAciAuthor)
-            }
-
             mergedContactAddress = contactAddress
         case .contactThread(nil), .groupThread:
             return messageFailure(.threadMergeUpdateMissingAuthor)
