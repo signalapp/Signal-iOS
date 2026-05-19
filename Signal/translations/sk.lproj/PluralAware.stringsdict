@@ -548,13 +548,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld disappearing message timer change · %2$@</string>
+			<string>%1$ld zmena časovača miznúcich správ · %2$@</string>
 			<key>few</key>
-			<string>%1$ld disappearing message timer changes · %2$@</string>
+			<string>%1$ld zmeny časovača miznúcich správ · %2$@</string>
 			<key>many</key>
-			<string>%1$ld disappearing message timer changes · %2$@</string>
+			<string>%1$ld zmeny časovača miznúcich správ · %2$@</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes · %2$@</string>
+			<string>%1$ld zmien časovača miznúcich správ · %2$@</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>

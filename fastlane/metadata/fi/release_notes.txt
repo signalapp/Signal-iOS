@@ -1,2 +1,2 @@
-• We've introduced additional confirmations and educational messaging in the app to help protect Signal users from phishing and social engineering attacks. As a reminder, never reply to chats pretending to be Signal, and never send your verification code, PIN, or recovery key to anyone.
-• Animated GIF searches are now much faster, but it's still up to you if you say what you mean or meme what you say.
+• Olemme lisänneet sovellukseen uusia vahvistusvaiheita ja opasteviestejä, joiden tarkoituksena on suojata Signal-käyttäjiä tietojenkalastelulta ja sosiaalisen manipuloinnin hyökkäyksiltä. Muistathan: älä koskaan vastaa keskusteluihin, joiden lähettäjä esittää olevansa Signal, äläkä koskaan lähetä vahvistuskoodia, PIN-koodia tai palautusavainta kenellekään.
+• Parannuksia animoitujen GIF-tiedostojen haun suorituskykyyn.

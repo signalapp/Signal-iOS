@@ -2582,13 +2582,13 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "আরও বার্তা লোড হচ্ছে…";
 
 /* Label on truncated text messages that's shown while the full contents of a text message are being downloaded. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Loading…";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "লোড হচ্ছে…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "আরও পড়ুন";
 
 /* Button on truncated text messages that they can be tapped to download the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Get Full Message";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "পুরো মেসেজ নিন";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "ক্লিপবোর্ডে কপি করা হয়েছে";
@@ -7742,22 +7742,22 @@
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "আমরা আপনাকে ভয়েস কলের মাধ্যমে যাচাইকরণ কোড পাঠাতে পারিনি। এর পরিবর্তে এসএমএসের মাধ্যমে আপনার কোড সংগ্রহ করার চেষ্টা করুন।";
 
 /* Bottom bar label for the release notes thread */
-"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "The only official chat from Signal";
+"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "Signal-এর একমাত্র অফিসিয়াল চ্যাট";
 
 /* Display name for the release notes channel */
 "RELEASE_NOTES_CHANNEL_NAME" = "Signal";
 
 /* Label displayed in thread details of the release notes chat */
-"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Official Chat";
+"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "অফিসিয়াল চ্যাট";
 
 /* Settings description label for the release notes thread telling a user to keep up to date */
-"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Keep up to date with news & release notes";
+"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "খবর ও রিলিজ নোট পেয়ে আপডেট থাকুন";
 
 /* Details text for the thread details view of the release notes channel */
-"RELEASE_NOTES_DETAILS" = "The only official chat from Signal. Keep up to date with news and release notes";
+"RELEASE_NOTES_DETAILS" = "Signal-এর একমাত্র অফিসিয়াল চ্যাট। খবর ও রিলিজ নোট পেয়ে আপডেট থাকুন";
 
 /* Settings description label for the release notes thread telling a user this is the only official chat */
-"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "The only official chat from Signal";
+"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "Signal-এর একমাত্র অফিসিয়াল চ্যাট";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "এখনই ঠিক করুন";
@@ -9254,7 +9254,7 @@
 "SIGNAL_CALL" = "Signal কল";
 
 /* Title for the sheet presented when user taps on Signal Proxy link in chat. */
-"SIGNAL_PROXY" = "Signal Proxy Server";
+"SIGNAL_PROXY" = "Signal প্রক্সি সার্ভার";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "আমি আপনাকে Signal ইনস্টল করার জন্য আমন্ত্রণ করছি! লিঙ্কটি এখানে:";

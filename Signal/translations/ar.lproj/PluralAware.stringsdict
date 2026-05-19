@@ -656,17 +656,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>%1$ld disappearing message timer changes · %2$@</string>
+			<string>%1$ld تغييرات في مُؤقِّت الرسائل المؤقَّتة · %2$@</string>
 			<key>one</key>
-			<string>%1$ld disappearing message timer change · %2$@</string>
+			<string>%1$ld تغيير في مُؤقِّت الرسائل المؤقَّتة · %2$@</string>
 			<key>two</key>
-			<string>%1$ld disappearing message timer changes · %2$@</string>
+			<string>%1$ld تغييران في مُؤقِّت الرسائل المؤقَّتة · %2$@</string>
 			<key>few</key>
-			<string>%1$ld disappearing message timer changes · %2$@</string>
+			<string>%1$ld تغييرات في مُؤقِّت الرسائل المؤقَّتة · %2$@</string>
 			<key>many</key>
-			<string>%1$ld disappearing message timer changes · %2$@</string>
+			<string>%1$ld تغييرًا في مُؤقِّت الرسائل المؤقَّتة · %2$@</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes · %2$@</string>
+			<string>%1$ld تغيير في مُؤقِّت الرسائل المؤقَّتة · %2$@</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>

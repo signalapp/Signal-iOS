@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld disappearing message timer change · %2$@</string>
+			<string>%1$ld تغییر زمان‌سنج پیام ناپدیدشونده · %2$@</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes · %2$@</string>
+			<string>%1$ld تغییر زمان‌سنج پیام ناپدیدشونده · %2$@</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>

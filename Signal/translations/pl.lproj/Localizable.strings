@@ -1334,7 +1334,7 @@
 "CALL_LINK" = "Link do połączenia";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
-"CALL_LINK_ADD_NAME" = "Dodaj nazwę rozmowy";
+"CALL_LINK_ADD_NAME" = "Dodaj nazwę połączenia";
 
 /* Button to copy a Call Link to the clipboard. */
 "CALL_LINK_COPY" = "Skopiuj link";
@@ -1367,7 +1367,7 @@
 "CALL_LINK_DELETED" = "Link do połączenia usunięty.";
 
 /* Button to open a screen to edit the name of a Call Link. Also used as the title of that screen once it opens. */
-"CALL_LINK_EDIT_NAME" = "Edytuj nazwę rozmowy";
+"CALL_LINK_EDIT_NAME" = "Edytuj nazwę połączenia";
 
 /* Description of sheet presented when joining call from call link sheet fails. */
 "CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Nie udało się dołączyć do rozmowy. Sprawdź połączenie z internetem i spróbuj ponownie.";
@@ -2582,13 +2582,13 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Wczytywanie wiadomości…";
 
 /* Label on truncated text messages that's shown while the full contents of a text message are being downloaded. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Loading…";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Wczytywanie…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Czytaj dalej";
 
 /* Button on truncated text messages that they can be tapped to download the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Get Full Message";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Pobierz całą wiadomość";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "Skopiowano do schowka";
@@ -3038,7 +3038,7 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ dla aplikacji Signal";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Wpłać %1$@ i wesprzyj Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Wpłacaj %1$@ i wesprzyj Signal";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Wpłać %1$@ i wesprzyj Signal";
@@ -3239,7 +3239,7 @@
 "DONATION_READ_MORE_SHEET_BULLET_2" = "Twoja prywatność jest naszą misją";
 
 /* Bullet point for a sheet discussing donating to Signal. For non-English languages, skip the word 501c3, and skip the language about US donations being tax deductible. */
-"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal jest organizacją non profit.";
+"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal jest organizacją non profit";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Kwota";
@@ -7742,22 +7742,22 @@
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Nie udało się podać kodu weryfikacyjnego przez połączenie głosowe. Możesz zamiast tego poprosić o SMS z kodem.";
 
 /* Bottom bar label for the release notes thread */
-"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "The only official chat from Signal";
+"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "To oficjalny i jedyny czat twórców aplikacji Signal";
 
 /* Display name for the release notes channel */
 "RELEASE_NOTES_CHANNEL_NAME" = "Signal";
 
 /* Label displayed in thread details of the release notes chat */
-"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Official Chat";
+"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Oficjalny czat";
 
 /* Settings description label for the release notes thread telling a user to keep up to date */
-"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Keep up to date with news & release notes";
+"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Bądź na bieżąco z nowościami i aktualizacjami";
 
 /* Details text for the thread details view of the release notes channel */
-"RELEASE_NOTES_DETAILS" = "The only official chat from Signal. Keep up to date with news and release notes";
+"RELEASE_NOTES_DETAILS" = "To oficjalny i jedyny czat twórców aplikacji Signal. Bądź na bieżąco z nowościami i aktualizacjami";
 
 /* Settings description label for the release notes thread telling a user this is the only official chat */
-"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "The only official chat from Signal";
+"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "To oficjalny i jedyny czat twórców aplikacji Signal";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Zrób to teraz";
@@ -9254,7 +9254,7 @@
 "SIGNAL_CALL" = "Połączenie Signal";
 
 /* Title for the sheet presented when user taps on Signal Proxy link in chat. */
-"SIGNAL_PROXY" = "Signal Proxy Server";
+"SIGNAL_PROXY" = "Serwer proxy Signal";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Zapraszam Cię do komunikatora Signal! Link do pobrania aplikacji:";

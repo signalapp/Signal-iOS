@@ -386,7 +386,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes · %2$@</string>
+			<string>%1$ld perubahan timer pesan terhapus otomatis · %2$@</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
