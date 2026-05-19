@@ -570,7 +570,9 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     return .retryableError(error)
                 default:
                     // All other errors should be treated as per normal.
-                    if error.httpStatusCode == 429 {
+                    if case SignalError.rateLimitedError(let retryAfter, _) = error {
+                        return .retryableError(RateLimitedRetryError(retryAfter: retryAfter))
+                    } else if error.httpStatusCode == 429 {
                         if let retryAfter = error.httpResponseHeaders?.retryAfterTimeInterval {
                             return .retryableError(RateLimitedRetryError(retryAfter: retryAfter))
                         }
