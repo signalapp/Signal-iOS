@@ -97,17 +97,43 @@ public class ExperienceUpgrade: SDSCodableModel, Decodable {
 
         try container.encode(manifest, forKey: .manifest)
     }
-}
 
-extension ExperienceUpgrade {
-    public var shouldCheckPreconditions: Bool {
-        !isComplete && !isSnoozed && !hasPassedNumberOfDaysToShow
+    // MARK: -
+
+    public func isSnoozed(now: Date) -> Bool {
+        guard
+            lastSnoozedTimestamp > 0,
+            snoozeCount > 0
+        else {
+            return false
+        }
+
+        // Check if enough time has passed since the last snooze date.
+        let timeSinceLastSnooze = now.timeIntervalSince(Date(timeIntervalSince1970: lastSnoozedTimestamp))
+        return timeSinceLastSnooze <= manifest.snoozeDuration(forSnoozeCount: snoozeCount)
     }
-}
 
-// MARK: - Removal
+    public func hasPassedNumberOfDaysToShow(now: Date) -> Bool {
+        guard firstViewedTimestamp > 0 else {
+            return false
+        }
 
-extension ExperienceUpgrade {
+        guard
+            let daysSinceFirstView = Calendar.current.dateComponents(
+                [.day],
+                from: Date(timeIntervalSince1970: firstViewedTimestamp),
+                to: now,
+            ).day
+        else {
+            owsFailDebug("Failed to get day component?")
+            return false
+        }
+
+        return Int(clamping: daysSinceFirstView) > manifest.numberOfDaysToShowFor
+    }
+
+    // MARK: - Removal
+
     public func anyDidRemove(transaction: DBWriteTransaction) {
         switch manifest {
         case
@@ -137,11 +163,9 @@ extension ExperienceUpgrade {
             }
         }
     }
-}
 
-// MARK: - Mark as <state>
+    // MARK: - Mark as <state>
 
-extension ExperienceUpgrade {
     public func markAsSnoozed(transaction: DBWriteTransaction) {
         upsert(withTransaction: transaction) { upgrade in
             upgrade.lastSnoozedTimestamp = Date().timeIntervalSince1970
@@ -172,11 +196,9 @@ extension ExperienceUpgrade {
         block(experienceToUpgrade)
         experienceToUpgrade.anyUpsert(transaction: transaction)
     }
-}
 
-// MARK: - Update remote megaphone info
+    // MARK: - Update remote megaphone info
 
-extension ExperienceUpgrade {
     /// Updates a subset of properties on the existing manifest with the given
     /// re-fetched megaphone. Does nothing if the given megaphone does not
     /// match the existing.

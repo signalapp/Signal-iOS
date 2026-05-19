@@ -141,20 +141,22 @@ struct BackupEnablementReminderMegaphoneTests {
     }
 
     func testSnoozed() throws {
+        let now = Date()
+
         experienceUpgrade.snoozeCount = 1
 
         experienceUpgrade.lastSnoozedTimestamp = Date().addingTimeInterval(-25 * TimeInterval.day).timeIntervalSince1970
-        #expect(experienceUpgrade.isSnoozed, "should still be snoozed if last snooze was recent")
+        #expect(experienceUpgrade.isSnoozed(now: now), "should still be snoozed if last snooze was recent")
 
         experienceUpgrade.lastSnoozedTimestamp = Date().addingTimeInterval(-31 * TimeInterval.day).timeIntervalSince1970
-        #expect(!experienceUpgrade.isSnoozed, "should not be snoozed if last snooze was long enough ago")
+        #expect(!experienceUpgrade.isSnoozed(now: now), "should not be snoozed if last snooze was long enough ago")
 
         experienceUpgrade.snoozeCount = 2
         experienceUpgrade.lastSnoozedTimestamp = Date().addingTimeInterval(-31 * TimeInterval.day).timeIntervalSince1970
-        #expect(experienceUpgrade.isSnoozed, "should still be snoozed if last snooze was recent")
+        #expect(experienceUpgrade.isSnoozed(now: now), "should still be snoozed if last snooze was recent")
 
         experienceUpgrade.lastSnoozedTimestamp = Date().addingTimeInterval(-91 * TimeInterval.day).timeIntervalSince1970
-        #expect(!experienceUpgrade.isSnoozed, "should not still be snoozed if last snooze was long enough ago")
+        #expect(!experienceUpgrade.isSnoozed(now: now), "should not still be snoozed if last snooze was long enough ago")
     }
 }
 

@@ -438,7 +438,7 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
 
     /// The interval immediately after registration during which we should not
     /// show the upgrade.
-    private var delayAfterRegistration: TimeInterval {
+    public var delayAfterRegistration: TimeInterval {
         switch self {
         case
             .newLinkedDeviceNotification,
@@ -478,7 +478,7 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
     }
 
     /// The date after which the upgrade should no longer be shown.
-    private var expirationDate: Date {
+    public var expirationDate: Date {
         switch self {
         case
             .newLinkedDeviceNotification,
@@ -501,7 +501,7 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
     }
 
     /// Whether we should show this upgrade on linked devices.
-    private var showOnLinkedDevices: Bool {
+    public var showOnLinkedDevices: Bool {
         switch self {
         case
             .newLinkedDeviceNotification,
@@ -524,27 +524,6 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
             // Controlled by conditional check
             return true
         }
-    }
-
-    // MARK: - Preconditions
-
-    public func shouldCheckPreconditions(
-        timeIntervalSinceRegistration: TimeInterval,
-        isRegisteredPrimaryDevice: Bool,
-        tx: DBReadTransaction,
-    ) -> Bool {
-        if timeIntervalSinceRegistration < delayAfterRegistration {
-            // We have not waited long enough after registration to show this
-            // upgrade.
-            return false
-        }
-
-        guard Date() < expirationDate else {
-            // We should not show an expired upgrade.
-            return false
-        }
-
-        return isRegisteredPrimaryDevice || showOnLinkedDevices
     }
 
     // MARK: Local megaphone preconditions

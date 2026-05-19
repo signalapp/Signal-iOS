@@ -81,29 +81,3 @@ public class ExperienceUpgradeFinder {
         return ExperienceUpgradeManifest.sortedByImportance(experienceUpgrades)
     }
 }
-
-public extension ExperienceUpgrade {
-    var isSnoozed: Bool {
-        guard
-            lastSnoozedTimestamp > 0,
-            snoozeCount > 0
-        else {
-            return false
-        }
-
-        // Check if enough time has passed since the last snooze date.
-        let timeSinceLastSnooze = -Date(timeIntervalSince1970: lastSnoozedTimestamp).timeIntervalSinceNow
-        return timeSinceLastSnooze <= manifest.snoozeDuration(forSnoozeCount: snoozeCount)
-    }
-
-    var hasPassedNumberOfDaysToShow: Bool {
-        daysSinceFirstViewed > manifest.numberOfDaysToShowFor
-    }
-
-    var daysSinceFirstViewed: Int {
-        guard firstViewedTimestamp > 0 else { return 0 }
-
-        let secondsSinceFirstView = -Date(timeIntervalSince1970: firstViewedTimestamp).timeIntervalSinceNow
-        return Int(secondsSinceFirstView / .day)
-    }
-}

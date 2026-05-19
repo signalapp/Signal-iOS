@@ -460,7 +460,6 @@
 		34ACA7F72733183000E47AD4 /* CountryCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */; };
 		34B14D8D24F02A9600CC3A9A /* GroupLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B14D8C24F02A9500CC3A9A /* GroupLinkViewController.swift */; };
 		34B14D8F24F41C4300CC3A9A /* GroupLinkQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B14D8E24F41C4200CC3A9A /* GroupLinkQRCodeViewController.swift */; };
-		34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* SplashViewController.swift */; };
 		34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */; };
 		34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */; };
 		34BB78B7272C51B600DA0D04 /* MobileCoinHelperSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */; };
@@ -4658,7 +4657,6 @@
 		34B14D8C24F02A9500CC3A9A /* GroupLinkViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupLinkViewController.swift; sourceTree = "<group>"; };
 		34B14D8E24F41C4200CC3A9A /* GroupLinkQRCodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupLinkQRCodeViewController.swift; sourceTree = "<group>"; };
 		34B3F83E1E8DF1700035BE1A /* ContactPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactPickerViewController.swift; sourceTree = "<group>"; };
-		34B3F8441E8DF1700035BE1A /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteFlow.swift; sourceTree = "<group>"; };
 		34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicatorView.swift; sourceTree = "<group>"; };
 		34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicatorInteraction.swift; sourceTree = "<group>"; };
@@ -11486,7 +11484,6 @@
 				887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */,
 				04E66D3E2DFC81BC0059DBAC /* RecoveryKeyReminderMegaphone.swift */,
 				D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */,
-				34B3F8441E8DF1700035BE1A /* SplashViewController.swift */,
 			);
 			path = UserInterface;
 			sourceTree = "<group>";
@@ -18736,7 +18733,6 @@
 				50EF82492F8EDB84000EE0DD /* SpamReport.swift in Sources */,
 				50EF824A2F8EDB84000EE0DD /* SpamReportingUIUtils.swift in Sources */,
 				F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */,
-				34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */,
 				662AC92B2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift in Sources */,
 				66B943812A6F217600DCF2FF /* SpoilerParticleShader.metal in Sources */,
 				45069FC829D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift in Sources */,

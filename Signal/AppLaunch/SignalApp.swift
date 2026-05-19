@@ -223,11 +223,6 @@ public class SignalApp {
 
         Logger.info("")
 
-        // If there's a presented blocking splash, but the user is trying to open a
-        // thread, dismiss it. We'll try again next time they open the app. We
-        // don't want to block them from accessing their conversations.
-        ExperienceUpgradeManager.dismissSplashWithoutCompletingIfNecessary()
-
         if let visibleThread = conversationSplitViewController.visibleThread, visibleThread.uniqueId == threadUniqueId {
             AppEnvironment.shared.windowManagerRef.minimizeCallIfNeeded()
             conversationSplitViewController.selectedConversationViewController?.scrollToInitialPosition(animated: animated)
