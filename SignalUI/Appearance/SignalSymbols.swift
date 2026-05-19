@@ -79,6 +79,7 @@ public enum SignalSymbol: Character {
     case missedOutgoing = "\u{E05B}"
     case multiply = "\u{00D7}"
     case outgoing = "\u{E05C}"
+    case officialBadge = "\u{E086}"
     case person = "\u{E05D}"
     case personCheck = "\u{E05F}"
     case personCircle = "\u{E05E}"

@@ -426,7 +426,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     }
 
     private func officialLabelConfig() -> CVLabelConfig {
-        let symbol = SignalSymbol.checkCircle.attributedString(dynamicTypeBaseSize: UIFont.dynamicTypeCalloutClamped.pointSize)
+        let symbol = SignalSymbol.officialBadge.attributedString(dynamicTypeBaseSize: UIFont.dynamicTypeCalloutClamped.pointSize)
         let notVerifiedString = NSAttributedString.composed(
             of: [
                 symbol,
