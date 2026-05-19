@@ -200,22 +200,11 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             auth: auth,
             logger: logger,
         )
-        let form: Upload.Form
-        do {
-            form = try await backupRequestManager.fetchBackupUploadForm(
-                backupByteLength: metadata.encryptedDataLength,
-                auth: backupAuth,
-                logger: logger,
-            )
-        } catch let error {
-            switch error as? BackupArchive.Response.BackupUploadFormError {
-            case .tooLarge:
-                logger.warn("Backup too large! \(metadata.encryptedDataLength)")
-            default:
-                break
-            }
-            throw error
-        }
+        let form = try await backupRequestManager.fetchBackupUploadForm(
+            backupByteLength: metadata.encryptedDataLength,
+            auth: backupAuth,
+            logger: logger,
+        )
         let result = try await attachmentUploadManager.uploadBackup(
             localUploadMetadata: metadata,
             form: form,

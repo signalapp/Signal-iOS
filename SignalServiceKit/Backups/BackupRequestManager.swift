@@ -77,13 +77,8 @@ public extension BackupArchive {
             case rateLimited = 429
         }
 
-        public enum BackupUploadFormError: Int, Error {
-            case badArgument = 400
-            case invalidAuth = 401
-            case forbidden = 403
-            /// The backup file is too large (as reported by us in `backupByteLength`.
-            case tooLarge = 413
-            case rateLimited = 429
+        public enum BackupUploadFormError: Error {
+            case tooLarge
         }
     }
 }
@@ -256,18 +251,12 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
             return try await chatConnectionManager.withUnauthService(.backups) {
                 try await $0.getUploadForm(
                     auth: auth.backupAuth,
-                    uploadSize: UInt64(backupByteLength),
+                    uploadSize: UInt64(safeCast: backupByteLength),
                 )
             }.asUploadForm()
-        } catch let error {
-            if
-                let httpStatusCode = error.httpStatusCode,
-                let error = BackupArchive.Response.BackupUploadFormError(rawValue: httpStatusCode)
-            {
-                throw error
-            } else {
-                throw error
-            }
+        } catch SignalError.uploadTooLarge(let message) {
+            logger.warn("Backup too large! \(backupByteLength); SignalError.uploadTooLarge(\(message)")
+            throw BackupArchive.Response.BackupUploadFormError.tooLarge
         }
     }
 

@@ -972,6 +972,15 @@ class BackupSettingsViewController:
             ))
             actionSheet.addAction(.cancel)
 
+        case BackupArchive.Response.BackupUploadFormError.tooLarge:
+            actionSheet = ActionSheetController(
+                message: OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE",
+                    comment: "Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload.",
+                ),
+            )
+            actionSheet.addAction(.okay)
+
         case _ where error.isNetworkFailureOrTimeout || error.is5xxServiceResponse:
             actionSheet = ActionSheetController(
                 message: OWSLocalizedString(
