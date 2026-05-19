@@ -131,10 +131,20 @@ public protocol AttachmentDownloadManager {
         tx: DBWriteTransaction,
     )
 
-    func enqueueDownloadOfAttachment(
-        id: Attachment.IDType,
+    func enqueueDownloadOfReferencedAttachment(
+        referencedAttachment: ReferencedAttachment,
         priority: AttachmentDownloadPriority,
-        source: QueuedAttachmentDownloadRecord.SourceType,
+        tx: DBWriteTransaction,
+    ) throws(AttachmentDownloads.Error)
+
+    func downloadReferencedAttachment(
+        referencedAttachment: ReferencedAttachment,
+        priority: AttachmentDownloadPriority,
+        progress: OWSProgressSink?,
+    ) async throws
+
+    func enqueueCopyOfLocalAttachment(
+        id: Attachment.IDType,
         tx: DBWriteTransaction,
     )
 

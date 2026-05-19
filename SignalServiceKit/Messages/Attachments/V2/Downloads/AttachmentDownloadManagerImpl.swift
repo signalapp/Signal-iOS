@@ -254,7 +254,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
 
-        enqueueDownloadOfAttachments(referencedAttachments, priority: priority, tx: tx)
+        enqueueDownloadOfReferencedAttachments(referencedAttachments, priority: priority, tx: tx)
     }
 
     public func enqueueDownloadOfAttachmentsForStoryMessage(
@@ -270,14 +270,51 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             storyMessageRowId: storyMessageRowId,
             tx: tx,
         )
-        enqueueDownloadOfAttachments(referencedAttachments, priority: priority, tx: tx)
+        enqueueDownloadOfReferencedAttachments(referencedAttachments, priority: priority, tx: tx)
     }
 
-    private func enqueueDownloadOfAttachments(
-        _ referencedAttachments: [ReferencedAttachment],
+    public func downloadReferencedAttachment(
+        referencedAttachment: ReferencedAttachment,
+        priority: AttachmentDownloadPriority,
+        progress: OWSProgressSink?,
+    ) async throws {
+        if CurrentAppContext().isRunningTests {
+            // No need to enqueue downloads if we're running tests.
+            return
+        }
+
+        let source = try await db.awaitableWrite { tx in
+            try _enqueueDownloadOfReferencedAttachment(
+                referencedAttachment: referencedAttachment,
+                priority: priority,
+                tx: tx,
+            )
+        }
+
+        try await _waitForDownloadOfAttachment(
+            id: referencedAttachment.attachment.id,
+            source: source,
+            progress: progress,
+        )
+    }
+
+    public func enqueueDownloadOfReferencedAttachment(
+        referencedAttachment: ReferencedAttachment,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction,
-    ) {
+    ) throws(AttachmentDownloads.Error) {
+        _ = try _enqueueDownloadOfReferencedAttachment(
+            referencedAttachment: referencedAttachment,
+            priority: priority,
+            tx: tx,
+        )
+    }
+
+    private func _enqueueDownloadOfReferencedAttachment(
+        referencedAttachment: ReferencedAttachment,
+        priority: AttachmentDownloadPriority,
+        tx: DBWriteTransaction,
+    ) throws(AttachmentDownloads.Error) -> QueuedAttachmentDownloadRecord.SourceType {
         let backupPlan = backupSettingsStore.backupPlan(tx: tx)
         let isEligibleToDownloadFromMediaTier: Bool
         switch backupPlan {
@@ -291,62 +328,90 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             isEligibleToDownloadFromMediaTier = true
         }
 
-        var didEnqueueAnyDownloads = false
-        referencedAttachments.forEach { referencedAttachment in
-            let sourceToUse: QueuedAttachmentDownloadRecord.SourceType = {
-                // We only download from the latest transit tier info.
-                let transitTierInfo = referencedAttachment.attachment.latestTransitTierInfo
-                let mediaTierInfo = referencedAttachment.attachment.mediaTierInfo
-                guard
-                    let transitTierInfo,
-                    let mediaTierInfo
-                else {
-                    // If we don't have both there's nothing to decide
-                    return mediaTierInfo == nil ? .transitTier : .mediaTierFullsize
-                }
-                if
-                    isEligibleToDownloadFromMediaTier,
-                    mediaTierInfo.lastDownloadAttemptTimestamp == nil
-                {
-                    // If we've never tried media tier, always try that first.
-                    return .mediaTierFullsize
-                } else
-                if transitTierInfo.lastDownloadAttemptTimestamp == nil {
-                    // If we tried media tier and failed, try transit tier
-                    // next time.
-                    return .transitTier
-                } else {
-                    // If both have failed fall back to default.
-                    return isEligibleToDownloadFromMediaTier
-                        ? .mediaTierFullsize
-                        : .transitTier
-                }
-            }()
+        let sourceToUse: QueuedAttachmentDownloadRecord.SourceType = {
+            // We only download from the latest transit tier info.
+            let transitTierInfo = referencedAttachment.attachment.latestTransitTierInfo
+            let mediaTierInfo = referencedAttachment.attachment.mediaTierInfo
+            guard
+                let transitTierInfo,
+                let mediaTierInfo
+            else {
+                // If we don't have both there's nothing to decide
+                return mediaTierInfo == nil ? .transitTier : .mediaTierFullsize
+            }
+            if
+                isEligibleToDownloadFromMediaTier,
+                mediaTierInfo.lastDownloadAttemptTimestamp == nil
+            {
+                // If we've never tried media tier, always try that first.
+                return .mediaTierFullsize
+            } else
+            if transitTierInfo.lastDownloadAttemptTimestamp == nil {
+                // If we tried media tier and failed, try transit tier
+                // next time.
+                return .transitTier
+            } else {
+                // If both have failed fall back to default.
+                return isEligibleToDownloadFromMediaTier
+                    ? .mediaTierFullsize
+                    : .transitTier
+            }
+        }()
 
-            let downloadability = downloadabilityChecker.downloadability(
-                of: referencedAttachment.reference,
-                priority: priority,
+        let downloadability = downloadabilityChecker.downloadability(
+            of: referencedAttachment.reference,
+            priority: priority,
+            source: sourceToUse,
+            mimeType: referencedAttachment.attachment.mimeType,
+            tx: tx,
+        )
+        switch downloadability {
+        case .downloadable:
+            attachmentDownloadStore.enqueueDownloadOfAttachment(
+                withId: referencedAttachment.reference.attachmentRowId,
                 source: sourceToUse,
-                mimeType: referencedAttachment.attachment.mimeType,
+                priority: priority,
                 tx: tx,
             )
-            switch downloadability {
-            case .downloadable:
-                didEnqueueAnyDownloads = true
-                attachmentDownloadStore.enqueueDownloadOfAttachment(
-                    withId: referencedAttachment.reference.attachmentRowId,
-                    source: sourceToUse,
+            return sourceToUse
+        case .blockedByActiveCall:
+            throw .blockedByActiveCall
+        case .blockedByPendingMessageRequest:
+            throw .blockedByPendingMessageRequest
+        case .blockedByAutoDownloadSettings:
+            throw .blockedByAutoDownloadSettings
+        case .blockedByNetworkState:
+            throw .blockedByNetworkState
+        }
+    }
+
+    private func enqueueDownloadOfReferencedAttachments(
+        _ referencedAttachments: [ReferencedAttachment],
+        priority: AttachmentDownloadPriority,
+        tx: DBWriteTransaction,
+    ) {
+        var didEnqueueAnyDownloads = false
+        referencedAttachments.forEach { referencedAttachment in
+            do throws(AttachmentDownloads.Error) {
+                try enqueueDownloadOfReferencedAttachment(
+                    referencedAttachment: referencedAttachment,
                     priority: priority,
                     tx: tx,
                 )
-            case .blockedByActiveCall:
-                Logger.info("Skipping enqueue of download during active call")
-            case .blockedByPendingMessageRequest:
-                Logger.info("Skipping enqueue of download due to pending message request")
-            case .blockedByAutoDownloadSettings:
-                Logger.info("Skipping enqueue of download due to auto download settings")
-            case .blockedByNetworkState:
-                Logger.info("Skipping enqueue of download due to network state")
+                didEnqueueAnyDownloads = true
+            } catch {
+                switch error {
+                case .blockedByActiveCall:
+                    Logger.info("Skipping enqueue of download during active call")
+                case .blockedByPendingMessageRequest:
+                    Logger.info("Skipping enqueue of download due to pending message request")
+                case .blockedByAutoDownloadSettings:
+                    Logger.info("Skipping enqueue of download due to auto download settings")
+                case .blockedByNetworkState:
+                    Logger.info("Skipping enqueue of download due to network state")
+                case .expiredCredentials:
+                    Logger.info("Skipping enqueue of download due to unexpected error")
+                }
             }
         }
         if didEnqueueAnyDownloads {
@@ -361,10 +426,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
     }
 
-    public func enqueueDownloadOfAttachment(
+    public func enqueueCopyOfLocalAttachment(
         id: Attachment.IDType,
-        priority: AttachmentDownloadPriority,
-        source: QueuedAttachmentDownloadRecord.SourceType,
         tx: DBWriteTransaction,
     ) {
         if CurrentAppContext().isRunningTests {
@@ -374,8 +437,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         attachmentDownloadStore.enqueueDownloadOfAttachment(
             withId: id,
-            source: source,
-            priority: priority,
+            source: .transitTier,
+            priority: .localClone,
             tx: tx,
         )
         tx.addSyncCompletion { [weak self] in
@@ -394,6 +457,24 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             return
         }
 
+        await db.awaitableWrite { tx in
+            self.attachmentDownloadStore.enqueueDownloadOfAttachment(
+                withId: id,
+                source: source,
+                priority: priority,
+                tx: tx,
+            )
+        }
+
+        try await _waitForDownloadOfAttachment(id: id, source: source, progress: progress)
+    }
+
+    private func _waitForDownloadOfAttachment(
+        id: Attachment.IDType,
+        source: QueuedAttachmentDownloadRecord.SourceType,
+        progress: OWSProgressSink?,
+    ) async throws {
+
         let downloadKey = DownloadQueue.DownloadKey(id: id, source: source)
         await downloadQueue.clearOldDownloadsAndIncrementProgressID(key: downloadKey)
 
@@ -406,15 +487,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
 
         do {
-            await db.awaitableWrite { tx in
-                self.attachmentDownloadStore.enqueueDownloadOfAttachment(
-                    withId: id,
-                    source: source,
-                    priority: priority,
-                    tx: tx,
-                )
-            }
-
             self.beginDownloadingIfNecessary()
             try await downloadWaitingTask.value
         } catch {

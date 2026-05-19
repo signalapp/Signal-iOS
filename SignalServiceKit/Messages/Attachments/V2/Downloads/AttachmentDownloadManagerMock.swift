@@ -61,12 +61,26 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
         // Do nothing
     }
 
-    open func enqueueDownloadOfAttachment(
+    open func enqueueCopyOfLocalAttachment(
         id: Attachment.IDType,
-        priority: AttachmentDownloadPriority,
-        source: QueuedAttachmentDownloadRecord.SourceType,
         tx: DBWriteTransaction,
     ) {
+        // Do nothing
+    }
+
+    open func enqueueDownloadOfReferencedAttachment(
+        referencedAttachment: ReferencedAttachment,
+        priority: AttachmentDownloadPriority,
+        tx: DBWriteTransaction,
+    ) {
+        // Do nothing
+    }
+
+    public func downloadReferencedAttachment(
+        referencedAttachment: ReferencedAttachment,
+        priority: AttachmentDownloadPriority,
+        progress: (any OWSProgressSink)?,
+    ) async throws {
         // Do nothing
     }
 

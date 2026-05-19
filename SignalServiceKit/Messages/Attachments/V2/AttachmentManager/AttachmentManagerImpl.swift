@@ -251,10 +251,8 @@ public class AttachmentManagerImpl: AttachmentManager {
                 else {
                     throw OWSAssertionError("Missing attachment we just created")
                 }
-                attachmentDownloadManager.enqueueDownloadOfAttachment(
+                attachmentDownloadManager.enqueueCopyOfLocalAttachment(
                     id: newAttachmentReference.attachmentRowId,
-                    priority: .localClone,
-                    source: .transitTier,
                     tx: tx,
                 )
             }
@@ -1055,10 +1053,8 @@ public class AttachmentManagerImpl: AttachmentManager {
                 else {
                     throw OWSAssertionError("Missing attachment we just created")
                 }
-                attachmentDownloadManager.enqueueDownloadOfAttachment(
+                attachmentDownloadManager.enqueueCopyOfLocalAttachment(
                     id: newAttachmentReference.attachmentRowId,
-                    priority: .localClone,
-                    source: .transitTier,
                     tx: tx,
                 )
             }
