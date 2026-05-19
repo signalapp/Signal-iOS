@@ -343,8 +343,15 @@ extension BackupArchive {
 
         /// It's possible for us to create a thread-merge event without an ACI
         /// author; for example, if we have an old chat with an E164, then learn
-        /// that E164's PNI later. We don't need to back these up.
+        /// that E164's PNI later. We don't need to back these up (and the
+        /// LibSignal validator rejects them).
         case threadMergeWithoutAciAuthor
+
+        /// It's possible for us to create a thread-merge event in our own Note
+        /// to Self; for example, if we have an old chat with an E164, then we
+        /// claim that E164 later. We don't need to back these up (and the
+        /// LibSignal validator rejects them).
+        case threadMergeInNoteToSelf
     }
 
     enum ArchiveInteractionResult<Component> {
