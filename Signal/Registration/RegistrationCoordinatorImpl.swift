@@ -3544,13 +3544,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             let accountEntropyPool = getOrGenerateAccountEntropyPool()
 
             if
-                let backupStepGuarantee = await performSVRBackupStepsIfNeeded(
+                let nextStep = await performSVRBackupStepsIfNeeded(
                     resetPINReminderInterval: false,
                     accountEntropyPool: accountEntropyPool,
                     accountIdentity: accountIdentity,
                 )
             {
-                return backupStepGuarantee
+                return nextStep
             }
 
             return await exportAndWipeState(
@@ -4780,10 +4780,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func reglockToken(for e164: E164) -> String? {
         if
-
-            inMemoryState.wasReglockEnabledBeforeStarting
-            || persistedState.e164WithKnownReglockEnabled == e164
-            ,
+            inMemoryState.wasReglockEnabledBeforeStarting || persistedState.e164WithKnownReglockEnabled == e164,
             let reglockToken = inMemoryState.reglockToken
         {
             return reglockToken
