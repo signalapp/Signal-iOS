@@ -517,160 +517,141 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                         progress: nil,
                     )
                 }
-            } catch let error {
-                if Task.isCancelled {
-                    logger.info("Cancelled; stopping the queue")
-                    try? await loader.stop(reason: CancellationError())
-                    return .retryableError(CancellationError())
+            } catch let cancellationError as CancellationError {
+                logger.info("Cancelled; stopping the queue")
+                try? await loader.stop(reason: cancellationError)
+                return .retryableError(cancellationError)
+            } catch BackupArchive.Response.CopyToMediaTierError.sourceObjectNotFound,
+                BackupArchive.Response.CopyToMediaTierError.badArgument
+            {
+                // Any time we find this error, retry. It means the upload
+                // expired, and so the copy failed. This is always transient
+                // and can always be fixed by reuploading, don't even increment
+                // the retry count.
+                return .retryableError(OWSGenericError("Upload expired: should retry upload."))
+            } catch BackupArchive.Response.CopyToMediaTierError.forbidden {
+                // This only happens if we've lost write access to the media tier.
+                // As a final check, force refresh our crednetial and check if its
+                // paid. If its not (we just got a 403 so that's what we expect),
+                // all uploads will fail so dequeue them and quit.
+                let credential = try? await backupRequestManager.fetchBackupServiceAuth(
+                    for: backupKey,
+                    localAci: localAci,
+                    auth: .implicit(),
+                    forceRefreshUnlessCachedPaidCredential: true,
+                    logger: logger,
+                )
+                switch credential?.backupLevel {
+                case .free, nil:
+                    await backupMediaErrorNotificationPresenter.notifyIfNecessary()
+                    try? await loader.stop()
+                    return .retryableError(IsFreeTierError())
+                case .paid:
+                    return .retryableError(OWSGenericError("Refreshed credential is paid: should retry upload."))
+                }
+            } catch BackupArchive.Response.CopyToMediaTierError.outOfCapacity {
+                let didSetConsumeMediaTierCapacity = await db.awaitableWrite { tx in
+                    if !backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx) {
+                        backupSettingsStore.setHasConsumedMediaTierCapacity(true, tx: tx)
+                        return true
+                    } else {
+                        return false
+                    }
+                }
+                if didSetConsumeMediaTierCapacity {
+                    await MainActor.run { [notificationPresenter] in
+                        notificationPresenter.notifyUserOfMediaTierQuotaConsumed()
+                    }
+                }
+                let error = OutOfCapacityError()
+                try? await loader.stop(reason: error)
+                return .retryableError(error)
+            } catch SignalError.rateLimitedError(let retryAfter, _) {
+                return .retryableError(RateLimitedRetryError(retryAfter: retryAfter))
+            } catch let error where error.httpStatusCode == 429 {
+                if let retryAfter = error.httpResponseHeaders?.retryAfterTimeInterval {
+                    return .retryableError(RateLimitedRetryError(retryAfter: retryAfter))
                 }
 
-                switch error as? BackupArchive.Response.CopyToMediaTierError {
-                case .sourceObjectNotFound, .badArgument:
-                    // Any time we find this error, retry. It means the upload
-                    // expired, and so the copy failed. This is always transient
-                    // and can always be fixed by reuploading, don't even increment
-                    // the retry count.
+                // If for whatever reason we don't have a retry-after,
+                // treat this like a network error that retries with
+                // backoff.
+                return .retryableError(NetworkRetryError())
+            } catch let error where (error.isNetworkFailureOrTimeout || error.is5xxServiceResponse) {
+                switch await statusManager.currentStatus(for: mode) {
+                case .running:
+                    // If we _think_ we are connected and should be running,
+                    // use a more crude retry time mechanism to retry later.
+                    // Note that we update the individual row but really this
+                    // will end up holding up the entire queue because we don't
+                    // reorder when popping off the queue based on retry time,
+                    // so this row will remain first in line (unless something else
+                    // changes, in which case we retry and either succeed or fall back
+                    // into here) and block the rest of the queue from trying,
+                    // which is what we want because the error is a general network
+                    // issue.
+                    return .retryableError(NetworkRetryError())
+                case .noWifiReachability, .notRegisteredAndReady, .hasConsumedMediaTierCapacity,
+                     .lowBattery, .lowPowerMode, .appBackgrounded, .empty, .suspended:
+                    // These other states may be overriding reachability;
+                    // just allow the queue itself to retry and once the
+                    // other states are resolved reachability will kick in,
+                    // or won't.
+                    fallthrough
+                case .noReachability:
+                    // If reachability thinks we are not connected, queue status
+                    // will cover us. Don't touch the record itself; the queue will stop
+                    // running and start again once reconnected, and we want to try
+                    // the record again immediately then.
                     return .retryableError(error)
-                case .forbidden:
-                    // This only happens if we've lost write access to the media tier.
-                    // As a final check, force refresh our crednetial and check if its
-                    // paid. If its not (we just got a 403 so that's what we expect),
-                    // all uploads will fail so dequeue them and quit.
-                    let credential = try? await backupRequestManager.fetchBackupServiceAuth(
-                        for: backupKey,
-                        localAci: localAci,
-                        auth: .implicit(),
-                        forceRefreshUnlessCachedPaidCredential: true,
-                        logger: logger,
+                }
+            } catch Upload.Error.missingFile {
+                // The file is missing! We can never retry this upload;
+                // call it a "success" so we don't mess with progress
+                // state and so we wipe the upload task row, and move on.
+                logger.error("Missing attachment file; skipping and proceeding")
+                if record.record.isFullsize {
+                    await progress.didFinishUploadOfFullsizeAttachment(
+                        uploadRecord: record.record,
                     )
-                    switch credential?.backupLevel {
-                    case .free, nil:
-                        await backupMediaErrorNotificationPresenter.notifyIfNecessary()
-                        try? await loader.stop()
-                        return .retryableError(IsFreeTierError())
-                    case .paid:
-                        return .retryableError(OWSGenericError("Refreshed credential is paid: should retry upload."))
-                    }
-                case .outOfCapacity:
-                    let didSetConsumeMediaTierCapacity = await db.awaitableWrite { tx in
-                        if !backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx) {
-                            backupSettingsStore.setHasConsumedMediaTierCapacity(true, tx: tx)
-                            return true
-                        } else {
-                            return false
-                        }
-                    }
-                    if didSetConsumeMediaTierCapacity {
-                        await MainActor.run { [notificationPresenter] in
-                            notificationPresenter.notifyUserOfMediaTierQuotaConsumed()
-                        }
-                    }
-                    let error = OutOfCapacityError()
-                    try? await loader.stop(reason: error)
-                    return .retryableError(error)
-                default:
-                    // All other errors should be treated as per normal.
-                    if case SignalError.rateLimitedError(let retryAfter, _) = error {
+                }
+                return .success
+            } catch Upload.Error.uploadFailure(let recovery) {
+                switch recovery {
+                case .resume(let retryMode), .restart(let retryMode):
+                    switch retryMode {
+                    case .afterBackoff:
+                        return .retryableError(RateLimitedRetryError(retryAfter: nil))
+                    case .afterServerRequestedDelay(let retryAfter):
                         return .retryableError(RateLimitedRetryError(retryAfter: retryAfter))
-                    } else if error.httpStatusCode == 429 {
-                        if let retryAfter = error.httpResponseHeaders?.retryAfterTimeInterval {
-                            return .retryableError(RateLimitedRetryError(retryAfter: retryAfter))
-                        }
-
-                        // If for whatever reason we don't have a retry-after,
-                        // treat this like a network error that retries with
-                        // backoff.
-                        return .retryableError(NetworkRetryError())
-                    } else if
-                        error.isNetworkFailureOrTimeout
-                        // Retry 500s per-item with the same backoff as network errors
-                        || error.is5xxServiceResponse
-                        || (error as? Upload.Error) == .networkTimeout
-                        || (error as? Upload.Error) == .networkError
-                    {
-                        switch await statusManager.currentStatus(for: mode) {
-                        case .running:
-                            // If we _think_ we are connected and should be running,
-                            // use a more crude retry time mechanism to retry later.
-                            // Note that we update the individual row but really this
-                            // will end up holding up the entire queue because we don't
-                            // reorder when popping off the queue based on retry time,
-                            // so this row will remain first in line (unless something else
-                            // changes, in which case we retry and either succeed or fall back
-                            // into here) and block the rest of the queue from trying,
-                            // which is what we want because the error is a general network
-                            // issue.
-                            return .retryableError(NetworkRetryError())
-                        case .noWifiReachability, .notRegisteredAndReady, .hasConsumedMediaTierCapacity,
-                             .lowBattery, .lowPowerMode, .appBackgrounded, .empty, .suspended:
-                            // These other states may be overriding reachability;
-                            // just allow the queue itself to retry and once the
-                            // other states are resolved reachability will kick in,
-                            // or won't.
-                            fallthrough
-                        case .noReachability:
-                            // If reachability thinks we are not connected, queue status
-                            // will cover us. Don't touch the record itself; the queue will stop
-                            // running and start again once reconnected, and we want to try
-                            // the record again immediately then.
-                            return .retryableError(error)
-                        }
-                    } else if let uploadError = error as? Upload.Error {
-                        switch uploadError {
-                        case .missingFile:
-                            // The file is missing! We can never retry this upload;
-                            // call it a "success" so we don't mess with progress
-                            // state and so we wipe the upload task row, and move on.
-                            logger.error("Missing attachment file; skipping and proceeding")
-                            if record.record.isFullsize {
-                                await progress.didFinishUploadOfFullsizeAttachment(
-                                    uploadRecord: record.record,
-                                )
-                            }
-                            return .success
-                        case .uploadFailure(let recovery):
-                            switch recovery {
-                            case .resume(let retryMode), .restart(let retryMode):
-                                switch retryMode {
-                                case .afterBackoff:
-                                    return .retryableError(RateLimitedRetryError(retryAfter: nil))
-                                case .afterServerRequestedDelay(let retryAfter):
-                                    return .retryableError(RateLimitedRetryError(retryAfter: retryAfter))
-                                case .immediately:
-                                    return .retryableError(RateLimitedRetryError(retryAfter: 0))
-                                }
-                            case .noMoreRetries:
-                                logger.error("No more upload retries; stopping the queue")
-                                await backupMediaErrorNotificationPresenter.notifyIfNecessary()
-                                try? await loader.stop()
-                                return .retryableError(error)
-                            }
-                        default:
-                            // For other errors stop the queue to prevent thundering herd;
-                            // when it starts up again (e.g. on app launch) we will retry.
-                            logger.error("Unknown error occurred; stopping the queue. \(error)")
-                            await backupMediaErrorNotificationPresenter.notifyIfNecessary()
-                            try? await loader.stop()
-                            return .retryableError(error)
-                        }
-                    } else if record.record.isFullsize {
-                        // For other errors stop the queue to prevent thundering herd;
-                        // when it starts up again (e.g. on app launch) we will retry.
-                        logger.error("Unknown error occurred; stopping the queue")
-                        await backupMediaErrorNotificationPresenter.notifyIfNecessary()
-                        try? await loader.stop()
-                        return .retryableError(error)
-                    } else {
-                        // Ignore the error if we e.g. fail to generate a thumbnail;
-                        // just upload the fullsize.
-                        logger.error("Failed to upload thumbnail; proceeding")
-                        if record.record.isFullsize {
-                            await progress.didFinishUploadOfFullsizeAttachment(
-                                uploadRecord: record.record,
-                            )
-                        }
-                        return .success
+                    case .immediately:
+                        return .retryableError(RateLimitedRetryError(retryAfter: 0))
                     }
+                case .noMoreRetries:
+                    let message = "No more upload retries; stopping the queue"
+                    logger.warn(message)
+                    await backupMediaErrorNotificationPresenter.notifyIfNecessary()
+                    try? await loader.stop()
+                    return .retryableError(OWSGenericError(message))
+                }
+            } catch let error {
+                if record.record.isFullsize {
+                    // For other errors stop the queue to prevent thundering herd;
+                    // when it starts up again (e.g. on app launch) we will retry.
+                    logger.error("Unknown error occurred; stopping the queue")
+                    await backupMediaErrorNotificationPresenter.notifyIfNecessary()
+                    try? await loader.stop()
+                    return .retryableError(error)
+                } else {
+                    // Ignore the error if we e.g. fail to generate a thumbnail;
+                    // just upload the fullsize.
+                    logger.error("Failed to upload thumbnail; proceeding")
+                    if record.record.isFullsize {
+                        await progress.didFinishUploadOfFullsizeAttachment(
+                            uploadRecord: record.record,
+                        )
+                    }
+                    return .success
                 }
             }
 
