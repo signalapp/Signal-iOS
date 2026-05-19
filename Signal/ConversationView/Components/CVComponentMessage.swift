@@ -800,7 +800,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 reactionsFrame.y = contentFrame.maxY - reactionsVOverlap
                 let leftAlignX = contentFrame.minX + reactionsHInset
                 let rightAlignX = contentFrame.maxX - (reactionsSize.width + reactionsHInset)
-                if isIncoming ^ CurrentAppContext().isRTL {
+                if isIncoming != CurrentAppContext().isRTL {
                     reactionsFrame.x = max(leftAlignX, rightAlignX)
                 } else {
                     reactionsFrame.x = min(leftAlignX, rightAlignX)

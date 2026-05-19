@@ -136,11 +136,3 @@ public extension UInt64 {
         NSNumber(value: self)
     }
 }
-
-// MARK: -
-
-public extension Bool {
-    static func ^(left: Bool, right: Bool) -> Bool {
-        return left != right
-    }
-}
