@@ -12,7 +12,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let appContext: SVR2.Shims.AppContext
     private let appReadiness: AppReadiness
     private let appVersion: AppVersion
-    private let clientWrapper: SVR2ClientWrapper
+    private let pinHasher: any SVR2PinHasher
     private let connectionFactory: SgxWebsocketConnectionFactory
     private let credentialStorage: SVRAuthCredentialStorage
     private let db: any DB
@@ -23,46 +23,15 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let tsConstants: TSConstantsProtocol
     private let twoFAManager: SVR2.Shims.OWS2FAManager
 
-    public convenience init(
-        appContext: SVR2.Shims.AppContext,
-        appReadiness: AppReadiness,
-        appVersion: AppVersion,
-        connectionFactory: SgxWebsocketConnectionFactory,
-        credentialStorage: SVRAuthCredentialStorage,
-        db: any DB,
-        accountKeyStore: AccountKeyStore,
-        storageServiceManager: StorageServiceManager,
-        svrLocalStorage: SVRLocalStorageInternal,
-        tsAccountManager: TSAccountManager,
-        tsConstants: TSConstantsProtocol,
-        twoFAManager: SVR2.Shims.OWS2FAManager,
-    ) {
-        self.init(
-            appContext: appContext,
-            appReadiness: appReadiness,
-            appVersion: appVersion,
-            clientWrapper: SVR2ClientWrapperImpl(),
-            connectionFactory: connectionFactory,
-            credentialStorage: credentialStorage,
-            db: db,
-            accountKeyStore: accountKeyStore,
-            storageServiceManager: storageServiceManager,
-            svrLocalStorage: svrLocalStorage,
-            tsAccountManager: tsAccountManager,
-            tsConstants: tsConstants,
-            twoFAManager: twoFAManager,
-        )
-    }
-
     init(
         appContext: SVR2.Shims.AppContext,
         appReadiness: AppReadiness,
         appVersion: AppVersion,
-        clientWrapper: SVR2ClientWrapper,
         connectionFactory: SgxWebsocketConnectionFactory,
         credentialStorage: SVRAuthCredentialStorage,
         db: any DB,
         accountKeyStore: AccountKeyStore,
+        pinHasher: any SVR2PinHasher,
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorageInternal,
         tsAccountManager: TSAccountManager,
@@ -72,12 +41,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.appContext = appContext
         self.appReadiness = appReadiness
         self.appVersion = appVersion
-        self.clientWrapper = clientWrapper
         self.connectionFactory = connectionFactory
         self.credentialStorage = credentialStorage
         self.db = db
         self.accountKeyStore = accountKeyStore
         self.localStorage = svrLocalStorage
+        self.pinHasher = pinHasher
         self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
         self.tsConstants = tsConstants
@@ -471,10 +440,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         let pinHash: SVR2PinHash
         let encryptedMasterKey: Data
         do {
-            pinHash = try connection.hashPin(
-                pin: pin,
-                wrapper: clientWrapper,
-            )
+            pinHash = try hashPin(pin, forConnection: connection.connection)
             encryptedMasterKey = try pinHash.encryptMasterKey(masterKey)
         } catch {
             return .localEncryptionError
@@ -723,7 +689,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     ) async -> RestoreResult {
         let pinHash: SVR2PinHash
         do {
-            pinHash = try connection.hashPin(pin: pin, wrapper: clientWrapper)
+            pinHash = try hashPin(pin, forConnection: connection.connection)
         } catch {
             return .decryptionError
         }
@@ -1024,7 +990,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     ///   we keep track of how many requests are going out, decrement when they finish,
     ///   and close the connection when there are none left.
     private class WebsocketConnection {
-        private let connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>
+        let connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>
         let mrEnclave: MrEnclave
 
         init(connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>) {
@@ -1050,18 +1016,17 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         func disconnect(isNormalClosure: Bool) {
             connection.disconnect(code: isNormalClosure ? .normalClosure : nil)
         }
+    }
 
-        func hashPin(
-            pin: String,
-            wrapper: SVR2ClientWrapper,
-        ) throws -> SVR2PinHash {
-            let utf8NormalizedPin = Data(SVRUtil.normalizePin(pin).utf8)
-            return try wrapper.hashPin(
-                connection: connection,
-                utf8NormalizedPin: utf8NormalizedPin,
-                username: connection.auth.username,
-            )
-        }
+    func hashPin(
+        _ pin: String,
+        forConnection connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
+    ) throws -> SVR2PinHash {
+        return try pinHasher.hashPin(
+            normalizedPin: SVRUtil.normalizePin(pin),
+            username: connection.auth.username,
+            mrEnclave: connection.mrEnclave,
+        )
     }
 
     private struct CachedWebsocketConnection {

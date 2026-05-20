@@ -27,8 +27,6 @@ struct SVR2ConcurrencyTests {
         mockConnection.mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
         mockConnectionFactory = MockSgxWebsocketConnectionFactory()
 
-        let mockClientWrapper = MockSVR2ClientWrapper()
-
         let accountKeyStore = AccountKeyStore(
             backupSettingsStore: BackupSettingsStore(),
         )
@@ -38,11 +36,11 @@ struct SVR2ConcurrencyTests {
             appContext: SVR2.Mocks.AppContext(),
             appReadiness: AppReadinessMock(),
             appVersion: MockAppVerion(),
-            clientWrapper: mockClientWrapper,
             connectionFactory: mockConnectionFactory,
             credentialStorage: credentialStorage,
             db: db,
             accountKeyStore: accountKeyStore,
+            pinHasher: MockPinHasher(),
             storageServiceManager: FakeStorageServiceManager(),
             svrLocalStorage: localStorage,
             tsAccountManager: MockTSAccountManager(),

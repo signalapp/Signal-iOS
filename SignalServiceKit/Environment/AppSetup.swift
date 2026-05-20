@@ -446,6 +446,7 @@ extension AppSetup.GlobalsContinuation {
             credentialStorage: svrCredentialStorage,
             db: db,
             accountKeyStore: accountKeyStore,
+            pinHasher: LibSignalPinHasher(),
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
             tsAccountManager: tsAccountManager,

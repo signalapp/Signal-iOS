@@ -45,11 +45,11 @@ class SecureValueRecovery2Tests: XCTestCase {
             appContext: SVR2.Mocks.AppContext(),
             appReadiness: AppReadinessMock(),
             appVersion: MockAppVerion(),
-            clientWrapper: MockSVR2ClientWrapper(),
             connectionFactory: mockConnectionFactory,
             credentialStorage: credentialStorage,
             db: db,
             accountKeyStore: accountKeyStore,
+            pinHasher: MockPinHasher(),
             storageServiceManager: FakeStorageServiceManager(),
             svrLocalStorage: localStorage,
             tsAccountManager: mockTSAccountManager,
@@ -106,9 +106,8 @@ class SecureValueRecovery2Tests: XCTestCase {
             case 0:
                 // First it should issue a backup to the new enclave.
                 XCTAssert(request.hasBackup)
-                // Test mock encruption just passes along the unmodified master key and pin.
-                XCTAssertEqual(request.backup.data, masterKey.rawData)
-                XCTAssertEqual(request.backup.pin, pin.data(using: .utf8))
+                XCTAssertEqual(request.backup.data.count, 48)
+                XCTAssertEqual(request.backup.pin.count, 32)
 
                 var backupResponse = SVR2Proto_BackupResponse()
                 backupResponse.status = .ok
@@ -116,8 +115,7 @@ class SecureValueRecovery2Tests: XCTestCase {
             case 1:
                 // Then an expose
                 XCTAssert(request.hasExpose)
-                // Test mock encruption just passes along the unmodified master key.
-                XCTAssertEqual(request.expose.data, masterKey.rawData)
+                XCTAssertEqual(request.expose.data.count, 48)
 
                 var exposeResponse = SVR2Proto_ExposeResponse()
                 exposeResponse.status = .ok
@@ -211,9 +209,8 @@ class SecureValueRecovery2Tests: XCTestCase {
             case 0:
                 // First it should issue a backup to the new enclave.
                 XCTAssert(request.hasBackup)
-                // Test mock encruption just passes along the unmodified master key and pin.
-                XCTAssertEqual(request.backup.data, masterKey.rawData)
-                XCTAssertEqual(request.backup.pin, pin.data(using: .utf8))
+                XCTAssertEqual(request.backup.data.count, 48)
+                XCTAssertEqual(request.backup.pin.count, 32)
 
                 var backupResponse = SVR2Proto_BackupResponse()
                 backupResponse.status = .ok
@@ -221,8 +218,7 @@ class SecureValueRecovery2Tests: XCTestCase {
             case 1:
                 // Then an expose
                 XCTAssert(request.hasExpose)
-                // Test mock encruption just passes along the unmodified master key.
-                XCTAssertEqual(request.expose.data, masterKey.rawData)
+                XCTAssertEqual(request.expose.data.count, 48)
 
                 var exposeResponse = SVR2Proto_ExposeResponse()
                 exposeResponse.status = .ok

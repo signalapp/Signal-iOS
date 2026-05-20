@@ -783,6 +783,7 @@
 		509DC8DA2BCED88600375E86 /* RemoteMegaphoneFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */; };
 		50A156C72FA11AA8008FE086 /* Fingerprint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A156C62FA11AA8008FE086 /* Fingerprint.swift */; };
 		50A1CE3A2A00931900730C40 /* DebugLogger+MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */; };
+		50A26F1A2FB6991F000A2D8B /* SVR2PinHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A26F192FB6991F000A2D8B /* SVR2PinHash.swift */; };
 		50A40ED32B88005A0060C5A5 /* DisplayName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A40ED22B88005A0060C5A5 /* DisplayName.swift */; };
 		50A4AC622C111FAE00D89C8E /* CallLinkAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A4AC612C111FAE00D89C8E /* CallLinkAuthCredential.swift */; };
 		50A5AA992A7449A100CF2ECC /* DecryptedIncomingEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A5AA982A7449A100CF2ECC /* DecryptedIncomingEnvelope.swift */; };
@@ -5054,6 +5055,7 @@
 		50A156C62FA11AA8008FE086 /* Fingerprint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fingerprint.swift; sourceTree = "<group>"; };
 		50A1CE372A00894C00730C40 /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
 		50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebugLogger+MainApp.swift"; sourceTree = "<group>"; };
+		50A26F192FB6991F000A2D8B /* SVR2PinHash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2PinHash.swift; sourceTree = "<group>"; };
 		50A40ED22B88005A0060C5A5 /* DisplayName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayName.swift; sourceTree = "<group>"; };
 		50A4AC612C111FAE00D89C8E /* CallLinkAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkAuthCredential.swift; sourceTree = "<group>"; };
 		50A5AA982A7449A100CF2ECC /* DecryptedIncomingEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptedIncomingEnvelope.swift; sourceTree = "<group>"; };
@@ -10697,6 +10699,7 @@
 			children = (
 				662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */,
 				66C2B13C2A0E9116008DDE72 /* SVR2AuthCredential.swift */,
+				50A26F192FB6991F000A2D8B /* SVR2PinHash.swift */,
 				669947B92A20129000E4DC0C /* SVR2Shims.swift */,
 				66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */,
 			);
@@ -19903,6 +19906,7 @@
 				D945319E2CE53CEB004DAB30 /* SubscriptionRedemptionNecessityChecker.swift in Sources */,
 				662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */,
 				66C2B13D2A0E9116008DDE72 /* SVR2AuthCredential.swift in Sources */,
+				50A26F1A2FB6991F000A2D8B /* SVR2PinHash.swift in Sources */,
 				669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */,
 				66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */,
 				66C2B1382A0DB6A9008DDE72 /* SVRAuthCredential.swift in Sources */,
