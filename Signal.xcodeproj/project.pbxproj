@@ -926,8 +926,6 @@
 		6612780D2996BD0300A1D5A1 /* RegistrationCoordinatorTestShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278092996BAB400A1D5A1 /* RegistrationCoordinatorTestShims.swift */; };
 		66138FB6298326C7002E0CFE /* SecureValueRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FB5298326C7002E0CFE /* SecureValueRecovery.swift */; };
 		661396AB28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */; };
-		661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */; };
-		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
 		661429192D35B9F10043AA22 /* BackupArchive+Timestamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661429182D35B9EA0043AA22 /* BackupArchive+Timestamp.swift */; };
 		66144B2F2BF7FB5200E2C9CD /* WallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B2E2BF7FB5200E2C9CD /* WallpaperImageStore.swift */; };
 		66144B312BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B302BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift */; };
@@ -5194,8 +5192,6 @@
 		661278092996BAB400A1D5A1 /* RegistrationCoordinatorTestShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorTestShims.swift; sourceTree = "<group>"; };
 		66138FB5298326C7002E0CFE /* SecureValueRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery.swift; sourceTree = "<group>"; };
 		661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenStoryHeaderCell.swift; sourceTree = "<group>"; };
-		661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromise.swift; sourceTree = "<group>"; };
-		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
 		661429182D35B9EA0043AA22 /* BackupArchive+Timestamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupArchive+Timestamp.swift"; sourceTree = "<group>"; };
 		66144B2E2BF7FB5200E2C9CD /* WallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperImageStore.swift; sourceTree = "<group>"; };
 		66144B302BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperImageStoreImpl.swift; sourceTree = "<group>"; };
@@ -10461,7 +10457,6 @@
 			isa = PBXGroup;
 			children = (
 				668A01172C2B6088007B8808 /* Catchable.swift */,
-				661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */,
 				668A01182C2B6088007B8808 /* DispatchQueue+Promise.swift */,
 				668A01192C2B6088007B8808 /* firstly.swift */,
 				668A011A2C2B6088007B8808 /* Future.swift */,
@@ -14323,7 +14318,6 @@
 				F908C67A29F08E4E00C3EFC4 /* AppExpiryTest.swift */,
 				66B1E26F2CB48C48005F43AC /* Array+SSKTest.swift */,
 				F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */,
-				661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */,
 				F962B38B293F9F9F00765BD8 /* CRC32Test.swift */,
 				509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */,
 				724E68632C91FA73002199F3 /* DataHexadecimalTest.swift */,
@@ -19142,7 +19136,6 @@
 				F9C5CC0C289453B300548EEE /* CDNDownloadOperation.swift in Sources */,
 				727328072CA6CF570080E2C7 /* Certificates.swift in Sources */,
 				508F05A52FA28308004B96E5 /* CGDataProvider+SSK.swift in Sources */,
-				661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */,
 				50E5E4B32993352C00E15A1C /* ChangePhoneNumberPniManager.swift in Sources */,
 				6603AC2D29C220F30079BC82 /* ChangePhoneNumberPniManagerMock.swift in Sources */,
 				66F6D6A32C7D0CCA00EFAF75 /* ChatColors.swift in Sources */,
@@ -20130,7 +20123,6 @@
 				500AF3AD2C5834A400CB9F4F /* CancellableContinuationTest.swift in Sources */,
 				508622AD2D026F5200931BF9 /* CanonicalPhoneNumberTest.swift in Sources */,
 				725464F62B9FAC7600EABFD2 /* CGPointExtensionsTest.swift in Sources */,
-				661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */,
 				D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */,
 				F9C9610B29A91026001E4A09 /* ChatServiceAuthTest.swift in Sources */,
 				507529172F6494C2000F72F0 /* CipherContextTest.swift in Sources */,
