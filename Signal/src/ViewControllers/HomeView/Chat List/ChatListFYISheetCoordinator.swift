@@ -44,6 +44,8 @@ class ChatListFYISheetCoordinator {
             let timestampMs: UInt64
         }
 
+        struct BackupArchiveError {}
+
         case badgeThanks(BadgeThanks)
         case badgeIssue(BadgeIssue)
         case badgeExpiration(BadgeExpiration)
@@ -51,8 +53,10 @@ class ChatListFYISheetCoordinator {
         case backupSubscriptionFailedToRenew(BackupSubscriptionFailedToRenew)
         case keyTransparencySelfCheckFailed(KeyTransparencySelfCheckFailed)
         case smsVerificationCodeSent(SMSVerificationCodeSent)
+        case backupArchiveError(BackupArchiveError)
     }
 
+    private let backupArchiveErrorStore: BackupArchiveErrorStore
     private let backupExportJobRunner: BackupExportJobRunner
     private let backupSubscriptionIssueStore: BackupSubscriptionIssueStore
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
@@ -63,6 +67,7 @@ class ChatListFYISheetCoordinator {
     private let profileManager: ProfileManager
 
     init(
+        backupArchiveErrorStore: BackupArchiveErrorStore,
         backupExportJobRunner: BackupExportJobRunner,
         backupSubscriptionIssueStore: BackupSubscriptionIssueStore,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
@@ -72,6 +77,7 @@ class ChatListFYISheetCoordinator {
         networkManager: NetworkManager,
         profileManager: ProfileManager,
     ) {
+        self.backupArchiveErrorStore = backupArchiveErrorStore
         self.backupExportJobRunner = backupExportJobRunner
         self.backupSubscriptionIssueStore = backupSubscriptionIssueStore
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
@@ -128,6 +134,8 @@ class ChatListFYISheetCoordinator {
             return .backupSubscriptionFailedToRenew(FYISheet.BackupSubscriptionFailedToRenew())
         } else if keyTransparencyStore.shouldWarnSelfCheckFailed(tx: tx) {
             return .keyTransparencySelfCheckFailed(FYISheet.KeyTransparencySelfCheckFailed())
+        } else if backupArchiveErrorStore.hasError(tx: tx) {
+            return .backupArchiveError(FYISheet.BackupArchiveError())
         } else {
             return nil
         }
@@ -257,6 +265,8 @@ class ChatListFYISheetCoordinator {
             await _present(backupSubscriptionFailedToRenew: backupSubscriptionFailedToRenew, from: chatListViewController)
         case .keyTransparencySelfCheckFailed(let keyTransparencySelfCheckFailed):
             await _present(keyTransparencySelfCheckFailed: keyTransparencySelfCheckFailed, from: chatListViewController)
+        case .backupArchiveError(let backupArchiveError):
+            await _present(backupArchiveError: backupArchiveError, from: chatListViewController)
         }
     }
 
@@ -465,6 +475,22 @@ class ChatListFYISheetCoordinator {
         chatListViewController.present(sheet, animated: true) { [self] in
             db.write { tx in
                 backupSubscriptionIssueStore.setDidWarnIAPSubscriptionFailedToRenew(tx: tx)
+            }
+        }
+    }
+
+    private func _present(
+        backupArchiveError: FYISheet.BackupArchiveError,
+        from chatListViewController: ChatListViewController,
+    ) async {
+        let logger = PrefixedLogger(prefix: "[Backups]")
+        logger.info("Showing BackupArchiveError FYI sheet.")
+
+        let sheet = BackupArchiveErrorHeroSheet(fromViewController: chatListViewController)
+
+        chatListViewController.present(sheet, animated: true) { [self] in
+            db.write { tx in
+                backupArchiveErrorStore.setHasError(false, tx: tx)
             }
         }
     }
@@ -685,6 +711,30 @@ private final class KeyTransparencySelfCheckFailedHeroSheet: HeroSheetViewContro
                     "KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE",
                     comment: "Title for the secondary button in a sheet shown when a Key Transparency self-check fails.",
                 ),
+                style: .secondary,
+            ),
+        )
+    }
+}
+
+// MARK: -
+
+private final class BackupArchiveErrorHeroSheet: HeroSheetViewController {
+    init(fromViewController: UIViewController) {
+        super.init(
+            hero: .image(.errorCircle, tintColor: .Signal.label),
+            title: "Backup Archive Error! (Internal-only)",
+            body: "Backup import or export hit errors. Please submit a debug log so the iOS team can investigate.",
+            primaryButton: HeroSheetViewController.Button(
+                title: "Submit debug log",
+                action: { sheet in
+                    sheet.dismiss(animated: true) {
+                        DebugLogs.submitLogs(supportTag: "BackupArchive", dumper: .fromGlobals())
+                    }
+                },
+            ),
+            secondaryButton: .dismissing(
+                title: CommonStrings.notNowButton,
                 style: .secondary,
             ),
         )

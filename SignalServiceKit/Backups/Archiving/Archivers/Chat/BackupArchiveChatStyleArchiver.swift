@@ -83,12 +83,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
 
         if !partialErrors.isEmpty {
             // Just log these errors, but count as success and proceed.
-            BackupArchive
-                .collapse(
-                    partialErrors
-                        .map { BackupArchive.LoggableErrorAndProto(error: $0, wasFrameDropped: false) },
-                )
-                .forEach { $0.log() }
+            BackupArchive.collapse(partialErrors).forEach { $0.log() }
         }
 
         return .success(protos)

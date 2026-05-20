@@ -409,14 +409,7 @@ private extension InternalSettingsViewController {
         let accountKeyStore = DependenciesBridge.shared.accountKeyStore
         let backupArchiveManager = DependenciesBridge.shared.backupArchiveManager
         let db = DependenciesBridge.shared.db
-        let errorPresenter = DependenciesBridge.shared.backupArchiveErrorPresenter
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-
-        func presentBackupErrorsAndToast(_ message: String) {
-            errorPresenter.presentOverTopmostViewController { [self] in
-                presentToast(text: message)
-            }
-        }
 
         let backupKey: MessageBackupKey
         let exportMetadata: Upload.EncryptedBackupUploadMetadata
@@ -450,7 +443,7 @@ private extension InternalSettingsViewController {
         } catch {
             let message = "Failed to export Backup proto! \(error)"
             Logger.error(message)
-            presentBackupErrorsAndToast(message)
+            presentToast(text: message)
             return
         }
 
@@ -462,13 +455,13 @@ private extension InternalSettingsViewController {
             applicationActivities: nil,
         )
         activityVC.popoverPresentationController?.sourceView = view
-        activityVC.completionWithItemsHandler = { _, _, _, _ in
+        activityVC.completionWithItemsHandler = { [self] _, _, _, _ in
             UIPasteboard.general.setItems(
                 [[UIPasteboard.typeAutomatic: keyString]],
                 options: [.expirationDate: Date().addingTimeInterval(120)],
             )
 
-            presentBackupErrorsAndToast("Success! Encryption key copied.")
+            presentToast(text: "Success! Encryption key copied.")
         }
 
         present(activityVC, animated: true)

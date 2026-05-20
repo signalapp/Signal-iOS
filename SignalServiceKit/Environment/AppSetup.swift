@@ -172,7 +172,6 @@ extension AppSetup.GlobalsContinuation {
     public func initGlobals(
         appContext: AppContext,
         appReadiness: AppReadiness,
-        backupArchiveErrorPresenterFactory: BackupArchiveErrorPresenterFactory,
         deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?,
         deviceSleepManager: (any DeviceSleepManager)?,
         paymentsEvents: PaymentsEvents,
@@ -1398,10 +1397,6 @@ extension AppSetup.GlobalsContinuation {
         )
         let backupThreadStore = BackupArchiveThreadStore(threadStore: threadStore)
 
-        let backupArchiveErrorPresenter = backupArchiveErrorPresenterFactory.build(
-            db: db,
-            tsAccountManager: tsAccountManager,
-        )
         let backupArchiveAvatarFetcher = BackupArchiveAvatarFetcher(
             appReadiness: appReadiness,
             dateProvider: dateProvider,
@@ -1492,7 +1487,7 @@ extension AppSetup.GlobalsContinuation {
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
             avatarFetcher: backupArchiveAvatarFetcher,
-            backupArchiveErrorPresenter: backupArchiveErrorPresenter,
+            backupArchiveErrorStore: BackupArchiveErrorStore(),
             backupAttachmentCoordinator: backupAttachmentCoordinator,
             backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
             backupNonceMetadataStore: backupNonceMetadataStore,
@@ -1707,7 +1702,6 @@ extension AppSetup.GlobalsContinuation {
             authorMergeHelper: authorMergeHelper,
             avatarDefaultColorManager: avatarDefaultColorManager,
             backgroundMessageFetcherFactory: backgroundMessageFetcherFactory,
-            backupArchiveErrorPresenter: backupArchiveErrorPresenter,
             backupArchiveManager: backupArchiveManager,
             backupAttachmentDownloadProgress: backupAttachmentDownloadProgress,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,

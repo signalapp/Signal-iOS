@@ -231,8 +231,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
     }
 
-    private var hasPresentedBackupErrors = false
-
     override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -242,11 +240,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             hasEverPresentedExperienceUpgrade = true
         } else if !hasEverAppeared {
             presentGetStartedBannerIfNecessary()
-        }
-
-        if !hasPresentedBackupErrors {
-            hasPresentedBackupErrors = true
-            DependenciesBridge.shared.backupArchiveErrorPresenter.presentOverTopmostViewController(completion: {})
         }
 
         requestReviewIfAppropriate()
@@ -373,6 +366,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     @objc
     func showFYISheetIfNecessary() {
         let fyiSheetCoordinator = ChatListFYISheetCoordinator(
+            backupArchiveErrorStore: BackupArchiveErrorStore(),
             backupExportJobRunner: DependenciesBridge.shared.backupExportJobRunner,
             backupSubscriptionIssueStore: BackupSubscriptionIssueStore(),
             donationReceiptCredentialResultStore: DependenciesBridge.shared.donationReceiptCredentialResultStore,

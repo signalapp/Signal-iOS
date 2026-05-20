@@ -91,7 +91,6 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
             .initGlobals(
                 appContext: appContext,
                 appReadiness: appReadiness,
-                backupArchiveErrorPresenterFactory: NoOpBackupArchiveErrorPresenterFactory(),
                 deviceBatteryLevelManager: nil,
                 deviceSleepManager: nil,
                 paymentsEvents: PaymentsEventsAppExtension(),

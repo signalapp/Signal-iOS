@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SwiftProtobuf
-
 extension BackupArchive {
 
     public typealias RawError = Swift.Error
@@ -1150,12 +1148,13 @@ extension BackupArchive {
 
 extension BackupArchive {
 
-    public enum LogLevel: Int {
-        /// Log these, but don't pull up the internal
-        /// dialog if all errors are warnings.
+    public enum LogLevel: Int, Comparable {
         case warning
-        /// Log these and show the internal dialog if these happen.
         case error
+
+        public static func <(lhs: Self, rhs: Self) -> Bool {
+            return lhs.rawValue < rhs.rawValue
+        }
     }
 }
 
@@ -1174,46 +1173,10 @@ extension BackupArchive {
         var logLevel: BackupArchive.LogLevel { get }
     }
 
-    struct LoggableErrorAndProto {
-        let error: any BackupArchive.LoggableError
-        let wasFrameDropped: Bool
-        /// Nil for archiving, if we fail to even parse the proto on restore,
-        /// or if the feature flag is disabled such that this would be unused.
-        let protoJson: String?
-
-        init(
-            error: any BackupArchive.LoggableError,
-            wasFrameDropped: Bool,
-            protoFrame: SwiftProtobuf.Message? = nil,
-        ) {
-            self.error = error
-            self.wasFrameDropped = wasFrameDropped
-            // Don't serialize proto frames if we aren't displaying errors.
-            if let protoFrame, BuildFlags.Backups.archiveErrorDisplay {
-                do {
-                    self.protoJson = try String(
-                        data: JSONSerialization.data(
-                            withJSONObject: JSONSerialization.jsonObject(
-                                with: protoFrame.jsonUTF8Data(),
-                                options: .mutableContainers,
-                            ),
-                            options: .prettyPrinted,
-                        ),
-                        encoding: .utf8,
-                    )
-                } catch let jsonError {
-                    self.protoJson = "Unable to json encode proto: \(jsonError)"
-                }
-            } else {
-                self.protoJson = nil
-            }
-        }
-    }
-
-    static func collapse(_ errors: [LoggableErrorAndProto]) -> [CollapsedErrorLog] {
+    static func collapse(_ errors: [any LoggableError]) -> [CollapsedErrorLog] {
         var collapsedLogs = OrderedDictionary<String, CollapsedErrorLog>()
         for error in errors {
-            let collapseKey = error.error.collapseKey ?? UUID().uuidString
+            let collapseKey = error.collapseKey ?? UUID().uuidString
 
             if var existingLog = collapsedLogs[collapseKey] {
                 existingLog.collapse(error)
@@ -1231,35 +1194,26 @@ extension BackupArchive {
 
         public private(set) var typeLogString: String
         public private(set) var exampleCallsiteString: String
-        public private(set) var exampleProtoFrameJson: String?
         public private(set) var errorCount: UInt = 0
-        public private(set) var wasFrameDropped: Bool
         public private(set) var logLevel: BackupArchive.LogLevel
 
-        init(_ error: LoggableErrorAndProto) {
+        init(_ error: any LoggableError) {
             self.logger = PrefixedLogger(prefix: "[Backups]")
 
-            self.typeLogString = error.error.typeLogString
-            self.exampleCallsiteString = error.error.callsiteLogString
-            self.exampleProtoFrameJson = error.protoJson
-            self.wasFrameDropped = error.wasFrameDropped
-            self.logLevel = error.error.logLevel
+            self.typeLogString = error.typeLogString
+            self.exampleCallsiteString = error.callsiteLogString
+            self.logLevel = error.logLevel
             self.collapse(error)
         }
 
-        mutating func collapse(_ error: LoggableErrorAndProto) {
+        mutating func collapse(_ error: any LoggableError) {
             self.errorCount += 1
-            self.wasFrameDropped = wasFrameDropped || error.wasFrameDropped
-            self.logLevel = LogLevel(rawValue: max(self.logLevel.rawValue, error.error.logLevel.rawValue))!
-            if exampleProtoFrameJson == nil, let protoJson = error.protoJson {
-                self.exampleProtoFrameJson = protoJson
-            }
+            self.logLevel = LogLevel(rawValue: max(self.logLevel.rawValue, error.logLevel.rawValue))!
         }
 
         func log() {
             let logString =
                 typeLogString + " "
-                    + "Dropped frame(s)? \(wasFrameDropped). "
                     + "Repeated \(errorCount) times. "
                     + "example callsite: \(exampleCallsiteString)"
             switch logLevel {

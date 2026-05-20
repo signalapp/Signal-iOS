@@ -400,7 +400,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let dataMigrationContinuation = globalsContinuation.initGlobals(
             appContext: launchContext.appContext,
             appReadiness: appReadiness,
-            backupArchiveErrorPresenterFactory: BackupArchiveErrorPresenterFactoryInternal(),
             deviceBatteryLevelManager: DeviceBatteryLevelManagerImpl(),
             deviceSleepManager: launchContext.deviceSleepManager,
             paymentsEvents: PaymentsEventsMainApp(),

@@ -54,7 +54,6 @@ class LinkedDevicesViewModel: ObservableObject {
     private var deviceIdToIgnore: DeviceId?
     fileprivate var shouldShowFinishLinkingSheet = false
 
-    private let backupArchiveErrorPresenter: BackupArchiveErrorPresenter
     private let databaseChangeObserver: DatabaseChangeObserver
     private let db: any DB
     private let deviceService: OWSDeviceService
@@ -69,7 +68,6 @@ class LinkedDevicesViewModel: ObservableObject {
 #if DEBUG
         self.isPreview = isPreview
 #endif
-        backupArchiveErrorPresenter = DependenciesBridge.shared.backupArchiveErrorPresenter
         databaseChangeObserver = DependenciesBridge.shared.databaseChangeObserver
         db = DependenciesBridge.shared.db
         deviceService = DependenciesBridge.shared.deviceService
@@ -655,7 +653,6 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
 
         actionSheet.onDismiss = { [weak self] in
             self?.viewModel.expectMoreDevices()
-            DependenciesBridge.shared.backupArchiveErrorPresenter.presentOverTopmostViewController(completion: {})
         }
         presentActionSheet(actionSheet)
     }

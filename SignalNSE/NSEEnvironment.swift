@@ -63,7 +63,6 @@ class NSEEnvironment {
             .initGlobals(
                 appContext: appContext,
                 appReadiness: appReadiness,
-                backupArchiveErrorPresenterFactory: NoOpBackupArchiveErrorPresenterFactory(),
                 deviceBatteryLevelManager: nil,
                 deviceSleepManager: nil,
                 paymentsEvents: PaymentsEventsAppExtension(),

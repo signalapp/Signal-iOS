@@ -73,7 +73,6 @@ public class MockSSKEnvironment {
         ).migrateDatabaseSchema().initGlobals(
             appContext: testAppContext,
             appReadiness: appReadiness,
-            backupArchiveErrorPresenterFactory: NoOpBackupArchiveErrorPresenterFactory(),
             deviceBatteryLevelManager: nil,
             deviceSleepManager: nil,
             paymentsEvents: PaymentsEventsNoop(),

@@ -6,13 +6,6 @@
 import GRDB
 public import LibSignalClient
 
-public enum BackupValidationError: Error {
-    case unknownFields([String])
-    case validationFailed(message: String, unknownFields: [String])
-    case ioError(String)
-    case unknownError
-}
-
 public enum BackupImportError: Error {
     case unsupportedVersion
 }
@@ -31,7 +24,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
     private class NotImplementedError: Error {}
     private class BackupError: Error {}
-    private typealias LoggableErrorAndProto = BackupArchive.LoggableErrorAndProto
 
     private let accountDataArchiver: BackupArchiveAccountDataArchiver
     private let adHocCallArchiver: BackupArchiveAdHocCallArchiver
@@ -39,7 +31,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentUploadManager: AttachmentUploadManager
     private let avatarFetcher: BackupArchiveAvatarFetcher
-    private let backupArchiveErrorPresenter: BackupArchiveErrorPresenter
+    private let backupArchiveErrorStore: BackupArchiveErrorStore
     private let backupAttachmentCoordinator: BackupAttachmentCoordinator
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupNonceMetadataStore: BackupNonceMetadataStore
@@ -80,7 +72,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadManager: AttachmentUploadManager,
         avatarFetcher: BackupArchiveAvatarFetcher,
-        backupArchiveErrorPresenter: BackupArchiveErrorPresenter,
+        backupArchiveErrorStore: BackupArchiveErrorStore,
         backupAttachmentCoordinator: BackupAttachmentCoordinator,
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupNonceMetadataStore: BackupNonceMetadataStore,
@@ -117,7 +109,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentUploadManager = attachmentUploadManager
         self.avatarFetcher = avatarFetcher
-        self.backupArchiveErrorPresenter = backupArchiveErrorPresenter
+        self.backupArchiveErrorStore = backupArchiveErrorStore
         self.backupAttachmentCoordinator = backupAttachmentCoordinator
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupNonceMetadataStore = backupNonceMetadataStore
@@ -469,7 +461,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             throw OWSAssertionError("MRBK unset as backup being created!")
         }
 
-        var errors = [LoggableErrorAndProto]()
+        var errors = [any BackupArchive.LoggableError]()
         let result = Result<Void, Error>(catching: {
             logger.info("Exporting for \(purposeString) with version \(backupVersion), timestamp \(startDate.ows_millisecondsSince1970)")
 
@@ -505,7 +497,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 case .success:
                     break
                 case .failure(let error):
-                    errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                    errors.append(error)
                     throw OWSAssertionError("Failed to archive account data")
                 }
             }
@@ -525,7 +517,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             case .success(let success):
                 localRecipientId = success
             case .failure(let error):
-                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                errors.append(error)
                 throw OWSAssertionError("Failed to archive local recipient!")
             }
 
@@ -559,7 +551,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 case .success:
                     break
                 case .failure(let error):
-                    errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                    errors.append(error)
                     throw OWSAssertionError("Failed to archive release notes channel!")
                 }
             }
@@ -572,9 +564,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             case .success:
                 break
             case .partialSuccess(let partialFailures):
-                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+                errors.append(contentsOf: partialFailures)
             case .completeFailure(let error):
-                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                errors.append(error)
                 throw BackupError()
             }
 
@@ -585,9 +577,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             case .success:
                 break
             case .partialSuccess(let partialFailures):
-                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+                errors.append(contentsOf: partialFailures)
             case .completeFailure(let error):
-                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                errors.append(error)
                 throw BackupError()
             }
 
@@ -598,9 +590,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             case .success:
                 break
             case .partialSuccess(let partialFailures):
-                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+                errors.append(contentsOf: partialFailures)
             case .completeFailure(let error):
-                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                errors.append(error)
                 throw BackupError()
             }
 
@@ -611,9 +603,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             case .success:
                 break
             case .partialSuccess(let partialFailures):
-                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+                errors.append(contentsOf: partialFailures)
             case .completeFailure(let error):
-                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                errors.append(error)
                 throw BackupError()
             }
 
@@ -637,9 +629,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             case .success:
                 break
             case .partialSuccess(let partialFailures):
-                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+                errors.append(contentsOf: partialFailures)
             case .completeFailure(let error):
-                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                errors.append(error)
                 throw BackupError()
             }
 
@@ -651,9 +643,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             case .success:
                 break
             case .partialSuccess(let partialFailures):
-                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+                errors.append(contentsOf: partialFailures)
             case .completeFailure(let error):
-                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                errors.append(error)
                 throw BackupError()
             }
 
@@ -675,9 +667,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             case .success:
                 break
             case .partialSuccess(let partialFailures):
-                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+                errors.append(contentsOf: partialFailures)
             case .completeFailure(let error):
-                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                errors.append(error)
                 throw BackupError()
             }
 
@@ -689,9 +681,9 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             case .success:
                 break
             case .partialSuccess(let partialFailures):
-                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+                errors.append(contentsOf: partialFailures)
             case .completeFailure(let error):
-                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                errors.append(error)
                 throw BackupError()
             }
 
@@ -947,7 +939,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             )
         }
 
-        var frameErrors = [LoggableErrorAndProto]()
+        var frameErrors = [any BackupArchive.LoggableError]()
         let result = Result<BackupProto_BackupInfo, Error>(catching: {
             var hasMoreFrames = false
             var framesRestored: UInt64 = 0
@@ -964,11 +956,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 throw OWSAssertionError("invalid empty header frame")
             case .protoDeserializationError(let error):
                 // Fail if we fail to deserialize the header.
-                frameErrors.append(LoggableErrorAndProto(
-                    error: BackupArchive.RestoreFrameError.restoreFrameError(
-                        .invalidProtoData(.missingBackupInfoHeader),
-                    ),
-                    wasFrameDropped: true,
+                frameErrors.append(BackupArchive.RestoreFrameError.restoreFrameError(
+                    .invalidProtoData(.missingBackupInfoHeader),
                 ))
                 throw error
             }
@@ -976,12 +965,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             logger.info("Importing with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")
 
             guard backupInfo.version == Constants.supportedBackupVersion else {
-                frameErrors.append(LoggableErrorAndProto(
-                    error: BackupArchive.RestoreFrameError.restoreFrameError(
-                        .invalidProtoData(.unsupportedBackupInfoVersion),
-                    ),
-                    wasFrameDropped: true,
-                    protoFrame: backupInfo,
+                frameErrors.append(BackupArchive.RestoreFrameError.restoreFrameError(
+                    .invalidProtoData(.unsupportedBackupInfoVersion),
                 ))
                 throw BackupImportError.unsupportedVersion
             }
@@ -989,12 +974,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 let mrbk = try BackupKey(contents: backupInfo.mediaRootBackupKey)
                 localStorage.setMediaRootBackupKey(MediaRootBackupKey(backupKey: mrbk), tx: tx)
             } catch {
-                frameErrors.append(LoggableErrorAndProto(
-                    error: BackupArchive.RestoreFrameError.restoreFrameError(
-                        .invalidProtoData(.invalidMediaRootBackupKey),
-                    ),
-                    wasFrameDropped: true,
-                    protoFrame: backupInfo,
+                frameErrors.append(BackupArchive.RestoreFrameError.restoreFrameError(
+                    .invalidProtoData(.invalidMediaRootBackupKey),
                 ))
                 throw error
             }
@@ -1113,11 +1094,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                         let frameItem = frame.item
                     else {
                         if hasMoreFrames {
-                            frameErrors.append(LoggableErrorAndProto(
-                                error: BackupArchive.UnrecognizedEnumError(
-                                    enumType: BackupProto_Frame.OneOf_Item.self,
-                                ),
-                                wasFrameDropped: true,
+                            frameErrors.append(BackupArchive.UnrecognizedEnumError(
+                                enumType: BackupProto_Frame.OneOf_Item.self,
                             ))
                         }
                         return
@@ -1178,12 +1156,12 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                             case .success:
                                 return
                             case .unrecognizedEnum(let error):
-                                frameErrors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true, protoFrame: recipient))
+                                frameErrors.append(error)
                                 return
                             case .partialRestore(let errors):
-                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: recipient) })
+                                frameErrors.append(contentsOf: errors)
                             case .failure(let errors):
-                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: recipient) })
+                                frameErrors.append(contentsOf: errors)
                                 if BuildFlags.Backups.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
@@ -1197,12 +1175,12 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                             case .success:
                                 return
                             case .unrecognizedEnum(let error):
-                                frameErrors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true, protoFrame: chat))
+                                frameErrors.append(error)
                                 return
                             case .partialRestore(let errors):
-                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: chat) })
+                                frameErrors.append(contentsOf: errors)
                             case .failure(let errors):
-                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: chat) })
+                                frameErrors.append(contentsOf: errors)
                                 if BuildFlags.Backups.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
@@ -1216,12 +1194,12 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                             case .success:
                                 return
                             case .unrecognizedEnum(let error):
-                                frameErrors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true, protoFrame: chatItem))
+                                frameErrors.append(error)
                                 return
                             case .partialRestore(let errors):
-                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: chatItem) })
+                                frameErrors.append(contentsOf: errors)
                             case .failure(let errors):
-                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: chatItem) })
+                                frameErrors.append(contentsOf: errors)
                                 if BuildFlags.Backups.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
@@ -1237,12 +1215,12 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                             case .success:
                                 return
                             case .unrecognizedEnum(let error):
-                                frameErrors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true, protoFrame: backupProtoAccountData))
+                                frameErrors.append(error)
                                 return
                             case .partialRestore(let errors):
-                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: backupProtoAccountData) })
+                                frameErrors.append(contentsOf: errors)
                             case .failure(let errors):
-                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: backupProtoAccountData) })
+                                frameErrors.append(contentsOf: errors)
                                 // We always fail if we fail to import account data, even in prod.
                                 throw BackupError()
                             }
@@ -1255,12 +1233,12 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                             case .success:
                                 return
                             case .unrecognizedEnum(let error):
-                                frameErrors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true, protoFrame: backupProtoStickerPack))
+                                frameErrors.append(error)
                                 return
                             case .partialRestore(let errors):
-                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: backupProtoStickerPack) })
+                                frameErrors.append(contentsOf: errors)
                             case .failure(let errors):
-                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: backupProtoStickerPack) })
+                                frameErrors.append(contentsOf: errors)
                                 if BuildFlags.Backups.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
@@ -1274,12 +1252,12 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                             case .success:
                                 return
                             case .unrecognizedEnum(let error):
-                                frameErrors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true, protoFrame: backupProtoAdHocCall))
+                                frameErrors.append(error)
                                 return
                             case .partialRestore(let errors):
-                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: backupProtoAdHocCall) })
+                                frameErrors.append(contentsOf: errors)
                             case .failure(let errors):
-                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: backupProtoAdHocCall) })
+                                frameErrors.append(contentsOf: errors)
                                 if BuildFlags.Backups.restoreFailOnAnyError {
                                     throw BackupError()
                                 }
@@ -1432,32 +1410,28 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     // MARK: -
 
     private func processErrors(
-        errors: [LoggableErrorAndProto],
+        errors: [any BackupArchive.LoggableError],
         didFail: Bool,
     ) {
         let collapsedErrors = BackupArchive.collapse(errors)
-        var maxLogLevel = -1
-        var wasFrameDropped = false
-        collapsedErrors.forEach { collapsedError in
+        guard let firstError = collapsedErrors.first else {
+            return
+        }
+
+        var maxLogLevel = firstError.logLevel
+        for collapsedError in collapsedErrors {
             collapsedError.log()
-            maxLogLevel = max(maxLogLevel, collapsedError.logLevel.rawValue)
-            if collapsedError.wasFrameDropped {
-                wasFrameDropped = true
-            }
+            maxLogLevel = max(maxLogLevel, collapsedError.logLevel)
         }
-        if wasFrameDropped {
-            // Log this specifically so we can do a naive exact text search in debug logs.
-            logger.error("Dropped frame(s) on backup export or import!!!")
-        }
-        // Only present errors if some error rises above warning.
-        // (But if one does, present _all_ errors).
-        if maxLogLevel > BackupArchive.LogLevel.warning.rawValue {
+
+        if maxLogLevel > BackupArchive.LogLevel.warning {
+            // Do an async write, since in the case of an error we may roll back
+            // the transaction we're in.
             Task {
                 await db.awaitableWrite { tx in
-                    backupArchiveErrorPresenter.persistErrors(collapsedErrors, didFail: didFail, tx: tx)
+                    backupArchiveErrorStore.setHasError(true, tx: tx)
                 }
             }
-
         }
     }
 
@@ -1466,31 +1440,28 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         backupEncryptionKey: MessageBackupKey,
         backupPurpose: MessageBackupPurpose,
     ) async throws {
-        let fileSize = (try? OWSFileSystem.fileSize(ofPath: fileUrl.path)) ?? 0
+        let fileSize = try OWSFileSystem.fileSize(ofPath: fileUrl.path)
 
         do {
-            let result = try validateMessageBackup(key: backupEncryptionKey, purpose: backupPurpose, length: fileSize) {
-                return try FileHandle(forReadingFrom: fileUrl)
-            }
+            let result = try validateMessageBackup(
+                key: backupEncryptionKey,
+                purpose: backupPurpose,
+                length: fileSize,
+                makeStream: { () throws -> SignalInputStream in
+                    return try FileHandle(forReadingFrom: fileUrl)
+                },
+            )
             if result.fields.count > 0 {
-                throw BackupValidationError.unknownFields(result.fields)
+                throw OWSAssertionError("Unknown fields during Backup validation! \(result.fields)")
             }
+        } catch let validationError as MessageBackupValidationError {
+            await db.awaitableWrite { tx in
+                backupArchiveErrorStore.setHasError(true, tx: tx)
+            }
+
+            throw OWSAssertionError("Backup validation failed! \(validationError.errorMessage); unknown fields \(validationError.unknownFields.fields)")
         } catch {
-            switch error {
-            case let validationError as MessageBackupValidationError:
-                await backupArchiveErrorPresenter.persistValidationError(validationError)
-                logger.error("Backup validation failed \(validationError.errorMessage)")
-                throw BackupValidationError.validationFailed(
-                    message: validationError.errorMessage,
-                    unknownFields: validationError.unknownFields.fields,
-                )
-            case SignalError.ioError(let description):
-                logger.error("Backup validation i/o error: \(description)")
-                throw BackupValidationError.ioError(description)
-            default:
-                logger.error("Backup validation unknown error: \(error)")
-                throw BackupValidationError.unknownError
-            }
+            throw OWSAssertionError("Backup validation failed! \(error)")
         }
     }
 
