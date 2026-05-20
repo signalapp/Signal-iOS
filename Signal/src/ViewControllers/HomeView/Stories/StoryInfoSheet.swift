@@ -3,42 +3,60 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
-class StoryInfoSheet: OWSTableSheetViewController {
+class StoryInfoSheet: OWSTableViewController2, DatabaseChangeDelegate, UIAdaptivePresentationControllerDelegate {
+
     private(set) var storyMessage: StoryMessage
+
     let context: StoryContext
+
     var dismissHandler: (() -> Void)?
 
     private let spoilerState: SpoilerRenderState
-
-    override var sheetBackgroundColor: UIColor { .ows_gray90 }
 
     init(storyMessage: StoryMessage, context: StoryContext, spoilerState: SpoilerRenderState) {
         self.storyMessage = storyMessage
         self.context = context
         self.spoilerState = spoilerState
+
         super.init()
 
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
         overrideUserInterfaceStyle = .dark
-        tableViewController.forceDarkMode = true
-        tableViewController.tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
-    }
+        forceDarkMode = true
 
-    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        super.dismiss(animated: flag) { [dismissHandler] in
-            completion?()
-            dismissHandler?()
+        modalPresentationStyle = .pageSheet
+        presentationController?.delegate = self
+
+        if let sheetPresentationController {
+            if #available(iOS 17.0, *) {
+                sheetPresentationController.traitOverrides.userInterfaceStyle = .dark
+            } else {
+                sheetPresentationController.overrideTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
+            }
+            sheetPresentationController.detents = [.medium(), .large()]
+            sheetPresentationController.prefersGrabberVisible = true
         }
     }
 
-    override func tableContents() -> OWSTableContents {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        backgroundStyle = .clear
+
+        tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
+
+        updateTableContents()
+    }
+
+    private func updateTableContents() {
         storyMessage = SSKEnvironment.shared.databaseStorageRef.read { StoryMessage.anyFetch(uniqueId: storyMessage.uniqueId, transaction: $0) ?? storyMessage }
+
+        var detents: [UISheetPresentationController.Detent] = [.medium()]
 
         let contents = OWSTableContents()
 
@@ -62,14 +80,20 @@ class StoryInfoSheet: OWSTableSheetViewController {
         switch storyMessage.manifest {
         case .outgoing(let recipientStates):
             contents.add(sections: buildStatusSections(for: recipientStates))
+            if recipientStates.count > 10 {
+                detents.append(.large())
+            }
         case .incoming:
             contents.add(buildSenderSection())
         }
 
-        return contents
+        self.contents = contents
+
+        sheetPresentationController?.detents = detents
     }
 
     private let byteCountFormatter: ByteCountFormatter = ByteCountFormatter()
+
     private func buildMetadataStackView() -> UIStackView {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -257,7 +281,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
     private func buildValueLabel(name: String, value: String) -> UILabel {
         let label = UILabel()
-        label.textColor = Theme.darkThemePrimaryColor
+        label.textColor = .Signal.label
         label.font = .dynamicTypeFootnoteClamped
         label.attributedText = valueLabelAttributedText(name: name, value: value)
         return label
@@ -266,7 +290,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
     private func contactItem(for address: SignalServiceAddress, accessoryText: String) -> OWSTableItem {
         return .init(customCellBlock: { [weak self] in
             guard let self else { return UITableViewCell() }
-            let tableView = self.tableViewController.tableView
+            let tableView = self.tableView
             guard
                 let cell = tableView.dequeueReusableCell(
                     withIdentifier: ContactTableViewCell.reuseIdentifier,
@@ -309,16 +333,16 @@ class StoryInfoSheet: OWSTableSheetViewController {
         let labelConfig = CVLabelConfig.unstyledText(
             text,
             font: .dynamicTypeFootnoteClamped,
-            textColor: Theme.darkThemeSecondaryTextAndIconColor,
+            textColor: .Signal.secondaryLabel,
         )
         labelConfig.applyForRendering(label: label)
         let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: .greatestFiniteMagnitude)
 
         return ContactCellAccessoryView(accessoryView: label, size: labelSize)
     }
-}
 
-extension StoryInfoSheet: DatabaseChangeDelegate {
+    // MARK: - DatabaseChangeDelegate
+
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         guard databaseChanges.storyMessageRowIds.contains(storyMessage.id!) else { return }
         updateTableContents()
@@ -330,5 +354,11 @@ extension StoryInfoSheet: DatabaseChangeDelegate {
 
     func databaseChangesDidReset() {
         updateTableContents()
+    }
+
+    // MARK: - UIAdaptivePresentationControllerDelegate
+
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        dismissHandler?()
     }
 }
