@@ -715,6 +715,9 @@
 /* Title for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Cópias de segurança automáticas desativadas";
 
+/* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Ocorreu um problema ao criar a sua cópia de segurança. Tente novamente ou contacte o Suporte.";
 
@@ -2582,13 +2585,13 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "A carregar mais mensagens…";
 
 /* Label on truncated text messages that's shown while the full contents of a text message are being downloaded. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Loading…";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "A carregar…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Ler mais";
 
 /* Button on truncated text messages that they can be tapped to download the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Get Full Message";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Transferir mensagem completa";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "Copiado para a área de transferência";
@@ -4571,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Escolha um administrador novo";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Escolha um administrador novo";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Atingido o limite de membros recomendado";
@@ -5585,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Quer partilhar o seu nome e foto com %1$@ e deixar que lhe envie mensagem? Removeu esta pessoa no passado.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Denunciar…";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Desbloquear";
@@ -7742,22 +7745,22 @@
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Não conseguimos enviar-lhe um código de verificação via chamada de voz. Experimente receber o seu código por SMS.";
 
 /* Bottom bar label for the release notes thread */
-"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "The only official chat from Signal";
+"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "O único chat oficial do Signal";
 
 /* Display name for the release notes channel */
 "RELEASE_NOTES_CHANNEL_NAME" = "Signal";
 
 /* Label displayed in thread details of the release notes chat */
-"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Official Chat";
+"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Chat oficial";
 
 /* Settings description label for the release notes thread telling a user to keep up to date */
-"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Keep up to date with news & release notes";
+"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Mantenha-se a par das novidades e atualizações";
 
 /* Details text for the thread details view of the release notes channel */
-"RELEASE_NOTES_DETAILS" = "The only official chat from Signal. Keep up to date with news and release notes";
+"RELEASE_NOTES_DETAILS" = "O único chat oficial do Signal. Mantenha-se a par das novidades e atualizações";
 
 /* Settings description label for the release notes thread telling a user this is the only official chat */
-"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "The only official chat from Signal";
+"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "O único chat oficial do Signal";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Resolver agora";
@@ -7940,7 +7943,7 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "O Signal pode agora verificar automaticamente a encriptação";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "O Signal já não pode verificar automaticamente a encriptação para este chat. Isto deve-se provavelmente ao facto de %1$@ ter mudado o seu número de telemóvel. Verifique a encriptação de ponta a ponta manualmente comparando os números no ecrã anterior ou digitalizando o código no seu dispositivo.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "A autoverificação já não está disponível para este chat";
@@ -8254,6 +8257,9 @@
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "Conta";
 
+/* Label for button in Safety Tips to go to 'account' page in settings. */
+"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Dados da sua conta";
 
@@ -8382,6 +8388,9 @@
 
 /* Label for the 'phone number' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "N.º de telefone";
+
+/* Title text for sheet displaying the 'Can't change phone number splash' message. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Utilize isto para alterar o seu número atual para um número de telefone novo. Não poderá desfazer esta alteração.\n\nAntes de continuar, assegure-se que o seu número novo pode receber SMS ou chamadas.";
@@ -9254,7 +9263,7 @@
 "SIGNAL_CALL" = "Chamada do Signal";
 
 /* Title for the sheet presented when user taps on Signal Proxy link in chat. */
-"SIGNAL_PROXY" = "Signal Proxy Server";
+"SIGNAL_PROXY" = "Servidor proxy do Signal";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Estou a convidá-lo(a) para instalar o Signal! Aqui está a hiperligação:";
@@ -10137,6 +10146,12 @@
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Os nomes de utilizador só podem ser atualizados quando se está ligado à internet.";
+
+/* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+
+/* Second part of body for a hero sheet informing the user a verification code was requested. */
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Marcou %1$@ como não verificado.";

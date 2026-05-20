@@ -715,6 +715,9 @@
 /* Title for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Αυτόματα αντίγραφα ασφαλείας απενεργοποιημένα";
 
+/* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Κάτι πήγε στραβά με τη δημιουργία του αντιγράφου ασφαλείας σου. Παρακαλώ δοκίμασε ξανά ή επικοινώνησε με την υποστήριξη.";
 
@@ -2582,13 +2585,13 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Φορτώνονται περισσότερα μηνύματα…";
 
 /* Label on truncated text messages that's shown while the full contents of a text message are being downloaded. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Loading…";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Φορτώνει…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Διάβασε Περισσότερα";
 
 /* Button on truncated text messages that they can be tapped to download the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Get Full Message";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Λήψη ολόκληρου του μηνύματος";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "Αντιγράφηκε στο πρόχειρο";
@@ -4571,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Επιλογή νέου διαχειριστή";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Επιλογή νέου διαχειριστή";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Έφτασες το προτεινόμενο όριο μελών";
@@ -5585,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Να μπορεί ο/η %1$@ να σου στείλει μηνύματα και να μοιραστείς το όνομα και τη φωτογραφία σου μαζί του/της; Έχεις αφαιρέσει αυτό το άτομο στο παρελθόν.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Αναφορά…";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Κατάργηση αποκλεισμού";
@@ -7742,22 +7745,22 @@
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Δεν μπορέσαμε να σου στείλουμε κωδικό επαλήθευσης μέσω φωνητικής κλήσης. Δοκίμασε να λάβεις τον κωδικό σου μέσω SMS.";
 
 /* Bottom bar label for the release notes thread */
-"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "The only official chat from Signal";
+"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "Η μόνη επίσημη συνομιλία από το Signal";
 
 /* Display name for the release notes channel */
 "RELEASE_NOTES_CHANNEL_NAME" = "Signal";
 
 /* Label displayed in thread details of the release notes chat */
-"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Official Chat";
+"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Επίσημη συνομιλία";
 
 /* Settings description label for the release notes thread telling a user to keep up to date */
-"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Keep up to date with news & release notes";
+"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Μην χάσεις ξανά τα νέα και τις σημειώσεις έκδοσης";
 
 /* Details text for the thread details view of the release notes channel */
-"RELEASE_NOTES_DETAILS" = "The only official chat from Signal. Keep up to date with news and release notes";
+"RELEASE_NOTES_DETAILS" = "Η μόνη επίσημη συνομιλία από το Signal. Μην χάσεις ξανά τα νέα και τις σημειώσεις έκδοσης";
 
 /* Settings description label for the release notes thread telling a user this is the only official chat */
-"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "The only official chat from Signal";
+"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "Η μόνη επίσημη συνομιλία από το Signal";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Διόρθωση τώρα";
@@ -7940,7 +7943,7 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Το Signal μπορεί πλέον να επαληθεύει αυτόματα την κρυπτογράφηση";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Το Signal δεν μπορεί πλέον να επαληθεύσει αυτόματα την κρυπτογράφηση για αυτήν τη συνομιλία. Αυτό πιθανότατα οφείλεται στο γεγονός ότι ο χρήστης %1$@ άλλαξε τον αριθμό τηλεφώνου του. Επαλήθευσε την κρυπτογράφηση από άκρο σε άκρο χειροκίνητα συγκρίνοντας τους αριθμούς στην προηγούμενη οθόνη ή σαρώνοντας τον κωδικό στη συσκευή τους.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Η αυτόματη επαλήθευση δεν είναι πλέον διαθέσιμη για αυτήν τη συνομιλία";
@@ -8254,6 +8257,9 @@
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "Λογαριασμός";
 
+/* Label for button in Safety Tips to go to 'account' page in settings. */
+"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Τα δεδομένα του λογαριασμού σου";
 
@@ -8382,6 +8388,9 @@
 
 /* Label for the 'phone number' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Αριθμός τηλεφώνου";
+
+/* Title text for sheet displaying the 'Can't change phone number splash' message. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Με αυτό μπορείς να αλλάξεις τον τωρινό αριθμό τηλεφώνου σου σε νέο αριθμό. Δεν μπορείς να αναιρέσεις αυτήν την αλλαγή.\n\nΠριν συνεχίσεις, επιβεβαίωσε πως μπορείς να λάβεις SMS ή κλήσεις στον νέο αριθμό.";
@@ -9254,7 +9263,7 @@
 "SIGNAL_CALL" = "Κλήση Signal";
 
 /* Title for the sheet presented when user taps on Signal Proxy link in chat. */
-"SIGNAL_PROXY" = "Signal Proxy Server";
+"SIGNAL_PROXY" = "Διακομιστής proxy του Signal";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Σε προσκαλώ να εγκαταστήσεις το Signal! Να ο σύνδεσμος:";
@@ -10137,6 +10146,12 @@
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Τα ονόματα χρήστη μπορούν να ενημερωθούν μόνο όταν υπάρχει σύνδεση στο διαδίκτυο.";
+
+/* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+
+/* Second part of body for a hero sheet informing the user a verification code was requested. */
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Σημείωσες τον/την %1$@ ως μη επιβεβαιωμένο/η.";

@@ -715,6 +715,9 @@
 /* Title for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Sandaran Automatik Dinyahdayakan";
 
+/* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Ada yang tidak kena semasa membuat sandaran anda. Sila cuba lagi atau hubungi sokongan.";
 
@@ -2582,13 +2585,13 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Muatkan Lagi Mesej…";
 
 /* Label on truncated text messages that's shown while the full contents of a text message are being downloaded. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Loading…";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Memuatkan…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Baca Lagi";
 
 /* Button on truncated text messages that they can be tapped to download the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Get Full Message";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Dapatkan Mesej Penuh";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "Disalin ke Papan Keratan";
@@ -4571,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Pilih Pentadbir Baru";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Pilih pentadbir baru";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Had ahli yang disyorkan telah dicapai";
@@ -5585,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Benarkan %1$@ mesej anda dan kongsi nama serta foto anda dengan mereka? Anda telah mengalih keluar orang ini pada masa lalu.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Laporkan…";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Nyahsekat";
@@ -7742,22 +7745,22 @@
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Kami tidak dapat menghantar kod pengesahan kepada anda melalui panggilan suara. Cuba dapatkan kod anda melalui sms.";
 
 /* Bottom bar label for the release notes thread */
-"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "The only official chat from Signal";
+"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "Satu-satunya sembang rasmi daripada Signal";
 
 /* Display name for the release notes channel */
 "RELEASE_NOTES_CHANNEL_NAME" = "Signal";
 
 /* Label displayed in thread details of the release notes chat */
-"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Official Chat";
+"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Sembang rasmi";
 
 /* Settings description label for the release notes thread telling a user to keep up to date */
-"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Keep up to date with news & release notes";
+"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Ikuti perkembangan terkini dengan berita & nota keluaran";
 
 /* Details text for the thread details view of the release notes channel */
-"RELEASE_NOTES_DETAILS" = "The only official chat from Signal. Keep up to date with news and release notes";
+"RELEASE_NOTES_DETAILS" = "Satu-satunya sembang rasmi daripada Signal. Ikuti perkembangan terkini dengan berita dan nota keluaran";
 
 /* Settings description label for the release notes thread telling a user this is the only official chat */
-"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "The only official chat from Signal";
+"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "Satu-satunya sembang rasmi daripada Signal";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Baiki sekarang";
@@ -7940,7 +7943,7 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal kini boleh mengesahkan penyulitan secara automatik";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal tidak lagi boleh mengesahkan penyulitan untuk sembang ini secara automatik. Ini mungkin kerana %1$@ menukar nombor telefon mereka. Sahkan penyulitan hujung ke hujung secara manual dengan membandingkan nombor pada skrin sebelumnya atau mengimbas kod pada peranti mereka.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Pengesahan automatik tidak lagi tersedia untuk sembang ini";
@@ -8254,6 +8257,9 @@
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "Akaun";
 
+/* Label for button in Safety Tips to go to 'account' page in settings. */
+"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Data akaun anda";
 
@@ -8382,6 +8388,9 @@
 
 /* Label for the 'phone number' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Nombor Telefon";
+
+/* Title text for sheet displaying the 'Can't change phone number splash' message. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Gunakan ini untuk menukar nombor telefon semasa anda kepada nombor telefon yang baru. Anda tidak boleh buat asal penukaran ini.\n\nSebelum meneruskan, pastikan nombor baru anda boleh menerima SMS atau panggilan.";
@@ -9254,7 +9263,7 @@
 "SIGNAL_CALL" = "Panggilan Signal";
 
 /* Title for the sheet presented when user taps on Signal Proxy link in chat. */
-"SIGNAL_PROXY" = "Signal Proxy Server";
+"SIGNAL_PROXY" = "Pelayan Proksi Signal";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Saya menjemput anda untuk memasang Signal! Berikut adalah pautan:";
@@ -10137,6 +10146,12 @@
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Nama pengguna hanya boleh dikemas kini apabila disambungkan ke internet.";
+
+/* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+
+/* Second part of body for a hero sheet informing the user a verification code was requested. */
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Anda tandakan %1$@ sebagai tidak disahkan.";

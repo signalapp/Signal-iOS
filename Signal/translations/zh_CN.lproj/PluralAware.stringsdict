@@ -386,7 +386,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld disappearing message timer changes · %2$@</string>
+			<string>%1$ld 个限时消息定时器更改 · %2$@</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -1348,6 +1348,22 @@
 			<string>d</string>
 			<key>other</key>
 			<string>%1$d 次尝试机会</string>
+		</dict>
+	</dict>
+	<key>SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_BODY</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+
+Try again in %1$d hours.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

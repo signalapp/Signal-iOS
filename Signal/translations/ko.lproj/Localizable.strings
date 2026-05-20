@@ -137,7 +137,7 @@
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%1$@ 님이 보낸 메시지, 스티커, 반응, 열람 확인 또는 미디어가 전달되지 못했습니다. 나에게 직접 보내거나 그룹 대화에서 보내려 한 것 같아요.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "버리기";
+"ALERT_DISCARD_BUTTON" = "삭제하기";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "저장하지 않음";
@@ -715,6 +715,9 @@
 /* Title for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "자동 백업 비활성화됨";
 
+/* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "백업을 만드는 중 오류가 발생했습니다. 다시 시도하거나 지원팀에 문의하세요.";
 
@@ -1106,7 +1109,7 @@
 "BADGE_EXPIRED_BOOST_BODY" = "부스트 배지가 만료되어 더 이상 프로필에 표시되지 않습니다.\n\nSignal은 계속 이용하실 수 있지만, 매월 소액의 후원으로 함께해 주시면 Signal의 지속적인 운영에 큰 힘이 될 수 있어요.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "부스트 배지가 만료되어 더 이상 프로필에 표시되지 않습니다.\n\n일회성 기부를 통해 부스트 배지를 30일 더 활성화해 보세요.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "부스트 배지가 만료되어 더 이상 프로필에 표시되지 않습니다.\n\n일회성 후원을 통해 부스트 배지를 30일 더 활성화해 보세요.";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "배지 만료";
@@ -2582,13 +2585,13 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "메시지 더 불러오는 중…";
 
 /* Label on truncated text messages that's shown while the full contents of a text message are being downloaded. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "Loading…";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_DOWNLOADING" = "불러오는 중…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "더 보기";
 
 /* Button on truncated text messages that they can be tapped to download the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Get Full Message";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "전체 메시지 받기";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "클립보드에 복사됨";
@@ -3068,7 +3071,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "은행 송금을 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다. 추가 후원을 하시려면 해당 후원이 완료되고 나서 진행해 주세요.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "계좌 이체를 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다. 이 기부가 완료될 때까지 기다렸다가 구독을 업데이트해 주세요.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "계좌 이체를 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다. 이 후원이 완료될 때까지 기다렸다가 구독을 업데이트해 주세요.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "계좌 이체를 통해 보낼 수 있는 최대 금액은 %1$@입니다. 다른 금액이나 다른 결제 방법으로 시도해 주세요.";
@@ -3128,7 +3131,7 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "후원 대기 중";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "1회성 기부가 대기 중입니다. 기부가 완료되면 프로필에 %1$@ 배지를 표시할 수 있습니다.\n\n계좌 이체를 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "일회성 후원이 대기 중입니다. 후원이 완료되면 프로필에 %1$@ 배지를 표시할 수 있습니다.\n\n계좌 이체를 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
 "DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "월 정기후원이 대기 중입니다. 후원이 완료되면 프로필에 %1$@ 배지를 표시할 수 있습니다.\n\n은행 송금을 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다.";
@@ -3260,22 +3263,22 @@
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "친구를 대신해 후원했어요";
 
 /* Title for one-time donation receipts */
-"DONATION_RECEIPT_ONE_TIME" = "일회성 기부";
+"DONATION_RECEIPT_ONE_TIME" = "일회성 후원";
 
 /* Title for recurring donation receipts */
 "DONATION_RECEIPT_RECURRING" = "정기후원";
 
 /* Title on donation receipts */
-"DONATION_RECEIPT_TITLE" = "기부 영수증";
+"DONATION_RECEIPT_TITLE" = "후원 영수증";
 
 /* Section title for donation type on receipts */
 "DONATION_RECEIPT_TYPE" = "유형";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
-"DONATION_RECEIPTS" = "기부 영수증";
+"DONATION_RECEIPTS" = "후원 영수증";
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
-"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Signal을 다시 설치했다면 이전 기부 영수증은 사용할 수 없습니다.";
+"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Signal을 다시 설치했다면 이전 후원 영수증은 사용할 수 없습니다.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user cancels the webview before authrizing the payment. */
 "DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "결제를 취소했습니다. 다시 시도해 주세요.";
@@ -4571,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "새 관리자 선택";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "새 관리자 선택";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "권장 멤버 수 한도에 도달했습니다.";
@@ -5189,13 +5192,13 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "보내고 받은 음성 메시지와 오디오 파일이 여기에 표시됩니다.";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "내가 주고받는 음성 메시지와 오디오 파일이 여기에 표시됩니다.";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
 "MEDIA_GALLERY_NO_AUDIO_TITLE" = "오디오 파일 없음";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - second line. */
-"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "내가 주고받는 파일이 여기에 표시됩니다";
+"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "내가 주고받는 파일이 여기에 표시됩니다.";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - first line. */
 "MEDIA_GALLERY_NO_FILES_TITLE" = "파일 없음";
@@ -5204,7 +5207,7 @@
 "MEDIA_GALLERY_NO_FILTER_RESULTS" = "미디어 없음";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "보내고 받은 사진, 동영상, GIF 파일이 여기에 표시됩니다.";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "내가 주고받는 사진, 동영상, GIF 파일이 여기에 표시됩니다.";
 
 /* Displayed in All Media screen when there's no media - first line. */
 "MEDIA_GALLERY_NO_MEDIA_TITLE" = "미디어 없음";
@@ -5585,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "%1$@ 님이 나에게 메시지를 보내고, 내 이름과 사진을 공유하도록 허용할까요? 이 사용자는 내가 이전에 삭제했던 사용자입니다.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "신고…";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "차단 해제";
@@ -6782,7 +6785,7 @@
 "PHONE_NUMBER_TYPE_PAGER" = "호출기";
 
 /* Label for 'Work' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK" = "회사";
+"PHONE_NUMBER_TYPE_WORK" = "직장";
 
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "FAX (회사)";
@@ -7742,22 +7745,22 @@
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "음성 통화를 통해 확인 코드를 보내지 못했습니다. SMS를 통해 대신 받아보세요.";
 
 /* Bottom bar label for the release notes thread */
-"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "The only official chat from Signal";
+"RELEASE_NOTES_BOTTOM_BAR_LABEL" = "Signal이 운영하는 유일한 공식 채팅";
 
 /* Display name for the release notes channel */
 "RELEASE_NOTES_CHANNEL_NAME" = "Signal";
 
 /* Label displayed in thread details of the release notes chat */
-"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Official Chat";
+"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "공식 채팅";
 
 /* Settings description label for the release notes thread telling a user to keep up to date */
-"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Keep up to date with news & release notes";
+"RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "최신 소식과 릴리스 노트를 확인하세요";
 
 /* Details text for the thread details view of the release notes channel */
-"RELEASE_NOTES_DETAILS" = "The only official chat from Signal. Keep up to date with news and release notes";
+"RELEASE_NOTES_DETAILS" = "Signal이 운영하는 유일한 공식 채널. 최신 소식과 릴리스 노트를 확인하세요";
 
 /* Settings description label for the release notes thread telling a user this is the only official chat */
-"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "The only official chat from Signal";
+"RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT" = "Signal이 운영하는 유일한 공식 채팅";
 
 /* Button below the warning to fix a corrupted username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "지금 해결";
@@ -7940,7 +7943,7 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "이제 키 암호화를 자동으로 인증할 수 있어요";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal이 더 이상 이 채팅의 암호화를 자동으로 인증할 수 없습니다. %1$@ 님이 전화번호를 변경하여 발생한 문제일 수 있습니다. 이전 화면의 숫자를 대조하거나, 상대방 기기의 코드를 스캔하여 종단간 암호화를 수동으로 인증해 주세요.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "이 채팅에 더 이상 자동 인증을 사용할 수 없습니다";
@@ -8254,6 +8257,9 @@
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "계정";
 
+/* Label for button in Safety Tips to go to 'account' page in settings. */
+"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "내 계정 데이터";
 
@@ -8382,6 +8388,9 @@
 
 /* Label for the 'phone number' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "전화번호";
+
+/* Title text for sheet displaying the 'Can't change phone number splash' message. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "현재 전화번호를 새 전화번호로 바꿀 수 있으며, 변경 후에는 되돌릴 수 없습니다.\n\n변경하기 전에, 새 전화번호로 SMS 메시지나 전화를 받을 수 있는지 확인하세요.";
@@ -9254,7 +9263,7 @@
 "SIGNAL_CALL" = "Signal 통화";
 
 /* Title for the sheet presented when user taps on Signal Proxy link in chat. */
-"SIGNAL_PROXY" = "Signal Proxy Server";
+"SIGNAL_PROXY" = "Signal 프록시 서버";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Signal로 같이 옮겨요! 여기 링크를 클릭하세요.";
@@ -10137,6 +10146,12 @@
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "사용자 이름은 인터넷에 연결됐을 때만 업데이트할 수 있습니다.";
+
+/* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+
+/* Second part of body for a hero sheet informing the user a verification code was requested. */
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%1$@ 님을 검증하지 않았다고 표시했습니다.";
