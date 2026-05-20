@@ -7,7 +7,6 @@ import SignalServiceKit
 import Testing
 @testable import Signal
 
-@Suite(.disabled("Waiting for TODO at DisplayableAccountEntropyPool.swift:34"))
 struct DisplayableAccountEntropyPoolTest {
     private static let aepLength = AccountEntropyPool.Constants.byteLength
 
