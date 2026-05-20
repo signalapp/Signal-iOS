@@ -261,27 +261,34 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
         view.addSubview(sendingIndicatorStackView)
         sendingIndicatorStackView.autoPinEdges(toEdgesOf: repliesAndViewsButton)
 
-        view.addSubview(playbackProgressView)
-        playbackProgressView.autoPinEdge(.leading, to: .leading, of: mediaViewContainer, withOffset: OWSTableViewController2.defaultHOuterMargin)
-        playbackProgressView.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer, withOffset: -OWSTableViewController2.defaultHOuterMargin)
-        playbackProgressView.autoSetDimension(.height, toSize: 2)
         playbackProgressView.isUserInteractionEnabled = false
+        view.addSubview(playbackProgressView)
 
+        let progressViewSideMargin: CGFloat
         if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
             let cornerRadius: CGFloat = if #available(iOS 26, *) { 40 } else { 18 }
             // iPhone with notch or iPad (views/replies rendered below media, media is in a card)
             mediaViewContainer.layer.cornerRadius = cornerRadius
             mediaViewContainer.clipsToBounds = true
+
             onboardingOverlay.layer.cornerRadius = cornerRadius
             onboardingOverlay.clipsToBounds = true
+
+            progressViewSideMargin = OWSTableViewController2.defaultHOuterMargin + 4
+            // Equal margins on the sides and the bottom.
+            playbackProgressView.autoPinEdge(.bottom, to: .bottom, of: mediaViewContainer, withOffset: -progressViewSideMargin)
             repliesAndViewsButton.autoPinEdge(.top, to: .bottom, of: mediaViewContainer)
-            playbackProgressView.autoPinEdge(.bottom, to: .top, of: repliesAndViewsButton, withOffset: -OWSTableViewController2.defaultHOuterMargin)
         } else {
+            progressViewSideMargin = OWSTableViewController2.defaultHOuterMargin
+
             // iPhone with home button (views/replies rendered on top of media, media is fullscreen)
             repliesAndViewsButton.autoPinEdge(.bottom, to: .bottom, of: mediaViewContainer)
             playbackProgressView.autoPinEdge(.bottom, to: .top, of: repliesAndViewsButton)
             mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .bottom)
         }
+        playbackProgressView.autoSetDimension(.height, toSize: 2)
+        playbackProgressView.autoPinEdge(.leading, to: .leading, of: mediaViewContainer, withOffset: progressViewSideMargin)
+        playbackProgressView.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer, withOffset: -progressViewSideMargin)
 
         applyConstraints()
 

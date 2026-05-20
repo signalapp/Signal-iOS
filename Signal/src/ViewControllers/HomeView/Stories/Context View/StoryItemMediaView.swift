@@ -31,8 +31,7 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
     private var gradientProtectionViewHeightConstraint: NSLayoutConstraint?
 
     private var contextButton: ContextMenuButton!
-    private let bottomContentVStack = UIStackView()
-
+    private var bottomContentVStack: UIStackView!
     init(
         item: StoryItem,
         contextButton: ContextMenuButton,
@@ -45,6 +44,17 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
 
         super.init(frame: .zero)
 
+        // Will use these margins to position avatar, contact name and timestamp at the bottom.
+        directionalLayoutMargins.leading = OWSTableViewController2.defaultHOuterMargin
+        directionalLayoutMargins.trailing = OWSTableViewController2.defaultHOuterMargin
+        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
+            // iPhone with notch or iPad (views/replies rendered below media, media is in a card)
+            directionalLayoutMargins.bottom = OWSTableViewController2.defaultHOuterMargin + 22
+        } else {
+            // iPhone with home button (views/replies rendered on top of media, media is fullscreen)
+            directionalLayoutMargins.bottom = 80
+        }
+
         autoPin(toAspectRatio: 9 / 16)
 
         updateMediaView()
@@ -55,28 +65,26 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
         }
 
         addSubview(gradientProtectionView)
-        gradientProtectionView.autoPinWidthToSuperview()
-        gradientProtectionView.autoPinEdge(toSuperviewEdge: .bottom)
+        gradientProtectionView.translatesAutoresizingMaskIntoConstraints = false
 
+        bottomContentVStack = UIStackView(arrangedSubviews: [
+            captionLabel,
+            authorRow,
+        ])
         bottomContentVStack.axis = .vertical
         bottomContentVStack.spacing = 24
         addSubview(bottomContentVStack)
+        bottomContentVStack.translatesAutoresizingMaskIntoConstraints = false
 
-        bottomContentVStack.autoPinWidthToSuperview(withMargin: OWSTableViewController2.defaultHOuterMargin)
+        NSLayoutConstraint.activate([
+            gradientProtectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            gradientProtectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            gradientProtectionView.bottomAnchor.constraint(equalTo: bottomAnchor),
 
-        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
-            // iPhone with notch or iPad (views/replies rendered below media, media is in a card)
-            bottomContentVStack.autoPinEdge(toSuperviewEdge: .bottom, withInset: OWSTableViewController2.defaultHOuterMargin + 16)
-        } else {
-            // iPhone with home button (views/replies rendered on top of media, media is fullscreen)
-            bottomContentVStack.autoPinEdge(toSuperviewEdge: .bottom, withInset: 80)
-        }
-
-        bottomContentVStack.autoPinEdge(toSuperviewEdge: .top, withInset: OWSTableViewController2.defaultHOuterMargin)
-
-        bottomContentVStack.addArrangedSubview(.vStretchingSpacer())
-        bottomContentVStack.addArrangedSubview(captionLabel)
-        bottomContentVStack.addArrangedSubview(authorRow)
+            bottomContentVStack.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+            bottomContentVStack.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+            bottomContentVStack.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+        ])
 
         updateCaption()
         updateAuthorRow(newContextButton: contextButton)
@@ -314,7 +322,20 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
 
     // MARK: - Author Row
 
-    private lazy var timestampLabel = UILabel()
+    private lazy var timestampLabel: UILabel = {
+        let label = UILabel()
+        label.font = .dynamicTypeFootnote
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = .Signal.label
+        label.layer.shadowColor = UIColor.black.cgColor
+        label.layer.shadowOpacity = 0.4
+        label.layer.shadowOffset = CGSize(width: 0, height: 1)
+        label.layer.shadowRadius = 2
+        label.setCompressionResistanceHorizontalHigh()
+        label.setContentHuggingHorizontalHigh()
+        return label
+    }()
+
     private lazy var authorRow = UIStackView()
     private func updateAuthorRow(newContextButton contextButton: ContextMenuButton) {
         let (avatarView, nameLabel) = SSKEnvironment.shared.databaseStorageRef.read { (
@@ -322,28 +343,18 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
             buildNameLabel(transaction: $0),
         ) }
 
-        let nameTrailingView: UIView
-        let nameTrailingSpacing: CGFloat
+        let nameHStack = UIStackView(arrangedSubviews: [nameLabel])
         if item.message.authorAddress.isSystemStoryAddress {
-            let icon = UIImageView(image: Theme.iconImage(.official))
-            icon.contentMode = .center
-            nameTrailingView = icon
-            nameTrailingSpacing = 3
+            nameHStack.addArrangedSubview(UIImageView(image: Theme.iconImage(.official)))
+            nameHStack.spacing = 3
+            nameHStack.alignment = .center
         } else {
-            nameTrailingView = timestampLabel
-            nameTrailingSpacing = 8
+            nameHStack.addArrangedSubview(timestampLabel)
+            nameHStack.spacing = 8
+            nameHStack.alignment = .firstBaseline
         }
 
         let metadataStackView: UIStackView
-
-        let nameHStack = UIStackView(arrangedSubviews: [
-            nameLabel,
-            nameTrailingView,
-        ])
-        nameHStack.spacing = nameTrailingSpacing
-        nameHStack.axis = .horizontal
-        nameHStack.alignment = .center
-
         if
             case .privateStory(let uniqueId) = delegate?.context,
             let privateStoryThread = SSKEnvironment.shared.databaseStorageRef.read(
@@ -404,17 +415,12 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
             contextButton.centerYAnchor.constraint(equalTo: authorRow.centerYAnchor),
         ])
 
-        timestampLabel.setCompressionResistanceHorizontalHigh()
-        timestampLabel.setContentHuggingHorizontalHigh()
-        timestampLabel.font = .dynamicTypeFootnote
-        timestampLabel.textColor = .Signal.label
-        timestampLabel.alpha = 0.8
         updateTimestampText()
     }
 
     private func buildAvatarView(transaction: DBReadTransaction) -> UIView {
         let authorAvatarView = ConversationAvatarView(
-            sizeClass: .twentyEight,
+            sizeClass: .thirtySix,
             localUserDisplayMode: .asLocalUser,
             badged: false,
             shape: .circular,
@@ -441,7 +447,7 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
             }
 
             let groupAvatarView = ConversationAvatarView(
-                sizeClass: .twentyEight,
+                sizeClass: .thirtySix,
                 localUserDisplayMode: .asLocalUser,
                 badged: false,
                 shape: .circular,
@@ -470,7 +476,7 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
     private func buildNameLabel(transaction: DBReadTransaction) -> UIView {
         let label = UILabel()
         label.textColor = .Signal.label
-        label.font = UIFont.dynamicTypeSubheadline.semibold()
+        label.font = UIFont.dynamicTypeSubheadline.bold()
         label.text = StoryUtil.authorDisplayName(
             for: item.message,
             contactsManager: SSKEnvironment.shared.contactManagerRef,
@@ -478,6 +484,10 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
             useShortGroupName: false,
             transaction: transaction,
         )
+        label.layer.shadowColor = UIColor.black.cgColor
+        label.layer.shadowOpacity = 0.4
+        label.layer.shadowOffset = CGSize(width: 0, height: 1)
+        label.layer.shadowRadius = 2
         return label
     }
 
