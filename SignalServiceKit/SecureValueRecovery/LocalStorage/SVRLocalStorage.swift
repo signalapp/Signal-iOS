@@ -49,25 +49,8 @@ struct SVRLocalStorage {
         svrKvStore.removeValues(
             forKeys: [
                 Keys.isMasterKeyBackedUp,
-                Keys.syncedStorageServiceKey,
-                Keys.legacy_svr1EnclaveName,
                 Keys.svr2MrEnclaveStringValue,
                 Keys.needsMasterKeyBackup,
-            ],
-            transaction: transaction,
-        )
-    }
-
-    func clearStorageServiceKeys(_ transaction: DBWriteTransaction) {
-        svrKvStore.removeValue(forKey: Keys.syncedStorageServiceKey, transaction: transaction)
-    }
-
-    // MARK: - Cleanup
-
-    func cleanupDeadKeys(_ transaction: DBWriteTransaction) {
-        svrKvStore.removeValues(
-            forKeys: [
-                Keys.legacy_svr1EnclaveName,
             ],
             transaction: transaction,
         )
@@ -79,10 +62,6 @@ struct SVRLocalStorage {
         // These must not change, they match what was historically in KeyBackupServiceImpl.
         static let isMasterKeyBackedUp = "isMasterKeyBackedUp"
         static let needsMasterKeyBackup = "needsMasterKeyBackup"
-        static let syncedStorageServiceKey = "Storage Service Encryption"
-        // Kept around because its existence indicates we had an svr1 backup.
-        // TODO: Remove after Nov 1, 2024
-        static let legacy_svr1EnclaveName = "enclaveName"
         static let svr2MrEnclaveStringValue = "svr2_mrenclaveStringValue"
     }
 }

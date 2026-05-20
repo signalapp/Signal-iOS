@@ -234,9 +234,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         case .masterKey(let masterKey):
             accountKeyStore.setMasterKey(masterKey, tx: tx)
         }
-
-        // Wipe the storage service key, we don't need it anymore.
-        localStorage.clearStorageServiceKeys(tx)
     }
 
     public func storeKeys(
@@ -280,9 +277,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             let newMasterKey = accountKeyStore.getMasterKey(tx: tx)?.rawData
             keyChanged = (oldMasterKey != newMasterKey)
         }
-
-        // Wipe the storage service key, we don't need it anymore.
-        localStorage.clearStorageServiceKeys(tx)
 
         // Trigger a re-fetch of the storage manifest if our keys have changed
         if keyChanged {
@@ -918,7 +912,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         mrEnclaveStringValue: String?,
         transaction: DBWriteTransaction,
     ) {
-        localStorage.cleanupDeadKeys(transaction)
         if isMasterKeyBackedUp != localStorage.getIsMasterKeyBackedUp(transaction) {
             localStorage.setIsMasterKeyBackedUp(isMasterKeyBackedUp, transaction)
         }

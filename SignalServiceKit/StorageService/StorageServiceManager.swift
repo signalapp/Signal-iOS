@@ -1217,7 +1217,6 @@ class StorageServiceOperation {
                 await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                     // Clear out the key, it's no longer valid. This will prevent us
                     // from trying to backup again until the sync response is received.
-                    DependenciesBridge.shared.svrLocalStorage.clearStorageServiceKeys(transaction)
                     DependenciesBridge.shared.accountKeyStore.setMasterKey(nil, tx: transaction)
                     SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
                 }
@@ -1770,7 +1769,6 @@ class StorageServiceOperation {
                 await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                     // Clear out the key, it's no longer valid. This will prevent us
                     // from trying to backup again until the sync response is received.
-                    DependenciesBridge.shared.svrLocalStorage.clearStorageServiceKeys(transaction)
                     DependenciesBridge.shared.accountKeyStore.setMasterKey(nil, tx: transaction)
                     SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
                 }
