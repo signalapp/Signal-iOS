@@ -34,7 +34,7 @@ final class WebSocketPromise: SSKWebSocketDelegate {
     /// Initialize a WebSocketPromise & try to connect.
     ///
     /// If an error occurs while connecting, it'll be reported on the first
-    /// invocation of  `waitForResponse`/`waitForAllResponses`.
+    /// invocation of `waitForResponse`.
     init(webSocket: SSKWebSocket) {
         self.webSocket = webSocket
         webSocket.delegate = self
@@ -55,7 +55,6 @@ final class WebSocketPromise: SSKWebSocketDelegate {
 
     private enum WaitingState {
         case waitingForResponse(Future<Data>)
-        case waitingForAllResponses(Future<[Data]>)
     }
 
     private struct State {
@@ -79,36 +78,14 @@ final class WebSocketPromise: SSKWebSocketDelegate {
     /// If a connection failure or write error occurred, it will be reported
     /// here in lieu of the next message.
     ///
-    /// The caller must ensure that `waitForResponse` and `waitForAllResponses`
-    /// are called sequentially. After calling one of these methods, the caller
-    /// must wait until the Promise is resolved before calling either method.
+    /// The caller must ensure that `waitForResponse` invocations happen
+    /// sequentially. After calling this method, the caller must wait until the
+    /// Promise is resolved before calling the method again.
     func waitForResponse() -> Promise<Data> {
         let (promise, future) = Promise<Data>.pending()
         updateState { state in
             owsPrecondition(state.waitingState == nil)
             state.waitingState = .waitingForResponse(future)
-        }
-        return promise
-    }
-
-    /// Read all remaining messages from the underlying web socket.
-    ///
-    /// If a connection failure or write error occurred, it will be reported
-    /// here in lieu of the next message.
-    ///
-    /// The caller must ensure that `waitForResponse` and `waitForAllResponses`
-    /// are called sequentially. After calling one of these methods, the caller
-    /// must wait until the Promise is resolved before calling either method.
-    ///
-    /// - Returns:
-    ///     All remaining messages if the web socket is closed with the
-    ///     `WebSocketError.normalClosure` code. Otherwise, rejects the promise
-    ///     with the error that prevented the socket from closing normally.
-    func waitForAllResponses() -> Promise<[Data]> {
-        let (promise, future) = Promise<[Data]>.pending()
-        updateState { state in
-            owsPrecondition(state.waitingState == nil)
-            state.waitingState = .waitingForAllResponses(future)
         }
         return promise
     }
@@ -149,23 +126,6 @@ final class WebSocketPromise: SSKWebSocketDelegate {
                 return { future.reject(socketError) }
             }
             // Keep waiting until we receive a message or an error.
-            return nil
-        case .waitingForAllResponses(let future):
-            switch state.socketError {
-            case .some(WebSocketError.closeError(statusCode: WebSocketError.normalClosure, closeReason: _)):
-                // On iOS 13 & 14, we expect exactly one message. If we notice "!= 1"
-                // results on well-behaved platforms, surface it as an error since it's
-                // probably leading to incorrect behavior on iOS 13 & 14.
-                owsAssertDebug(state.receivedMessages.count == 1, "Must be exactly one message.")
-                let receivedMessages = state.receivedMessages
-                state.receivedMessages = []
-                return { future.resolve(receivedMessages) }
-            case .some(let socketError):
-                return { future.reject(socketError) }
-            case .none:
-                break
-            }
-            // Keep waiting until the socket is closed.
             return nil
         }
     }

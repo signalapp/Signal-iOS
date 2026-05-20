@@ -35,11 +35,6 @@ public class SgxWebsocketConnection<Configurator: SgxWebsocketConfigurator> {
     }
 
     // Subclasses must implement.
-    func sendRequestAndReadAllResponses(_ request: Configurator.Request) async throws -> [Configurator.Response] {
-        fatalError("Concrete subclass must implement")
-    }
-
-    // Subclasses must implement.
     func disconnect(code: URLSessionWebSocketTask.CloseCode?) {
         fatalError("Concrete subclass must implement")
     }
@@ -131,17 +126,6 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         return try Configurator.Response(serializedBytes: data)
     }
 
-    override public func sendRequestAndReadAllResponses(
-        _ request: Configurator.Request,
-    ) async throws -> [Configurator.Response] {
-        try self.encryptAndSendRequest(request.serializedData())
-        let encryptedResponses = try await self.webSocket.waitForAllResponses().awaitable()
-        return try encryptedResponses.map {
-            let data = try self.decryptResponse($0)
-            return try Configurator.Response(serializedBytes: data)
-        }
-    }
-
     private func encryptAndSendRequest(_ request: Data) throws {
         let encryptedRequest = try client.establishedSend(request)
         webSocket.send(data: encryptedRequest)
@@ -182,14 +166,6 @@ public class MockSgxWebsocketConnection<Configurator: SgxWebsocketConfigurator>:
         _ request: Configurator.Request,
     ) async throws -> Configurator.Response {
         try await onSendRequestAndReadResponse!(request).awaitable()
-    }
-
-    public var onSendRequestAndReadAllResponses: ((Configurator.Request) -> Promise<[Configurator.Response]>)?
-
-    override public func sendRequestAndReadAllResponses(
-        _ request: Configurator.Request,
-    ) async throws -> [Configurator.Response] {
-        try await onSendRequestAndReadAllResponses!(request).awaitable()
     }
 
     public var onDisconnect: (() -> Void)?
