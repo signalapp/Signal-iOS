@@ -238,7 +238,7 @@ public class OWS2FAManager {
             throw OWSAssertionError("Missing master key")
         }
 
-        _ = try await svr.backupMasterKey(
+        try await svr.backupMasterKey(
             pin: pin,
             masterKey: masterKey,
             authMethod: .implicit,

@@ -94,7 +94,7 @@ struct SVR2ConcurrencyTests {
         }
 
         let firstMasterKey = MasterKey()
-        async let firstBackupResult = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit)
+        async let firstBackupResult: Void = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit)
 
         // Let the first backup succeed and start the expose, then make the second request.
         firstBackupFuture.resolve(backupResponse())
@@ -103,7 +103,7 @@ struct SVR2ConcurrencyTests {
         try await madeRequestContinuations[1].wait()
 
         let secondMasterKey = MasterKey()
-        async let secondBackupResult = svr.backupMasterKey(pin: "abcd", masterKey: secondMasterKey, authMethod: .implicit)
+        async let secondBackupResult: Void = svr.backupMasterKey(pin: "abcd", masterKey: secondMasterKey, authMethod: .implicit)
 
         firstExposeFuture.resolve(exposeResponse())
         secondBackupFuture.resolve(backupResponse())
@@ -165,7 +165,7 @@ struct SVR2ConcurrencyTests {
         }
 
         let firstMasterKey = MasterKey()
-        async let firstBackupResult = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit)
+        async let firstBackupResult: Void = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit)
 
         let backupError = WebSocketError.closeError(statusCode: 400, closeReason: nil)
         firstBackupFuture.reject(backupError)
@@ -198,7 +198,7 @@ struct SVR2ConcurrencyTests {
         }
 
         let secondMasterKey = MasterKey()
-        _ = try await svr.backupMasterKey(pin: "zzzz", masterKey: secondMasterKey, authMethod: .implicit)
+        try await svr.backupMasterKey(pin: "zzzz", masterKey: secondMasterKey, authMethod: .implicit)
 
         #expect(numOpenedConnections == 2)
     }

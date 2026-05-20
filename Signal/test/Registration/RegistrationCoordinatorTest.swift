@@ -413,7 +413,7 @@ public class RegistrationCoordinatorTest {
             #expect(masterKey.rawData == finalMasterKey.rawData)
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
-            return .value(masterKey)
+            return .value(())
         }
 
         // Once we sync push tokens, we should restore from storage service.
@@ -550,7 +550,7 @@ public class RegistrationCoordinatorTest {
             // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
-            return .value(masterKey)
+            return .value(())
         }
 
         // Once we sync push tokens, we should restore from storage service.
@@ -920,7 +920,7 @@ public class RegistrationCoordinatorTest {
             // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
-            return .value(masterKey)
+            return .value(())
         }
 
         // Once we back up to svr, we should restore from storage service.
@@ -1298,7 +1298,7 @@ public class RegistrationCoordinatorTest {
                 backup: .chatServerAuth(expectedAuthedAccount()),
             ))
             self.svr.hasMasterKey = true
-            return .value(masterKey)
+            return .value(())
         }
 
         // Once we sync push tokens, we should restore from storage service.
@@ -1614,7 +1614,7 @@ public class RegistrationCoordinatorTest {
                 Stubs.svr2AuthCredential,
                 backup: .chatServerAuth(expectedAuthedAccount()),
             ))
-            return .value(masterKey)
+            return .value(())
         }
 
         // Once we back up to svr, we should restore from storage service.
@@ -1921,7 +1921,7 @@ public class RegistrationCoordinatorTest {
             #expect(pin == Stubs.pinCode)
             #expect(masterKey.rawData == newMasterKey.rawData)
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
-            return .value(masterKey)
+            return .value(())
         }
 
         // Once we sync push tokens, we should restore from storage service.
@@ -2951,9 +2951,9 @@ public class RegistrationCoordinatorTest {
         })
 
         // When we skip the pin, it should skip any SVR backups.
-        svr.backupMasterKeyMock = { _, masterKey, _ in
+        svr.backupMasterKeyMock = { _, _, _ in
             Issue.record("Shouldn't talk to SVR with skipped PIN!")
-            return .value(masterKey)
+            return .value(())
         }
 
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ _, _ in
@@ -3082,10 +3082,9 @@ public class RegistrationCoordinatorTest {
         })
 
         // When we skip the pin, it should skip any SVR backups.
-        svr.backupMasterKeyMock = { _, masterKey, _ in
+        svr.backupMasterKeyMock = { _, _, _ in
             Issue.record("Shouldn't talk to SVR with skipped PIN!")
-            return .value(masterKey)
-
+            return .value(())
         }
 
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in

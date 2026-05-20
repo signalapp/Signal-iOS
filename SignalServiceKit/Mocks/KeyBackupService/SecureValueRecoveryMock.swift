@@ -31,10 +31,10 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public var reglockToken: String?
 
-    public var backupMasterKeyMock: ((_ pin: String, _ masterKey: MasterKey, _ authMethod: SVR.AuthMethod) -> Promise<MasterKey>)?
+    public var backupMasterKeyMock: ((_ pin: String, _ masterKey: MasterKey, _ authMethod: SVR.AuthMethod) -> Promise<Void>)?
 
-    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) async throws -> MasterKey {
-        return try await backupMasterKeyMock!(pin, masterKey, authMethod).awaitable()
+    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) async throws {
+        try await backupMasterKeyMock!(pin, masterKey, authMethod).awaitable()
     }
 
     public var restoreKeysMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>)?

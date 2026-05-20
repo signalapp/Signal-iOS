@@ -4037,7 +4037,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         let masterKey = accountEntropyPool.getMasterKey()
         do {
-            let backedUpMasterKey = try await deps.svr.backupMasterKey(
+            try await deps.svr.backupMasterKey(
                 pin: pin,
                 masterKey: masterKey,
                 authMethod: authMethod,
@@ -4047,7 +4047,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             await db.awaitableWrite { tx in
                 logger.info("Setting pin code after SVR backup")
                 updateMasterKeyAndLocalState(
-                    masterKey: backedUpMasterKey,
+                    masterKey: masterKey,
                     tx: tx,
                 )
                 deps.ows2FAManager.markPinEnabled(

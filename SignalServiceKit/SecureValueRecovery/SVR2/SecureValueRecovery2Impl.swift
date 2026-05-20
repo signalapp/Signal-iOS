@@ -110,7 +110,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             // Record that the master key needs to be backed up.
             localStorage.setNeedsMasterKeyBackup(true, transaction)
             transaction.addSyncCompletion {
-                Task { _ = try await self.backupMasterKey(pin: pin, masterKey: newMasterKey, authMethod: .implicit) }
+                Task { try await self.backupMasterKey(pin: pin, masterKey: newMasterKey, authMethod: .implicit) }
             }
         }
     }
@@ -119,10 +119,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     private let backupQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
-    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) async throws -> MasterKey {
+    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) async throws {
         Logger.info("")
-        return try await backupQueue.run {
-            return try await doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: authMethod)
+        try await backupQueue.run {
+            try await doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: authMethod)
         }
     }
 
@@ -229,7 +229,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     /// 1. The expose requests succeeeds (we are done backing up and can wipe this)
     /// 2. The user chooses a different PIN (we will make a new backup request)
     /// 3. The user wipes SVR2 backups
-    private struct InProgressBackup: Codable, Equatable {
+    private struct InProgressBackup: Codable {
         let masterKey: Data
         let encryptedMasterKey: Data
         // TODO: Remove.
@@ -242,19 +242,14 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         func matches(
             pin: String,
+            masterKey: MasterKey,
             mrEnclave: MrEnclave,
         ) -> Bool {
-            if !SVRUtil.verifyPIN(pin: pin, againstEncodedPINVerificationString: self.encodedPINVerificationString) {
-                return false
-            }
-            if mrEnclave.stringValue != self.mrEnclaveStringValue {
-                return false
-            }
-            return true
-        }
-
-        func matches(_ other: InProgressBackup) -> Bool {
-            return self == other
+            return (
+                SVRUtil.verifyPIN(pin: pin, againstEncodedPINVerificationString: self.encodedPINVerificationString)
+                    && masterKey.rawData.ows_constantTimeIsEqual(to: self.masterKey)
+                    && mrEnclave.stringValue == self.mrEnclaveStringValue,
+            )
         }
     }
 
@@ -278,7 +273,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         pin: String,
         masterKey: MasterKey,
         authMethod: SVR2.AuthMethod,
-    ) async throws -> MasterKey {
+    ) async throws {
         let config = SVR2WebsocketConfigurator(mrenclave: tsConstants.svr2Enclave, authMethod: authMethod)
 
         let connection = try await makeHandshakeAndOpenConnection(config)
@@ -300,7 +295,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
 
         let completedInProgressBackup: InProgressBackup
-        if let inProgressBackup, inProgressBackup.matches(pin: pin, mrEnclave: config.mrenclave) {
+        if let inProgressBackup, inProgressBackup.matches(pin: pin, masterKey: masterKey, mrEnclave: config.mrenclave) {
             // Continue the backup from where we left off.
             Logger.warn("Skipping backup that was already completed")
             completedInProgressBackup = inProgressBackup
@@ -326,9 +321,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             connection: connection,
         )
 
-        try await self.db.awaitableWrite { tx in
-            guard let persistedBackup = try self.getInProgressBackup(tx: tx), persistedBackup.matches(completedInProgressBackup) else {
-                Logger.info("Backup state changed while expose ongoing; throwing away results")
+        await self.db.awaitableWrite { tx in
+            let hasInProgressBackup = (try? self.getInProgressBackup(tx: tx)) != nil
+            guard hasInProgressBackup else {
+                Logger.info("backup state cleared while expose ongoing; throwing away results")
                 return
             }
             self.localStorage.setNeedsMasterKeyBackup(false, tx)
@@ -339,8 +335,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 transaction: tx,
             )
         }
-
-        return try MasterKey(data: completedInProgressBackup.masterKey)
     }
 
     private func performBackupRequest(
@@ -662,7 +656,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             Logger.warn("skipping; hasPin? \(pin != nil); hasMasterKey? \(masterKey != nil)")
             return
         }
-        _ = try await doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: .implicit)
+        try await doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: .implicit)
     }
 
     /// If there is a newer enclave than the one we most recently backed up to, backs up known
@@ -698,7 +692,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         Logger.info("Migrating SVR2 Enclaves")
         do {
-            _ = try await self.doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: .implicit)
+            try await self.doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: .implicit)
             Logger.info("Successfully migrated SVR2 enclave")
         } catch {
             owsFailDebug("Failed to migrate SVR2 enclave")
