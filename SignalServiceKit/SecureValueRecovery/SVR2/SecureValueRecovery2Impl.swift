@@ -626,15 +626,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         authMethod: SVR2.AuthMethod,
     ) async throws {
         let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
-        do {
-            let connection = try await makeHandshakeAndOpenConnection(config)
-            defer { connection.disconnect(code: .normalClosure) }
-            return try await self.performDeleteRequest(
-                mrEnclave: mrEnclave,
-                connection: connection,
-                authedAccount: authMethod.authedAccount,
-            )
-        }
+        let connection = try await makeHandshakeAndOpenConnection(config)
+        defer { connection.disconnect(code: .normalClosure) }
+        return try await self.performDeleteRequest(
+            mrEnclave: mrEnclave,
+            connection: connection,
+            authedAccount: authMethod.authedAccount,
+        )
     }
 
     private func performDeleteRequest(
