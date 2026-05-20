@@ -1613,7 +1613,6 @@
 		8862921028355B8000AA0C3B /* MyStoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8862920F28355B8000AA0C3B /* MyStoryViewModel.swift */; };
 		886292122835606D00AA0C3B /* MyStoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886292112835606D00AA0C3B /* MyStoryCell.swift */; };
 		8862A55925F090C5005D65DB /* InternalSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */; };
-		8864072827EEA658009916B6 /* StoryGroupReplySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072727EEA658009916B6 /* StoryGroupReplySheet.swift */; };
 		8864072A27F0D426009916B6 /* StoryGroupReplyLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072927F0D426009916B6 /* StoryGroupReplyLoader.swift */; };
 		8864072C27F0DA38009916B6 /* StoryGroupReplyViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */; };
 		8864072E27F0E8DF009916B6 /* StoryGroupReplyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */; };
@@ -1677,8 +1676,7 @@
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
 		88B00D4B28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D4A28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift */; };
 		88B00D4D28A3346100BC9CA0 /* StoryViewsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D4C28A3346000BC9CA0 /* StoryViewsViewController.swift */; };
-		88B00D4F28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D4E28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift */; };
-		88B00D5128A341D000BC9CA0 /* StoryGroupRepliesAndViewsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D5028A341CF00BC9CA0 /* StoryGroupRepliesAndViewsSheet.swift */; };
+		88B00D5128A341D000BC9CA0 /* StoryGroupRepliesAndViewsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D5028A341CF00BC9CA0 /* StoryGroupRepliesAndViewsViewController.swift */; };
 		88B2234A283F290400A25048 /* StoryPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B22349283F290400A25048 /* StoryPrivacySettingsViewController.swift */; };
 		88B2234C284FABE600A25048 /* StoryThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B2234B284FABE600A25048 /* StoryThumbnailView.swift */; };
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
@@ -5821,7 +5819,6 @@
 		8862920F28355B8000AA0C3B /* MyStoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStoryViewModel.swift; sourceTree = "<group>"; };
 		886292112835606D00AA0C3B /* MyStoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStoryCell.swift; sourceTree = "<group>"; };
 		8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalSettingsViewController.swift; sourceTree = "<group>"; };
-		8864072727EEA658009916B6 /* StoryGroupReplySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplySheet.swift; sourceTree = "<group>"; };
 		8864072927F0D426009916B6 /* StoryGroupReplyLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyLoader.swift; sourceTree = "<group>"; };
 		8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyViewItem.swift; sourceTree = "<group>"; };
 		8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyCell.swift; sourceTree = "<group>"; };
@@ -5929,8 +5926,7 @@
 		88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewWallpaperViewController.swift; sourceTree = "<group>"; };
 		88B00D4A28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyViewController.swift; sourceTree = "<group>"; };
 		88B00D4C28A3346000BC9CA0 /* StoryViewsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewsViewController.swift; sourceTree = "<group>"; };
-		88B00D4E28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPrivateViewsSheet.swift; sourceTree = "<group>"; };
-		88B00D5028A341CF00BC9CA0 /* StoryGroupRepliesAndViewsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupRepliesAndViewsSheet.swift; sourceTree = "<group>"; };
+		88B00D5028A341CF00BC9CA0 /* StoryGroupRepliesAndViewsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupRepliesAndViewsViewController.swift; sourceTree = "<group>"; };
 		88B22349283F290400A25048 /* StoryPrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPrivacySettingsViewController.swift; sourceTree = "<group>"; };
 		88B2234B284FABE600A25048 /* StoryThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryThumbnailView.swift; sourceTree = "<group>"; };
 		88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsDetailSheet.swift; sourceTree = "<group>"; };
@@ -11214,7 +11210,6 @@
 				8864072F27F21AA7009916B6 /* Group Reply Sheet */,
 				668FE09E28B947ED008B9071 /* StoryContextMenuGenerator.swift */,
 				88423A51280A171E007D2918 /* StoryDirectReplySheet.swift */,
-				88B00D4E28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift */,
 				8864073027F21AD7009916B6 /* StoryReplyInputToolbar.swift */,
 				88423A53280A2675007D2918 /* StoryReplyPreviewView.swift */,
 				88423A55280A373C007D2918 /* StoryReplySheet.swift */,
@@ -11316,10 +11311,9 @@
 		8864072F27F21AA7009916B6 /* Group Reply Sheet */ = {
 			isa = PBXGroup;
 			children = (
-				88B00D5028A341CF00BC9CA0 /* StoryGroupRepliesAndViewsSheet.swift */,
+				88B00D5028A341CF00BC9CA0 /* StoryGroupRepliesAndViewsViewController.swift */,
 				8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */,
 				8864072927F0D426009916B6 /* StoryGroupReplyLoader.swift */,
-				8864072727EEA658009916B6 /* StoryGroupReplySheet.swift */,
 				88B00D4A28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift */,
 				8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */,
 			);
@@ -18744,10 +18738,9 @@
 				66BE544D28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift in Sources */,
 				884DB95027DE67BB00C6A309 /* StoryContextViewController.swift in Sources */,
 				88423A52280A171E007D2918 /* StoryDirectReplySheet.swift in Sources */,
-				88B00D5128A341D000BC9CA0 /* StoryGroupRepliesAndViewsSheet.swift in Sources */,
+				88B00D5128A341D000BC9CA0 /* StoryGroupRepliesAndViewsViewController.swift in Sources */,
 				8864072E27F0E8DF009916B6 /* StoryGroupReplyCell.swift in Sources */,
 				8864072A27F0D426009916B6 /* StoryGroupReplyLoader.swift in Sources */,
-				8864072827EEA658009916B6 /* StoryGroupReplySheet.swift in Sources */,
 				88B00D4B28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift in Sources */,
 				8864072C27F0DA38009916B6 /* StoryGroupReplyViewItem.swift in Sources */,
 				880FB40828CD437600FA1C10 /* StoryInfoSheet.swift in Sources */,
@@ -18757,7 +18750,6 @@
 				884DB94F27DE67BB00C6A309 /* StoryPageViewController.swift in Sources */,
 				884DB95427DEB9E900C6A309 /* StoryPlaybackProgressView.swift in Sources */,
 				88B2234A283F290400A25048 /* StoryPrivacySettingsViewController.swift in Sources */,
-				88B00D4F28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift in Sources */,
 				8864073127F21AD7009916B6 /* StoryReplyInputToolbar.swift in Sources */,
 				88423A54280A2675007D2918 /* StoryReplyPreviewView.swift in Sources */,
 				88423A56280A373C007D2918 /* StoryReplySheet.swift in Sources */,

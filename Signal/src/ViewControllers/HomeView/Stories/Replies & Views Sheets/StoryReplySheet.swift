@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import LibSignalClient
 import SignalServiceKit
 import SignalUI
-import UIKit
 
 protocol StoryReplySheet: OWSViewController, StoryReplyInputToolbarDelegate, MessageReactionPickerDelegate {
     var bottomBar: UIView { get }

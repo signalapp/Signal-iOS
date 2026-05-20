@@ -10,12 +10,17 @@ protocol StoryGroupReplyDelegate: AnyObject {
     func storyGroupReplyViewControllerDidBeginEditing(_ storyGroupReplyViewController: StoryGroupReplyViewController)
 }
 
-class StoryGroupReplyViewController: OWSViewController, StoryReplySheet, StoryGroupReplyMessageResendDelegate {
+class StoryGroupReplyViewController: OWSViewController, ContextMenuInteractionDelegate, DatabaseChangeDelegate,
+    StoryGroupReplyMessageResendDelegate, StoryReplyInputToolbarDelegate, StoryReplySheet,
+    UIAdaptivePresentationControllerDelegate, UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource
+{
     weak var delegate: StoryGroupReplyDelegate?
 
     private(set) lazy var tableView = UITableView()
 
     private let spoilerState: SpoilerRenderState
+
+    var dismissHandler: (() -> Void)?
 
     let bottomBar = UIView()
     private(set) lazy var inputToolbar = StoryReplyInputToolbar(isGroupStory: true, spoilerState: spoilerState)
@@ -31,79 +36,121 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet, StoryGr
 
     private lazy var emptyStateView: UIView = {
         let label = UILabel()
-        label.textColor = .ows_gray45
+        label.textColor = .Signal.secondaryLabel
         label.textAlignment = .center
         label.numberOfLines = 2
         label.attributedText = NSAttributedString(
             string: OWSLocalizedString("STORIES_NO_REPLIES_YET", comment: "Indicates that this story has no replies yet"),
-            attributes: [NSAttributedString.Key.font: UIFont.dynamicTypeHeadline],
+            attributes: [.font: UIFont.dynamicTypeHeadline],
         ).stringByAppendingString(
             "\n",
         ).stringByAppendingString(
             OWSLocalizedString("STORIES_NO_REPLIES_SUBTITLE", comment: "The subtitle when this story has no replies"),
-            attributes: [NSAttributedString.Key.font: UIFont.dynamicTypeSubheadline],
+            attributes: [.font: UIFont.dynamicTypeSubheadline],
         )
-        label.isHidden = true
         label.isUserInteractionEnabled = false
-        return label
+
+        let view = UIView()
+        view.isHidden = true
+
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(greaterThanOrEqualTo: view.layoutMarginsGuide.topAnchor),
+            label.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.centerYAnchor),
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+
+        return view
     }()
 
     let storyMessage: StoryMessage
+
+    // This VC also gets embedded as a child VC into StoryGroupRepliesAndViewsViewController.
+    // Distinguish that vs when this VC is presented on its own.
+    private let isStandaloneVC: Bool
+
     lazy var thread: TSThread? = SSKEnvironment.shared.databaseStorageRef.read { storyMessage.context.thread(transaction: $0) }
 
-    init(storyMessage: StoryMessage, spoilerState: SpoilerRenderState) {
+    init(storyMessage: StoryMessage, spoilerState: SpoilerRenderState, isStandaloneVC: Bool) {
         self.storyMessage = storyMessage
         self.spoilerState = spoilerState
+        self.isStandaloneVC = isStandaloneVC
 
         super.init()
 
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
+
+        overrideUserInterfaceStyle = .dark
+
+        if isStandaloneVC {
+            modalPresentationStyle = .pageSheet
+            presentationController?.delegate = self
+
+            if let sheetPresentationController {
+                if #available(iOS 17.0, *) {
+                    sheetPresentationController.traitOverrides.userInterfaceStyle = .dark
+                } else {
+                    sheetPresentationController.overrideTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
+                }
+                sheetPresentationController.detents = [.medium(), .large()]
+                sheetPresentationController.prefersGrabberVisible = true
+            }
+        }
     }
 
     fileprivate var replyLoader: StoryGroupReplyLoader?
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        view.preservesSuperviewLayoutMargins = true
 
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         tableView.keyboardDismissMode = .interactive
-        tableView.backgroundColor = .ows_gray90
+        tableView.backgroundColor = .clear
         tableView.addInteraction(contextMenu)
+        for type in StoryGroupReplyCell.CellType.all {
+            tableView.register(StoryGroupReplyCell.self, forCellReuseIdentifier: type.rawValue)
+        }
+
+        inputToolbar.delegate = self
 
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        ])
 
-        inputToolbar.delegate = self
+        bottomBar.preservesSuperviewLayoutMargins = true
         view.addSubview(bottomBar)
         bottomBar.translatesAutoresizingMaskIntoConstraints = false
+
+        view.insertSubview(emptyStateView, belowSubview: bottomBar)
+        emptyStateView.translatesAutoresizingMaskIntoConstraints = false
+
         NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+
             bottomBar.topAnchor.constraint(equalTo: tableView.bottomAnchor),
             bottomBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomBar.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+
+            emptyStateView.topAnchor.constraint(equalTo: view.topAnchor),
+            emptyStateView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            emptyStateView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            emptyStateView.bottomAnchor.constraint(equalTo: bottomBar.topAnchor),
         ])
         // Its a bit silly but this is the easiest way to capture touches
         // and not let them pass up to any parent scrollviews. pans inside the
         // bottom bar shouldn't scroll anything.
         bottomBar.addGestureRecognizer(UIPanGestureRecognizer())
 
-        for type in StoryGroupReplyCell.CellType.all {
-            tableView.register(StoryGroupReplyCell.self, forCellReuseIdentifier: type.rawValue)
-        }
-
         replyLoader = StoryGroupReplyLoader(storyMessage: storyMessage, threadUniqueId: thread?.uniqueId, tableView: tableView)
-
-        view.insertSubview(emptyStateView, belowSubview: bottomBar)
-        emptyStateView.autoPinWidthToSuperview()
-        emptyStateView.autoPinEdge(toSuperviewEdge: .top)
-        emptyStateView.autoPinEdge(.bottom, to: .top, of: bottomBar)
 
         updateBottomBarContents()
     }
@@ -117,61 +164,50 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet, StoryGr
             return owsFailDebug("Unexpectedly missing group thread")
         }
 
-        if groupThread.canSendChatMessagesToThread() {
-            switch bottomBarMode {
-            case .member:
-                // Nothing to do, we're already in the right state
-                break
-            case .nonMember, .blockedByAnnouncementOnly, .none:
-                bottomBar.removeAllSubviews()
-                bottomBar.addSubview(inputToolbar)
-                inputToolbar.autoPinEdgesToSuperviewEdges()
-            }
-
-            bottomBarMode = .member
+        let newBottomBarMode: BottomBarMode = if groupThread.canSendChatMessagesToThread() {
+            .member
         } else if groupThread.isBlockedByAnnouncementOnly {
-            switch bottomBarMode {
-            case .blockedByAnnouncementOnly:
-                // Nothing to do, we're already in the right state
-                break
-            case .member, .nonMember, .none:
-                bottomBar.removeAllSubviews()
-
-                let view = BlockingAnnouncementOnlyView(thread: groupThread, fromViewController: self, forceDarkMode: true)
-                bottomBar.addSubview(view)
-                view.autoPinWidthToSuperview()
-                view.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
-                view.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 8)
-            }
-
-            bottomBarMode = .blockedByAnnouncementOnly
+            .blockedByAnnouncementOnly
         } else {
-            switch bottomBarMode {
-            case .nonMember:
-                // Nothing to do, we're already in the right state
-                break
-            case .member, .blockedByAnnouncementOnly, .none:
-                bottomBar.removeAllSubviews()
+            .nonMember
+        }
 
-                let label = UILabel()
-                label.font = .dynamicTypeSubheadline
-                label.text = OWSLocalizedString(
-                    "STORIES_GROUP_REPLY_NOT_A_MEMBER",
-                    comment: "Text indicating you can't reply to a group story because you're not a member of the group",
-                )
-                label.textColor = .ows_gray05
-                label.textAlignment = .center
-                label.numberOfLines = 0
-                label.alpha = 0.7
-                label.setContentHuggingVerticalHigh()
+        guard bottomBarMode != newBottomBarMode else { return }
 
-                bottomBar.addSubview(label)
-                label.autoPinWidthToSuperview(withMargin: 37)
-                label.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
-                label.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 8)
-            }
+        bottomBarMode = newBottomBarMode
+        bottomBar.removeAllSubviews()
 
-            bottomBarMode = .nonMember
+        switch bottomBarMode {
+        case .member:
+            bottomBar.addSubview(inputToolbar)
+            inputToolbar.autoPinEdgesToSuperviewEdges()
+
+        case .nonMember:
+            let label = UILabel()
+            label.font = .dynamicTypeSubheadline
+            label.text = OWSLocalizedString(
+                "STORIES_GROUP_REPLY_NOT_A_MEMBER",
+                comment: "Text indicating you can't reply to a group story because you're not a member of the group",
+            )
+            label.textColor = .Signal.secondaryLabel
+            label.textAlignment = .center
+            label.numberOfLines = 0
+            label.setContentHuggingVerticalHigh()
+
+            bottomBar.addSubview(label)
+            label.autoPinWidthToSuperviewMargins()
+            label.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
+            label.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 8)
+
+        case .blockedByAnnouncementOnly:
+            let view = BlockingAnnouncementOnlyView(thread: groupThread, fromViewController: self, forceDarkMode: true)
+            bottomBar.addSubview(view)
+            view.autoPinWidthToSuperview()
+            view.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
+            view.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 8)
+
+        case .none:
+            owsFailDebug("Invalid state")
         }
     }
 
@@ -199,9 +235,9 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet, StoryGr
 
         self.present(promptBuilder.build(for: message, isTerminatedGroup: isTerminatedGroupThread), animated: true)
     }
-}
 
-extension StoryGroupReplyViewController: UIScrollViewDelegate {
+    // MARK: - UIScrollViewDelegate
+
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard
             let visibleRows = tableView.indexPathsForVisibleRows?.map({ $0.row }),
@@ -220,9 +256,9 @@ extension StoryGroupReplyViewController: UIScrollViewDelegate {
             replyLoader?.loadNewerPageIfNecessary()
         }
     }
-}
 
-extension StoryGroupReplyViewController: UITableViewDelegate {
+    // MARK: - UITableView
+
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let cell = cell as? StoryGroupReplyCell else {
             return
@@ -236,9 +272,7 @@ extension StoryGroupReplyViewController: UITableViewDelegate {
         }
         cell.setIsCellVisible(false)
     }
-}
 
-extension StoryGroupReplyViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let item = replyLoader?.replyItem(for: indexPath) else {
             owsFailDebug("Missing item for cell at indexPath \(indexPath)")
@@ -260,15 +294,15 @@ extension StoryGroupReplyViewController: UITableViewDataSource {
         emptyStateView.isHidden = numberOfRows > 0
         return numberOfRows
     }
-}
 
-extension StoryGroupReplyViewController: StoryReplyInputToolbarDelegate {
+    // MARK: - StoryReplyInputToolbarDelegate
+
     func storyReplyInputToolbarDidBeginEditing(_ storyReplyInputToolbar: StoryReplyInputToolbar) {
         delegate?.storyGroupReplyViewControllerDidBeginEditing(self)
     }
-}
 
-extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
+    // MARK: - ContextMenuInteractionDelegate
+
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
         guard
             let indexPath = tableView.indexPathForRow(at: location),
@@ -333,9 +367,9 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {}
 
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration configuration: ContextMenuConfiguration) {}
-}
 
-extension StoryGroupReplyViewController: DatabaseChangeDelegate {
+    // MARK: - DatabaseChangeDelegate
+
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         guard let thread, databaseChanges.didUpdate(thread: thread) else { return }
         updateBottomBarContents()
@@ -347,5 +381,11 @@ extension StoryGroupReplyViewController: DatabaseChangeDelegate {
 
     func databaseChangesDidReset() {
         updateBottomBarContents()
+    }
+
+    // MARK: - UIAdaptivePresentationControllerDelegate
+
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        dismissHandler?()
     }
 }

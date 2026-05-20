@@ -982,38 +982,52 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
         case .groupId:
             switch currentItem.message.direction {
             case .outgoing:
-                let groupRepliesAndViewsVC = StoryGroupRepliesAndViewsSheet(
+                pause()
+
+                let groupRepliesAndViewsVC = StoryGroupRepliesAndViewsViewController(
                     storyMessage: currentItem.message,
                     context: context,
                     spoilerState: spoilerState,
                 )
                 groupRepliesAndViewsVC.dismissHandler = { [weak self] in self?.play() }
                 groupRepliesAndViewsVC.focusedTab = currentItem.numberOfReplies > 0 ? .replies : .views
-                self.pause()
-                self.present(groupRepliesAndViewsVC, animated: true)
+                present(groupRepliesAndViewsVC, animated: true)
+
             case .incoming:
-                let groupReplyVC = StoryGroupReplySheet(
+                pause()
+
+                let groupReplyVC = StoryGroupReplyViewController(
                     storyMessage: currentItem.message,
                     spoilerState: spoilerState,
+                    isStandaloneVC: true,
                 )
                 groupReplyVC.dismissHandler = { [weak self] in self?.play() }
-                self.pause()
-                self.present(groupReplyVC, animated: true)
+                present(groupReplyVC, animated: true)
             }
+
         case .authorAci:
+            pause()
+
             owsAssertDebug(
                 !currentItem.message.authorAddress.isSystemStoryAddress,
                 "Should be impossible to reply to system stories",
             )
+
             let directReplyVC = StoryDirectReplySheet(storyMessage: currentItem.message, spoilerState: spoilerState)
             directReplyVC.dismissHandler = { [weak self] in self?.play() }
-            self.pause()
-            self.present(directReplyVC, animated: true)
+            present(directReplyVC, animated: true)
+
         case .privateStory:
-            let privateViewsVC = StoryPrivateViewsSheet(storyMessage: currentItem.message, context: context)
-            privateViewsVC.dismissHandler = { [weak self] in self?.play() }
-            self.pause()
-            self.present(privateViewsVC, animated: true)
+            pause()
+
+            let viewController = StoryViewsViewController(
+                storyMessage: currentItem.message,
+                context: context,
+                isStandaloneVC: true,
+            )
+            viewController.dismissHandler = { [weak self] in self?.play() }
+            present(viewController, animated: true)
+
         case .none:
             owsFailDebug("Unexpected context")
         }

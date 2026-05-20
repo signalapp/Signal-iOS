@@ -707,9 +707,10 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         // Rounded rect background for the text input field:
         // Liquid Glass on iOS 26, gray-ish on earlier iOS versions.
         let backgroundView: UIView
+        let cornerRadius = LayoutMetrics.initialTextBoxHeight / 2
         if #available(iOS 26, *) {
             let glassEffectView = UIVisualEffectView(effect: Style.glassEffect(isInteractive: true))
-            glassEffectView.cornerConfiguration = .uniformCorners(radius: 20)
+            glassEffectView.cornerConfiguration = .uniformCorners(radius: .fixed(cornerRadius))
             glassEffectView.contentView.addSubview(messageComponentsView)
             backgroundView = glassEffectView
 
@@ -717,7 +718,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         } else {
             backgroundView = UIView()
             backgroundView.backgroundColor = UIColor.Signal.tertiaryFill
-            backgroundView.layer.cornerRadius = 20
+            backgroundView.layer.cornerRadius = cornerRadius
 
             messageContentView.addSubview(backgroundView)
             messageContentView.addSubview(messageComponentsView)

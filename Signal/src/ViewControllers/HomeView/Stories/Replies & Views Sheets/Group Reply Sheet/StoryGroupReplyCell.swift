@@ -47,8 +47,7 @@ class StoryGroupReplyCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.image = UIImage(imageLiteralResourceName: "error-circle-20")
-        imageView.tintColor = .ows_accentRed
-        imageView.autoSetDimensions(to: .square(20))
+        imageView.tintColor = .Signal.red
 
         let container = UIView()
         container.layoutMargins = UIEdgeInsets(hMargin: 12, vMargin: 0)
@@ -254,7 +253,7 @@ class StoryGroupReplyCell: UITableViewCell {
 
         sendingSpinner.isHiddenInStackView = true
         sendingSpinner.autoSetDimension(.width, toSize: 12)
-        sendingSpinner.tintColor = Theme.darkThemePrimaryColor
+        sendingSpinner.tintColor = .Signal.label
 
         vStack.addArrangedSubview(internalHStack)
 
@@ -305,7 +304,7 @@ class StoryGroupReplyCell: UITableViewCell {
             if item.wasRemotelyDeleted {
                 return .attributedText(OWSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted").styled(
                     with: .font(UIFont.dynamicTypeBodyClamped.italic()),
-                    .color(.ows_gray05),
+                    .color(.Signal.label),
                 ))
             } else if cellType.isReaction {
                 let reactionString: String
@@ -316,7 +315,7 @@ class StoryGroupReplyCell: UITableViewCell {
                 }
                 return .attributedText(reactionString.styled(
                     with: .font(.dynamicTypeBodyClamped),
-                    .color(.ows_gray05),
+                    .color(.Signal.label),
                     .alignment(.natural),
                 ))
             } else if let displayableText = item.displayableText {
@@ -377,7 +376,7 @@ class StoryGroupReplyCell: UITableViewCell {
         // Style footer
         footerText.addAttributesToEntireString([
             .font: UIFont.dynamicTypeCaption1Clamped,
-            .foregroundColor: UIColor.ows_gray25,
+            .foregroundColor: UIColor.Signal.secondaryLabel,
         ])
 
         // Render footer inline if possible
@@ -467,7 +466,7 @@ class StoryGroupReplyCell: UITableViewCell {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = textValue.naturalTextAligment
         let baseFont = UIFont.dynamicTypeBodyClamped
-        let baseTextColor = UIColor.ows_gray05
+        let baseTextColor = UIColor.Signal.label
         let baseAttrs: [NSAttributedString.Key: Any] = [
             .font: baseFont,
             .foregroundColor: baseTextColor,
@@ -621,7 +620,10 @@ class StoryGroupReplyCell: UITableViewCell {
 
 private class SendingSpinner: UIImageView {
     init() {
-        super.init(image: #imageLiteral(resourceName: "message_status_sending").withRenderingMode(.alwaysTemplate).withAlignmentRectInsets(.init(hMargin: 0, vMargin: -2)))
+        super.init(
+            image: UIImage(imageLiteralResourceName: "message_status_sending")
+                .withAlignmentRectInsets(.init(hMargin: 0, vMargin: -2)),
+        )
 
         startAnimating()
     }

@@ -3,10 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 import SignalUI
-import UIKit
 
 private struct Viewer {
     let address: SignalServiceAddress
@@ -14,19 +12,48 @@ private struct Viewer {
     let viewedTimestamp: UInt64
 }
 
-class StoryViewsViewController: OWSViewController {
+class StoryViewsViewController: OWSViewController, DatabaseChangeDelegate, UIAdaptivePresentationControllerDelegate,
+    UITableViewDelegate, UITableViewDataSource
+{
     private(set) var storyMessage: StoryMessage
+
     let context: StoryContext
+
+    // This VC also gets embedded as a child VC into StoryGroupRepliesAndViewsViewController.
+    // Distinguish that vs when this VC is presented on its own.
+    private let isStandaloneVC: Bool
+
+    var dismissHandler: (() -> Void)?
 
     let tableView = UITableView(frame: .zero, style: .grouped)
 
     private let emptyStateView = UIView()
 
-    init(storyMessage: StoryMessage, context: StoryContext) {
+    init(storyMessage: StoryMessage, context: StoryContext, isStandaloneVC: Bool) {
         self.storyMessage = storyMessage
         self.context = context
+        self.isStandaloneVC = isStandaloneVC
+
         super.init()
+
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
+
+        overrideUserInterfaceStyle = .dark
+
+        if isStandaloneVC {
+            modalPresentationStyle = .pageSheet
+            presentationController?.delegate = self
+
+            if let sheetPresentationController {
+                if #available(iOS 17.0, *) {
+                    sheetPresentationController.traitOverrides.userInterfaceStyle = .dark
+                } else {
+                    sheetPresentationController.overrideTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
+                }
+                sheetPresentationController.detents = [.medium(), .large()]
+                sheetPresentationController.prefersGrabberVisible = true
+            }
+        }
     }
 
     override func viewDidLoad() {
@@ -43,15 +70,23 @@ class StoryViewsViewController: OWSViewController {
         tableView.register(StoryViewCell.self, forCellReuseIdentifier: StoryViewCell.reuseIdentifier)
 
         view.addSubview(emptyStateView)
+        emptyStateView.preservesSuperviewLayoutMargins = true
         emptyStateView.autoPinEdgesToSuperviewEdges()
 
         updateViewers()
     }
 
+    // MARK: - Data
+
     private var viewers = [Viewer]()
+
     private func updateViewers(reloadStoryMessage: Bool = false) {
         defer {
             tableView.reloadData()
+            // If it's a personal story, only allow half-screen sheet only if no views.
+            if isStandaloneVC {
+                sheetPresentationController?.detents = if viewers.isEmpty { [.medium()] } else { [.medium()] }
+            }
             updateEmptyStateView()
         }
 
@@ -106,80 +141,77 @@ class StoryViewsViewController: OWSViewController {
         emptyStateView.removeAllSubviews()
         emptyStateView.isHidden = viewers.count > 0
 
-        let label = UILabel()
-        label.textAlignment = .center
-
         if StoryManager.areViewReceiptsEnabled {
+            let label = UILabel()
+            label.textAlignment = .center
             label.font = .dynamicTypeHeadline
-            label.textColor = .ows_gray45
+            label.textColor = .Signal.secondaryLabel
             label.text = OWSLocalizedString(
                 "STORIES_NO_VIEWS_YET",
                 comment: "Indicates that this story has no views yet",
             )
+            emptyStateView.addSubview(label)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                label.topAnchor.constraint(greaterThanOrEqualTo: emptyStateView.topAnchor),
+                label.centerYAnchor.constraint(equalTo: emptyStateView.centerYAnchor),
+
+                label.leadingAnchor.constraint(equalTo: emptyStateView.layoutMarginsGuide.leadingAnchor),
+                label.trailingAnchor.constraint(equalTo: emptyStateView.layoutMarginsGuide.trailingAnchor),
+            ])
 
             emptyStateView.isUserInteractionEnabled = false
-            emptyStateView.addSubview(label)
-            label.autoPinEdgesToSuperviewEdges()
         } else {
-            label.font = .dynamicTypeCallout
-            label.textColor = .ows_gray25
+            let label = UILabel()
+            label.textAlignment = .center
+            label.font = .dynamicTypeSubheadline
+            label.textColor = .Signal.secondaryLabel
             label.text = OWSLocalizedString(
                 "STORIES_VIEWS_OFF_DESCRIPTION",
                 comment: "Text explaining that you will not see any views for your story because you have view receipts turned off",
             )
             label.numberOfLines = 0
+            label.lineBreakMode = .byWordWrapping
             label.setContentHuggingVerticalHigh()
 
-            let settingsButton = OWSButton { [weak self] in
-                let privacySettings = OWSNavigationController(rootViewController: StoryPrivacySettingsViewController())
+            let settingsButton = UIButton(
+                configuration: .smallSecondary(title: CommonStrings.goToSettingsButton),
+                primaryAction: UIAction { [weak self] _ in
+                    guard let self else { return }
 
-                // Dismiss the story view and present the privacy settings screen
-                owsAssertDebug(self?.presentingViewController?.presentingViewController is ConversationSplitViewController)
-                self?.presentingViewController?.presentingViewController?.dismiss(animated: true, completion: {
-                    CurrentAppContext().frontmostViewController()?.present(privacySettings, animated: true)
-                })
-            }
-            settingsButton.setTitle(CommonStrings.goToSettingsButton, for: .normal)
-            settingsButton.titleLabel?.font = UIFont.dynamicTypeCaption1.semibold()
-            settingsButton.setTitleColor(.ows_gray25, for: .normal)
-            settingsButton.ows_contentEdgeInsets = UIEdgeInsets(hMargin: 14, vMargin: 6)
-            settingsButton.layer.borderWidth = 1.5
-            settingsButton.layer.borderColor = UIColor.ows_gray25.cgColor
+                    let privacySettings = OWSNavigationController(rootViewController: StoryPrivacySettingsViewController())
 
-            let settingsButtonPillWrapper = ManualLayoutView(name: "SettingsButton")
-            settingsButtonPillWrapper.shouldDeactivateConstraints = false
-            settingsButtonPillWrapper.addSubview(settingsButton) { view in
-                settingsButton.layer.cornerRadius = settingsButton.height / 2
-            }
-            settingsButton.autoPinEdgesToSuperviewEdges()
-
-            let topSpacer = UIView.vStretchingSpacer()
-            let bottomSpacer = UIView.vStretchingSpacer()
+                    // Dismiss the story view and present the privacy settings screen
+                    owsAssertDebug(self.presentingViewController?.presentingViewController is ConversationSplitViewController)
+                    self.presentingViewController?.presentingViewController?.dismiss(animated: true, completion: {
+                        CurrentAppContext().frontmostViewController()?.present(privacySettings, animated: true)
+                    })
+                },
+            )
 
             let stackView = UIStackView(arrangedSubviews: [
-                topSpacer,
                 label,
-                settingsButtonPillWrapper,
-                bottomSpacer,
+                settingsButton,
             ])
-            stackView.isLayoutMarginsRelativeArrangement = true
-            stackView.layoutMargins = UIEdgeInsets(hMargin: 65, vMargin: 0)
             stackView.axis = .vertical
             stackView.spacing = 20
             stackView.alignment = .center
             emptyStateView.addSubview(stackView)
-            stackView.autoPinEdgesToSuperviewEdges()
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                stackView.topAnchor.constraint(greaterThanOrEqualTo: emptyStateView.topAnchor),
+                stackView.centerYAnchor.constraint(equalTo: emptyStateView.centerYAnchor),
 
-            topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+                stackView.leadingAnchor.constraint(equalTo: emptyStateView.layoutMarginsGuide.leadingAnchor),
+                stackView.trailingAnchor.constraint(equalTo: emptyStateView.layoutMarginsGuide.trailingAnchor),
+            ])
 
             emptyStateView.isUserInteractionEnabled = true
         }
     }
-}
 
-extension StoryViewsViewController: UITableViewDelegate {}
+    // MARK: - UITableView
 
-extension StoryViewsViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         1
     }
@@ -197,9 +229,9 @@ extension StoryViewsViewController: UITableViewDataSource {
         cell.configure(with: viewer)
         return cell
     }
-}
 
-extension StoryViewsViewController: DatabaseChangeDelegate {
+    // MARK: - DatabaseChangeDelegate
+
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         if databaseChanges.storyMessageRowIds.contains(storyMessage.id!) {
             updateViewers(reloadStoryMessage: true)
@@ -213,9 +245,16 @@ extension StoryViewsViewController: DatabaseChangeDelegate {
     func databaseChangesDidReset() {
         updateViewers(reloadStoryMessage: true)
     }
+
+    // MARK: - UIAdaptivePresentationControllerDelegate
+
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        dismissHandler?()
+    }
 }
 
 private class StoryViewCell: UITableViewCell {
+
     static let reuseIdentifier = "StoryViewCell"
 
     let avatarView = ConversationAvatarView(sizeClass: .thirtySix, localUserDisplayMode: .asUser, badged: true)
@@ -223,14 +262,14 @@ private class StoryViewCell: UITableViewCell {
     lazy var nameLabel: UILabel = {
         let label = UILabel()
         label.font = .dynamicTypeBodyClamped
-        label.textColor = Theme.darkThemePrimaryColor
+        label.textColor = .Signal.label
         return label
     }()
 
     lazy var timestampLabel: UILabel = {
         let label = UILabel()
         label.font = .dynamicTypeFootnoteClamped
-        label.textColor = Theme.darkThemeSecondaryTextAndIconColor
+        label.textColor = .Signal.secondaryLabel
         return label
     }()
 
