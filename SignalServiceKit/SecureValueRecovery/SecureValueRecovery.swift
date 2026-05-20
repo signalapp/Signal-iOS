@@ -123,11 +123,12 @@ public protocol SecureValueRecovery {
     func currentPinType(transaction: DBReadTransaction) -> SVR.PinType?
 
     /// Loads the users key, if any, from the SVR into the database.
-    func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>
+    func restoreKeys(pin: String, authMethod: SVR.AuthMethod) async -> SVR.RestoreKeysResult
 
     /// Backs up the user's master key to SVR.
-    func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) -> Promise<MasterKey>
+    func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) async throws -> MasterKey
 
+    @MainActor
     func warmCaches()
 
     /// Removes the SVR keys locally from the device, they can still be

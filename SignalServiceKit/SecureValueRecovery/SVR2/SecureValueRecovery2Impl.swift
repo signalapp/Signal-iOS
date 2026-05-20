@@ -18,7 +18,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let db: any DB
     private let accountKeyStore: AccountKeyStore
     private let localStorage: SVRLocalStorageInternal
-    private let scheduler: Scheduler
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
     private let tsConstants: TSConstantsProtocol
@@ -32,7 +31,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         credentialStorage: SVRAuthCredentialStorage,
         db: any DB,
         accountKeyStore: AccountKeyStore,
-        scheduler: Scheduler,
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorageInternal,
         tsAccountManager: TSAccountManager,
@@ -48,7 +46,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             credentialStorage: credentialStorage,
             db: db,
             accountKeyStore: accountKeyStore,
-            scheduler: scheduler,
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
             tsAccountManager: tsAccountManager,
@@ -66,7 +63,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         credentialStorage: SVRAuthCredentialStorage,
         db: any DB,
         accountKeyStore: AccountKeyStore,
-        scheduler: Scheduler,
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorageInternal,
         tsAccountManager: TSAccountManager,
@@ -82,30 +78,31 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.db = db
         self.accountKeyStore = accountKeyStore
         self.localStorage = svrLocalStorage
-        self.scheduler = scheduler
         self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
         self.tsConstants = tsConstants
         self.twoFAManager = twoFAManager
     }
 
+    @MainActor
     public func warmCaches() {
         if self.appContext.isMainApp {
 
             // Never migrate in the NSE or extensions.
-            _ = performStartupMigrationsIfNecessary()
-                .done {
-                    self.refreshCredentialsAndBackupIfNecessary()
-                }
+            Task { @MainActor in
+                try await performStartupMigrationsIfNecessary()
+                self.refreshCredentialsAndBackupIfNecessary()
+            }
         }
     }
 
+    @MainActor
     private func refreshCredentialsAndBackupIfNecessary() {
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            _ = self.periodicRefreshCredentialIfNecessary()
-                .then {
-                    self.backupMasterKeyIfNecessary()
-                }
+            Task {
+                await self.periodicRefreshCredentialIfNecessary()
+                try await self.backupMasterKeyIfNecessary()
+            }
         }
     }
 
@@ -133,8 +130,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         )
     }
 
-    @discardableResult
-    private func periodicRefreshCredentialIfNecessary() -> Guarantee<Void> {
+    @MainActor
+    private func periodicRefreshCredentialIfNecessary() async {
         let needsRefresh = self.db.read { tx -> Bool in
             guard self.tsAccountManager.registrationState(tx: tx).isRegistered else {
                 // Only refresh if registered.
@@ -147,25 +144,24 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             return self.getNeedsCredentialRefreshBasedOnVersion(tx: tx)
         }
         guard needsRefresh else {
-            return .value(())
+            return
         }
         // Force refresh a credential, even if we have one cached, to ensure we
         // have a fresh credential to back up.
         Logger.info("Refreshing auth credential for periodic backup")
-        return Promise.wrapAsync { try await RemoteAttestation.authForSVR2(chatServiceAuth: .implicit()) }
-            .map(on: DispatchQueue.main) { credential -> Void in
-                Logger.info("Storing refreshed credential")
-                self.db.write { tx in
-                    self.credentialStorage.storeAuthCredentialForCurrentUsername(
-                        SVR2AuthCredential(credential: credential),
-                        tx,
-                    )
-                    self.didRefreshCredentialInCurrentVersion(tx: tx)
-                }
+        do {
+            let credential = try await RemoteAttestation.authForSVR2(chatServiceAuth: .implicit())
+            Logger.info("Storing refreshed credential")
+            db.write { tx in
+                credentialStorage.storeAuthCredentialForCurrentUsername(
+                    SVR2AuthCredential(credential: credential),
+                    tx,
+                )
+                didRefreshCredentialInCurrentVersion(tx: tx)
             }
-            .recover { _ in
-                Logger.warn("Unable to fetch auth credential")
-            }
+        } catch {
+            Logger.warn("Unable to fetch auth credential")
+        }
     }
 
     // MARK: - Key Existence
@@ -215,7 +211,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             // Record that the master key needs to be backed up.
             localStorage.setNeedsMasterKeyBackup(true, transaction)
             transaction.addSyncCompletion {
-                _ = self.backupMasterKey(pin: pin, masterKey: newMasterKey, authMethod: .implicit)
+                Task { _ = try await self.backupMasterKey(pin: pin, masterKey: newMasterKey, authMethod: .implicit) }
             }
         }
     }
@@ -228,17 +224,17 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Key Management
 
-    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) -> Promise<MasterKey> {
+    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) async throws -> MasterKey {
         Logger.info("")
-        return doBackupAndExpose(pin: pin, masterKey: masterKey.rawData, authMethod: authMethod)
+        return try await doBackupAndExpose(pin: pin, masterKey: masterKey.rawData, authMethod: authMethod)
     }
 
-    public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
+    public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) async -> SVR.RestoreKeysResult {
         Logger.info("")
         // When we restore, we remember which enclave it was from. On some future app startup, we check
         // this enclave, and migrate to a new one if available. This code path relies on that happening
         // asynchronously.
-        return doRestore(pin: pin, authMethod: authMethod).map(on: SyncScheduler(), \.asSVRResult)
+        return await doRestore(pin: pin, authMethod: authMethod).asSVRResult
     }
 
     public func clearKeys(transaction: DBWriteTransaction) {
@@ -384,79 +380,73 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         pin: String,
         masterKey: Data,
         authMethod: SVR2.AuthMethod,
-    ) -> Promise<MasterKey> {
+    ) async throws -> MasterKey {
         let config = SVR2WebsocketConfigurator(mrenclave: tsConstants.svr2Enclave, authMethod: authMethod)
-        return makeHandshakeAndOpenConnection(config)
-            .then(on: scheduler) { connection -> Promise<MasterKey> in
-                Logger.info("Connection open; beginning backup/expose")
-                func continueWithExpose(backup: InProgressBackup) -> Promise<MasterKey> {
-                    return self
-                        .performExposeRequest(
-                            backup: backup,
-                            authedAccount: authMethod.authedAccount,
-                            connection: connection,
-                        )
-                        .then(on: SyncScheduler()) { result -> Promise<MasterKey> in
-                            switch result {
-                            case .success:
-                                do {
-                                    return .value(try MasterKey(data: backup.masterKey))
-                                } catch {
-                                    return .init(error: SVR.SVRError.assertion)
-                                }
-                            case .serverError, .networkError, .localPersistenceError:
-                                return .init(error: SVR.SVRError.assertion)
-                            }
-                        }
-                }
 
-                func startFreshBackupExpose() -> Promise<MasterKey> {
-                    return self
-                        .performBackupRequest(
-                            pin: pin,
-                            masterKey: masterKey,
-                            mrEnclave: config.mrenclave,
-                            connection: connection,
-                        )
-                        .then(on: self.scheduler) { (backupResult: BackupResult) -> Promise<MasterKey> in
-                            switch backupResult {
-                            case .serverError, .networkError, .localPersistenceError, .localEncryptionError:
-                                return .init(error: SVR.SVRError.assertion)
-                            case .success(let inProgressBackup):
-                                return continueWithExpose(backup: inProgressBackup)
-                            }
-                        }
-                }
+        let connection = try await makeHandshakeAndOpenConnection(config)
+        defer { closeConnectionAfterDelay(connection) }
 
-                // Check if we had an in flight backup.
-                let inProgressBackup: InProgressBackup?
+        Logger.info("Connection open; beginning backup/expose")
+        func continueWithExpose(backup: InProgressBackup) async throws -> MasterKey {
+            let result = await self.performExposeRequest(
+                backup: backup,
+                authedAccount: authMethod.authedAccount,
+                connection: connection,
+            )
+            switch result {
+            case .success:
                 do {
-                    inProgressBackup = try self.db.read(block: self.getInProgressBackup)
+                    return try MasterKey(data: backup.masterKey)
                 } catch {
-                    // If we fail to decode, something has gone wrong locally. But we can
-                    // treat this like if we never had a backup; after all the user may uninstall,
-                    // reinstall, and do a backup again with the same PIN. This, like that, is
-                    // a local-only trigger.
-                    Logger.error("Failed to decode in progress backup state")
-                    inProgressBackup = nil
+                    throw SVR.SVRError.assertion
                 }
-                if let inProgressBackup {
-                    if inProgressBackup.matches(pin: pin, mrEnclave: config.mrenclave) {
-                        // Continue the backup from where we left off.
-                        Logger.info("Continuing existing backup with expose")
-                        return continueWithExpose(backup: inProgressBackup)
-                    } else {
-                        // We had an in flight backup, but for a different PIN.
-                        // If its expose hasn't started, it should stop itself.
-                        Logger.info("Cancelling in progress backup because master key changed")
-                        return startFreshBackupExpose()
-                    }
-                } else {
-                    Logger.info("Starting fresh backup + expose")
-                    return startFreshBackupExpose()
-                }
-
+            case .serverError, .networkError, .localPersistenceError:
+                throw SVR.SVRError.assertion
             }
+        }
+
+        func startFreshBackupExpose() async throws -> MasterKey {
+            let backupResult = await self.performBackupRequest(
+                pin: pin,
+                masterKey: masterKey,
+                mrEnclave: config.mrenclave,
+                connection: connection,
+            )
+            switch backupResult {
+            case .serverError, .networkError, .localPersistenceError, .localEncryptionError:
+                throw SVR.SVRError.assertion
+            case .success(let inProgressBackup):
+                return try await continueWithExpose(backup: inProgressBackup)
+            }
+        }
+
+        // Check if we had an in flight backup.
+        let inProgressBackup: InProgressBackup?
+        do {
+            inProgressBackup = try self.db.read(block: self.getInProgressBackup)
+        } catch {
+            // If we fail to decode, something has gone wrong locally. But we can
+            // treat this like if we never had a backup; after all the user may uninstall,
+            // reinstall, and do a backup again with the same PIN. This, like that, is
+            // a local-only trigger.
+            Logger.error("Failed to decode in progress backup state")
+            inProgressBackup = nil
+        }
+        if let inProgressBackup {
+            if inProgressBackup.matches(pin: pin, mrEnclave: config.mrenclave) {
+                // Continue the backup from where we left off.
+                Logger.info("Continuing existing backup with expose")
+                return try await continueWithExpose(backup: inProgressBackup)
+            } else {
+                // We had an in flight backup, but for a different PIN.
+                // If its expose hasn't started, it should stop itself.
+                Logger.info("Cancelling in progress backup because master key changed")
+                return try await startFreshBackupExpose()
+            }
+        } else {
+            Logger.info("Starting fresh backup + expose")
+            return try await startFreshBackupExpose()
+        }
     }
 
     private enum BackupResult {
@@ -472,11 +462,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         masterKey: Data,
         mrEnclave: MrEnclave,
         connection: WebsocketConnection,
-    ) -> Guarantee<BackupResult> {
+    ) async -> BackupResult {
         guard
             let encodedPINVerificationString = try? SVRUtil.deriveEncodedPINVerificationString(pin: pin)
         else {
-            return .value(.localEncryptionError)
+            return .localEncryptionError
         }
         let pinHash: SVR2PinHash
         let encryptedMasterKey: Data
@@ -487,7 +477,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             )
             encryptedMasterKey = try pinHash.encryptMasterKey(masterKey)
         } catch {
-            return .value(.localEncryptionError)
+            return .localEncryptionError
         }
 
         var backupRequest = SVR2Proto_BackupRequest()
@@ -498,8 +488,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         var request = SVR2Proto_Request()
         request.backup = backupRequest
 
-        return connection.sendRequestAndReadResponse(request) { makeRequest in
-            return makeRequest().map(on: self.scheduler) { (response: SVR2Proto_Response) -> BackupResult in
+        return await sendRequestAndReadResponse(request, on: connection) { responseResult in
+            do {
+                let response = try responseResult.get()
                 guard response.hasBackup else {
                     Logger.error("Backup response missing from server")
                     return .serverError
@@ -517,7 +508,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     do {
                         // Write the in progress state to disk; we want to continue
                         // from here and not redo the backup request.
-                        try self.db.write { tx in
+                        try await self.db.awaitableWrite { tx in
                             try self.setInProgressBackup(inProgressBackup, tx)
                         }
                     } catch {
@@ -529,13 +520,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     Logger.error("Unknown backup status response")
                     return .serverError
                 }
-            }
-            .recover(on: SyncScheduler()) { error in
+            } catch {
                 Logger.error("Backup failed with closed connection")
                 if error.isNetworkFailureOrTimeout {
-                    return .value(.networkError)
+                    return .networkError
                 } else {
-                    return .value(.serverError)
+                    return .serverError
                 }
             }
         }
@@ -552,13 +542,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         backup: InProgressBackup,
         authedAccount: AuthedAccount,
         connection: WebsocketConnection,
-    ) -> Guarantee<ExposeResult> {
+    ) async -> ExposeResult {
         var exposeRequest = SVR2Proto_ExposeRequest()
         exposeRequest.data = backup.encryptedMasterKey
         var request = SVR2Proto_Request()
         request.expose = exposeRequest
         Logger.info("Issuing expose request")
-        return connection.sendRequestAndReadResponse(request) { makeRequest in
+        return await sendRequestAndReadResponse(request, on: connection) {
             // Check that the backup is still the latest before we actually
             // issue the request.
             let currentBackup: InProgressBackup?
@@ -566,15 +556,19 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 currentBackup = try self.db.read { return try self.getInProgressBackup($0) }
             } catch {
                 Logger.error("Unable to read in progress backup to continue expose")
-                return .value(.localPersistenceError)
+                return .localPersistenceError
             }
             if let currentBackup, backup.matches(currentBackup).negated {
                 // This expose is out of date. But its fine to let the caller
                 // think it was a success; the backup that took its place
                 // is now in charge and this one is done and shouldn't be repeated.
-                return .value(.success)
+                return .success
             }
-            return makeRequest().map(on: self.scheduler) { response -> ExposeResult in
+            // Continue and send the request.
+            return nil
+        } responseHandler: { responseResult in
+            do {
+                let response = try responseResult.get()
                 guard response.hasExpose else {
                     Logger.error("Expose response missing from server")
                     return .serverError
@@ -583,7 +577,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 case .ok:
                     Logger.info("Expose success!")
                     do {
-                        try self.db.write { tx in
+                        try await self.db.awaitableWrite { tx in
                             guard let persistedBackup = try self.getInProgressBackup(tx), persistedBackup.matches(backup) else {
                                 Logger.info("Backup state changed while expose ongoing; throwing away results")
                                 return
@@ -628,13 +622,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     Logger.error("Unknown expose status response")
                     return .serverError
                 }
-            }
-            .recover(on: SyncScheduler()) { error in
+            } catch {
                 Logger.error("Expose failed with closed connection")
                 if error.isNetworkFailureOrTimeout {
-                    return .value(.networkError)
+                    return .networkError
                 } else {
-                    return .value(.serverError)
+                    return .serverError
                 }
             }
         }
@@ -672,61 +665,54 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private func doRestore(
         pin: String,
         authMethod: SVR2.AuthMethod,
-    ) -> Guarantee<RestoreResult> {
-        var enclavesToTry = [tsConstants.svr2Enclave] + tsConstants.svr2PreviousEnclaves
-        func tryNextEnclave() -> Guarantee<RestoreResult> {
-            guard enclavesToTry.isEmpty.negated else {
-                // If we reach the end, there's no backup.
-                return .value(.backupMissing)
+    ) async -> RestoreResult {
+        let enclavesToTry = [tsConstants.svr2Enclave] + tsConstants.svr2PreviousEnclaves
+        for enclave in enclavesToTry {
+            let enclaveResult = await self.doRestoreForSpecificEnclave(
+                pin: pin,
+                mrEnclave: enclave,
+                authMethod: authMethod,
+            )
+            switch enclaveResult {
+            case .backupMissing:
+                // Only if we get an explicit backup missing result
+                // from the server, try prior enclaves.
+                // This works because we always wipe old enclaves when
+                // we know about newer ones, so the only reason we'd have
+                // anything in an old enclave is that we haven't migrated yet.
+                // Once we migrate, we wipe the old one.
+                continue
+            case .success, .invalidPin, .decryptionError, .serverError,
+                 .networkError, .genericError:
+                return enclaveResult
             }
-            let enclave = enclavesToTry.removeFirst()
-            return self
-                .doRestoreForSpecificEnclave(
-                    pin: pin,
-                    mrEnclave: enclave,
-                    authMethod: authMethod,
-                )
-                .then(on: self.scheduler) { enclaveResult in
-                    switch enclaveResult {
-                    case .backupMissing:
-                        // Only if we get an explicit backup missing result
-                        // from the server, try prior enclaves.
-                        // This works because we always wipe old enclaves when
-                        // we know about newer ones, so the only reason we'd have
-                        // anything in an old enclave is that we haven't migrated yet.
-                        // Once we migrate, we wipe the old one.
-                        return tryNextEnclave()
-                    case .success, .invalidPin, .decryptionError, .serverError,
-                         .networkError, .genericError:
-                        return .value(enclaveResult)
-                    }
-                }
         }
-        return tryNextEnclave()
+        // If we reach the end, there's no backup.
+        return .backupMissing
     }
 
     private func doRestoreForSpecificEnclave(
         pin: String,
         mrEnclave: MrEnclave,
         authMethod: SVR2.AuthMethod,
-    ) -> Guarantee<RestoreResult> {
+    ) async -> RestoreResult {
         let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
-        return makeHandshakeAndOpenConnection(config)
-            .then(on: scheduler) { connection -> Guarantee<RestoreResult> in
-                Logger.info("Connection open; making restore request")
-                return self.performRestoreRequest(
-                    mrEnclave: mrEnclave,
-                    pin: pin,
-                    connection: connection,
-                    authedAccount: authMethod.authedAccount,
-                )
+        do {
+            let connection = try await makeHandshakeAndOpenConnection(config)
+            defer { closeConnectionAfterDelay(connection) }
+            Logger.info("Connection open; making restore request")
+            return await self.performRestoreRequest(
+                mrEnclave: mrEnclave,
+                pin: pin,
+                connection: connection,
+                authedAccount: authMethod.authedAccount,
+            )
+        } catch {
+            if error.isNetworkFailureOrTimeout {
+                return .networkError(error)
             }
-            .recover(on: SyncScheduler()) { error in
-                if error.isNetworkFailureOrTimeout {
-                    return .value(.networkError(error))
-                }
-                return .value(.genericError(error))
-            }
+            return .genericError(error)
+        }
     }
 
     private func performRestoreRequest(
@@ -734,20 +720,21 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         pin: String,
         connection: WebsocketConnection,
         authedAccount: AuthedAccount,
-    ) -> Guarantee<RestoreResult> {
+    ) async -> RestoreResult {
         let pinHash: SVR2PinHash
         do {
             pinHash = try connection.hashPin(pin: pin, wrapper: clientWrapper)
         } catch {
-            return .value(.decryptionError)
+            return .decryptionError
         }
 
         var restoreRequest = SVR2Proto_RestoreRequest()
         restoreRequest.pin = pinHash.accessKey
         var request = SVR2Proto_Request()
         request.restore = restoreRequest
-        return connection.sendRequestAndReadResponse(request) { makeRequest in
-            return makeRequest().map(on: self.scheduler) { response -> RestoreResult in
+        return await sendRequestAndReadResponse(request, on: connection) { responseResult in
+            do {
+                let response = try responseResult.get()
                 guard response.hasRestore else {
                     Logger.error("Restore missing in server response")
                     return .serverError
@@ -767,7 +754,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     let encryptedMasterKey = response.restore.data
                     do {
                         let masterKey = try pinHash.decryptMasterKey(encryptedMasterKey)
-                        self.db.write { tx in
+                        await self.db.awaitableWrite { tx in
                             self.updateLocalSVRState(
                                 isMasterKeyBackedUp: true,
                                 pinType: .init(forPin: pin),
@@ -781,13 +768,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                         return .decryptionError
                     }
                 }
-            }
-            .recover(on: SyncScheduler()) { error -> Guarantee<RestoreResult> in
+            } catch {
                 Logger.error("Restore failed with closed connection")
                 if error.isNetworkFailureOrTimeout {
-                    return .value(.networkError(error))
+                    return .networkError(error)
                 } else {
-                    return .value(.genericError(error))
+                    return .genericError(error)
                 }
             }
         }
@@ -805,46 +791,46 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private func doDelete(
         mrEnclave: MrEnclave,
         authMethod: SVR2.AuthMethod,
-    ) -> Guarantee<DeleteResult> {
+    ) async -> DeleteResult {
         let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
-        return makeHandshakeAndOpenConnection(config)
-            .then(on: scheduler) { connection -> Guarantee<DeleteResult> in
-                return self.performDeleteRequest(
-                    mrEnclave: mrEnclave,
-                    connection: connection,
-                    authedAccount: authMethod.authedAccount,
-                )
+        do {
+            let connection = try await makeHandshakeAndOpenConnection(config)
+            defer { closeConnectionAfterDelay(connection) }
+            return await self.performDeleteRequest(
+                mrEnclave: mrEnclave,
+                connection: connection,
+                authedAccount: authMethod.authedAccount,
+            )
+        } catch {
+            if error.isNetworkFailureOrTimeout {
+                return .networkError(error)
             }
-            .recover(on: SyncScheduler()) { error in
-                if error.isNetworkFailureOrTimeout {
-                    return .value(.networkError(error))
-                }
-                return .value(.genericError(error))
-            }
+            return .genericError(error)
+        }
     }
 
     private func performDeleteRequest(
         mrEnclave: MrEnclave,
         connection: WebsocketConnection,
         authedAccount: AuthedAccount,
-    ) -> Guarantee<DeleteResult> {
+    ) async -> DeleteResult {
         var request = SVR2Proto_Request()
         request.delete = SVR2Proto_DeleteRequest()
-        return connection.sendRequestAndReadResponse(request) { makeRequest in
-            return makeRequest().map(on: self.scheduler) { response -> DeleteResult in
+        return await sendRequestAndReadResponse(request, on: connection) { responseResult in
+            do {
+                let response = try responseResult.get()
                 guard response.hasDelete else {
                     Logger.error("Delete missing in server response")
                     return .serverError
                 }
                 Logger.info("Delete success!")
                 return .success
-            }
-            .recover(on: SyncScheduler()) { error -> Guarantee<DeleteResult> in
+            } catch {
                 Logger.error("Delete failed with closed connection")
                 if error.isNetworkFailureOrTimeout {
-                    return .value(.networkError(error))
+                    return .networkError(error)
                 } else {
-                    return .value(.genericError(error))
+                    return .genericError(error)
                 }
             }
         }
@@ -899,8 +885,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         enclaveStrings.formIntersection(knownEnclaves)
     }
 
-    private func wipeOldEnclavesIfNeeded(auth: SVR2.AuthMethod) {
-        var (isRegistered, enclavesToDeleteFrom) = db.read { tx in
+    private func wipeOldEnclavesIfNeeded(auth: SVR2.AuthMethod) async {
+        let (isRegistered, enclavesToDeleteFrom) = db.read { tx in
             return (
                 self.tsAccountManager.registrationState(tx: tx).isRegistered,
                 self.getOldEnclavesToDeleteFrom(tx),
@@ -909,40 +895,31 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         guard isRegistered else {
             return
         }
-        func doNextDelete() -> Guarantee<DeleteResult> {
-            guard enclavesToDeleteFrom.isEmpty.negated else {
-                return .value(.success)
-            }
-            let enclave = enclavesToDeleteFrom.removeFirst()
+        for enclave in enclavesToDeleteFrom {
             Logger.info("Wiping old enclave: \(enclave.stringValue)")
-            return self.doDelete(mrEnclave: enclave, authMethod: auth).then(on: self.scheduler) { result in
-                switch result {
-                case .success:
-                    self.db.write { tx in
-                        self.markOldEnclaveDeleted(enclave, tx)
-                    }
-                case .serverError, .networkError, .genericError:
-                    Logger.error("Failed to wipe old enclave; will retry eventually.")
+            let result = await self.doDelete(mrEnclave: enclave, authMethod: auth)
+            switch result {
+            case .success:
+                await db.awaitableWrite { tx in
+                    markOldEnclaveDeleted(enclave, tx)
                 }
-                return doNextDelete()
+            case .serverError, .networkError, .genericError:
+                Logger.error("Failed to wipe old enclave; will retry eventually.")
             }
         }
-        _ = doNextDelete()
     }
 
     // MARK: - Migrations
 
-    public func performStartupMigrationsIfNecessary() -> Promise<Void> {
+    public func performStartupMigrationsIfNecessary() async throws {
         // Require migrations to succeed before we check for old stuff
         // to wipe, because migrations add old stuff to be wiped.
         // If a migration isn't needed, this returns a success immediately.
-        migrateEnclavesIfNecessary()
-            .done(on: scheduler) {
-                self.wipeOldEnclavesIfNeeded(auth: .implicit)
-            }
+        try await migrateEnclavesIfNecessary()
+        await wipeOldEnclavesIfNeeded(auth: .implicit)
     }
 
-    private func backupMasterKeyIfNecessary() -> Promise<Void> {
+    private func backupMasterKeyIfNecessary() async throws {
         let (
             currentPIN,
             backupRequested,
@@ -959,7 +936,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             let masterKey,
             backupRequested
         {
-            return backupMasterKey(pin: currentPIN, masterKey: masterKey, authMethod: .implicit).asVoid()
+            _ = try await backupMasterKey(pin: currentPIN, masterKey: masterKey, authMethod: .implicit)
         } else {
             if masterKey != nil, currentPIN == nil {
                 Logger.warn("Cannot backup master key without PIN")
@@ -967,76 +944,71 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 Logger.warn("Skipping backup due missing master key")
             }
         }
-        return .value(())
     }
 
     /// If there is a newer enclave than the one we most recently backed up to, backs up known
     /// master key data to it instead, marking the old enclave for deletion.
     /// If there is no migration needed, returns a success promise immediately.
-    private func migrateEnclavesIfNecessary() -> Promise<Void> {
-        return firstly(on: scheduler) { () -> (String, String, Data)? in
-            return self.db.read { tx -> (String, String, Data)? in
-                guard
-                    self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
-                    let masterKey = self.accountKeyStore.getMasterKey(tx: tx)?.rawData,
-                    let pin = self.twoFAManager.pinCode(transaction: tx)
-                else {
-                    // Need to be registered with a master key and PIN to migrate.
-                    Logger.info("Not migrating; local state not ready")
-                    return nil
-                }
-                let currentEnclaveString = self.tsConstants.svr2Enclave.stringValue
-                let oldSVR2EnclaveString = self.localStorage.getSVR2MrEnclaveStringValue(tx)
-
-                guard self.localStorage.getIsMasterKeyBackedUp(tx) else {
-                    // "isMasterKeyBackedUp" is shared between svr2 and kbs; if its
-                    // false that means we had no backups to begin with and therefore
-                    // should not back up to any new enclave.
-                    Logger.info("Not migrating; no previous backups.")
-                    return nil
-                }
-
-                if
-                    let oldSVR2EnclaveString,
-                    oldSVR2EnclaveString != currentEnclaveString
-                {
-                    // We are backed up to an svr2 enclave that isn't the current one.
-                    Logger.info("Migrating from old svr2 enclave")
-                    return (oldSVR2EnclaveString, pin, masterKey)
-                }
-
+    private func migrateEnclavesIfNecessary() async throws {
+        let values = db.read { tx -> (String, String, Data)? in
+            guard
+                self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
+                let masterKey = self.accountKeyStore.getMasterKey(tx: tx)?.rawData,
+                let pin = self.twoFAManager.pinCode(transaction: tx)
+            else {
+                // Need to be registered with a master key and PIN to migrate.
+                Logger.info("Not migrating; local state not ready")
                 return nil
             }
-        }.then(on: scheduler) { values -> Promise<Void> in
-            guard let (oldSVR2EnclaveString, pin, masterKey) = values else {
-                // No migration needed.
-                return .value(())
+            let currentEnclaveString = self.tsConstants.svr2Enclave.stringValue
+            let oldSVR2EnclaveString = self.localStorage.getSVR2MrEnclaveStringValue(tx)
+
+            guard self.localStorage.getIsMasterKeyBackedUp(tx) else {
+                // "isMasterKeyBackedUp" is shared between svr2 and kbs; if its
+                // false that means we had no backups to begin with and therefore
+                // should not back up to any new enclave.
+                Logger.info("Not migrating; no previous backups.")
+                return nil
             }
 
-            Logger.info("Migrating SVR2 Enclaves")
-            return self
-                .doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: .implicit)
-                .done(on: self.scheduler) { _ in
-                    Logger.info("Successfully migrated SVR2 enclave")
-                    if
-                        let backedUpEnclave = self.tsConstants.svr2PreviousEnclaves.first(where: {
-                            $0.stringValue == oldSVR2EnclaveString
-                        })
-                    {
-                        Logger.info("Adding old enclave to be deleted")
-                        // Strictly speaking, this happens in a separate transaction from when we mark the
-                        // backup/expose complete. But no matter what this is best effort; the client
-                        // can be uninstalled before it gets a chance to delete the old backup, for example.
-                        self.db.write { tx in
-                            self.addOldEnclaveToDeleteFrom(backedUpEnclave, tx)
-                        }
-                        // We start wiping any old enclaves right after doing this migration,
-                        // no need to kick it off here.
-                    }
-                }
-                .catch(on: SyncScheduler()) { _ in
-                    owsFailDebug("Failed to migrate SVR2 enclave")
-                }
+            if
+                let oldSVR2EnclaveString,
+                oldSVR2EnclaveString != currentEnclaveString
+            {
+                // We are backed up to an svr2 enclave that isn't the current one.
+                Logger.info("Migrating from old svr2 enclave")
+                return (oldSVR2EnclaveString, pin, masterKey)
+            }
+
+            return nil
+        }
+        guard let (oldSVR2EnclaveString, pin, masterKey) = values else {
+            // No migration needed.
+            return
+        }
+
+        Logger.info("Migrating SVR2 Enclaves")
+        do {
+            _ = try await self.doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: .implicit)
+            Logger.info("Successfully migrated SVR2 enclave")
+        } catch {
+            owsFailDebug("Failed to migrate SVR2 enclave")
+            throw error
+        }
+
+        let backedUpEnclave = self.tsConstants.svr2PreviousEnclaves.first(where: {
+            $0.stringValue == oldSVR2EnclaveString
+        })
+        if let backedUpEnclave {
+            Logger.info("Adding old enclave to be deleted")
+            // Strictly speaking, this happens in a separate transaction from when we mark the
+            // backup/expose complete. But no matter what this is best effort; the client
+            // can be uninstalled before it gets a chance to delete the old backup, for example.
+            await self.db.awaitableWrite { tx in
+                self.addOldEnclaveToDeleteFrom(backedUpEnclave, tx)
+            }
+            // We start wiping any old enclaves right after doing this migration,
+            // no need to kick it off here.
         }
     }
 
@@ -1053,112 +1025,30 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     ///   and close the connection when there are none left.
     private class WebsocketConnection {
         private let connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>
-        private let scheduler: Scheduler
-        private let onDisconnect: () -> Void
+        let mrEnclave: MrEnclave
 
-        init(
-            connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
-            scheduler: Scheduler,
-            onDisconnect: @escaping () -> Void,
-        ) {
+        init(connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>) {
             self.connection = connection
-            self.scheduler = scheduler
-            self.onDisconnect = onDisconnect
+            self.mrEnclave = connection.mrEnclave
         }
 
-        private var requestQueue = [(Error?) -> Promise<Void>]()
-        private var isMakingRequest = false
+        private let requestQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
-        private func startNextRequestIfPossible() {
-            guard !isMakingRequest else {
-                return
-            }
-            if requestQueue.isEmpty {
-                self.scheduleDisconnectIfNeeded()
-                return
-            }
-
-            let errorToReport: Error?
-            switch connectionState {
-            case .connected:
-                errorToReport = nil
-            case .disconnected(let error):
-                errorToReport = error
-            }
-
-            let nextRequest = requestQueue.removeFirst()
-            self.isMakingRequest = true
-            nextRequest(errorToReport).ensure(on: scheduler) {
-                self.isMakingRequest = false
-                self.startNextRequestIfPossible()
-            }.cauterize()
-        }
-
-        /// Should only be called from the scheduler's queue.
-        /// - Parameter handler: Called once all previously enqueued requests have gotten a response
-        ///  AND executed the contents of their handlers. Anything you want done before another request
-        ///  starts should happen before the resolution of the promise returned by this handler.
+        /// - Parameter handler: Called once all previously-enqueued requests have
+        /// gotten a response AND executed the contents of their handlers. Anything
+        /// you want done before another request starts should happen before
+        /// `handler` returns.
         func sendRequestAndReadResponse<T>(
             _ request: SVR2Proto_Request,
-            handler: @escaping (() -> Promise<SVR2Proto_Response>) -> Guarantee<T>,
-        ) -> Guarantee<T> {
-            let (returnedGuarantee, returnedFuture) = Guarantee<T>.pending()
-            requestQueue.append({ (initialError: Error?) -> Promise<Void> in
-                if let initialError {
-                    let guarantee = handler({ return .init(error: initialError) })
-                    returnedFuture.resolve(on: self.scheduler, with: guarantee)
-                    return .init(error: SVR.SVRError.assertion)
-                }
-                let guarantee = handler({
-                    let promise = self.connection.sendRequestAndReadResponse(request)
-                    return promise.recover(on: self.scheduler) { error in
-                        // Treat all errors as terminating the connection.
-                        self.disconnect(error)
-                        return Promise<SVR2Proto_Response>(error: error)
-                    }
-                })
-                returnedFuture.resolve(on: self.scheduler, with: guarantee)
-                return guarantee.asVoid(on: SyncScheduler())
-            })
-            startNextRequestIfPossible()
-            return returnedGuarantee
-        }
-
-        private func scheduleDisconnectIfNeeded() {
-            // Give a little leeway to start another request, after
-            // which if nothing is happening we can close the connection.
-            self.scheduler.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                if self?.requestQueue.isEmpty == true, self?.isMakingRequest != true {
-                    self?.disconnect(nil)
-                }
+            handler: (_ makeRequest: () async throws -> SVR2Proto_Response) async -> T,
+        ) async -> T {
+            return await requestQueue.runWithoutTaskCancellationHandler {
+                return await handler({ try await self.connection.sendRequestAndReadResponse(request) })
             }
         }
 
-        private enum ConnectionState {
-            case connected
-            case disconnected(Error?)
-
-            var isDisconnected: Bool {
-                switch self {
-                case .connected: return false
-                case .disconnected: return true
-                }
-            }
-        }
-
-        private var connectionState = ConnectionState.connected
-
-        private func disconnect(_ error: Error?) {
-            guard !connectionState.isDisconnected else {
-                return
-            }
-            connectionState = .disconnected(error)
-            connection.disconnect(code: error == nil ? .normalClosure : nil)
-            onDisconnect()
-        }
-
-        deinit {
-            disconnect(SVR.SVRError.assertion)
+        func disconnect(isNormalClosure: Bool) {
+            connection.disconnect(code: isNormalClosure ? .normalClosure : nil)
         }
 
         func hashPin(
@@ -1174,14 +1064,18 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
     }
 
+    private struct CachedWebsocketConnection {
+        let wrappedValue: WebsocketConnection
+        var refCount: Int
+    }
+
     /// Maps from mrenclave string to open connection.
     /// A single connection makes all requests in serial; the next isn't made until we get a response.
-    private var openConnectionByMrEnclaveString: [String: WebsocketConnection] = [:]
+    private let openConnectionByMrEnclaveString = AtomicValue<[String: CachedWebsocketConnection]>([:], lock: .init())
 
-    private lazy var openConnectionChainedPromise = ChainedPromise<WebsocketConnection?>(initialValue: nil, scheduler: scheduler)
+    private let connectionQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
-    private func makeHandshakeAndOpenConnection(_ config: SVR2WebsocketConfigurator) -> Promise<WebsocketConnection> {
-
+    private func makeHandshakeAndOpenConnection(_ config: SVR2WebsocketConfigurator) async throws -> WebsocketConnection {
         // Update the auth method with cached credentials if we have them.
         switch config.authMethod {
         case .svrAuth, .chatServerAuth:
@@ -1194,72 +1088,108 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             }
         }
 
-        var innerError: Error = SVR.SVRError.assertion
-        func innerConnectAndPerformHandshake() -> Promise<WebsocketConnection?> {
-            if let openConnection = self.openConnectionByMrEnclaveString[config.mrenclave.stringValue] {
-                Logger.info("Reusing already open websocket connection")
-                return .value(openConnection)
-            }
-            Logger.info("Opening new connection")
-            return self.connectionFactory
-                .connectAndPerformHandshake(
-                    configurator: config,
-                    on: self.scheduler,
-                )
-                .then(on: self.scheduler) { connection -> Promise<WebsocketConnection?> in
-                    let knownGoodAuthCredential = connection.auth
-                    let connection = WebsocketConnection(
-                        connection: connection,
-                        scheduler: self.scheduler,
-                        onDisconnect: { [weak self] in
-                            self?.openConnectionByMrEnclaveString[config.mrenclave.stringValue] = nil
-                        },
-                    )
-                    self.openConnectionByMrEnclaveString[config.mrenclave.stringValue] = connection
-
+        return try await connectionQueue.run {
+            while true {
+                if
+                    let openConnection = self.openConnectionByMrEnclaveString.update(block: {
+                        $0[config.mrenclave.stringValue]?.refCount += 1
+                        return $0[config.mrenclave.stringValue]?.wrappedValue
+                    })
+                {
+                    Logger.info("Reusing already open websocket connection")
+                    return openConnection
+                }
+                Logger.info("Opening new connection")
+                do {
+                    let sgxConnection = try await self.connectionFactory.connectAndPerformHandshake(configurator: config)
+                    let knownGoodAuthCredential = sgxConnection.auth
+                    let connection = WebsocketConnection(connection: sgxConnection)
+                    self.openConnectionByMrEnclaveString.update(block: {
+                        $0[config.mrenclave.stringValue] = CachedWebsocketConnection(wrappedValue: connection, refCount: 1)
+                    })
                     // If we were able to open a connection, that means the auth used is valid
                     // and we should cache it.
-                    self.db.write { tx in
+                    await self.db.awaitableWrite { tx in
                         self.credentialStorage.storeAuthCredentialForCurrentUsername(
                             SVR2AuthCredential(credential: knownGoodAuthCredential),
                             tx,
                         )
                     }
-
-                    return .value(connection)
-                }
-                .recover(on: SyncScheduler()) { (error: Error) -> Promise<WebsocketConnection?> in
+                    return connection
+                } catch {
                     Logger.error("Failed to open websocket connection and complete handshake")
-                    innerError = error
 
                     // if we fail to connect for any reason, assume the credential we tried to use was bad.
                     // clear it out, and if we have a backup, try again with that.
                     switch config.authMethod {
                     case .svrAuth(let attemptedCredential, let backup):
-                        self.db.write { tx in
+                        await self.db.awaitableWrite { tx in
                             self.credentialStorage.deleteInvalidCredentials([attemptedCredential].compacted(), tx)
                         }
                         if let backup {
                             config.authMethod = backup
-                            return innerConnectAndPerformHandshake()
+                            continue
                         }
                     case .chatServerAuth, .implicit:
                         break
                     }
 
-                    return .init(error: error)
+                    throw error
                 }
-        }
-
-        return openConnectionChainedPromise.enqueue(recoverValue: nil) { (_: WebsocketConnection?) -> Promise<WebsocketConnection?> in
-            innerConnectAndPerformHandshake()
-        }.then(on: SyncScheduler()) { connection -> Promise<WebsocketConnection> in
-            if let connection {
-                return .value(connection)
-            } else {
-                return .init(error: innerError)
             }
         }
+    }
+
+    private func sendRequestAndReadResponse<T>(
+        _ request: SVR2Proto_Request,
+        on connection: WebsocketConnection,
+        earlyHandler: () async -> T? = { nil },
+        responseHandler: (Result<SVR2Proto_Response, any Error>) async -> T,
+    ) async -> T {
+        return await connection.sendRequestAndReadResponse(request, handler: { makeRequest in
+            if let result = await earlyHandler() {
+                return result
+            }
+            let response = await Result(catching: { try await makeRequest() })
+            if case .failure = response {
+                closeConnectionAfterError(connection)
+            }
+            return await responseHandler(response)
+        })
+    }
+
+    private func closeConnectionAfterDelay(_ connection: WebsocketConnection) {
+        Task {
+            // Give a little leeway to start another request, after
+            // which if nothing is happening we can close the connection.
+            try await Task.sleep(nanoseconds: 0.1.clampedNanoseconds)
+
+            let mrEnclave = connection.mrEnclave.stringValue
+            let shouldDisconnect = self.openConnectionByMrEnclaveString.update {
+                // If the connect is active and this is the last reference...
+                if $0[mrEnclave]?.wrappedValue === connection {
+                    $0[mrEnclave]?.refCount -= 1
+                    if $0[mrEnclave]?.refCount == 0 {
+                        // ...remove it because we're going to disconnect it.
+                        $0.removeValue(forKey: mrEnclave)
+                        return true
+                    }
+                }
+                return false
+            }
+            if shouldDisconnect {
+                connection.disconnect(isNormalClosure: true)
+            }
+        }
+    }
+
+    private func closeConnectionAfterError(_ connection: WebsocketConnection) {
+        openConnectionByMrEnclaveString.update {
+            if $0[connection.mrEnclave.stringValue]?.wrappedValue === connection {
+                $0.removeValue(forKey: connection.mrEnclave.stringValue)
+            }
+        }
+        connection.disconnect(isNormalClosure: false)
     }
 
     // MARK: - Local key storage helpers

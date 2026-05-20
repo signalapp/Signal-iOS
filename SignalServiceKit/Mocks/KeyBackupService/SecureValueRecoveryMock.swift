@@ -33,14 +33,14 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public var backupMasterKeyMock: ((_ pin: String, _ masterKey: MasterKey, _ authMethod: SVR.AuthMethod) -> Promise<MasterKey>)?
 
-    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) -> Promise<MasterKey> {
-        return backupMasterKeyMock!(pin, masterKey, authMethod)
+    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) async throws -> MasterKey {
+        return try await backupMasterKeyMock!(pin, masterKey, authMethod).awaitable()
     }
 
     public var restoreKeysMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>)?
 
-    public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
-        return restoreKeysMock!(pin, authMethod)
+    public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) async -> SVR.RestoreKeysResult {
+        return await restoreKeysMock!(pin, authMethod).awaitable()
     }
 
     public func warmCaches() {

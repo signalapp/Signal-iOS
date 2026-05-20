@@ -446,7 +446,6 @@ extension AppSetup.GlobalsContinuation {
             credentialStorage: svrCredentialStorage,
             db: db,
             accountKeyStore: accountKeyStore,
-            scheduler: DispatchQueue(label: "org.signal.svr2", qos: .userInitiated),
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
             tsAccountManager: tsAccountManager,

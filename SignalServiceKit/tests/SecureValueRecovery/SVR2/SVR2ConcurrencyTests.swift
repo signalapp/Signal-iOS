@@ -15,7 +15,6 @@ struct SVR2ConcurrencyTests {
     private let svr: SecureValueRecovery2Impl
 
     private let credentialStorage: SVRAuthCredentialStorageMock
-    private let queue = DispatchQueue(label: "SVR2ConcurrencyTestsQueue")
     private let mockConnectionFactory: MockSgxWebsocketConnectionFactory
     private let mockConnection: MockSgxWebsocketConnection<SVR2WebsocketConfigurator>
 
@@ -24,6 +23,7 @@ struct SVR2ConcurrencyTests {
         self.credentialStorage = SVRAuthCredentialStorageMock()
 
         mockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
+        mockConnection.mockEnclave = TSConstants.shared.svr2Enclave
         mockConnection.mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
         mockConnectionFactory = MockSgxWebsocketConnectionFactory()
 
@@ -43,7 +43,6 @@ struct SVR2ConcurrencyTests {
             credentialStorage: credentialStorage,
             db: db,
             accountKeyStore: accountKeyStore,
-            scheduler: queue,
             storageServiceManager: FakeStorageServiceManager(),
             svrLocalStorage: localStorage,
             tsAccountManager: MockTSAccountManager(),
@@ -58,7 +57,7 @@ struct SVR2ConcurrencyTests {
         mockConnectionFactory.setOnConnectAndPerformHandshake { (_: SVR2WebsocketConfigurator) in
             #expect(!hasOpenedConnection)
             hasOpenedConnection = true
-            return .value(self.mockConnection)
+            return self.mockConnection
         }
 
         let closeContinuation = CancellableContinuation<Void>()
@@ -104,7 +103,7 @@ struct SVR2ConcurrencyTests {
         }
 
         let firstMasterKey = MasterKey()
-        async let firstBackupResult = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit).awaitable()
+        async let firstBackupResult = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit)
 
         // Let the first backup succeed and start the expose, then make the second request.
         firstBackupFuture.resolve(backupResponse())
@@ -113,7 +112,7 @@ struct SVR2ConcurrencyTests {
         try await madeRequestContinuations[1].wait()
 
         let secondMasterKey = MasterKey()
-        async let secondBackupResult = svr.backupMasterKey(pin: "abcd", masterKey: secondMasterKey, authMethod: .implicit).awaitable()
+        async let secondBackupResult = svr.backupMasterKey(pin: "abcd", masterKey: secondMasterKey, authMethod: .implicit)
 
         // There is a race condition here because the connection closes itself
         // after 100ms of inactivity. If the second `backupMasterKey` call is
@@ -144,7 +143,7 @@ struct SVR2ConcurrencyTests {
         mockConnectionFactory.setOnConnectAndPerformHandshake { (_: SVR2WebsocketConfigurator) in
             #expect(!hasOpenedConnection)
             hasOpenedConnection = true
-            return .value(self.mockConnection)
+            return self.mockConnection
         }
 
         let closeContinuation = CancellableContinuation<Void>()
@@ -187,10 +186,10 @@ struct SVR2ConcurrencyTests {
         }
 
         let firstMasterKey = MasterKey()
-        async let firstBackupResult = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit).awaitable()
+        async let firstBackupResult = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit)
 
         let secondMasterKey = MasterKey()
-        async let secondBackupResult = svr.backupMasterKey(pin: "abcd", masterKey: secondMasterKey, authMethod: .implicit).awaitable()
+        async let secondBackupResult = svr.backupMasterKey(pin: "abcd", masterKey: secondMasterKey, authMethod: .implicit)
 
         // In addition to the race condition described above related to the 100ms
         // disconnection timeout, there is non-determinism and another race
@@ -228,9 +227,11 @@ struct SVR2ConcurrencyTests {
     func testWebsocketConnectionFailure() async throws {
 
         let firstMockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
+        firstMockConnection.mockEnclave = TSConstants.shared.svr2Enclave
         firstMockConnection.mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
 
         let secondMockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
+        secondMockConnection.mockEnclave = TSConstants.shared.svr2Enclave
         secondMockConnection.mockAuth = RemoteAttestation.Auth(username: "username2", password: "password2")
 
         var numOpenedConnections = 0
@@ -238,12 +239,12 @@ struct SVR2ConcurrencyTests {
             numOpenedConnections += 1
             switch numOpenedConnections {
             case 1:
-                return .value(firstMockConnection)
+                return firstMockConnection
             case 2:
-                return .value(secondMockConnection)
+                return secondMockConnection
             default:
                 Issue.record("Unexpected number of opened connections")
-                return .init(error: OWSAssertionError(""))
+                throw OWSAssertionError("")
             }
         }
 
@@ -253,11 +254,10 @@ struct SVR2ConcurrencyTests {
         }
 
         let (firstBackupPromise, firstBackupFuture) = Promise<SVR2Proto_Response>.pending()
-        // We won't make a first expose request; it will get cancelled because of the failure.
-        // We also won't make a second backup or expose request.
+        let (secondBackupPromise, secondBackupFuture) = Promise<SVR2Proto_Response>.pending()
 
         var firstConnectionRequestCount = 0
-        let madeRequestContinuations = (0..<1).map { i in
+        let madeRequestContinuations = (0..<2).map { i in
             return CancellableContinuation<Void>()
         }
         firstMockConnection.onSendRequestAndReadResponse = { request in
@@ -270,6 +270,10 @@ struct SVR2ConcurrencyTests {
                 // First backup.
                 #expect(request.hasBackup)
                 return firstBackupPromise
+            case 1:
+                // Second backup.
+                #expect(request.hasBackup)
+                return secondBackupPromise
             default:
                 Issue.record("Unexpected request")
                 return .init(error: OWSAssertionError(""))
@@ -277,19 +281,21 @@ struct SVR2ConcurrencyTests {
         }
 
         let firstMasterKey = MasterKey()
-        async let firstBackupResult = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit).awaitable()
+        async let firstBackupResult = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit)
 
         let secondMasterKey = MasterKey()
-        async let secondBackupResult = svr.backupMasterKey(pin: "abcd", masterKey: secondMasterKey, authMethod: .implicit).awaitable()
+        async let secondBackupResult = svr.backupMasterKey(pin: "abcd", masterKey: secondMasterKey, authMethod: .implicit)
 
         // See above. In this case, we want both `backupMasterKey` calls to acquire
         // the same shared connection so they see the same errors.
         try await Task.sleep(nanoseconds: 3.clampedNanoseconds)
 
-        let firstBackupError = WebSocketError.closeError(statusCode: 400, closeReason: nil)
-        firstBackupFuture.reject(firstBackupError)
+        let backupError = WebSocketError.closeError(statusCode: 400, closeReason: nil)
+        firstBackupFuture.reject(backupError)
+        secondBackupFuture.reject(backupError)
 
         try await madeRequestContinuations[0].wait()
+        try await madeRequestContinuations[1].wait()
 
         do {
             _ = try await firstBackupResult
@@ -324,7 +330,7 @@ struct SVR2ConcurrencyTests {
         }
 
         let thirdMasterKey = MasterKey()
-        _ = try await svr.backupMasterKey(pin: "zzzz", masterKey: thirdMasterKey, authMethod: .implicit).awaitable()
+        _ = try await svr.backupMasterKey(pin: "zzzz", masterKey: thirdMasterKey, authMethod: .implicit)
 
         #expect(numOpenedConnections == 2)
     }

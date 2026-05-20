@@ -30,12 +30,12 @@ public class SgxWebsocketConnection<Configurator: SgxWebsocketConfigurator> {
     public var auth: RemoteAttestation.Auth { fatalError("Concrete subclass must implement") }
 
     // Subclasses must implement.
-    func sendRequestAndReadResponse(_ request: Configurator.Request) -> Promise<Configurator.Response> {
+    func sendRequestAndReadResponse(_ request: Configurator.Request) async throws -> Configurator.Response {
         fatalError("Concrete subclass must implement")
     }
 
     // Subclasses must implement.
-    func sendRequestAndReadAllResponses(_ request: Configurator.Request) -> Promise<[Configurator.Response]> {
+    func sendRequestAndReadAllResponses(_ request: Configurator.Request) async throws -> [Configurator.Response] {
         fatalError("Concrete subclass must implement")
     }
 
@@ -51,20 +51,17 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
     private let configurator: Configurator
     private let _client: Configurator.Client
     private let _auth: RemoteAttestation.Auth
-    private let scheduler: Scheduler
 
     private init(
         webSocket: WebSocketPromise,
         configurator: Configurator,
         client: Configurator.Client,
         auth: RemoteAttestation.Auth,
-        scheduler: Scheduler,
     ) {
         self.webSocket = webSocket
         self.configurator = configurator
         self._client = client
         self._auth = auth
-        self.scheduler = scheduler
         super.init()
     }
 
@@ -72,38 +69,29 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         configurator: Configurator,
         auth: RemoteAttestation.Auth,
         websocketFactory: WebSocketFactory,
-        scheduler: Scheduler,
-    ) throws -> Promise<SgxWebsocketConnection<Configurator>> {
+    ) async throws -> SgxWebsocketConnection<Configurator> {
         let webSocket = try buildSocket(
             configurator: configurator,
             auth: auth,
             websocketFactory: websocketFactory,
-            scheduler: scheduler,
         )
-        return firstly(on: scheduler) {
-            webSocket.waitForResponse()
-        }.then(on: scheduler) { attestationMessage -> Promise<Configurator.Client> in
+        do {
+            let attestationMessage = try await webSocket.waitForResponse().awaitable()
             let client = try Configurator.client(
                 mrenclave: configurator.mrenclave,
                 attestationMessage: attestationMessage,
                 currentDate: Date(),
             )
-            return firstly {
-                webSocket.send(data: client.initialRequest())
-                return webSocket.waitForResponse()
-            }.map(on: scheduler) { handshakeResponse -> Configurator.Client in
-                try client.completeHandshake(handshakeResponse)
-                return client
-            }
-        }.map(on: scheduler) { client -> SgxWebsocketConnection<Configurator> in
+            webSocket.send(data: client.initialRequest())
+            let handshakeResponse = try await webSocket.waitForResponse().awaitable()
+            try client.completeHandshake(handshakeResponse)
             return SgxWebsocketConnectionImpl<Configurator>(
                 webSocket: webSocket,
                 configurator: configurator,
                 client: client,
                 auth: auth,
-                scheduler: scheduler,
             )
-        }.recover(on: scheduler) { error -> Promise<SgxWebsocketConnection<Configurator>> in
+        } catch {
             Logger.warn("\(type(of: configurator).loggingName): Disconnecting socket after failed handshake: \(error)")
             webSocket.disconnect(code: .invalidFramePayloadData)
             throw error
@@ -114,7 +102,6 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         configurator: Configurator,
         auth: RemoteAttestation.Auth,
         websocketFactory: WebSocketFactory,
-        scheduler: Scheduler,
     ) throws -> WebSocketPromise {
         let authHeaderValue = HttpHeaders.authHeaderValue(username: auth.username, password: auth.password)
         let request = WebSocketRequest(
@@ -123,7 +110,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
             urlQueryItems: nil,
             extraHeaders: [HttpHeaders.authHeaderKey: authHeaderValue],
         )
-        guard let webSocketPromise = websocketFactory.webSocketPromise(request: request, callbackScheduler: scheduler) else {
+        guard let webSocketPromise = websocketFactory.webSocketPromise(request: request, callbackScheduler: DispatchQueue.global()) else {
             throw OWSAssertionError("We should always be able to get a web socket from this API.")
         }
         return webSocketPromise
@@ -137,27 +124,21 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
 
     override public func sendRequestAndReadResponse(
         _ request: Configurator.Request,
-    ) -> Promise<Configurator.Response> {
-        firstly(on: scheduler) { () -> Promise<Data> in
-            try self.encryptAndSendRequest(request.serializedData())
-            return self.webSocket.waitForResponse()
-        }.map(on: scheduler) { encryptedResponse in
-            let data = try self.decryptResponse(encryptedResponse)
-            return try Configurator.Response(serializedBytes: data)
-        }
+    ) async throws -> Configurator.Response {
+        try self.encryptAndSendRequest(request.serializedData())
+        let encryptedResponse = try await self.webSocket.waitForResponse().awaitable()
+        let data = try self.decryptResponse(encryptedResponse)
+        return try Configurator.Response(serializedBytes: data)
     }
 
     override public func sendRequestAndReadAllResponses(
         _ request: Configurator.Request,
-    ) -> Promise<[Configurator.Response]> {
-        firstly(on: scheduler) { () -> Promise<[Data]> in
-            try self.encryptAndSendRequest(request.serializedData())
-            return self.webSocket.waitForAllResponses()
-        }.map(on: scheduler) { encryptedResponses in
-            try encryptedResponses.map {
-                let data = try self.decryptResponse($0)
-                return try Configurator.Response(serializedBytes: data)
-            }
+    ) async throws -> [Configurator.Response] {
+        try self.encryptAndSendRequest(request.serializedData())
+        let encryptedResponses = try await self.webSocket.waitForAllResponses().awaitable()
+        return try encryptedResponses.map {
+            let data = try self.decryptResponse($0)
+            return try Configurator.Response(serializedBytes: data)
         }
     }
 
@@ -199,16 +180,16 @@ public class MockSgxWebsocketConnection<Configurator: SgxWebsocketConfigurator>:
 
     override public func sendRequestAndReadResponse(
         _ request: Configurator.Request,
-    ) -> Promise<Configurator.Response> {
-        onSendRequestAndReadResponse!(request)
+    ) async throws -> Configurator.Response {
+        try await onSendRequestAndReadResponse!(request).awaitable()
     }
 
     public var onSendRequestAndReadAllResponses: ((Configurator.Request) -> Promise<[Configurator.Response]>)?
 
     override public func sendRequestAndReadAllResponses(
         _ request: Configurator.Request,
-    ) -> Promise<[Configurator.Response]> {
-        onSendRequestAndReadAllResponses!(request)
+    ) async throws -> [Configurator.Response] {
+        try await onSendRequestAndReadAllResponses!(request).awaitable()
     }
 
     public var onDisconnect: (() -> Void)?

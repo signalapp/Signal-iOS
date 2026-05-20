@@ -9,23 +9,20 @@ import Foundation
 
 public class MockSgxWebsocketConnectionFactory: SgxWebsocketConnectionFactory {
 
-    private var onConnectAndPerformHandshakeHandlers = [String: (Any) -> Promise<Any>]()
+    private var onConnectAndPerformHandshakeHandlers = [String: (Any) async throws -> Any]()
 
     public func setOnConnectAndPerformHandshake<Configurator: SgxWebsocketConfigurator>(
-        _ block: @escaping (Configurator) -> Promise<SgxWebsocketConnection<Configurator>>,
+        _ block: @escaping (Configurator) async throws -> SgxWebsocketConnection<Configurator>,
     ) {
         let key = String(describing: Configurator.self)
-        self.onConnectAndPerformHandshakeHandlers[key] = {
-            return block($0 as! Configurator).map(on: SyncScheduler()) { $0 }
-        }
+        self.onConnectAndPerformHandshakeHandlers[key] = { try await block($0 as! Configurator) }
     }
 
     public func connectAndPerformHandshake<Configurator: SgxWebsocketConfigurator>(
         configurator: Configurator,
-        on scheduler: Scheduler,
-    ) -> Promise<SgxWebsocketConnection<Configurator>> {
+    ) async throws -> SgxWebsocketConnection<Configurator> {
         let key = String(describing: Configurator.self)
-        return onConnectAndPerformHandshakeHandlers[key]!(configurator).map(on: scheduler) { $0 as! SgxWebsocketConnection<Configurator> }
+        return try await onConnectAndPerformHandshakeHandlers[key]!(configurator) as! SgxWebsocketConnection<Configurator>
     }
 }
 

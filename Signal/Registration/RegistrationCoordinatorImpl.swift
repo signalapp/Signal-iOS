@@ -2216,7 +2216,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) async -> RegistrationStep {
         let maxAutomaticRetries = Constants.networkErrorRetries
 
-        let result = await deps.svr.restoreKeys(pin: pin, authMethod: .svrAuth(credential, backup: nil)).awaitable()
+        let result = await deps.svr.restoreKeys(pin: pin, authMethod: .svrAuth(credential, backup: nil))
 
         switch result {
         case .success(let masterKey):
@@ -3443,7 +3443,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         let result = await deps.svr.restoreKeys(
             pin: pin,
             authMethod: .svrAuth(svrAuthCredential, backup: nil),
-        ).awaitable()
+        )
 
         switch result {
         case .success(let masterKey):
@@ -3929,7 +3929,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         let result = await deps.svr.restoreKeys(
             pin: pin,
             authMethod: authMethod,
-        ).awaitable()
+        )
 
         switch result {
         case .success(let masterKey):
@@ -4022,7 +4022,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 pin: pin,
                 masterKey: masterKey,
                 authMethod: authMethod,
-            ).awaitable()
+            )
 
             inMemoryState.hasBackedUpToSVR = true
             await db.awaitableWrite { tx in

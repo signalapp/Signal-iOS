@@ -239,7 +239,7 @@ public class OWS2FAManager {
             pin: pin,
             masterKey: masterKey,
             authMethod: .implicit,
-        ).awaitable()
+        )
 
         await db.awaitableWrite { tx in
             markEnabled(pin: pin, resetReminderInterval: true, transaction: tx)

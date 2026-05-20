@@ -50,7 +50,6 @@ class SecureValueRecovery2Tests: XCTestCase {
             credentialStorage: credentialStorage,
             db: db,
             accountKeyStore: accountKeyStore,
-            scheduler: DispatchQueue(label: ""),
             storageServiceManager: FakeStorageServiceManager(),
             svrLocalStorage: localStorage,
             tsAccountManager: mockTSAccountManager,
@@ -65,19 +64,21 @@ class SecureValueRecovery2Tests: XCTestCase {
         let mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
         let oldEnclave = MrEnclave("0000000000000000000000000000000000000000000000000000000000000000")
         let oldEnclaveConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
+        oldEnclaveConnection.mockEnclave = oldEnclave
         oldEnclaveConnection.mockAuth = mockAuth
         let newEnclave = MrEnclave("0101010101010101010101010101010101010101010101010101010101010101")
         let newEnclaveConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
+        newEnclaveConnection.mockEnclave = newEnclave
         newEnclaveConnection.mockAuth = mockAuth
         mockConnectionFactory.setOnConnectAndPerformHandshake { (config: SVR2WebsocketConfigurator) in
             switch config.mrenclave.stringValue {
             case oldEnclave.stringValue:
-                return .value(oldEnclaveConnection)
+                return oldEnclaveConnection
             case newEnclave.stringValue:
-                return .value(newEnclaveConnection)
+                return newEnclaveConnection
             default:
                 XCTFail("Unexpected enclave connection")
-                return .init(error: OWSAssertionError(""))
+                throw OWSAssertionError("")
             }
         }
 
@@ -148,7 +149,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         }
 
         // Kick off the migration.
-        _ = try await svr.performStartupMigrationsIfNecessary().awaitable()
+        _ = try await svr.performStartupMigrationsIfNecessary()
 
         XCTAssertEqual(newEnclaveRequestCount, 2)
         XCTAssertEqual(oldEnclaveRequestCount, 1)
@@ -158,7 +159,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         }
 
         // If we try to migrate again, it does nothing because we are at the newest enclave.
-        _ = try await svr.performStartupMigrationsIfNecessary().awaitable()
+        _ = try await svr.performStartupMigrationsIfNecessary()
         XCTAssertEqual(newEnclaveRequestCount, 2)
         XCTAssertEqual(oldEnclaveRequestCount, 1)
     }
@@ -169,17 +170,19 @@ class SecureValueRecovery2Tests: XCTestCase {
         let mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
         let oldEnclave = MrEnclave("0000000000000000000000000000000000000000000000000000000000000000")
         let oldEnclaveConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
+        oldEnclaveConnection.mockEnclave = oldEnclave
         oldEnclaveConnection.mockAuth = mockAuth
         let newEnclave = MrEnclave("0101010101010101010101010101010101010101010101010101010101010101")
         let newEnclaveConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
+        newEnclaveConnection.mockEnclave = newEnclave
         newEnclaveConnection.mockAuth = mockAuth
         mockConnectionFactory.setOnConnectAndPerformHandshake { (config: SVR2WebsocketConfigurator) in
             switch config.mrenclave.stringValue {
             case newEnclave.stringValue:
-                return .value(newEnclaveConnection)
+                return newEnclaveConnection
             default:
                 XCTFail("Unexpected enclave connection")
-                return .init(error: OWSAssertionError(""))
+                throw OWSAssertionError("")
             }
         }
 
@@ -234,7 +237,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         // NOTE: the old enclave should get no requests, its considered dead.
 
         // Kick off the migration.
-        _ = try await svr.performStartupMigrationsIfNecessary().awaitable()
+        _ = try await svr.performStartupMigrationsIfNecessary()
 
         XCTAssertEqual(newEnclaveRequestCount, 2)
 
@@ -243,7 +246,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         }
 
         // If we try to migrate again, it does nothing because we are at the newest enclave.
-        _ = try await svr.performStartupMigrationsIfNecessary().awaitable()
+        _ = try await svr.performStartupMigrationsIfNecessary()
         XCTAssertEqual(newEnclaveRequestCount, 2)
     }
 
