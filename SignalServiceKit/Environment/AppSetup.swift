@@ -404,7 +404,7 @@ extension AppSetup.GlobalsContinuation {
             backupSettingsStore: backupSettingsStore,
         )
         let svrCredentialStorage = SVRAuthCredentialStorageImpl()
-        let svrLocalStorage = SVRLocalStorageImpl()
+        let svrLocalStorage = SVRLocalStorage()
 
         let accountAttributesUpdater = AccountAttributesUpdaterImpl(
             accountAttributesGenerator: AccountAttributesGenerator(

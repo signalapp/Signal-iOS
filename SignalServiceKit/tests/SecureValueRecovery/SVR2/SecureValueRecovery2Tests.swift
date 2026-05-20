@@ -17,7 +17,7 @@ class SecureValueRecovery2Tests: XCTestCase {
 
     private var mock2FAManager: SVR2.TestMocks.OWS2FAManager!
     private var accountKeyStore: AccountKeyStore!
-    private var localStorage: SVRLocalStorageImpl!
+    private var localStorage: SVRLocalStorage!
     private var mockConnectionFactory: MockSgxWebsocketConnectionFactory!
     private var mockConnection: MockSgxWebsocketConnection<SVR2WebsocketConfigurator>!
     private var mockTSAccountManager: MockTSAccountManager!
@@ -31,7 +31,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         accountKeyStore = AccountKeyStore(
             backupSettingsStore: BackupSettingsStore(),
         )
-        localStorage = SVRLocalStorageImpl()
+        localStorage = SVRLocalStorage()
 
         let mockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
         mockConnection.mockAuth = RemoteAttestation.Auth(username: "username", password: "password")

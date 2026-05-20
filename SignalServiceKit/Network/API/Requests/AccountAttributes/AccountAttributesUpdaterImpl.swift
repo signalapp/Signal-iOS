@@ -25,7 +25,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         static let periodicRefreshInterval: TimeInterval = 14 * .day
     }
 
-    public init(
+    init(
         accountAttributesGenerator: AccountAttributesGenerator,
         appReadiness: AppReadiness,
         cron: Cron,

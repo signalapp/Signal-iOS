@@ -43,7 +43,6 @@ public class RegistrationCoordinatorTest {
     private var sessionManager: RegistrationSessionManagerMock!
     private var storageServiceManagerMock: RegistrationCoordinatorImpl.TestMocks.StorageServiceManager!
     private var svr: SecureValueRecoveryMock!
-    private var svrLocalStorageMock: SVRLocalStorageMock!
     private var svrAuthCredentialStore: SVRAuthCredentialStorageMock!
     private var timeoutProviderMock: RegistrationCoordinatorImpl.TestMocks.TimeoutProvider!
     private var tsAccountManagerMock: MockTSAccountManager!
@@ -91,7 +90,6 @@ public class RegistrationCoordinatorTest {
         receiptManagerMock = RegistrationCoordinatorImpl.TestMocks.ReceiptManager()
         registrationStateChangeManagerMock = MockRegistrationStateChangeManager()
         sessionManager = RegistrationSessionManagerMock()
-        svrLocalStorageMock = SVRLocalStorageMock()
         storageServiceManagerMock = RegistrationCoordinatorImpl.TestMocks.StorageServiceManager(run: testRun)
         timeoutProviderMock = RegistrationCoordinatorImpl.TestMocks.TimeoutProvider()
         tsAccountManagerMock = MockTSAccountManager()

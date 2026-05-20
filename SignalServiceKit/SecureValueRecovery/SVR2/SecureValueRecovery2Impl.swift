@@ -17,7 +17,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let credentialStorage: SVRAuthCredentialStorage
     private let db: any DB
     private let accountKeyStore: AccountKeyStore
-    private let localStorage: SVRLocalStorageInternal
+    private let localStorage: SVRLocalStorage
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
     private let tsConstants: TSConstantsProtocol
@@ -33,7 +33,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         accountKeyStore: AccountKeyStore,
         pinHasher: any SVR2PinHasher,
         storageServiceManager: StorageServiceManager,
-        svrLocalStorage: SVRLocalStorageInternal,
+        svrLocalStorage: SVRLocalStorage,
         tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR2.Shims.OWS2FAManager,

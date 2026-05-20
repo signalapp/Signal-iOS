@@ -5,41 +5,9 @@
 
 import Foundation
 
-public protocol SVRLocalStorage {
-    func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool
-
-    func clearStorageServiceKeys(_ transaction: DBWriteTransaction)
-}
-
-public protocol SVRLocalStorageInternal: SVRLocalStorage {
-    func getNeedsMasterKeyBackup(_ transaction: DBReadTransaction) -> Bool
-
-    func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType?
-
-    func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String?
-
-    // MARK: - Setters
-
-    func setNeedsMasterKeyBackup(_ value: Bool, _ transaction: DBWriteTransaction)
-
-    func setIsMasterKeyBackedUp(_ value: Bool, _ transaction: DBWriteTransaction)
-
-    func setPinType(_ value: SVR.PinType, _ transaction: DBWriteTransaction)
-
-    func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction)
-
-    // MARK: - Clearing Keys
-
-    func clearSVRKeys(_ transaction: DBWriteTransaction)
-
-    // MARK: - Cleanup
-
-    func cleanupDeadKeys(_ transaction: DBWriteTransaction)
-}
-
 /// Stores state related to SVR independent of enclave; e.g. do we have backups at all,
 /// what type is our pin, etc.
-class SVRLocalStorageImpl: SVRLocalStorageInternal {
+struct SVRLocalStorage {
     private let svrKvStore: KeyValueStore
 
     init() {
@@ -131,18 +99,3 @@ class SVRLocalStorageImpl: SVRLocalStorageInternal {
         static let svr2MrEnclaveStringValue = "svr2_mrenclaveStringValue"
     }
 }
-
-#if TESTABLE_BUILD
-public class SVRLocalStorageMock: SVRLocalStorage {
-
-    var isMasterKeyBackedUp: Bool = false
-
-    public func clearStorageServiceKeys(_ transaction: DBWriteTransaction) {
-        fatalError("not implemented")
-    }
-
-    public func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool {
-        return isMasterKeyBackedUp
-    }
-}
-#endif

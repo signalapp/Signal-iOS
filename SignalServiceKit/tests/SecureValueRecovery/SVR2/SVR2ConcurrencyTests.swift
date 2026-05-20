@@ -30,7 +30,7 @@ struct SVR2ConcurrencyTests {
         let accountKeyStore = AccountKeyStore(
             backupSettingsStore: BackupSettingsStore(),
         )
-        let localStorage = SVRLocalStorageImpl()
+        let localStorage = SVRLocalStorage()
 
         self.svr = SecureValueRecovery2Impl(
             appContext: SVR2.Mocks.AppContext(),

@@ -175,7 +175,7 @@ public class DependenciesBridge {
     public let storyRecipientManager: StoryRecipientManager
     public let storyRecipientStore: StoryRecipientStore
     public let subscriptionConfigManager: SubscriptionConfigManager
-    public let svrLocalStorage: SVRLocalStorage
+    let svrLocalStorage: SVRLocalStorage
     public let threadAssociatedDataStore: ThreadAssociatedDataStore
     public let threadRemover: ThreadRemover
     public let threadReplyInfoStore: ThreadReplyInfoStore
