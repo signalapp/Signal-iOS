@@ -51,18 +51,6 @@ struct SVR2ConcurrencyTests {
 
     @Test
     func testConcurrentRequestsOnSameEnclave_startSecondAfterFirstSendsExpose() async throws {
-        var hasOpenedConnection = false
-        mockConnectionFactory.setOnConnectAndPerformHandshake { (_: SVR2WebsocketConfigurator) in
-            #expect(!hasOpenedConnection)
-            hasOpenedConnection = true
-            return self.mockConnection
-        }
-
-        let closeContinuation = CancellableContinuation<Void>()
-        mockConnection.onDisconnect = {
-            closeContinuation.resume(with: .success(()))
-        }
-
         let (firstBackupPromise, firstBackupFuture) = Promise<SVR2Proto_Response>.pending()
         let (firstExposePromise, firstExposeFuture) = Promise<SVR2Proto_Response>.pending()
         let (secondBackupPromise, secondBackupFuture) = Promise<SVR2Proto_Response>.pending()
@@ -72,7 +60,7 @@ struct SVR2ConcurrencyTests {
         let madeRequestContinuations = (0..<4).map { i in
             return CancellableContinuation<Void>()
         }
-        mockConnection.onSendRequestAndReadResponse = { request in
+        let onSendRequestAndReadResponse = { (request: SVR2Proto_Request) -> Promise<SVR2Proto_Response> in
             defer {
                 madeRequestContinuations[requestCount].resume(with: .success(()))
                 requestCount += 1
@@ -100,6 +88,14 @@ struct SVR2ConcurrencyTests {
             }
         }
 
+        mockConnectionFactory.setOnConnectAndPerformHandshake { (_: SVR2WebsocketConfigurator) in
+            let mockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
+            mockConnection.mockEnclave = TSConstants.shared.svr2Enclave
+            mockConnection.mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
+            mockConnection.onSendRequestAndReadResponse = onSendRequestAndReadResponse
+            return mockConnection
+        }
+
         let firstMasterKey = MasterKey()
         async let firstBackupResult = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit)
 
@@ -112,15 +108,6 @@ struct SVR2ConcurrencyTests {
         let secondMasterKey = MasterKey()
         async let secondBackupResult = svr.backupMasterKey(pin: "abcd", masterKey: secondMasterKey, authMethod: .implicit)
 
-        // There is a race condition here because the connection closes itself
-        // after 100ms of inactivity. If the second `backupMasterKey` call is
-        // delayed more than 100ms in requesting the connection/scheduling its
-        // requests, the connection may close prematurely, causing the second
-        // backup to open a new connection. We can reduce the likelihood of hitting
-        // this race condition by pausing temporarily here; note that we already
-        // wait for 100ms at the end of the test for the connection to close.
-        try await Task.sleep(nanoseconds: 3.clampedNanoseconds)
-
         firstExposeFuture.resolve(exposeResponse())
         secondBackupFuture.resolve(backupResponse())
         secondExposeFuture.resolve(exposeResponse())
@@ -131,94 +118,6 @@ struct SVR2ConcurrencyTests {
         try await madeRequestContinuations[3].wait()
 
         _ = try await secondBackupResult
-
-        try await closeContinuation.wait()
-    }
-
-    @Test
-    func testConcurrentRequestsOnSameEnclave_startSecondImmediately() async throws {
-        var hasOpenedConnection = false
-        mockConnectionFactory.setOnConnectAndPerformHandshake { (_: SVR2WebsocketConfigurator) in
-            #expect(!hasOpenedConnection)
-            hasOpenedConnection = true
-            return self.mockConnection
-        }
-
-        let closeContinuation = CancellableContinuation<Void>()
-        mockConnection.onDisconnect = {
-            closeContinuation.resume(with: .success(()))
-        }
-
-        let (firstBackupPromise, firstBackupFuture) = Promise<SVR2Proto_Response>.pending()
-        // We won't make a first expose request; it will get cancelled because of the second
-        // overwriting it.
-        let (secondBackupPromise, secondBackupFuture) = Promise<SVR2Proto_Response>.pending()
-        let (secondExposePromise, secondExposeFuture) = Promise<SVR2Proto_Response>.pending()
-
-        var requestCount = 0
-        let madeRequestContinuations = (0..<3).map { i in
-            return CancellableContinuation<Void>()
-        }
-        mockConnection.onSendRequestAndReadResponse = { request in
-            defer {
-                madeRequestContinuations[requestCount].resume(with: .success(()))
-                requestCount += 1
-            }
-            switch requestCount {
-            case 0:
-                // First backup.
-                #expect(request.hasBackup)
-                return firstBackupPromise
-            case 1:
-                // Second backup
-                #expect(request.hasBackup)
-                return secondBackupPromise
-            case 2:
-                // Second expose
-                #expect(request.hasExpose)
-                return secondExposePromise
-            default:
-                Issue.record("Unexpected request")
-                return .init(error: OWSAssertionError(""))
-            }
-        }
-
-        let firstMasterKey = MasterKey()
-        async let firstBackupResult = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit)
-
-        let secondMasterKey = MasterKey()
-        async let secondBackupResult = svr.backupMasterKey(pin: "abcd", masterKey: secondMasterKey, authMethod: .implicit)
-
-        // In addition to the race condition described above related to the 100ms
-        // disconnection timeout, there is non-determinism and another race
-        // condition in this flow specifically.
-        //
-        // The two `backupMasterKey` calls above may execute in either order (they
-        // are asynchronous and concurrent). This is fine because they are
-        // interchangeable. The test itself wants to ensure that only one of them
-        // issues an expose, and it should be the second one, but it can't confirm
-        // which that is because of the non-determinism.
-        //
-        // Additionally, the following lines must wait until both of the above
-        // requests have queued up their backup requests to ensure both of those
-        // run before either of them issues an expose.
-        try await Task.sleep(nanoseconds: 3.clampedNanoseconds)
-
-        firstBackupFuture.resolve(backupResponse())
-        secondBackupFuture.resolve(backupResponse())
-        secondExposeFuture.resolve(exposeResponse())
-
-        try await madeRequestContinuations[0].wait()
-        try await madeRequestContinuations[1].wait()
-        try await madeRequestContinuations[2].wait()
-
-        // We don't know which of these will arrive "first" or "second", so we have
-        // to wait for all of the madeRequestContinuations before we can wait for
-        // either of these.
-        _ = try await firstBackupResult
-        _ = try await secondBackupResult
-
-        try await closeContinuation.wait()
     }
 
     @Test
@@ -246,16 +145,10 @@ struct SVR2ConcurrencyTests {
             }
         }
 
-        let firstCloseContinuation = CancellableContinuation<Void>()
-        firstMockConnection.onDisconnect = {
-            firstCloseContinuation.resume(with: .success(()))
-        }
-
         let (firstBackupPromise, firstBackupFuture) = Promise<SVR2Proto_Response>.pending()
-        let (secondBackupPromise, secondBackupFuture) = Promise<SVR2Proto_Response>.pending()
 
         var firstConnectionRequestCount = 0
-        let madeRequestContinuations = (0..<2).map { i in
+        let madeRequestContinuations = (0..<1).map { i in
             return CancellableContinuation<Void>()
         }
         firstMockConnection.onSendRequestAndReadResponse = { request in
@@ -268,10 +161,6 @@ struct SVR2ConcurrencyTests {
                 // First backup.
                 #expect(request.hasBackup)
                 return firstBackupPromise
-            case 1:
-                // Second backup.
-                #expect(request.hasBackup)
-                return secondBackupPromise
             default:
                 Issue.record("Unexpected request")
                 return .init(error: OWSAssertionError(""))
@@ -281,31 +170,15 @@ struct SVR2ConcurrencyTests {
         let firstMasterKey = MasterKey()
         async let firstBackupResult = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit)
 
-        let secondMasterKey = MasterKey()
-        async let secondBackupResult = svr.backupMasterKey(pin: "abcd", masterKey: secondMasterKey, authMethod: .implicit)
-
-        // See above. In this case, we want both `backupMasterKey` calls to acquire
-        // the same shared connection so they see the same errors.
-        try await Task.sleep(nanoseconds: 3.clampedNanoseconds)
-
         let backupError = WebSocketError.closeError(statusCode: 400, closeReason: nil)
         firstBackupFuture.reject(backupError)
-        secondBackupFuture.reject(backupError)
 
         try await madeRequestContinuations[0].wait()
-        try await madeRequestContinuations[1].wait()
 
         do {
             _ = try await firstBackupResult
             Issue.record("Expected error on first backup.")
         } catch {}
-
-        do {
-            _ = try await secondBackupResult
-            Issue.record("Expected error on second backup.")
-        } catch {}
-
-        try await firstCloseContinuation.wait()
 
         #expect(numOpenedConnections == 1)
 
@@ -327,8 +200,8 @@ struct SVR2ConcurrencyTests {
             }
         }
 
-        let thirdMasterKey = MasterKey()
-        _ = try await svr.backupMasterKey(pin: "zzzz", masterKey: thirdMasterKey, authMethod: .implicit)
+        let secondMasterKey = MasterKey()
+        _ = try await svr.backupMasterKey(pin: "zzzz", masterKey: secondMasterKey, authMethod: .implicit)
 
         #expect(numOpenedConnections == 2)
     }
