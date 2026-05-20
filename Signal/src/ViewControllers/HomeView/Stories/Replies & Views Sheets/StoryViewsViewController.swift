@@ -19,7 +19,7 @@ class StoryViewsViewController: OWSViewController, DatabaseChangeDelegate, UIAda
 
     let context: StoryContext
 
-    // This VC also gets embedded as a child VC into StoryGroupRepliesAndViewsViewController.
+    // This VC also gets embedded as a child VC into StoryGroupRepliesAndViewsSheet.
     // Distinguish that vs when this VC is presented on its own.
     private let isStandaloneVC: Bool
 

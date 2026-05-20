@@ -991,7 +991,7 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
             case .outgoing:
                 pause()
 
-                let groupRepliesAndViewsVC = StoryGroupRepliesAndViewsViewController(
+                let groupRepliesAndViewsVC = StoryGroupRepliesAndViewsSheet(
                     storyMessage: currentItem.message,
                     context: context,
                     spoilerState: spoilerState,

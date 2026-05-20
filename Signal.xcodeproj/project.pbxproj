@@ -1676,7 +1676,7 @@
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
 		88B00D4B28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D4A28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift */; };
 		88B00D4D28A3346100BC9CA0 /* StoryViewsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D4C28A3346000BC9CA0 /* StoryViewsViewController.swift */; };
-		88B00D5128A341D000BC9CA0 /* StoryGroupRepliesAndViewsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D5028A341CF00BC9CA0 /* StoryGroupRepliesAndViewsViewController.swift */; };
+		88B00D5128A341D000BC9CA0 /* StoryGroupRepliesAndViewsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D5028A341CF00BC9CA0 /* StoryGroupRepliesAndViewsSheet.swift */; };
 		88B2234A283F290400A25048 /* StoryPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B22349283F290400A25048 /* StoryPrivacySettingsViewController.swift */; };
 		88B2234C284FABE600A25048 /* StoryThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B2234B284FABE600A25048 /* StoryThumbnailView.swift */; };
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
@@ -5926,7 +5926,7 @@
 		88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewWallpaperViewController.swift; sourceTree = "<group>"; };
 		88B00D4A28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyViewController.swift; sourceTree = "<group>"; };
 		88B00D4C28A3346000BC9CA0 /* StoryViewsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewsViewController.swift; sourceTree = "<group>"; };
-		88B00D5028A341CF00BC9CA0 /* StoryGroupRepliesAndViewsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupRepliesAndViewsViewController.swift; sourceTree = "<group>"; };
+		88B00D5028A341CF00BC9CA0 /* StoryGroupRepliesAndViewsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupRepliesAndViewsSheet.swift; sourceTree = "<group>"; };
 		88B22349283F290400A25048 /* StoryPrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPrivacySettingsViewController.swift; sourceTree = "<group>"; };
 		88B2234B284FABE600A25048 /* StoryThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryThumbnailView.swift; sourceTree = "<group>"; };
 		88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsDetailSheet.swift; sourceTree = "<group>"; };
@@ -11311,7 +11311,7 @@
 		8864072F27F21AA7009916B6 /* Group Reply Sheet */ = {
 			isa = PBXGroup;
 			children = (
-				88B00D5028A341CF00BC9CA0 /* StoryGroupRepliesAndViewsViewController.swift */,
+				88B00D5028A341CF00BC9CA0 /* StoryGroupRepliesAndViewsSheet.swift */,
 				8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */,
 				8864072927F0D426009916B6 /* StoryGroupReplyLoader.swift */,
 				88B00D4A28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift */,
@@ -18738,7 +18738,7 @@
 				66BE544D28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift in Sources */,
 				884DB95027DE67BB00C6A309 /* StoryContextViewController.swift in Sources */,
 				88423A52280A171E007D2918 /* StoryDirectReplySheet.swift in Sources */,
-				88B00D5128A341D000BC9CA0 /* StoryGroupRepliesAndViewsViewController.swift in Sources */,
+				88B00D5128A341D000BC9CA0 /* StoryGroupRepliesAndViewsSheet.swift in Sources */,
 				8864072E27F0E8DF009916B6 /* StoryGroupReplyCell.swift in Sources */,
 				8864072A27F0D426009916B6 /* StoryGroupReplyLoader.swift in Sources */,
 				88B00D4B28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift in Sources */,
