@@ -53,10 +53,6 @@ public class OWS2FAManager {
         return pinCode(transaction: tx) != nil
     }
 
-    public var pinCodeWithSneakyTransaction: String? {
-        return db.read { pinCode(transaction: $0) }
-    }
-
     public func pinCode(transaction: DBReadTransaction) -> String? {
         return keyValueStore.getString(kOWS2FAManager_PinCode, transaction: transaction)
     }
@@ -158,13 +154,10 @@ public class OWS2FAManager {
 
     // MARK: -
 
-    public func verifyPin(_ pin: String, result: @escaping (Bool) -> Void) {
-        if let pinToMatch = pinCodeWithSneakyTransaction {
-            result(pinToMatch == SVRUtil.normalizePin(pin))
-        } else {
-            owsFailDebug("unexpectedly attempting to verify pin when 2fa is disabled")
-            result(false)
-        }
+    public func verifyPin(_ pin: String, tx: DBReadTransaction) -> Bool {
+        let pinToMatch = pinCode(transaction: tx)
+        owsAssertDebug(pinToMatch != nil, "can't verify pin when 2fa is disabled")
+        return SVRUtil.normalizePin(pin) == pinToMatch
     }
 
     // MARK: -

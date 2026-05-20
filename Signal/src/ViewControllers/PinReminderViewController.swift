@@ -371,13 +371,15 @@ public class PinReminderViewController: OWSViewController {
             return
         }
 
-        SSKEnvironment.shared.ows2FAManagerRef.verifyPin(pin) { success in
-            if success {
-                SSKEnvironment.shared.ows2FAManagerRef.reminderCompleted(incorrectAttempts: self.hasGuessedWrong)
-                self.completionHandler?(.succeeded)
-            } else if !silent {
-                self.validationState = .mismatch
-            }
+        let db = context.db
+        let twoFactorManager = SSKEnvironment.shared.ows2FAManagerRef
+
+        let success = db.read { tx in twoFactorManager.verifyPin(pin, tx: tx) }
+        if success {
+            twoFactorManager.reminderCompleted(incorrectAttempts: self.hasGuessedWrong)
+            self.completionHandler?(.succeeded)
+        } else if !silent {
+            self.validationState = .mismatch
         }
     }
 

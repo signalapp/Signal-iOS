@@ -201,8 +201,12 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
                 helpCards.append(.saveRecoveryPhrase)
             }
 
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+            let twoFactorManager = SSKEnvironment.shared.ows2FAManagerRef
+
             let hasShortOrMissingPin: Bool = {
-                guard let pinCode = SSKEnvironment.shared.ows2FAManagerRef.pinCodeWithSneakyTransaction else {
+                let pinCode = databaseStorage.read { tx in twoFactorManager.pinCode(transaction: tx) }
+                guard let pinCode else {
                     return true
                 }
                 let shortPinLength: UInt = 4

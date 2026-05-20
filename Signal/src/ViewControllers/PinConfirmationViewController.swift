@@ -303,13 +303,19 @@ public class PinConfirmationViewController: OWSViewController {
             validationState = .tooShort
             return
         }
+        let db = context.db
+        let twoFactorManager = SSKEnvironment.shared.ows2FAManagerRef
 
-        SSKEnvironment.shared.ows2FAManagerRef.verifyPin(pin) { success in
-            if success {
-                self.dismiss(animated: true) { self.completionHandler(true) }
-            } else {
-                self.validationState = .mismatch
+        let success = db.read { tx in
+            return twoFactorManager.verifyPin(pin, tx: tx)
+        }
+
+        if success {
+            self.dismiss(animated: true) {
+                self.completionHandler(true)
             }
+        } else {
+            self.validationState = .mismatch
         }
     }
 
