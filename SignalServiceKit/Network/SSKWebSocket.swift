@@ -44,8 +44,6 @@ public protocol SSKWebSocket: AnyObject {
     func disconnect(code: URLSessionWebSocketTask.CloseCode?)
 
     func write(data: Data)
-
-    func writePing()
 }
 
 // MARK: -
@@ -180,7 +178,6 @@ public class SSKWebSocketNative: SSKWebSocket {
     private var hasEverConnected = false
     private var isConnected = false
     private var shouldReportError = true
-    private var hasUnansweredPing = false
 
     // This method is thread-safe.
     public var state: SSKWebSocketState {
@@ -325,32 +322,6 @@ public class SSKWebSocketNative: SSKWebSocket {
         }
         taskToSendTo?.send(.data(data)) { [weak self] error in
             self?.reportError(error, context: "write")
-        }
-    }
-
-    public func writePing() {
-        let taskToPing = lock.withLock { () -> URLSessionWebSocketTask? in
-            owsAssertDebug(hasEverConnected, "Must connect before sending a ping.")
-            guard let webSocketTask else {
-                reportErrorWithLock(OWSGenericError("Missing webSocketTask."), context: "ping")
-                return nil
-            }
-            guard !hasUnansweredPing else {
-                reportErrorWithLock(OWSGenericError("Ping didn't get a response."), context: "ping")
-                return nil
-            }
-            hasUnansweredPing = true
-            return webSocketTask
-        }
-        taskToPing?.sendPing(pongReceiveHandler: { [weak self] error in
-            self?.receivedPong(error)
-        })
-    }
-
-    private func receivedPong(_ error: Error?) {
-        lock.withLock {
-            hasUnansweredPing = false
-            reportErrorWithLock(error, context: "pong")
         }
     }
 
