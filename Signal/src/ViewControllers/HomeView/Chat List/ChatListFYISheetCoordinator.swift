@@ -491,11 +491,64 @@ class ChatListFYISheetCoordinator {
         smsVerificationCodeSent: FYISheet.SMSVerificationCodeSent,
         from chatListViewController: ChatListViewController,
     ) async {
-        let sheet = SMSVerificationCodeSentHeroSheet(
-            timestamp: smsVerificationCodeSent.timestampMs,
-            presentingFrom: chatListViewController,
+        let timestampString = DateUtil.formatMessageTimestampForCVC(
+            smsVerificationCodeSent.timestampMs,
+            shouldUseLongFormat: true,
         )
-        chatListViewController.present(sheet, animated: true, completion: { [self] in
+        let bodyPartOne = OWSLocalizedString(
+            "VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST",
+            comment: "First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }}",
+        )
+        let bodyPartTwo = OWSLocalizedString(
+            "VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND",
+            comment: "Second part of body for a hero sheet informing the user a verification code was requested.",
+        )
+        let body: NSAttributedString = .composed(of: [
+            bodyPartOne.styled(
+                with: .font(.dynamicTypeHeadline),
+                .color(UIColor.Signal.label),
+                .paragraphSpacingAfter(4.0),
+            ),
+            "\n",
+            timestampString.styled(
+                with: .font(.dynamicTypeBody),
+                .color(UIColor.Signal.label),
+            ),
+            "\n",
+            bodyPartTwo.styled(
+                with: .font(.dynamicTypeBody),
+                .color(UIColor.Signal.label),
+                .paragraphSpacingBefore(12.0),
+            ),
+        ])
+
+        let actionSheet = ActionSheetController(
+            message: body,
+            image: UIImage(resource: .verificationcodeAlert96),
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "SAFETY_TIPS_BUTTON_ACTION_TITLE",
+                comment: "Title for Safety Tips button in thread details.",
+            ),
+            handler: { [weak chatListViewController] _ in
+                guard let chatListViewController else { return }
+                let safetyTipsVC = SafetyTipsViewController(
+                    primaryButton: SafetyTipsViewController.Button(
+                        title: OWSLocalizedString(
+                            "SETTINGS_ACCOUNT_BUTTON",
+                            comment: "Label for button in Safety Tips to go to 'account' page in settings.",
+                        ),
+                        action: { [weak chatListViewController] in
+                            chatListViewController?.showAppSettings(mode: .accountSettings)
+                        },
+                    ),
+                )
+                chatListViewController.present(safetyTipsVC, animated: true)
+            },
+        ))
+        actionSheet.addAction(.ok)
+        chatListViewController.present(actionSheet, animated: true, completion: { [self] in
             let kvStore = SafetyTipsManager()
             db.write { tx in
                 kvStore.removeVerificationCodeRequestedTimestampMs(transaction: tx)
@@ -634,73 +687,6 @@ private final class KeyTransparencySelfCheckFailedHeroSheet: HeroSheetViewContro
                 ),
                 style: .secondary,
             ),
-        )
-    }
-}
-
-// MARK: -
-
-private final class SMSVerificationCodeSentHeroSheet: HeroSheetViewController {
-    init(timestamp: UInt64, presentingFrom fromViewController: UIViewController) {
-        let timestampString = DateUtil.formatMessageTimestampForCVC(timestamp, shouldUseLongFormat: true)
-        let bodyPartOne = OWSLocalizedString(
-            "VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST",
-            comment: "First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }}",
-        )
-
-        let bodyPartTwo = OWSLocalizedString(
-            "VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND",
-            comment: "Second part of body for a hero sheet informing the user a verification code was requested.",
-        )
-
-        let body: NSAttributedString = .composed(of: [
-            bodyPartOne.styled(
-                with: .font(.dynamicTypeHeadline),
-                .paragraphSpacingAfter(4.0),
-            ),
-            "\n",
-            timestampString.styled(with: .font(.dynamicTypeBody)),
-            "\n",
-            bodyPartTwo.styled(
-                with: .font(.dynamicTypeBody),
-                .paragraphSpacingBefore(12.0),
-            ),
-        ])
-
-        super.init(
-            hero: .image(.verificationcodeAlert96),
-            title: nil,
-            body: HeroSheetViewController.Body(
-                textContent: .attributed(body),
-                textAlignment: .natural,
-                textColor: UIColor.Signal.label,
-            ),
-            primary: .button(HeroSheetViewController.Button(
-                title: OWSLocalizedString(
-                    "SAFETY_TIPS_BUTTON_ACTION_TITLE",
-                    comment: "Title for Safety Tips button in thread details.",
-                ),
-                style: .secondary,
-                action: .custom({ [fromViewController] sheet in
-                    sheet.dismiss(animated: true)
-                    let safetyTipsVC = SafetyTipsViewController(
-                        primaryButton: SafetyTipsViewController.Button(
-                            title: OWSLocalizedString(
-                                "SETTINGS_ACCOUNT_BUTTON",
-                                comment: "Label for button in Safety Tips to go to 'account' page in settings.",
-                            ),
-                            action: {
-                                (fromViewController as? ChatListViewController)?.showAppSettings(mode: .accountSettings)
-                            },
-                        ),
-                    )
-                    fromViewController.present(safetyTipsVC, animated: true)
-                }),
-            )),
-            secondary: .button(.dismissing(
-                title: CommonStrings.okButton,
-                style: .secondary,
-            )),
         )
     }
 }

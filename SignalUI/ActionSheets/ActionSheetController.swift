@@ -89,12 +89,19 @@ open class ActionSheetController: OWSViewController {
         didSet {
             oldValue?.removeFromSuperview()
             guard let customHeader else { return }
-            stackView.insertArrangedSubview(customHeader, at: 0)
+            stackView.insertArrangedSubview(customHeader, at: headerInsertIndex)
         }
     }
 
     /// Keep a reference in case we need to remove/replace it.
     private var defaultHeader: UIView?
+
+    private var imageHeaderView: UIImageView?
+
+    // If there's an image, insert the header below that.
+    private var headerInsertIndex: Int {
+        imageHeaderView != nil ? 1 : 0
+    }
 
     public func setTitle(_ title: String? = nil, message: String? = nil) {
         createHeader(title: title, message: { if let message { .text(message) } else { nil } }())
@@ -102,6 +109,16 @@ open class ActionSheetController: OWSViewController {
 
     public func setTitle(_ title: String? = nil, message: NSAttributedString) {
         createHeader(title: title, message: .attributedText(message))
+    }
+
+    public func setImage(_ image: UIImage) {
+        imageHeaderView?.removeFromSuperview()
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = .center
+        imageView.setCompressionResistanceVerticalHigh()
+        stackView.insertArrangedSubview(imageView, at: 0)
+        stackView.setCustomSpacing(16, after: imageView)
+        self.imageHeaderView = imageView
     }
 
     public var isCancelable = false
@@ -123,8 +140,13 @@ open class ActionSheetController: OWSViewController {
         setTitle(title, message: message)
     }
 
-    public convenience init(title: String? = nil, message: NSAttributedString) {
+    public convenience init(title: String? = nil, message: NSAttributedString, image: UIImage? = nil) {
         self.init()
+
+        if let image {
+            setImage(image)
+        }
+
         setTitle(title, message: message)
     }
 
@@ -350,7 +372,7 @@ open class ActionSheetController: OWSViewController {
         headerStack.layoutMargins = UIEdgeInsets(top: 8, leading: 12, bottom: 0, trailing: 12)
         headerStack.spacing = 4
 
-        stackView.insertArrangedSubview(headerStack, at: 0)
+        stackView.insertArrangedSubview(headerStack, at: headerInsertIndex)
         stackView.setCustomSpacing(20, after: headerStack)
         self.defaultHeader = headerStack
 
