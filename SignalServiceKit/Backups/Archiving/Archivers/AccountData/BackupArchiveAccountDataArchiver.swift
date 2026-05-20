@@ -162,15 +162,6 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                 accountData.svrPin = pin
             }
 
-            if
-                let keyTransparencyBlob = keyTransparencyStore.getKeyTransparencyBlob(
-                    aci: context.localIdentifiers.aci,
-                    tx: context.tx,
-                )
-            {
-                accountData.keyTransparencyData = keyTransparencyBlob
-            }
-
             if let isSystemCallLogEnabled = preferences.isSystemCallLogEnabled(tx: context.tx) {
                 var iosSpecificSettings = BackupProto_AccountData.IOSSpecificSettings()
                 iosSpecificSettings.isSystemCallLogEnabled = isSystemCallLogEnabled
@@ -635,14 +626,6 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
 
         if !accountData.svrPin.isEmpty {
             ows2FAManager.restorePinFromBackup(accountData.svrPin, tx: context.tx)
-        }
-
-        if accountData.hasKeyTransparencyData {
-            keyTransparencyStore.setKeyTransparencyBlob(
-                accountData.keyTransparencyData,
-                aci: context.localIdentifiers.aci,
-                tx: context.tx,
-            )
         }
 
         if accountData.hasIosSpecificSettings {

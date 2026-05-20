@@ -21,6 +21,7 @@ public final class KeyTransparencyManager {
     private let tsAccountManager: TSAccountManager
     private let udManager: OWSUDManager
 
+    private var notificationObservers: [NotificationCenter.Observer] = []
     private let taskQueue: KeyedConcurrentTaskQueue<Aci>
 
     init(
@@ -47,6 +48,33 @@ public final class KeyTransparencyManager {
         self.udManager = udManager
 
         self.taskQueue = KeyedConcurrentTaskQueue(concurrentLimitPerKey: 1)
+
+        observeNotifications()
+    }
+
+    deinit {
+        for observer in notificationObservers {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+
+    private func observeNotifications() {
+        notificationObservers = [
+            NotificationCenter.default.addObserver(
+                name: Usernames.localUsernameStateChangedNotification,
+                block: { [weak self] _ in
+                    guard let self else { return }
+                    handleSelfCheckIdentifierChanged(field: .usernameHash)
+                },
+            ),
+            NotificationCenter.default.addObserver(
+                name: .localNumberDidChange,
+                block: { [weak self] _ in
+                    guard let self else { return }
+                    handleSelfCheckIdentifierChanged(field: .e164)
+                },
+            ),
+        ]
     }
 
     // MARK: Opt-out
@@ -246,6 +274,8 @@ public final class KeyTransparencyManager {
 
     // MARK: - Self-check
 
+    /// When the value of an `AccountDataField` identifier for the local user
+    /// changes, we need to inform LibSignal so it can update internal state.
     /// Use `Cron` to periodically perform a Key Transparency validation on the
     /// local user.
     public func registerSelfCheckForCron(cron: Cron) {
@@ -442,6 +472,45 @@ public final class KeyTransparencyManager {
             specialIntervalTillNextCron: specialIntervalTillNextCron,
             tx: tx,
         )
+    }
+
+    /// If an `AccountDataField` value changes for the local user, we want to
+    /// inform LibSignal so they can adjust state accordingly.
+    private func handleSelfCheckIdentifierChanged(field: KeyTransparency.AccountDataField) {
+        Task {
+            guard
+                let localIdentifiers = db.read(block: { tx in
+                    tsAccountManager.localIdentifiers(tx: tx)
+                })
+            else {
+                return
+            }
+
+            try await taskQueue.run(forKey: localIdentifiers.aci) {
+                await _handleSelfCheckIdentifierChanged(field: field, localAci: localIdentifiers.aci)
+            }
+        }
+    }
+
+    private func _handleSelfCheckIdentifierChanged(
+        field: KeyTransparency.AccountDataField,
+        localAci: Aci,
+    ) async {
+        let libSignalStore = KeyTransparencyStoreForLibSignal(
+            db: db,
+            keyTransparencyStore: keyTransparencyStore,
+        )
+
+        do {
+            try await KeyTransparency.resetField(
+                field,
+                for: localAci,
+                store: libSignalStore,
+            )
+        } catch {
+            // We should only end up here if there's malformed data.
+            owsFailDebug("Failed to reset \(field) for local user!")
+        }
     }
 }
 

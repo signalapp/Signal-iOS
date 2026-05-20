@@ -384,16 +384,6 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     set {_uniqueStorage()._bioEmoji = newValue}
   }
 
-  /// Opaque blob containing key transparency data for the account
-  public var keyTransparencyData: Data {
-    get {_storage._keyTransparencyData ?? Data()}
-    set {_uniqueStorage()._keyTransparencyData = newValue}
-  }
-  /// Returns true if `keyTransparencyData` has been explicitly set.
-  public var hasKeyTransparencyData: Bool {_storage._keyTransparencyData != nil}
-  /// Clears the value of `keyTransparencyData`. Subsequent reads from it will return its default value.
-  public mutating func clearKeyTransparencyData() {_uniqueStorage()._keyTransparencyData = nil}
-
   public var iosSpecificSettings: BackupProto_AccountData.IOSSpecificSettings {
     get {_storage._iosSpecificSettings ?? BackupProto_AccountData.IOSSpecificSettings()}
     set {_uniqueStorage()._iosSpecificSettings = newValue}
@@ -6855,7 +6845,7 @@ extension BackupProto_Frame: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
 extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountData"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}profileKey\0\u{1}username\0\u{1}usernameLink\0\u{1}givenName\0\u{1}familyName\0\u{1}avatarUrlPath\0\u{1}donationSubscriberData\0\u{2}\u{2}accountSettings\0\u{1}backupsSubscriberData\0\u{1}svrPin\0\u{1}androidSpecificSettings\0\u{1}bioText\0\u{1}bioEmoji\0\u{1}keyTransparencyData\0\u{1}iosSpecificSettings\0\u{c}\u{8}\u{1}")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}profileKey\0\u{1}username\0\u{1}usernameLink\0\u{1}givenName\0\u{1}familyName\0\u{1}avatarUrlPath\0\u{1}donationSubscriberData\0\u{2}\u{2}accountSettings\0\u{1}backupsSubscriberData\0\u{1}svrPin\0\u{1}androidSpecificSettings\0\u{1}bioText\0\u{1}bioEmoji\0\u{2}\u{2}iosSpecificSettings\0\u{c}\u{8}\u{1}\u{c}\u{f}\u{1}")
 
   fileprivate class _StorageClass {
     var _profileKey: Data = Data()
@@ -6871,7 +6861,6 @@ extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._Message
     var _androidSpecificSettings: BackupProto_AccountData.AndroidSpecificSettings? = nil
     var _bioText: String = String()
     var _bioEmoji: String = String()
-    var _keyTransparencyData: Data? = nil
     var _iosSpecificSettings: BackupProto_AccountData.IOSSpecificSettings? = nil
 
       // This property is used as the initial default value for new instances of the type.
@@ -6896,7 +6885,6 @@ extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._Message
       _androidSpecificSettings = source._androidSpecificSettings
       _bioText = source._bioText
       _bioEmoji = source._bioEmoji
-      _keyTransparencyData = source._keyTransparencyData
       _iosSpecificSettings = source._iosSpecificSettings
     }
   }
@@ -6929,7 +6917,6 @@ extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._Message
         case 12: try { try decoder.decodeSingularMessageField(value: &_storage._androidSpecificSettings) }()
         case 13: try { try decoder.decodeSingularStringField(value: &_storage._bioText) }()
         case 14: try { try decoder.decodeSingularStringField(value: &_storage._bioEmoji) }()
-        case 15: try { try decoder.decodeSingularBytesField(value: &_storage._keyTransparencyData) }()
         case 16: try { try decoder.decodeSingularMessageField(value: &_storage._iosSpecificSettings) }()
         default: break
         }
@@ -6982,9 +6969,6 @@ extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._Message
       if !_storage._bioEmoji.isEmpty {
         try visitor.visitSingularStringField(value: _storage._bioEmoji, fieldNumber: 14)
       }
-      try { if let v = _storage._keyTransparencyData {
-        try visitor.visitSingularBytesField(value: v, fieldNumber: 15)
-      } }()
       try { if let v = _storage._iosSpecificSettings {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
       } }()
@@ -7010,7 +6994,6 @@ extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._Message
         if _storage._androidSpecificSettings != rhs_storage._androidSpecificSettings {return false}
         if _storage._bioText != rhs_storage._bioText {return false}
         if _storage._bioEmoji != rhs_storage._bioEmoji {return false}
-        if _storage._keyTransparencyData != rhs_storage._keyTransparencyData {return false}
         if _storage._iosSpecificSettings != rhs_storage._iosSpecificSettings {return false}
         return true
       }
