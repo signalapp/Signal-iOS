@@ -162,7 +162,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         updateLocalSVRState(
             isMasterKeyBackedUp: localStorage.getIsMasterKeyBackedUp(transaction),
-            pinType: .alphanumeric,
             mrEnclaveStringValue: nil,
             transaction: transaction,
         )
@@ -183,12 +182,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 Task { _ = try await self.backupMasterKey(pin: pin, masterKey: newMasterKey, authMethod: .implicit) }
             }
         }
-    }
-
-    // MARK: - PIN Management
-
-    public func currentPinType(transaction: DBReadTransaction) -> SVR.PinType? {
-        return localStorage.getPinType(transaction)
     }
 
     // MARK: - Key Management
@@ -314,6 +307,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private struct InProgressBackup: Codable, Equatable {
         let masterKey: Data
         let encryptedMasterKey: Data
+        // TODO: Remove.
         let rawPinType: Int
         let encodedPINVerificationString: String
         // If we make a backup to one mrenclave, then update the mrenclave,
@@ -336,10 +330,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         func matches(_ other: InProgressBackup) -> Bool {
             return self == other
-        }
-
-        var pinType: SVR.PinType {
-            return SVR.PinType(rawValue: rawPinType) ?? .alphanumeric
         }
     }
 
@@ -439,7 +429,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             let inProgressBackup = InProgressBackup(
                 masterKey: masterKey.rawData,
                 encryptedMasterKey: encryptedMasterKey,
-                rawPinType: SVR.PinType(forPin: pin).rawValue,
+                rawPinType: 0,
                 encodedPINVerificationString: encodedPINVerificationString,
                 mrEnclaveStringValue: mrEnclave.stringValue,
             )
@@ -495,7 +485,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     self.clearInProgressBackup(tx)
                     self.updateLocalSVRState(
                         isMasterKeyBackedUp: true,
-                        pinType: backup.pinType,
                         mrEnclaveStringValue: backup.mrEnclaveStringValue,
                         transaction: tx,
                     )
@@ -628,7 +617,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             await self.db.awaitableWrite { tx in
                 self.updateLocalSVRState(
                     isMasterKeyBackedUp: true,
-                    pinType: .init(forPin: pin),
                     mrEnclaveStringValue: mrEnclave.stringValue,
                     transaction: tx,
                 )
@@ -927,16 +915,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     private func updateLocalSVRState(
         isMasterKeyBackedUp: Bool,
-        pinType: SVR.PinType,
         mrEnclaveStringValue: String?,
         transaction: DBWriteTransaction,
     ) {
         localStorage.cleanupDeadKeys(transaction)
         if isMasterKeyBackedUp != localStorage.getIsMasterKeyBackedUp(transaction) {
             localStorage.setIsMasterKeyBackedUp(isMasterKeyBackedUp, transaction)
-        }
-        if pinType != localStorage.getPinType(transaction) {
-            localStorage.setPinType(pinType, transaction)
         }
         if mrEnclaveStringValue != localStorage.getSVR2MrEnclaveStringValue(transaction) {
             localStorage.setSVR2MrEnclaveStringValue(mrEnclaveStringValue, transaction)

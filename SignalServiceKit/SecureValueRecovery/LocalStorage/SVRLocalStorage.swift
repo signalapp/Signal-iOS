@@ -25,13 +25,6 @@ struct SVRLocalStorage {
         return svrKvStore.getBool(Keys.isMasterKeyBackedUp, defaultValue: false, transaction: transaction)
     }
 
-    func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType? {
-        guard let raw = svrKvStore.getInt(Keys.pinType, transaction: transaction) else {
-            return nil
-        }
-        return SVR.PinType(rawValue: raw)
-    }
-
     func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String? {
         return svrKvStore.getString(Keys.svr2MrEnclaveStringValue, transaction: transaction)
     }
@@ -46,10 +39,6 @@ struct SVRLocalStorage {
         svrKvStore.setBool(value, key: Keys.isMasterKeyBackedUp, transaction: transaction)
     }
 
-    func setPinType(_ value: SVR.PinType, _ transaction: DBWriteTransaction) {
-        svrKvStore.setInt(value.rawValue, key: Keys.pinType, transaction: transaction)
-    }
-
     func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction) {
         svrKvStore.setString(value, key: Keys.svr2MrEnclaveStringValue, transaction: transaction)
     }
@@ -59,7 +48,6 @@ struct SVRLocalStorage {
     func clearSVRKeys(_ transaction: DBWriteTransaction) {
         svrKvStore.removeValues(
             forKeys: [
-                Keys.pinType,
                 Keys.isMasterKeyBackedUp,
                 Keys.syncedStorageServiceKey,
                 Keys.legacy_svr1EnclaveName,
@@ -89,7 +77,6 @@ struct SVRLocalStorage {
 
     private enum Keys {
         // These must not change, they match what was historically in KeyBackupServiceImpl.
-        static let pinType = "pinType"
         static let isMasterKeyBackedUp = "isMasterKeyBackedUp"
         static let needsMasterKeyBackup = "needsMasterKeyBackup"
         static let syncedStorageServiceKey = "Storage Service Encryption"

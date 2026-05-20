@@ -172,7 +172,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         }
     }
 
-    private var pinType: SVR.PinType {
+    private var pinType: OWS2FAManager.PinType {
         didSet {
             updatePinType()
         }
@@ -202,7 +202,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     private init(
         mode: Mode,
         initialMode: Mode,
-        pinType: SVR.PinType,
+        pinType: OWS2FAManager.PinType,
         showCancelButton: Bool,
         completionHandler: @escaping (PinSetupViewController, Error?) -> Void,
     ) {

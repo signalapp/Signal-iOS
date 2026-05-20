@@ -57,6 +57,16 @@ public class OWS2FAManager {
         return keyValueStore.getString(kOWS2FAManager_PinCode, transaction: transaction)
     }
 
+    public enum PinType {
+        case numeric
+        case alphanumeric
+
+        public static func forPin(_ pin: String) -> Self {
+            let normalizedPin = SVRUtil.normalizePin(pin)
+            return normalizedPin.digitsOnly() == normalizedPin ? .numeric : .alphanumeric
+        }
+    }
+
     // MARK: -
 
     static var allRepetitionIntervals: [TimeInterval] = [1 * .day, 3 * .day, 7 * .day, 14 * .day, 28 * .day]

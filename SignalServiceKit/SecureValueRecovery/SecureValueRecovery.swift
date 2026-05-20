@@ -16,16 +16,6 @@ public enum SVR {
         case missingOrInvalidMRBK
     }
 
-    public enum PinType: Int {
-        case numeric = 1
-        case alphanumeric = 2
-
-        public init(forPin pin: String) {
-            let normalizedPin = SVRUtil.normalizePin(pin)
-            self = normalizedPin.digitsOnly() == normalizedPin ? .numeric : .alphanumeric
-        }
-    }
-
     public enum DerivedKey: Hashable {
         /// The key required to bypass reglock and register or change number
         /// into an owned account.
@@ -112,9 +102,6 @@ public protocol SecureValueRecovery {
 
     /// Indicates whether or not we have a master key stored in SVR
     func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool
-
-    /// The pin type used (e.g. numeric, alphanumeric)
-    func currentPinType(transaction: DBReadTransaction) -> SVR.PinType?
 
     /// Loads the users key, if any, from the SVR into the database.
     func restoreKeys(pin: String, authMethod: SVR.AuthMethod) async -> SVR.RestoreKeysResult

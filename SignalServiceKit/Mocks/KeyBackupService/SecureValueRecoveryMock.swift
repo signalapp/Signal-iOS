@@ -23,12 +23,6 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         return hasMasterKey
     }
 
-    public var currentPinType: SVR.PinType?
-
-    public func currentPinType(transaction: DBReadTransaction) -> SVR.PinType? {
-        return currentPinType
-    }
-
     public var reglockToken: String?
 
     public var backupMasterKeyMock: ((_ pin: String, _ masterKey: MasterKey, _ authMethod: SVR.AuthMethod) -> Promise<MasterKey>)?

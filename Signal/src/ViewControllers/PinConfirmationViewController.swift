@@ -48,8 +48,10 @@ public class PinConfirmationViewController: OWSViewController {
         } else {
             textField.layer.cornerRadius = 10
         }
+        let twoFactorManager = SSKEnvironment.shared.ows2FAManagerRef
         let currentPinType = context.db.read { tx in
-            context.svr.currentPinType(transaction: tx)
+            let pinCode = twoFactorManager.pinCode(transaction: tx)
+            return pinCode.map(OWS2FAManager.PinType.forPin(_:)) ?? .alphanumeric
         }
         textField.keyboardType = currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
         return textField
@@ -398,8 +400,10 @@ extension PinConfirmationViewController: UIViewControllerTransitioningDelegate {
 extension PinConfirmationViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let hasPendingChanges: Bool
+        let twoFactorManager = SSKEnvironment.shared.ows2FAManagerRef
         let currentPinType = context.db.read { tx in
-            context.svr.currentPinType(transaction: tx)
+            let pinCode = twoFactorManager.pinCode(transaction: tx)
+            return pinCode.map(OWS2FAManager.PinType.forPin(_:)) ?? .alphanumeric
         }
         if currentPinType == .alphanumeric {
             hasPendingChanges = true
