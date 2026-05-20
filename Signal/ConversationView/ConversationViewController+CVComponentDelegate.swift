@@ -213,9 +213,9 @@ extension ConversationViewController: CVComponentDelegate {
                         tx: tx,
                     )
                     switch enqueuedDownload?.state {
-                    case nil, .done:
+                    case nil, .done, .ineligible:
                         return false
-                    case .ineligible, .ready:
+                    case .ready:
                         return true
                     }
                 }
