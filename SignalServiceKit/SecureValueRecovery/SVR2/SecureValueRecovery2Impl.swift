@@ -207,7 +207,15 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         // When we restore, we remember which enclave it was from. On some future app startup, we check
         // this enclave, and migrate to a new one if available. This code path relies on that happening
         // asynchronously.
-        return await doRestore(pin: pin, authMethod: authMethod).asSVRResult
+        do {
+            return try await doRestore(pin: pin, authMethod: authMethod).asSVRResult
+        } catch {
+            // [Err] TODO: Expose these directly to the caller.
+            if error.isNetworkFailureOrTimeout {
+                return .networkError(error)
+            }
+            return .genericError(error)
+        }
     }
 
     public func clearKeys(transaction: DBWriteTransaction) {
@@ -341,8 +349,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         return try kvStore.getCodableValue(forKey: Self.inProgressBackupKey, transaction: tx)
     }
 
-    private func setInProgressBackup(_ value: InProgressBackup, _ tx: DBWriteTransaction) throws {
-        try kvStore.setCodable(optional: value, key: Self.inProgressBackupKey, transaction: tx)
+    private func setInProgressBackup(_ value: InProgressBackup, _ tx: DBWriteTransaction) {
+        failIfThrows {
+            try kvStore.setCodable(optional: value, key: Self.inProgressBackupKey, transaction: tx)
+        }
     }
 
     private func clearInProgressBackup(_ tx: DBWriteTransaction) {
@@ -382,43 +392,21 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         } else {
             // We don't have a backup, or we're trying to back up something else; start
             // fresh in both cases.
-            let backupResult = await self.performBackupRequest(
+            completedInProgressBackup = try await self.performBackupRequest(
                 pin: pin,
                 masterKey: masterKey,
                 mrEnclave: config.mrenclave,
                 connection: connection,
             )
-            switch backupResult {
-            case .serverError, .networkError, .localPersistenceError, .localEncryptionError:
-                throw SVR.SVRError.assertion
-            case .success(let inProgressBackup):
-                completedInProgressBackup = inProgressBackup
-            }
         }
 
-        let result = await self.performExposeRequest(
+        try await self.performExposeRequest(
             backup: completedInProgressBackup,
             authedAccount: authMethod.authedAccount,
             connection: connection,
         )
-        switch result {
-        case .success:
-            do {
-                return try MasterKey(data: completedInProgressBackup.masterKey)
-            } catch {
-                throw SVR.SVRError.assertion
-            }
-        case .serverError, .networkError, .localPersistenceError:
-            throw SVR.SVRError.assertion
-        }
-    }
 
-    private enum BackupResult {
-        case success(InProgressBackup)
-        case localEncryptionError
-        case localPersistenceError
-        case networkError
-        case serverError
+        return try MasterKey(data: completedInProgressBackup.masterKey)
     }
 
     private func performBackupRequest(
@@ -426,21 +414,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         masterKey: MasterKey,
         mrEnclave: MrEnclave,
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
-    ) async -> BackupResult {
+    ) async throws -> InProgressBackup {
         Logger.info("Performing backup")
-        guard
-            let encodedPINVerificationString = try? SVRUtil.deriveEncodedPINVerificationString(pin: pin)
-        else {
-            return .localEncryptionError
-        }
-        let pinHash: SVR2PinHash
-        let encryptedMasterKey: Data
-        do {
-            pinHash = try hashPin(pin, forConnection: connection)
-            encryptedMasterKey = try pinHash.encryptMasterKey(masterKey.rawData)
-        } catch {
-            return .localEncryptionError
-        }
+        let encodedPINVerificationString = try SVRUtil.deriveEncodedPINVerificationString(pin: pin)
+
+        let pinHash = try hashPin(pin, forConnection: connection)
+        let encryptedMasterKey = try pinHash.encryptMasterKey(masterKey.rawData)
 
         var backupRequest = SVR2Proto_BackupRequest()
         backupRequest.maxTries = SVR.maximumKeyAttempts
@@ -450,59 +429,36 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         var request = SVR2Proto_Request()
         request.backup = backupRequest
 
-        do {
-            let response = try await connection.sendRequestAndReadResponse(request)
-            guard response.hasBackup else {
-                Logger.error("Backup response missing from server")
-                return .serverError
-            }
-            switch response.backup.status {
-            case .ok:
-                Logger.info("Backup success!")
-                let inProgressBackup = InProgressBackup(
-                    masterKey: masterKey.rawData,
-                    encryptedMasterKey: encryptedMasterKey,
-                    rawPinType: SVR.PinType(forPin: pin).rawValue,
-                    encodedPINVerificationString: encodedPINVerificationString,
-                    mrEnclaveStringValue: mrEnclave.stringValue,
-                )
-                do {
-                    // Write the in progress state to disk; we want to continue
-                    // from here and not redo the backup request.
-                    try await self.db.awaitableWrite { tx in
-                        try self.setInProgressBackup(inProgressBackup, tx)
-                    }
-                } catch {
-                    Logger.error("Failed to serialize in progress backup")
-                    return .localPersistenceError
-                }
-                return .success(inProgressBackup)
-            case .UNRECOGNIZED, .unset:
-                Logger.error("Unknown backup status response")
-                return .serverError
-            }
-        } catch {
-            Logger.error("Backup failed with closed connection")
-            if error.isNetworkFailureOrTimeout {
-                return .networkError
-            } else {
-                return .serverError
-            }
+        let response = try await connection.sendRequestAndReadResponse(request)
+        guard response.hasBackup else {
+            throw OWSGenericError("backup missing from server response")
         }
-    }
-
-    private enum ExposeResult {
-        case success
-        case localPersistenceError
-        case networkError
-        case serverError
+        switch response.backup.status {
+        case .ok:
+            Logger.info("Backup success!")
+            let inProgressBackup = InProgressBackup(
+                masterKey: masterKey.rawData,
+                encryptedMasterKey: encryptedMasterKey,
+                rawPinType: SVR.PinType(forPin: pin).rawValue,
+                encodedPINVerificationString: encodedPINVerificationString,
+                mrEnclaveStringValue: mrEnclave.stringValue,
+            )
+            // Write the in progress state to disk; we want to continue
+            // from here and not redo the backup request.
+            await self.db.awaitableWrite { tx in
+                self.setInProgressBackup(inProgressBackup, tx)
+            }
+            return inProgressBackup
+        case .UNRECOGNIZED, .unset:
+            throw OWSGenericError("backup status response unknown")
+        }
     }
 
     private func performExposeRequest(
         backup: InProgressBackup,
         authedAccount: AuthedAccount,
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
-    ) async -> ExposeResult {
+    ) async throws {
         var exposeRequest = SVR2Proto_ExposeRequest()
         exposeRequest.data = backup.encryptedMasterKey
         var request = SVR2Proto_Request()
@@ -514,105 +470,80 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         do {
             currentBackup = try self.db.read { return try self.getInProgressBackup($0) }
         } catch {
-            Logger.error("Unable to read in progress backup to continue expose")
-            return .localPersistenceError
+            throw OWSAssertionError("couldn't read in progress backup to continue expose")
         }
         if let currentBackup, backup.matches(currentBackup).negated {
             // This expose is out of date. But its fine to let the caller
             // think it was a success; the backup that took its place
             // is now in charge and this one is done and shouldn't be repeated.
-            return .success
+            return
         }
-        do {
-            let response = try await connection.sendRequestAndReadResponse(request)
-            guard response.hasExpose else {
-                Logger.error("Expose response missing from server")
-                return .serverError
-            }
-            switch response.expose.status {
-            case .ok:
-                Logger.info("Expose success!")
-                do {
-                    try await self.db.awaitableWrite { tx in
-                        guard let persistedBackup = try self.getInProgressBackup(tx), persistedBackup.matches(backup) else {
-                            Logger.info("Backup state changed while expose ongoing; throwing away results")
-                            return
-                        }
-                        self.localStorage.setNeedsMasterKeyBackup(false, tx)
-                        self.clearInProgressBackup(tx)
-                        self.updateLocalSVRState(
-                            isMasterKeyBackedUp: true,
-                            pinType: backup.pinType,
-                            mrEnclaveStringValue: backup.mrEnclaveStringValue,
-                            transaction: tx,
-                        )
+        let response = try await connection.sendRequestAndReadResponse(request)
+        guard response.hasExpose else {
+            throw OWSGenericError("expose missing from server response")
+        }
+        switch response.expose.status {
+        case .ok:
+            Logger.info("Expose success!")
+            do {
+                try await self.db.awaitableWrite { tx in
+                    guard let persistedBackup = try self.getInProgressBackup(tx), persistedBackup.matches(backup) else {
+                        Logger.info("Backup state changed while expose ongoing; throwing away results")
+                        return
                     }
-                } catch {
-                    Logger.error("Unable to read in progress backup to finalize expose")
-                    return .localPersistenceError
+                    self.localStorage.setNeedsMasterKeyBackup(false, tx)
+                    self.clearInProgressBackup(tx)
+                    self.updateLocalSVRState(
+                        isMasterKeyBackedUp: true,
+                        pinType: backup.pinType,
+                        mrEnclaveStringValue: backup.mrEnclaveStringValue,
+                        transaction: tx,
+                    )
                 }
-                return .success
-            case .error:
-                // Every expose is a pair with a backup request. For it to fail,
-                // one of three things happened:
-                // 1. The local client sent a second backup, invalidating the one
-                // this expose is paired with.
-                // 2. A second client has sent its own backup, invalidating the
-                // backup this expose is paired with.
-                // 3. The server is misbehaving and reporting an error.
-                //
-                // 1 should be impossible; this class enforces serial execution to
-                // prevent this. It is developer error if it does.
-                //
-                // 2 is impossible; only a primary device does backups, and if there
-                // were another primary this one would be deregistered and its
-                // auth credentials invalidated.
-                //
-                // 3 could be a legitimate server error or a compromised server; in either
-                // case we do NOT want to make another backup; report a failure but keep
-                // any InProgressBackup state around so that retries just retry the expose.
-                // This prevents any possibility of repeated PIN guessing by a compromised server.
-                Logger.error("Got error response when exposing on SVR2 server; something has gone horribly wrong.")
-                return .serverError
-            case .UNRECOGNIZED, .unset:
-                Logger.error("Unknown expose status response")
-                return .serverError
+            } catch {
+                throw OWSAssertionError("couldn't read in progress backup to finalize expose")
             }
-        } catch {
-            Logger.error("Expose failed with closed connection")
-            if error.isNetworkFailureOrTimeout {
-                return .networkError
-            } else {
-                return .serverError
-            }
+        case .error:
+            // Every expose is a pair with a backup request. For it to fail,
+            // one of three things happened:
+            // 1. The local client sent a second backup, invalidating the one
+            // this expose is paired with.
+            // 2. A second client has sent its own backup, invalidating the
+            // backup this expose is paired with.
+            // 3. The server is misbehaving and reporting an error.
+            //
+            // 1 should be impossible; this class enforces serial execution to
+            // prevent this. It is developer error if it does.
+            //
+            // 2 is impossible; only a primary device does backups, and if there
+            // were another primary this one would be deregistered and its
+            // auth credentials invalidated.
+            //
+            // 3 could be a legitimate server error or a compromised server; in either
+            // case we do NOT want to make another backup; report a failure but keep
+            // any InProgressBackup state around so that retries just retry the expose.
+            // This prevents any possibility of repeated PIN guessing by a compromised server.
+            throw OWSGenericError("Got error response when exposing on SVR2 server; something has gone horribly wrong.")
+        case .UNRECOGNIZED, .unset:
+            throw OWSGenericError("expose status response unknown")
         }
     }
 
     // MARK: - Restore Request
 
     private enum RestoreResult {
-        case success(masterKey: Data, mrEnclave: MrEnclave)
-        case backupMissing
+        case success(masterKey: MasterKey, mrEnclave: MrEnclave)
         case invalidPin(remainingAttempts: UInt32)
-        case decryptionError
-        case serverError
-        case networkError(Error)
-        case genericError(Error)
+        case backupMissing
 
         var asSVRResult: SVR.RestoreKeysResult {
             switch self {
             case .success(let masterKey, _):
-                do {
-                    return .success(try MasterKey(data: masterKey))
-                } catch {
-                    return .genericError(SVR.SVRError.assertion)
-                }
-            case .backupMissing: return .backupMissing
-            case .invalidPin(let remainingAttempts): return .invalidPin(remainingAttempts: remainingAttempts)
-            case .networkError(let error): return .networkError(error)
-            case .genericError(let error): return .genericError(error)
-            case .decryptionError, .serverError:
-                return .genericError(SVR.SVRError.assertion)
+                return .success(masterKey)
+            case .backupMissing:
+                return .backupMissing
+            case .invalidPin(let remainingAttempts):
+                return .invalidPin(remainingAttempts: remainingAttempts)
             }
         }
     }
@@ -620,10 +551,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private func doRestore(
         pin: String,
         authMethod: SVR2.AuthMethod,
-    ) async -> RestoreResult {
+    ) async throws -> RestoreResult {
         let enclavesToTry = [tsConstants.svr2Enclave] + tsConstants.svr2PreviousEnclaves
         for enclave in enclavesToTry {
-            let enclaveResult = await self.doRestoreForSpecificEnclave(
+            let enclaveResult = try await self.doRestoreForSpecificEnclave(
                 pin: pin,
                 mrEnclave: enclave,
                 authMethod: authMethod,
@@ -637,8 +568,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 // anything in an old enclave is that we haven't migrated yet.
                 // Once we migrate, we wipe the old one.
                 continue
-            case .success, .invalidPin, .decryptionError, .serverError,
-                 .networkError, .genericError:
+            case .success, .invalidPin:
                 return enclaveResult
             }
         }
@@ -650,23 +580,18 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         pin: String,
         mrEnclave: MrEnclave,
         authMethod: SVR2.AuthMethod,
-    ) async -> RestoreResult {
+    ) async throws -> RestoreResult {
         let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
         do {
             let connection = try await makeHandshakeAndOpenConnection(config)
             defer { connection.disconnect(code: .normalClosure) }
             Logger.info("Connection open; making restore request")
-            return await self.performRestoreRequest(
+            return try await self.performRestoreRequest(
                 mrEnclave: mrEnclave,
                 pin: pin,
                 connection: connection,
                 authedAccount: authMethod.authedAccount,
             )
-        } catch {
-            if error.isNetworkFailureOrTimeout {
-                return .networkError(error)
-            }
-            return .genericError(error)
         }
     }
 
@@ -675,90 +600,58 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         pin: String,
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
         authedAccount: AuthedAccount,
-    ) async -> RestoreResult {
-        let pinHash: SVR2PinHash
-        do {
-            pinHash = try hashPin(pin, forConnection: connection)
-        } catch {
-            return .decryptionError
-        }
+    ) async throws -> RestoreResult {
+        let pinHash = try hashPin(pin, forConnection: connection)
 
         var restoreRequest = SVR2Proto_RestoreRequest()
         restoreRequest.pin = pinHash.accessKey
         var request = SVR2Proto_Request()
         request.restore = restoreRequest
-        do {
-            let response = try await connection.sendRequestAndReadResponse(request)
-            guard response.hasRestore else {
-                Logger.error("Restore missing in server response")
-                return .serverError
+        let response = try await connection.sendRequestAndReadResponse(request)
+        guard response.hasRestore else {
+            throw OWSGenericError("restore missing in server response")
+        }
+        switch response.restore.status {
+        case .unset, .UNRECOGNIZED:
+            throw OWSGenericError("restore status response unknown")
+        case .missing:
+            Logger.info("restore response: backup missing")
+            return .backupMissing
+        case .pinMismatch:
+            Logger.info("restore response: invalid pin")
+            return .invalidPin(remainingAttempts: response.restore.tries)
+        case .ok:
+            Logger.info("Restore success!")
+            let encryptedMasterKey = response.restore.data
+            let masterKeyData = try pinHash.decryptMasterKey(encryptedMasterKey)
+            let masterKey = try MasterKey(data: masterKeyData)
+            await self.db.awaitableWrite { tx in
+                self.updateLocalSVRState(
+                    isMasterKeyBackedUp: true,
+                    pinType: .init(forPin: pin),
+                    mrEnclaveStringValue: mrEnclave.stringValue,
+                    transaction: tx,
+                )
             }
-            switch response.restore.status {
-            case .unset, .UNRECOGNIZED:
-                Logger.error("Unknown restore status response")
-                return .serverError
-            case .missing:
-                Logger.info("Restore response: backup missing")
-                return .backupMissing
-            case .pinMismatch:
-                Logger.info("Restore response: invalid pin")
-                return .invalidPin(remainingAttempts: response.restore.tries)
-            case .ok:
-                Logger.info("Restore success!")
-                let encryptedMasterKey = response.restore.data
-                do {
-                    let masterKey = try pinHash.decryptMasterKey(encryptedMasterKey)
-                    await self.db.awaitableWrite { tx in
-                        self.updateLocalSVRState(
-                            isMasterKeyBackedUp: true,
-                            pinType: .init(forPin: pin),
-                            mrEnclaveStringValue: mrEnclave.stringValue,
-                            transaction: tx,
-                        )
-                    }
-                    return .success(masterKey: masterKey, mrEnclave: mrEnclave)
-                } catch {
-                    Logger.info("Failed to decrypt master key from restore")
-                    return .decryptionError
-                }
-            }
-        } catch {
-            Logger.error("Restore failed with closed connection")
-            if error.isNetworkFailureOrTimeout {
-                return .networkError(error)
-            } else {
-                return .genericError(error)
-            }
+            return .success(masterKey: masterKey, mrEnclave: mrEnclave)
         }
     }
 
     // MARK: - Delete Request
 
-    private enum DeleteResult {
-        case success
-        case serverError
-        case networkError(Error)
-        case genericError(Error)
-    }
-
     private func doDelete(
         mrEnclave: MrEnclave,
         authMethod: SVR2.AuthMethod,
-    ) async -> DeleteResult {
+    ) async throws {
         let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
         do {
             let connection = try await makeHandshakeAndOpenConnection(config)
             defer { connection.disconnect(code: .normalClosure) }
-            return await self.performDeleteRequest(
+            return try await self.performDeleteRequest(
                 mrEnclave: mrEnclave,
                 connection: connection,
                 authedAccount: authMethod.authedAccount,
             )
-        } catch {
-            if error.isNetworkFailureOrTimeout {
-                return .networkError(error)
-            }
-            return .genericError(error)
         }
     }
 
@@ -766,25 +659,14 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         mrEnclave: MrEnclave,
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
         authedAccount: AuthedAccount,
-    ) async -> DeleteResult {
+    ) async throws {
         var request = SVR2Proto_Request()
         request.delete = SVR2Proto_DeleteRequest()
-        do {
-            let response = try await connection.sendRequestAndReadResponse(request)
-            guard response.hasDelete else {
-                Logger.error("Delete missing in server response")
-                return .serverError
-            }
-            Logger.info("Delete success!")
-            return .success
-        } catch {
-            Logger.error("Delete failed with closed connection")
-            if error.isNetworkFailureOrTimeout {
-                return .networkError(error)
-            } else {
-                return .genericError(error)
-            }
+        let response = try await connection.sendRequestAndReadResponse(request)
+        guard response.hasDelete else {
+            throw OWSGenericError("delete missing in server response")
         }
+        Logger.info("Delete success!")
     }
 
     // MARK: Durable deletes
@@ -848,14 +730,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
         for enclave in enclavesToDeleteFrom {
             Logger.info("Wiping old enclave: \(enclave.stringValue)")
-            let result = await self.doDelete(mrEnclave: enclave, authMethod: auth)
-            switch result {
-            case .success:
+            do {
+                try await self.doDelete(mrEnclave: enclave, authMethod: auth)
                 await db.awaitableWrite { tx in
                     markOldEnclaveDeleted(enclave, tx)
                 }
-            case .serverError, .networkError, .genericError:
-                Logger.error("Failed to wipe old enclave; will retry eventually.")
+            } catch {
+                Logger.warn("couldn't wipe old enclave; may retry eventually: \(error)")
             }
         }
     }

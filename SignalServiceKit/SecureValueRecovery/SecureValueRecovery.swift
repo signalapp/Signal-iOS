@@ -11,12 +11,6 @@ public enum SVR {
 
     static let maximumKeyAttempts: UInt32 = 10
 
-    public enum SVRError: Error, Equatable {
-        case assertion
-        case invalidPin(remainingAttempts: UInt32)
-        case backupMissing
-    }
-
     public enum KeysError: Error {
         case missingMasterKey
         case missingOrInvalidMRBK

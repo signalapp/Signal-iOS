@@ -44,14 +44,16 @@ struct SVR2PinHash {
     func encryptMasterKey(_ masterKey: Data) throws -> Data {
         let (iv, cipherText) = try Sha256HmacSiv.encrypt(data: masterKey, key: encryptionKey)
         if iv.count != 16 || cipherText.count != 32 {
-            throw SVR.SVRError.assertion
+            throw OWSGenericError("iv or ciphertext is wrong length")
         }
         let encryptedMasterKey = iv + cipherText
         return encryptedMasterKey
     }
 
     func decryptMasterKey(_ encryptedMasterKey: Data) throws -> Data {
-        guard encryptedMasterKey.count == 48 else { throw SVR.SVRError.assertion }
+        guard encryptedMasterKey.count == 48 else {
+            throw OWSGenericError("encrypted master key is wrong length")
+        }
 
         let startIndex: Int = encryptedMasterKey.startIndex
         let ivRange = startIndex...(startIndex + 15)
@@ -62,7 +64,9 @@ struct SVR2PinHash {
             key: encryptionKey,
         )
 
-        guard masterKey.count == MasterKey.Constants.byteLength else { throw SVR.SVRError.assertion }
+        guard masterKey.count == MasterKey.Constants.byteLength else {
+            throw OWSGenericError("decrypted master key is wrong length")
+        }
 
         return masterKey
     }
