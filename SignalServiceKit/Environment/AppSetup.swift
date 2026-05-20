@@ -438,9 +438,6 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let svr = SecureValueRecovery2Impl(
-            appContext: SVR2.Wrappers.AppContext(),
-            appReadiness: appReadiness,
-            appVersion: appVersion,
             connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: webSocketFactory),
             credentialStorage: svrCredentialStorage,
             db: db,

@@ -9,9 +9,6 @@ import LibSignalClient
 /// Implementation of `SecureValueRecovery` that talks to the SVR2 server.
 public class SecureValueRecovery2Impl: SecureValueRecovery {
 
-    private let appContext: SVR2.Shims.AppContext
-    private let appReadiness: AppReadiness
-    private let appVersion: AppVersion
     private let pinHasher: any SVR2PinHasher
     private let connectionFactory: SgxWebsocketConnectionFactory
     private let credentialStorage: SVRAuthCredentialStorage
@@ -24,9 +21,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let twoFAManager: SVR2.Shims.OWS2FAManager
 
     init(
-        appContext: SVR2.Shims.AppContext,
-        appReadiness: AppReadiness,
-        appVersion: AppVersion,
         connectionFactory: SgxWebsocketConnectionFactory,
         credentialStorage: SVRAuthCredentialStorage,
         db: any DB,
@@ -38,9 +32,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR2.Shims.OWS2FAManager,
     ) {
-        self.appContext = appContext
-        self.appReadiness = appReadiness
-        self.appVersion = appVersion
         self.connectionFactory = connectionFactory
         self.credentialStorage = credentialStorage
         self.db = db
@@ -53,83 +44,23 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.twoFAManager = twoFAManager
     }
 
-    @MainActor
-    public func warmCaches() {
-        if self.appContext.isMainApp {
-
-            // Never migrate in the NSE or extensions.
-            Task { @MainActor in
-                try await performStartupMigrationsIfNecessary()
-                self.refreshCredentialsAndBackupIfNecessary()
-            }
-        }
-    }
-
-    @MainActor
-    private func refreshCredentialsAndBackupIfNecessary() {
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            Task {
-                await self.periodicRefreshCredentialIfNecessary()
-                try await self.backupMasterKeyIfNecessary()
-            }
-        }
-    }
-
     // MARK: - Periodic Backups
 
-    private static let periodicCredentialRefreshAppVersionKey = "periodicCredentialRefreshAppVersion"
-
-    private func getNeedsCredentialRefreshBasedOnVersion(tx: DBReadTransaction) -> Bool {
-        guard
-            let lastAppVersion = self.kvStore.getString(
-                Self.periodicCredentialRefreshAppVersionKey,
-                transaction: tx,
-            )
-        else {
-            return true
-        }
-        return lastAppVersion != appVersion.currentAppVersion
-    }
-
-    private func didRefreshCredentialInCurrentVersion(tx: DBWriteTransaction) {
-        self.kvStore.setString(
-            appVersion.currentAppVersion,
-            key: Self.periodicCredentialRefreshAppVersionKey,
-            transaction: tx,
-        )
-    }
-
-    @MainActor
-    private func periodicRefreshCredentialIfNecessary() async {
-        let needsRefresh = self.db.read { tx -> Bool in
-            guard self.tsAccountManager.registrationState(tx: tx).isRegistered else {
-                // Only refresh if registered.
-                return false
-            }
-            guard self.hasBackedUpMasterKey(transaction: tx) else {
-                // If we've never backed up, don't refresh periodically.
-                return false
-            }
-            return self.getNeedsCredentialRefreshBasedOnVersion(tx: tx)
-        }
-        guard needsRefresh else {
+    public func refreshCredentialsIfNecessary() async throws {
+        let hasBackedUp = self.db.read { tx in self.hasBackedUpMasterKey(transaction: tx) }
+        guard hasBackedUp else {
+            // If we've never backed up, don't refresh periodically. (If we eventually
+            // perform a backup, we'll cache those credential after fetching them.)
             return
         }
         // Force refresh a credential, even if we have one cached, to ensure we
         // have a fresh credential to back up.
-        Logger.info("Refreshing auth credential for periodic backup")
-        do {
-            let credential = try await RemoteAttestation.authForSVR2(chatServiceAuth: .implicit())
-            Logger.info("Storing refreshed credential")
-            db.write { tx in
-                credentialStorage.storeAuthCredentialForCurrentUsername(
-                    SVR2AuthCredential(credential: credential),
-                    tx,
-                )
-                didRefreshCredentialInCurrentVersion(tx: tx)
-            }
-        } catch {
-            Logger.warn("Unable to fetch auth credential")
+        let credential = try await RemoteAttestation.authForSVR2(chatServiceAuth: .implicit())
+        await db.awaitableWrite { tx in
+            credentialStorage.storeAuthCredentialForCurrentUsername(
+                SVR2AuthCredential(credential: credential),
+                tx,
+            )
         }
     }
 
@@ -680,37 +611,38 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         enclaveStrings.formIntersection(knownEnclaves)
     }
 
-    private func wipeOldEnclavesIfNeeded(auth: SVR2.AuthMethod) async {
-        let (isRegistered, enclavesToDeleteFrom) = db.read { tx in
-            return (
-                self.tsAccountManager.registrationState(tx: tx).isRegistered,
-                self.getOldEnclavesToDeleteFrom(tx),
-            )
-        }
-        guard isRegistered else {
-            return
-        }
-        for enclave in enclavesToDeleteFrom {
+    private func wipeOldEnclavesIfNeeded() async throws {
+        var firstError: (any Error)?
+        for enclave in db.read(block: { tx in self.getOldEnclavesToDeleteFrom(tx) }) {
             Logger.info("Wiping old enclave: \(enclave.stringValue)")
             do {
-                try await self.doDelete(mrEnclave: enclave, authMethod: auth)
+                try await self.doDelete(mrEnclave: enclave, authMethod: .implicit)
                 await db.awaitableWrite { tx in
                     markOldEnclaveDeleted(enclave, tx)
                 }
             } catch {
                 Logger.warn("couldn't wipe old enclave; may retry eventually: \(error)")
+                firstError = firstError ?? error
             }
+        }
+        if let firstError {
+            throw firstError
         }
     }
 
     // MARK: - Migrations
 
-    public func performStartupMigrationsIfNecessary() async throws {
-        // Require migrations to succeed before we check for old stuff
-        // to wipe, because migrations add old stuff to be wiped.
+    public func refreshBackupIfNecessary() async throws {
         // If a migration isn't needed, this returns a success immediately.
         try await migrateEnclavesIfNecessary()
-        await wipeOldEnclavesIfNeeded(auth: .implicit)
+
+        // If a backup isn't needed, this returns a success immediately.
+        try await backupMasterKeyIfNecessary()
+
+        // Require migrations/backups to succeed before we check for old stuff to
+        // wipe because (a) migrations add old stuff to be wiped and (b) backups
+        // are more important.
+        try await wipeOldEnclavesIfNeeded()
     }
 
     private func backupMasterKeyIfNecessary() async throws {
@@ -720,30 +652,17 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     private func _backupMasterKeyIfNecessary() async throws {
-        let (
-            currentPIN,
-            backupRequested,
-            masterKey,
-        ) = db.read { tx in
-            (
-                twoFAManager.pinCode(transaction: tx),
-                localStorage.getNeedsMasterKeyBackup(tx),
-                accountKeyStore.getMasterKey(tx: tx),
-            )
+        guard db.read(block: localStorage.getNeedsMasterKeyBackup(_:)) else {
+            return
         }
-        if
-            let currentPIN,
-            let masterKey,
-            backupRequested
-        {
-            _ = try await doBackupAndExpose(pin: currentPIN, masterKey: masterKey, authMethod: .implicit)
-        } else {
-            if masterKey != nil, currentPIN == nil {
-                Logger.warn("Cannot backup master key without PIN")
-            } else if masterKey == nil, currentPIN != nil {
-                Logger.warn("Skipping backup due missing master key")
-            }
+        let (pin, masterKey) = db.read { tx -> (String?, MasterKey?) in
+            return (twoFAManager.pinCode(transaction: tx), accountKeyStore.getMasterKey(tx: tx))
         }
+        guard let pin, let masterKey else {
+            Logger.warn("skipping; hasPin? \(pin != nil); hasMasterKey? \(masterKey != nil)")
+            return
+        }
+        _ = try await doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: .implicit)
     }
 
     /// If there is a newer enclave than the one we most recently backed up to, backs up known
@@ -756,40 +675,24 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     private func _migrateEnclavesIfNecessary() async throws {
-        let values = db.read { tx -> (String, String, MasterKey)? in
-            guard
-                self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
-                let masterKey = self.accountKeyStore.getMasterKey(tx: tx),
-                let pin = self.twoFAManager.pinCode(transaction: tx)
-            else {
-                // Need to be registered with a master key and PIN to migrate.
-                Logger.info("Not migrating; local state not ready")
-                return nil
-            }
-            let currentEnclaveString = self.tsConstants.svr2Enclave.stringValue
-            let oldSVR2EnclaveString = self.localStorage.getSVR2MrEnclaveStringValue(tx)
-
-            guard self.localStorage.getIsMasterKeyBackedUp(tx) else {
-                // "isMasterKeyBackedUp" is shared between svr2 and kbs; if its
-                // false that means we had no backups to begin with and therefore
-                // should not back up to any new enclave.
-                Logger.info("Not migrating; no previous backups.")
-                return nil
-            }
-
-            if
-                let oldSVR2EnclaveString,
-                oldSVR2EnclaveString != currentEnclaveString
-            {
-                // We are backed up to an svr2 enclave that isn't the current one.
-                Logger.info("Migrating from old svr2 enclave")
-                return (oldSVR2EnclaveString, pin, masterKey)
-            }
-
-            return nil
+        let (isBackedUp, oldEnclave) = db.read { tx -> (Bool, String?) in
+            return (self.localStorage.getIsMasterKeyBackedUp(tx), self.localStorage.getSVR2MrEnclaveStringValue(tx))
         }
-        guard let (oldSVR2EnclaveString, pin, masterKey) = values else {
-            // No migration needed.
+        guard isBackedUp else {
+            // "isMasterKeyBackedUp" is shared between svr2 and kbs; if its
+            // false that means we had no backups to begin with and therefore
+            // should not back up to any new enclave.
+            return
+        }
+        guard oldEnclave != tsConstants.svr2Enclave.stringValue else {
+            // The "old" enclave is already the current enclave.
+            return
+        }
+        let (pin, masterKey) = db.read { tx -> (String?, MasterKey?) in
+            return (twoFAManager.pinCode(transaction: tx), accountKeyStore.getMasterKey(tx: tx))
+        }
+        guard let pin, let masterKey else {
+            // We don't have anything that *can* be backed up.
             return
         }
 
@@ -802,9 +705,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             throw error
         }
 
-        let backedUpEnclave = self.tsConstants.svr2PreviousEnclaves.first(where: {
-            $0.stringValue == oldSVR2EnclaveString
-        })
+        let backedUpEnclave = self.tsConstants.svr2PreviousEnclaves.first(where: { $0.stringValue == oldEnclave })
         if let backedUpEnclave {
             Logger.info("Adding old enclave to be deleted")
             // Strictly speaking, this happens in a separate transaction from when we mark the

@@ -8,32 +8,11 @@ import LibSignalClient
 
 extension SVR2 {
     public enum Shims {
-        public typealias AppContext = _SVR2_AppContextShim
         public typealias OWS2FAManager = _SVR2_OWS2FAManagerShim
     }
 
     public enum Wrappers {
-        public typealias AppContext = _SVR2_AppContextWrapper
         public typealias OWS2FAManager = _SVR2_OWS2FAManagerWrapper
-    }
-}
-
-public protocol _SVR2_AppContextShim {
-
-    var isMainApp: Bool { get }
-    var isNSE: Bool { get }
-}
-
-public class _SVR2_AppContextWrapper: _SVR2_AppContextShim {
-
-    public init() {}
-
-    public var isMainApp: Bool {
-        return CurrentAppContext().isMainApp
-    }
-
-    public var isNSE: Bool {
-        return CurrentAppContext().isNSE
     }
 }
 
@@ -56,22 +35,3 @@ public class _SVR2_OWS2FAManagerWrapper: SVR2.Shims.OWS2FAManager {
         manager.markDisabled(transaction: transaction)
     }
 }
-
-#if TESTABLE_BUILD
-
-extension SVR2 {
-    enum Mocks {
-        typealias AppContext = _SVR2_AppContextMock
-    }
-}
-
-class _SVR2_AppContextMock: _SVR2_AppContextShim {
-
-    init() {}
-
-    var isMainApp: Bool { true }
-
-    var isNSE: Bool { false }
-}
-
-#endif

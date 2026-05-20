@@ -780,6 +780,27 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             operation: { try await blockingManager.syncBlockListIfNecessary(force: false) },
         )
 
+        let svr = DependenciesBridge.shared.svr
+
+        // We must refresh our SVR2 credentials periodically. We typically do this
+        // when updating to a new version, but we want to refresh it after 14 days
+        // if we haven't upgraded.
+        cron.schedulePeriodically(
+            uniqueKey: .refreshSVRCredentials,
+            approximateInterval: 14 * .day,
+            mustBeRegistered: true,
+            mustBeDeviceType: .primary,
+            mustBeConnected: true,
+            operation: { try await svr.refreshCredentialsIfNecessary() },
+        )
+
+        cron.scheduleFrequently(
+            mustBeRegistered: true,
+            mustBeDeviceType: .primary,
+            mustBeConnected: true,
+            operation: { try await svr.refreshBackupIfNecessary() },
+        )
+
         // Warm the "available emoji" cache, intentionally off the main thread.
         Task.detached {
             Emoji.warmAvailableCache()

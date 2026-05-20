@@ -82,6 +82,7 @@ public class Cron {
         case fetchSubscriptionConfig
         case keyTransparencySelfCheck
         case refreshBackup
+        case refreshSVRCredentials
         case updateAttributes
     }
 

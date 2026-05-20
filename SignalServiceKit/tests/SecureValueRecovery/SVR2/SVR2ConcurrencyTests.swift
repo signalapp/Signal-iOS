@@ -33,9 +33,6 @@ struct SVR2ConcurrencyTests {
         let localStorage = SVRLocalStorage()
 
         self.svr = SecureValueRecovery2Impl(
-            appContext: SVR2.Mocks.AppContext(),
-            appReadiness: AppReadinessMock(),
-            appVersion: MockAppVerion(),
             connectionFactory: mockConnectionFactory,
             credentialStorage: credentialStorage,
             db: db,

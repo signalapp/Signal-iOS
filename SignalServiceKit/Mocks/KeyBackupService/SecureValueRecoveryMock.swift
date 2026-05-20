@@ -11,6 +11,12 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public init() {}
 
+    public func refreshBackupIfNecessary() async throws {
+    }
+
+    public func refreshCredentialsIfNecessary() async throws {
+    }
+
     public var hasMasterKey = false
 
     public var hasBackedUpMasterKey: Bool = false
@@ -35,10 +41,6 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) async -> SVR.RestoreKeysResult {
         return await restoreKeysMock!(pin, authMethod).awaitable()
-    }
-
-    public func warmCaches() {
-        // Do nothing
     }
 
     public func clearKeys(transaction: DBWriteTransaction) {

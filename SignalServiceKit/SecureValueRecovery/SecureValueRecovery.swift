@@ -97,6 +97,12 @@ public enum SVR {
 
 public protocol SecureValueRecovery {
 
+    /// Performs pending backups, migrations, and deletions.
+    func refreshBackupIfNecessary() async throws
+
+    /// Performs periodic credential refresh to help with re-registration.
+    func refreshCredentialsIfNecessary() async throws
+
     /// Indicates whether or not we have a master key locally
     func hasMasterKey(transaction: DBReadTransaction) -> Bool
 
@@ -108,9 +114,6 @@ public protocol SecureValueRecovery {
 
     /// Backs up the user's master key to SVR.
     func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) async throws -> MasterKey
-
-    @MainActor
-    func warmCaches()
 
     /// Removes the SVR keys locally from the device, they can still be
     /// restored from the server if you know the pin.
