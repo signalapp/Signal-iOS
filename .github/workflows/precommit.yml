@@ -34,7 +34,7 @@ concurrency:
 
 env:
   # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md#xcode
-  DEVELOPER_DIR: /Applications/Xcode_26.4.app
+  DEVELOPER_DIR: /Applications/Xcode_26.5.app
   # v0.60.1
   swiftformat-ref: c8e50ff2cfc2eab46246c072a9ae25ab656c6ec3
 
