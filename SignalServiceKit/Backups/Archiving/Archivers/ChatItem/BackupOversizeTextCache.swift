@@ -113,7 +113,6 @@ class BackupArchiveInlinedOversizeTextArchiver {
         // writes because no new attachments should be created while backups is running.
         // Worst case, we miss an attachment and the oversized text ends up truncated
         // or as a pointer in the backup.
-        var attachmentIdIndex = 0
         let attachmentIds: [Attachment.IDType] = db.read { tx in
             self.attachmentRowIdsForTablePopulation(tx: tx)
         }
@@ -132,16 +131,33 @@ class BackupArchiveInlinedOversizeTextArchiver {
             return
         }
 
-        await TimeGatedBatch.processAll(db: db) { tx in
-            let batchIds = attachmentIds.dropFirst(attachmentIdIndex).prefix(Self.batchCount)
-            attachmentIdIndex += Self.batchCount
-            self.populateTableIncrementallyBatch(
-                attachmentIds: batchIds,
-                progress: progressSource,
-                tx: tx,
-            )
-            return batchIds.isEmpty ? .done(()) : .more
-        }
+        // Get an ArraySlice, from which we can call .removeFirst() cheaply.
+        var remainingAttachmentIds = attachmentIds[...]
+        await TimeGatedBatch.processAll(
+            db: db,
+            processBatch: { tx in
+                if remainingAttachmentIds.isEmpty {
+                    return .done(())
+                }
+
+                let attachmentId = remainingAttachmentIds.removeFirst()
+
+                guard let stream = attachmentStore.fetch(id: attachmentId, tx: tx)?.asStream() else {
+                    return .more
+                }
+                owsAssertDebug(stream.contentType == .file)
+                owsAssertDebug(stream.mimeType == MimeType.textXSignalPlain.rawValue)
+
+                if let text = try? stream.decryptedLongText() {
+                    insert(attachmentId: attachmentId, text: text, tx: tx)
+                } else {
+                    logger.warn("Failed to decrypt long text attachment! Skipping.")
+                }
+
+                progressSource?.incrementCompletedUnitCount(by: 1)
+                return .more
+            },
+        )
     }
 
     typealias ArchivedMessageBody = BackupArchive.ArchivedMessageBody
@@ -411,36 +427,6 @@ class BackupArchiveInlinedOversizeTextArchiver {
                 .select(Column(Attachment.Record.CodingKeys.sqliteId))
                 .fetchAll(tx.database)
         }
-    }
-
-    // Returns number of rows processed. Returns 0 if finished.
-    private func populateTableIncrementallyBatch(
-        attachmentIds: ArraySlice<Attachment.IDType>,
-        progress: OWSProgressSource?,
-        tx: DBWriteTransaction,
-    ) {
-        var maxRecordId: BackupOversizeTextCache.IDType = 0
-        for attachmentId in attachmentIds {
-            guard let stream = attachmentStore.fetch(id: attachmentId, tx: tx)?.asStream() else {
-                continue
-            }
-            owsAssertDebug(stream.contentType == .file)
-            owsAssertDebug(stream.mimeType == MimeType.textXSignalPlain.rawValue)
-
-            // If the attachment fails to decrypt, skip this record.
-            if let text = try? stream.decryptedLongText() {
-                let recordId = self.insert(attachmentId: stream.id, text: text, tx: tx)
-                maxRecordId = max(maxRecordId, recordId)
-            } else {
-                logger.error("Failed to decrypt long text! Skipping.")
-            }
-            if let progress {
-                progress.incrementCompletedUnitCount(by: 1)
-            }
-        }
-        // Treat these rows as "restored" (since we already have a corresponding attachment stream).
-        // We'll never do a restore after doing an archive, but its still best practice to set.
-        kvStore.setInt64(maxRecordId, key: Self.lastRestoredRowIdKey, transaction: tx)
     }
 
     // Returns true if done (no more rows to restore)
