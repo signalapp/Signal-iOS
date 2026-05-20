@@ -1408,17 +1408,15 @@ extension ConversationViewController: CVComponentDelegate {
     }
 
     public func didTapSafetyTips() {
-        let viewController = SafetyTipsViewController()
-        viewController.delegate = self
-        present(viewController, animated: true)
-    }
-}
-
-// MARK: - SafetyTipsViewControllerDelegate
-
-extension ConversationViewController: SafetyTipsViewControllerDelegate {
-    public func didTapViewMoreSafetyTips() {
-        let viewController = MoreSafetyTipsViewController()
+        let viewController = SafetyTipsViewController(
+            primaryButton: SafetyTipsViewController.Button(
+                title: CommonStrings.viewMoreButton,
+                action: { [weak self] in
+                    let viewController = MoreSafetyTipsViewController()
+                    self?.present(viewController, animated: true)
+                },
+            ),
+        )
         present(viewController, animated: true)
     }
 }

@@ -40,12 +40,17 @@ class ChatListFYISheetCoordinator {
 
         struct KeyTransparencySelfCheckFailed {}
 
+        struct SMSVerificationCodeSent {
+            let timestampMs: UInt64
+        }
+
         case badgeThanks(BadgeThanks)
         case badgeIssue(BadgeIssue)
         case badgeExpiration(BadgeExpiration)
         case backupSubscriptionExpired(BackupSubscriptionExpired)
         case backupSubscriptionFailedToRenew(BackupSubscriptionFailedToRenew)
         case keyTransparencySelfCheckFailed(KeyTransparencySelfCheckFailed)
+        case smsVerificationCodeSent(SMSVerificationCodeSent)
     }
 
     private let backupExportJobRunner: BackupExportJobRunner
@@ -93,7 +98,9 @@ class ChatListFYISheetCoordinator {
     // MARK: -
 
     private func nextSheetToPresent(tx: DBReadTransaction) -> FYISheet? {
-        if let sheet = shouldShowBadgeThanksSheet(successMode: .oneTimeBoost, tx: tx) {
+        if let sheet = shouldShowSMSVerificationCodeSentSheet(tx: tx) {
+            return sheet
+        } else if let sheet = shouldShowBadgeThanksSheet(successMode: .oneTimeBoost, tx: tx) {
             return sheet
         } else if let sheet = shouldShowBadgeThanksSheet(successMode: .recurringSubscriptionInitiation, tx: tx) {
             return sheet
@@ -124,6 +131,23 @@ class ChatListFYISheetCoordinator {
         } else {
             return nil
         }
+    }
+
+    /// Checks for `.smsVerificationCodeSent` FYI sheets.
+    ///
+    /// When another device tries to register and receives an SMS code, notify
+    /// the primary device by showing an FYI sheet.
+    ///
+    private func shouldShowSMSVerificationCodeSentSheet(
+        tx: DBReadTransaction,
+    ) -> FYISheet? {
+
+        let safetyTipsKVStore = SafetyTipsManager()
+        guard let timestamp = safetyTipsKVStore.lastVerificationCodeTimestampMsWithinExpiryTime(transaction: tx) else {
+            return nil
+        }
+
+        return .smsVerificationCodeSent(FYISheet.SMSVerificationCodeSent(timestampMs: timestamp))
     }
 
     /// Checks for `.badgeThanks` FYI sheets.
@@ -219,6 +243,8 @@ class ChatListFYISheetCoordinator {
         from chatListViewController: ChatListViewController,
     ) async {
         switch fyiSheet {
+        case .smsVerificationCodeSent(let smsVerificationCodeSent):
+            await _present(smsVerificationCodeSent: smsVerificationCodeSent, from: chatListViewController)
         case .badgeThanks(let badgeThanks):
             await _present(badgeThanks: badgeThanks, from: chatListViewController)
         case .badgeIssue(let badgeIssue):
@@ -460,6 +486,22 @@ class ChatListFYISheetCoordinator {
             }
         }
     }
+
+    private func _present(
+        smsVerificationCodeSent: FYISheet.SMSVerificationCodeSent,
+        from chatListViewController: ChatListViewController,
+    ) async {
+        let sheet = SMSVerificationCodeSentHeroSheet(
+            timestamp: smsVerificationCodeSent.timestampMs,
+            presentingFrom: chatListViewController,
+        )
+        chatListViewController.present(sheet, animated: true, completion: { [self] in
+            let kvStore = SafetyTipsManager()
+            db.write { tx in
+                kvStore.removeVerificationCodeRequestedTimestampMs(transaction: tx)
+            }
+        })
+    }
 }
 
 // MARK: - ChatListViewController: BadgeIssueSheetDelegate
@@ -592,6 +634,73 @@ private final class KeyTransparencySelfCheckFailedHeroSheet: HeroSheetViewContro
                 ),
                 style: .secondary,
             ),
+        )
+    }
+}
+
+// MARK: -
+
+private final class SMSVerificationCodeSentHeroSheet: HeroSheetViewController {
+    init(timestamp: UInt64, presentingFrom fromViewController: UIViewController) {
+        let timestampString = DateUtil.formatMessageTimestampForCVC(timestamp, shouldUseLongFormat: true)
+        let bodyPartOne = OWSLocalizedString(
+            "VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST",
+            comment: "First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }}",
+        )
+
+        let bodyPartTwo = OWSLocalizedString(
+            "VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND",
+            comment: "Second part of body for a hero sheet informing the user a verification code was requested.",
+        )
+
+        let body: NSAttributedString = .composed(of: [
+            bodyPartOne.styled(
+                with: .font(.dynamicTypeHeadline),
+                .paragraphSpacingAfter(4.0),
+            ),
+            "\n",
+            timestampString.styled(with: .font(.dynamicTypeBody)),
+            "\n",
+            bodyPartTwo.styled(
+                with: .font(.dynamicTypeBody),
+                .paragraphSpacingBefore(12.0),
+            ),
+        ])
+
+        super.init(
+            hero: .image(.verificationcodeAlert96),
+            title: nil,
+            body: HeroSheetViewController.Body(
+                textContent: .attributed(body),
+                textAlignment: .natural,
+                textColor: UIColor.Signal.label,
+            ),
+            primary: .button(HeroSheetViewController.Button(
+                title: OWSLocalizedString(
+                    "SAFETY_TIPS_BUTTON_ACTION_TITLE",
+                    comment: "Title for Safety Tips button in thread details.",
+                ),
+                style: .secondary,
+                action: .custom({ [fromViewController] sheet in
+                    sheet.dismiss(animated: true)
+                    let safetyTipsVC = SafetyTipsViewController(
+                        primaryButton: SafetyTipsViewController.Button(
+                            title: OWSLocalizedString(
+                                "SETTINGS_ACCOUNT_BUTTON",
+                                comment: "Label for button in Safety Tips to go to 'account' page in settings.",
+                            ),
+                            action: {
+                                (fromViewController as? ChatListViewController)?.showAppSettings(mode: .accountSettings)
+                            },
+                        ),
+                    )
+                    fromViewController.present(safetyTipsVC, animated: true)
+                }),
+            )),
+            secondary: .button(.dismissing(
+                title: CommonStrings.okButton,
+                style: .secondary,
+            )),
         )
     }
 }

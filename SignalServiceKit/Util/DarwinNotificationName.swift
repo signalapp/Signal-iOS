@@ -7,6 +7,7 @@ import Foundation
 
 public struct DarwinNotificationName: ExpressibleByStringLiteral {
     static let primaryDBFolderNameDidChange: DarwinNotificationName = "org.signal.primaryDBFolderNameDidChange"
+    static let smsVerificationCodeRequested: DarwinNotificationName = "org.signal.safetyTips.smsVerificationCodeRequested"
 
     static func sdsCrossProcess(for type: AppContextType) -> DarwinNotificationName {
         DarwinNotificationName("org.signal.sdscrossprocess.\(type)")

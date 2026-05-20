@@ -12,10 +12,10 @@ final class DonationReadMoreSheetViewController: HeroSheetViewController {
             hero: .image(.sustainerHeart),
             title: nil,
             body: HeroSheetViewController.Body(
-                text: OWSLocalizedString(
+                textContent: .plain(OWSLocalizedString(
                     "DONATION_READ_MORE_SHEET_BODY",
                     comment: "Body text for a sheet discussing donating to Signal.",
-                ),
+                )),
                 textAlignment: .left,
                 textColor: .Signal.label,
                 bulletPoints: [

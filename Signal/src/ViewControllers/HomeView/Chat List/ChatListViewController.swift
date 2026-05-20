@@ -1378,6 +1378,7 @@ extension ChatListViewController {
         case donate(donateMode: DonateViewController.DonateMode)
         case linkedDevices
         case proxy
+        case accountSettings
     }
 
     func showAppSettings(mode: ShowAppSettingsMode? = nil, completion: (() -> Void)? = nil) {
@@ -1491,6 +1492,9 @@ extension ChatListViewController {
 
         case .proxy:
             viewControllers += [PrivacySettingsViewController(), AdvancedPrivacySettingsViewController(), ProxySettingsViewController()]
+
+        case .accountSettings:
+            viewControllers += [AccountSettingsViewController(appReadiness: appReadiness)]
         }
 
         navigationController.setViewControllers(viewControllers, animated: false)

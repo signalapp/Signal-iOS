@@ -12,12 +12,18 @@ public enum SafetyTipsType {
     case group
 }
 
-public protocol SafetyTipsViewControllerDelegate: AnyObject {
-    func didTapViewMoreSafetyTips()
-}
-
 public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollViewDelegate {
+    public struct Button {
+        let title: String
+        let action: () -> Void
+    }
+
     override public var placeOnGlassIfAvailable: Bool { true }
+    let primaryButton: Button
+
+    init(primaryButton: Button) {
+        self.primaryButton = primaryButton
+    }
 
     private enum SafetyTips: CaseIterable {
         case chatsFromSignal
@@ -79,8 +85,6 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
     let contentScrollView = UIScrollView()
     let stackView = UIStackView()
 
-    public weak var delegate: SafetyTipsViewControllerDelegate?
-
     override public func viewDidLoad() {
         super.viewDidLoad()
 
@@ -133,26 +137,26 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = UIColor.Signal.secondaryFill
         config.cornerStyle = .capsule
-        var attrString = AttributedString(CommonStrings.viewMoreButton)
+        var attrString = AttributedString(primaryButton.title)
         attrString.font = .dynamicTypeBodyClamped.medium()
         config.attributedTitle = attrString
         config.baseForegroundColor = UIColor.Signal.label
         config.contentInsets = .init(margin: 14)
-        let viewMoreButton = UIButton(
+        let button = UIButton(
             configuration: config,
             primaryAction: .init(handler: { [weak self] _ in
                 self?.dismiss(animated: true)
-                self?.delegate?.didTapViewMoreSafetyTips()
+                self?.primaryButton.action()
             }),
         )
 
-        viewMoreButton.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(viewMoreButton)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(button)
         NSLayoutConstraint.activate([
-            viewMoreButton.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor),
-            viewMoreButton.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            viewMoreButton.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            viewMoreButton.heightAnchor.constraint(equalToConstant: 52),
+            button.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor),
+            button.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            button.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            button.heightAnchor.constraint(equalToConstant: 52),
         ])
     }
 

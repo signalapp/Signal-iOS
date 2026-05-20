@@ -63,6 +63,7 @@
 		045B408E2EC6897B002D3F9A /* PinnedMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B408D2EC68974002D3F9A /* PinnedMessageManagerTest.swift */; };
 		045B40922ECE406A002D3F9A /* ConversationViewController+PinnedMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B40912ECE4060002D3F9A /* ConversationViewController+PinnedMessages.swift */; };
 		045B40952ECF98C1002D3F9A /* PinnedMessagesDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B40942ECF98BB002D3F9A /* PinnedMessagesDetailsViewController.swift */; };
+		046092262FBCD2DA00A8765F /* SafetyTipsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046092232FBCC7E700A8765F /* SafetyTipsManager.swift */; };
 		046926092E8EBAAE00B1FC74 /* TSInfoMessage+Polls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */; };
 		0477BE322FA4FC41002F9B47 /* TSReleaseNotesThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */; };
 		047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */; };
@@ -4208,6 +4209,7 @@
 		045B408D2EC68974002D3F9A /* PinnedMessageManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageManagerTest.swift; sourceTree = "<group>"; };
 		045B40912ECE4060002D3F9A /* ConversationViewController+PinnedMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+PinnedMessages.swift"; sourceTree = "<group>"; };
 		045B40942ECF98BB002D3F9A /* PinnedMessagesDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessagesDetailsViewController.swift; sourceTree = "<group>"; };
+		046092232FBCC7E700A8765F /* SafetyTipsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyTipsManager.swift; sourceTree = "<group>"; };
 		046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Polls.swift"; sourceTree = "<group>"; };
 		0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSReleaseNotesThread.swift; sourceTree = "<group>"; };
 		047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphoneTests.swift; sourceTree = "<group>"; };
@@ -8484,6 +8486,14 @@
 				0426758F2EC529F500124C5F /* TSInfoMessage+PinnedMessage.swift */,
 			);
 			path = PinnedMessages;
+			sourceTree = "<group>";
+		};
+		046092252FBCD28300A8765F /* SafetyTips */ = {
+			isa = PBXGroup;
+			children = (
+				046092232FBCC7E700A8765F /* SafetyTipsManager.swift */,
+			);
+			path = SafetyTips;
 			sourceTree = "<group>";
 		};
 		0484CECC2F44B7B4009AB2CB /* AdminDelete */ = {
@@ -14640,6 +14650,7 @@
 				E19C3D922CF6B34200F2C496 /* QRCodes */,
 				6600F352298C8FBB00B1EDB7 /* Registration */,
 				F9B0DC3B28948656004E07B7 /* Resources */,
+				046092252FBCD28300A8765F /* SafetyTips */,
 				50B791552E8B39230063E71E /* Search */,
 				6673FF6A2978B5B900F96CFD /* SecureValueRecovery */,
 				F9C5CB98289453B200548EEE /* Security */,
@@ -19775,6 +19786,7 @@
 				F9C5CDF8289453B400548EEE /* ReverseDispatchQueue.swift in Sources */,
 				F945FE4A2984796D00C835C7 /* RingrtcFieldTrials.swift in Sources */,
 				557238D32F2D53FD0033BC9A /* RingrtcVp9Config.swift in Sources */,
+				046092262FBCD2DA00A8765F /* SafetyTipsManager.swift in Sources */,
 				668A01332C2B6088007B8808 /* Scheduler.swift in Sources */,
 				72C905912B9ACA3D00E586B8 /* ScreenLock.swift in Sources */,
 				7255A4D22B98E2B700E95368 /* ScrubbingLogFormatter.swift in Sources */,

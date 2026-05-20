@@ -151,6 +151,13 @@ extension ChatListViewController {
             name: DonationReceiptCredentialRedemptionJob.didFailNotification,
             object: nil,
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(smsVerificationCodeRequested),
+            name: .smsVerificationCodeRequested,
+            object: nil,
+        )
+        SafetyTipsManager.startObservingDarwinNotifications()
 
         SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
 
@@ -216,6 +223,13 @@ extension ChatListViewController {
 
     @objc
     private func localProfileDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        showFYISheetIfNecessary()
+    }
+
+    @objc
+    private func smsVerificationCodeRequested(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
         showFYISheetIfNecessary()

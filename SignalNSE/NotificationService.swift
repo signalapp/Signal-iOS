@@ -95,6 +95,10 @@ class NotificationService: UNNotificationServiceExtension {
         }
     }
 
+    private func verificationCodeRequestTimestampMs(userInfo: [AnyHashable: Any]) -> UInt64? {
+        return (userInfo["verificationCodeRequested"] as? [String: Any])?["timestamp"] as? UInt64
+    }
+
     @MainActor
     private func _didReceive(_ request: UNNotificationRequest, logger: NSELogger) async -> UNNotificationContent {
         globalEnvironment.setUp(logger: logger)
@@ -138,6 +142,15 @@ class NotificationService: UNNotificationServiceExtension {
             return UNNotificationContent()
         case nil:
             globalEnvironment.setAppIsReady()
+        }
+
+        if let timestamp = verificationCodeRequestTimestampMs(userInfo: request.content.userInfo) {
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+                let kvStore = SafetyTipsManager()
+                kvStore.setLastVerificationCodeRequestedTimestampMs(value: timestamp, transaction: transaction)
+            }
+            Logger.info("Skipping fetch for verification code requested push")
+            return UNNotificationContent()
         }
 
         // Mark down that the APNS token is working since we got a push.

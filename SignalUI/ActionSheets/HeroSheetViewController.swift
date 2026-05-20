@@ -22,6 +22,11 @@ open class HeroSheetViewController: StackSheetViewController {
     }
 
     public struct Body {
+        public enum TextContent {
+            case plain(String)
+            case attributed(NSAttributedString)
+        }
+
         public struct BulletPoint {
             public let icon: UIImage
             public let text: String
@@ -48,20 +53,20 @@ open class HeroSheetViewController: StackSheetViewController {
             }
         }
 
-        public let text: String
+        public let textContent: TextContent
         public let textAlignment: NSTextAlignment
         public let textColor: UIColor
         public let bulletPoints: [BulletPoint]
         public let toggle: Toggle?
 
         public init(
-            text: String,
+            textContent: TextContent,
             textAlignment: NSTextAlignment = .center,
             textColor: UIColor = .Signal.secondaryLabel,
             bulletPoints: [BulletPoint] = [],
             toggle: Toggle? = nil,
         ) {
-            self.text = text
+            self.textContent = textContent
             self.textAlignment = textAlignment
             self.textColor = textColor
             self.bulletPoints = bulletPoints
@@ -137,7 +142,7 @@ open class HeroSheetViewController: StackSheetViewController {
     ) {
         self.hero = hero
         self.titleText = title
-        self.body = Body(text: body)
+        self.body = Body(textContent: .plain(body))
         self.primary = primaryButton.map { .button($0) }
         self.secondary = secondaryButton.map { .button($0) }
         super.init()
@@ -193,10 +198,16 @@ open class HeroSheetViewController: StackSheetViewController {
         let bodyLabel = UILabel()
         self.stackView.addArrangedSubview(bodyLabel)
         self.stackView.setCustomSpacing(32, after: bodyLabel)
-        bodyLabel.text = body.text
+        switch body.textContent {
+        case .plain(let text):
+            bodyLabel.text = text
+            bodyLabel.font = .dynamicTypeSubheadline
+        case .attributed(let attributedText):
+            // attributed strings should set their own font.
+            bodyLabel.attributedText = attributedText
+        }
         bodyLabel.textColor = body.textColor
         bodyLabel.textAlignment = body.textAlignment
-        bodyLabel.font = .dynamicTypeSubheadline
         bodyLabel.numberOfLines = 0
 
         for bodyBullet in body.bulletPoints {
@@ -378,7 +389,7 @@ open class HeroSheetViewController: StackSheetViewController {
         hero: .image(UIImage(named: "sustainer-heart")!),
         title: nil,
         body: HeroSheetViewController.Body(
-            text: "As an independent nonprofit, Signal is committed to private messaging and calls. No ads, no trackers, no surveillance. Donate today to support Signal.",
+            textContent: .plain("As an independent nonprofit, Signal is committed to private messaging and calls. No ads, no trackers, no surveillance. Donate today to support Signal."),
             textAlignment: .left,
             textColor: .Signal.label,
             bulletPoints: [
@@ -407,7 +418,7 @@ open class HeroSheetViewController: StackSheetViewController {
         hero: .image(UIImage(named: "toggle-32")!),
         title: nil,
         body: HeroSheetViewController.Body(
-            text: #"Give Boots extra dinner? He'd like you to know he's "extra hungry" tonight."#,
+            textContent: .plain(#"Give Boots extra dinner? He'd like you to know he's "extra hungry" tonight."#),
             toggle: HeroSheetViewController.Body.Toggle(
                 text: "Extra Food?",
                 isOn: true,
@@ -452,7 +463,7 @@ open class HeroSheetViewController: StackSheetViewController {
     SheetPreviewViewController(sheet: HeroSheetViewController(
         hero: .image(UIImage(named: "transfer_complete")!),
         title: LocalizationNotNeeded("Continue on your other device"),
-        body: HeroSheetViewController.Body(text: LocalizationNotNeeded("Continue transferring your account on your other device.")),
+        body: HeroSheetViewController.Body(textContent: .plain(LocalizationNotNeeded("Continue transferring your account on your other device."))),
         primary: .hero(.animation(named: "circular_indeterminate", height: 60)),
         secondary: nil,
     ))
