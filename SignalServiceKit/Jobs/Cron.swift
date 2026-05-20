@@ -165,7 +165,12 @@ public class Cron {
                     return false
                 }
                 Logger.info("job \(uniqueKey) starting")
-                try await operation()
+                do throws(E) {
+                    try await operation()
+                } catch where isRetryable(error) {
+                    Logger.warn("job \(uniqueKey) encountered retryable error: \(error)")
+                    throw error
+                }
                 return true
             },
             handleResult: { [db] result in
