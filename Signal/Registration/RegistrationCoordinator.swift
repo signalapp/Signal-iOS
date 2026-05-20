@@ -25,6 +25,8 @@ public protocol RegistrationCoordinator {
     /// change number request on the server. Exiting wipes in progress state.
     func exitRegistration() -> Bool
 
+    func canChangeNumber() -> ChangeNumberAllowedResult
+
     /// Call this method to determine which step comes next in the flow.
     /// If nothing has changed, this may be the current step, in which case
     /// no change in the UI is needed.
@@ -179,6 +181,11 @@ public enum AcknowledgeReglockResult {
     // Unable to get anywhere; typically we are in re-registration
     // and state has already been wiped unrecoverably.
     case cannotExit
+}
+
+public enum ChangeNumberAllowedResult {
+    case success
+    case retryAfter(TimeInterval)
 }
 
 public enum BackupRestoreProgressPhase: String, OWSSequentialProgressStep {

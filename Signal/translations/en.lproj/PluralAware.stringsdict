@@ -1544,6 +1544,26 @@
 			<string>%d attempts</string>
 		</dict>
 	</dict>
+	<key>SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_BODY</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+
+Try again in %d hour.</string>
+			<key>other</key>
+			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+
+Try again in %d hours.</string>
+		</dict>
+	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

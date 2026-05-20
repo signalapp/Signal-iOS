@@ -371,6 +371,13 @@ public class RemoteConfig {
         return !isEnabled(.remoteMuteKillSwitch)
     }
 
+    public var postRegistrationChangeNumberWaitingPeriodInSeconds: TimeInterval {
+        return TimeInterval(getUInt64Value(
+            forFlag: .postRegistrationWaitingPeriodSeconds,
+            defaultValue: UInt64.hourInMs / UInt64(MSEC_PER_SEC),
+        ))
+    }
+
     // MARK: - RingRTC
 
     public var ringrtcNwPathMonitorTrial: Bool {
@@ -697,6 +704,7 @@ private enum ValueFlag: String, FlagType {
     case paypalDisabledRegions = "global.donations.paypalDisabledRegions"
     case pinnedMessageLimit = "global.pinned_message_limit"
     case pinnedThreadLimit = "global.pinned_chat_limit"
+    case postRegistrationWaitingPeriodSeconds = "global.changeNumber.postRegistrationWaitingPeriodSeconds"
     case reactiveProfileKeyAttemptInterval = "ios.reactiveProfileKeyAttemptInterval"
     case replaceableInteractionExpiration = "ios.replaceableInteractionExpiration"
     case ringrtcDredDuration = "ios.ringrtcDredDuration"
@@ -742,6 +750,7 @@ private enum ValueFlag: String, FlagType {
         case .paypalDisabledRegions: true
         case .pinnedMessageLimit: true
         case .pinnedThreadLimit: true
+        case .postRegistrationWaitingPeriodSeconds: true
         case .reactiveProfileKeyAttemptInterval: true
         case .replaceableInteractionExpiration: false
         case .ringrtcDredDuration: true

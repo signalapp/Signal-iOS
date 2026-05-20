@@ -530,7 +530,11 @@ extension RegistrationNavigationController: RegistrationConfimModeSwitchPresente
     }
 }
 
-extension RegistrationNavigationController: RegistrationChangeNumberSplashPresenter {}
+extension RegistrationNavigationController: RegistrationChangeNumberSplashPresenter {
+    func canChangeNumber() -> ChangeNumberAllowedResult {
+        return coordinator.canChangeNumber()
+    }
+}
 
 extension RegistrationNavigationController: RegistrationPermissionsPresenter {
     func requestPermissions() async {

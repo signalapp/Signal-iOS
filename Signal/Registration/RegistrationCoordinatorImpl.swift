@@ -77,6 +77,25 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    public func canChangeNumber() -> ChangeNumberAllowedResult {
+        let waitingPeriodInSeconds = deps.remoteConfigManager.currentConfig().postRegistrationChangeNumberWaitingPeriodInSeconds
+        let registrationDate = deps.db.read { tx in
+            deps.tsAccountManager.registrationDate(tx: tx)
+        }
+
+        guard let registrationDate else {
+            logger.error("User missing registration date")
+            return .success
+        }
+
+        let timeSinceRegistration = deps.dateProvider().timeIntervalSince(registrationDate)
+        if timeSinceRegistration > waitingPeriodInSeconds {
+            return .success
+        }
+        let retryAfterTimeout = waitingPeriodInSeconds - timeSinceRegistration
+        return .retryAfter(retryAfterTimeout)
+    }
+
     @MainActor
     public func nextStep() async -> RegistrationStep {
         if deps.appExpiry.isExpired(now: deps.dateProvider()) {
