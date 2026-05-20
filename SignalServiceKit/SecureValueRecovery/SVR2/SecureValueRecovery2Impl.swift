@@ -158,7 +158,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     ) {
         // clearInProgressBackup will clear any in progress backup state.
         // This will prevent us continuing any in progress backups/exposes.
-        clearInProgressBackup(transaction)
+        clearInProgressBackup(tx: transaction)
 
         updateLocalSVRState(
             isMasterKeyBackedUp: localStorage.getIsMasterKeyBackedUp(transaction),
@@ -216,7 +216,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         // This will prevent us continuing any in progress backups/exposes.
         // If either are in flight, they will no-op when they get a response
         // and see no in progress backup state.
-        clearInProgressBackup(transaction)
+        clearInProgressBackup(tx: transaction)
         localStorage.clearSVRKeys(transaction)
     }
 
@@ -329,17 +329,17 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     private static let inProgressBackupKey = "InProgressBackup"
 
-    private func getInProgressBackup(_ tx: DBReadTransaction) throws -> InProgressBackup? {
+    private func getInProgressBackup(tx: DBReadTransaction) throws -> InProgressBackup? {
         return try kvStore.getCodableValue(forKey: Self.inProgressBackupKey, transaction: tx)
     }
 
-    private func setInProgressBackup(_ value: InProgressBackup, _ tx: DBWriteTransaction) {
+    private func setInProgressBackup(_ value: InProgressBackup, tx: DBWriteTransaction) {
         failIfThrows {
             try kvStore.setCodable(optional: value, key: Self.inProgressBackupKey, transaction: tx)
         }
     }
 
-    private func clearInProgressBackup(_ tx: DBWriteTransaction) {
+    private func clearInProgressBackup(tx: DBWriteTransaction) {
         kvStore.removeValue(forKey: Self.inProgressBackupKey, transaction: tx)
     }
 
@@ -358,7 +358,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         // Check if we had an in flight backup.
         let inProgressBackup: InProgressBackup?
         do {
-            inProgressBackup = try self.db.read(block: self.getInProgressBackup)
+            inProgressBackup = try self.db.read(block: self.getInProgressBackup(tx:))
         } catch {
             // If we fail to decode, something has gone wrong locally. But we can
             // treat this like if we never had a backup; after all the user may uninstall,
@@ -382,6 +382,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 mrEnclave: config.mrenclave,
                 connection: connection,
             )
+            // Write the in progress state to disk; we want to continue
+            // from here and not redo the backup request.
+            await self.db.awaitableWrite { tx in
+                self.setInProgressBackup(completedInProgressBackup, tx: tx)
+            }
         }
 
         try await self.performExposeRequest(
@@ -389,6 +394,20 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             authedAccount: authMethod.authedAccount,
             connection: connection,
         )
+
+        try await self.db.awaitableWrite { tx in
+            guard let persistedBackup = try self.getInProgressBackup(tx: tx), persistedBackup.matches(completedInProgressBackup) else {
+                Logger.info("Backup state changed while expose ongoing; throwing away results")
+                return
+            }
+            self.localStorage.setNeedsMasterKeyBackup(false, tx)
+            self.clearInProgressBackup(tx: tx)
+            self.updateLocalSVRState(
+                isMasterKeyBackedUp: true,
+                mrEnclaveStringValue: completedInProgressBackup.mrEnclaveStringValue,
+                transaction: tx,
+            )
+        }
 
         return try MasterKey(data: completedInProgressBackup.masterKey)
     }
@@ -420,19 +439,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         switch response.backup.status {
         case .ok:
             Logger.info("Backup success!")
-            let inProgressBackup = InProgressBackup(
+            return InProgressBackup(
                 masterKey: masterKey.rawData,
                 encryptedMasterKey: encryptedMasterKey,
                 rawPinType: 0,
                 encodedPINVerificationString: encodedPINVerificationString,
                 mrEnclaveStringValue: mrEnclave.stringValue,
             )
-            // Write the in progress state to disk; we want to continue
-            // from here and not redo the backup request.
-            await self.db.awaitableWrite { tx in
-                self.setInProgressBackup(inProgressBackup, tx)
-            }
-            return inProgressBackup
         case .UNRECOGNIZED, .unset:
             throw OWSGenericError("backup status response unknown")
         }
@@ -448,20 +461,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         var request = SVR2Proto_Request()
         request.expose = exposeRequest
         Logger.info("Issuing expose request")
-        // Check that the backup is still the latest before we actually
-        // issue the request.
-        let currentBackup: InProgressBackup?
-        do {
-            currentBackup = try self.db.read { return try self.getInProgressBackup($0) }
-        } catch {
-            throw OWSAssertionError("couldn't read in progress backup to continue expose")
-        }
-        if let currentBackup, backup.matches(currentBackup).negated {
-            // This expose is out of date. But its fine to let the caller
-            // think it was a success; the backup that took its place
-            // is now in charge and this one is done and shouldn't be repeated.
-            return
-        }
         let response = try await connection.sendRequestAndReadResponse(request)
         guard response.hasExpose else {
             throw OWSGenericError("expose missing from server response")
@@ -469,23 +468,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         switch response.expose.status {
         case .ok:
             Logger.info("Expose success!")
-            do {
-                try await self.db.awaitableWrite { tx in
-                    guard let persistedBackup = try self.getInProgressBackup(tx), persistedBackup.matches(backup) else {
-                        Logger.info("Backup state changed while expose ongoing; throwing away results")
-                        return
-                    }
-                    self.localStorage.setNeedsMasterKeyBackup(false, tx)
-                    self.clearInProgressBackup(tx)
-                    self.updateLocalSVRState(
-                        isMasterKeyBackedUp: true,
-                        mrEnclaveStringValue: backup.mrEnclaveStringValue,
-                        transaction: tx,
-                    )
-                }
-            } catch {
-                throw OWSAssertionError("couldn't read in progress backup to finalize expose")
-            }
         case .error:
             // Every expose is a pair with a backup request. For it to fail,
             // one of three things happened:
