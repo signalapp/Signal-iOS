@@ -360,38 +360,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         defer { connection.disconnect(code: .normalClosure) }
 
         Logger.info("Connection open; beginning backup/expose")
-        func continueWithExpose(backup: InProgressBackup) async throws -> MasterKey {
-            let result = await self.performExposeRequest(
-                backup: backup,
-                authedAccount: authMethod.authedAccount,
-                connection: connection,
-            )
-            switch result {
-            case .success:
-                do {
-                    return try MasterKey(data: backup.masterKey)
-                } catch {
-                    throw SVR.SVRError.assertion
-                }
-            case .serverError, .networkError, .localPersistenceError:
-                throw SVR.SVRError.assertion
-            }
-        }
-
-        func startFreshBackupExpose() async throws -> MasterKey {
-            let backupResult = await self.performBackupRequest(
-                pin: pin,
-                masterKey: masterKey,
-                mrEnclave: config.mrenclave,
-                connection: connection,
-            )
-            switch backupResult {
-            case .serverError, .networkError, .localPersistenceError, .localEncryptionError:
-                throw SVR.SVRError.assertion
-            case .success(let inProgressBackup):
-                return try await continueWithExpose(backup: inProgressBackup)
-            }
-        }
 
         // Check if we had an in flight backup.
         let inProgressBackup: InProgressBackup?
@@ -405,20 +373,43 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             Logger.error("Failed to decode in progress backup state")
             inProgressBackup = nil
         }
-        if let inProgressBackup {
-            if inProgressBackup.matches(pin: pin, mrEnclave: config.mrenclave) {
-                // Continue the backup from where we left off.
-                Logger.info("Continuing existing backup with expose")
-                return try await continueWithExpose(backup: inProgressBackup)
-            } else {
-                // We had an in flight backup, but for a different PIN.
-                // If its expose hasn't started, it should stop itself.
-                Logger.info("Cancelling in progress backup because master key changed")
-                return try await startFreshBackupExpose()
-            }
+
+        let completedInProgressBackup: InProgressBackup
+        if let inProgressBackup, inProgressBackup.matches(pin: pin, mrEnclave: config.mrenclave) {
+            // Continue the backup from where we left off.
+            Logger.warn("Skipping backup that was already completed")
+            completedInProgressBackup = inProgressBackup
         } else {
-            Logger.info("Starting fresh backup + expose")
-            return try await startFreshBackupExpose()
+            // We don't have a backup, or we're trying to back up something else; start
+            // fresh in both cases.
+            let backupResult = await self.performBackupRequest(
+                pin: pin,
+                masterKey: masterKey,
+                mrEnclave: config.mrenclave,
+                connection: connection,
+            )
+            switch backupResult {
+            case .serverError, .networkError, .localPersistenceError, .localEncryptionError:
+                throw SVR.SVRError.assertion
+            case .success(let inProgressBackup):
+                completedInProgressBackup = inProgressBackup
+            }
+        }
+
+        let result = await self.performExposeRequest(
+            backup: completedInProgressBackup,
+            authedAccount: authMethod.authedAccount,
+            connection: connection,
+        )
+        switch result {
+        case .success:
+            do {
+                return try MasterKey(data: completedInProgressBackup.masterKey)
+            } catch {
+                throw SVR.SVRError.assertion
+            }
+        case .serverError, .networkError, .localPersistenceError:
+            throw SVR.SVRError.assertion
         }
     }
 
@@ -436,6 +427,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         mrEnclave: MrEnclave,
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
     ) async -> BackupResult {
+        Logger.info("Performing backup")
         guard
             let encodedPINVerificationString = try? SVRUtil.deriveEncodedPINVerificationString(pin: pin)
         else {
