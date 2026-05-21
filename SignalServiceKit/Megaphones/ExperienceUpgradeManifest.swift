@@ -354,14 +354,14 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
         switch self {
         case
             .introducingPins,
-            .pinReminder,
-            .backupKeyReminder:
+            .pinReminder:
             return 2 * .day
         case
             .notificationPermissionReminder,
             .inactiveLinkedDeviceReminder:
             return 3 * .day
-        case .inactivePrimaryDeviceReminder:
+        case .inactivePrimaryDeviceReminder,
+             .backupKeyReminder:
             return 7 * .day
         case
             .newLinkedDeviceNotification,
