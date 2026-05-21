@@ -120,6 +120,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
                 playVideo()
                 hasAutoPlayedVideo = true
             }
+            layoutMediaView()
         }
     }
 
@@ -264,27 +265,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         return videoPlayerView
     }
 
-    // MARK: - UIViewController
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        view.backgroundColor = .clear
-
-        configureMediaView()
-
-        view.addSubview(scrollView)
-        scrollView.autoPinEdgesToSuperviewEdges()
-
-        // Video Playback controls
-        if isVideo {
-            configureVideoPlaybackControls()
-        }
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
+    private func layoutMediaView() {
         // HACK: Setting the frame to itself *seems* like it should be a no-op, but
         // it ensures the content is drawn at the right frame. In particular I was
         // reproducibly seeing some images squished (they were EXIF rotated, maybe
@@ -340,6 +321,29 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
             await downloadTask?.value
             downloadTask = nil
         }
+    }
+
+    // MARK: - UIViewController
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = .clear
+
+        configureMediaView()
+
+        view.addSubview(scrollView)
+        scrollView.autoPinEdgesToSuperviewEdges()
+
+        // Video Playback controls
+        if isVideo {
+            configureVideoPlaybackControls()
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        layoutMediaView()
     }
 
     override func viewDidAppear(_ animated: Bool) {
