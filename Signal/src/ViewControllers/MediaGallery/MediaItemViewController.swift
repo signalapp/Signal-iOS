@@ -139,22 +139,33 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
             configuration: .forMediaOverlay(),
         )
 
-        let manualLayoutView = OWSLayerView(frame: .zero) { layerView in
-            progressView.frame.size = .square(44)
-            progressView.center = layerView.center
-        }
-        manualLayoutView.addSubview(progressView)
-        mediaView.addSubview(manualLayoutView)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapProgressView))
+        progressView.addGestureRecognizer(tapGesture)
+
+        let manualLayoutView = ManualLayoutView(name: "progressViewContainer")
+        view.addSubview(manualLayoutView)
 
         manualLayoutView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            manualLayoutView.topAnchor.constraint(equalTo: mediaView.topAnchor),
-            manualLayoutView.bottomAnchor.constraint(equalTo: mediaView.bottomAnchor),
-            manualLayoutView.leadingAnchor.constraint(equalTo: mediaView.leadingAnchor),
-            manualLayoutView.trailingAnchor.constraint(equalTo: mediaView.trailingAnchor),
+            manualLayoutView.topAnchor.constraint(equalTo: view.topAnchor),
+            manualLayoutView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            manualLayoutView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            manualLayoutView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
 
+        manualLayoutView.addSubview(progressView)
+        manualLayoutView.centerSubviewOnSuperview(progressView, size: .square(44))
+
         self.progressView = progressView
+    }
+
+    @objc
+    private func didTapProgressView() {
+        if downloadTask != nil {
+            downloadTask?.cancel()
+        } else if galleryItem.referencedAttachment.asReferencedStream == nil {
+            downloadFullsizeIfNeeded(userInitiated: true)
+        }
     }
 
     private func configureMediaView() {
@@ -170,13 +181,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
         scrollView = ZoomableMediaView(mediaView: mediaView, onSingleTap: { [weak self] in
             guard let self else { return }
-            if downloadTask != nil {
-                downloadTask?.cancel()
-            } else if galleryItem.referencedAttachment.asReferencedStream == nil {
-                downloadFullsizeIfNeeded(userInitiated: true)
-            } else {
-                delegate?.mediaItemViewControllerDidTapMedia(self)
-            }
+            delegate?.mediaItemViewControllerDidTapMedia(self)
         })
         scrollView.delegate = self
     }
