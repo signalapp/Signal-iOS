@@ -463,6 +463,10 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
         conversionRefreshButton.configuration?.image = UIImage(named: "refresh-20")
         conversionRefreshButton.configuration?.contentInsets = .init(hMargin: 12, vMargin: 4)
         conversionRefreshButton.tintColor = .Signal.label
+        conversionRefreshButton.accessibilityLabel = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for the refresh button on the payments settings screen.",
+        )
 
         let conversionLabel = UILabel()
         conversionLabel.font = .dynamicTypeSubheadlineClamped
@@ -478,6 +482,10 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
         conversionInfoButton.configuration?.image = UIImage(named: "info-20")
         conversionInfoButton.configuration?.contentInsets = .init(hMargin: 12, vMargin: 4)
         conversionInfoButton.tintColor = .Signal.secondaryLabel
+        conversionInfoButton.accessibilityLabel = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for the information button on the payments settings screen.",
+        )
 
         let conversionStack = UIStackView(arrangedSubviews: [
             conversionRefreshButton,
