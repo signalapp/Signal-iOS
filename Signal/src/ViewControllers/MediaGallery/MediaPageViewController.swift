@@ -883,7 +883,7 @@ extension MediaPageViewController: MediaItemViewControllerDelegate {
     func mediaItemViewControllerDidUpdateGalleryItem(_ viewController: MediaItemViewController, item: MediaGalleryItem) {
         if
             let newItem = mediaGallery.reloadGalleryItem(item: item),
-            newItem.referencedAttachment.attachment.id == currentItem.referencedAttachment.attachment.id
+            newItem.referencedAttachment.reference.referenceId == currentItem.referencedAttachment.reference.referenceId
         {
             replaceCurrentItem(item: newItem)
         }

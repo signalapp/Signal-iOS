@@ -243,6 +243,28 @@ public struct AttachmentStore {
         return fetchReferencedAttachments(references: references, tx: tx)
     }
 
+    public func fetchUpdatedReferencedAttachment(
+        for referencedAttachment: ReferencedAttachment,
+        tx: DBReadTransaction,
+    ) -> ReferencedAttachment? {
+        let references = fetchReferencedAttachments(
+            for: referencedAttachment.reference.owner.id,
+            tx: tx,
+        )
+        var refreshedReference: ReferencedAttachment?
+        for reference in references {
+            if reference.reference.referenceId == referencedAttachment.reference.referenceId {
+                refreshedReference = reference
+                break
+            }
+        }
+        guard let refreshedReference else {
+            owsFailDebug("Missing attachment reference!")
+            return nil
+        }
+        return refreshedReference
+    }
+
     public func fetchReferencedAttachmentsOwnedByMessage(
         messageRowId: Int64,
         tx: DBReadTransaction,

@@ -488,8 +488,8 @@ class MediaGallery {
 
     func reloadGalleryItem(item: MediaGalleryItem) -> MediaGalleryItem? {
         let reloadedReferencedAttachment = DependenciesBridge.shared.db.read {
-            DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
-                for: item.referencedAttachment.reference.owner.id,
+            DependenciesBridge.shared.attachmentStore.fetchUpdatedReferencedAttachment(
+                for: item.referencedAttachment,
                 tx: $0,
             )
         }
