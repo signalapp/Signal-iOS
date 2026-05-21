@@ -71,6 +71,7 @@ struct BackupOnboardingIntroView: View {
 
                 Image(.backupsLogo)
                     .frame(width: 80, height: 80)
+                    .accessibilityHidden(true)
 
                 Spacer().frame(height: 16)
                 HStack {
