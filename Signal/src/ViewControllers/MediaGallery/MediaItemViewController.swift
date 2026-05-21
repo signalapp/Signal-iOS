@@ -12,6 +12,7 @@ protocol MediaItemViewControllerDelegate: AnyObject {
     func mediaItemViewControllerDidTapMedia(_ viewController: MediaItemViewController)
     func mediaItemViewControllerWillBeginZooming(_ viewController: MediaItemViewController)
     func mediaItemViewControllerFullyZoomedOut(_ viewController: MediaItemViewController)
+    func mediaItemViewControllerDidUpdateGalleryItem(_ viewController: MediaItemViewController, item: MediaGalleryItem)
 }
 
 protocol VideoPlaybackStatusProvider: AnyObject {
@@ -26,14 +27,12 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     weak var delegate: MediaItemViewControllerDelegate?
 
-    let galleryItem: MediaGalleryItem
+    private(set) var galleryItem: MediaGalleryItem
 
     init(galleryItem: MediaGalleryItem) {
         self.galleryItem = galleryItem
 
         super.init()
-
-        image = galleryItem.referencedAttachment.getThumbnailImageSync(quality: .large)
     }
 
     deinit {
@@ -44,6 +43,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     private var scrollView: ZoomableMediaView!
 
+    private var progressView: CVAttachmentProgressView?
     private(set) var mediaView: UIView!
     private var mediaViewBottomConstraint: NSLayoutConstraint?
     private var mediaViewLeadingConstraint: NSLayoutConstraint?
@@ -53,6 +53,8 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
     var videoPlayerView: VideoPlayerView? { mediaView as? VideoPlayerView }
     var videoPlayer: VideoPlayer? { videoPlayerView?.videoPlayer }
     private var buttonPlayVideo: UIButton?
+
+    private var downloadTask: Task<Void, Never>?
 
     func zoomOut(animated: Bool) {
         scrollView.zoomOut(animated: animated)
@@ -76,22 +78,84 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         buttonConfiguration.image = UIImage(named: "play-fill-48")
         buttonConfiguration.contentInsets = .init(margin: 22) // 92 pt button size
 
-        let button = UIButton(
-            configuration: buttonConfiguration,
-            primaryAction: UIAction { [weak self] _ in
-                self?.playVideo()
-            },
-        )
-        button.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(button)
-        NSLayoutConstraint.activate([
-            button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            button.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-        ])
-        self.buttonPlayVideo = button
+        if galleryItem.isVideoReadyToPlay {
+            let button = UIButton(
+                configuration: buttonConfiguration,
+                primaryAction: UIAction { [weak self] _ in
+                    self?.playVideo()
+                },
+            )
+            button.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(button)
+            NSLayoutConstraint.activate([
+                button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                button.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            ])
+            self.buttonPlayVideo = button
+        }
     }
 
     // MARK: - Media Views
+
+    func replaceGalleryItem(item: MediaGalleryItem) {
+        zoomOut(animated: false)
+        stopVideoIfPlaying()
+
+        mediaView.removeFromSuperview()
+        mediaView = nil
+        scrollView.removeFromSuperview()
+        scrollView.delegate = nil
+        scrollView = nil
+
+        galleryItem = item
+        configureMediaView()
+
+        view.addSubview(scrollView)
+        scrollView.autoPinEdgesToSuperviewEdges()
+
+        // Video Playback controls
+        if isVideo {
+            configureVideoPlaybackControls()
+            if shouldAutoPlayVideo, !hasAutoPlayedVideo {
+                playVideo()
+                hasAutoPlayedVideo = true
+            }
+        }
+    }
+
+    private func addProgressViewIfNeeded() {
+        guard progressView == nil else {
+            return
+        }
+        guard let attachmentPointer = galleryItem.referencedAttachment.attachment.asAnyPointer() else {
+            return
+        }
+
+        let progressView = CVAttachmentProgressView(
+            direction: .download(
+                attachmentPointer: attachmentPointer,
+                downloadState: .enqueuedOrDownloading,
+            ),
+            configuration: .forMediaOverlay(),
+        )
+
+        let manualLayoutView = OWSLayerView(frame: .zero) { layerView in
+            progressView.frame.size = .square(44)
+            progressView.center = layerView.center
+        }
+        manualLayoutView.addSubview(progressView)
+        mediaView.addSubview(manualLayoutView)
+
+        manualLayoutView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            manualLayoutView.topAnchor.constraint(equalTo: mediaView.topAnchor),
+            manualLayoutView.bottomAnchor.constraint(equalTo: mediaView.bottomAnchor),
+            manualLayoutView.leadingAnchor.constraint(equalTo: mediaView.leadingAnchor),
+            manualLayoutView.trailingAnchor.constraint(equalTo: mediaView.trailingAnchor),
+        ])
+
+        self.progressView = progressView
+    }
 
     private func configureMediaView() {
         buildMediaView()
@@ -106,13 +170,21 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
         scrollView = ZoomableMediaView(mediaView: mediaView, onSingleTap: { [weak self] in
             guard let self else { return }
-            delegate?.mediaItemViewControllerDidTapMedia(self)
+            if downloadTask != nil {
+                downloadTask?.cancel()
+            } else if galleryItem.referencedAttachment.asReferencedStream == nil {
+                downloadFullsizeIfNeeded(userInitiated: true)
+            } else {
+                delegate?.mediaItemViewControllerDidTapMedia(self)
+            }
         })
         scrollView.delegate = self
     }
 
     private func buildMediaView() {
         guard mediaView == nil else { return }
+
+        image = galleryItem.referencedAttachment.getThumbnailImageSync(quality: .large)
 
         let view: UIView
         let referencedAttachmentStream = galleryItem.referencedAttachment.asReferencedStream
@@ -220,6 +292,51 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         scrollView.zoomScale = scrollView.minimumZoomScale
     }
 
+    private func downloadFullsizeIfNeeded(userInitiated: Bool) {
+        guard galleryItem.referencedAttachment.asReferencedStream == nil else { return }
+
+        addProgressViewIfNeeded()
+
+        if let downloadTask {
+            downloadTask.cancel()
+        }
+
+        let attachmentId = galleryItem.referencedAttachment.reference.attachmentRowId
+        downloadTask = Task {
+            await withTaskCancellationHandler(
+                operation: {
+                    do {
+                        try await DependenciesBridge.shared.attachmentDownloadManager.downloadReferencedAttachment(
+                            referencedAttachment: galleryItem.referencedAttachment,
+                            priority: userInitiated ? .userInitiated : .default,
+                            progress: nil,
+                        )
+
+                        delegate?.mediaItemViewControllerDidUpdateGalleryItem(self, item: galleryItem)
+                    } catch {
+                        progressView?.state = .tapToDownload
+                    }
+                },
+                onCancel: {
+                    DependenciesBridge.shared.db.write { tx in
+                        DependenciesBridge.shared.attachmentDownloadManager.cancelDownload(
+                            for: attachmentId,
+                            tx: tx,
+                        )
+                    }
+                    Task { @MainActor in
+                        progressView?.state = .tapToDownload
+                    }
+                },
+            )
+        }
+
+        Task {
+            await downloadTask?.value
+            downloadTask = nil
+        }
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -230,6 +347,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
         let timestamp = Date().ows_millisecondsSince1970
         let attachmentId = galleryItem.referencedAttachment.attachment.id
+
         Task {
             await DependenciesBridge.shared.db.awaitableWrite { tx in
                 DependenciesBridge.shared.attachmentStore.markViewedFullscreen(
@@ -239,6 +357,15 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
                 )
             }
         }
+
+        downloadFullsizeIfNeeded(userInitiated: false)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        if isVideo {
+            downloadTask?.cancel()
+        }
+        super.viewDidDisappear(animated)
     }
 
     override func viewDidLayoutSubviews() {

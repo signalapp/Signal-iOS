@@ -655,7 +655,7 @@ class MediaControlPanelView: UIView {
     func configureWithMediaItem(
         _ item: MediaGalleryItem,
         videoPlayer: VideoPlayer?,
-        transitionDirection: UIPageViewController.NavigationDirection,
+        transitionDirection: UIPageViewController.NavigationDirection?,
         animated: Bool,
     ) {
         guard currentItem != item else { return }

@@ -35,7 +35,7 @@ struct MediaGalleryIndexPath: Comparable {
 }
 
 /// The minimal requirements needed for items loaded and managed by MediaGallerySections.
-protocol MediaGallerySectionItem {
+protocol MediaGallerySectionItem: Equatable {
     var attachmentId: AttachmentReferenceId { get }
     var galleryDate: GalleryDate { get }
 }
@@ -765,7 +765,10 @@ struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUserData> {
                 return nil
             }
 
-            if let existingItem = items[offsetInSection].item {
+            if
+                let existingItem = items[offsetInSection].item,
+                existingItem == newItem
+            {
                 return existingItem
             }
 

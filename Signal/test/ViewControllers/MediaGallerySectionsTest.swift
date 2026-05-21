@@ -1198,8 +1198,8 @@ class MediaGallerySectionsTest: SignalBaseTest {
         let fakeItem2 = FakeItem(2021_01_06)
         let itemId2 = wrapper.sections.stateForTesting.itemsBySection[fakeItem2.galleryDate]![1].itemId
         let newItem2 = wrapper.mutate { sections in sections.getOrReplaceItem(fakeItem2, itemId: itemId2) }
-        XCTAssertEqual(fakeItem, newItem2)
-        XCTAssertEqual([nil, fakeItem, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual(fakeItem2, newItem2)
+        XCTAssertEqual([nil, fakeItem2, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testIndexAfter() {

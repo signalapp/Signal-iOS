@@ -259,16 +259,21 @@ class MediaPageViewController: UIPageViewController {
 
     private func buildGalleryPage(galleryItem: MediaGalleryItem) -> MediaItemViewController {
         if let cachedPage = cachedPages[galleryItem] {
-            Logger.debug("cache hit.")
             return cachedPage
         }
-
-        Logger.debug("cache miss.")
-
         let viewController = MediaItemViewController(galleryItem: galleryItem)
         viewController.delegate = self
         cachedPages[galleryItem] = viewController
         return viewController
+    }
+
+    private func replaceCurrentItem(item: MediaGalleryItem) {
+        guard let currentViewController else { return }
+        currentViewController.replaceGalleryItem(item: item)
+        didTransitionToNewPage(
+            animated: true,
+            direction: nil,
+        )
     }
 
     private var currentViewController: MediaItemViewController? {
@@ -302,7 +307,7 @@ class MediaPageViewController: UIPageViewController {
         }
     }
 
-    private func didTransitionToNewPage(animated: Bool, direction: UIPageViewController.NavigationDirection) {
+    private func didTransitionToNewPage(animated: Bool, direction: UIPageViewController.NavigationDirection?) {
         guard let currentViewController else {
             owsFailBeta("No MediaItemViewController")
             return
@@ -870,6 +875,15 @@ extension MediaPageViewController: MediaItemViewControllerDelegate {
 
     func mediaItemViewControllerFullyZoomedOut(_ viewController: MediaItemViewController) {
         setShouldHideToolbars(false, animated: true)
+    }
+
+    func mediaItemViewControllerDidUpdateGalleryItem(_ viewController: MediaItemViewController, item: MediaGalleryItem) {
+        if
+            let newItem = mediaGallery.reloadGalleryItem(item: item),
+            newItem.referencedAttachment.attachment.id == currentItem.referencedAttachment.attachment.id
+        {
+            replaceCurrentItem(item: newItem)
+        }
     }
 }
 

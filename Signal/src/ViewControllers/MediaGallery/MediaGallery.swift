@@ -139,8 +139,12 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     // MARK: Equatable
 
     static func ==(lhs: MediaGalleryItem, rhs: MediaGalleryItem) -> Bool {
+        let lhsHasStreamInfo = lhs.referencedAttachment.attachment.streamInfo != nil
+        let rhsHasStreamInfo = rhs.referencedAttachment.attachment.streamInfo != nil
         return lhs.referencedAttachment.attachment.id == rhs.referencedAttachment.attachment.id
             && lhs.referencedAttachment.reference.hasSameOwner(as: rhs.referencedAttachment.reference)
+            && lhs.referencedAttachment.attachment.localRelativeFilePathThumbnail == rhs.referencedAttachment.attachment.localRelativeFilePathThumbnail
+            && lhsHasStreamInfo == rhsHasStreamInfo
     }
 
     // MARK: Hashable
@@ -482,6 +486,18 @@ class MediaGallery {
         }
     }
 
+    func reloadGalleryItem(item: MediaGalleryItem) -> MediaGalleryItem? {
+        let reloadedReferencedAttachment = DependenciesBridge.shared.db.read {
+            DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
+                for: item.referencedAttachment.reference.owner.id,
+                tx: $0,
+            )
+        }
+        guard let reloadedReferencedAttachment else { return nil }
+
+        return reloadItem(referencedAttachment: reloadedReferencedAttachment)
+    }
+
     // MARK: -
 
     var hasFetchedOldest: Bool { sections.hasFetchedOldest }
@@ -692,12 +708,12 @@ class MediaGallery {
         )
     }
 
-    func ensureLoadedForDetailView(focusedAttachment: ReferencedAttachment) -> MediaGalleryItem? {
+    func reloadItem(referencedAttachment: ReferencedAttachment) -> MediaGalleryItem? {
         Logger.info("")
-        let newItem: MediaGalleryItem? = SSKEnvironment.shared.databaseStorageRef.read { transaction -> MediaGalleryItem? in
+        return SSKEnvironment.shared.databaseStorageRef.read { transaction -> MediaGalleryItem? in
             guard
                 let focusedItem = buildGalleryItem(
-                    attachment: focusedAttachment,
+                    attachment: referencedAttachment,
                     spoilerState: spoilerState,
                     transaction: transaction,
                 )
@@ -734,6 +750,11 @@ class MediaGallery {
                 }
             }
         }
+    }
+
+    func ensureLoadedForDetailView(focusedAttachment: ReferencedAttachment) -> MediaGalleryItem? {
+        Logger.info("")
+        let newItem: MediaGalleryItem? = reloadItem(referencedAttachment: focusedAttachment)
 
         guard let focusedItem = newItem else {
             return nil
