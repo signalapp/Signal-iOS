@@ -560,22 +560,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     private static let oldEnclavesToDeleteFromKey = "OldEnclavesToDeleteFrom"
 
-    private func getOldEnclavesToDeleteFrom(_ tx: DBReadTransaction) -> [MrEnclave] {
+    private func getOldEnclavesToDeleteFrom(_ tx: DBReadTransaction) -> Set<String> {
         // This is decoding a Set<String>. It won't actually ever fail, so just eat up errors.
-        let enclaveStrings: Set<String>? = try? kvStore.getCodableValue(
+        let enclaveStrings: Set<String> = (try? kvStore.getCodableValue(
             forKey: Self.oldEnclavesToDeleteFromKey,
             transaction: tx,
-        )
-        guard var enclaveStrings else {
-            return []
-        }
-        var enclavesToDeleteFrom = [MrEnclave]()
-        for enclave in tsConstants.svr2PreviousEnclaves {
-            if enclaveStrings.remove(enclave.stringValue) != nil {
-                enclavesToDeleteFrom.append(enclave)
-            }
-        }
-        return enclavesToDeleteFrom
+        )) ?? Set()
+        return enclaveStrings
     }
 
     private func addOldEnclaveToDeleteFrom(_ enclave: MrEnclave, _ tx: DBWriteTransaction) {
@@ -585,38 +576,41 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             transaction: tx,
         )) ?? Set()
         enclaveStrings.insert(enclave.stringValue)
-        cleanUpForgottenEnclaves(in: &enclaveStrings)
         try? kvStore.setCodable(enclaveStrings, key: Self.oldEnclavesToDeleteFromKey, transaction: tx)
     }
 
-    private func markOldEnclaveDeleted(_ enclave: MrEnclave, _ tx: DBWriteTransaction) {
+    private func markOldEnclaveDeleted(_ enclave: String, _ tx: DBWriteTransaction) {
         // This is (en/de)coding a Set<String>. It won't actually ever fail, so just eat up errors.
         var enclaveStrings: Set<String> = (try? kvStore.getCodableValue(
             forKey: Self.oldEnclavesToDeleteFromKey,
             transaction: tx,
         )) ?? Set()
-        enclaveStrings.remove(enclave.stringValue)
-        cleanUpForgottenEnclaves(in: &enclaveStrings)
+        enclaveStrings.remove(enclave)
         try? kvStore.setCodable(enclaveStrings, key: Self.oldEnclavesToDeleteFromKey, transaction: tx)
-    }
-
-    private func cleanUpForgottenEnclaves(in enclaveStrings: inout Set<String>) {
-        let knownEnclaves = Set(tsConstants.svr2PreviousEnclaves.map(\.stringValue))
-        enclaveStrings.formIntersection(knownEnclaves)
     }
 
     private func wipeOldEnclavesIfNeeded() async throws {
         var firstError: (any Error)?
-        for enclave in db.read(block: { tx in self.getOldEnclavesToDeleteFrom(tx) }) {
-            Logger.info("Wiping old enclave: \(enclave.stringValue)")
+        var oldEnclaves = db.read(block: { tx in self.getOldEnclavesToDeleteFrom(tx) })
+        for obsoleteEnclave in tsConstants.svr2PreviousEnclaves {
+            guard oldEnclaves.remove(obsoleteEnclave.stringValue) != nil else {
+                continue
+            }
+            Logger.info("wiping old enclave: \(obsoleteEnclave)")
             do {
-                try await self.doDelete(mrEnclave: enclave, authMethod: .implicit)
+                try await self.doDelete(mrEnclave: obsoleteEnclave, authMethod: .implicit)
                 await db.awaitableWrite { tx in
-                    markOldEnclaveDeleted(enclave, tx)
+                    markOldEnclaveDeleted(obsoleteEnclave.stringValue, tx)
                 }
             } catch {
                 Logger.warn("couldn't wipe old enclave; may retry eventually: \(error)")
                 firstError = firstError ?? error
+            }
+        }
+        for unknownEnclave in oldEnclaves {
+            Logger.warn("pruning unknown enclave: \(unknownEnclave)")
+            await db.awaitableWrite { tx in
+                markOldEnclaveDeleted(unknownEnclave, tx)
             }
         }
         if let firstError {
