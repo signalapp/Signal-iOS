@@ -102,6 +102,11 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
         case .success:
             presenter.continueFromSplash()
         case .retryAfter(let backoff):
+            let title = OWSLocalizedString(
+                "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE",
+                comment: "Title text for sheet displaying the 'Can't change phone number splash' message.",
+            )
+
             let bodyTextFormat = OWSLocalizedString(
                 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_BODY",
                 tableName: "PluralAware",
@@ -112,19 +117,24 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
                 bodyTextFormat,
                 Int(ceil(Double(backoff) / Double(1 * TimeInterval.hour))),
             )
+
+            let bodyAttributedString = NSAttributedString(string: bodyTextFormatted)
+                .styled(
+                    with:
+                    .font(.dynamicTypeBody),
+                    .color(UIColor.Signal.label),
+                )
+
             let heroImage = UIImage(named: "change_number_error")!
-            present(
-                HeroSheetViewController(
-                    hero: .image(heroImage),
-                    title: OWSLocalizedString(
-                        "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE",
-                        comment: "Title text for sheet displaying the 'Can't change phone number splash' message.",
-                    ),
-                    body: bodyTextFormatted,
-                    primaryButton: .dismissing(title: CommonStrings.okButton),
-                ),
-                animated: true,
+
+            let actionSheet = ActionSheetController(
+                title: title,
+                message: bodyAttributedString,
+                image: heroImage,
             )
+            actionSheet.addAction(ActionSheetAction.ok)
+
+            present(actionSheet, animated: true)
         }
     }
 }
