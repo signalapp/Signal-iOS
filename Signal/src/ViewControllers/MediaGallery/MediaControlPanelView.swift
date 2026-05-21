@@ -658,12 +658,16 @@ class MediaControlPanelView: UIView {
         transitionDirection: UIPageViewController.NavigationDirection?,
         animated: Bool,
     ) {
-        guard currentItem != item else { return }
 
         currentItem = item
         if currentMediaAlbum?.items.contains(item) != true {
             currentMediaAlbum = mediaGallery.album(for: item)
         }
+
+        // If item is not downloaded, disable share/forward
+        let canForward = (item.referencedAttachment.asReferencedStream != nil)
+        buttonShareMedia.isEnabled = canForward
+        buttonForwardMedia.isEnabled = canForward
 
         var animator: UIViewPropertyAnimator?
         if animated {

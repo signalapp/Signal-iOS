@@ -200,7 +200,6 @@ class MediaPageViewController: UIPageViewController {
             bottomMediaPanel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomMediaPanel.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
-        updateControlsForCurrentOrientation()
 
         // Load initial page and update all UI to reflect it.
         setCurrentItem(initialGalleryItem, direction: .forward, shouldAutoPlayVideo: true, animated: false)
@@ -270,6 +269,7 @@ class MediaPageViewController: UIPageViewController {
     private func replaceCurrentItem(item: MediaGalleryItem) {
         guard let currentViewController else { return }
         currentViewController.replaceGalleryItem(item: item)
+        updateControlsForCurrentOrientation()
         didTransitionToNewPage(
             animated: true,
             direction: nil,
@@ -323,6 +323,7 @@ class MediaPageViewController: UIPageViewController {
         updateScreenTitle(using: currentViewController.galleryItem)
         currentViewController.videoPlaybackStatusObserver = bottomMediaPanel
         showOrHideTopAndBottomPanelsAsNecessary(animated: animated)
+        updateControlsForCurrentOrientation()
     }
 
     // MARK: Show / hide toolbars
@@ -368,15 +369,15 @@ class MediaPageViewController: UIPageViewController {
 
         if traitCollection.verticalSizeClass == .compact {
             // Order of buttons is reversed: first button in array is the outermost in the navbar.
-            navigationItem.rightBarButtonItems = [contextMenuBarButton, barButtonForwardMedia, barButtonShareMedia]
+            navigationItem.rightBarButtonItems = [buildContextMenuBarButton(), barButtonForwardMedia, barButtonShareMedia]
         } else {
-            navigationItem.rightBarButtonItems = [contextMenuBarButton]
+            navigationItem.rightBarButtonItems = [buildContextMenuBarButton()]
         }
     }
 
     // MARK: Context Menu
 
-    private lazy var contextMenuBarButton: UIBarButtonItem = {
+    private func buildContextMenuBarButton() -> UIBarButtonItem {
         let buttonImageName: String = if #available(iOS 26, *) { "more" } else { "more-circle" }
         let contextMenuBarButton = UIBarButtonItem(
             image: UIImage(named: buttonImageName),
@@ -396,6 +397,8 @@ class MediaPageViewController: UIPageViewController {
                         comment: "Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app.",
                     ),
                     image: Theme.iconImage(.contextMenuSave),
+                    attributes:
+                    currentItem.referencedAttachment.asReferencedStream == nil ? .disabled : [],
                     handler: { [weak self] _ in
                         self?.saveCurrentMediaToPhotos()
                     },
@@ -424,7 +427,7 @@ class MediaPageViewController: UIPageViewController {
             ],
         )
         return contextMenuBarButton
-    }()
+    }
 
     // MARK: Bar Buttons
 
