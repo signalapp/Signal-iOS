@@ -6,12 +6,8 @@
 import Foundation
 import LibSignalClient
 
-/// Just a container for simple static helper methods on SVR
-/// that can be shared with other classes (incl. objc classes).
-@objc
-public final class SVRUtil: NSObject {
+public enum SVRUtil {
 
-    @objc
     public static func normalizePin(_ pin: String) -> String {
         // Trim leading and trailing whitespace
         var normalizedPin = pin.ows_stripped()
