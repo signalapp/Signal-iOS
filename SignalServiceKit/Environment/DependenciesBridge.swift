@@ -164,6 +164,7 @@ public class DependenciesBridge {
     public let recipientMerger: RecipientMerger
     public let registrationSessionManager: RegistrationSessionManager
     public let registrationStateChangeManager: RegistrationStateChangeManager
+    public let remoteReleaseNotesService: any RemoteReleaseNotesServiceProtocol
     public let searchableNameIndexer: SearchableNameIndexer
     public let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
     public let signalProtocolStoreManager: SignalProtocolStoreManager
@@ -307,6 +308,7 @@ public class DependenciesBridge {
         recipientMerger: RecipientMerger,
         registrationSessionManager: RegistrationSessionManager,
         registrationStateChangeManager: RegistrationStateChangeManager,
+        remoteReleaseNotesService: any RemoteReleaseNotesServiceProtocol,
         searchableNameIndexer: SearchableNameIndexer,
         sentMessageTranscriptReceiver: SentMessageTranscriptReceiver,
         signalProtocolStoreManager: SignalProtocolStoreManager,
@@ -449,6 +451,7 @@ public class DependenciesBridge {
         self.recipientMerger = recipientMerger
         self.registrationSessionManager = registrationSessionManager
         self.registrationStateChangeManager = registrationStateChangeManager
+        self.remoteReleaseNotesService = remoteReleaseNotesService
         self.searchableNameIndexer = searchableNameIndexer
         self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
         self.signalProtocolStoreManager = signalProtocolStoreManager

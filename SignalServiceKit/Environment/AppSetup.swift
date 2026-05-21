@@ -1679,6 +1679,8 @@ extension AppSetup.GlobalsContinuation {
             tsAccountManager: tsAccountManager,
         )
 
+        let remoteReleaseNotesService = RemoteReleaseNotesService(signalService: signalService)
+
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
             accountEntropyPoolManager: accountEntropyPoolManager,
@@ -1797,6 +1799,7 @@ extension AppSetup.GlobalsContinuation {
             recipientMerger: recipientMerger,
             registrationSessionManager: registrationSessionManager,
             registrationStateChangeManager: registrationStateChangeManager,
+            remoteReleaseNotesService: remoteReleaseNotesService,
             searchableNameIndexer: searchableNameIndexer,
             sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
             signalProtocolStoreManager: signalProtocolStoreManager,

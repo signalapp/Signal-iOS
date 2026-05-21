@@ -645,16 +645,16 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        let remoteMegaphoneFetcher = RemoteMegaphoneFetcher(
-            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-            signalService: SSKEnvironment.shared.signalServiceRef,
+        let remoteReleaseNotesFetchingManager = RemoteReleaseNotesFetchingManager(
+            db: DependenciesBridge.shared.db,
+            remoteReleaseNotesService: DependenciesBridge.shared.remoteReleaseNotesService,
         )
         cron.schedulePeriodically(
             uniqueKey: .fetchMegaphones,
             approximateInterval: 3 * .day,
             mustBeRegistered: false,
             mustBeConnected: true,
-            operation: { try await remoteMegaphoneFetcher.syncRemoteMegaphones() },
+            operation: { try await remoteReleaseNotesFetchingManager.syncRemoteReleaseNotes() },
         )
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
