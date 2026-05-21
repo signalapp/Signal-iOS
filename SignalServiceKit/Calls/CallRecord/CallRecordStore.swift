@@ -126,10 +126,13 @@ public protocol CallRecordStore {
     )
 
     /// Enumerate all ad hoc call records.
+    /// - Parameter block
+    /// A block executed for each enumerated record. Returns `true` if
+    /// enumeration should continue, and `false` otherwise.
     func enumerateAdHocCallRecords(
         tx: DBReadTransaction,
-        block: (CallRecord) throws -> Void,
-    ) throws
+        block: (CallRecord) throws(CancellationError) -> Bool,
+    ) throws(CancellationError)
 
     /// Fetch the record for the given call ID in the given thread, if one
     /// exists.
@@ -279,6 +282,19 @@ class CallRecordStoreImpl: CallRecordStore {
         }
     }
 
+    func enumerateAdHocCallRecords(
+        tx: DBReadTransaction,
+        block: (CallRecord) throws(CancellationError) -> Bool,
+    ) throws(CancellationError) {
+        var cursor = FailIfThrowsRecordCursor {
+            return try CallRecord
+                .filter(Column(CallRecord.CodingKeys.callType) == CallRecord.CallType.adHocCall.rawValue)
+                .fetchCursor(tx.database)
+        }
+
+        while let record = cursor.next(), try block(record) {}
+    }
+
     func fetch(
         callId: UInt64,
         conversationId: CallRecord.ConversationID,
@@ -405,22 +421,6 @@ class CallRecordStoreImpl: CallRecordStore {
                 sql: sqlString,
                 arguments: StatementArguments(sqlArgs),
             ))
-        }
-    }
-
-    func enumerateAdHocCallRecords(
-        tx: DBReadTransaction,
-        block: (CallRecord) throws -> Void,
-    ) throws {
-        do {
-            let cursor = try CallRecord
-                .filter(Column(CallRecord.CodingKeys.callType) == CallRecord.CallType.adHocCall.rawValue)
-                .fetchCursor(tx.database)
-            while let value = try cursor.next() {
-                try block(value)
-            }
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 

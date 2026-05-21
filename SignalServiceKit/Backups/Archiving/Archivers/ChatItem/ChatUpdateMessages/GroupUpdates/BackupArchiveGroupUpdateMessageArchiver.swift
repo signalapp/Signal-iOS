@@ -37,7 +37,7 @@ final class BackupArchiveGroupUpdateMessageArchiver {
         case .nonGroupUpdate:
             // Should be impossible.
             return .completeFailure(.fatalArchiveError(.developerError(
-                OWSAssertionError("Invalid interaction type"),
+                message: "Invalid interaction type",
             )))
         case .legacyRawString:
             return .skippableInteraction(.skippableGroupUpdate(.legacyRawString))

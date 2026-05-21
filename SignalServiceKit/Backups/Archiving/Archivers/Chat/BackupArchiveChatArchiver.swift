@@ -50,74 +50,32 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
         var completeFailureError: BackupArchive.FatalArchivingError?
         var partialErrors = [ArchiveFrameError]()
 
-        func archiveThread(_ thread: TSThread, _ frameBencher: BackupArchive.Bencher.FrameBencher) -> Bool {
-            var stop = false
-            autoreleasepool {
-                let result: ArchiveMultiFrameResult
-                if let thread = thread as? TSContactThread {
-                    // Check address directly; isNoteToSelf uses global state.
-                    if thread.contactAddress.isEqualToAddress(context.recipientContext.localIdentifiers.aciAddress) {
-                        result = self.archiveNoteToSelfThread(
-                            thread,
-                            stream: stream,
-                            frameBencher: frameBencher,
-                            context: context,
-                        )
-                    } else {
-                        result = self.archiveContactThread(
-                            thread,
-                            stream: stream,
-                            frameBencher: frameBencher,
-                            context: context,
-                        )
-                    }
-                } else if let thread = thread as? TSGroupThread, thread.isGroupV2Thread {
-                    result = self.archiveGroupV2Thread(
-                        thread,
-                        stream: stream,
-                        frameBencher: frameBencher,
-                        context: context,
-                    )
-                } else if let thread = thread as? TSGroupThread, thread.isGroupV1Thread {
-                    // Remember which threads were gv1 so we can silently drop their messages.
-                    context.gv1ThreadIds.insert(thread.uniqueThreadIdentifier)
-                    // Skip gv1 threads; count as success.
-                    result = .success
-                } else if thread.isReleaseNotesThread {
-                    // TODO: [KC] implement release notes in backups
-                    result = .success
-                } else {
-                    result = .completeFailure(.fatalArchiveError(.unrecognizedThreadType))
-                }
+        try context.bencher.wrapEnumeration(
+            tx: context.tx,
+            enumerationBlock: { tx, block throws(CancellationError) in
+                try threadStore.enumerateNonStoryThreads(tx: tx, block: block)
+            },
+            perEnumerantBlock: { [self] thread, frameBencher in
+                let result = archiveThread(
+                    thread: thread,
+                    stream: stream,
+                    frameBencher: frameBencher,
+                    context: context,
+                )
 
                 switch result {
                 case .success:
                     break
                 case .completeFailure(let error):
                     completeFailureError = error
-                    stop = true
-                    return
+                    return false
                 case .partialSuccess(let errors):
                     partialErrors.append(contentsOf: errors)
                 }
-            }
 
-            return !stop
-        }
-
-        do {
-            try context.bencher.wrapEnumeration(
-                threadStore.enumerateNonStoryThreads(tx:block:),
-                tx: context.tx,
-            ) { thread, frameBencher in
-                try Task.checkCancellation()
-                return archiveThread(thread, frameBencher)
-            }
-        } catch let error as CancellationError {
-            throw error
-        } catch let error {
-            return .completeFailure(.fatalArchiveError(.threadIteratorError(error)))
-        }
+                return true
+            },
+        )
 
         if let completeFailureError {
             return .completeFailure(completeFailureError)
@@ -128,18 +86,60 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
         }
     }
 
-    private func archiveNoteToSelfThread(
-        _ thread: TSContactThread,
+    private func archiveThread(
+        thread: TSThread,
         stream: BackupArchiveProtoOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveMultiFrameResult {
-        guard let threadRowId = thread.sqliteRowId else {
-            return .completeFailure(.fatalArchiveError(
-                .fetchedThreadMissingRowId,
-            ))
+        if let thread = thread as? TSContactThread {
+            if thread.contactAddress.isEqualToAddress(context.recipientContext.localIdentifiers.aciAddress) {
+                return archiveNoteToSelfThread(
+                    thread,
+                    threadRowId: thread.sqliteRowId!,
+                    stream: stream,
+                    frameBencher: frameBencher,
+                    context: context,
+                )
+            } else {
+                return self.archiveContactThread(
+                    thread,
+                    threadRowId: thread.sqliteRowId!,
+                    stream: stream,
+                    frameBencher: frameBencher,
+                    context: context,
+                )
+            }
+        } else if let thread = thread as? TSGroupThread, thread.isGroupV2Thread {
+            return archiveGroupV2Thread(
+                thread,
+                threadRowId: thread.sqliteRowId!,
+                stream: stream,
+                frameBencher: frameBencher,
+                context: context,
+            )
+        } else if let thread = thread as? TSGroupThread, thread.isGroupV1Thread {
+            // Remember which threads were gv1 so we can silently drop their messages.
+            context.gv1ThreadIds.insert(thread.uniqueThreadIdentifier)
+            // Skip gv1 threads; count as success.
+            return .success
+        } else if thread.isReleaseNotesThread {
+            // TODO: [KC] implement release notes in backups
+            return .success
+        } else {
+            return .completeFailure(.fatalArchiveError(.developerError(
+                message: "Unexpected thread type! \(type(of: thread))",
+            )))
         }
+    }
 
+    private func archiveNoteToSelfThread(
+        _ thread: TSContactThread,
+        threadRowId: TSThread.RowId,
+        stream: BackupArchiveProtoOutputStream,
+        frameBencher: BackupArchive.Bencher.FrameBencher,
+        context: BackupArchive.ChatArchivingContext,
+    ) -> ArchiveMultiFrameResult {
         return archiveThread(
             BackupArchive.ChatThread(threadType: .contact(thread), threadRowId: threadRowId),
             recipientId: context.recipientContext.localRecipientId,
@@ -151,6 +151,7 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
 
     private func archiveContactThread(
         _ thread: TSContactThread,
+        threadRowId: TSThread.RowId,
         stream: BackupArchiveProtoOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.ChatArchivingContext,
@@ -185,12 +186,6 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
             }
         }
 
-        guard let threadRowId = thread.sqliteRowId else {
-            return .completeFailure(.fatalArchiveError(
-                .fetchedThreadMissingRowId,
-            ))
-        }
-
         return archiveThread(
             BackupArchive.ChatThread(threadType: .contact(thread), threadRowId: threadRowId),
             recipientId: recipientId,
@@ -202,6 +197,7 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
 
     private func archiveGroupV2Thread(
         _ thread: TSGroupThread,
+        threadRowId: TSThread.RowId,
         stream: BackupArchiveProtoOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.ChatArchivingContext,
@@ -211,12 +207,6 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
         )
         guard let recipientId = context.recipientContext[recipientAddress] else {
             return .partialSuccess([.archiveFrameError(.referencedRecipientIdMissing(recipientAddress))])
-        }
-
-        guard let threadRowId = thread.sqliteRowId else {
-            return .completeFailure(.fatalArchiveError(
-                .fetchedThreadMissingRowId,
-            ))
         }
 
         return archiveThread(

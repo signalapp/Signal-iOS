@@ -284,11 +284,7 @@ public class AppEnvironment: NSObject {
             // Things that should run on either the primary or linked devices.
             if let registeredState, registeredState.isPrimary {
                 Task {
-                    do {
-                        try await avatarDefaultColorStorageServiceMigrator.performMigrationIfNecessary()
-                    } catch {
-                        Logger.warn("Couldn't perform avatar default color migration: \(error)")
-                    }
+                    await avatarDefaultColorStorageServiceMigrator.performMigrationIfNecessary()
                 }
 
                 Task {

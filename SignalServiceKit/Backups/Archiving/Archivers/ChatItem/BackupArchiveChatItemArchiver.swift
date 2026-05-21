@@ -136,11 +136,16 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         var completeFailureError: BackupArchive.FatalArchivingError?
         var partialFailures = [ArchiveFrameError]()
 
-        func archiveInteraction(
-            _ interactionRecord: InteractionRecord,
-            _ frameBencher: BackupArchive.Bencher.FrameBencher,
-        ) -> Bool {
-            return autoreleasepool { () -> Bool in
+        try context.bencher.wrapEnumeration(
+            tx: context.tx,
+            enumerationBlock: { tx, block throws(CancellationError) in
+                var cursor = FailIfThrowsRecordCursor {
+                    try InteractionRecord.fetchCursor(tx.database)
+                }
+
+                while let interactionRecord = cursor.next(), try block(interactionRecord) {}
+            },
+            perEnumerantBlock: { [self] interactionRecord, frameBencher -> Bool in
                 let interaction: TSInteraction
                 do {
                     interaction = try TSInteraction.fromRecord(interactionRecord)
@@ -149,13 +154,12 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
                     return true
                 }
 
-                let result = self.archiveInteraction(
+                switch archiveInteraction(
                     interaction,
                     stream: stream,
                     frameBencher: frameBencher,
                     context: context,
-                )
-                switch result {
+                ) {
                 case .success:
                     return true
                 case .partialSuccess(let errors):
@@ -165,32 +169,8 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
                     completeFailureError = error
                     return false
                 }
-            }
-        }
-
-        do {
-            try context.bencher.wrapEnumeration(
-                { tx, block in
-                    let cursor = try InteractionRecord
-                        .fetchCursor(tx.database)
-
-                    while
-                        let interactionRecord = try cursor.next(),
-                        try block(interactionRecord)
-                    {}
-                },
-                tx: context.tx,
-            ) { interactionRecord, frameBencher in
-                try Task.checkCancellation()
-                return archiveInteraction(interactionRecord, frameBencher)
-            }
-        } catch let error as CancellationError {
-            throw error
-        } catch let error {
-            // Errors thrown here are from the iterator's SQL query,
-            // not the individual interaction handler.
-            return .completeFailure(.fatalArchiveError(.interactionIteratorError(error)))
-        }
+            },
+        )
 
         if let completeFailureError {
             return .completeFailure(completeFailureError)

@@ -33,45 +33,40 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
 
-        do {
-            // enumerate deleted threads
-            for item in privateStoryThreadDeletionManager.allDeletedIdentifiers(tx: context.tx) {
-                try Task.checkCancellation()
-                autoreleasepool {
-                    context.bencher.processFrame { frameBencher in
-                        self.archiveDeletedStoryList(
-                            rawDistributionId: item,
-                            stream: stream,
-                            frameBencher: frameBencher,
-                            context: context,
-                            errors: &errors,
-                        )
-                    }
-                }
+        for item in privateStoryThreadDeletionManager.allDeletedIdentifiers(tx: context.tx) {
+            if Task.isCancelled {
+                throw CancellationError()
             }
-            try context.bencher.wrapEnumeration(
-                threadStore.enumerateStoryThreads(tx:block:),
-                tx: context.tx,
-            ) { storyThread, frameBencher in
-                try Task.checkCancellation()
-                autoreleasepool {
-                    self.archiveStoryThread(
-                        storyThread,
+
+            autoreleasepool {
+                context.bencher.processFrame { frameBencher in
+                    archiveDeletedStoryList(
+                        rawDistributionId: item,
                         stream: stream,
                         frameBencher: frameBencher,
                         context: context,
                         errors: &errors,
                     )
                 }
-
-                return true
             }
-        } catch let error as CancellationError {
-            throw error
-        } catch {
-            // The enumeration of threads failed, not the processing of one single thread.
-            return .completeFailure(.fatalArchiveError(.threadIteratorError(error)))
         }
+
+        try context.bencher.wrapEnumeration(
+            tx: context.tx,
+            enumerationBlock: { tx, block throws(CancellationError) in
+                try threadStore.enumerateStoryThreads(tx: tx, block: block)
+            },
+            perEnumerantBlock: { [self] storyThread, frameBencher in
+                archiveStoryThread(
+                    storyThread,
+                    stream: stream,
+                    frameBencher: frameBencher,
+                    context: context,
+                    errors: &errors,
+                )
+                return true
+            },
+        )
 
         if errors.isEmpty {
             return .success

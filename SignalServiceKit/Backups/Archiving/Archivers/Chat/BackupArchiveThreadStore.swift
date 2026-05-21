@@ -17,22 +17,22 @@ public final class BackupArchiveThreadStore {
 
     func enumerateNonStoryThreads(
         tx: DBReadTransaction,
-        block: (TSThread) throws -> Bool,
-    ) throws {
+        block: (TSThread) throws(CancellationError) -> Bool,
+    ) throws(CancellationError) {
         try threadStore.enumerateNonStoryThreads(tx: tx, block: block)
     }
 
     func enumerateGroupThreads(
         tx: DBReadTransaction,
-        block: (TSGroupThread) throws -> Bool,
-    ) throws {
+        block: (TSGroupThread) throws(CancellationError) -> Bool,
+    ) throws(CancellationError) {
         try threadStore.enumerateGroupThreads(tx: tx, block: block)
     }
 
     func enumerateStoryThreads(
         tx: DBReadTransaction,
-        block: (TSPrivateStoryThread) throws -> Bool,
-    ) throws {
+        block: (TSPrivateStoryThread) throws(CancellationError) -> Bool,
+    ) throws(CancellationError) {
         try threadStore.enumerateStoryThreads(tx: tx, block: block)
     }
 

@@ -32,8 +32,8 @@ struct AvatarDefaultColorStorageServiceMigrator {
         self.threadStore = threadStore
     }
 
-    func performMigrationIfNecessary() async throws {
-        try await db.awaitableWrite { tx in
+    func performMigrationIfNecessary() async {
+        await db.awaitableWrite { tx in
             if kvStore.hasValue(StoreKeys.hasEnqueuedMigrationKey, transaction: tx) {
                 return
             }
@@ -46,15 +46,14 @@ struct AvatarDefaultColorStorageServiceMigrator {
             }
 
             var groupV2MasterKeys = [GroupMasterKey]()
-            try threadStore.enumerateGroupThreads(tx: tx) { groupThread in
-                guard
+            threadStore.enumerateGroupThreads(tx: tx) { groupThread in
+                if
                     let groupModelV2 = groupThread.groupModel as? TSGroupModelV2,
                     let groupMasterKey = try? groupModelV2.masterKey()
-                else {
-                    return true
+                {
+                    groupV2MasterKeys.append(groupMasterKey)
                 }
 
-                groupV2MasterKeys.append(groupMasterKey)
                 return true
             }
 

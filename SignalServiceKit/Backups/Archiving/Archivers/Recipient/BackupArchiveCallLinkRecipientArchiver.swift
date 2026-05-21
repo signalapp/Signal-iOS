@@ -46,75 +46,72 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
         context: BackupArchive.RecipientArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
-        do {
-            try context.bencher.wrapEnumeration(
-                callLinkStore.enumerateAll(tx:block:),
-                tx: context.tx,
-            ) { record, frameBencher in
-                try Task.checkCancellation()
-                autoreleasepool {
-                    var callLink = BackupProto_CallLink()
-                    callLink.rootKey = record.rootKey.bytes
-                    if let adminPasskey = record.adminPasskey {
-                        // If there is no adminPasskey on the record, then the
-                        // local user is not the call admin, and we leave this
-                        // field blank on the proto.
-                        callLink.adminKey = adminPasskey
-                    }
-                    if let name = record.name {
-                        // If the default name is being used, just leave the field blank.
-                        callLink.name = name
-                    }
-                    callLink.restrictions = { () -> BackupProto_CallLink.Restrictions in
-                        if let restrictions = record.restrictions {
-                            switch restrictions {
-                            case .none: return .none
-                            case .adminApproval: return .adminApproval
-                            case .unknown: return .unknown
-                            }
-                        } else {
-                            return .unknown
-                        }
-                    }()
 
-                    let callLinkRecordId = CallLinkRecordId(record)
-                    let callLinkAppId: RecipientAppId = .callLink(callLinkRecordId)
-                    // Lacking an expiration is a valid state. It can occur 1) if we hadn't
-                    // yet fetched the expiration from the server at the time of backup, or
-                    // 2) if someone deletes a call link before we're able to fetch the
-                    // expiration.
-                    BackupArchive.Timestamps.setTimestampIfValid(
-                        from: record,
-                        \.expirationMs,
-                        on: &callLink,
-                        \.expirationMs,
-                        allowZero: true,
-                    )
-
-                    owsAssertDebug(record.revoked != true, "call links should be deleted, not revoked")
-
-                    let recipientId = context.assignRecipientId(to: callLinkAppId)
-                    let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
-                        stream,
-                        frameBencher: frameBencher,
-                    ) {
-                        var recipient = BackupProto_Recipient()
-                        recipient.id = recipientId.value
-                        recipient.destination = .callLink(callLink)
-                        var frame = BackupProto_Frame()
-                        frame.item = .recipient(recipient)
-                        return frame
-                    }
-                    if let maybeError {
-                        errors.append(maybeError)
-                    }
+        try context.bencher.wrapEnumeration(
+            tx: context.tx,
+            enumerationBlock: { tx, block throws(CancellationError) in
+                try callLinkStore.enumerateAll(tx: tx, block: block)
+            },
+            perEnumerantBlock: { record, frameBencher -> Bool in
+                var callLink = BackupProto_CallLink()
+                callLink.rootKey = record.rootKey.bytes
+                if let adminPasskey = record.adminPasskey {
+                    // If there is no adminPasskey on the record, then the
+                    // local user is not the call admin, and we leave this
+                    // field blank on the proto.
+                    callLink.adminKey = adminPasskey
                 }
-            }
-        } catch let error as CancellationError {
-            throw error
-        } catch {
-            return .completeFailure(.fatalArchiveError(.callLinkRecordIteratorError(error)))
-        }
+                if let name = record.name {
+                    // If the default name is being used, just leave the field blank.
+                    callLink.name = name
+                }
+                callLink.restrictions = { () -> BackupProto_CallLink.Restrictions in
+                    if let restrictions = record.restrictions {
+                        switch restrictions {
+                        case .none: return .none
+                        case .adminApproval: return .adminApproval
+                        case .unknown: return .unknown
+                        }
+                    } else {
+                        return .unknown
+                    }
+                }()
+
+                let callLinkRecordId = CallLinkRecordId(record)
+                let callLinkAppId: RecipientAppId = .callLink(callLinkRecordId)
+                // Lacking an expiration is a valid state. It can occur 1) if we hadn't
+                // yet fetched the expiration from the server at the time of backup, or
+                // 2) if someone deletes a call link before we're able to fetch the
+                // expiration.
+                BackupArchive.Timestamps.setTimestampIfValid(
+                    from: record,
+                    \.expirationMs,
+                    on: &callLink,
+                    \.expirationMs,
+                    allowZero: true,
+                )
+
+                owsAssertDebug(record.revoked != true, "call links should be deleted, not revoked")
+
+                let recipientId = context.assignRecipientId(to: callLinkAppId)
+                let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
+                    stream,
+                    frameBencher: frameBencher,
+                ) {
+                    var recipient = BackupProto_Recipient()
+                    recipient.id = recipientId.value
+                    recipient.destination = .callLink(callLink)
+                    var frame = BackupProto_Frame()
+                    frame.item = .recipient(recipient)
+                    return frame
+                }
+                if let maybeError {
+                    errors.append(maybeError)
+                }
+
+                return true
+            },
+        )
 
         if errors.isEmpty {
             return .success
@@ -167,23 +164,19 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
                 || callLinkProto.expirationMs != 0,
         )
 
-        do {
-            let record = try callLinkStore.insertFromBackup(
-                rootKey: rootKey,
-                adminPasskey: adminKey,
-                name: hasAnyState ? callLinkProto.name.nilIfEmpty : nil,
-                restrictions: hasAnyState ? restrictions : nil,
-                revoked: hasAnyState ? false : nil,
-                expiration: hasAnyState ? Int64(callLinkProto.expirationMs / 1000) : nil,
-                isUpcoming: hasAnyState ? (adminKey != nil) : nil,
-                tx: context.tx,
-            )
-            let callLinkRecordId = CallLinkRecordId(record)
-            context[recipient.recipientId] = .callLink(callLinkRecordId)
-            context[callLinkRecordId] = record
-        } catch {
-            return .failure([.restoreFrameError(.databaseInsertionFailed(error))])
-        }
+        let record = callLinkStore.insertFromBackup(
+            rootKey: rootKey,
+            adminPasskey: adminKey,
+            name: hasAnyState ? callLinkProto.name.nilIfEmpty : nil,
+            restrictions: hasAnyState ? restrictions : nil,
+            revoked: hasAnyState ? false : nil,
+            expiration: hasAnyState ? Int64(callLinkProto.expirationMs / 1000) : nil,
+            isUpcoming: hasAnyState ? (adminKey != nil) : nil,
+            tx: context.tx,
+        )
+        let callLinkRecordId = CallLinkRecordId(record)
+        context[recipient.recipientId] = .callLink(callLinkRecordId)
+        context[callLinkRecordId] = record
 
         return .success
     }

@@ -33,17 +33,19 @@ public struct CallLinkRecordStore {
         expiration: Int64?,
         isUpcoming: Bool?,
         tx: DBWriteTransaction,
-    ) throws -> CallLinkRecord {
-        return try CallLinkRecord.insertFromBackup(
-            rootKey: rootKey,
-            adminPasskey: adminPasskey,
-            name: name,
-            restrictions: restrictions,
-            revoked: revoked,
-            expiration: expiration,
-            isUpcoming: isUpcoming,
-            tx: tx,
-        )
+    ) -> CallLinkRecord {
+        return failIfThrows {
+            try CallLinkRecord.insertFromBackup(
+                rootKey: rootKey,
+                adminPasskey: adminPasskey,
+                name: name,
+                restrictions: restrictions,
+                revoked: revoked,
+                expiration: expiration,
+                isUpcoming: isUpcoming,
+                tx: tx,
+            )
+        }
     }
 
     public func fetchOrInsert(rootKey: CallLinkRootKey, tx: DBWriteTransaction) -> (record: CallLinkRecord, inserted: Bool) {
@@ -89,15 +91,19 @@ public struct CallLinkRecordStore {
         }
     }
 
-    public func enumerateAll(tx: DBReadTransaction, block: (CallLinkRecord) throws -> Void) throws {
-        do {
-            let cursor = try CallLinkRecord.fetchCursor(tx.database)
-            while let next = try cursor.next() {
-                try block(next)
-            }
-        } catch {
-            throw error.grdbErrorForLogging
+    /// Enumerate all `CallLinkRecord`s.
+    /// - Parameter block
+    /// A block executed for each enumerated record. Returns `true` if
+    /// enumeration should continue, and `false` otherwise.
+    public func enumerateAll(
+        tx: DBReadTransaction,
+        block: (CallLinkRecord) throws(CancellationError) -> Bool,
+    ) throws(CancellationError) {
+        var cursor = FailIfThrowsRecordCursor {
+            try CallLinkRecord.fetchCursor(tx.database)
         }
+
+        while let record = cursor.next(), try block(record) {}
     }
 
     public func fetchUpcoming(earlierThan expirationTimestamp: Date?, limit: Int, tx: DBReadTransaction) -> [CallLinkRecord] {

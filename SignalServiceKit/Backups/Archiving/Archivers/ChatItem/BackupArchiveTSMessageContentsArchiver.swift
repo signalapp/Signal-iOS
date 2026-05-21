@@ -191,11 +191,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         _ message: TSMessage,
         context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveInteractionResult<ChatItemType> {
-        guard let messageRowId = message.sqliteRowId else {
-            return .completeFailure(.fatalArchiveError(
-                .fetchedInteractionMissingRowId,
-            ))
-        }
+        let messageRowId = message.sqliteRowId!
 
         let messageOwnedReferencedAttachments: MessageOwnedReferencedAttachments = {
             let referencedAttachments = attachmentStore.fetchReferencedAttachmentsOwnedByMessage(

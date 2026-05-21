@@ -198,9 +198,10 @@ public extension TSMessage {
         let newReaction = OWSReaction(
             uniqueMessageId: uniqueId,
             emoji: emoji,
-            reactor: reactor,
+            reactorAci: reactor,
+            reactorPhoneNumber: nil,
             sentAtTimestamp: sentAtTimestamp,
-            receivedAtTimestamp: receivedAtTimestamp,
+            sortOrder: receivedAtTimestamp,
         )
 
         newReaction.anyInsert(transaction: tx)

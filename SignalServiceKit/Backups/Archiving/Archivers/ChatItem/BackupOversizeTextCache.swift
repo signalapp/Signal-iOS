@@ -186,15 +186,10 @@ class BackupArchiveInlinedOversizeTextArchiver {
             ))
         }
 
-        let oversizedText: String?
-        do {
-            oversizedText = try self.fetchInlineableOversizedText(
-                attachmentId: oversizeTextReferencedAttachment.attachment.id,
-                tx: context.tx,
-            )
-        } catch {
-            return .completeFailure(.fatalArchiveError(.oversizedTextCacheFetchError(error)))
-        }
+        let oversizedText = self.fetchInlineableOversizedText(
+            attachmentId: oversizeTextReferencedAttachment.attachment.id,
+            tx: context.tx,
+        )
 
         if let oversizedText {
             // If we had downloaded the attachment, we'd have an oversized text to inline.
@@ -381,7 +376,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
 
     // MARK: - Helpers
 
-    private func fetchInlineableOversizedText(attachmentId: Attachment.IDType, tx: DBReadTransaction) throws -> String? {
+    private func fetchInlineableOversizedText(attachmentId: Attachment.IDType, tx: DBReadTransaction) -> String? {
         return failIfThrows {
             try BackupOversizeTextCache
                 .filter(Column(BackupOversizeTextCache.CodingKeys.attachmentRowId) == attachmentId)

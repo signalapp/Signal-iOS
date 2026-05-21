@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import GRDB
+
 public class BackupArchiveRecipientStore {
 
     private let recipientTable: RecipientDatabaseTable
@@ -20,13 +22,13 @@ public class BackupArchiveRecipientStore {
 
     func enumerateAllSignalRecipients(
         tx: DBReadTransaction,
-        block: (SignalRecipient) -> Void,
-    ) throws {
-        let cursor = try SignalRecipient.fetchCursor(tx.database)
-        while let next = try cursor.next() {
-            try Task.checkCancellation()
-            block(next)
+        block: (SignalRecipient) throws(CancellationError) -> Bool,
+    ) throws(CancellationError) {
+        var cursor = FailIfThrowsRecordCursor {
+            try SignalRecipient.fetchCursor(tx.database)
         }
+
+        while let recipient = cursor.next(), try block(recipient) {}
     }
 
     func fetchRecipient(

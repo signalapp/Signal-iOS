@@ -91,7 +91,7 @@ public class StickerManager: NSObject {
             db: DependenciesBridge.shared.db,
             runner: StickerPackDownloadTaskRunner(
                 store: StickerPackDownloadTaskRecordStore(
-                    store: BackupStickerPackDownloadStoreImpl(),
+                    store: BackupStickerPackDownloadStore(),
                 ),
             ),
         )
@@ -1195,14 +1195,14 @@ public class StickerManager: NSObject {
             self.store = store
         }
 
-        func peek(count: UInt, tx: DBReadTransaction) throws -> [StickerPackDownloadTaskRecord] {
-            return try store.peek(count: count, tx: tx).map {
+        func peek(count: UInt, tx: DBReadTransaction) -> [StickerPackDownloadTaskRecord] {
+            return store.peek(count: count, tx: tx).map {
                 return .init(id: $0.id!, record: $0)
             }
         }
 
-        func removeRecord(_ record: StickerPackDownloadTaskRecord, tx: DBWriteTransaction) throws {
-            try store.removeRecordFromQueue(record: record.record, tx: tx)
+        func removeRecord(_ record: StickerPackDownloadTaskRecord, tx: DBWriteTransaction) {
+            store.removeRecordFromQueue(record: record.record, tx: tx)
         }
     }
 

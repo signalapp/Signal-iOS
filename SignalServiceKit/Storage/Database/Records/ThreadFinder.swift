@@ -54,76 +54,74 @@ public class ThreadFinder {
     /// - Parameter block
     /// A block executed for each enumerated thread. Returns `true` if
     /// enumeration should continue, and `false` otherwise.
-    public func enumerateStoryThreads(
-        transaction: DBReadTransaction,
-        block: (TSPrivateStoryThread) throws -> Bool,
-    ) throws {
+    public func enumerateStoryThreads<E: Error>(
+        tx: DBReadTransaction,
+        block: (TSPrivateStoryThread) throws(E) -> Bool,
+    ) throws(E) {
         let sql = """
             SELECT *
             FROM \(TSThread.databaseTableName)
             WHERE \(threadColumn: .recordType) = \(SDSRecordType.privateStoryThread.rawValue)
         """
-        let cursor = try TSPrivateStoryThread.fetchCursor(
-            transaction.database,
-            sql: sql,
-        )
-        while let storyThread = try cursor.next() {
-            guard try block(storyThread) else {
-                break
-            }
+
+        var cursor = FailIfThrowsRecordCursor {
+            try TSPrivateStoryThread.fetchCursor(
+                tx.database,
+                sql: sql,
+            )
         }
+
+        while let storyThread = cursor.next(), try block(storyThread) {}
     }
 
     /// Enumerates group threads in "last interaction" order.
     /// - Parameter block
     /// A block executed for each enumerated thread. Returns `true` if
     /// enumeration should continue, and `false` otherwise.
-    public func enumerateGroupThreads(
-        transaction: DBReadTransaction,
-        block: (TSGroupThread) throws -> Bool,
-    ) throws {
+    public func enumerateGroupThreads<E: Error>(
+        tx: DBReadTransaction,
+        block: (TSGroupThread) throws(E) -> Bool,
+    ) throws(E) {
         let sql = """
             SELECT *
             FROM \(TSThread.databaseTableName)
-            WHERE \(groupThreadColumn: .groupModel) IS NOT NULL
+            WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
         """
 
-        let cursor = try TSThread.fetchCursor(
-            transaction.database,
-            sql: sql,
-        )
-        while let threadRecord = try cursor.next() {
-            guard let groupThread = threadRecord as? TSGroupThread else {
-                owsFailDebug("Skipping thread that's not a group.")
-                continue
-            }
-            guard try block(groupThread) else {
-                break
-            }
+        var cursor = FailIfThrowsRecordCursor {
+            return try TSGroupThread.fetchCursor(
+                tx.database,
+                sql: sql,
+            )
         }
+
+        while let groupThread = cursor.next(), try block(groupThread) {}
     }
 
     /// Enumerates all non-story threads in arbitrary order.
     /// - Parameter block
     /// A block executed for each enumerated thread. Returns `true` if
     /// enumeration should continue, and `false` otherwise.
-    public func enumerateNonStoryThreads(
-        transaction: DBReadTransaction,
-        block: (TSThread) throws -> Bool,
-    ) throws {
+    public func enumerateNonStoryThreads<E: Error>(
+        tx: DBReadTransaction,
+        block: (TSThread) throws(E) -> Bool,
+    ) throws(E) {
         let sql = """
             SELECT *
             FROM \(TSThread.databaseTableName)
             WHERE \(threadColumn: .recordType) IS NOT ?
         """
 
-        let cursor = try TSThread.fetchCursor(
-            transaction.database,
-            sql: sql,
-            arguments: [SDSRecordType.privateStoryThread.rawValue],
-        )
-        while let thread = try cursor.next(), try block(thread) {}
+        var cursor = FailIfThrowsRecordCursor {
+            return try TSThread.fetchCursor(
+                tx.database,
+                sql: sql,
+                arguments: [SDSRecordType.privateStoryThread.rawValue],
+            )
+        }
+
+        while let thread = cursor.next(), try block(thread) {}
     }
 
     public func visibleThreadCount(

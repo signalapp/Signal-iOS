@@ -122,7 +122,12 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         /// key" for contacts. They directly contain many of the fields we store
         /// in a `Contact` recipient, with the other fields keyed off data in
         /// the recipient.
-        let recipientBlock: (SignalRecipient, BackupArchive.Bencher.FrameBencher) -> Void = { recipient, frameBencher in
+        try context.bencher.wrapEnumeration(
+            tx: context.tx,
+            enumerationBlock: { tx, block throws(CancellationError) in
+                try recipientStore.enumerateAllSignalRecipients(tx: tx, block: block)
+            },
+        ) { recipient, frameBencher -> Bool in
             guard
                 let contactAddress = BackupArchive.ContactAddress(
                     aci: recipient.aci,
@@ -132,7 +137,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             else {
                 /// Skip recipients with no identifiers, but don't add to the
                 /// list of errors.
-                return
+                return true
             }
 
             guard
@@ -143,7 +148,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                 )
             else {
                 // Skip the local user.
-                return
+                return true
             }
 
             /// Track the `ServiceId`s for this `SignalRecipient`, so we don't
@@ -177,7 +182,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     .fetchOne(context.tx.database)
             } catch let error {
                 errors.append(.archiveFrameError(.unableToFetchRecipientIdentity(error)))
-                return
+                return true
             }
 
             let username: String? = recipient.aci
@@ -265,21 +270,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             )
 
             writeToStream(contact: contact, contactAddress: contactAddress, contactDbRowId: recipient.id, frameBencher: frameBencher)
-        }
-
-        do {
-            try context.bencher.wrapEnumeration(
-                recipientStore.enumerateAllSignalRecipients(tx:block:),
-                tx: context.tx,
-            ) { recipient, frameBencher in
-                autoreleasepool {
-                    recipientBlock(recipient, frameBencher)
-                }
-            }
-        } catch let error as CancellationError {
-            throw error
-        } catch {
-            return .completeFailure(.fatalArchiveError(.recipientIteratorError(error)))
+            return true
         }
 
         /// After enumerating all `SignalRecipient`s, we enumerate
@@ -302,18 +293,19 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         /// like `OWSUserProfile`. If, in the future, we have an enforced 1:1
         /// relationship between `SignalRecipient` and `OWSUserProfile`, we can
         /// remove this code.
-        context.bencher.wrapEnumeration(
-            profileManager.enumerateUserProfiles(tx:block:),
+        try context.bencher.wrapEnumeration(
             tx: context.tx,
-        ) { userProfile, frameBencher in
-            autoreleasepool {
+            enumerationBlock: { tx, block throws(CancellationError) in
+                try profileManager.enumerateUserProfiles(tx: tx, block: block)
+            },
+            perEnumerantBlock: { userProfile, frameBencher -> Bool in
                 if let serviceId = userProfile.serviceId {
                     let (inserted, _) = archivedServiceIds.insert(serviceId)
 
                     if !inserted {
                         /// Bail early if we've already archived a `Contact` for this
                         /// service ID.
-                        return
+                        return true
                     }
                 }
                 if let phoneNumber = userProfile.phoneNumber {
@@ -322,7 +314,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     if !inserted {
                         /// Bail early if we've already archived a `Contact` for this
                         /// phone number.
-                        return
+                        return true
                     }
                 }
 
@@ -335,7 +327,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                 else {
                     /// Skip profiles with no identifiers, but don't add to the
                     /// list of errors.
-                    return
+                    return true
                 }
 
                 let signalServiceAddress: BackupArchive.InteropAddress
@@ -344,7 +336,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     /// Skip the local user. We need to check `internalAddress`
                     /// here, since the "local user profile" has historically been
                     /// persisted with a special, magic phone number.
-                    return
+                    return true
                 case .otherUser(let _signalServiceAddress):
                     signalServiceAddress = _signalServiceAddress
                 }
@@ -385,8 +377,10 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     contactDbRowId: nil,
                     frameBencher: frameBencher,
                 )
-            }
-        }
+
+                return true
+            },
+        )
 
         if errors.isEmpty {
             return .success

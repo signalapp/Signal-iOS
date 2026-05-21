@@ -1387,7 +1387,7 @@ extension AppSetup.GlobalsContinuation {
             recipientTable: recipientDatabaseTable,
             searchableNameIndexer: searchableNameIndexer,
         )
-        let backupStickerPackDownloadStore = BackupStickerPackDownloadStoreImpl()
+        let backupStickerPackDownloadStore = BackupStickerPackDownloadStore()
         let backupStoryStore = BackupArchiveStoryStore(
             storyStore: storyStore,
             storyRecipientStore: storyRecipientStore,

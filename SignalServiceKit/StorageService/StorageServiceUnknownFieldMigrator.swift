@@ -173,7 +173,7 @@ public class StorageServiceUnknownFieldMigrator {
                         recordMap[groupId] = $0.dontNotifyForMentionsIfMuted
                     }
                 }
-                try? ThreadFinder().enumerateGroupThreads(transaction: tx) { groupThread -> Bool in
+                ThreadFinder().enumerateGroupThreads(tx: tx) { groupThread -> Bool in
                     let remoteValue: TSThreadMentionNotificationMode =
                         (recordMap[groupThread.groupId] ?? false) ? .never : .always
                     if isPrimaryDevice {

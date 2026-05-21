@@ -67,61 +67,58 @@ public class BackupArchiveAdHocCallArchiver: BackupArchiveProtoStreamWriter {
         context: BackupArchive.ChatArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
-        do {
-            try context.bencher.wrapEnumeration(
-                callRecordStore.enumerateAdHocCallRecords(tx:block:),
-                tx: context.tx,
-            ) { record, frameBencher in
-                try Task.checkCancellation()
-                autoreleasepool {
-                    let callTimestamp = record.callBeganTimestamp
-                    guard BackupArchive.Timestamps.isValid(callTimestamp) else {
-                        partialErrors.append(.archiveFrameError(.invalidAdHocCallTimestamp))
-                        return
-                    }
 
-                    var adHocCallProto = BackupProto_AdHocCall()
-                    adHocCallProto.callID = record.callId
-                    adHocCallProto.callTimestamp = record.callBeganTimestamp
-
-                    // It's a cross-client decision that `state` can only
-                    // ever be `.generic` (even if the client state is
-                    // actually `.joined`).
-                    adHocCallProto.state = .generic
-
-                    guard
-                        let callLinkRecordId = BackupArchive.CallLinkRecordId(callRecordConversationId: record.conversationId)
-                    else {
-                        partialErrors.append(.archiveFrameError(.adHocCallDoesNotHaveCallLinkAsConversationId))
-                        return
-                    }
-                    guard let recipientId = context.recipientContext[.callLink(callLinkRecordId)] else {
-                        partialErrors.append(.archiveFrameError(
-                            .referencedRecipientIdMissing(.callLink(callLinkRecordId)),
-                        ))
-                        return
-                    }
-                    adHocCallProto.recipientID = recipientId.value
-
-                    let error: ArchiveFrameError? = Self.writeFrameToStream(
-                        stream,
-                        frameBencher: frameBencher,
-                    ) {
-                        var frame = BackupProto_Frame()
-                        frame.adHocCall = adHocCallProto
-                        return frame
-                    }
-
-                    if let error {
-                        partialErrors.append(error)
-                    }
+        try context.bencher.wrapEnumeration(
+            tx: context.tx,
+            enumerationBlock: { tx, block throws(CancellationError) in
+                try callRecordStore.enumerateAdHocCallRecords(tx: tx, block: block)
+            },
+            perEnumerantBlock: { record, frameBencher -> Bool in
+                let callTimestamp = record.callBeganTimestamp
+                guard BackupArchive.Timestamps.isValid(callTimestamp) else {
+                    partialErrors.append(.archiveFrameError(.invalidAdHocCallTimestamp))
+                    return true
                 }
-            }
-        } catch let error as CancellationError {
-            throw error
-        } catch {
-            return .completeFailure(.fatalArchiveError(.adHocCallIteratorError(error)))
-        }
+
+                var adHocCallProto = BackupProto_AdHocCall()
+                adHocCallProto.callID = record.callId
+                adHocCallProto.callTimestamp = record.callBeganTimestamp
+
+                // It's a cross-client decision that `state` can only
+                // ever be `.generic` (even if the client state is
+                // actually `.joined`).
+                adHocCallProto.state = .generic
+
+                guard
+                    let callLinkRecordId = BackupArchive.CallLinkRecordId(callRecordConversationId: record.conversationId)
+                else {
+                    partialErrors.append(.archiveFrameError(.adHocCallDoesNotHaveCallLinkAsConversationId))
+                    return true
+                }
+                guard let recipientId = context.recipientContext[.callLink(callLinkRecordId)] else {
+                    partialErrors.append(.archiveFrameError(
+                        .referencedRecipientIdMissing(.callLink(callLinkRecordId)),
+                    ))
+                    return true
+                }
+                adHocCallProto.recipientID = recipientId.value
+
+                let error: ArchiveFrameError? = Self.writeFrameToStream(
+                    stream,
+                    frameBencher: frameBencher,
+                ) {
+                    var frame = BackupProto_Frame()
+                    frame.adHocCall = adHocCallProto
+                    return frame
+                }
+
+                if let error {
+                    partialErrors.append(error)
+                }
+
+                return true
+            },
+        )
 
         if partialErrors.isEmpty {
             return .success

@@ -62,12 +62,12 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
 
         do {
             try context.bencher.wrapEnumeration(
-                threadStore.enumerateGroupThreads(tx:block:),
                 tx: context.tx,
-            ) { groupThread, frameBencher in
-                try Task.checkCancellation()
-                autoreleasepool {
-                    self.archiveGroupThread(
+                enumerationBlock: { tx, block throws(CancellationError) in
+                    try threadStore.enumerateGroupThreads(tx: tx, block: block)
+                },
+                perEnumerantBlock: { [self] groupThread, frameBencher -> Bool in
+                    archiveGroupThread(
                         groupThread,
                         blockedGroupIds: blockedGroupIds,
                         stream: stream,
@@ -75,15 +75,10 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                         context: context,
                         errors: &errors,
                     )
-                }
 
-                return true
-            }
-        } catch let error as CancellationError {
-            throw error
-        } catch {
-            // The enumeration of threads failed, not the processing of one single thread.
-            return .completeFailure(.fatalArchiveError(.threadIteratorError(error)))
+                    return true
+                },
+            )
         }
 
         if errors.isEmpty {

@@ -55,27 +55,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         SignalServiceAddress.legacyAddress(serviceId: reactorAci, phoneNumber: reactorPhoneNumber)
     }
 
-    /// Note that we initialize with a receivedAtTimestamp, but should make no assumptions
-    /// that the sortOrder is always a timestamp at read time. Backups use sortOrders that
-    /// may not be timestamps.
-    public convenience init(
-        uniqueMessageId: String,
-        emoji: String,
-        reactor: Aci,
-        sentAtTimestamp: UInt64,
-        receivedAtTimestamp: UInt64,
-    ) {
-        self.init(
-            uniqueMessageId: uniqueMessageId,
-            emoji: emoji,
-            reactorAci: reactor,
-            reactorPhoneNumber: nil,
-            sentAtTimestamp: sentAtTimestamp,
-            sortOrder: receivedAtTimestamp,
-        )
-    }
-
-    private init(
+    init(
         uniqueMessageId: String,
         emoji: String,
         reactorAci: Aci?,
@@ -91,40 +71,6 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         self.sentAtTimestamp = sentAtTimestamp
         self.sortOrder = sortOrder
         self.read = false
-    }
-
-    public static func fromRestoredBackup(
-        uniqueMessageId: String,
-        emoji: String,
-        reactorAci: Aci,
-        sentAtTimestamp: UInt64,
-        sortOrder: UInt64,
-    ) -> Self {
-        return Self(
-            uniqueMessageId: uniqueMessageId,
-            emoji: emoji,
-            reactorAci: reactorAci,
-            reactorPhoneNumber: nil,
-            sentAtTimestamp: sentAtTimestamp,
-            sortOrder: sortOrder,
-        )
-    }
-
-    public static func fromRestoredBackup(
-        uniqueMessageId: String,
-        emoji: String,
-        reactorE164: E164,
-        sentAtTimestamp: UInt64,
-        sortOrder: UInt64,
-    ) -> OWSReaction {
-        return .init(
-            uniqueMessageId: uniqueMessageId,
-            emoji: emoji,
-            reactorAci: nil,
-            reactorPhoneNumber: reactorE164.stringValue,
-            sentAtTimestamp: sentAtTimestamp,
-            sortOrder: sortOrder,
-        )
     }
 
     public func markAsRead(transaction: DBWriteTransaction) {

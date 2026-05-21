@@ -74,9 +74,9 @@ final class BackupArchiveSimpleChatUpdateArchiver {
             .typeEndPoll,
             .typePinnedMessage:
             // Non-simple chat update types
-            return .completeFailure(.fatalArchiveError(
-                .developerError(OWSAssertionError("Unexpected info message type: \(infoMessage.messageType)")),
-            ))
+            return .completeFailure(.fatalArchiveError(.developerError(
+                message: "Unexpected info message type: \(infoMessage.messageType)",
+            )))
         case .verificationStateChange:
             guard let verificationStateChangeMessage = infoMessage as? OWSVerificationStateChangeMessage else {
                 return messageFailure(.verificationStateChangeNotExpectedSDSRecordType)

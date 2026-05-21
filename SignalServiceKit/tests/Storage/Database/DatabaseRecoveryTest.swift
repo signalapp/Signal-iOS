@@ -152,9 +152,10 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             let reaction = OWSReaction(
                 uniqueMessageId: message.uniqueId,
                 emoji: "💽",
-                reactor: localAci,
+                reactorAci: localAci,
+                reactorPhoneNumber: nil,
                 sentAtTimestamp: 1234,
-                receivedAtTimestamp: 1234,
+                sortOrder: 1234,
             )
             reaction.anyInsert(transaction: transaction)
 

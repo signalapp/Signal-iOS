@@ -61,27 +61,23 @@ public class AddToGroupViewController: OWSTableViewController2 {
         return databaseStorage.read { transaction in
             var result = [TSGroupThread]()
 
-            do {
-                try ThreadFinder().enumerateGroupThreads(transaction: transaction) { thread -> Bool in
-                    if thread.isGroupV2Thread {
-                        let groupViewHelper = GroupViewHelper(
-                            threadViewModel: ThreadViewModel(
-                                thread: thread,
-                                forChatList: false,
-                                transaction: transaction,
-                            ),
-                            memberLabelCoordinator: nil,
-                        )
+            ThreadFinder().enumerateGroupThreads(tx: transaction) { groupThread -> Bool in
+                if groupThread.isGroupV2Thread {
+                    let groupViewHelper = GroupViewHelper(
+                        threadViewModel: ThreadViewModel(
+                            thread: groupThread,
+                            forChatList: false,
+                            transaction: transaction,
+                        ),
+                        memberLabelCoordinator: nil,
+                    )
 
-                        if groupViewHelper.canEditConversationMembership {
-                            result.append(thread)
-                        }
+                    if groupViewHelper.canEditConversationMembership {
+                        result.append(groupThread)
                     }
-
-                    return true
                 }
-            } catch {
-                owsFailDebug("Failed to fetch group threads: \(error). Returning an empty array")
+
+                return true
             }
 
             return result

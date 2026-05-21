@@ -10,15 +10,26 @@ extension BackupArchive {
     /// A `Bencher` specialized for measuring Backup archiving.
     class ArchiveBencher: Bencher {
 
-        /// Given a block that does an enumeration over db objects, wraps that enumeration to instead take
-        /// a closure with a FrameBencher that also measures the time spent enumerating.
-        func wrapEnumeration<EnumeratedInput, Output>(
-            _ enumerationFunc: (DBReadTransaction, (EnumeratedInput) throws -> Output) throws -> Void,
+        /// Wrap the given enumeration method to facilitate measurement of the
+        /// time spent.
+        ///
+        /// - Parameter enumerationBlock
+        /// A block that enumerates models and calls the block it is passed for
+        /// each model.
+        /// - Parameter perEnumerantBlock
+        /// A block called once per enumerated model. Returns `true` if
+        /// enumeration should continue; `false` otherwise.
+        func wrapEnumeration<Enumerant>(
             tx: DBReadTransaction,
-            enumerationBlock: @escaping (EnumeratedInput, FrameBencher) throws -> Output,
-        ) rethrows {
+            enumerationBlock: (DBReadTransaction, (Enumerant) throws(CancellationError) -> Bool) throws(CancellationError) -> Void,
+            perEnumerantBlock: @escaping (Enumerant, FrameBencher) -> Bool,
+        ) throws(CancellationError) {
             var enumerationStepStartDate = dateProvider()
-            try enumerationFunc(tx) { enumeratedInput throws in
+            try enumerationBlock(tx) { enumeratedInput throws(CancellationError) -> Bool in
+                if Task.isCancelled {
+                    throw CancellationError()
+                }
+
                 defer {
                     // A little cheating - the "end" of this step is the "start"
                     // of the next one.
@@ -31,32 +42,9 @@ extension BackupArchive {
                     enumerationStepStartDate: enumerationStepStartDate,
                 )
 
-                return try enumerationBlock(enumeratedInput, frameBencher)
-            }
-        }
-
-        /// Variant of the above where the block doesn't throw; unfortunately `rethrows`
-        /// can't cover two layers of throws variations.
-        func wrapEnumeration<EnumeratedInput, Output>(
-            _ enumerationFunc: (DBReadTransaction, (EnumeratedInput) -> Output) throws -> Void,
-            tx: DBReadTransaction,
-            enumerationBlock: @escaping (EnumeratedInput, FrameBencher) -> Output,
-        ) rethrows {
-            var enumerationStepStartDate = dateProvider()
-            try enumerationFunc(tx) { enumeratedInput in
-                defer {
-                    // A little cheating - the "end" of this step is the "start"
-                    // of the next one.
-                    enumerationStepStartDate = dateProvider()
+                return autoreleasepool {
+                    perEnumerantBlock(enumeratedInput, frameBencher)
                 }
-
-                let frameBencher = FrameBencher(
-                    bencher: self,
-                    dateProvider: dateProvider,
-                    enumerationStepStartDate: enumerationStepStartDate,
-                )
-
-                return enumerationBlock(enumeratedInput, frameBencher)
             }
         }
     }

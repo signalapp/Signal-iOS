@@ -104,6 +104,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
         threadInfo: BackupArchive.ChatArchivingContext.CachedThreadInfo,
         context: BackupArchive.ChatArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<Details> {
+        let incomingMessageRowId = incomingMessage.sqliteRowId!
         var partialErrors = [ArchiveFrameError]()
 
         guard
@@ -183,14 +184,8 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             expireStartDate = nil
         }
 
-        guard let interactionRowId = incomingMessage.sqliteRowId else {
-            return .completeFailure(.fatalArchiveError(
-                .fetchedInteractionMissingRowId,
-            ))
-        }
-
         let pinMessageDetails = pinnedMessageManager.pinMessageDetails(
-            interactionId: interactionRowId,
+            interactionId: incomingMessageRowId,
             tx: context.tx,
         )
 

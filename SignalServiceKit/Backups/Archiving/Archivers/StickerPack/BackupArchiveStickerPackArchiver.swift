@@ -47,15 +47,25 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
         context: BackupArchive.ArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
-
         var handledPacks = Set<Data>()
 
-        func archiveInstalledStickerPack(
-            _ installedStickerPack: StickerPackRecord,
-            _ frameBencher: BackupArchive.Bencher.FrameBencher,
-        ) {
-            autoreleasepool {
-                guard !handledPacks.contains(installedStickerPack.packId) else { return }
+        // Iterate over installed sticker packs...
+        try context.bencher.wrapEnumeration(
+            tx: context.tx,
+            enumerationBlock: { tx, block throws(CancellationError) in
+                var cursor = FailIfThrowsRecordCursor {
+                    try StickerPackRecord
+                        .filter(Column(StickerPackRecord.CodingKeys.isInstalled) == true)
+                        .fetchCursor(tx.database)
+                }
+
+                while let stickerPack = cursor.next(), try block(stickerPack) {}
+            },
+            perEnumerantBlock: { installedStickerPack, frameBencher -> Bool in
+                if handledPacks.contains(installedStickerPack.packId) {
+                    return true
+                }
+
                 let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
                     stream,
                     frameBencher: frameBencher,
@@ -75,67 +85,45 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
                 } else {
                     handledPacks.insert(installedStickerPack.packId)
                 }
-            }
-        }
 
-        func enumerateStickerPackRecord(tx: DBReadTransaction, block: (StickerPackRecord) throws -> Void) throws {
-            let cursor = try StickerPackRecord
-                .filter(Column(StickerPackRecord.CodingKeys.isInstalled) == true)
-                .fetchCursor(tx.database)
-            while let stickerPack = try cursor.next() {
-                try block(stickerPack)
-            }
-        }
-
-        // Iterate over the installed sticker packs
-        do {
-            try context.bencher.wrapEnumeration(
-                enumerateStickerPackRecord(tx:block:),
-                tx: context.tx,
-            ) { stickerPack, frameBencher in
-                try Task.checkCancellation()
-                archiveInstalledStickerPack(stickerPack, frameBencher)
-            }
-        } catch let error as CancellationError {
-            throw error
-        } catch {
-            return .completeFailure(.fatalArchiveError(.stickerPackIteratorError(error)))
-        }
+                return true
+            },
+        )
 
         // Iterate over any restored sticker packs that have yet to be downloaded via StickerManager.
-        do {
-            try context.bencher.wrapEnumeration(
-                backupStickerPackDownloadStore.iterateAllEnqueued(tx:block:),
-                tx: context.tx,
-            ) { record, frameBencher in
-                try Task.checkCancellation()
-                autoreleasepool {
-                    guard !handledPacks.contains(record.packId) else { return }
-                    let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
-                        stream,
-                        frameBencher: frameBencher,
-                    ) {
-                        var stickerPack = BackupProto_StickerPack()
-                        stickerPack.packID = record.packId
-                        stickerPack.packKey = record.packKey
-
-                        var frame = BackupProto_Frame()
-                        frame.item = .stickerPack(stickerPack)
-
-                        return frame
-                    }
-                    if let maybeError {
-                        errors.append(maybeError)
-                    } else {
-                        handledPacks.insert(record.packId)
-                    }
+        try context.bencher.wrapEnumeration(
+            tx: context.tx,
+            enumerationBlock: { tx, block throws(CancellationError) in
+                try backupStickerPackDownloadStore.iterateAllEnqueued(tx: tx, block: block)
+            },
+            perEnumerantBlock: { record, frameBencher -> Bool in
+                if handledPacks.contains(record.packId) {
+                    return true
                 }
-            }
-        } catch let error as CancellationError {
-            throw error
-        } catch {
-            return .completeFailure(.fatalArchiveError(.stickerPackIteratorError(error)))
-        }
+
+                let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
+                    stream,
+                    frameBencher: frameBencher,
+                ) {
+                    var stickerPack = BackupProto_StickerPack()
+                    stickerPack.packID = record.packId
+                    stickerPack.packKey = record.packKey
+
+                    var frame = BackupProto_Frame()
+                    frame.item = .stickerPack(stickerPack)
+
+                    return frame
+                }
+
+                if let maybeError {
+                    errors.append(maybeError)
+                } else {
+                    handledPacks.insert(record.packId)
+                }
+
+                return true
+            },
+        )
 
         if errors.count > 0 {
             return .partialSuccess(errors)
@@ -155,15 +143,11 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
         _ stickerPack: BackupProto_StickerPack,
         context: BackupArchive.RestoringContext,
     ) -> RestoreFrameResult {
-        do {
-            try backupStickerPackDownloadStore.enqueue(
-                packId: stickerPack.packID,
-                packKey: stickerPack.packKey,
-                tx: context.tx,
-            )
-        } catch {
-            return .failure([.restoreFrameError(.databaseInsertionFailed(error))])
-        }
+        backupStickerPackDownloadStore.enqueue(
+            packId: stickerPack.packID,
+            packKey: stickerPack.packKey,
+            tx: context.tx,
+        )
         return .success
     }
 }

@@ -6,30 +6,30 @@
 public import LibSignalClient
 
 public protocol ThreadStore {
-    /// Covers contact and group threads.
+    /// Enumerate all threads other than `TSPrivateStoryThread`.
     /// - Parameter block
     /// A block executed for each enumerated thread. Returns `true` if
     /// enumeration should continue, and `false` otherwise.
-    func enumerateNonStoryThreads(
+    func enumerateNonStoryThreads<E: Error>(
         tx: DBReadTransaction,
-        block: (TSThread) throws -> Bool,
-    ) throws
+        block: (TSThread) throws(E) -> Bool,
+    ) throws(E)
     /// Enumerates story distribution lists
     /// - Parameter block
     /// A block executed for each enumerated thread. Returns `true` if
     /// enumeration should continue, and `false` otherwise.
-    func enumerateStoryThreads(
+    func enumerateStoryThreads<E: Error>(
         tx: DBReadTransaction,
-        block: (TSPrivateStoryThread) throws -> Bool,
-    ) throws
+        block: (TSPrivateStoryThread) throws(E) -> Bool,
+    ) throws(E)
     /// Enumerates group threads in "last interaction" order.
     /// - Parameter block
     /// A block executed for each enumerated thread. Returns `true` if
     /// enumeration should continue, and `false` otherwise.
-    func enumerateGroupThreads(
+    func enumerateGroupThreads<E: Error>(
         tx: DBReadTransaction,
-        block: (TSGroupThread) throws -> Bool,
-    ) throws
+        block: (TSGroupThread) throws(E) -> Bool,
+    ) throws(E)
     func fetchThread(rowId: Int64, tx: DBReadTransaction) -> TSThread?
     func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread?
     func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread]
@@ -153,16 +153,16 @@ public class ThreadStoreImpl: ThreadStore {
 
     public init() {}
 
-    public func enumerateNonStoryThreads(tx: DBReadTransaction, block: (TSThread) throws -> Bool) throws {
-        return try ThreadFinder().enumerateNonStoryThreads(transaction: tx, block: block)
+    public func enumerateNonStoryThreads<E: Error>(tx: DBReadTransaction, block: (TSThread) throws(E) -> Bool) throws(E) {
+        return try ThreadFinder().enumerateNonStoryThreads(tx: tx, block: block)
     }
 
-    public func enumerateStoryThreads(tx: DBReadTransaction, block: (TSPrivateStoryThread) throws -> Bool) throws {
-        return try ThreadFinder().enumerateStoryThreads(transaction: tx, block: block)
+    public func enumerateStoryThreads<E: Error>(tx: DBReadTransaction, block: (TSPrivateStoryThread) throws(E) -> Bool) throws(E) {
+        return try ThreadFinder().enumerateStoryThreads(tx: tx, block: block)
     }
 
-    public func enumerateGroupThreads(tx: DBReadTransaction, block: (TSGroupThread) throws -> Bool) throws {
-        return try ThreadFinder().enumerateGroupThreads(transaction: tx, block: block)
+    public func enumerateGroupThreads<E: Error>(tx: DBReadTransaction, block: (TSGroupThread) throws(E) -> Bool) throws(E) {
+        return try ThreadFinder().enumerateGroupThreads(tx: tx, block: block)
     }
 
     public func fetchThread(rowId: Int64, tx: DBReadTransaction) -> TSThread? {
@@ -289,7 +289,7 @@ public class MockThreadStore: ThreadStore {
     private(set) var threads = [TSThread]()
     public var nextRowId: Int64 = 1
 
-    public func enumerateNonStoryThreads(tx: DBReadTransaction, block: (TSThread) throws -> Bool) throws {
+    public func enumerateNonStoryThreads<E: Error>(tx: DBReadTransaction, block: (TSThread) throws(E) -> Bool) throws(E) {
         for thread in threads {
             guard !(thread is TSPrivateStoryThread) else {
                 continue
@@ -300,7 +300,7 @@ public class MockThreadStore: ThreadStore {
         }
     }
 
-    public func enumerateStoryThreads(tx: DBReadTransaction, block: (TSPrivateStoryThread) throws -> Bool) throws {
+    public func enumerateStoryThreads<E: Error>(tx: DBReadTransaction, block: (TSPrivateStoryThread) throws(E) -> Bool) throws(E) {
         for thread in threads {
             guard let storyThread = thread as? TSPrivateStoryThread else {
                 continue
@@ -311,7 +311,7 @@ public class MockThreadStore: ThreadStore {
         }
     }
 
-    public func enumerateGroupThreads(tx: DBReadTransaction, block: (TSGroupThread) throws -> Bool) throws {
+    public func enumerateGroupThreads<E: Error>(tx: DBReadTransaction, block: (TSGroupThread) throws(E) -> Bool) throws(E) {
         for thread in threads {
             guard let groupThread = thread as? TSGroupThread else {
                 continue

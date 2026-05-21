@@ -21,12 +21,7 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
         _ message: TSMessage,
         context: BackupArchive.RecipientArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<[BackupProto_Reaction]> {
-        let reactions: [OWSReaction]
-        do {
-            reactions = try reactionStore.allReactions(message: message, context: context)
-        } catch {
-            return .completeFailure(.fatalArchiveError(.reactionIteratorError(error)))
-        }
+        let reactions = reactionStore.allReactions(message: message, context: context)
 
         var errors = [ArchiveFrameError]()
         var reactionProtos = [BackupProto_Reaction]()
@@ -81,64 +76,45 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
         for reaction in reactions {
             let reactorAddress = context[reaction.authorRecipientId]
 
-            let insertResult: Result<Void, Error>
             switch reactorAddress {
             case .localAddress:
-                insertResult = Result {
-                    try reactionStore.createReaction(
+                reactionStore.createReaction(
+                    uniqueMessageId: message.uniqueId,
+                    emoji: reaction.emoji,
+                    reactorAci: context.localIdentifiers.aci,
+                    sentAtTimestamp: reaction.sentTimestamp,
+                    sortOrder: reaction.sortOrder,
+                    context: context,
+                )
+            case .contact(let address):
+                if let aci = address.aci {
+                    reactionStore.createReaction(
                         uniqueMessageId: message.uniqueId,
                         emoji: reaction.emoji,
-                        reactorAci: context.localIdentifiers.aci,
+                        reactorAci: aci,
                         sentAtTimestamp: reaction.sentTimestamp,
                         sortOrder: reaction.sortOrder,
                         context: context,
                     )
-                }
-            case .contact(let address):
-                if let aci = address.aci {
-                    insertResult = Result {
-                        try reactionStore.createReaction(
-                            uniqueMessageId: message.uniqueId,
-                            emoji: reaction.emoji,
-                            reactorAci: aci,
-                            sentAtTimestamp: reaction.sentTimestamp,
-                            sortOrder: reaction.sortOrder,
-                            context: context,
-                        )
-                    }
                 } else if let e164 = address.e164 {
-                    insertResult = Result {
-                        try reactionStore.createLegacyReaction(
-                            uniqueMessageId: message.uniqueId,
-                            emoji: reaction.emoji,
-                            reactorE164: e164,
-                            sentAtTimestamp: reaction.sentTimestamp,
-                            sortOrder: reaction.sortOrder,
-                            context: context,
-                        )
-                    }
+                    reactionStore.createLegacyReaction(
+                        uniqueMessageId: message.uniqueId,
+                        emoji: reaction.emoji,
+                        reactorE164: e164,
+                        sentAtTimestamp: reaction.sentTimestamp,
+                        sortOrder: reaction.sortOrder,
+                        context: context,
+                    )
                 } else {
                     reactionErrors.append(.restoreFrameError(.invalidProtoData(.reactionNotFromAciOrE164)))
-                    continue
                 }
             case .group, .distributionList, .releaseNotesChannel, .callLink:
                 // Referencing a group or distributionList as the author is invalid.
                 reactionErrors.append(.restoreFrameError(.invalidProtoData(.reactionNotFromAciOrE164)))
-                continue
             case nil:
                 reactionErrors.append(.restoreFrameError(
                     .invalidProtoData(.recipientIdNotFound(reaction.authorRecipientId)),
                 ))
-                continue
-            }
-
-            switch insertResult {
-            case .success:
-                break
-            case .failure(let insertError):
-                reactionErrors.append(
-                    .restoreFrameError(.databaseInsertionFailed(insertError)),
-                )
             }
         }
 

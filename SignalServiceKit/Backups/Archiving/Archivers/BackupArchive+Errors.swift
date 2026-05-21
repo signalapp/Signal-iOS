@@ -504,40 +504,10 @@ extension BackupArchive {
     /// single frame.
     public struct FatalArchivingError: BackupArchive.LoggableError {
         public enum ErrorType {
-            /// Error iterating over all SignalRecipients for backup purposes.
-            case recipientIteratorError(RawError)
-
-            /// Error iterating over all threads for backup purposes.
-            case threadIteratorError(RawError)
-            /// We fetched a thread (via the iterator) with no sqlite row id.
-            case fetchedThreadMissingRowId
-
-            /// Some unrecognized thread was found when iterating over all threads.
-            case unrecognizedThreadType
-
-            /// Error iterating over all interactions for backup purposes.
-            case interactionIteratorError(RawError)
-            /// We fetched an interaction (via the iterator) with no sqlite row id.
-            case fetchedInteractionMissingRowId
-
-            /// Error fetching reactions for a message.
-            case reactionIteratorError(RawError)
-
-            /// Error iterating over all sticker packs for backup purposes.
-            case stickerPackIteratorError(RawError)
-
-            /// Error iterating over all call link records for backup purposes.
-            case callLinkRecordIteratorError(RawError)
-
-            /// Error iterating over all ad hoc calls for backup purposes.
-            case adHocCallIteratorError(RawError)
-
-            case oversizedTextCacheFetchError(RawError)
-
-            /// These should never happen; it means some invariant in the backup code
-            /// we could not enforce with the type system was broken. Nothing was wrong with
-            /// the proto or local database; its the iOS backup code that has a bug somewhere.
-            case developerError(OWSAssertionError)
+            /// An code-level invariant of some sort was violated in the Backups
+            /// archiving code; for example, some codepath found an object type
+            /// that should be handled elsewhere.
+            case developerError(message: String)
         }
 
         private let type: ErrorType

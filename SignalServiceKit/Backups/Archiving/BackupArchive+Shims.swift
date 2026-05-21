@@ -255,7 +255,10 @@ public class _MessageBackup_PreferencesWrapper: _MessageBackup_PreferencesShim {
 
 public protocol _MessageBackup_ProfileManagerShim {
 
-    func enumerateUserProfiles(tx: DBReadTransaction, block: (OWSUserProfile) -> Void)
+    func enumerateUserProfiles(
+        tx: DBReadTransaction,
+        block: (OWSUserProfile) throws(CancellationError) -> Bool,
+    ) throws(CancellationError) -> Void
 
     func getUserProfile(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSUserProfile?
 
@@ -295,10 +298,15 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         self.profileManager = profileManager
     }
 
-    public func enumerateUserProfiles(tx: DBReadTransaction, block: (OWSUserProfile) -> Void) {
-        OWSUserProfile.anyEnumerate(transaction: tx) { profile, _ in
-            block(profile)
+    public func enumerateUserProfiles(
+        tx: DBReadTransaction,
+        block: (OWSUserProfile) throws(CancellationError) -> Bool,
+    ) throws(CancellationError) {
+        var cursor = FailIfThrowsRecordCursor {
+            try OWSUserProfile.fetchCursor(tx.database)
         }
+
+        while let profile = cursor.next(), try block(profile) {}
     }
 
     public func getUserProfile(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSUserProfile? {
