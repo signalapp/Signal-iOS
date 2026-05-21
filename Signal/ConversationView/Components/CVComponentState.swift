@@ -1361,7 +1361,23 @@ private extension CVComponentState.Builder {
                     case .failed:
                         mediaAlbumHasFailedAttachment = true
                     case .none:
-                        mediaAlbumHasSkippedAttachment = true
+                        // If optimize local storage is enabled, and the user has auto-downloads
+                        // disabled, show the 'skipped attachment' download indicator. Otherwise
+                        // render the attachment as normal, using the backup thumbnail for display.
+                        let backupPlan = DependenciesBridge.shared.backupPlanManager.backupPlan(tx: transaction)
+                        switch backupPlan {
+                        case
+                            .paid(let optimizeLocalStorage),
+                            .paidAsTester(let optimizeLocalStorage),
+                            .paidExpiringSoon(let optimizeLocalStorage):
+                            mediaAlbumHasSkippedAttachment = optimizeLocalStorage
+                                && !canAutoDownloadAttachment(referencedAttachment: attachment)
+                        case
+                            .free,
+                            .disabled,
+                            .disabling:
+                            mediaAlbumHasSkippedAttachment = true
+                        }
                     }
                 }
 
@@ -1395,6 +1411,28 @@ private extension CVComponentState.Builder {
             owsFailDebug("Unknown message cell type.")
         }
         return result
+    }
+
+    private func canAutoDownloadAttachment(referencedAttachment: ReferencedAttachment) -> Bool {
+        let mediaBandwidthPreferenceStore = DependenciesBridge.shared.mediaBandwidthPreferenceStore
+        let autoDownloadableMediaTypes = mediaBandwidthPreferenceStore.autoDownloadableMediaTypes(tx: transaction)
+        let mimeType = referencedAttachment.attachment.mimeType
+        if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
+            return autoDownloadableMediaTypes.contains(.photo)
+        }
+        if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
+            return autoDownloadableMediaTypes.contains(.video)
+        }
+        if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
+            if
+                autoDownloadableMediaTypes.contains(.audio),
+                referencedAttachment.reference.renderingFlag != .voiceMessage
+            {
+                return true
+            }
+            return false
+        }
+        return autoDownloadableMediaTypes.contains(.document)
     }
 
     mutating func buildThreadDetails() -> ThreadDetails {
