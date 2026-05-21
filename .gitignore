@@ -36,6 +36,9 @@ Index/
 *.sdsjson
 Scripts/sds_codegen/sds-includes/*
 
+# Logs
+debuglogs/
+
 /.idea
 /.vscode
 
