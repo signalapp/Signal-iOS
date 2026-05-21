@@ -74,9 +74,9 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
     public func backupThumbnailData(image: UIImage) throws -> Data {
         let maxFileSize: UInt32 = remoteConfigProvider.currentConfig().backupMaxThumbnailFileSize
 
-        // libwebp uses `maxFileSize` as a best effort guide, so start with 80% this value to
+        // libwebp uses `maxFileSize` as a best effort guide, so start with 95% this value to
         // allow for some overruns in size during encoding
-        let initialMaxFileSize = UInt32(CGFloat(maxFileSize) * 0.8)
+        let initialMaxFileSize = UInt32(CGFloat(maxFileSize) * 0.95)
 
         return try backupThumbnailData(
             image: image,
@@ -107,6 +107,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
                 with: image,
                 format: .webP,
                 options: [
+                    .encodeWebPMethod: 3,
                     .encodeMaxFileSize: targetMaxFileSize,
                     .encodeMaxPixelSize: targetSize,
                 ],
