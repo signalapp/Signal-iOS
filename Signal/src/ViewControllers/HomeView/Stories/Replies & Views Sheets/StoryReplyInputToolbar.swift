@@ -303,6 +303,7 @@ class StoryReplyInputToolbar: UIView, BodyRangesTextViewDelegate {
                 directionalLayoutMargins.trailing -= SendButtonWrapper.legacySendButtonInnerHMargin
             }
 
+            sendButton.isPointerInteractionEnabled = true
             sendButton.setContentHuggingHorizontalHigh()
             sendButton.setCompressionResistanceHorizontalHigh()
             addSubview(sendButton)

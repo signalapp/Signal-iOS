@@ -194,6 +194,7 @@ class StoryContextOnboardingOverlayView: UIView {
                 self.delegate?.storyContextOnboardingOverlayWantsToExitStoryViewer(self)
             },
         )
+        closeButton.isPointerInteractionEnabled = true
         closeButton.translatesAutoresizingMaskIntoConstraints = false
 
         blurView.contentView.addSubview(closeButton)

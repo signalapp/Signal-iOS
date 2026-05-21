@@ -249,6 +249,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             button.configuration?.baseForegroundColor = Style.buttonTintColor
             button.accessibilityLabel = accessibilityLabel
             button.accessibilityIdentifier = accessibilityIdentifier
+            button.isPointerInteractionEnabled = true
             button.translatesAutoresizingMaskIntoConstraints = false
             button.addConstraints([
                 button.widthAnchor.constraint(equalToConstant: LayoutMetrics.initialTextBoxHeight),
@@ -345,6 +346,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             button.configuration?.cornerStyle = .capsule
             button.accessibilityLabel = MessageStrings.sendButton
             button.accessibilityIdentifier = accessibilityIdentifier
+            button.isPointerInteractionEnabled = true
             button.translatesAutoresizingMaskIntoConstraints = false
             button.addConstraints([
                 button.widthAnchor.constraint(equalToConstant: buttonSize),
@@ -378,6 +380,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 comment: "Accessibility hint describing what you can do with the attachment button",
             )
             button.accessibilityIdentifier = accessibilityIdentifier
+            button.isPointerInteractionEnabled = true
             button.translatesAutoresizingMaskIntoConstraints = false
             button.addConstraints([
                 button.widthAnchor.constraint(equalToConstant: buttonSize),
@@ -403,6 +406,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             button.configuration?.baseForegroundColor = .white
             button.configuration?.cornerStyle = .capsule
             button.accessibilityIdentifier = accessibilityIdentifier
+            button.isPointerInteractionEnabled = true
             button.translatesAutoresizingMaskIntoConstraints = false
             button.addConstraints([
                 button.widthAnchor.constraint(equalToConstant: buttonSize),
@@ -1216,6 +1220,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             let button = UIButton(type: .system)
             button.accessibilityLabel = MessageStrings.sendButton
             button.ows_adjustsImageWhenDisabled = true
+            button.isPointerInteractionEnabled = true
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "sendButton")
             button.setImage(UIImage(imageLiteralResourceName: "send-blue-28"), for: .normal)
             button.bounds.size = CGSize(width: 48, height: LayoutMetrics.initialToolbarHeight)
@@ -1225,6 +1230,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         lazy var cameraButton: UIButton = {
             let button = UIButton(type: .system)
             button.tintColor = Style.buttonTintColor
+            button.isPointerInteractionEnabled = true
             button.accessibilityLabel = OWSLocalizedString(
                 "CAMERA_BUTTON_LABEL",
                 comment: "Accessibility label for camera button.",
@@ -1242,6 +1248,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         lazy var voiceMemoButton: UIButton = {
             let button = UIButton(type: .system)
             button.tintColor = Style.buttonTintColor
+            button.isPointerInteractionEnabled = true
             button.accessibilityLabel = OWSLocalizedString(
                 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL",
                 comment: "accessibility label for the button which records voice memos",
@@ -1366,6 +1373,8 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         override private init(frame: CGRect) {
             super.init(frame: frame)
+
+            isPointerInteractionEnabled = true
 
             addSubview(roundedCornersBackground)
             roundedCornersBackground.autoCenterInSuperview()

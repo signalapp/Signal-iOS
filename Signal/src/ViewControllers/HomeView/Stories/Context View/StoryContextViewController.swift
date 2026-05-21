@@ -297,6 +297,7 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
         spinner.autoCenterInSuperview()
         spinner.startAnimating()
 
+        closeButton.isPointerInteractionEnabled = true
         view.addSubview(closeButton)
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         if #available(iOS 26, *) {
@@ -462,6 +463,7 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
                     )
                 }
                 contextButton.setActions(actions: actions)
+                contextButton.isPointerInteractionEnabled = true
                 return contextButton
             }()
 
