@@ -367,6 +367,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
                 tintColor: .white,
             )
             button.addTarget(self, action: #selector(didTapShare), for: .touchUpInside)
+            button.accessibilityLabel = CommonStrings.shareButton
             return button
         }()
 
