@@ -10,7 +10,6 @@ import UIKit
 
 public class ProfileDetailLabel: UIStackView {
     private let tapAction: (() -> Void)?
-    private let longPressAction: (() -> Void)?
 
     public convenience init(
         title: String,
@@ -19,7 +18,6 @@ public class ProfileDetailLabel: UIStackView {
         showDetailDisclosure: Bool = false,
         shouldLineWrap: Bool = true,
         tapAction: (() -> Void)? = nil,
-        longPressAction: (() -> Void)? = nil,
     ) {
         self.init(
             attributedTitle: NSMutableAttributedString(
@@ -34,7 +32,6 @@ public class ProfileDetailLabel: UIStackView {
             showDetailDisclosure: showDetailDisclosure,
             shouldLineWrap: shouldLineWrap,
             tapAction: tapAction,
-            longPressAction: longPressAction,
         )
     }
 
@@ -45,10 +42,8 @@ public class ProfileDetailLabel: UIStackView {
         showDetailDisclosure: Bool = false,
         shouldLineWrap: Bool = true,
         tapAction: (() -> Void)? = nil,
-        longPressAction: (() -> Void)? = nil,
     ) {
         self.tapAction = tapAction
-        self.longPressAction = longPressAction
 
         super.init(frame: .zero)
         self.axis = .horizontal
@@ -110,9 +105,6 @@ public class ProfileDetailLabel: UIStackView {
         if tapAction != nil {
             addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
         }
-        if longPressAction != nil {
-            addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(didLongPress(sender:))))
-        }
     }
 
     required init(coder: NSCoder) {
@@ -122,12 +114,6 @@ public class ProfileDetailLabel: UIStackView {
     @objc
     private func didTap() {
         tapAction?()
-    }
-
-    @objc
-    private func didLongPress(sender: UIGestureRecognizer) {
-        guard sender.state == .began else { return }
-        longPressAction?()
     }
 }
 
@@ -334,7 +320,6 @@ public extension ProfileDetailLabel {
             icon: .contactInfoPhone,
             font: font,
             tapAction: copyPhoneNumber,
-            longPressAction: copyPhoneNumber,
         )
     }
 
