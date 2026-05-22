@@ -1,1 +1,1 @@
-8.12.0.{build_number}
+8.12.1.{build_number}
