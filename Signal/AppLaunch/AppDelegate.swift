@@ -148,9 +148,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         debugLogger.enableFileLogging(appContext: mainAppContext, canLaunchInBackground: true)
         DebugLogger.configureSwiftLogging()
-        if DebugFlags.audibleErrorLogging {
-            debugLogger.enableErrorReporting()
-        }
 
         Logger.warn("Launching…")
         defer { Logger.info("Launched.") }

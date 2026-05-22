@@ -25,8 +25,6 @@ private let build = FeatureBuild.current
 /// it's easier to review which feature flags are in play.
 public enum BuildFlags {
 
-    public static let choochoo = build <= .internal
-
     public static let failDebug = build <= .internal
 
     public static let linkedPhones = build <= .internal
@@ -150,8 +148,6 @@ public enum DebugFlags {
     public static let betaLogging = build <= .beta
 
     public static let testPopulationErrorAlerts = build <= .beta
-
-    public static let audibleErrorLogging = build <= .internal
 
     public static let internalSettings = build <= .internal
 

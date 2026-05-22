@@ -49,7 +49,6 @@ public class Preferences {
 
     private enum UserDefaultsKeys {
         static let deviceScale = "OWSPreferencesKeyDeviceScale"
-        static let isAudibleErrorLoggingEnabled = "IsAudibleErrorLoggingEnabled"
         static let isFailDebugEnabled = "IsFailDebugEnabled"
     }
 
@@ -145,14 +144,6 @@ public class Preferences {
 
     public static func setIsFailDebugEnabled(_ value: Bool) {
         CurrentAppContext().appUserDefaults().set(value, forKey: UserDefaultsKeys.isFailDebugEnabled)
-    }
-
-    public static var isAudibleErrorLoggingEnabled: Bool {
-        CurrentAppContext().appUserDefaults().bool(forKey: UserDefaultsKeys.isAudibleErrorLoggingEnabled) && BuildFlags.choochoo
-    }
-
-    public static func setIsAudibleErrorLoggingEnabled(_ value: Bool) {
-        CurrentAppContext().appUserDefaults().set(value, forKey: UserDefaultsKeys.isAudibleErrorLoggingEnabled)
     }
 
     // MARK: Specific Preferences

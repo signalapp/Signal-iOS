@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import AudioToolbox
 import CocoaLumberjack
 import LibSignalClient
 import SignalRingRTC
@@ -59,19 +58,6 @@ private final class DebugLogFileManager: DDLogFileManagerDefault {
     }
 }
 
-public final class ErrorLogger: DDFileLogger {
-    public static func playAlertSound() {
-        AudioServicesPlayAlertSound(SystemSoundID(1023))
-    }
-
-    override public func log(message logMessage: DDLogMessage) {
-        super.log(message: logMessage)
-        if Preferences.isAudibleErrorLoggingEnabled {
-            Self.playAlertSound()
-        }
-    }
-}
-
 public final class DebugLogger {
 
     private init() {}
@@ -105,8 +91,6 @@ public final class DebugLogger {
         DebugLogger.nseDebugLogsDirPath,
     ]
 
-    public static let errorLogsDir = URL(fileURLWithPath: OWSFileSystem.cachesDirectoryPath().appendingPathComponent("ErrorLogs"))
-
     public var fileLogger: DDFileLogger?
     public var allLogFilePaths: Set<String> {
         let fileManager = FileManager.default
@@ -127,12 +111,6 @@ public final class DebugLogger {
             logPathSet.formUnion(fileLogger.logFileManager.unsortedLogFilePaths)
         }
         return logPathSet
-    }
-
-    public func enableErrorReporting() {
-        let errorLogger = ErrorLogger(logFileManager: DDLogFileManagerDefault(logsDirectory: Self.errorLogsDir.path))
-        errorLogger.logFormatter = ScrubbingLogFormatter()
-        DDLog.add(errorLogger, with: .error)
     }
 
     // MARK: Enable/Disable
