@@ -152,7 +152,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 await exportMessageBackupProto()
             }
         })
-        if BuildFlags.Backups.showOptimizeMedia {
+        if SSKEnvironment.shared.remoteConfigManagerRef.currentConfig().isOptimizeStorageEnabled {
             backupsSection.add(.switch(
                 withText: "Offload all attachments",
                 subtitle: "If on and \"Optimize Storage\" enabled, offload all attachments instead of only those >30d old",

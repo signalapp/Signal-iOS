@@ -1103,6 +1103,7 @@ extension AppSetup.GlobalsContinuation {
                 listMediaManager: backupListMediaManager,
                 orphanedAttachmentCleaner: orphanedAttachmentCleaner,
                 orphanedAttachmentStore: orphanedAttachmentStore,
+                remoteConfig: remoteConfigProvider,
                 tsAccountManager: tsAccountManager,
             ),
             orphanRunner: OrphanedBackupAttachmentQueueRunnerImpl(

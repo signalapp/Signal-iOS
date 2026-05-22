@@ -68,6 +68,7 @@ class BackupSettingsViewController:
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
             deviceSleepManager: deviceSleepManager,
+            remoteConfig: SSKEnvironment.shared.remoteConfigManagerRef,
             subscriptionConfigManager: DependenciesBridge.shared.subscriptionConfigManager,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
@@ -91,6 +92,7 @@ class BackupSettingsViewController:
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
         deviceSleepManager: DeviceSleepManager,
+        remoteConfig: RemoteConfigProvider,
         subscriptionConfigManager: SubscriptionConfigManager,
         tsAccountManager: TSAccountManager,
     ) {
@@ -145,6 +147,7 @@ class BackupSettingsViewController:
                 ),
                 hasBackupFailed: backupFailureStateManager.hasFailedBackup(tx: tx),
                 isBackgroundAppRefreshDisabled: Self.isBackgroundAppRefreshDisabled(),
+                isOptimizeStorageEnabled: remoteConfig.currentConfig().isOptimizeStorageEnabled,
             )
 
             return viewModel
@@ -1539,6 +1542,8 @@ private class BackupSettingsViewModel: ObservableObject {
     /// from running.)
     @Published var isBackgroundAppRefreshDisabled: Bool
 
+    @Published var isOptimizeStorageEnabled: Bool
+
     weak var actionsDelegate: ActionsDelegate?
 
     init(
@@ -1555,6 +1560,7 @@ private class BackupSettingsViewModel: ObservableObject {
         mediaTierCapacityOverflow: UInt64?,
         hasBackupFailed: Bool,
         isBackgroundAppRefreshDisabled: Bool,
+        isOptimizeStorageEnabled: Bool,
     ) {
         self.backupSubscriptionConfiguration = backupSubscriptionConfiguration
 
@@ -1574,6 +1580,8 @@ private class BackupSettingsViewModel: ObservableObject {
         self.mediaTierCapacityOverflow = mediaTierCapacityOverflow
         self.hasBackupFailed = hasBackupFailed
         self.isBackgroundAppRefreshDisabled = isBackgroundAppRefreshDisabled
+
+        self.isOptimizeStorageEnabled = isOptimizeStorageEnabled
     }
 
     // MARK: -
@@ -1914,7 +1922,7 @@ struct BackupSettingsView: View {
                         viewModel: viewModel,
                     )
 
-                    if BuildFlags.Backups.showOptimizeMedia {
+                    if viewModel.isOptimizeStorageEnabled {
                         Toggle(
                             OWSLocalizedString(
                                 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE",
@@ -1927,7 +1935,7 @@ struct BackupSettingsView: View {
                         ).disabled(!viewModel.optimizeLocalStorageAvailable)
                     }
                 } footer: {
-                    if BuildFlags.Backups.showOptimizeMedia {
+                    if viewModel.isOptimizeStorageEnabled {
                         let footerText: String = if
                             viewModel.optimizeLocalStorageAvailable,
                             viewModel.isPaidPlanTester
@@ -3170,6 +3178,7 @@ private extension BackupSettingsViewModel {
             mediaTierCapacityOverflow: mediaTierCapacityOverflow,
             hasBackupFailed: hasBackupFailed,
             isBackgroundAppRefreshDisabled: isBackgroundAppRefreshDisabled,
+            isOptimizeStorageEnabled: false,
         )
         let actionsDelegate = PreviewActionsDelegate()
         viewModel.actionsDelegate = actionsDelegate

@@ -55,6 +55,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
     private let listMediaManager: BackupListMediaManager
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private let orphanedAttachmentStore: OrphanedAttachmentStore
+    private let remoteConfig: RemoteConfigProvider
     private let tsAccountManager: TSAccountManager
 
     public init(
@@ -68,6 +69,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         listMediaManager: BackupListMediaManager,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
+        remoteConfig: RemoteConfigProvider,
         tsAccountManager: TSAccountManager,
     ) {
         self.attachmentStore = attachmentStore
@@ -80,11 +82,12 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         self.listMediaManager = listMediaManager
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.orphanedAttachmentStore = orphanedAttachmentStore
+        self.remoteConfig = remoteConfig
         self.tsAccountManager = tsAccountManager
     }
 
     public func offloadAttachmentsIfNeeded() async throws {
-        guard BuildFlags.Backups.showOptimizeMedia else {
+        guard remoteConfig.currentConfig().isOptimizeStorageEnabled else {
             return
         }
 
