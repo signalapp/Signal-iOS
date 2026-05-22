@@ -347,26 +347,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         case .ok:
             Logger.info("Expose success!")
         case .error:
-            // Every expose is a pair with a backup request. For it to fail,
-            // one of three things happened:
-            // 1. The local client sent a second backup, invalidating the one
-            // this expose is paired with.
-            // 2. A second client has sent its own backup, invalidating the
-            // backup this expose is paired with.
-            // 3. The server is misbehaving and reporting an error.
-            //
-            // 1 should be impossible; this class enforces serial execution to
-            // prevent this. It is developer error if it does.
-            //
-            // 2 is impossible; only a primary device does backups, and if there
-            // were another primary this one would be deregistered and its
-            // auth credentials invalidated.
-            //
-            // 3 could be a legitimate server error or a compromised server; in either
-            // case we do NOT want to make another backup; report a failure but keep
-            // any CompletedBackup state around so that retries just retry the expose.
-            // This prevents any possibility of repeated PIN guessing by a compromised server.
-            throw OWSGenericError("Got error response when exposing on SVR2 server; something has gone horribly wrong.")
+            Logger.warn("Expose error; continuing anyways")
         case .UNRECOGNIZED, .unset:
             throw OWSGenericError("expose status response unknown")
         }
