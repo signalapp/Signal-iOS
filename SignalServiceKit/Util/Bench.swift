@@ -6,6 +6,22 @@
 import Foundation
 import QuartzCore
 
+public struct TimedResult<T, E: Error> {
+    let value: Result<T, E>
+    let duration: CFTimeInterval
+
+    var formattedDuration: String {
+        return String(format: "%0.2fms", duration * 1000)
+    }
+}
+
+public func withDuration<T, E: Error>(of block: () throws(E) -> T) -> TimedResult<T, E> {
+    let startTime = CACurrentMediaTime()
+    let result = Result(catching: block)
+    let endTime = CACurrentMediaTime()
+    return TimedResult(value: result, duration: endTime - startTime)
+}
+
 /// Benchmark time for async code by calling the passed in block parameter when the work
 /// is done.
 ///
@@ -49,26 +65,22 @@ private func BenchAsync(title: String, logInProduction: Bool = false, block: (@e
 ///        }
 ///    }
 ///
-public func Bench<T>(
+public func Bench<T, E: Error>(
     title: String,
     logIfLongerThan intervalLimit: TimeInterval = 0,
     logInProduction: Bool = false,
-    block: () throws -> T,
-) rethrows -> T {
-    let startTime = CACurrentMediaTime()
-    let value = try block()
-    let timeElapsed = CACurrentMediaTime() - startTime
-
-    if timeElapsed > intervalLimit {
-        let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
-        let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
+    block: () throws(E) -> T,
+) throws(E) -> T {
+    let result = withDuration(of: block)
+    if result.duration > intervalLimit {
+        let logMessage = "[Bench] title: \(title), duration: \(result.formattedDuration)"
         if logInProduction {
             Logger.info(logMessage)
         } else {
             Logger.debug(logMessage)
         }
     }
-    return value
+    return try result.value.get()
 }
 
 public protocol MemorySampler {
