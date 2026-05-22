@@ -241,6 +241,7 @@ public class OWS2FAManager {
         try await svr.backupMasterKey(
             pin: pin,
             masterKey: masterKey,
+            force: false,
             authMethod: .implicit,
         )
 

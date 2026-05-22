@@ -225,7 +225,6 @@ final class BackupDisablingManager {
 
                 accountEntropyPoolManager.setAccountEntropyPool(
                     newAccountEntropyPool: try! AccountEntropyPool(key: aepBeingRotatedString),
-                    disablePIN: false,
                     tx: tx,
                 )
             }

@@ -20,7 +20,6 @@ class SecureValueRecovery2Tests: XCTestCase {
     private var localStorage: SVRLocalStorage!
     private var mockConnectionFactory: MockSgxWebsocketConnectionFactory!
     private var mockConnection: MockSgxWebsocketConnection<SVR2WebsocketConfigurator>!
-    private var mockTSAccountManager: MockTSAccountManager!
     private var mockTSConstants: TSConstantsMock!
 
     override func setUp() {
@@ -38,7 +37,6 @@ class SecureValueRecovery2Tests: XCTestCase {
         self.mockConnection = mockConnection
         mockConnectionFactory = MockSgxWebsocketConnectionFactory()
 
-        mockTSAccountManager = .init()
         mockTSConstants = TSConstantsMock()
 
         self.svr = SecureValueRecovery2Impl(
@@ -49,7 +47,6 @@ class SecureValueRecovery2Tests: XCTestCase {
             pinHasher: MockPinHasher(),
             storageServiceManager: FakeStorageServiceManager(),
             svrLocalStorage: localStorage,
-            tsAccountManager: mockTSAccountManager,
             tsConstants: mockTSConstants,
             twoFAManager: mock2FAManager,
         )
@@ -59,14 +56,17 @@ class SecureValueRecovery2Tests: XCTestCase {
     func testMigration() async throws {
         // Set up the connections to both the old and new enclaves.
         let mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
+
         let oldEnclave = MrEnclave("0000000000000000000000000000000000000000000000000000000000000000")
         let oldEnclaveConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
         oldEnclaveConnection.mockEnclave = oldEnclave
         oldEnclaveConnection.mockAuth = mockAuth
+
         let newEnclave = MrEnclave("0101010101010101010101010101010101010101010101010101010101010101")
         let newEnclaveConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
         newEnclaveConnection.mockEnclave = newEnclave
         newEnclaveConnection.mockAuth = mockAuth
+
         mockConnectionFactory.setOnConnectAndPerformHandshake { (config: SVR2WebsocketConfigurator) in
             switch config.mrenclave.stringValue {
             case oldEnclave.stringValue:
@@ -84,15 +84,9 @@ class SecureValueRecovery2Tests: XCTestCase {
 
         // Set up the local data needed.
         db.write { tx in
-            localStorage.setIsMasterKeyBackedUp(true, tx)
             accountKeyStore.setMasterKey(masterKey, tx: tx)
-            localStorage.setSVR2MrEnclaveStringValue(oldEnclave.stringValue, tx)
         }
-        mockTSAccountManager.registrationStateMock = { .registered }
         mock2FAManager.pinCode = pin
-
-        mockTSConstants.svr2Enclave = newEnclave
-        mockTSConstants.svr2PreviousEnclaves = [oldEnclave]
 
         // Expect backup and expose to the new enclave.
         var newEnclaveRequestCount = 0
@@ -131,6 +125,24 @@ class SecureValueRecovery2Tests: XCTestCase {
             var response = SVR2Proto_Response()
             switch oldEnclaveRequestCount {
             case 0:
+                // First it should issue a backup to the old enclave
+                XCTAssert(request.hasBackup)
+                XCTAssertEqual(request.backup.data.count, 48)
+                XCTAssertEqual(request.backup.pin.count, 32)
+
+                var backupResponse = SVR2Proto_BackupResponse()
+                backupResponse.status = .ok
+                response.backup = backupResponse
+            case 1:
+                // Then an expose
+                XCTAssert(request.hasExpose)
+                XCTAssertEqual(request.expose.data.count, 48)
+
+                var exposeResponse = SVR2Proto_ExposeResponse()
+                exposeResponse.status = .ok
+                response.expose = exposeResponse
+            case 2:
+                // Then a delete
                 XCTAssert(request.hasDelete)
                 // New enclave should be all backed up by now.
                 XCTAssertEqual(newEnclaveRequestCount, 2)
@@ -143,36 +155,54 @@ class SecureValueRecovery2Tests: XCTestCase {
             return .value(response)
         }
 
-        // Kick off the migration.
+        // Migrate to the old enclave.
+        mockTSConstants.svr2Enclave = oldEnclave
+        mockTSConstants.svr2PreviousEnclaves = []
         _ = try await svr.refreshBackupIfNecessary()
-
-        XCTAssertEqual(newEnclaveRequestCount, 2)
-        XCTAssertEqual(oldEnclaveRequestCount, 1)
-
+        XCTAssertEqual(newEnclaveRequestCount, 0)
+        XCTAssertEqual(oldEnclaveRequestCount, 2)
         db.read { tx in
-            XCTAssertEqual(localStorage.getSVR2MrEnclaveStringValue(tx), newEnclave.stringValue)
+            XCTAssertEqual(localStorage.completedBackupStore.allKeys(transaction: tx), [oldEnclave.stringValue])
         }
 
-        // If we try to migrate again, it does nothing because we are at the newest enclave.
+        // Migrate to the new enclave.
+        mockTSConstants.svr2Enclave = newEnclave
+        mockTSConstants.svr2PreviousEnclaves = [oldEnclave]
         _ = try await svr.refreshBackupIfNecessary()
         XCTAssertEqual(newEnclaveRequestCount, 2)
-        XCTAssertEqual(oldEnclaveRequestCount, 1)
+        XCTAssertEqual(oldEnclaveRequestCount, 3)
+        db.read { tx in
+            XCTAssertEqual(localStorage.completedBackupStore.allKeys(transaction: tx), [newEnclave.stringValue])
+        }
+
+        // Migrate again; nothing should change.
+        _ = try await svr.refreshBackupIfNecessary()
+        XCTAssertEqual(newEnclaveRequestCount, 2)
+        XCTAssertEqual(oldEnclaveRequestCount, 3)
+        db.read { tx in
+            XCTAssertEqual(localStorage.completedBackupStore.allKeys(transaction: tx), [newEnclave.stringValue])
+        }
     }
 
     @MainActor
     func testMigration_forgottenEnclave() async throws {
         // Set up the connections to both the old and new enclaves.
         let mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
+
         let oldEnclave = MrEnclave("0000000000000000000000000000000000000000000000000000000000000000")
         let oldEnclaveConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
         oldEnclaveConnection.mockEnclave = oldEnclave
         oldEnclaveConnection.mockAuth = mockAuth
+
         let newEnclave = MrEnclave("0101010101010101010101010101010101010101010101010101010101010101")
         let newEnclaveConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
         newEnclaveConnection.mockEnclave = newEnclave
         newEnclaveConnection.mockAuth = mockAuth
+
         mockConnectionFactory.setOnConnectAndPerformHandshake { (config: SVR2WebsocketConfigurator) in
             switch config.mrenclave.stringValue {
+            case oldEnclave.stringValue:
+                return oldEnclaveConnection
             case newEnclave.stringValue:
                 return newEnclaveConnection
             default:
@@ -186,16 +216,9 @@ class SecureValueRecovery2Tests: XCTestCase {
 
         // Set up the local data needed.
         db.write { tx in
-            localStorage.setIsMasterKeyBackedUp(true, tx)
             accountKeyStore.setMasterKey(masterKey, tx: tx)
-            localStorage.setSVR2MrEnclaveStringValue(oldEnclave.stringValue, tx)
         }
-        mockTSAccountManager.registrationStateMock = { .registered }
         mock2FAManager.pinCode = pin
-
-        mockTSConstants.svr2Enclave = newEnclave
-        // No old enclaves to know about.
-        mockTSConstants.svr2PreviousEnclaves = []
 
         // Expect backup and expose to the new enclave.
         var newEnclaveRequestCount = 0
@@ -227,20 +250,55 @@ class SecureValueRecovery2Tests: XCTestCase {
             return .value(response)
         }
 
-        // NOTE: the old enclave should get no requests, its considered dead.
+        // The old enclave should just get a delete.
+        var oldEnclaveRequestCount = 0
+        oldEnclaveConnection.onSendRequestAndReadResponse = { request in
+            defer { oldEnclaveRequestCount += 1 }
+            var response = SVR2Proto_Response()
+            switch oldEnclaveRequestCount {
+            case 0:
+                // First it should issue a backup to the old enclave
+                XCTAssert(request.hasBackup)
+                XCTAssertEqual(request.backup.data.count, 48)
+                XCTAssertEqual(request.backup.pin.count, 32)
 
-        // Kick off the migration.
-        _ = try await svr.refreshBackupIfNecessary()
+                var backupResponse = SVR2Proto_BackupResponse()
+                backupResponse.status = .ok
+                response.backup = backupResponse
+            case 1:
+                // Then an expose
+                XCTAssert(request.hasExpose)
+                XCTAssertEqual(request.expose.data.count, 48)
 
-        XCTAssertEqual(newEnclaveRequestCount, 2)
-
-        db.read { tx in
-            XCTAssertEqual(localStorage.getSVR2MrEnclaveStringValue(tx), newEnclave.stringValue)
+                var exposeResponse = SVR2Proto_ExposeResponse()
+                exposeResponse.status = .ok
+                response.expose = exposeResponse
+            default:
+                XCTFail("Unexpected request")
+                return .init(error: OWSAssertionError(""))
+            }
+            return .value(response)
         }
 
-        // If we try to migrate again, it does nothing because we are at the newest enclave.
+        // Migrate to the old enclave.
+        mockTSConstants.svr2Enclave = oldEnclave
+        mockTSConstants.svr2PreviousEnclaves = []
+        _ = try await svr.refreshBackupIfNecessary()
+        XCTAssertEqual(newEnclaveRequestCount, 0)
+        XCTAssertEqual(oldEnclaveRequestCount, 2)
+        db.read { tx in
+            XCTAssertEqual(localStorage.completedBackupStore.allKeys(transaction: tx), [oldEnclave.stringValue])
+        }
+
+        // Migrate to the new enclave.
+        mockTSConstants.svr2Enclave = newEnclave
+        mockTSConstants.svr2PreviousEnclaves = []
         _ = try await svr.refreshBackupIfNecessary()
         XCTAssertEqual(newEnclaveRequestCount, 2)
+        XCTAssertEqual(oldEnclaveRequestCount, 2)
+        db.read { tx in
+            XCTAssertEqual(localStorage.completedBackupStore.allKeys(transaction: tx), [newEnclave.stringValue])
+        }
     }
 
     func testPinHashingNumeric() throws {
@@ -328,6 +386,4 @@ public class _SVR2_OWS2FAManagerTestMock: SVR2.Shims.OWS2FAManager {
     public func pinCode(transaction: DBReadTransaction) -> String? {
         return pinCode
     }
-
-    public func markDisabled(transaction: DBWriteTransaction) {}
 }

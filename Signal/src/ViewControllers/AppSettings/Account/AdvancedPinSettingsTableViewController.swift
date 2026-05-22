@@ -145,13 +145,12 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
                 db.write { tx in
                     Logger.warn("Rotating AEP: disabling PIN!")
 
+                    ows2FAManager.markDisabled(transaction: tx)
+
                     accountEntropyPoolManager.setAccountEntropyPool(
                         newAccountEntropyPool: AccountEntropyPool(),
-                        disablePIN: true,
                         tx: tx,
                     )
-
-                    ows2FAManager.markDisabled(transaction: tx)
                 }
 
                 self.updateTableContents()

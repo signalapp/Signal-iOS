@@ -1390,7 +1390,6 @@ class BackupSettingsViewController:
 
                 accountEntropyPoolManager.setAccountEntropyPool(
                     newAccountEntropyPool: newCandidateAEP,
-                    disablePIN: false,
                     tx: tx,
                 )
             case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:

@@ -8,7 +8,6 @@ public protocol AccountEntropyPoolManager {
 
     func setAccountEntropyPool(
         newAccountEntropyPool: AccountEntropyPool,
-        disablePIN: Bool,
         tx: DBWriteTransaction,
     )
 }
@@ -75,7 +74,6 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
 
         setAccountEntropyPool(
             newAccountEntropyPool: AccountEntropyPool(),
-            disablePIN: false,
             tx: tx,
         )
     }
@@ -84,7 +82,6 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
 
     func setAccountEntropyPool(
         newAccountEntropyPool: AccountEntropyPool,
-        disablePIN: Bool,
         tx: DBWriteTransaction,
     ) {
         logger.warn("Setting new AEP!")
@@ -117,16 +114,20 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
 
         accountKeyStore.setAccountEntropyPool(newAccountEntropyPool, tx: tx)
 
-        svr.handleMasterKeyUpdated(
-            newMasterKey: newAccountEntropyPool.getMasterKey(),
-            disablePIN: disablePIN,
-            tx: tx,
-        )
-
         // Skip the steps below if we're not yet registered. This check matters
         // because one of our big callers is registration itself.
         guard isRegisteredPrimaryDevice else {
             return
+        }
+
+        tx.addSyncCompletion { [svr] in
+            Task {
+                do {
+                    try await svr.refreshBackupIfNecessary()
+                } catch {
+                    Logger.warn("couldn't refresh svr after rotating aep: \(error)")
+                }
+            }
         }
 
         // Schedule an account attributes update, since we need to update the
@@ -170,7 +171,7 @@ class MockAccountEntropyPoolManager: AccountEntropyPoolManager {
     func generateIfMissing() async {}
 
     var setAccountEntropyPoolMock: (() -> Void)?
-    func setAccountEntropyPool(newAccountEntropyPool: AccountEntropyPool, disablePIN: Bool, tx: DBWriteTransaction) {
+    func setAccountEntropyPool(newAccountEntropyPool: AccountEntropyPool, tx: DBWriteTransaction) {
         setAccountEntropyPoolMock?()
     }
 }

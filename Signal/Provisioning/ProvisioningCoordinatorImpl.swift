@@ -402,7 +402,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     userProfileWriter: .linking,
                     transaction: tx,
                 )
-                self.svr.clearKeys(transaction: tx)
 
                 // reset to default (false)
                 self.receiptManager.setAreReadReceiptsEnabled(

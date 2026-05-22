@@ -20,7 +20,6 @@ extension SVR2 {
 
 public protocol _SVR2_OWS2FAManagerShim {
     func pinCode(transaction: DBReadTransaction) -> String?
-    func markDisabled(transaction: DBWriteTransaction)
 }
 
 public class _SVR2_OWS2FAManagerWrapper: SVR2.Shims.OWS2FAManager {
@@ -29,9 +28,5 @@ public class _SVR2_OWS2FAManagerWrapper: SVR2.Shims.OWS2FAManager {
 
     public func pinCode(transaction: DBReadTransaction) -> String? {
         return manager.pinCode(transaction: transaction)
-    }
-
-    public func markDisabled(transaction: DBWriteTransaction) {
-        manager.markDisabled(transaction: transaction)
     }
 }

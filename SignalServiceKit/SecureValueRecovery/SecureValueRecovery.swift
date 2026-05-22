@@ -113,11 +113,7 @@ public protocol SecureValueRecovery {
     func restoreKeys(pin: String, authMethod: SVR.AuthMethod) async -> SVR.RestoreKeysResult
 
     /// Backs up the user's master key to SVR.
-    func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) async throws
-
-    /// Removes the SVR keys locally from the device, they can still be
-    /// restored from the server if you know the pin.
-    func clearKeys(transaction: DBWriteTransaction)
+    func backupMasterKey(pin: String, masterKey: MasterKey, force: Bool, authMethod: SVR.AuthMethod) async throws
 
     func storeKeys(
         fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
@@ -130,10 +126,4 @@ public protocol SecureValueRecovery {
         authedDevice: AuthedDevice,
         tx: DBWriteTransaction,
     ) throws(SVR.KeysError)
-
-    func handleMasterKeyUpdated(
-        newMasterKey: MasterKey,
-        disablePIN: Bool,
-        tx: DBWriteTransaction,
-    )
 }

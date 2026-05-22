@@ -40,7 +40,6 @@ struct SVR2ConcurrencyTests {
             pinHasher: MockPinHasher(),
             storageServiceManager: FakeStorageServiceManager(),
             svrLocalStorage: localStorage,
-            tsAccountManager: MockTSAccountManager(),
             tsConstants: TSConstants.shared,
             twoFAManager: SVR2.TestMocks.OWS2FAManager(),
         )
@@ -94,7 +93,7 @@ struct SVR2ConcurrencyTests {
         }
 
         let firstMasterKey = MasterKey()
-        async let firstBackupResult: Void = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit)
+        async let firstBackupResult: Void = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, force: false, authMethod: .implicit)
 
         // Let the first backup succeed and start the expose, then make the second request.
         firstBackupFuture.resolve(backupResponse())
@@ -103,7 +102,7 @@ struct SVR2ConcurrencyTests {
         try await madeRequestContinuations[1].wait()
 
         let secondMasterKey = MasterKey()
-        async let secondBackupResult: Void = svr.backupMasterKey(pin: "abcd", masterKey: secondMasterKey, authMethod: .implicit)
+        async let secondBackupResult: Void = svr.backupMasterKey(pin: "abcd", masterKey: secondMasterKey, force: false, authMethod: .implicit)
 
         firstExposeFuture.resolve(exposeResponse())
         secondBackupFuture.resolve(backupResponse())
@@ -165,7 +164,7 @@ struct SVR2ConcurrencyTests {
         }
 
         let firstMasterKey = MasterKey()
-        async let firstBackupResult: Void = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, authMethod: .implicit)
+        async let firstBackupResult: Void = svr.backupMasterKey(pin: "1234", masterKey: firstMasterKey, force: false, authMethod: .implicit)
 
         let backupError = WebSocketError.closeError(statusCode: 400, closeReason: nil)
         firstBackupFuture.reject(backupError)
@@ -198,7 +197,7 @@ struct SVR2ConcurrencyTests {
         }
 
         let secondMasterKey = MasterKey()
-        try await svr.backupMasterKey(pin: "zzzz", masterKey: secondMasterKey, authMethod: .implicit)
+        try await svr.backupMasterKey(pin: "zzzz", masterKey: secondMasterKey, force: false, authMethod: .implicit)
 
         #expect(numOpenedConnections == 2)
     }

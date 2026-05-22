@@ -407,12 +407,12 @@ public class RegistrationCoordinatorTest {
         }
 
         // We haven't done a SVR backup; that should happen now.
-        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
+        svr.backupMasterKeyMock = { pin, masterKey, force, authMethod in
             #expect(pin == Stubs.pinCode)
-            // We don't have a SVR auth credential, it should use chat server creds.
             #expect(masterKey.rawData == finalMasterKey.rawData)
+            #expect(force)
+            // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
-            self.svr.hasMasterKey = true
             return .value(())
         }
 
@@ -544,12 +544,12 @@ public class RegistrationCoordinatorTest {
         })
 
         // We haven't done a SVR backup; that should happen now.
-        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
+        svr.backupMasterKeyMock = { pin, masterKey, force, authMethod in
             #expect(pin == Stubs.pinCode)
             #expect(masterKey.rawData == finalMasterKey.rawData)
+            #expect(force)
             // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
-            self.svr.hasMasterKey = true
             return .value(())
         }
 
@@ -628,11 +628,12 @@ public class RegistrationCoordinatorTest {
 
         // Set a PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
+        var didClearPinCode = false
+        ows2FAManagerMock.clearLocalPinCodeMock = { didClearPinCode = true }
 
         // Make SVR give us back a reg recovery password.
         let masterKey = AccountEntropyPool().getMasterKey()
         await db.awaitableWrite { accountKeyStore.setMasterKey(masterKey, tx: $0) }
-        svr.hasMasterKey = true
 
         // NOTE: We expect to skip opening path steps because
         // if we have a SVR master key locally, this _must_ be
@@ -695,7 +696,7 @@ public class RegistrationCoordinatorTest {
         )
 
         // Check we have the master key now, to be safe.
-        #expect(svr.hasMasterKey)
+        #expect(!didClearPinCode)
 
         // Give it the pin code, which should make it try and register.
         // Now we should expect to be at verification code entry since we already set the phone number.
@@ -710,7 +711,7 @@ public class RegistrationCoordinatorTest {
         // We want to have kept the master key; we failed the reg recovery pw check
         // but that could happen even if the key is valid. Once we finish session based
         // re-registration we want to be able to recover the key.
-        #expect(svr.hasMasterKey)
+        #expect(!didClearPinCode)
     }
 
     @MainActor @Test(arguments: Self.testCases())
@@ -723,11 +724,12 @@ public class RegistrationCoordinatorTest {
 
         // Set a PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
+        var didClearPinCode = false
+        ows2FAManagerMock.clearLocalPinCodeMock = { didClearPinCode = true }
 
         // Make SVR give us back a reg recovery password.
         let masterKey = AccountEntropyPool().getMasterKey()
         db.write { accountKeyStore.setMasterKey(masterKey, tx: $0) }
-        svr.hasMasterKey = true
 
         // NOTE: We expect to skip opening path steps because
         // if we have a SVR master key locally, this _must_ be
@@ -809,7 +811,7 @@ public class RegistrationCoordinatorTest {
                 .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)),
         )
 
-        #expect(svr.hasMasterKey)
+        #expect(!didClearPinCode)
 
         // Give it the pin code, which should make it try and register.
         // Now we should expect to be at verification code entry since we already set the phone number.
@@ -822,7 +824,7 @@ public class RegistrationCoordinatorTest {
                 ),
         )
 
-        #expect(svr.hasMasterKey.negated)
+        #expect(didClearPinCode)
     }
 
     @MainActor @Test(arguments: Self.testCases())
@@ -837,7 +839,6 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         let (initialMasterKey, finalMasterKey) = buildKeyDataMocks(testCase)
-        svr.hasMasterKey = true
 
         // NOTE: We expect to skip opening path steps because
         // if we have a SVR master key locally, this _must_ be
@@ -913,13 +914,13 @@ public class RegistrationCoordinatorTest {
         })
 
         // We haven't done a SVR backup; that should happen.
-        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
+        svr.backupMasterKeyMock = { pin, masterKey, force, authMethod in
             self.testRun.addObservedStep(.backupMasterKey)
             #expect(pin == Stubs.pinCode)
             #expect(masterKey.rawData == finalMasterKey.rawData)
+            #expect(force)
             // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
-            self.svr.hasMasterKey = true
             return .value(())
         }
 
@@ -1037,12 +1038,13 @@ public class RegistrationCoordinatorTest {
 
         // Set a PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
+        var didClearPinCode = false
+        ows2FAManagerMock.clearLocalPinCodeMock = { didClearPinCode = true }
         ows2FAManagerMock.isReglockEnabledMock = { true }
 
         // Make SVR give us back a reg recovery password.
         let masterKey = AccountEntropyPool().getMasterKey()
         db.write { accountKeyStore.setMasterKey(masterKey, tx: $0) }
-        svr.hasMasterKey = true
 
         // NOTE: We expect to skip opening path steps because
         // if we have a SVR master key locally, this _must_ be
@@ -1116,7 +1118,7 @@ public class RegistrationCoordinatorTest {
             ),
         ))
 
-        #expect(svr.hasMasterKey)
+        #expect(!didClearPinCode)
 
         let acknowledgeAction: RegistrationReglockTimeoutAcknowledgeAction = switch testCase.mode {
         case .registering: .resetPhoneNumber
@@ -1150,7 +1152,7 @@ public class RegistrationCoordinatorTest {
         )
 
         // We want to have wiped our master key; we failed reglock, which means the key itself is wrong.
-        #expect(svr.hasMasterKey)
+        #expect(!didClearPinCode)
     }
 
     // Test the path where a the local masterkey is no longer in sync with the one storedin SVR
@@ -1166,6 +1168,8 @@ public class RegistrationCoordinatorTest {
 
         // Set a PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
+        var didClearPinCode = false
+        ows2FAManagerMock.clearLocalPinCodeMock = { didClearPinCode = true }
         ows2FAManagerMock.isReglockEnabledMock = { true }
 
         // Make SVR give us back a reg recovery password.
@@ -1174,7 +1178,6 @@ public class RegistrationCoordinatorTest {
         // For non-AEP, we will replace the local key with the remote key.
         // For AEP, we'll rotate to a new AEP (or use the existing local AEP if it's present)
         let finalMasterKey = testCase.newKey == .masterKey ? remoteMasterKey : newMasterKey
-        svr.hasMasterKey = true
 
         // Put some auth credentials in storage.
         let svr2CredentialCandidates: [SVR2AuthCredential] = [
@@ -1203,7 +1206,6 @@ public class RegistrationCoordinatorTest {
         svr.restoreKeysMock = { pin, authMethod in
             #expect(pin == Stubs.pinCode)
             #expect(authMethod == .svrAuth(Stubs.svr2AuthCredential, backup: nil))
-            self.svr.hasMasterKey = true
             return .value(.success(remoteMasterKey))
         }
 
@@ -1289,15 +1291,15 @@ public class RegistrationCoordinatorTest {
         })
 
         // We haven't done a SVR backup; that should happen now.
-        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
+        svr.backupMasterKeyMock = { pin, masterKey, force, authMethod in
             #expect(pin == Stubs.pinCode)
-            // We don't have a SVR auth credential, it should use chat server creds.
             #expect(masterKey.rawData == finalMasterKey.rawData)
+            #expect(force)
+            // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .svrAuth(
                 Stubs.svr2AuthCredential,
                 backup: .chatServerAuth(expectedAuthedAccount()),
             ))
-            self.svr.hasMasterKey = true
             return .value(())
         }
 
@@ -1357,12 +1359,12 @@ public class RegistrationCoordinatorTest {
 
         #expect(svrAuthCredentialStore.svr2Dict[Stubs.svr2AuthCredential.credential.username] != nil)
 
-        #expect(svr.hasMasterKey)
+        #expect(!didClearPinCode)
 
         // Give it the pin code, which should make it try and register.
         #expect(await coordinator.submitPINCode(Stubs.pinCode).awaitable() == .done)
 
-        #expect(svr.hasMasterKey)
+        #expect(!didClearPinCode)
     }
 
     /// Test the path where both local and remote RRP are rejected due to a reglock challenge
@@ -1383,6 +1385,8 @@ public class RegistrationCoordinatorTest {
 
         // Set a PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
+        var didClearPinCode = false
+        ows2FAManagerMock.clearLocalPinCodeMock = { didClearPinCode = true }
         ows2FAManagerMock.isReglockEnabledMock = { true }
 
         // Make SVR give us back a reg recovery password.
@@ -1390,7 +1394,6 @@ public class RegistrationCoordinatorTest {
         let remoteMasterKey = MasterKey()
         // For non-AEP, we will replace the local key with the remote key.
         // For AEP, we'll rotate to a new AEP (or use the existing local AEP if it's present)
-        svr.hasMasterKey = true
 
         // Put some auth credentials in storage.
         let svr2CredentialCandidates: [SVR2AuthCredential] = [
@@ -1420,7 +1423,6 @@ public class RegistrationCoordinatorTest {
         svr.restoreKeysMock = { pin, authMethod in
             #expect(pin == Stubs.pinCode)
             #expect(authMethod == .svrAuth(Stubs.svr2AuthCredential, backup: nil))
-            self.svr.hasMasterKey = true
             return .value(.success(remoteMasterKey))
         }
 
@@ -1512,7 +1514,7 @@ public class RegistrationCoordinatorTest {
                 ),
         )
 
-        #expect(svr.hasMasterKey)
+        #expect(!didClearPinCode)
 
         // Submit verification code
         #expect(
@@ -1526,7 +1528,7 @@ public class RegistrationCoordinatorTest {
         )
 
         // We want to have wiped our master key; we failed reglock, which means the key itself is wrong.
-        #expect(svr.hasMasterKey)
+        #expect(!didClearPinCode)
     }
 
     // MARK: - SVR Auth Credential Path
@@ -1557,7 +1559,6 @@ public class RegistrationCoordinatorTest {
             self.testRun.addObservedStep(.restoreKeys)
             #expect(pin == Stubs.pinCode)
             #expect(authMethod == .svrAuth(Stubs.svr2AuthCredential, backup: nil))
-            self.svr.hasMasterKey = true
             return .value(.success(initialMasterKey))
         }
 
@@ -1606,10 +1607,11 @@ public class RegistrationCoordinatorTest {
         })
 
         // Once we create pre-keys, we should back up to svr.
-        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
+        svr.backupMasterKeyMock = { pin, masterKey, force, authMethod in
             self.testRun.addObservedStep(.backupMasterKey)
             #expect(pin == Stubs.pinCode)
             #expect(masterKey.rawData == finalMasterKey.rawData)
+            #expect(force)
             #expect(authMethod == .svrAuth(
                 Stubs.svr2AuthCredential,
                 backup: .chatServerAuth(expectedAuthedAccount()),
@@ -1917,9 +1919,10 @@ public class RegistrationCoordinatorTest {
         })
 
         // Finish the validation.
-        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
+        svr.backupMasterKeyMock = { pin, masterKey, force, authMethod in
             #expect(pin == Stubs.pinCode)
             #expect(masterKey.rawData == newMasterKey.rawData)
+            #expect(force)
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             return .value(())
         }
@@ -2951,7 +2954,7 @@ public class RegistrationCoordinatorTest {
         })
 
         // When we skip the pin, it should skip any SVR backups.
-        svr.backupMasterKeyMock = { _, _, _ in
+        svr.backupMasterKeyMock = { _, _, _, _ in
             Issue.record("Shouldn't talk to SVR with skipped PIN!")
             return .value(())
         }
@@ -3082,7 +3085,7 @@ public class RegistrationCoordinatorTest {
         })
 
         // When we skip the pin, it should skip any SVR backups.
-        svr.backupMasterKeyMock = { _, _, _ in
+        svr.backupMasterKeyMock = { _, _, _, _ in
             Issue.record("Shouldn't talk to SVR with skipped PIN!")
             return .value(())
         }

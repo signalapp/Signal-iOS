@@ -16,7 +16,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let accountKeyStore: AccountKeyStore
     private let localStorage: SVRLocalStorage
     private let storageServiceManager: StorageServiceManager
-    private let tsAccountManager: TSAccountManager
     private let tsConstants: TSConstantsProtocol
     private let twoFAManager: SVR2.Shims.OWS2FAManager
 
@@ -28,7 +27,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         pinHasher: any SVR2PinHasher,
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorage,
-        tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR2.Shims.OWS2FAManager,
     ) {
@@ -39,7 +37,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.localStorage = svrLocalStorage
         self.pinHasher = pinHasher
         self.storageServiceManager = storageServiceManager
-        self.tsAccountManager = tsAccountManager
         self.tsConstants = tsConstants
         self.twoFAManager = twoFAManager
     }
@@ -74,55 +71,14 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         return localStorage.getIsMasterKeyBackedUp(transaction)
     }
 
-    // MARK: -
-
-    /// Takes SVR-related actions when the master key changes, such as updating
-    /// local state and updating remote SVR state.
-    ///
-    /// - Parameter disablePIN
-    /// If `true`, wipes local state related to the PIN; no remote actions are
-    /// taken, since the master key the PIN protects is being updated anyway.
-    public func handleMasterKeyUpdated(
-        newMasterKey: MasterKey,
-        disablePIN: Bool,
-        tx transaction: DBWriteTransaction,
-    ) {
-        // clearInProgressBackup will clear any in progress backup state.
-        // This will prevent us continuing any in progress backups/exposes.
-        clearInProgressBackup(tx: transaction)
-
-        updateLocalSVRState(
-            isMasterKeyBackedUp: localStorage.getIsMasterKeyBackedUp(transaction),
-            mrEnclaveStringValue: nil,
-            transaction: transaction,
-        )
-
-        if disablePIN {
-            Logger.info("Disabling PIN.")
-
-            // Disable the PIN locally.
-            twoFAManager.markDisabled(transaction: transaction)
-            // Wipe credentials; they're now useless.
-            credentialStorage.removeSVR2CredentialsForCurrentUser(transaction)
-        } else if let pin = twoFAManager.pinCode(transaction: transaction) {
-            Logger.info("Scheduling master key backup with PIN.")
-
-            // Record that the master key needs to be backed up.
-            localStorage.setNeedsMasterKeyBackup(true, transaction)
-            transaction.addSyncCompletion {
-                Task { try await self.backupMasterKey(pin: pin, masterKey: newMasterKey, authMethod: .implicit) }
-            }
-        }
-    }
-
     // MARK: - Key Management
 
     private let backupQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
-    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) async throws {
+    public func backupMasterKey(pin: String, masterKey: MasterKey, force: Bool, authMethod: SVR.AuthMethod) async throws {
         Logger.info("")
         try await backupQueue.run {
-            try await doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: authMethod)
+            try await doBackupAndExpose(pin: pin, masterKey: masterKey, force: force, authMethod: authMethod)
         }
     }
 
@@ -140,15 +96,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             }
             return .genericError(error)
         }
-    }
-
-    public func clearKeys(transaction: DBWriteTransaction) {
-        Logger.info("")
-        // This will prevent us continuing any in progress backups/exposes.
-        // If either are in flight, they will no-op when they get a response
-        // and see no in progress backup state.
-        clearInProgressBackup(tx: transaction)
-        localStorage.clearSVRKeys(transaction)
     }
 
     public func storeKeys(
@@ -220,129 +167,136 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Backup/Expose Request
 
-    private lazy var kvStore = KeyValueStore(collection: "SecureValueRecovery2Impl")
+    private let kvStore = KeyValueStore(collection: "SecureValueRecovery2Impl")
 
-    /// We must be careful to never repeat a backup request when an expose request fails, or
-    /// even if an expose request was made. Once we get a success response from a backup
-    /// request, we create and persist one of these to track that, and only ever make expose
-    /// requests from then on until either:
-    /// 1. The expose requests succeeeds (we are done backing up and can wipe this)
-    /// 2. The user chooses a different PIN (we will make a new backup request)
-    /// 3. The user wipes SVR2 backups
-    private struct InProgressBackup: Codable {
+    /// We must be careful to never repeat a backup request after sending an
+    /// expose request for the first time. We must do this even if the
+    /// connection dies and we lose the response to the expose request.
+    /// After we get a success response from a backup request, we create and
+    /// persist one of these to track that we've started making expose requests,
+    /// and we only ever make expose requests from then on until:
+    /// 1. The user chooses a different PIN (we will make a new backup request)
+    /// 2. The user rotates their master key (we will make a new backup request)
+    /// 3. We roll out a new enclave (we will make a new backup request)
+    /// 3. The user disables their PIN (we will make a delete request)
+    private struct CompletedBackup: Codable {
         let masterKey: Data
         let encryptedMasterKey: Data
-        // TODO: Remove.
-        let rawPinType: Int
         let encodedPINVerificationString: String
-        // If we make a backup to one mrenclave, then update the mrenclave,
-        // we are safe to drop it and start again with a backup to the new
-        // mrenclave.
-        let mrEnclaveStringValue: String
+        var isExposed: Bool
 
-        func matches(
-            pin: String,
-            masterKey: MasterKey,
-            mrEnclave: MrEnclave,
-        ) -> Bool {
+        func matches(pin: String, masterKey: MasterKey) -> Bool {
             return (
                 SVRUtil.verifyPIN(pin: pin, againstEncodedPINVerificationString: self.encodedPINVerificationString)
-                    && masterKey.rawData.ows_constantTimeIsEqual(to: self.masterKey)
-                    && mrEnclave.stringValue == self.mrEnclaveStringValue,
+                    && masterKey.rawData.ows_constantTimeIsEqual(to: self.masterKey),
             )
         }
     }
 
-    private static let inProgressBackupKey = "InProgressBackup"
-
-    private func getInProgressBackup(tx: DBReadTransaction) throws -> InProgressBackup? {
-        return try kvStore.getCodableValue(forKey: Self.inProgressBackupKey, transaction: tx)
-    }
-
-    private func setInProgressBackup(_ value: InProgressBackup, tx: DBWriteTransaction) {
-        failIfThrows {
-            try kvStore.setCodable(optional: value, key: Self.inProgressBackupKey, transaction: tx)
+    private func getCompletedBackup(forEnclave enclave: MrEnclave, tx: DBReadTransaction) -> CompletedBackup? {
+        do {
+            return try localStorage.completedBackupStore.getCodableValue(forKey: enclave.stringValue, transaction: tx)
+        } catch {
+            // If we fail to decode, something has gone wrong locally. But we can
+            // treat this like if we never had a backup; after all the user may uninstall,
+            // reinstall, and do a backup again with the same PIN. This, like that, is
+            // a local-only trigger.
+            Logger.error("couldn't decode CompletedBackup")
+            return nil
         }
     }
 
-    private func clearInProgressBackup(tx: DBWriteTransaction) {
-        kvStore.removeValue(forKey: Self.inProgressBackupKey, transaction: tx)
+    private func setCompletedBackup(_ value: CompletedBackup, forEnclave enclave: MrEnclave, tx: DBWriteTransaction) {
+        failIfThrows {
+            try localStorage.completedBackupStore.setCodable(optional: value, key: enclave.stringValue, transaction: tx)
+        }
+    }
+
+    private func removeCompletedBackup(forEnclave enclave: String, tx: DBWriteTransaction) {
+        localStorage.completedBackupStore.removeValue(forKey: enclave, transaction: tx)
     }
 
     private func doBackupAndExpose(
         pin: String,
         masterKey: MasterKey,
+        force: Bool,
         authMethod: SVR2.AuthMethod,
     ) async throws {
-        let config = SVR2WebsocketConfigurator(mrenclave: tsConstants.svr2Enclave, authMethod: authMethod)
+        let mrEnclave = tsConstants.svr2Enclave
+
+        let priorBackup = self.db.read { tx in self.getCompletedBackup(forEnclave: mrEnclave, tx: tx) }
+
+        let priorMatchingBackup: CompletedBackup?
+        if force {
+            // We're forcing a backup, so *nothing* matches.
+            priorMatchingBackup = nil
+        } else if let priorBackup, priorBackup.matches(pin: pin, masterKey: masterKey) {
+            // We're trying to back up what's already backed up.
+            priorMatchingBackup = priorBackup
+        } else {
+            priorMatchingBackup = nil
+        }
+
+        if let priorMatchingBackup, priorMatchingBackup.isExposed {
+            return
+        }
+
+        let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
 
         let connection = try await makeHandshakeAndOpenConnection(config)
         defer { connection.disconnect(code: .normalClosure) }
 
         Logger.info("Connection open; beginning backup/expose")
 
-        // Check if we had an in flight backup.
-        let inProgressBackup: InProgressBackup?
-        do {
-            inProgressBackup = try self.db.read(block: self.getInProgressBackup(tx:))
-        } catch {
-            // If we fail to decode, something has gone wrong locally. But we can
-            // treat this like if we never had a backup; after all the user may uninstall,
-            // reinstall, and do a backup again with the same PIN. This, like that, is
-            // a local-only trigger.
-            Logger.error("Failed to decode in progress backup state")
-            inProgressBackup = nil
+        // After this point, we might have data stored in this enclave. (For
+        // example, the network may drop before we receive the response.) Store
+        // this enclave so that we eventually clean it up.
+        await self.db.awaitableWrite { tx in
+            self.addEnclaveToPotentiallyDeleteFrom(mrEnclave, tx)
         }
 
-        let completedInProgressBackup: InProgressBackup
-        if let inProgressBackup, inProgressBackup.matches(pin: pin, masterKey: masterKey, mrEnclave: config.mrenclave) {
-            // Continue the backup from where we left off.
+        var completedBackup: CompletedBackup
+        if let priorMatchingBackup {
+            // We already completed a backup for this (pin, masterKey, enclave) triple,
+            // so we only want to perform an expose.
             Logger.warn("Skipping backup that was already completed")
-            completedInProgressBackup = inProgressBackup
+            completedBackup = priorMatchingBackup
         } else {
-            // We don't have a backup, or we're trying to back up something else; start
-            // fresh in both cases.
-            completedInProgressBackup = try await self.performBackupRequest(
+            // We don't have a backup, or we're trying to back up something else, or
+            // we're trying to back up to somewhere else; start fresh in these cases.
+            completedBackup = try await self.performBackupRequest(
                 pin: pin,
                 masterKey: masterKey,
-                mrEnclave: config.mrenclave,
                 connection: connection,
             )
-            // Write the in progress state to disk; we want to continue
-            // from here and not redo the backup request.
             await self.db.awaitableWrite { tx in
-                self.setInProgressBackup(completedInProgressBackup, tx: tx)
+                // Write that we've finished to disk; we never want to repeat the prior
+                // request after we start sending expose requests.
+                self.setCompletedBackup(completedBackup, forEnclave: mrEnclave, tx: tx)
             }
         }
 
+        // This must be true because it's checked earlier for existing backups and
+        // starts out false for new backups.
+        owsPrecondition(!completedBackup.isExposed)
+
         try await self.performExposeRequest(
-            backup: completedInProgressBackup,
+            backup: completedBackup,
             authedAccount: authMethod.authedAccount,
             connection: connection,
         )
+        completedBackup.isExposed = true
 
         await self.db.awaitableWrite { tx in
-            let hasInProgressBackup = (try? self.getInProgressBackup(tx: tx)) != nil
-            guard hasInProgressBackup else {
-                Logger.info("backup state cleared while expose ongoing; throwing away results")
-                return
-            }
-            self.localStorage.setNeedsMasterKeyBackup(false, tx)
-            self.clearInProgressBackup(tx: tx)
-            self.updateLocalSVRState(
-                isMasterKeyBackedUp: true,
-                mrEnclaveStringValue: completedInProgressBackup.mrEnclaveStringValue,
-                transaction: tx,
-            )
+            self.setCompletedBackup(completedBackup, forEnclave: mrEnclave, tx: tx)
         }
     }
 
     private func performBackupRequest(
         pin: String,
         masterKey: MasterKey,
-        mrEnclave: MrEnclave,
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
-    ) async throws -> InProgressBackup {
+    ) async throws -> CompletedBackup {
         Logger.info("Performing backup")
         let encodedPINVerificationString = try SVRUtil.deriveEncodedPINVerificationString(pin: pin)
 
@@ -364,12 +318,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         switch response.backup.status {
         case .ok:
             Logger.info("Backup success!")
-            return InProgressBackup(
+            return CompletedBackup(
                 masterKey: masterKey.rawData,
                 encryptedMasterKey: encryptedMasterKey,
-                rawPinType: 0,
                 encodedPINVerificationString: encodedPINVerificationString,
-                mrEnclaveStringValue: mrEnclave.stringValue,
+                isExposed: false,
             )
         case .UNRECOGNIZED, .unset:
             throw OWSGenericError("backup status response unknown")
@@ -377,7 +330,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     private func performExposeRequest(
-        backup: InProgressBackup,
+        backup: CompletedBackup,
         authedAccount: AuthedAccount,
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
     ) async throws {
@@ -411,7 +364,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             //
             // 3 could be a legitimate server error or a compromised server; in either
             // case we do NOT want to make another backup; report a failure but keep
-            // any InProgressBackup state around so that retries just retry the expose.
+            // any CompletedBackup state around so that retries just retry the expose.
             // This prevents any possibility of repeated PIN guessing by a compromised server.
             throw OWSGenericError("Got error response when exposing on SVR2 server; something has gone horribly wrong.")
         case .UNRECOGNIZED, .unset:
@@ -515,13 +468,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             let encryptedMasterKey = response.restore.data
             let masterKeyData = try pinHash.decryptMasterKey(encryptedMasterKey)
             let masterKey = try MasterKey(data: masterKeyData)
-            await self.db.awaitableWrite { tx in
-                self.updateLocalSVRState(
-                    isMasterKeyBackedUp: true,
-                    mrEnclaveStringValue: mrEnclave.stringValue,
-                    transaction: tx,
-                )
-            }
             return .success(masterKey: masterKey, mrEnclave: mrEnclave)
         }
     }
@@ -535,6 +481,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
         let connection = try await makeHandshakeAndOpenConnection(config)
         defer { connection.disconnect(code: .normalClosure) }
+        await db.awaitableWrite { tx in
+            // If send a request to delete this, it may be deleted even if we don't get
+            // back a response (e.g., the connection fails, the app exits). By clearing
+            // this now, we ensure resiliency for new backups after these edge cases.
+            removeCompletedBackup(forEnclave: mrEnclave.stringValue, tx: tx)
+        }
         return try await self.performDeleteRequest(
             mrEnclave: mrEnclave,
             connection: connection,
@@ -558,59 +510,63 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: Durable deletes
 
-    private static let oldEnclavesToDeleteFromKey = "OldEnclavesToDeleteFrom"
+    private static let enclavesToPotentiallyDeleteFromKey = "OldEnclavesToDeleteFrom"
 
-    private func getOldEnclavesToDeleteFrom(_ tx: DBReadTransaction) -> Set<String> {
+    private func getEnclavesToPotentiallyDeleteFrom(_ tx: DBReadTransaction) -> Set<String> {
         // This is decoding a Set<String>. It won't actually ever fail, so just eat up errors.
         let enclaveStrings: Set<String> = (try? kvStore.getCodableValue(
-            forKey: Self.oldEnclavesToDeleteFromKey,
+            forKey: Self.enclavesToPotentiallyDeleteFromKey,
             transaction: tx,
         )) ?? Set()
         return enclaveStrings
     }
 
-    private func addOldEnclaveToDeleteFrom(_ enclave: MrEnclave, _ tx: DBWriteTransaction) {
+    private func addEnclaveToPotentiallyDeleteFrom(_ enclave: MrEnclave, _ tx: DBWriteTransaction) {
         // This is (en/de)coding a Set<String>. It won't actually ever fail, so just eat up errors.
         var enclaveStrings: Set<String> = (try? kvStore.getCodableValue(
-            forKey: Self.oldEnclavesToDeleteFromKey,
+            forKey: Self.enclavesToPotentiallyDeleteFromKey,
             transaction: tx,
         )) ?? Set()
         enclaveStrings.insert(enclave.stringValue)
-        try? kvStore.setCodable(enclaveStrings, key: Self.oldEnclavesToDeleteFromKey, transaction: tx)
+        try? kvStore.setCodable(enclaveStrings, key: Self.enclavesToPotentiallyDeleteFromKey, transaction: tx)
     }
 
-    private func markOldEnclaveDeleted(_ enclave: String, _ tx: DBWriteTransaction) {
+    private func markEnclaveDeleted(_ enclave: String, _ tx: DBWriteTransaction) {
         // This is (en/de)coding a Set<String>. It won't actually ever fail, so just eat up errors.
         var enclaveStrings: Set<String> = (try? kvStore.getCodableValue(
-            forKey: Self.oldEnclavesToDeleteFromKey,
+            forKey: Self.enclavesToPotentiallyDeleteFromKey,
             transaction: tx,
         )) ?? Set()
         enclaveStrings.remove(enclave)
-        try? kvStore.setCodable(enclaveStrings, key: Self.oldEnclavesToDeleteFromKey, transaction: tx)
+        try? kvStore.setCodable(enclaveStrings, key: Self.enclavesToPotentiallyDeleteFromKey, transaction: tx)
     }
 
-    private func wipeOldEnclavesIfNeeded() async throws {
+    private func wipeObsoleteEnclaves(allEnclaves: some Sequence<MrEnclave>, enclavesToKeep: Int) async throws {
         var firstError: (any Error)?
-        var oldEnclaves = db.read(block: { tx in self.getOldEnclavesToDeleteFrom(tx) })
-        for obsoleteEnclave in tsConstants.svr2PreviousEnclaves {
-            guard oldEnclaves.remove(obsoleteEnclave.stringValue) != nil else {
+        var potentialEnclaves = db.read(block: { tx in self.getEnclavesToPotentiallyDeleteFrom(tx) })
+        for keptEnclave in allEnclaves.prefix(enclavesToKeep) {
+            potentialEnclaves.remove(keptEnclave.stringValue)
+        }
+        for obsoleteEnclave in allEnclaves.dropFirst(enclavesToKeep) {
+            guard potentialEnclaves.remove(obsoleteEnclave.stringValue) != nil else {
                 continue
             }
-            Logger.info("wiping old enclave: \(obsoleteEnclave)")
+            Logger.info("wiping enclave: \(obsoleteEnclave)")
             do {
                 try await self.doDelete(mrEnclave: obsoleteEnclave, authMethod: .implicit)
                 await db.awaitableWrite { tx in
-                    markOldEnclaveDeleted(obsoleteEnclave.stringValue, tx)
+                    markEnclaveDeleted(obsoleteEnclave.stringValue, tx)
                 }
             } catch {
-                Logger.warn("couldn't wipe old enclave; may retry eventually: \(error)")
+                Logger.warn("couldn't wipe enclave; may retry eventually: \(error)")
                 firstError = firstError ?? error
             }
         }
-        for unknownEnclave in oldEnclaves {
+        for unknownEnclave in potentialEnclaves {
             Logger.warn("pruning unknown enclave: \(unknownEnclave)")
             await db.awaitableWrite { tx in
-                markOldEnclaveDeleted(unknownEnclave, tx)
+                removeCompletedBackup(forEnclave: unknownEnclave, tx: tx)
+                markEnclaveDeleted(unknownEnclave, tx)
             }
         }
         if let firstError {
@@ -621,89 +577,26 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     // MARK: - Migrations
 
     public func refreshBackupIfNecessary() async throws {
-        // If a migration isn't needed, this returns a success immediately.
-        try await migrateEnclavesIfNecessary()
-
-        // If a backup isn't needed, this returns a success immediately.
-        try await backupMasterKeyIfNecessary()
-
-        // Require migrations/backups to succeed before we check for old stuff to
-        // wipe because (a) migrations add old stuff to be wiped and (b) backups
-        // are more important.
-        try await wipeOldEnclavesIfNeeded()
-    }
-
-    private func backupMasterKeyIfNecessary() async throws {
         try await backupQueue.run {
-            try await _backupMasterKeyIfNecessary()
-        }
-    }
+            let pin = db.read(block: twoFAManager.pinCode(transaction:))
 
-    private func _backupMasterKeyIfNecessary() async throws {
-        guard db.read(block: localStorage.getNeedsMasterKeyBackup(_:)) else {
-            return
-        }
-        let (pin, masterKey) = db.read { tx -> (String?, MasterKey?) in
-            return (twoFAManager.pinCode(transaction: tx), accountKeyStore.getMasterKey(tx: tx))
-        }
-        guard let pin, let masterKey else {
-            Logger.warn("skipping; hasPin? \(pin != nil); hasMasterKey? \(masterKey != nil)")
-            return
-        }
-        try await doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: .implicit)
-    }
-
-    /// If there is a newer enclave than the one we most recently backed up to, backs up known
-    /// master key data to it instead, marking the old enclave for deletion.
-    /// If there is no migration needed, returns a success promise immediately.
-    private func migrateEnclavesIfNecessary() async throws {
-        try await backupQueue.run {
-            try await _migrateEnclavesIfNecessary()
-        }
-    }
-
-    private func _migrateEnclavesIfNecessary() async throws {
-        let (isBackedUp, oldEnclave) = db.read { tx -> (Bool, String?) in
-            return (self.localStorage.getIsMasterKeyBackedUp(tx), self.localStorage.getSVR2MrEnclaveStringValue(tx))
-        }
-        guard isBackedUp else {
-            // "isMasterKeyBackedUp" is shared between svr2 and kbs; if its
-            // false that means we had no backups to begin with and therefore
-            // should not back up to any new enclave.
-            return
-        }
-        guard oldEnclave != tsConstants.svr2Enclave.stringValue else {
-            // The "old" enclave is already the current enclave.
-            return
-        }
-        let (pin, masterKey) = db.read { tx -> (String?, MasterKey?) in
-            return (twoFAManager.pinCode(transaction: tx), accountKeyStore.getMasterKey(tx: tx))
-        }
-        guard let pin, let masterKey else {
-            // We don't have anything that *can* be backed up.
-            return
-        }
-
-        Logger.info("Migrating SVR2 Enclaves")
-        do {
-            try await self.doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: .implicit)
-            Logger.info("Successfully migrated SVR2 enclave")
-        } catch {
-            owsFailDebug("Failed to migrate SVR2 enclave")
-            throw error
-        }
-
-        let backedUpEnclave = self.tsConstants.svr2PreviousEnclaves.first(where: { $0.stringValue == oldEnclave })
-        if let backedUpEnclave {
-            Logger.info("Adding old enclave to be deleted")
-            // Strictly speaking, this happens in a separate transaction from when we mark the
-            // backup/expose complete. But no matter what this is best effort; the client
-            // can be uninstalled before it gets a chance to delete the old backup, for example.
-            await self.db.awaitableWrite { tx in
-                self.addOldEnclaveToDeleteFrom(backedUpEnclave, tx)
+            if let pin {
+                let masterKey = db.read(block: accountKeyStore.getMasterKey(tx:))
+                if let masterKey {
+                    // If a backup isn't needed, this returns a success immediately.
+                    try await doBackupAndExpose(pin: pin, masterKey: masterKey, force: false, authMethod: .implicit)
+                } else {
+                    Logger.warn("can't back up master key without master key")
+                }
             }
-            // We start wiping any old enclaves right after doing this migration,
-            // no need to kick it off here.
+
+            let allEnclaves = [tsConstants.svr2Enclave] + tsConstants.svr2PreviousEnclaves
+            // If we don't have a PIN, we shouldn't keep any enclaves.
+            let enclavesToKeep = pin == nil ? 0 : 1
+
+            // Require backups (i.e., migrations) to succeed before deleting from old
+            // enclaves to ensure we're always backed up to at least one enclave.
+            try await wipeObsoleteEnclaves(allEnclaves: allEnclaves, enclavesToKeep: enclavesToKeep)
         }
     }
 
@@ -771,21 +664,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     throw error
                 }
             }
-        }
-    }
-
-    // MARK: - Local key storage helpers
-
-    private func updateLocalSVRState(
-        isMasterKeyBackedUp: Bool,
-        mrEnclaveStringValue: String?,
-        transaction: DBWriteTransaction,
-    ) {
-        if isMasterKeyBackedUp != localStorage.getIsMasterKeyBackedUp(transaction) {
-            localStorage.setIsMasterKeyBackedUp(isMasterKeyBackedUp, transaction)
-        }
-        if mrEnclaveStringValue != localStorage.getSVR2MrEnclaveStringValue(transaction) {
-            localStorage.setSVR2MrEnclaveStringValue(mrEnclaveStringValue, transaction)
         }
     }
 }

@@ -424,7 +424,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         case .changingNumber:
                             break
                         case .registering, .reRegistering:
-                            deps.svr.clearKeys(transaction: tx)
                             deps.ows2FAManager.clearLocalPinCode(tx)
                         }
                     }
@@ -485,9 +484,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .changingNumber:
                 break
             case .registering, .reRegistering:
-                // Whenever we do this, wipe the keys we've got.
-                // We don't want to have them and use then implicitly later.
-                deps.svr.clearKeys(transaction: tx)
                 deps.ows2FAManager.clearLocalPinCode(tx)
             }
         }
@@ -524,9 +520,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .changingNumber:
                 break
             case .registering, .reRegistering:
-                // Whenever we do this, wipe the keys we've got.
-                // We don't want to have them and use them implicitly later.
-                deps.svr.clearKeys(transaction: tx)
                 deps.ows2FAManager.clearLocalPinCode(tx)
             }
         }
@@ -2043,9 +2036,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         // Its possible we tried svr2 and kbs has the right info, or vice versa, but this is all
                         // best effort anyway; just fall back to session-based registration.
                         deps.svrAuthCredentialStore.removeSVR2CredentialsForCurrentUser(tx)
-                        // Clear the SVR master key locally; we failed reglock so we know its wrong
-                        // and useless anyway.
-                        deps.svr.clearKeys(transaction: tx)
                         deps.ows2FAManager.clearLocalPinCode(tx)
                         self.updatePersistedState(tx) {
                             $0.e164WithKnownReglockEnabled = e164
@@ -4040,6 +4030,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             try await deps.svr.backupMasterKey(
                 pin: pin,
                 masterKey: masterKey,
+                force: true,
                 authMethod: authMethod,
             )
 

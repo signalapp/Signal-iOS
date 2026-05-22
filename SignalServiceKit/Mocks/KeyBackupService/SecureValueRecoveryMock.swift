@@ -17,8 +17,6 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
     public func refreshCredentialsIfNecessary() async throws {
     }
 
-    public var hasMasterKey = false
-
     public var hasBackedUpMasterKey: Bool = false
 
     public func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool {
@@ -26,25 +24,21 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
     }
 
     public func hasMasterKey(transaction: DBReadTransaction) -> Bool {
-        return hasMasterKey
+        return SVRLocalStorage().getIsMasterKeyBackedUp(transaction)
     }
 
     public var reglockToken: String?
 
-    public var backupMasterKeyMock: ((_ pin: String, _ masterKey: MasterKey, _ authMethod: SVR.AuthMethod) -> Promise<Void>)?
+    public var backupMasterKeyMock: ((_ pin: String, _ masterKey: MasterKey, _ force: Bool, _ authMethod: SVR.AuthMethod) -> Promise<Void>)?
 
-    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) async throws {
-        try await backupMasterKeyMock!(pin, masterKey, authMethod).awaitable()
+    public func backupMasterKey(pin: String, masterKey: MasterKey, force: Bool, authMethod: SVR.AuthMethod) async throws {
+        try await backupMasterKeyMock!(pin, masterKey, force, authMethod).awaitable()
     }
 
     public var restoreKeysMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>)?
 
     public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) async -> SVR.RestoreKeysResult {
         return await restoreKeysMock!(pin, authMethod).awaitable()
-    }
-
-    public func clearKeys(transaction: DBWriteTransaction) {
-        hasMasterKey = false
     }
 
     public var syncedMasterKey: MasterKey?
@@ -81,10 +75,6 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public func clearPendingRestoration(transaction: DBWriteTransaction) {
         doesHavePendingRestoration = false
-    }
-
-    public func handleMasterKeyUpdated(newMasterKey: MasterKey, disablePIN: Bool, tx: DBWriteTransaction) {
-        // Do nothing
     }
 }
 

@@ -445,7 +445,6 @@ extension AppSetup.GlobalsContinuation {
             pinHasher: LibSignalPinHasher(),
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
-            tsAccountManager: tsAccountManager,
             tsConstants: tsConstants,
             twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager),
         )
