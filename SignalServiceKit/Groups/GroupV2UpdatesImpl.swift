@@ -952,10 +952,6 @@ public extension GroupV2UpdatesImpl {
 
 extension GroupsV2Error: IsRetryableProvider {
     public var isRetryableProvider: Bool {
-        if self.isNetworkFailureOrTimeout {
-            return true
-        }
-
         switch self {
         case
             .conflictingChangeOnService,

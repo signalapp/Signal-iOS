@@ -24,11 +24,11 @@ extension Error {
         //
         // When trying to cast an error to IsRetryableProvider,
         // we need to try casting both the Error and NSError form.
-        if let error = self as? IsRetryableProvider {
-            return error.isRetryableProvider
+        if let error = self as? IsRetryableProvider, error.isRetryableProvider {
+            return true
         }
-        if let error = (self as NSError) as? IsRetryableProvider {
-            return error.isRetryableProvider
+        if let error = (self as NSError) as? IsRetryableProvider, error.isRetryableProvider {
+            return true
         }
 
         if self.isNetworkFailureOrTimeout {

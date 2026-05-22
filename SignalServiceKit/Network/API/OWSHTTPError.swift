@@ -104,9 +104,6 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
     // MARK: - IsRetryableProvider
 
     public var isRetryableProvider: Bool {
-        if isNetworkFailureImpl || isTimeoutImpl {
-            return true
-        }
         switch self {
         case .wrappedFailure:
             return true
