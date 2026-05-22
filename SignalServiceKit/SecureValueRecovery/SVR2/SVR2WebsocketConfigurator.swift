@@ -15,7 +15,7 @@ class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
     let mrenclave: MrEnclave
     var authMethod: SVR2.AuthMethod
 
-    init(mrenclave: MrEnclave = TSConstants.svr2Enclave, authMethod: SVR2.AuthMethod) {
+    init(mrenclave: MrEnclave, authMethod: SVR2.AuthMethod) {
         self.mrenclave = mrenclave
         self.authMethod = authMethod
     }

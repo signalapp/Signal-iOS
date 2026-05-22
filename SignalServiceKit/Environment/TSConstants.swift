@@ -67,8 +67,7 @@ public class TSConstants {
     public static var storageServiceCensorshipPrefix: String { shared.storageServiceCensorshipPrefix }
     public static var svr2CensorshipPrefix: String { shared.svr2CensorshipPrefix }
 
-    static var svr2Enclave: MrEnclave { shared.svr2Enclave }
-    static var svr2PreviousEnclaves: [MrEnclave] { shared.svr2PreviousEnclaves }
+    static var svr2Enclaves: [MrEnclave] { shared.svr2Enclaves }
 
     public static var applicationGroup: String { shared.applicationGroup }
 
@@ -122,8 +121,8 @@ public protocol TSConstantsProtocol: AnyObject {
     var storageServiceCensorshipPrefix: String { get }
     var svr2CensorshipPrefix: String { get }
 
-    var svr2Enclave: MrEnclave { get }
-    var svr2PreviousEnclaves: [MrEnclave] { get }
+    var svr2Enclaves: [MrEnclave] { get }
+    var activeSvr2EnclaveCount: Int { get }
 
     var applicationGroup: String { get }
 
@@ -179,15 +178,19 @@ public class TSConstantsProduction: TSConstantsProtocol {
     public let storageServiceCensorshipPrefix = "storage"
     public let svr2CensorshipPrefix = "svr2"
 
-    public let svr2Enclave = MrEnclave("1240acbd4aa26974184844c8a46b1022d3957ac8a76c1fd8f5b1a15141ee0708")
-
-    // An array of previously used enclaves that we should try and restore
-    // key material from during registration. These must be ordered from
-    // newest to oldest, so we check the latest enclaves for backups before
-    // checking earlier enclaves.
-    public let svr2PreviousEnclaves: [MrEnclave] = [
+    // An array of enclaves that we should try and restore key material from
+    // during registration. These must be ordered from newest to oldest, so we
+    // check the latest enclaves before checking earlier enclaves.
+    //
+    // When backing up, we attempt to back up to the first
+    // `activeSvr2EnclaveCount` elements of this array. We typically set it to
+    // two for a brief time after adding a new enclave.
+    public let svr2Enclaves = [
+        MrEnclave("1240acbd4aa26974184844c8a46b1022d3957ac8a76c1fd8f5b1a15141ee0708"),
         MrEnclave("29cd63c87bea751e3bfd0fbd401279192e2e5c99948b4ee9437eafc4968355fb"),
     ]
+
+    public let activeSvr2EnclaveCount: Int = 1
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group"
 
@@ -233,16 +236,13 @@ public class TSConstantsStaging: TSConstantsProtocol {
     public let storageServiceCensorshipPrefix = "storage-staging"
     public let svr2CensorshipPrefix = "svr2-staging"
 
-    public let svr2Enclave = MrEnclave("3c699f4975aaa3d172c0aad042f94f031b2b03e10b9c19a45116a01693d83302")
-
-    // An array of previously used enclaves that we should try and restore
-    // key material from during registration. These must be ordered from
-    // newest to oldest, so we check the latest enclaves for backups before
-    // checking earlier enclaves.
-    public let svr2PreviousEnclaves: [MrEnclave] = [
+    public let svr2Enclaves = [
+        MrEnclave("3c699f4975aaa3d172c0aad042f94f031b2b03e10b9c19a45116a01693d83302"),
         MrEnclave("97f151f6ed078edbbfd72fa9cae694dcc08353f1f5e8d9ccd79a971b10ffc535"),
         MrEnclave("a75542d82da9f6914a1e31f8a7407053b99cc99a0e7291d8fbd394253e19b036"),
     ]
+
+    public let activeSvr2EnclaveCount: Int = 1
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group.staging"
 
@@ -306,9 +306,9 @@ public class TSConstantsMock: TSConstantsProtocol {
 
     public lazy var svr2CensorshipPrefix = defaultValues.svr2CensorshipPrefix
 
-    public lazy var svr2Enclave = defaultValues.svr2Enclave
+    public lazy var svr2Enclaves = defaultValues.svr2Enclaves
 
-    public lazy var svr2PreviousEnclaves = defaultValues.svr2PreviousEnclaves
+    public lazy var activeSvr2EnclaveCount = defaultValues.activeSvr2EnclaveCount
 
     public lazy var applicationGroup = defaultValues.applicationGroup
 

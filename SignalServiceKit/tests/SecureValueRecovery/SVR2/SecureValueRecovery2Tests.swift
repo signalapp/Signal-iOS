@@ -156,8 +156,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         }
 
         // Migrate to the old enclave.
-        mockTSConstants.svr2Enclave = oldEnclave
-        mockTSConstants.svr2PreviousEnclaves = []
+        mockTSConstants.svr2Enclaves = [oldEnclave]
         _ = try await svr.refreshBackupIfNecessary()
         XCTAssertEqual(newEnclaveRequestCount, 0)
         XCTAssertEqual(oldEnclaveRequestCount, 2)
@@ -166,8 +165,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         }
 
         // Migrate to the new enclave.
-        mockTSConstants.svr2Enclave = newEnclave
-        mockTSConstants.svr2PreviousEnclaves = [oldEnclave]
+        mockTSConstants.svr2Enclaves = [newEnclave, oldEnclave]
         _ = try await svr.refreshBackupIfNecessary()
         XCTAssertEqual(newEnclaveRequestCount, 2)
         XCTAssertEqual(oldEnclaveRequestCount, 3)
@@ -281,8 +279,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         }
 
         // Migrate to the old enclave.
-        mockTSConstants.svr2Enclave = oldEnclave
-        mockTSConstants.svr2PreviousEnclaves = []
+        mockTSConstants.svr2Enclaves = [oldEnclave]
         _ = try await svr.refreshBackupIfNecessary()
         XCTAssertEqual(newEnclaveRequestCount, 0)
         XCTAssertEqual(oldEnclaveRequestCount, 2)
@@ -291,8 +288,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         }
 
         // Migrate to the new enclave.
-        mockTSConstants.svr2Enclave = newEnclave
-        mockTSConstants.svr2PreviousEnclaves = []
+        mockTSConstants.svr2Enclaves = [newEnclave]
         _ = try await svr.refreshBackupIfNecessary()
         XCTAssertEqual(newEnclaveRequestCount, 2)
         XCTAssertEqual(oldEnclaveRequestCount, 2)

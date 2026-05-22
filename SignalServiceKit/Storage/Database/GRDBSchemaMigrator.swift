@@ -7784,7 +7784,7 @@ public class GRDBSchemaMigrator {
                 "97f151f6ed078edbbfd72fa9cae694dcc08353f1f5e8d9ccd79a971b10ffc535",
                 "a75542d82da9f6914a1e31f8a7407053b99cc99a0e7291d8fbd394253e19b036",
             ])
-            let allEnclaves = [TSConstants.svr2Enclave] + TSConstants.svr2PreviousEnclaves
+            let allEnclaves = TSConstants.svr2Enclaves
             let shouldMigrate = !migrationEnclaves.isDisjoint(with: allEnclaves.lazy.map(\.stringValue))
             return shouldMigrate
         }())

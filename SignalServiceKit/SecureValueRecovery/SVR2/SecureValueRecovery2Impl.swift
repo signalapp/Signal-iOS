@@ -220,8 +220,24 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         force: Bool,
         authMethod: SVR2.AuthMethod,
     ) async throws {
-        let mrEnclave = tsConstants.svr2Enclave
+        for enclave in tsConstants.svr2Enclaves.prefix(tsConstants.activeSvr2EnclaveCount) {
+            try await _doBackupAndExpose(
+                pin: pin,
+                masterKey: masterKey,
+                force: force,
+                mrEnclave: enclave,
+                authMethod: authMethod,
+            )
+        }
+    }
 
+    private func _doBackupAndExpose(
+        pin: String,
+        masterKey: MasterKey,
+        force: Bool,
+        mrEnclave: MrEnclave,
+        authMethod: SVR2.AuthMethod,
+    ) async throws {
         let priorBackup = self.db.read { tx in self.getCompletedBackup(forEnclave: mrEnclave, tx: tx) }
 
         let priorMatchingBackup: CompletedBackup?
@@ -374,8 +390,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         pin: String,
         authMethod: SVR2.AuthMethod,
     ) async throws -> RestoreResult {
-        let enclavesToTry = [tsConstants.svr2Enclave] + tsConstants.svr2PreviousEnclaves
-        for enclave in enclavesToTry {
+        for enclave in tsConstants.svr2Enclaves {
             let enclaveResult = try await self.doRestoreForSpecificEnclave(
                 pin: pin,
                 mrEnclave: enclave,
@@ -552,9 +567,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 }
             }
 
-            let allEnclaves = [tsConstants.svr2Enclave] + tsConstants.svr2PreviousEnclaves
+            let allEnclaves = tsConstants.svr2Enclaves
             // If we don't have a PIN, we shouldn't keep any enclaves.
-            let enclavesToKeep = pin == nil ? 0 : 1
+            let enclavesToKeep = pin == nil ? 0 : tsConstants.activeSvr2EnclaveCount
 
             // Require backups (i.e., migrations) to succeed before deleting from old
             // enclaves to ensure we're always backed up to at least one enclave.
