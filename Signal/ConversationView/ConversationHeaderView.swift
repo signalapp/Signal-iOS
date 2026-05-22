@@ -179,6 +179,23 @@ class ConversationHeaderView: UIView {
         }
     }
 
+    // MARK: Spinning Title
+
+    func updateTitleSpinning() {
+        let key = "spin"
+        if InMemorySettings.spinningConversationTitle {
+            guard layer.animation(forKey: key) == nil else { return }
+            let animation = CABasicAnimation(keyPath: "transform.rotation.z")
+            animation.toValue = NSNumber(value: Double.pi * 2)
+            animation.duration = 1
+            animation.isCumulative = true
+            animation.repeatCount = .greatestFiniteMagnitude
+            layer.add(animation, forKey: key)
+        } else {
+            layer.removeAnimation(forKey: key)
+        }
+    }
+
     // MARK: Delegate Methods
 
     @objc

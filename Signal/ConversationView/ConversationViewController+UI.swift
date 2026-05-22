@@ -31,6 +31,8 @@ extension ConversationViewController {
         } else {
             headerView.titleLabel.text = title
         }
+
+        headerView.updateTitleSpinning()
     }
 
     public func createHeaderViews() {

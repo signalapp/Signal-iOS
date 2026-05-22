@@ -328,6 +328,13 @@ class InternalSettingsViewController: OWSTableViewController2 {
             selector: #selector(spinCheckmarks(_:)),
         ))
         otherSection.add(.switch(
+            withText: "Spinning conversation title",
+            isOn: { InMemorySettings.spinningConversationTitle },
+            actionBlock: { _ in
+                InMemorySettings.spinningConversationTitle.toggle()
+            },
+        ))
+        otherSection.add(.switch(
             withText: "Force call quality survey",
             isOn: { InMemorySettings.forceCallQualitySurvey },
             actionBlock: { _ in
@@ -368,6 +375,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
 public enum InMemorySettings {
     static var spinningCheckmarks = false
+    static var spinningConversationTitle = false
     static var forceCallQualitySurvey = false
 }
 
