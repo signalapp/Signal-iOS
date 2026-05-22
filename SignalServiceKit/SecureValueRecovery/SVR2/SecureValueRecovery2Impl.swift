@@ -167,8 +167,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Backup/Expose Request
 
-    private let kvStore = KeyValueStore(collection: "SecureValueRecovery2Impl")
-
     /// We must be careful to never repeat a backup request after sending an
     /// expose request for the first time. We must do this even if the
     /// connection dies and we lose the response to the expose request.
@@ -491,35 +489,18 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: Durable deletes
 
-    private static let enclavesToPotentiallyDeleteFromKey = "OldEnclavesToDeleteFrom"
+    private let potentialEnclavesStore = NewKeyValueStore(collection: "SVR.Potential")
 
     private func getEnclavesToPotentiallyDeleteFrom(_ tx: DBReadTransaction) -> Set<String> {
-        // This is decoding a Set<String>. It won't actually ever fail, so just eat up errors.
-        let enclaveStrings: Set<String> = (try? kvStore.getCodableValue(
-            forKey: Self.enclavesToPotentiallyDeleteFromKey,
-            transaction: tx,
-        )) ?? Set()
-        return enclaveStrings
+        return Set(potentialEnclavesStore.fetchKeys(tx: tx))
     }
 
     private func addEnclaveToPotentiallyDeleteFrom(_ enclave: MrEnclave, _ tx: DBWriteTransaction) {
-        // This is (en/de)coding a Set<String>. It won't actually ever fail, so just eat up errors.
-        var enclaveStrings: Set<String> = (try? kvStore.getCodableValue(
-            forKey: Self.enclavesToPotentiallyDeleteFromKey,
-            transaction: tx,
-        )) ?? Set()
-        enclaveStrings.insert(enclave.stringValue)
-        try? kvStore.setCodable(enclaveStrings, key: Self.enclavesToPotentiallyDeleteFromKey, transaction: tx)
+        potentialEnclavesStore.writeValue(Data(), forKey: enclave.stringValue, tx: tx)
     }
 
     private func markEnclaveDeleted(_ enclave: String, _ tx: DBWriteTransaction) {
-        // This is (en/de)coding a Set<String>. It won't actually ever fail, so just eat up errors.
-        var enclaveStrings: Set<String> = (try? kvStore.getCodableValue(
-            forKey: Self.enclavesToPotentiallyDeleteFromKey,
-            transaction: tx,
-        )) ?? Set()
-        enclaveStrings.remove(enclave)
-        try? kvStore.setCodable(enclaveStrings, key: Self.enclavesToPotentiallyDeleteFromKey, transaction: tx)
+        potentialEnclavesStore.removeValue(forKey: enclave, tx: tx)
     }
 
     private func wipeObsoleteEnclaves(allEnclaves: some Sequence<MrEnclave>, enclavesToKeep: Int) async throws {

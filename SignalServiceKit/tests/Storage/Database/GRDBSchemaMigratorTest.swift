@@ -56,7 +56,7 @@ struct GRDBSchemaMigratorTest {
         }
     }
 
-    private func keyedArchiverData(rootObject: Any) -> Data {
+    private static func keyedArchiverData(rootObject: Any) -> Data {
         try! NSKeyedArchiver.archivedData(withRootObject: rootObject, requiringSecureCoding: true)
     }
 
@@ -162,11 +162,11 @@ struct GRDBSchemaMigratorTest {
 
         let baseUrl = URL(fileURLWithPath: "/not/a/real/path", isDirectory: true)
         let initialEntries: [(String, String, Data)] = [
-            (collection, "00000000-0000-4000-8000-000000000001", keyedArchiverData(rootObject: NSNumber(true))),
-            (collection, "00000000-0000-4000-8000-000000000002", keyedArchiverData(rootObject: NSNumber(true))),
-            (collection, "00000000-0000-4000-8000-000000000003", keyedArchiverData(rootObject: NSNumber(false))),
-            (collection, "00000000-0000-4000-8000-000000000004", keyedArchiverData(rootObject: [6, 7, 8, 9, 10])),
-            (collection, "abc1+/==", keyedArchiverData(rootObject: NSNumber(true))),
+            (collection, "00000000-0000-4000-8000-000000000001", Self.keyedArchiverData(rootObject: NSNumber(true))),
+            (collection, "00000000-0000-4000-8000-000000000002", Self.keyedArchiverData(rootObject: NSNumber(true))),
+            (collection, "00000000-0000-4000-8000-000000000003", Self.keyedArchiverData(rootObject: NSNumber(false))),
+            (collection, "00000000-0000-4000-8000-000000000004", Self.keyedArchiverData(rootObject: [6, 7, 8, 9, 10])),
+            (collection, "abc1+/==", Self.keyedArchiverData(rootObject: NSNumber(true))),
             ("UnrelatedCollection", "SomeKey", Data(count: 3)),
         ]
 
@@ -216,14 +216,14 @@ struct GRDBSchemaMigratorTest {
         #expect(rows[0]["key"] == "00000000-0000-4000-8000-000000000001")
         #expect(
             rows[0]["value"]
-                == keyedArchiverData(rootObject: migratedFilenames["00000000%2D0000%2D4000%2D8000%2D000000000001"]!),
+                == Self.keyedArchiverData(rootObject: migratedFilenames["00000000%2D0000%2D4000%2D8000%2D000000000001"]!),
         )
 
         #expect(rows[1]["collection"] == collection)
         #expect(rows[1]["key"] == "abc1+/==")
         #expect(
             rows[1]["value"]
-                == keyedArchiverData(rootObject: migratedFilenames["abc1%2B%2F%3D%3D"]!),
+                == Self.keyedArchiverData(rootObject: migratedFilenames["abc1%2B%2F%3D%3D"]!),
         )
 
         #expect(rows[2]["collection"] == "UnrelatedCollection")
@@ -495,7 +495,7 @@ struct GRDBSchemaMigratorTest {
             for (groupId, uniqueId) in uniqueIdMappings {
                 try db.execute(
                     sql: "INSERT INTO keyvalue VALUES (?, ?, ?)",
-                    arguments: [collection, groupId.hexadecimalString, keyedArchiverData(rootObject: uniqueId)],
+                    arguments: [collection, groupId.hexadecimalString, Self.keyedArchiverData(rootObject: uniqueId)],
                 )
             }
             let tx = DBWriteTransaction(database: db)
@@ -529,8 +529,8 @@ struct GRDBSchemaMigratorTest {
             "",
         ]
 
-        let blockedAciData = keyedArchiverData(rootObject: blockedAciStrings)
-        let blockedPhoneNumberData = keyedArchiverData(rootObject: blockedPhoneNumbers)
+        let blockedAciData = Self.keyedArchiverData(rootObject: blockedAciStrings)
+        let blockedPhoneNumberData = Self.keyedArchiverData(rootObject: blockedPhoneNumbers)
 
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -982,11 +982,11 @@ struct GRDBSchemaMigratorTest {
 
             try db.execute(
                 sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                arguments: ["TSStorageManagerPreKeyStoreCollection", "123", keyedArchiverData(rootObject: preKey)],
+                arguments: ["TSStorageManagerPreKeyStoreCollection", "123", Self.keyedArchiverData(rootObject: preKey)],
             )
             try db.execute(
                 sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                arguments: ["TSStorageManagerPNISignedPreKeyStoreCollection", "234", keyedArchiverData(rootObject: signedPreKey)],
+                arguments: ["TSStorageManagerPNISignedPreKeyStoreCollection", "234", Self.keyedArchiverData(rootObject: signedPreKey)],
             )
             try db.execute(
                 sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
@@ -1197,7 +1197,7 @@ struct GRDBSchemaMigratorTest {
 
     private func keyedArchiverSessionData(deviceIds: [Int32]) -> Data {
         let sessionDictionary = Dictionary(uniqueKeysWithValues: deviceIds.map { ($0, Data()) })
-        return keyedArchiverData(rootObject: sessionDictionary)
+        return Self.keyedArchiverData(rootObject: sessionDictionary)
     }
 
     @Test
@@ -1602,5 +1602,56 @@ struct GRDBSchemaMigratorTest {
                 ) == 0,
             )
         }
+    }
+
+    @Test(arguments: [
+        (#"["A"]"#, keyedArchiverData(rootObject: "B"), Set(["A", "B"])),
+        (#"["A", "A"]"#, keyedArchiverData(rootObject: "A"), Set(["A"])),
+        (#"GARBAGE"#, keyedArchiverData(rootObject: "A"), Set(["A"])),
+        (#"["A"]"#, Data("GARBAGE".utf8), Set(["A"])),
+    ])
+    func testMigrateSecureValueRecovery(testCase: (oldEnclaves: String?, currentEnclave: Data?, finalEnclaves: Set<String>)) throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(
+                sql: "CREATE TABLE keyvalue (KEY TEXT NOT NULL, collection TEXT NOT NULL, VALUE BLOB NOT NULL, PRIMARY KEY (KEY, collection))",
+            )
+            try db.execute(
+                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                arguments: ["SecureValueRecovery2Impl", "ArbitraryKey", #"["C"]"#],
+            )
+            if let oldEnclaves = testCase.oldEnclaves {
+                try db.execute(
+                    sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                    arguments: ["SecureValueRecovery2Impl", "OldEnclavesToDeleteFrom", Data(oldEnclaves.utf8)],
+                )
+            }
+            try db.execute(
+                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                arguments: ["kOWSKeyBackupService_Keys", "ArbitraryKey", Self.keyedArchiverData(rootObject: "C")],
+            )
+            if let currentEnclave = testCase.currentEnclave {
+                try db.execute(
+                    sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                    arguments: ["kOWSKeyBackupService_Keys", "svr2_mrenclaveStringValue", currentEnclave],
+                )
+            }
+        }
+
+        try databaseQueue.write { db in
+            let tx = DBWriteTransaction(database: db)
+            defer { tx.finalizeTransaction() }
+            try GRDBSchemaMigrator.migrateSecureValueRecovery(tx: tx)
+        }
+
+        let potentialEnclaves = try databaseQueue.read { db in
+            return try String.fetchAll(db, sql: "SELECT key FROM keyvalue WHERE collection = ?", arguments: ["SVR.Potential"])
+        }
+        #expect(Set(potentialEnclaves) == testCase.finalEnclaves)
+
+        let nonEmptyCollections = try databaseQueue.read { db in
+            return try String.fetchAll(db, sql: "SELECT DISTINCT collection FROM keyvalue")
+        }
+        #expect(Set(nonEmptyCollections) == ["SVR.Potential"])
     }
 }

@@ -328,6 +328,7 @@ public class GRDBSchemaMigrator {
         case setAttachmentContentTypeFromMimeType
         case dropAttachmentContentTypeAUTrigger
         case addOrphanedAttachmentTimestamp
+        case migrateSecureValueRecovery
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5166,6 +5167,11 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.migrateSecureValueRecovery) { tx in
+            try migrateSecureValueRecovery(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -7762,6 +7768,64 @@ public class GRDBSchemaMigrator {
             DELETE FROM BackupAttachmentUploadQueue
             """,
         )
+    }
+
+    static func migrateSecureValueRecovery(tx: DBWriteTransaction) throws {
+        // When this causes a unit test to fail, pre-migration enclaves have been
+        // torn down, and we don't need to delete anything from them. We should
+        // delete the `do` block that follows at that point in time.
+        assert({
+            let migrationEnclaves = Set([
+                // Production
+                "1240acbd4aa26974184844c8a46b1022d3957ac8a76c1fd8f5b1a15141ee0708",
+                "29cd63c87bea751e3bfd0fbd401279192e2e5c99948b4ee9437eafc4968355fb",
+
+                // Staging
+                "97f151f6ed078edbbfd72fa9cae694dcc08353f1f5e8d9ccd79a971b10ffc535",
+                "a75542d82da9f6914a1e31f8a7407053b99cc99a0e7291d8fbd394253e19b036",
+            ])
+            let allEnclaves = [TSConstants.svr2Enclave] + TSConstants.svr2PreviousEnclaves
+            let shouldMigrate = !migrationEnclaves.isDisjoint(with: allEnclaves.lazy.map(\.stringValue))
+            return shouldMigrate
+        }())
+        do {
+            try tx.database.execute(sql: """
+            INSERT OR IGNORE INTO keyvalue (collection, key, value)
+            SELECT 'SVR.Potential', j.value, X''
+            FROM keyvalue, json_each(keyvalue.value) j
+            WHERE
+                keyvalue.collection IS 'SecureValueRecovery2Impl'
+                AND keyvalue.key IS 'OldEnclavesToDeleteFrom'
+                AND json_valid(keyvalue.value)
+            """)
+
+            let currentEnclaveData = try Data.fetchOne(
+                tx.database,
+                sql: "SELECT value FROM keyvalue WHERE collection IS ? AND key IS ?",
+                arguments: ["kOWSKeyBackupService_Keys", "svr2_mrenclaveStringValue"],
+            )
+            if let currentEnclaveData {
+                let currentEnclaveString: String?
+                do {
+                    currentEnclaveString = try NSKeyedUnarchiver.unarchivedObject(ofClass: NSString.self, from: currentEnclaveData) as String?
+                } catch {
+                    Logger.warn("couldn't decode current enclave: \(error)")
+                    currentEnclaveString = nil
+                }
+                if let currentEnclaveString {
+                    try tx.database.execute(
+                        sql: "INSERT OR IGNORE INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                        arguments: ["SVR.Potential", currentEnclaveString, Data()],
+                    )
+                } else {
+                    Logger.warn("couldn't migrate current enclave")
+                }
+            }
+        }
+
+        try tx.database.execute(sql: """
+        DELETE FROM keyvalue WHERE collection IN ('SecureValueRecovery2Impl', 'kOWSKeyBackupService_Keys')
+        """)
     }
 
     static func dedupeSignalRecipients(tx: DBWriteTransaction) throws {
