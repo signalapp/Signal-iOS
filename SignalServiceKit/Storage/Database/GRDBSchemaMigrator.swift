@@ -360,7 +360,6 @@ public class GRDBSchemaMigrator {
         case dataMigration_groupIdMapping
         case dataMigration_disableSharingSuggestionsForExistingUsers
         case dataMigration_removeOversizedGroupAvatars
-        case dataMigration_scheduleStorageServiceUpdateForMutedThreads
         case dataMigration_populateGroupMember
         case dataMigration_cullInvalidIdentityKeySendingErrors
         case dataMigration_moveToThreadAssociatedData
@@ -369,12 +368,9 @@ public class GRDBSchemaMigrator {
         case dataMigration_repairAvatar
         case dataMigration_dropEmojiAvailabilityStore
         case dataMigration_dropSentStories
-        case dataMigration_syncGroupStories
         case dataMigration_deleteOldGroupCapabilities
-        case dataMigration_updateStoriesDisabledInAccountRecord
         case dataMigration_removeGroupStoryRepliesFromSearchIndex
         case dataMigration_populateStoryContextAssociatedDataLastReadTimestamp
-        case dataMigration_scheduleStorageServiceUpdateForSystemContacts
         case dataMigration_ensureLocalDeviceId
         case dataMigration_indexSearchableNames
         case dataMigration_removeSystemContacts
@@ -408,6 +404,10 @@ public class GRDBSchemaMigrator {
         case dataMigration_rotateStorageServiceKeyAndResetLocalData
         case dataMigration_rotateStorageServiceKeyAndResetLocalDataV2
         case dataMigration_rotateStorageServiceKeyAndResetLocalDataV3
+        case dataMigration_scheduleStorageServiceUpdateForMutedThreads
+        case dataMigration_scheduleStorageServiceUpdateForSystemContacts
+        case dataMigration_syncGroupStories
+        case dataMigration_updateStoriesDisabledInAccountRecord
         case experienceUpgradeSnooze
         case indexInfoMessageOnType
         case indexMediaGallery2
@@ -5264,23 +5264,6 @@ public class GRDBSchemaMigrator {
             return thrownError.map { .failure($0) } ?? .success(())
         }
 
-        migrator.registerMigration(.dataMigration_scheduleStorageServiceUpdateForMutedThreads) { transaction in
-            TSThread.anyEnumerate(
-                transaction: transaction,
-                sql: "SELECT * FROM \(TSThread.databaseTableName) WHERE \(threadColumn: .mutedUntilTimestampObsolete) > 0",
-                arguments: [],
-            ) { thread, _ in
-                if let thread = thread as? TSContactThread {
-                    SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [thread.contactAddress])
-                } else if let thread = thread as? TSGroupThread {
-                    SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: thread.groupModel)
-                } else {
-                    owsFail("Unexpected thread type \(thread)")
-                }
-            }
-            return .success(())
-        }
-
         migrator.registerMigration(.dataMigration_populateGroupMember) { transaction in
             TSThread.anyEnumerate(
                 transaction: transaction,
@@ -5442,14 +5425,6 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_syncGroupStories) { transaction in
-            for thread in ThreadFinder().storyThreads(includeImplicitGroupThreads: false, transaction: transaction) {
-                guard let thread = thread as? TSGroupThread else { continue }
-                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: thread.groupModel)
-            }
-            return .success(())
-        }
-
         migrator.registerMigration(.dataMigration_deleteOldGroupCapabilities) { transaction in
             let sql = """
                 DELETE FROM \(KeyValueStore.tableName)
@@ -5457,11 +5432,6 @@ public class GRDBSchemaMigrator {
                 IN ("GroupManager.senderKeyCapability", "GroupManager.announcementOnlyGroupsCapability", "GroupManager.groupsV2MigrationCapability")
             """
             try transaction.database.execute(sql: sql)
-            return .success(())
-        }
-
-        migrator.registerMigration(.dataMigration_updateStoriesDisabledInAccountRecord) { transaction in
-            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
             return .success(())
         }
 
@@ -5492,35 +5462,6 @@ public class GRDBSchemaMigrator {
                 SET lastReadTimestamp = lastViewedTimestamp
             """
             try transaction.database.execute(sql: sql)
-            return .success(())
-        }
-
-        migrator.registerMigration(.dataMigration_scheduleStorageServiceUpdateForSystemContacts) { transaction in
-            // We've added fields on the StorageService ContactRecord proto for
-            // their "system name", or the name of their associated system
-            // contact, if present. Consequently, for all Signal contacts with
-            // a system contact, we should schedule a StorageService update.
-            //
-            // We only want to do this if we are the primary device, since only
-            // the primary device's system contacts are synced.
-
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard tsAccountManager.registrationState(tx: transaction).isPrimaryDevice ?? false else {
-                return .success(())
-            }
-
-            var accountsToRemove: Set<SignalAccount> = []
-
-            SignalAccount.anyEnumerate(transaction: transaction) { account, _ in
-                guard account.isFromLocalAddressBook else {
-                    // Skip any accounts that do not have a system contact
-                    return
-                }
-
-                accountsToRemove.insert(account)
-            }
-
-            SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: accountsToRemove.map { $0.recipientAddress })
             return .success(())
         }
 
