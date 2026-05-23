@@ -156,20 +156,20 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
                 delegate?.cameraFirstCaptureSendFlowDidCancel(self)
                 return
             }
-            Task { @MainActor in
+            Task {
                 do {
                     _ = try await AttachmentMultisend.enqueueTextAttachment(textAttachment, to: selectedStoryItems)
-                    self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
                 } catch {
                     owsFailDebug("\(error)")
                 }
             }
+            self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
             return
         }
         if let approvedAttachments {
             let approvedMessageBody = self.approvedMessageBody
             let selectedConversations = self.selectedConversations
-            Task { @MainActor [attachmentLimits] in
+            Task { [attachmentLimits] in
                 do {
                     _ = try await AttachmentMultisend.enqueueApprovedMedia(
                         conversations: selectedConversations,
@@ -177,11 +177,11 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
                         approvedAttachments: approvedAttachments,
                         attachmentLimits: attachmentLimits,
                     )
-                    self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
                 } catch {
                     owsFailDebug("\(error)")
                 }
             }
+            self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
             return
         }
         owsFailDebug("completed without anything to send")
