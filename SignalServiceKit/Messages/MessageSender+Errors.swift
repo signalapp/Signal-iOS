@@ -210,30 +210,6 @@ public class SpamChallengeRequiredError: CustomNSError, UserErrorDescriptionProv
 
 // MARK: -
 
-class SpamChallengeResolvedError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
-    // NSError bridging: the domain of the error.
-    static let errorDomain = OWSError.errorDomain
-
-    // NSError bridging: the error code within the given domain.
-    var errorUserInfo: [String: Any] {
-        [NSLocalizedDescriptionKey: self.localizedDescription]
-    }
-
-    var localizedDescription: String {
-        OWSLocalizedString(
-            "ERROR_DESCRIPTION_SUSPECTED_SPAM",
-            comment: "Description for errors returned from the server due to suspected spam.",
-        )
-    }
-
-    // NSError bridging: the error code within the given domain.
-    var errorCode: Int { OWSErrorCode.serverRejectedSuspectedSpam.rawValue }
-
-    var isRetryableProvider: Bool { true }
-}
-
-// MARK: -
-
 class OWSRetryableMessageSenderError: Error, IsRetryableProvider {
     static var asNSError: NSError {
         OWSRetryableMessageSenderError() as Error as NSError

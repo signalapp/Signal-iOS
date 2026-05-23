@@ -226,7 +226,7 @@ extension TSOutgoingMessage {
                 if MessageSender.isRetryableError(error), recipientState.status == .sending {
                     // For retryable errors, we can just set the error code and leave the
                     // state set as Sending
-                } else if error is SpamChallengeRequiredError || error is SpamChallengeResolvedError {
+                } else if error is SpamChallengeRequiredError {
                     recipientState.updateStatusIfPossible(.pending)
                 } else {
                     recipientState.updateStatusIfPossible(.failed)
