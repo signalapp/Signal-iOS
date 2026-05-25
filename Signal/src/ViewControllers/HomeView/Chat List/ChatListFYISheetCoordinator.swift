@@ -61,6 +61,7 @@ class ChatListFYISheetCoordinator {
     private let keyTransparencyStore: KeyTransparencyStore
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
+    private let safetyTipsManager: SafetyTipsManager
 
     init(
         backupExportJobRunner: BackupExportJobRunner,
@@ -80,6 +81,7 @@ class ChatListFYISheetCoordinator {
         self.keyTransparencyStore = keyTransparencyStore
         self.networkManager = networkManager
         self.profileManager = profileManager
+        self.safetyTipsManager = SafetyTipsManager()
     }
 
     func presentIfNecessary(
@@ -142,8 +144,7 @@ class ChatListFYISheetCoordinator {
         tx: DBReadTransaction,
     ) -> FYISheet? {
 
-        let safetyTipsKVStore = SafetyTipsManager()
-        guard let timestamp = safetyTipsKVStore.lastVerificationCodeTimestampMsWithinExpiryTime(transaction: tx) else {
+        guard let timestamp = safetyTipsManager.lastVerificationCodeTimestampMsWithinExpiryTime(transaction: tx) else {
             return nil
         }
 
@@ -491,67 +492,13 @@ class ChatListFYISheetCoordinator {
         smsVerificationCodeSent: FYISheet.SMSVerificationCodeSent,
         from chatListViewController: ChatListViewController,
     ) async {
-        let timestampString = DateUtil.formatMessageTimestampForCVC(
-            smsVerificationCodeSent.timestampMs,
-            shouldUseLongFormat: true,
+        let actionSheetController = SafetyTipsSheet.makeSmsCodeRequestedSheet(
+            timestampMs: smsVerificationCodeSent.timestampMs,
+            fromViewController: chatListViewController,
         )
-        let bodyPartOne = OWSLocalizedString(
-            "VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST",
-            comment: "First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }}",
-        )
-        let bodyPartTwo = OWSLocalizedString(
-            "VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND",
-            comment: "Second part of body for a hero sheet informing the user a verification code was requested.",
-        )
-        let body: NSAttributedString = .composed(of: [
-            bodyPartOne.styled(
-                with: .font(.dynamicTypeHeadline),
-                .color(UIColor.Signal.label),
-                .paragraphSpacingAfter(4.0),
-            ),
-            "\n",
-            timestampString.styled(
-                with: .font(.dynamicTypeBody),
-                .color(UIColor.Signal.label),
-            ),
-            "\n",
-            bodyPartTwo.styled(
-                with: .font(.dynamicTypeBody),
-                .color(UIColor.Signal.label),
-                .paragraphSpacingBefore(12.0),
-            ),
-        ])
-
-        let actionSheet = ActionSheetController(
-            message: body,
-            image: UIImage(resource: .verificationcodeAlert96),
-        )
-        actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString(
-                "SAFETY_TIPS_BUTTON_ACTION_TITLE",
-                comment: "Title for Safety Tips button in thread details.",
-            ),
-            handler: { [weak chatListViewController] _ in
-                guard let chatListViewController else { return }
-                let safetyTipsVC = SafetyTipsViewController(
-                    primaryButton: SafetyTipsViewController.Button(
-                        title: OWSLocalizedString(
-                            "SETTINGS_ACCOUNT_BUTTON",
-                            comment: "Label for button in Safety Tips to go to 'account' page in settings.",
-                        ),
-                        action: { [weak chatListViewController] in
-                            chatListViewController?.showAppSettings(mode: .accountSettings)
-                        },
-                    ),
-                )
-                chatListViewController.present(safetyTipsVC, animated: true)
-            },
-        ))
-        actionSheet.addAction(.ok)
-        chatListViewController.present(actionSheet, animated: true, completion: { [self] in
-            let kvStore = SafetyTipsManager()
+        chatListViewController.present(actionSheetController, animated: true, completion: { [self] in
             db.write { tx in
-                kvStore.removeVerificationCodeRequestedTimestampMs(transaction: tx)
+                safetyTipsManager.removeVerificationCodeRequestedTimestampMs(transaction: tx)
             }
         })
     }

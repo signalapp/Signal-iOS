@@ -146,6 +146,11 @@ class NotificationService: UNNotificationServiceExtension {
 
         if let timestamp = verificationCodeRequestTimestampMs(userInfo: request.content.userInfo) {
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+                guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction).isPrimaryDevice == true else {
+                    Logger.info("Received verification code push on non-primary device; ignoring.")
+                    return
+                }
+
                 let kvStore = SafetyTipsManager()
                 kvStore.setLastVerificationCodeRequestedTimestampMs(value: timestamp, transaction: transaction)
             }
