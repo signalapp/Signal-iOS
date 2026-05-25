@@ -78,6 +78,14 @@ extension ConversationViewController {
             object: AVAudioSession.sharedInstance(),
         )
 
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(smsVerificationCodeRequested),
+            name: .smsVerificationCodeRequested,
+            object: nil,
+        )
+        SafetyTipsManager.startObservingDarwinNotifications()
+
         AppEnvironment.shared.callService.callServiceState.addObserver(self, syncStateImmediately: false)
     }
 
@@ -202,6 +210,28 @@ extension ConversationViewController {
     private func appExpiryDidChange(_ notification: Notification) {
         AssertIsOnMainThread()
         ensureBottomViewType()
+    }
+
+    @objc
+    private func smsVerificationCodeRequested(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        let db = DependenciesBridge.shared.db
+        let safetyTipsManager = SafetyTipsManager()
+        let timestamp: UInt64? = db.read { tx in
+            safetyTipsManager.lastVerificationCodeTimestampMsWithinExpiryTime(transaction: tx)
+        }
+
+        guard let timestamp else { return }
+        let actionSheetController = SafetyTipsSheet.makeSmsCodeRequestedSheet(
+            timestampMs: timestamp,
+            fromViewController: self,
+        )
+        present(actionSheetController, animated: true, completion: {
+            db.write { tx in
+                safetyTipsManager.removeVerificationCodeRequestedTimestampMs(transaction: tx)
+            }
+        })
     }
 }
 

@@ -68,6 +68,7 @@
 		044D77782E5E6D750048C21A /* PollVoteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044D77772E5E6D700048C21A /* PollVoteRecord.swift */; };
 		044D84452E9FDDF00090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044D84442E9FDDE30090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift */; };
 		044D84472E9FEE010090BA64 /* BackupArchivePollArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044D84462E9FEDE20090BA64 /* BackupArchivePollArchiver.swift */; };
+		044EA2232FC0EFAE005B5A3E /* SafetyTipsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044EA2222FC0EFA6005B5A3E /* SafetyTipsSheet.swift */; };
 		045B40892EC67510002D3F9A /* PinnedMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B40882EC6750A002D3F9A /* PinnedMessageManager.swift */; };
 		045B408C2EC67C03002D3F9A /* PinnedMessageRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B408B2EC67BFF002D3F9A /* PinnedMessageRecord.swift */; };
 		045B408E2EC6897B002D3F9A /* PinnedMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B408D2EC68974002D3F9A /* PinnedMessageManagerTest.swift */; };
@@ -4219,6 +4220,7 @@
 		044D77772E5E6D700048C21A /* PollVoteRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteRecord.swift; sourceTree = "<group>"; };
 		044D84442E9FDDE30090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchivePollTerminateChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		044D84462E9FEDE20090BA64 /* BackupArchivePollArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchivePollArchiver.swift; sourceTree = "<group>"; };
+		044EA2222FC0EFA6005B5A3E /* SafetyTipsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyTipsSheet.swift; sourceTree = "<group>"; };
 		045B40882EC6750A002D3F9A /* PinnedMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageManager.swift; sourceTree = "<group>"; };
 		045B408B2EC67BFF002D3F9A /* PinnedMessageRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageRecord.swift; sourceTree = "<group>"; };
 		045B408D2EC68974002D3F9A /* PinnedMessageManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageManagerTest.swift; sourceTree = "<group>"; };
@@ -11324,6 +11326,7 @@
 				0550A5E12C4035170072CC02 /* CLVViewInfo.swift */,
 				34E95C1F269F4F4F004807EC /* CLVViewState.swift */,
 				4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */,
+				044EA2222FC0EFA6005B5A3E /* SafetyTipsSheet.swift */,
 				1477630A275E20D700D1067E /* ThreadContextualActionProvider.swift */,
 			);
 			path = "Chat List";
@@ -18730,6 +18733,7 @@
 				348EE28F25B897BF00814FC2 /* ReusableMediaView.swift in Sources */,
 				66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */,
 				D9E43C2C2CC194140001536E /* RTCIceServerFetcher.swift in Sources */,
+				044EA2232FC0EFAE005B5A3E /* SafetyTipsSheet.swift in Sources */,
 				C1D9B1552B7FA28200D94595 /* SafetyTipsViewController.swift in Sources */,
 				7677E41329F84C2100AC6A75 /* ScreenLockUI.swift in Sources */,
 				667EDE6428F8D6B7001FB487 /* SDAnimatedImage+Duration.swift in Sources */,
