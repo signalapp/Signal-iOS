@@ -214,7 +214,7 @@ class MediaPageViewController: UIPageViewController {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        if traitCollection.verticalSizeClass != previousTraitCollection?.verticalSizeClass {
+        if traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass {
             updateControlsForCurrentOrientation()
         }
     }
@@ -367,7 +367,7 @@ class MediaPageViewController: UIPageViewController {
         // Bottom bar might be hidden while in landscape and visible in portrait, for the same media.
         showOrHideTopAndBottomPanelsAsNecessary(animated: false)
 
-        if traitCollection.verticalSizeClass == .compact {
+        if traitCollection.horizontalSizeClass == .regular {
             // Order of buttons is reversed: first button in array is the outermost in the navbar.
             navigationItem.rightBarButtonItems = [buildContextMenuBarButton(), barButtonForwardMedia, barButtonShareMedia]
         } else {
