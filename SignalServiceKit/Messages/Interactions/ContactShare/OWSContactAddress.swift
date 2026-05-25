@@ -137,7 +137,6 @@ public final class OWSContactAddress: NSObject, NSSecureCoding, OWSContactField 
                 return true
             }
         }
-        Logger.warn("Invalid address: empty")
         return false
     }
 

@@ -176,42 +176,34 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
     private func archiveContactAddress(
         _ contactAddress: OWSContactAddress,
     ) -> BackupArchive.ArchiveInteractionResult<BackupProto_ContactAttachment.PostalAddress?> {
+        guard contactAddress.isValid else {
+            return .success(nil)
+        }
+
         var addressProto = BackupProto_ContactAttachment.PostalAddress()
-        var isValid = false
-        if let label = contactAddress.label?.nilIfEmpty {
-            isValid = true
+        if let label = contactAddress.label?.strippedOrNil {
             addressProto.label = label
         }
-        if let street = contactAddress.street?.nilIfEmpty {
-            isValid = true
+        if let street = contactAddress.street?.strippedOrNil {
             addressProto.street = street
         }
-        if let pobox = contactAddress.pobox?.nilIfEmpty {
-            isValid = true
+        if let pobox = contactAddress.pobox?.strippedOrNil {
             addressProto.pobox = pobox
         }
-        if let neighborhood = contactAddress.neighborhood?.nilIfEmpty {
-            isValid = true
+        if let neighborhood = contactAddress.neighborhood?.strippedOrNil {
             addressProto.neighborhood = neighborhood
         }
-        if let city = contactAddress.city?.nilIfEmpty {
-            isValid = true
+        if let city = contactAddress.city?.strippedOrNil {
             addressProto.city = city
         }
-        if let region = contactAddress.region?.nilIfEmpty {
-            isValid = true
+        if let region = contactAddress.region?.strippedOrNil {
             addressProto.region = region
         }
-        if let postcode = contactAddress.postcode?.nilIfEmpty {
-            isValid = true
+        if let postcode = contactAddress.postcode?.strippedOrNil {
             addressProto.postcode = postcode
         }
-        if let country = contactAddress.country?.nilIfEmpty {
-            isValid = true
+        if let country = contactAddress.country?.strippedOrNil {
             addressProto.country = country
-        }
-        guard isValid else {
-            return .success(nil)
         }
         addressProto.type = switch contactAddress.type {
         case .home:
