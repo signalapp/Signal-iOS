@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import SignalUI
 import UIKit
 
 class MediaZoomAnimationController: NSObject {
@@ -90,19 +91,6 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
             return
         }
 
-        guard let presentationImage = item.image else {
-            owsFailDebug("presentationImage was unexpectedly nil")
-            // Complete transition immediately.
-            fromContextProvider.mediaWillPresent(fromContext: fromMediaContext)
-            toContextProvider.mediaWillPresent(toContext: toMediaContext)
-            DispatchQueue.main.async {
-                fromContextProvider.mediaDidPresent(fromContext: fromMediaContext)
-                toContextProvider.mediaDidPresent(toContext: toMediaContext)
-                transitionContext.completeTransition(true)
-            }
-            return
-        }
-
         // All is good, set up the view hieranchy and view animations.
 
         let backgroundView = UIView(frame: containerView.bounds)
@@ -121,10 +109,18 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
         }
         containerView.addSubview(clippingView)
 
-        let transitionView = MediaTransitionImageView(image: presentationImage)
+        let transitionView: UIView
+        if let presentationImage = item.image {
+            let view = MediaTransitionImageView(image: presentationImage)
+            view.shape = fromMediaContext.mediaViewShape
+            transitionView = view
+        } else {
+            let view = UIView()
+            view.backgroundColor = Theme.washColor
+            transitionView = view
+        }
         transitionView.contentMode = .scaleAspectFill
         transitionView.layer.masksToBounds = true
-        transitionView.shape = fromMediaContext.mediaViewShape
         transitionView.frame = clippingView.convert(fromMediaContext.presentationFrame, from: containerView)
         clippingView.addSubview(transitionView)
 
@@ -153,7 +149,9 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
             }
 
             toView.alpha = 1.0
-            transitionView.shape = toMediaContext.mediaViewShape
+            if let transitionView = transitionView as? MediaTransitionImageView {
+                transitionView.shape = toMediaContext.mediaViewShape
+            }
             transitionView.frame = clippingView.convert(toMediaContext.presentationFrame, from: containerView)
             backgroundView.backgroundColor = toMediaContext.backgroundColor
         }
