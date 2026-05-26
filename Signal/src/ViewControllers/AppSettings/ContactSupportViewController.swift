@@ -117,8 +117,6 @@ final class ContactSupportViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.rightBarButtonItem?.tintColor = .Signal.accent
-
         shouldAvoidKeyboard = true
 
         tableView.keyboardDismissMode = .interactive
