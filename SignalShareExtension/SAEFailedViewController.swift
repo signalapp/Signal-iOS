@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import PureLayout
 import SignalServiceKit
 import SignalUI
 
@@ -14,10 +13,10 @@ protocol SAEFailedViewDelegate: AnyObject {
 
 class SAEFailedViewController: UIViewController {
 
-    weak var delegate: SAEFailedViewDelegate?
+    private weak var delegate: SAEFailedViewDelegate?
 
-    let failureTitle: String
-    let failureMessage: String
+    private let failureTitle: String
+    private let failureMessage: String
 
     // MARK: Initializers and Factory Methods
 
@@ -25,6 +24,7 @@ class SAEFailedViewController: UIViewController {
         self.delegate = delegate
         self.failureTitle = title
         self.failureMessage = message
+
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -33,53 +33,46 @@ class SAEFailedViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func loadView() {
-        super.loadView()
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-        self.navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
             self?.cancelPressed()
         }
-        self.navigationItem.title = "Signal"
+        navigationItem.title = "Signal"
 
-        self.view.backgroundColor = Theme.launchScreenBackgroundColor
+        view.backgroundColor = .Signal.background
 
-        let logoImage = UIImage(named: "signal-logo-128-launch-screen")
-        let logoImageView = UIImageView(image: logoImage)
-        self.view.addSubview(logoImageView)
-        logoImageView.autoCenterInSuperview()
-        let logoSize = CGFloat(120)
-        logoImageView.autoSetDimension(.width, toSize: logoSize)
-        logoImageView.autoSetDimension(.height, toSize: logoSize)
+        let logoImageView = UIImageView(image: UIImage(named: "signal-logo-128-launch-screen"))
 
-        let titleLabel = UILabel()
-        titleLabel.textColor = UIColor.white
-        titleLabel.font = .semiboldFont(ofSize: 18)
+        let titleLabel = UILabel.headlineLabel(text: failureTitle, semibold: true)
         titleLabel.text = failureTitle
         titleLabel.textAlignment = .center
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
-        self.view.addSubview(titleLabel)
-        titleLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 20)
-        titleLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 20)
-        titleLabel.autoPinEdge(.top, to: .bottom, of: logoImageView, withOffset: 25)
 
-        let messageLabel = UILabel()
-        messageLabel.textColor = UIColor.white
-        messageLabel.font = .regularFont(ofSize: 14)
-        messageLabel.text = failureMessage
+        let messageLabel = UILabel.subheadlineLabel(text: failureMessage)
         messageLabel.textAlignment = .center
-        messageLabel.numberOfLines = 0
-        messageLabel.lineBreakMode = .byWordWrapping
-        self.view.addSubview(messageLabel)
-        messageLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 20)
-        messageLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 20)
-        messageLabel.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 10)
+
+        let vStack = UIStackView(arrangedSubviews: [logoImageView, titleLabel, messageLabel])
+        vStack.alignment = .center
+        vStack.axis = .vertical
+        vStack.spacing = 12
+        vStack.setCustomSpacing(24, after: logoImageView)
+        view.addSubview(vStack)
+
+        vStack.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            vStack.topAnchor.constraint(greaterThanOrEqualTo: view.layoutMarginsGuide.topAnchor),
+            vStack.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.centerYAnchor),
+
+            vStack.leadingAnchor.constraint(greaterThanOrEqualTo: view.layoutMarginsGuide.leadingAnchor),
+            vStack.centerXAnchor.constraint(equalTo: view.layoutMarginsGuide.centerXAnchor),
+        ])
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.navigationController?.isNavigationBarHidden = false
+        navigationController?.isNavigationBarHidden = false
     }
 
     // MARK: - Event Handlers
