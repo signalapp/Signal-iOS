@@ -80,10 +80,6 @@ public enum BuildFlags {
         public static let send = build <= .internal
     }
 
-    public enum AttachmentBackfill {
-        public static let handleRequests = true
-    }
-
     public static let collapsingChatEvents = build <= .beta
 
     public enum ReleaseNotesChannel {

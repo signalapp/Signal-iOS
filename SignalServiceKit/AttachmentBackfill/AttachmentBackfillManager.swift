@@ -165,11 +165,6 @@ public class AttachmentBackfillManager {
         registeredState: RegisteredState,
         tx: DBWriteTransaction,
     ) {
-        guard BuildFlags.AttachmentBackfill.handleRequests else {
-            logger.warn("Dropping backfill request: not yet supported.")
-            return
-        }
-
         guard registeredState.isPrimary else {
             logger.warn("Dropping backfill request: not registered primary.")
             return
