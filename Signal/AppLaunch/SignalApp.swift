@@ -128,6 +128,7 @@ public class SignalApp {
             owsFailDebug("Missing conversationSplitViewController.")
             return
         }
+
         conversationSplitViewController.showAppSettingsWithMode(mode, completion: completion)
     }
 

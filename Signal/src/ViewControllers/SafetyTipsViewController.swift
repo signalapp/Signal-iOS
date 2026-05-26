@@ -145,8 +145,9 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
         let button = UIButton(
             configuration: config,
             primaryAction: .init(handler: { [weak self] _ in
-                self?.dismiss(animated: true)
-                self?.primaryButton.action()
+                self?.dismiss(animated: true, completion: {
+                    self?.primaryButton.action()
+                })
             }),
         )
 

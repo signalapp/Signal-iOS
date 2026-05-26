@@ -144,6 +144,17 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         }
     }
 
+    private func selectedTabPopToRoot(animated: Bool) {
+        switch homeVC.selectedHomeTab {
+        case .calls:
+            callsListNavController.popToRootViewController(animated: animated)
+        case .chatList:
+            chatListNavController.popToRootViewController(animated: animated)
+        case .stories:
+            storiesNavController.popToRootViewController(animated: animated)
+        }
+    }
+
     func presentThread(
         threadUniqueId: String,
         action: ConversationViewAction,
@@ -550,6 +561,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     }
 
     func showAppSettingsWithMode(_ mode: ChatListViewController.ShowAppSettingsMode, completion: (() -> Void)? = nil) {
+        selectedTabPopToRoot(animated: true)
         homeVC.chatListViewController.showAppSettings(mode: mode, completion: completion)
     }
 
