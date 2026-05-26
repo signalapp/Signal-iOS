@@ -140,7 +140,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         }
 
         // has non-nil value if isRegistered is true.
-        let hasBackedUpMasterKey = self.svrLocalStorage.getIsMasterKeyBackedUp(tx)
+        let hasBackedUpMasterKey = self.svrLocalStorage.isMasterKeyBackedUp(tx: tx)
         let capabilities = AccountAttributes.Capabilities(hasSVRBackups: hasBackedUpMasterKey)
         let lastAttributeRequestToken = self.kvStore.getData(Keys.latestUpdateRequestToken, transaction: tx)
 

@@ -25,6 +25,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let signalService: OWSSignalServiceProtocol
     private let storageServiceManager: StorageServiceManager
     private let svr: SecureValueRecovery
+    private let svrLocalStorage: SVRLocalStorage
     private let syncManager: SyncManagerProtocol
     private let threadStore: ThreadStore
     private let tsAccountManager: TSAccountManager
@@ -47,6 +48,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManager,
         svr: SecureValueRecovery,
+        svrLocalStorage: SVRLocalStorage,
         syncManager: SyncManagerProtocol,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
@@ -68,6 +70,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         self.signalService = signalService
         self.storageServiceManager = storageServiceManager
         self.svr = svr
+        self.svrLocalStorage = svrLocalStorage
         self.syncManager = syncManager
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
@@ -479,7 +482,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         didLinkNSync: Bool,
     ) async throws(CompleteProvisioningError) {
         let hasBackedUpMasterKey = self.db.read { tx in
-            self.svr.hasBackedUpMasterKey(transaction: tx)
+            self.svrLocalStorage.isMasterKeyBackedUp(tx: tx)
         }
         let capabilities = AccountAttributes.Capabilities(hasSVRBackups: hasBackedUpMasterKey)
         do {
@@ -702,7 +705,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
         let phoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: tx)
 
-        let hasSVRBackups = svr.hasBackedUpMasterKey(transaction: tx)
+        let hasSVRBackups = svrLocalStorage.isMasterKeyBackedUp(tx: tx)
 
         return AccountAttributes(
             isManualMessageFetchEnabled: isManualMessageFetchEnabled,

@@ -160,6 +160,7 @@ public class RegistrationCoordinatorTest {
             signalService: mockSignalService,
             storageServiceManager: storageServiceManagerMock,
             svr: svr,
+            svrLocalStorage: SVRLocalStorage(),
             svrAuthCredentialStore: svrAuthCredentialStore,
             timeoutProvider: timeoutProviderMock,
             tsAccountManager: tsAccountManagerMock,

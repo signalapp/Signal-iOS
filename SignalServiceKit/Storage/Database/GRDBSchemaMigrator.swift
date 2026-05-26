@@ -5181,7 +5181,8 @@ public class GRDBSchemaMigrator {
         // migration, we want the crash logs reflect where it occurred.
 
         migrator.registerMigration(.dataMigration_enableV2RegistrationLockIfNecessary) { transaction in
-            if DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction) {
+            let accountKeyStore = DependenciesBridge.shared.accountKeyStore
+            if accountKeyStore.getMasterKey(tx: transaction) != nil {
                 KeyValueStore(collection: "kOWS2FAManager_Collection")
                     .setBool(true, key: "isRegistrationLockV2Enabled", transaction: transaction)
             }

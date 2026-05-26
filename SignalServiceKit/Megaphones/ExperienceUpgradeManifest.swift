@@ -530,10 +530,13 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
 
     public static func checkPreconditionsForIntroducingPins(transaction: DBReadTransaction) -> Bool {
         // The PIN setup flow requires an internet connection and you to not already have a PIN
+        let accountKeyStore = DependenciesBridge.shared.accountKeyStore
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let reachabilityManager = SSKEnvironment.shared.reachabilityManagerRef
         if
-            SSKEnvironment.shared.reachabilityManagerRef.isReachable,
-            DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice,
-            !DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction)
+            reachabilityManager.isReachable,
+            tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice,
+            accountKeyStore.getMasterKey(tx: transaction) == nil
         {
             return true
         }

@@ -103,12 +103,6 @@ public protocol SecureValueRecovery {
     /// Performs periodic credential refresh to help with re-registration.
     func refreshCredentialsIfNecessary() async throws
 
-    /// Indicates whether or not we have a master key locally
-    func hasMasterKey(transaction: DBReadTransaction) -> Bool
-
-    /// Indicates whether or not we have a master key stored in SVR
-    func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool
-
     /// Loads the users key, if any, from the SVR into the database.
     func restoreKeys(pin: String, authMethod: SVR.AuthMethod) async -> SVR.RestoreKeysResult
 

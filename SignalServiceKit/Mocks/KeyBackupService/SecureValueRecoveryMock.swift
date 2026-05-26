@@ -17,16 +17,6 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
     public func refreshCredentialsIfNecessary() async throws {
     }
 
-    public var hasBackedUpMasterKey: Bool = false
-
-    public func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool {
-        return hasBackedUpMasterKey
-    }
-
-    public func hasMasterKey(transaction: DBReadTransaction) -> Bool {
-        return SVRLocalStorage().getIsMasterKeyBackedUp(transaction)
-    }
-
     public var reglockToken: String?
 
     public var backupMasterKeyMock: ((_ pin: String, _ masterKey: MasterKey, _ force: Bool, _ authMethod: SVR.AuthMethod) -> Promise<Void>)?

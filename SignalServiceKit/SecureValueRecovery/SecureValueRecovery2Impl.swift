@@ -44,7 +44,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     // MARK: - Periodic Backups
 
     public func refreshCredentialsIfNecessary() async throws {
-        let hasBackedUp = self.db.read { tx in self.hasBackedUpMasterKey(transaction: tx) }
+        let hasBackedUp = self.db.read { tx in self.localStorage.isMasterKeyBackedUp(tx: tx) }
         guard hasBackedUp else {
             // If we've never backed up, don't refresh periodically. (If we eventually
             // perform a backup, we'll cache those credential after fetching them.)
@@ -59,16 +59,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 tx,
             )
         }
-    }
-
-    // MARK: - Key Existence
-
-    public func hasMasterKey(transaction: DBReadTransaction) -> Bool {
-        return accountKeyStore.getMasterKey(tx: transaction) != nil
-    }
-
-    public func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool {
-        return localStorage.getIsMasterKeyBackedUp(transaction)
     }
 
     // MARK: - Key Management

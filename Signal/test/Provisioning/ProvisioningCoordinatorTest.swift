@@ -90,6 +90,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             signalService: signalServiceMock,
             storageServiceManager: storageServiceManagerMock,
             svr: svrMock,
+            svrLocalStorage: SVRLocalStorage(),
             syncManager: syncManagerMock,
             threadStore: threadStoreMock,
             tsAccountManager: tsAccountManagerMock,

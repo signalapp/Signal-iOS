@@ -80,7 +80,9 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
     }
 
     private func runStartupJobsForLinkedDevice(tx: DBWriteTransaction) {
-        if svr.hasMasterKey(transaction: tx) {
+        let accountKeyStore = DependenciesBridge.shared.accountKeyStore
+
+        if accountKeyStore.getMasterKey(tx: tx) != nil {
             // No need to sync; we have the master key.
             return
         }

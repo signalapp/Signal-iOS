@@ -41,6 +41,7 @@ public struct RegistrationCoordinatorDependencies {
     public let signalService: OWSSignalServiceProtocol
     public let storageServiceManager: RegistrationCoordinatorImpl.Shims.StorageServiceManager
     public let svr: SecureValueRecovery
+    public let svrLocalStorage: SVRLocalStorage
     public let svrAuthCredentialStore: SVRAuthCredentialStorage
     public let timeoutProvider: RegistrationCoordinatorImpl.Shims.TimeoutProvider
     public let tsAccountManager: TSAccountManager
@@ -88,6 +89,7 @@ public struct RegistrationCoordinatorDependencies {
             signalService: SSKEnvironment.shared.signalServiceRef,
             storageServiceManager: RegistrationCoordinatorImpl.Wrappers.StorageServiceManager(SSKEnvironment.shared.storageServiceManagerRef),
             svr: DependenciesBridge.shared.svr,
+            svrLocalStorage: DependenciesBridge.shared.svrLocalStorage,
             svrAuthCredentialStore: DependenciesBridge.shared.svrCredentialStorage,
             timeoutProvider: RegistrationCoordinatorImpl.Wrappers.TimeoutProvider(),
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
