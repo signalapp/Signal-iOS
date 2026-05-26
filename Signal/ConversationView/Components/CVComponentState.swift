@@ -1373,8 +1373,11 @@ private extension CVComponentState.Builder {
                             .paid(let optimizeLocalStorage),
                             .paidAsTester(let optimizeLocalStorage),
                             .paidExpiringSoon(let optimizeLocalStorage):
-                            mediaAlbumHasSkippedAttachment = optimizeLocalStorage
-                                && !canAutoDownloadAttachment(referencedAttachment: attachment)
+                            if optimizeLocalStorage {
+                                mediaAlbumHasSkippedAttachment = !canAutoDownloadAttachment(referencedAttachment: attachment)
+                            } else {
+                                mediaAlbumHasSkippedAttachment = true
+                            }
                         case
                             .free,
                             .disabled,
