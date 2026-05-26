@@ -219,9 +219,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             accessoryType: newAccessMemberLabels == .administrator ? .checkmark : .none,
         ))
 
-        if BuildFlags.MemberLabel.send {
-            contents.add(accessMemberLabelsSection)
-        }
+        contents.add(accessMemberLabelsSection)
     }
 
     private func tryToSetAccessMembers(_ value: GroupV2Access) {
@@ -293,11 +291,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         ))
         actionSheet.addAction(.cancel)
 
-        if BuildFlags.MemberLabel.send {
-            self.presentActionSheet(actionSheet)
-        } else {
-            continueHandler()
-        }
+        self.presentActionSheet(actionSheet)
     }
 
     private func tryToSetAccessAttributes(_ value: GroupV2Access) {

@@ -63,11 +63,6 @@ public enum BuildFlags {
     // that's now dead because this is false.
     public static let migrateDeprecatedSessions = true
 
-    public enum MemberLabel {
-        public static let display = true
-        public static let send = true
-    }
-
     public enum KeyTransparency {
         public static let enabled = build <= .beta
         public static let conservativeSelfCheck = build <= .internal

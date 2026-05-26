@@ -423,7 +423,6 @@ struct CVItemModelBuilder: CVItemBuilding {
 
                 var memberLabel: String?
                 if
-                    BuildFlags.MemberLabel.display,
                     let groupThread = thread as? TSGroupThread,
                     !threadViewModel.hasPendingMessageRequest,
                     let senderAci = incomingSenderAddress.aci

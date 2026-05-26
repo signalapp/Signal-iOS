@@ -101,10 +101,6 @@ class GroupViewHelper {
     }
 
     var canEditMemberLabels: Bool {
-        guard BuildFlags.MemberLabel.send else {
-            return false
-        }
-
         return canLocalUserEditConversation { groupAccess in
             return groupAccess.memberLabels
         }

@@ -468,10 +468,8 @@ public class GroupManager: NSObject {
     ) async throws {
         try await updateGroupV2(groupModel: groupModel, description: "Change member role") { groupChangeSet in
             groupChangeSet.changeRoleForMember(aci, role: role)
-            if BuildFlags.MemberLabel.send {
-                if role == .normal, groupModel.access.memberLabels == .administrator {
-                    groupChangeSet.changeLabelForMember(aci, label: nil)
-                }
+            if role == .normal, groupModel.access.memberLabels == .administrator {
+                groupChangeSet.changeLabelForMember(aci, label: nil)
             }
         }
     }
@@ -493,11 +491,9 @@ public class GroupManager: NSObject {
     public static func changeGroupMemberLabelsAccessV2(groupModel: TSGroupModelV2, access: GroupV2Access) async throws {
         try await updateGroupV2(groupModel: groupModel, description: "Change group member labels access") { groupChangeSet in
             groupChangeSet.setAccessForMemberLabels(access)
-            if BuildFlags.MemberLabel.send {
-                let acisToClear = acisToClearMemberLabelsFor(groupModel: groupModel, access: access)
-                for aci in acisToClear {
-                    groupChangeSet.changeLabelForMember(aci, label: nil)
-                }
+            let acisToClear = acisToClearMemberLabelsFor(groupModel: groupModel, access: access)
+            for aci in acisToClear {
+                groupChangeSet.changeLabelForMember(aci, label: nil)
             }
         }
     }

@@ -938,7 +938,7 @@ extension ConversationSettingsViewController {
                         cell.selectionStyle = .default
                     }
 
-                    if BuildFlags.MemberLabel.display, let memberLabel {
+                    if let memberLabel {
                         configuration.memberLabel = memberLabel
                     }
 
@@ -1055,43 +1055,41 @@ extension ConversationSettingsViewController {
             ),
         )
 
-        if BuildFlags.MemberLabel.send {
-            let canEditMemberLabel = groupViewHelper.canEditMemberLabels
-            let iconColor: UIColor
-            let textColor: UIColor
-            if canEditMemberLabel {
-                iconColor = Theme.primaryIconColor
-                textColor = Theme.primaryTextColor
-            } else {
-                iconColor = UIColor.Signal.label.withAlphaComponent(0.3)
-                textColor = UIColor.Signal.label.withAlphaComponent(0.3)
-            }
-            section.add(
-                OWSTableItem.disclosureItem(
-                    icon: .memberLabel,
-                    tintColor: iconColor,
-                    withText: OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_MEMBER_TAG",
-                        comment: "Label for 'member label' action in conversation settings view.",
-                    ),
-                    textColor: textColor,
-                    actionBlock: { [weak self] in
-                        guard let self else { return }
-                        if canEditMemberLabel {
-                            memberLabelCoordinator?.presenter = self
-                            memberLabelCoordinator?.present()
-                        } else {
-                            presentToast(
-                                text: OWSLocalizedString(
-                                    "MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST",
-                                    comment: "Toast indicating that only admins can set a member label.",
-                                ),
-                            )
-                        }
-                    },
-                ),
-            )
+        let canEditMemberLabel = groupViewHelper.canEditMemberLabels
+        let iconColor: UIColor
+        let textColor: UIColor
+        if canEditMemberLabel {
+            iconColor = Theme.primaryIconColor
+            textColor = Theme.primaryTextColor
+        } else {
+            iconColor = UIColor.Signal.label.withAlphaComponent(0.3)
+            textColor = UIColor.Signal.label.withAlphaComponent(0.3)
         }
+        section.add(
+            OWSTableItem.disclosureItem(
+                icon: .memberLabel,
+                tintColor: iconColor,
+                withText: OWSLocalizedString(
+                    "CONVERSATION_SETTINGS_MEMBER_TAG",
+                    comment: "Label for 'member label' action in conversation settings view.",
+                ),
+                textColor: textColor,
+                actionBlock: { [weak self] in
+                    guard let self else { return }
+                    if canEditMemberLabel {
+                        memberLabelCoordinator?.presenter = self
+                        memberLabelCoordinator?.present()
+                    } else {
+                        presentToast(
+                            text: OWSLocalizedString(
+                                "MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST",
+                                comment: "Toast indicating that only admins can set a member label.",
+                            ),
+                        )
+                    }
+                },
+            ),
+        )
 
         let itemTitle = OWSLocalizedString(
             "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES",

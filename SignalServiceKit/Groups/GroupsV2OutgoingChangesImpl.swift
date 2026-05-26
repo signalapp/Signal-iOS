@@ -549,32 +549,30 @@ public class GroupsV2OutgoingChanges {
             didChange = true
         }
 
-        if BuildFlags.MemberLabel.send {
-            for (aci, label) in self.membersToChangeLabel {
-                guard currentGroupMembership.isFullMember(aci) else {
-                    // User is no longer a member.
-                    throw GroupsV2Error.cannotBuildGroupChangeProto_conflictingChange
-                }
-                var actionBuilder = GroupsProtoGroupChangeActionsModifyMemberLabelAction.builder()
-                let userId = try groupV2Params.userId(for: aci)
-                actionBuilder.setUserID(userId)
-
-                if
-                    let labelString = label?.label,
-                    let encryptedLabelString = try? groupV2Params.encryptMemberLabel(labelString)
-                {
-                    actionBuilder.setLabelString(encryptedLabelString)
-                }
-                if
-                    let labelEmoji = label?.labelEmoji,
-                    let encryptedLabelEmoji = try? groupV2Params.encryptMemberLabelEmoji(labelEmoji)
-                {
-                    actionBuilder.setLabelEmoji(encryptedLabelEmoji)
-                }
-
-                actionsBuilder.addModifyMemberLabel(actionBuilder.buildInfallibly())
-                didChange = true
+        for (aci, label) in self.membersToChangeLabel {
+            guard currentGroupMembership.isFullMember(aci) else {
+                // User is no longer a member.
+                throw GroupsV2Error.cannotBuildGroupChangeProto_conflictingChange
             }
+            var actionBuilder = GroupsProtoGroupChangeActionsModifyMemberLabelAction.builder()
+            let userId = try groupV2Params.userId(for: aci)
+            actionBuilder.setUserID(userId)
+
+            if
+                let labelString = label?.label,
+                let encryptedLabelString = try? groupV2Params.encryptMemberLabel(labelString)
+            {
+                actionBuilder.setLabelString(encryptedLabelString)
+            }
+            if
+                let labelEmoji = label?.labelEmoji,
+                let encryptedLabelEmoji = try? groupV2Params.encryptMemberLabelEmoji(labelEmoji)
+            {
+                actionBuilder.setLabelEmoji(encryptedLabelEmoji)
+            }
+
+            actionsBuilder.addModifyMemberLabel(actionBuilder.buildInfallibly())
+            didChange = true
         }
 
         let currentAccess = currentGroupModel.access

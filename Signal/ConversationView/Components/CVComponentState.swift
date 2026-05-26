@@ -1675,7 +1675,6 @@ private extension CVComponentState.Builder {
             } else if let quotedMessage = message.quotedMessage {
                 var memberLabel: String?
                 if
-                    BuildFlags.MemberLabel.display,
                     let groupThread = thread as? TSGroupThread,
                     !threadViewModel.hasPendingMessageRequest,
                     let originalMessageAuthor = quotedMessage.authorAddress.aci

@@ -493,7 +493,6 @@ extension MemberActionSheet: ConversationHeaderDelegate {
 
     func didTapMemberLabel() {
         guard
-            BuildFlags.MemberLabel.send,
             let presenter = self.fromViewController as? MemberLabelViewControllerPresenter,
             let groupViewHelper,
             let groupThread = groupViewHelper.thread as? TSGroupThread,

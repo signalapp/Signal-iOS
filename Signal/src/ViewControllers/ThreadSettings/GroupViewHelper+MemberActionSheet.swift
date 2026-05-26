@@ -130,7 +130,6 @@ extension GroupViewHelper {
 
         var message: String?
         if
-            BuildFlags.MemberLabel.send,
             hasMemberLabel,
             let groupModel = (thread as? TSGroupThread)?.groupModel as? TSGroupModelV2,
             groupModel.access.memberLabels == .administrator
