@@ -1626,7 +1626,6 @@
 		8864072C27F0DA38009916B6 /* StoryGroupReplyViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */; };
 		8864072E27F0E8DF009916B6 /* StoryGroupReplyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */; };
 		8864073127F21AD7009916B6 /* StoryReplyInputToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864073027F21AD7009916B6 /* StoryReplyInputToolbar.swift */; };
-		8868A089287F4514000E74A5 /* NewStorySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8868A088287F4514000E74A5 /* NewStorySheet.swift */; };
 		8868A08A287F4551000E74A5 /* InteractiveSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */; };
 		8868A08C287F4F81000E74A5 /* OWSTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8868A08B287F4F81000E74A5 /* OWSTableSheetViewController.swift */; };
 		886BB3D225BA0C9D00079781 /* PreviewWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */; };
@@ -5838,7 +5837,6 @@
 		8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyViewItem.swift; sourceTree = "<group>"; };
 		8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyCell.swift; sourceTree = "<group>"; };
 		8864073027F21AD7009916B6 /* StoryReplyInputToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryReplyInputToolbar.swift; sourceTree = "<group>"; };
-		8868A088287F4514000E74A5 /* NewStorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewStorySheet.swift; sourceTree = "<group>"; };
 		8868A08B287F4F81000E74A5 /* OWSTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableSheetViewController.swift; sourceTree = "<group>"; };
 		886A58C8276A760600A1099B /* DonationSubscriptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DonationSubscriptionManager.swift; sourceTree = "<group>"; };
 		886A58C9276A760600A1099B /* DonationReceiptCredentialRedemptionJobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DonationReceiptCredentialRedemptionJobQueue.swift; sourceTree = "<group>"; };
@@ -11796,7 +11794,6 @@
 				88F5D78B2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift */,
 				88F5D7892880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift */,
 				880FB3F228CC161800FA1C10 /* NewStoryHeaderView.swift */,
-				8868A088287F4514000E74A5 /* NewStorySheet.swift */,
 				66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */,
 				B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */,
 				88B6D67128076F37005D86EC /* StoryMessage+SignalUI.swift */,
@@ -17855,7 +17852,6 @@
 				88F5D78C2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift in Sources */,
 				88F5D78A2880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift in Sources */,
 				880FB3F328CC161800FA1C10 /* NewStoryHeaderView.swift in Sources */,
-				8868A089287F4514000E74A5 /* NewStorySheet.swift in Sources */,
 				3402AAAC271D9E180084CBAE /* NonContactTableViewCell.swift in Sources */,
 				507C07402F116E9200ECFEFA /* NormalizedImage.swift in Sources */,
 				3402AAAB271D9E180084CBAE /* OWSActionSheets.swift in Sources */,

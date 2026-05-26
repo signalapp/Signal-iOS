@@ -40,25 +40,51 @@ public class NewStoryHeaderView: UIStackView {
         addArrangedSubview(textView)
         addArrangedSubview(.hStretchingSpacer())
 
-        // TODO: Replace with ContextMenuButton
-        let newStoryButton = UIButton(
-            configuration: .bordered(),
-            primaryAction: UIAction { [weak self] _ in
-                self?.didTapNewStory()
-            },
-        )
-        newStoryButton.configuration?.image = UIImage(imageLiteralResourceName: "plus-extra-small")
-        newStoryButton.configuration?.imagePlacement = .leading
-        newStoryButton.configuration?.imagePadding = 6
-        newStoryButton.configuration?.title = OWSLocalizedString(
+        var configuration = UIButton.Configuration.bordered()
+        configuration.image = UIImage(imageLiteralResourceName: "plus-extra-small")
+        configuration.imagePlacement = .leading
+        configuration.imagePadding = 6
+        configuration.title = OWSLocalizedString(
             "NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON",
             comment: "table section header button to add a new story",
         )
-        newStoryButton.configuration?.titleTextAttributesTransformer = .defaultFont(.dynamicTypeFootnoteClamped.semibold())
-        newStoryButton.configuration?.contentInsets = .init(hMargin: 12, vMargin: 6)
-        newStoryButton.configuration?.baseForegroundColor = .Signal.label
-        newStoryButton.configuration?.baseBackgroundColor = delegate.cellBackgroundColor
-        newStoryButton.configuration?.cornerStyle = .capsule
+        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeFootnoteClamped.semibold())
+        configuration.contentInsets = .init(hMargin: 12, vMargin: 6)
+        configuration.baseForegroundColor = .Signal.label
+        configuration.baseBackgroundColor = delegate.cellBackgroundColor
+        configuration.cornerStyle = .capsule
+        let newStoryButton = UIButton(configuration: configuration)
+        newStoryButton.showsMenuAsPrimaryAction = true
+        newStoryButton.menu = UIMenu(children: [
+            UIAction(
+                title: OWSLocalizedString(
+                    "NEW_STORY_SHEET_CUSTOM_STORY_TITLE",
+                    comment: "Title for create custom story row on the 'new story sheet'",
+                ),
+                subtitle: OWSLocalizedString(
+                    "NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE",
+                    comment: "Subtitle for create custom story row on the 'new story sheet'",
+                ),
+                image: Theme.iconImage(.genericStories),
+                handler: { [weak self] _ in
+                    self?.didTapNewCustomStory()
+                },
+            ),
+            UIAction(
+                title: OWSLocalizedString(
+                    "NEW_STORY_SHEET_GROUP_STORY_TITLE",
+                    comment: "Title for create group story row on the 'new story sheet'",
+                ),
+                subtitle: OWSLocalizedString(
+                    "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE",
+                    comment: "Subtitle for create group story row on the 'new story sheet'",
+                ),
+                image: Theme.iconImage(.genericGroup),
+                handler: { [weak self] _ in
+                    self?.didTapNewGroupStory()
+                },
+            ),
+        ])
         addArrangedSubview(newStoryButton)
     }
 
@@ -66,11 +92,20 @@ public class NewStoryHeaderView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func didTapNewStory() {
-        let vc = NewStorySheet { [weak self] items in
+    private func didTapNewCustomStory() {
+        let vc = NewPrivateStoryRecipientsViewController { [weak self] items in
             guard let self else { return }
             self.delegate.newStoryHeaderView(self, didCreateNewStoryItems: items)
         }
-        delegate.present(vc, animated: true)
+        delegate.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+    }
+
+    private func didTapNewGroupStory() {
+        let vc = NewGroupStoryViewController { [weak self] items in
+            guard let self else { return }
+            self.delegate.newStoryHeaderView(self, didCreateNewStoryItems: items)
+        }
+        delegate.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+
     }
 }
