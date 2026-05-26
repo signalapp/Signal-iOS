@@ -128,7 +128,7 @@ extension ChatListViewController {
     // MARK: - theme changes
 
     func applyThemeToContextMenuAndToolbar() {
-        viewState.multiSelectState.toolbar?.themeChanged()
+        viewState.multiSelectState.toolbar?.updateColors()
     }
 
     // MARK: private helper
