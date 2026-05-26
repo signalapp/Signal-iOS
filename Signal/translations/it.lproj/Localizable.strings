@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Backup automatici disattivati";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "Il numero di messaggi sul tuo telefono supera il limite dello spazio di archiviazione. Elimina qualche messaggio e riprova.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Qualcosa è andato storto durante la creazione del tuo backup. Riprova o contatta l'assistenza.";
@@ -4574,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Scegli un nuovo admin";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Scegli un nuovo admin";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Limite di membri consigliato raggiunto";
@@ -5588,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Vuoi consentire a %1$@ di inviarti messaggi e di visualizzare il tuo nome e la tua foto? Ti ricordiamo che in passato avevi rimosso questo utente.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Segnala";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Sblocca";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Crittografia in fase di verifica…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For people you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Per le chat avviate tramite numero di telefono, Signal verifica automaticamente la sicurezza della connessione tramite il sistema \"key transparency\". Per maggiore sicurezza, puoi comunque verificare manualmente le connessioni usando un codice QR o confrontando i numeri di sicurezza.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Da ora Signal può verificare in automatico la crittografia";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This could be because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal non può verificare automaticamente la crittografia di questa chat. Ciò è dovuto, molto probabilmente, al fatto che %1$@ ha modificato il proprio numero di telefono o le relative impostazioni di privacy. Completa la verifica della crittografia manualmente: confronta i numeri sulla schermata precedente o scansiona il codice sul dispositivo dell'altra persona.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "La verifica automatica non è più disponibile per questa chat";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "Account";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "Apri le Impostazioni dell'account";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Dati del tuo account";
@@ -8390,7 +8390,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Numero di telefono";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Impossibile cambiare il numero di telefono";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Usa questa funzione per cambiare il tuo numero di telefono attuale con un nuovo numero di telefono. Non puoi annullare questo cambiamento.\n\nPrima di continuare, assicurati che il tuo nuovo numero possa ricevere SMS o chiamate.";
@@ -10148,10 +10148,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Puoi aggiornare i nomi utente solo quando hai una connessione a Internet funzionante.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "Hai richiesto l'invio del codice di verifica";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Non condividere questo codice di verifica con nessuno: Signal non ti contatterà mai per chiedertelo. Se ricevi un messaggio da qualcuno che dichiara di lavorare per Signal, si tratta di una truffa.\nIgnora questo messaggio se hai richiesto tu l'invio del codice.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Hai segnato %1$@ come non verificato.";

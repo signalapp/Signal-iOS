@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Sandaran Automatik Dinyahdayakan";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "Bilangan mesej yang anda ada melebihi had storan. Padamkan beberapa mesej dan cuba lagi.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Ada yang tidak kena semasa membuat sandaran anda. Sila cuba lagi atau hubungi sokongan.";
@@ -4574,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Pilih Pentadbir Baru";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Pilih Pentadbir Baru";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Had ahli yang disyorkan telah dicapai";
@@ -5588,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Benarkan %1$@ mesej anda dan kongsi nama serta foto anda dengan mereka? Anda telah mengalih keluar orang ini pada masa lalu.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Laporkan";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Nyahsekat";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Mengesahkan penyulitan...";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For people you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Bagi orang yang anda berhubung melalui nombor telefon, Signal boleh mengesahkan secara automatik sama ada sambungan itu selamat menggunakan proses yang dipanggil ketelusan kunci. Untuk keselamatan tambahan, anda masih boleh mengesahkan sambungan secara manual menggunakan kod QR atau dengan membandingkan nombor keselamatan.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal kini boleh mengesahkan penyulitan secara automatik";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This could be because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal tidak lagi boleh mengesahkan penyulitan untuk sembang ini secara automatik. Ini mungkin kerana %1$@ menukar nombor telefon mereka atau tetapan privasi nombor telefon mereka. Sahkan penyulitan hujung ke hujung secara manual dengan membandingkan nombor pada skrin sebelumnya atau mengimbas kod pada peranti mereka.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Pengesahan automatik tidak lagi tersedia untuk sembang ini";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "Akaun";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "Buka Tetapan Akaun";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Data akaun anda";
@@ -8390,7 +8390,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Nombor Telefon";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Tidak Dapat Menukar Nombor Telefon";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Gunakan ini untuk menukar nombor telefon semasa anda kepada nombor telefon yang baru. Anda tidak boleh buat asal penukaran ini.\n\nSebelum meneruskan, pastikan nombor baru anda boleh menerima SMS atau panggilan.";
@@ -10148,10 +10148,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Nama pengguna hanya boleh dikemas kini apabila disambungkan ke internet.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "Kod Pengesahan Telah Diminta";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Jangan berikan kod pengesahan kepada sesiapa. Signal tidak akan menghantar mesej untuk meminta kod. Jika anda menerima mesej daripada seseorang yang berpura-pura sebagai Signal, ia adalah penipuan.\nAnda boleh mengabaikan mesej ini dengan selamat jika anda meminta kod sendiri.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Anda tandakan %1$@ sebagai tidak disahkan.";

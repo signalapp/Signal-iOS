@@ -1555,13 +1555,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Mivel nemrég regisztráltad ezt a fiókot, jelenleg nem módosíthatod a telefonszámokat. Ez a rövid várakozási idő segít megvédeni a fiókodat.
 
-Try again in %1$d hour.</string>
+Próbáld meg %1$d óra múlva.</string>
 			<key>other</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Mivel nemrég regisztráltad ezt a fiókot, jelenleg nem módosíthatod a telefonszámokat. Ez a rövid várakozási idő segít megvédeni a fiókodat.
 
-Try again in %1$d hours.</string>
+Próbáld meg %1$d óra múlva.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

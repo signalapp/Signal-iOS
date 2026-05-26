@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Còpies de seguretat automàtiques desactivades";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "El nombre de missatges que tens supera el límit d'emmagatzematge. Elimina alguns missatges i torna-ho a provar.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Alguna cosa ha anat malament en crear la teva còpia de seguretat. Torna-ho a provar o posa't en contacte amb el servei d'assistència.";
@@ -4574,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Trieu un administrador nou";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Trieu un administrador nou";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "S'ha assolit el límit màxim de membres recomanat.";
@@ -5588,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Compartir el teu nom i foto amb %1$@ i permetre que t'enviï un missatge? Anteriorment, has eliminat a aquesta persona.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Denunciar";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Desbloquejar";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Verificant codificació…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For people you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Per les persones amb qui hagis connectat a través d'un número de telèfon, Signal pot confirmar automàticament si la connexió és segura mitjançant un procés anomenat transparència de claus. Per a més seguretat, pots continuar verificant manualment les teves connexions mitjançant un codi QR o comparant els números de seguretat.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Ara, Signal pot verificar automàticament la codificació";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This could be because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal no pot verificar automàticament la codificació d'aquest xat. Probablement, això passa perquè %1$@ ha canviat el seu número o els seus ajustos de privacitat del número de telèfon. Verifica manualment la codificació d'extrem a extrem comparant els números de la pantalla anterior o escanejant el codi al dispositiu de l'altra persona.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "La verificació automàtica ja no està disponible per a aquest xat";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "Compte";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "Obrir els Ajustos del compte";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Les dades del teu compte";
@@ -8390,7 +8390,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Número de telèfon";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "No es pot canviar el número de telèfon";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Useu-ho per canviar el número de telèfon actual per un de nou. No podeu desfer el canvi.\n\nAbans de continuar, assegureu-vos que el número nou pugui rebre SMS o trucades.";
@@ -10148,10 +10148,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Només es pot actualitzar l'àlies quan hi hagi connexió a Internet.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "S'ha sol·licitat una clau de verificació";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "No comparteixis la clau de verificació amb ningú. Signal mai te la demanarà per missatge. Si reps un missatge d'algú que diu ser Signal, és una estafa.\nSi has sol·licitat tu la clau, pots ignorar aquest missatge.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Heu marcat %1$@ com a no verificat.";

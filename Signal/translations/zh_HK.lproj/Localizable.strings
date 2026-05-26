@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "自動備份已停用";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "你的訊息數量超過儲存空間上限。刪除一些訊息然後再試。";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "建立備份時發生錯誤。請重試或聯絡支援團隊。";
@@ -4574,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "請選擇新的管理員";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "請選擇新的管理員";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "已到達建議的成員人數上限";
@@ -5588,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "你是否允許 %1$@ 與你通訊，並分享你的名字及照片？你之前曾移除此人。";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "舉報";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "解除封鎖";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "正在進行加密驗證…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For people you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "對於透過電話號碼建立聯繫的人，Signal 會透過稱為「金鑰透明度」的程序，自動確認聯絡對象是否安全。為了增加安全性，你仍然可以使用二維碼或比對安全碼手動驗證聯絡人。";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal 現在可自動驗證加密";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This could be because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal 無法自動驗證此聊天的加密。這可能是因為 %1$@ 已變更電話號碼，或是調整了電話號碼的隱私設定。透過比較上一個畫面的數字，或掃瞄對方裝置上的二維碼來手動驗證端對端加密。";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "自動驗證功能已不適用於此聊天";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "帳號";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "開啟帳戶設定";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "你的帳戶資料";
@@ -8390,7 +8390,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "電話號碼";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "無法變更電話號碼";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "藉此將您現用的電話號碼變更為新的電話號碼。您將無法復原此變更。\n\n在繼續之前，請確定您的新號碼可以接收短訊或來電。";
@@ -10148,10 +10148,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "用戶名稱僅可在連接網際網路時更新。";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "已要求驗證碼";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "請勿將驗證碼透露給任何人。Signal 絕不會透過訊息向你索取驗證碼。如果你收到某人假冒 Signal 發送的訊息，那是詐騙。\n如果是你本人要求此驗證碼，可以忽略此訊息。";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "您已將 %1$@ 標記為未驗證。";

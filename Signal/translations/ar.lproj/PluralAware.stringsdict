@@ -2331,29 +2331,29 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>لأنك قُمتَ بتسجيل هذا الحساب مؤخرًا، لا يمكنك تغيير رقم الهاتف حاليًا. قد تساعدك فترة انتظار قصيرة في حماية حسابك.
 
-Try again in %1$d hours.</string>
+حاوِل مُجدَّدًا بعد %1$d ساعات.</string>
 			<key>one</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>لأنك قُمتَ بتسجيل هذا الحساب مؤخرًا، لا يمكنك تغيير رقم الهاتف حاليًا. قد تساعدك فترة انتظار قصيرة في حماية حسابك.
 
-Try again in %1$d hour.</string>
+حاوِل مُجدَّدًا بعد %1$d ساعة.</string>
 			<key>two</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>لأنك قُمتَ بتسجيل هذا الحساب مؤخرًا، لا يمكنك تغيير رقم الهاتف حاليًا. قد تساعدك فترة انتظار قصيرة في حماية حسابك.
 
-Try again in %1$d hours.</string>
+حاوِل مُجدَّدًا بعد %1$d ساعتين.</string>
 			<key>few</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>لأنك قُمتَ بتسجيل هذا الحساب مؤخرًا، لا يمكنك تغيير رقم الهاتف حاليًا. قد تساعدك فترة انتظار قصيرة في حماية حسابك.
 
-Try again in %1$d hours.</string>
+حاوِل مُجدَّدًا بعد %1$d ساعات.</string>
 			<key>many</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>لأنك قُمتَ بتسجيل هذا الحساب مؤخرًا، لا يمكنك تغيير رقم الهاتف حاليًا. قد تساعدك فترة انتظار قصيرة في حماية حسابك.
 
-Try again in %1$d hours.</string>
+حاوِل مُجدَّدًا بعد %1$d ساعة.</string>
 			<key>other</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>لأنك قُمتَ بتسجيل هذا الحساب مؤخرًا، لا يمكنك تغيير رقم الهاتف حاليًا. قد تساعدك فترة انتظار قصيرة في حماية حسابك.
 
-Try again in %1$d hours.</string>
+حاوِل مُجدَّدًا بعد %1$d ساعة.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

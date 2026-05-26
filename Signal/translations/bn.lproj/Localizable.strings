@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "স্বয়ংক্রিয় ব্যাকআপ নিষ্ক্রিয় করা হয়েছে";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "আপনার কাছে থাকা মেসেজের সংখ্যা স্টোরেজ সীমা ছাড়িয়ে গেছে। কিছু মেসেজ মুছে আবার চেষ্টা করুন।";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "আপনার ব্যাকআপ তৈরি করার সময় কিছু একটা সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন অথবা সহায়তায় যোগাযোগ করুন।";
@@ -4574,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "নতুন অ্যাডমিন বেছে নিন";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "নতুন অ্যাডমিন বেছে নিন";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "সুপারিশকৃত সদস্য সর্বোচ্চ সীমায় পৌঁছেছে";
@@ -5588,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "%1$@-কে আপনাকে মেসেজ দিতে দিন এবং তার সাথে আপনার নাম ও ছবি শেয়ার করুন? আপনি অতীতে এই ব্যক্তিকে মুছে ফেলেছিলেন।";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "রিপোর্ট করুন";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "আনব্লক করুন";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "এনক্রিপশন যাচাই করা হচ্ছে…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For people you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "ফোন নম্বরের মাধ্যমে আপনি যেসব কন্টাক্টের সাথে সংযুক্ত আছেন, তাদের জন্য Signal স্বয়ংক্রিয়ভাবে 'কি' ট্রান্সপারেন্সি নামক একটি প্রক্রিয়া ব্যবহার করে সংযোগটি সুরক্ষিত কিনা তা নিশ্চিত করতে পারে। বাড়তি নিরাপত্তার জন্য, আপনি এখনো একটি QR কোড ব্যবহার করে অথবা নিরাপত্তা নম্বর তুলনা করে সংযোগগুলো ম্যানুয়ালি যাচাই করতে পারেন।";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal এখন স্বয়ংক্রিয়ভাবে এনক্রিপশন যাচাই করতে পারে";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This could be because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal এই চ্যাটের এনক্রিপশন স্বয়ংক্রিয়ভাবে যাচাই করতে পারবে না। এর কারণ হতে পারে যে %1$@ তার ফোন নম্বর অথবা ফোন নম্বরের গোপনীয়তা সেটিংস পরিবর্তন করেছেন। আগের স্ক্রিনে থাকা নম্বর তুলনা করে অথবা তাদের ডিভাইসে কোড স্ক্যান করে ম্যানুয়ালি এন্ড-টু-এন্ড এনক্রিপশন যাচাই করুন।";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "এই চ্যাটের ক্ষেত্রে আর স্বয়ংক্রিয়-যাচাইকরণের সুবিধা নেই";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "অ্যাকাউন্ট";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "অ্যাকাউন্ট সেটিংস খুলুন";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "আপনার অ্যাকাউন্টের ডেটা";
@@ -8390,7 +8390,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "ফোন নম্বর";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "ফোন নম্বর পরিবর্তন করা যাবে না";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "আপনার বর্তমান ফোন নম্বরটি একটি নতুন ফোন নম্বরে পরিবর্তন করতে এটি ব্যবহার করুন। আপনি এই পরিবর্তনটি পূর্বাবস্থায় ফিরিয়ে নিতে পারবেন না।\n\nএগিয়ে যাওয়ার আগে, নিশ্চিত করুন যে আপনার নতুন নম্বরটি এসএমএস বা কল পেতে পারে।";
@@ -10148,10 +10148,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "শুধুমাত্র ইন্টারনেটের সাথে সংযুক্ত হলেই ব্যবহারকারীর নাম আপডেট করা যাবে।";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "একটি যাচাইকরণ কোড অনুরোধ করা হয়েছে";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "আপনার যাচাইকরণ কোডটি কাউকে দেবেন না। Signal কখনোই এটি চেয়ে আপনাকে মেসেজ করবে না। যদি আপনি Signal-এর ছদ্মবেশধারী অন্য কারো কাছ থেকে কোনো মেসেজ পেয়ে থাকেন, তবে এটি প্রতারণা।\nআপনি যদি নিজেই কোডটির জন্য অনুরোধ করে থাকেন, তাহলে এই মেসেজটি নিশ্চিন্তে উপেক্ষা করতে পারেন।";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "আপনি %1$@ কে অযাচাইকৃত হিসেবে চিহ্নিত করেছেন";

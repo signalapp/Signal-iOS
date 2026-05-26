@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "ઓટોમેટિક બેકઅપ અક્ષમ કરેલ છે";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "તમારા મેસેજની સંખ્યા સ્ટોરેજ મર્યાદા કરતાં વધી ગઈ છે. કેટલાક મેસેજ ડિલીટ કરો અને ફરી પ્રયાસ કરો.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "તમારો બેકઅપ બનાવવામાં કંઈક ખોટું થયું. કૃપા કરીને ફરી પ્રયાસ કરો અથવા સપોર્ટનો સંપર્ક કરો.";
@@ -4574,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "નવો એડમિન પસંદ કરો";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "નવો એડમિન પસંદ કરો";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "ભલામણ કરેલ મેમ્બરની મર્યાદા પહોંચી ગઈ";
@@ -5588,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "%1$@ને તમને મેસેજ કરવા અને તેમની સાથે તમારું નામ અને ફોટો શેર કરવા દેવા છે? તમે આ વ્યક્તિને ભૂતકાળમાં દૂર કર્યા છે.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "રિપોર્ટ કરો";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "અનબ્લૉક કરો";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "એન્ક્રિપ્શન વેરિફાય કરી રહ્યા છે…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For people you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "ફોન નંબર દ્વારા તમે જે સંપર્કો સાથે જોડાયેલા છો, તેમના માટે Signal કી ટ્રાન્સપરન્સી નામની પ્રક્રિયાનો ઉપયોગ કરીને કનેક્શન સુરક્ષિત છે કે નહીં તેની ખાતરી આપમેળે કરી શકે છે. વધુ સુરક્ષા માટે, તમે હજી પણ QR કોડનો ઉપયોગ કરીને અથવા સેફ્ટી નંબરની તુલના કરીને કનેક્શનને વેરિફાય કરી શકો છો.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal હવે એન્ક્રિપ્શનને આપમેળે વેરિફાય કરી શકે છે";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This could be because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal આ ચેટ માટે એન્ક્રિપ્શન આપમેળે વેરિફાય કરી શકતું નથી. આ કદાચ એટલા માટે છે કારણ કે %1$@એ તેમનો ફોન નંબર અથવા તેમના ફોન નંબરની ગોપનીયતા સેટિંગ્સ બદલી છે. પાછલી સ્ક્રીન પરના નંબરોની તુલના કરીને અથવા તેમના ડિવાઇસ પર કોડ સ્કેન કરીને એન્ડ-ટૂ-એન્ડ એન્ક્રિપ્શન મેન્યુઅલી વેરિફાય કરો.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "આ ચેટ માટે હવે ઓટો-વેરિફિકેશન ઉપલબ્ધ નથી.";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "એકાઉન્ટ";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "એકાઉન્ટ સેટિંગ્સ ખોલો";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "તમારા એકાઉન્ટના ડેટા";
@@ -8390,7 +8390,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "ફોન નંબર";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "ફોન નંબર બદલી શકતા નથી";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "આનો ઉપયોગ તમારા વર્તમાન ફોન નંબરને નવા ફોન નંબર પર બદલવા માટે કરો. આ ફેરફારને તમે પૂર્વવત નહીં કરી શકો.\n\nચાલુ રાખતા પહેલાં, ખાતરી કરો કે તમારા નવા નંબરમાં SMS અથવા કૉલ આવી શકે છે.";
@@ -10148,10 +10148,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "યુઝરનેમ ત્યારે જ અપડેટ કરી શકાય છે જ્યારે ઇન્ટરનેટ કનેક્શન ચાલુ હોય.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "વેરિફિકેશન કોડની વિનંતી કરવામાં આવી હતી";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "તમારો વેરિફિકેશન કોડ કોઈને આપશો નહીં. Signal તમને ક્યારેય તેના માટે મેસેજ કરશે નહીં. જો તમને કોઈના તરફથી મેસેજ મળ્યો હોય જે Signal હોવાનો ડોળ કરતાં હોય, તો તે છેતરપિંડી હશે.\nજો તમે પોતે જ કોડની વિનંતી કરી હોય તો તમે આ મેસેજને અવગણી શકો છો.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "તમે ચકાસાયેલ નથી તરીકે %1$@ માર્ક કર્યું.";

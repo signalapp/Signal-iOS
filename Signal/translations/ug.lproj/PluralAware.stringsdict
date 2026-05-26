@@ -1361,9 +1361,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>بۇ ھېساباتنى تېخى يېقىندا تىزىملاتقانلىقىڭىز ئۈچۈن، تېلېفون نومۇرىڭىزنى ھازىرچە ئۆزگەرتەلمەيسىز. بىر قېتىملىق قىسقا مۇددەتلىك ساقلاش جەريانى ياردەملىشىپ ھېساباتىڭىزنى قوغدايدۇ.
 
-Try again in %1$d hours.</string>
+ %1$d سائەتتىن كېيىن قايتا سىناڭ.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

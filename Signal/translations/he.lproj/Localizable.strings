@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "גיבויים אוטומטיים מושבתים";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "מספר ההודעות שיש לך חורג ממגבלת האחסון. יש למחוק כמה הודעות ולנסות שוב.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "משהו השתבש ביצירת הגיבוי שלך. נא לנסות שוב, או ליצור קשר עם התמיכה.";
@@ -4574,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "בחר מנהלן חדש";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "בחר מנהלן חדש";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "מגבלה מומלצת של חברי קבוצה הושגה";
@@ -5588,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "לתת ל%1$@ לשלוח לך הודעות ולשתף את השם והתמונה שלך איתו או איתה? הסרת את האדם הזה בעבר.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "דיווח";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "ביטול חסימה";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "מתבצע אימות הצפנה…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For people you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "עבור אנשים שהחיבור איתם נוצר באמצעות מספר טלפון, Signal יכולה לאשר אוטומטית שהחיבור מאובטח באמצעות שימוש בתהליך שנקרא שקיפות מפתחות. לבטיחות משופרת, עדיין אפשר לאמת חיבורים ידנית באמצעות קוד QR או השוואת מספרי בטיחות.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal יכולה כעת לאמת הצפנה באופן אוטומטי";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This could be because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal לא יכולה לאמת אוטומטית את ההצפנה עבור הצ׳אט הזה. ייתכן שזה בגלל ש%1$@ החליפ/ה את מספר הטלפון או את הגדרות הפרטיות של מספר הטלפון. יש לאמת את ההצפנה מקצה לקצה באופן ידני באמצעות השוואת המספרים במסך הקודם או סריקת הקוד במכשיר שלו או שלה.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "אימות אוטומטי אינו זמין עוד עבור צ'אט זה";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "חשבון";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "פתיחת הגדרות החשבון";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "נתוני החשבון שלך";
@@ -8390,7 +8390,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "מספר טלפון";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "לא ניתן לשנות מספר טלפון";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "השתמש בזה כדי לשנות את מספר הטלפון הנוכחי שלך אל מספר טלפון חדש. אתה לא יכול לבטל את השינוי הזה.\n\nלפני המשכה, וודא שהמספר החדש שלך יכול לקבל מסרונים או שיחות.";
@@ -10148,10 +10148,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "שמות משתמש יכולים להתעדכן רק בזמן חיבור לאינטרנט.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "התקבלה בקשה לקוד אימות";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "אין לתת את קוד האימות שלך לאף אחד. Signal לעולם לא תשלח לך הודעה כדי לבקש אותו. אם קיבלת הודעה ממישהו שמעמיד פנים שהוא Signal, מדובר בהונאה.\nאם ביקשת את הקוד בעצמך, אפשר להתעלם מההודעה הנוכחית.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "סימנת את %1$@ כלא מוודא.";

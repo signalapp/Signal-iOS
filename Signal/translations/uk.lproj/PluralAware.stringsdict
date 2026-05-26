@@ -1943,21 +1943,21 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Наразі ви не можете змінити номер телефону, оскільки ви зареєстрували цей акаунт нещодавно. Короткий період очікування допомагає захистити акаунт.
 
-Try again in %1$d hour.</string>
+Спробуйте ще раз через %1$d годину.</string>
 			<key>few</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Наразі ви не можете змінити номер телефону, оскільки ви зареєстрували цей акаунт нещодавно. Короткий період очікування допомагає захистити акаунт.
 
-Try again in %1$d hours.</string>
+Спробуйте ще раз через %1$d години.</string>
 			<key>many</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Наразі ви не можете змінити номер телефону, оскільки ви зареєстрували цей акаунт нещодавно. Короткий період очікування допомагає захистити акаунт.
 
-Try again in %1$d hours.</string>
+Спробуйте ще раз через %1$d годин.</string>
 			<key>other</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Наразі ви не можете змінити номер телефону, оскільки ви зареєстрували цей акаунт нещодавно. Короткий період очікування допомагає захистити акаунт.
 
-Try again in %1$d hours.</string>
+Спробуйте ще раз через %1$d години.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

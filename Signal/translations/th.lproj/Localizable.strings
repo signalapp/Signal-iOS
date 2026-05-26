@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "การสำรองข้อมูลอัตโนมัติถูกปิดใช้งาน";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "จำนวนข้อความของคุณมีขนาดใหญ่กว่าพื้นที่จัดเก็บ โปรดลบข้อความออกบางส่วนแล้วลองอีกครั้ง";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "เกิดข้อผิดพลาดในระหว่างการสร้างข้อมูลสำรองของคุณ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน";
@@ -4574,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "เลือกผู้ดูแลใหม่";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "เลือกผู้ดูแลใหม่";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "จำนวนสมาชิกถึงขีดจำกัดที่แนะนำแล้ว";
@@ -5588,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "อนุญาตให้ %1$@ ส่งข้อความหารวมถึงมองเห็นชื่อและรูปของคุณหรือไม่ โปรดทราบว่าคุณเคยลบผู้ใช้คนนี้";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "รายงาน";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "เลิกบล็อก";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "กำลังตรวจยืนยันการเข้ารหัส…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For people you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "หากคุณและผู้ใช้เชื่อมโยงกันผ่านทางหมายเลขโทรศัพท์ Signal จะสามารถใช้ขั้นตอนที่เรียกว่า Key Transparency ในการยืนยันความปลอดภัยของเครือข่ายโดยอัตโนมัติ เพื่อความปลอดภัยยิ่งขึ้น คุณยังคงสามารถตรวจยืนยันเครือข่ายด้วยตนเองผ่านทางคิวอาร์โค้ดหรือโดยการเทียบหมายเลขความปลอดภัย";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal สามารถตรวจยืนยันการเข้ารหัสโดยอัตโนมัติได้แล้ว";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This could be because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal ไม่สามารถตรวจยืนยันการเข้ารหัสของแชทนี้โดยอัตโนมัติได้ นี่อาจเป็นเพราะ %1$@ เปลี่ยนหมายเลขโทรศัพท์หรือการตั้งค่าความเป็นส่วนตัวของหมายเลขโทรศัพท์ คุณยังสามารถตรวจยืนยันการเข้ารหัสตั้งแต่ต้นทางถึงปลายทางด้วยตนเองโดยเทียบหมายเลขซึ่งแสดงในหน้าที่แล้วหรือสแกนคิวอาร์โค้ดบนอุปกรณ์ของผู้ติดต่อ";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "ไม่สามารถใช้การตรวจยืนยันอัตโนมัติกับแชทนี้ได้แล้ว";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "บัญชี";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "เปิดหน้าการตั้งค่าบัญชี";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "ข้อมูลบัญชีของคุณ";
@@ -8390,7 +8390,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "หมายเลขโทรศัพท์";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "ไม่สามารถเปลี่ยนหมายเลขโทรศัพท์ได้";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "ใช้สิ่งนี้เพื่อเปลี่ยนหมายเลขโทรศัพท์ปัจจุบันของคุณเป็นหมายเลขโทรศัพท์ใหม่ คุณไม่สามารถยกเลิกการเปลี่ยนแปลงนี้ได้ \n\nก่อนดำเนินการต่อ อย่าลืมตรวจสอบว่าหมายเลขใหม่สามารถรับ SMS หรือการโทรได้";
@@ -10148,10 +10148,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "สามารถอัปเดตชื่อผู้ใช้เมื่ออุปกรณ์เชื่อมต่อกับอินเทอร์เน็ตอยู่เท่านั้น";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "ขอรหัสยืนยันแล้ว";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "โปรดอย่าบอกรหัสยืนยันของคุณกับผู้ใด Signal จะไม่ส่งข้อความหาคุณเพื่อขอรหัสนี้ หากคุณได้รับข้อความจากบุคคลที่แอบอ้างตนเป็น Signal โปรดทราบว่านั่นเป็นการหลอกลวง\nคุณสามารถเพิกเฉยต่อข้อความแนะนำเพื่อความปลอดภัยนี้หากคุณเป็นผู้ขอรหัสดังกล่าวเอง";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "คุณทำเครื่องหมายว่า %1$@ ยังไม่ถูกตรวจยืนยัน";

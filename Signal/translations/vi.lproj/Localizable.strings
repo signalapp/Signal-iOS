@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Đã tắt tự động sao lưu";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "Số lượng tin nhắn bạn có vượt quá giới hạn dung lượng. Hãy xóa bớt tin nhắn và thử lại.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Đã xảy ra lỗi khi tạo bản sao lưu. Vui lòng thử lại, hoặc liên hệ bộ phận hỗ trợ.";
@@ -4574,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Chọn Quản trị viên Mới";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Chọn quản trị viên mới";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Đã đạt giới hạn thành viên được giới thiệu";
@@ -5588,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Cho phép %1$@ nhắn tin cho bạn và chia sẻ tên và ảnh của bạn với họ? Bạn đã xóa người này trước đây.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Báo cáo";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Bỏ chặn";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Đang xác minh mã hóa…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For people you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Đối với những người bạn đã kết nối thông qua số điện thoại, Signal có thể tự động xác nhận xem kết nối có an toàn hay không bằng cách sử dụng quy trình được gọi là độ minh bạch của mã khóa. Để tăng độ bảo mật, bạn vẫn có thể xác minh thủ công các kết nối bằng mã QR hoặc bằng cách so sánh mã số an toàn.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal giờ đây có thể tự động xác minh mã hóa";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This could be because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal không thể tự động xác minh mã hóa cho cuộc trò chuyện này. Điều này có thể là vì %1$@ đã đổi số điện thoại của họ hoặc đã thay đổi phần cài đặt sự riêng tư cho số điện thoại. Xác minh thủ công mã hóa đầu cuối bằng cách so sánh các số trên màn hình trước đó hoặc quét mã trên thiết bị của họ.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Tính năng tự động xác minh không còn khả dụng cho cuộc trò chuyện này";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "Tài khoản";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "Mở cài đặt tài khoản";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Dữ liệu Tài khoản của bạn";
@@ -8390,7 +8390,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Số điện thoại";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Không thể đổi số điện thoại";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Sử dụng mẫu này để đổi số điện thoại hiện tại của bạn thành số mới. Bạn không thể hoàn tác thay đổi này.\n\nTrước khi tiếp tục, hãy đảm bảo rằng số điện thoại mới của bạn có thể nhận SMS hoặc cuộc gọi.";
@@ -10148,10 +10148,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Tên người dùng chỉ có thể được cập nhật khi có kết nối internet.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "Có yêu cầu mã xác minh";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Không bao giờ tiết lộ mã xác minh của bạn cho bất kỳ ai. Signal sẽ không bao giờ nhắn tin cho bạn để yêu cầu cung cấp mã. Nếu bạn nhận được tin nhắn từ ai đó giả danh Signal, đó là hành vi lừa đảo.\nBạn hoàn toàn có thể bỏ qua thông báo này nếu bạn tự yêu cầu mã.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Bạn đã đánh dấu %1$@ là chưa xác minh.";

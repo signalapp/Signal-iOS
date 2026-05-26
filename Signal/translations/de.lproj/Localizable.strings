@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Automatische Backups deaktiviert";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "Du hast mehr Nachrichten als das Speicherlimit zulässt. Lösche einige Nachrichten und versuche es erneut.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Bei der Erstellung deines Backups ist was schiefgelaufen. Bitte versuche es erneut oder kontaktiere den Support.";
@@ -4574,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Neuen Admin wählen";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Neuen Admin wählen";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Empfohlene Mitgliederanzahl erreicht";
@@ -5576,7 +5576,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Chat mit dieser Gruppe fortsetzen und deinen Namen und dein Foto mit deren Mitgliedern teilen?";
 
 /* A prompt asking if the user wants to accept a conversation invite. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT" = "Kann diese Person dir eine Nachricht schicken und ihren Namen und ihr Profilbild mit dir teilen? Sie erfährt erst, dass du ihre Nachricht gesehen hast, wenn du sie annimmst.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT" = "Darf diese Person dir eine Nachricht schicken und ihren Namen und ihr Profilbild mit dir teilen? Sie erfährt erst, dass du ihre Nachricht gesehen hast, wenn du sie annimmst.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Möchtest du dieser Gruppe beitreten und deinen Namen und dein Foto mit deren Mitgliedern teilen? Sie wissen nicht, dass du ihre Nachrichten gesehen hast, bis du die Einladung annimmst.";
@@ -5588,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Darf dir %1$@ Nachrichten schreiben und deinen Namen und dein Foto sehen? Diese Person wurde bereits entfernt.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Melden";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Freigeben";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Verschlüsselung wird verifiziert…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For people you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Bei Leuten, mit denen du über eine Telefonnummer verbunden bist, kann Signal mithilfe eines Verfahrens namens »Schlüssel-Transparenz« automatisch überprüfen, ob die Verbindung sicher ist. Für mehr Sicherheit kannst du Verbindungen auch weiterhin manuell mit einem QR-Code oder durch Vergleichen der Sicherheitsnummern verifizieren.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal kann die Verschlüsselung jetzt automatisch verifizieren";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This could be because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal kann die Verschlüsselung für diesen Chat nicht automatisch verifizieren. Das liegt wahrscheinlich daran, dass sich die Telefonnummer oder die Datenschutz-Einstellungen für die Telefonnummer von %1$@ geändert haben. Verifiziere die Ende-zu-Ende-Verschlüsselung manuell, indem du die Zahlen auf dem vorherigen Bildschirm vergleichst oder den Code auf dem anderen Gerät scannst.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Die automatische Verifizierung ist für diesen Chat nicht mehr verfügbar";
@@ -7955,13 +7955,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_HEADER" = "Automatische Schlüssel-Verifizierung";
 
 /* Body for a sheet explaining that encryption auto-verification is not available. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_BODY" = "Signal kann die Verschlüsselung in Chats nur automatisch verifizieren, wenn du mit jemandem über eine Telefonnummer verbunden bist. Wenn der Chat mit einem Nutzernamen oder einer gemeinsamen Gruppe begonnen wurde, verifiziere die Ende-zu-Ende-Verschlüsselung, indem du die Zahlen auf dem vorherigen Bildschirm vergleichst oder den Code auf dem Gerät scannst.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_BODY" = "Signal kann die Verschlüsselung in Chats nur automatisch verifizieren, wenn du mit jemandem über eine Telefonnummer verbunden bist. Wenn der Chat mit einem Nutzernamen oder einer gemeinsamen Gruppe begonnen wurde, verifiziere die Ende-zu-Ende-Verschlüsselung, indem du die Zahlen auf dem vorherigen Bildschirm vergleichst oder den Code auf dem anderen Gerät scannst.";
 
 /* Title for a sheet explaining that encryption auto-verification is not available. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_TITLE" = "Die automatische Verifizierung ist für diesen Chat nicht verfügbar";
 
 /* Body for a sheet explaining that encryption auto-verification succeeded. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "Bei Kontakten, mit denen du über eine Telefonnummer verbunden bist, überprüft Signal mithilfe eines Verfahrens namens »Schlüssel-Transparenz« automatisch, ob die Verbindung sicher ist. Für zusätzliche Sicherheit kannst zu die Ende-zu-Ende-Verschlüsselung manuell verifizieren, indem du die Zahlen auf dem vorherigen Bildschirm vergleichst oder den Code auf dem Gerät scannst.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "Bei Kontakten, mit denen du über eine Telefonnummer verbunden bist, überprüft Signal mithilfe eines Verfahrens namens »Schlüssel-Transparenz« automatisch, ob die Verbindung sicher ist. Für zusätzliche Sicherheit kannst zu die Ende-zu-Ende-Verschlüsselung manuell verifizieren, indem du die Zahlen auf dem vorherigen Bildschirm vergleichst oder den Code auf dem anderen Gerät scannst.";
 
 /* Title for a sheet explaining that encryption auto-verification succeeded. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_TITLE" = "Die Verschlüsselung wurde für diesen Chat automatisch verifiziert";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "Konto";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "Konto-Einstellungen öffnen";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Deine Kontodaten";
@@ -8390,7 +8390,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Telefonnummer";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Telefonnummer kann nicht geändert werden";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Verwende diese Funktion, um deine aktuelle Telefonnummer auf eine neue Nummer zu ändern. Du kannst diese Änderung nicht rückgängig machen.\n\nBevor du fortfährst, vergewissere dich, dass deine neue Telefonnummer SMS oder Anrufe empfangen kann.";
@@ -10148,10 +10148,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Nutzernamen können nur aktualisiert werden, wenn eine Verbindung zum Internet besteht.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "Ein Verifizierungscode wurde angefordert";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Gib deinen Verifizierungscode nicht an andere weiter. Signal wird dich niemals per Nachricht danach fragen. Wenn du eine Nachricht von jemandem erhalten hast, der vorgibt, von Signal zu sein, ist das eine Betrugsmasche.\nWenn du den Code selbst angefordert hast, kannst du diese Nachricht einfach ignorieren.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Du hast %1$@ als nicht verifiziert markiert.";

@@ -287,7 +287,7 @@
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "सिस्टम";
 
 /* Apple Pay donation error for decline failures where authentication is required. */
-"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "किसी भुगतान का कोई और तरीका आज़माएं या फिर ज़्यादा जानकारी के लिए अपने बैंक से संपर्क करें।";
+"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "किसी और मेथड से पेमेंट करें या फिर ज़्यादा जानकारी के लिए अपने बैंक से संपर्क करें।";
 
 /* Apple Pay donation error for decline failures where the user may need to contact their card or bank. */
 "APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "देख लें कि आपका पेमेंट मेथड Apple Pay में अपडेट है या नहीं। अगर अपडेट नहीं है, तो उसे अपडेट करके दोबारा कोशिश करें। अगर समस्या फिर भी दूर नहीं होती, तो अपने बैंक से संपर्क करें।";
@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "ऑटोमैटिक बैकअप की सुविधा बंद हैं";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "आपके मैसेज की संख्या स्टोरेज की तय सीमा को पार कर गई है। कुछ मैसेज डिलीट करें और फिर से कोशिश करें।";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "आपका बैकअप बनाने में कोई गड़बड़ी हुई। कृपया फिर से कोशिश करें या सपोर्ट टीम से संपर्क करें।";
@@ -1775,10 +1775,10 @@
 "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER" = "माह/वर्ष";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
-"CARD_DONATION_READ_MORE_SHEET_BODY" = "डोनेट करने पर, Signal आपकी कोई भी निजी जानकारी न तो इकट्ठा करता है और न ही उसे स्टोर करता है।\n\nहम आपसे डोनेशन पाने के लिए Stripe को अपने पेमेंट प्रोसेसर के रूप में इस्तेमाल करते हैं। आपकी ओर से उसे दी गई किसी भी जानकारी को न तो ऐक्सेस करते हैं, न स्टोर और न ही उसे सेव करते हैं।\n\nSignal आपके डोनेशन को आपके Signal अकाउंट से न तो कनेक्ट करता है, न ही वह ऐसा कर सकता है।आपके सहयोग के लिए धन्यवाद!";
+"CARD_DONATION_READ_MORE_SHEET_BODY" = "डोनेट करने पर, Signal आपकी कोई भी निजी जानकारी न तो इकट्ठा करता है और न ही उसे स्टोर करता है।\n\nहम आपसे डोनेशन पाने के लिए Stripe को अपने पेमेंट प्रोसेसर के रूप में इस्तेमाल करते हैं। आपकी ओर से उसे दी गई किसी भी जानकारी को न तो ऐक्सेस करते हैं, न स्टोर और न ही उसे सेव करते हैं।\n\nSignal आपके डोनेशन को आपके Signal अकाउंट से न तो कनेक्ट करता है, न ही वह ऐसा कर सकता है।\n\nआपके सहयोग के लिए धन्यवाद!";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the title of that sheet. */
-"CARD_DONATION_READ_MORE_SHEET_TITLE" = "आपकी जानकारी गोपनीय है";
+"CARD_DONATION_READ_MORE_SHEET_TITLE" = "आपकी जानकारी गोपनीय रहती है";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information. */
 "CARD_DONATION_SUBHEADER_LEARN_MORE" = "और जानें।";
@@ -3233,7 +3233,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ ने आपके बदले Signal को डोनेट किया है। Signal को दिए गए सहयोग के लिए अपनी प्रोफ़ाइल पर बैज दिखाएं।";
 
 /* Body text for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BODY" = "एक स्वतंत्र गैर-लाभकारी संस्था के तौर पर, Signal निजी मैसेज और कॉल की सुविधा उपलब्ध कराने के लिए प्रतिबद्ध है। न कोई विज्ञापन, न कोई ट्रैकर, न ही निगरानी। Signal को सहयोग करने के लिए आज ही डोनेट करें।";
+"DONATION_READ_MORE_SHEET_BODY" = "एक स्वतंत्र गैर-लाभकारी संस्था के तौर पर, Signal मैसेज और कॉल की जानकारी को गोपनीय बनाए रखने के लिए प्रतिबद्ध है।न कोई विज्ञापन, न कोई ट्रैकर, न ही निगरानी। Signal को सहयोग करने के लिए आज ही डोनेट करें।";
 
 /* Bullet point for a sheet discussing donating to Signal. */
 "DONATION_READ_MORE_SHEET_BULLET_1" = "डोनेट करने पर आपको अपनी प्रोफ़ाइल में एक बैज जोड़ने का विकल्प मिलेगा";
@@ -4574,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "नया ऐडमिन चुनें";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "नया ऐडमिन चुनें";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "ग्रुप में सदस्यों की सीमा पूरी हो चुकी है";
@@ -5588,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "क्या %1$@ को यह अनुमति देनी है कि वह आपको मैसेज भेज सकें और आपका नाम और फ़ोटो देख सकें? आपने पहले इस व्यक्ति को हटाया था।";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "रिपोर्ट करें";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "अनब्लॉक करें";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "एनक्रिप्शन वेरिफ़ाई किया जा रहा है…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For people you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "जिन लोगों से आप फ़ोन नंबर के ज़रिए कनेक्ट हैं, उनके लिए Signal 'की ट्रांसपेरेंसी' प्रोसेस के ज़रिए अपने-आप यह पुष्टि कर लेता है कि कनेक्शन सिक्योर है या नहीं। अतिरिक्त सुरक्षा के लिए, आपके पास भी QR कोड या सेफ़्टी नंबर के ज़रिए कनेक्शन को वेरिफ़ाई करने का विकल्प मौजूद है।";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal अब एनक्रिप्शन को ऑटोमैटिक तरीके से वेरिफ़ाई कर सकता है";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This could be because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal इस चैट के लिए एनक्रिप्शन को ऑटोमैटिक तरीके से वेरिफ़ाई नहीं कर सकता। ऐसा इसलिए है, क्योंकि हो सकता है कि %1$@ ने अपना फ़ोन नंबर या अपने फ़ोन नंबर की प्राइवेसी सेटिंग बदल दी हो। पिछली स्क्रीन पर दिख रहे नंबर का मिलान करके या उनके डिवाइस पर मौजूद कोड को स्कैन करके, एंड-टू-एंड एनक्रिप्शन को मैन्युअल तरीके से वेरिफ़ाई करें।";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "इस चैट के लिए ऑटो-वेरिफ़िकेशन की सुविधा अब उपलब्ध नहीं है";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "अकाउंट";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "अकाउंट सेटिंग खोलें";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "आपका अकाउंट डेटा";
@@ -8390,7 +8390,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "फ़ोन नंबर";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "फ़ोन नंबर नहीं बदला जा सकता";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "अपने मौजूदा फ़ोन नंबर को नए फ़ोन नंबर से बदलने के लिए इसका इस्तेमाल करें। बदलाव होने के बाद इसे पहले जैसा नहीं किया जा सकता।\n\nआगे बढ़ने से पहले, पक्का कर लें कि आपके नए नंबर पर SMS या कॉल आने की सुविधा मौजूद है।";
@@ -10004,7 +10004,7 @@
 "USE_PROXY_EXPLANATION" = "प्रॉक्सी का इस्तेमाल सिर्फ़ तब करें जब मोबाइल डेटा या वाई-फ़ाई से Signal कनेक्ट न हो रहा हो।";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "हर यूज़रनेम का अपना यूनिक QR कोड और लिंक होता है। इसे दोस्तों को भेजें, ताकि वे झटपट आपके साथ चैट शुरू कर सकें।";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "हर यूज़रनेम का अपना यूनीक QR कोड और लिंक होता है। इसे दोस्तों को भेजें, ताकि वे झटपट आपके साथ चैट शुरू कर सकें।";
 
 /* Title for the username links and QR codes section on the username education sheet */
 "USERNAME_EDUCATION_LINK_TITLE" = "QR कोड और लिंक";
@@ -10124,7 +10124,7 @@
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "यूज़रनेम सही नहीं है, कम से कम 2 डिजिट डालें";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "इन अंकों से आपको अपना यूज़रनेम प्राइवेट बनाए रखने में मदद मिलती है, ताकि अनचाहे मैसेज से बचा जा सके। अपना यूज़रनेम सिर्फ़ उन्हीं लोगों और ग्रुप के साथ शेयर करें, जिनसे आपको चैट करनी है। यूज़रनेम बदलने पर आपको नए अंक मिलेंगे।";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "इन डिजिट से आपको अपना यूज़रनेम प्राइवेट बनाए रखने में मदद मिलती है, ताकि अनचाहे मैसेज से बचा जा सके। अपना यूज़रनेम उन्हीं लोगों और ग्रुप के साथ शेयर करें, जिनसे आपको चैट करनी है। यूज़रनेम बदलने पर आपको नए डिजिट मिलेंगे।";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "यह नंबर क्या है?";
@@ -10148,10 +10148,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "यूज़रनेम तभी अपडेट हो सकता है जब आप इंटरनेट से जुड़े हों।";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "वेरिफ़िकेशन कोड का अनुरोध किया गया";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "अपना वेरिफ़िकेशन कोड किसी को न बताएं। Signal इसके लिए आपको कभी मैसेज नहीं करता। अगर आपको Signal के नाम से भेजा गया कोई भी मैसेज मिलता है, तो यह समझ लें कि यह कोई स्कैम है।\nअगर इस कोड का अनुरोध आपने किया है, तो इस मैसेज को नज़रअंदाज़ करें।";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "आपने %1$@ को 'वेरिफ़ाइड नहीं है' के तौर पर मार्क किया है।";

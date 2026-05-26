@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "النسخ الاحتياطية التلقائية مُعطَّلة";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "عدد رسائلك يتجاوز حدّ التخزين. احذف بعض الرسائل وحاوِل مُجدَّدًا.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "حدث خطأ ما أثناء إنشاء نسختك الاحتياطية. يُرجى المحاولة مرّة أخرى أو التواصل مع فريق الدعم.";
@@ -4574,7 +4574,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "اختر مشرفًا جديدًا";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "اختر مُشرِف جديد";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "وصل عدد الأعضاء إلى الحدّ المُوصى به";
@@ -5588,7 +5588,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "هل ترغبُ بالسماح لجهة الاتصال %1$@ بمراسلتك وهل ترغبُ بمشاركة اسمك وصورتك معها؟ حذفتَ هذا الشخص في الماضي.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "إبلاغ";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "رفع الحظر";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "جارٍ التحقُّق من التشفير…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For people you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "بالنسبة لِجهات الاتصال المُرتبطين بك عبر رقم الهاتف، يُمكن لتطبيق سيجنال التحقُّق تلقائيًا من أمان الاتصال باستخدام عملية تُسمّى شفافية المفاتيح. لِتعزيز الأمان، يُمكنك التحقُّق من الاتصالات يدويًا باستخدام كود QR أو من خلال مقارنة أرقام الأمان.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "يُمكن لسيجنال الآن التحقُّق تلقائيًا من التشفير";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This could be because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "لا يمكن لسيجنال التحقُّق تلقائيًا من تشفير هذه الدردشة. قد يكون هذا بسبب أن %1$@ غيّرَ رقم هاتفه أو إعدادات الخصوصية الخاصة برقم هاتفه. التحقُّق من التشفير من طرف لطرف يدويًا عن طريق مقارنة الأرقام على الشاشة السابقة أو مسح الكود على جهازه(ا).";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "التحقُّق التلقائي غير متوفِّر لهذه الدردشة.";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "الحِساب";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "افتح إعدادات الحساب";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "بيانات حسابك";
@@ -8390,7 +8390,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "رقم الهاتف";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "تعذَّر تغيير رقم الهاتف";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "استخدِم هذا لتغيير رقم هاتفك الحالي إلى رقم جديد. لا يمكن التراجُع عن هذا الإجراء.\n\nقبل الاستمرار، تأكَّد أن رقمك الجديد يمكنه تلقِّي الرسائل القصيرة أو المكالمات.";
@@ -10148,10 +10148,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "يُمكن تحديث أسماء المُستخدِمين فقط عند وجود اتصال بالإنترنت.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "تمَّ طلب كود تحقُّق.";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "لا تشارِك كود التحقُّق مع أي أحد. سيجنال لن يرسل إليك رسالة يطلب فيها هذا الكود أبدًا. إذا تلقّيتَ رسالة من شخص ما يدّعي أنه سيجنال، فالأمر يتعلق بمحاولة احتيال.\nيمكنك تجاهل هذه الرسالة إذا طلبت الكود بنفسك.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "قُمتَ بالإشارة إلى %1$@ كغير مُتحقَّق منه.";

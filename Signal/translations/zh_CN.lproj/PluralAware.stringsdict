@@ -1361,9 +1361,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>由于您近期才注册此账户，您暂时无法更改手机号码。设置短暂的等待期有助于保护您的账户。
 
-Try again in %1$d hours.</string>
+请在 %1$d 小时后再试。</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

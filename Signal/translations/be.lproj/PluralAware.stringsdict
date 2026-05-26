@@ -1943,21 +1943,21 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Паколькі вы нядаўна зарэгістравалі гэты ўліковы запіс, зараз вы не можаце змяніць нумары тэлефона. Кароткі перыяд чакання патрэбны для таго, каб лепш абараніць ваш уліковы запіс.
 
-Try again in %1$d hour.</string>
+Паўтарыце спробу праз %1$d гадзіну.</string>
 			<key>few</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Паколькі вы нядаўна зарэгістравалі гэты ўліковы запіс, зараз вы не можаце змяніць нумары тэлефона. Кароткі перыяд чакання патрэбны для таго, каб лепш абараніць ваш уліковы запіс.
 
-Try again in %1$d hours.</string>
+Паўтарыце спробу праз %1$d гадзіны.</string>
 			<key>many</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Паколькі вы нядаўна зарэгістравалі гэты ўліковы запіс, зараз вы не можаце змяніць нумары тэлефона. Кароткі перыяд чакання патрэбны для таго, каб лепш абараніць ваш уліковы запіс.
 
-Try again in %1$d hours.</string>
+Паўтарыце спробу праз %1$d гадзін.</string>
 			<key>other</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Паколькі вы нядаўна зарэгістравалі гэты ўліковы запіс, зараз вы не можаце змяніць нумары тэлефона. Кароткі перыяд чакання патрэбны для таго, каб лепш абараніць ваш уліковы запіс.
 
-Try again in %1$d hours.</string>
+Паўтарыце спробу праз %1$d гадзіны.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

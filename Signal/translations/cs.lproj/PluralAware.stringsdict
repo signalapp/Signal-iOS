@@ -1943,21 +1943,21 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Protože jste tento účet zaregistrovali teprve nedávno, nemůžete teď telefonní číslo změnit. Krátká čekací doba pomáhá chránit váš účet.
 
-Try again in %1$d hour.</string>
+Zkuste to znovu za %1$d hodinu.</string>
 			<key>few</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Protože jste tento účet zaregistrovali teprve nedávno, nemůžete teď telefonní číslo změnit. Krátká čekací doba pomáhá chránit váš účet. 
 
-Try again in %1$d hours.</string>
+Zkuste to znovu za %1$d hodiny.</string>
 			<key>many</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Protože jste tento účet zaregistrovali teprve nedávno, nemůžete teď telefonní číslo změnit. Krátká čekací doba pomáhá chránit váš účet. 
 
-Try again in %1$d hours.</string>
+Zkuste to znovu za %1$d hodiny.</string>
 			<key>other</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Protože jste tento účet zaregistrovali teprve nedávno, nemůžete teď telefonní číslo změnit. Krátká čekací doba pomáhá chránit váš účet.
 
-Try again in %1$d hours.</string>
+Zkuste to znovu za %1$d hodin.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

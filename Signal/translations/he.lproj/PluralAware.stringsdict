@@ -1943,21 +1943,21 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>בגלל שרשמת את החשבון הזה לאחרונה, אי אפשר להחליף מספר טלפון כרגע. זמן המתנה קצר עוזר להגן על החשבון שלך.
 
-Try again in %1$d hour.</string>
+יש לנסות שוב בעוד שעה %1$d.</string>
 			<key>two</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>בגלל שרשמת את החשבון הזה לאחרונה, אי אפשר להחליף מספר טלפון כרגע. זמן המתנה קצר עוזר להגן על החשבון שלך.
 
-Try again in %1$d hours.</string>
+יש לנסות שוב בעוד שעתיים.</string>
 			<key>many</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>בגלל שרשמת את החשבון הזה לאחרונה, אי אפשר להחליף מספר טלפון כרגע. זמן המתנה קצר עוזר להגן על החשבון שלך.
 
-Try again in %1$d hours.</string>
+יש לנסות שוב בעוד %1$d שעות.</string>
 			<key>other</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>בגלל שרשמת את החשבון הזה לאחרונה, אי אפשר להחליף מספר טלפון כרגע. זמן המתנה קצר עוזר להגן על החשבון שלך.
 
-Try again in %1$d hours.</string>
+יש לנסות שוב בעוד %1$d שעות.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
