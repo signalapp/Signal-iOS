@@ -509,6 +509,14 @@ public extension UIBarButtonItem {
         }
     }
 
+    /// Creates ••• bar button that presents a popup menu with the provided actions.
+    static func contextMenuButton(actions: [UIAction]) -> UIBarButtonItem {
+        UIBarButtonItem(
+            image: Theme.iconImage(.buttonMore),
+            menu: UIMenu(children: actions),
+        )
+    }
+
     static func setButton(action: @escaping () -> Void) -> UIBarButtonItem {
         if #available(iOS 26, *) {
             // iOS 26 done buttons appear as a big blue checkmark

@@ -8,7 +8,6 @@ import SignalUI
 
 class GroupStorySettingsViewController: OWSTableViewController2 {
     let thread: TSGroupThread
-    let contextButton = ContextMenuButton(empty: ())
 
     init(thread: TSGroupThread) {
         self.thread = thread
@@ -21,17 +20,10 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    override func themeDidChange() {
-        super.themeDidChange()
-
-        contextButton.tintColor = Theme.primaryIconColor
-    }
-
     private func updateBarButtons() {
         title = thread.groupNameOrDefault
 
-        contextButton.setImage(Theme.iconImage(.buttonMore), for: .normal)
-        contextButton.setActions(actions: [
+        navigationItem.rightBarButtonItem = .contextMenuButton(actions: [
             UIAction(
                 title: OWSLocalizedString(
                     "STORIES_GO_TO_CHAT_ACTION",
@@ -50,8 +42,6 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
                 },
             ),
         ])
-
-        navigationItem.rightBarButtonItem = .init(customView: contextButton)
     }
 
     override func viewDidLoad() {

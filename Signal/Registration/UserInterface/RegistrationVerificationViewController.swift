@@ -210,21 +210,6 @@ class RegistrationVerificationViewController: OWSViewController {
         },
     )
 
-    private lazy var contextButton: ContextMenuButton = {
-        let result = ContextMenuButton(empty: ())
-        result.autoSetDimensions(to: .square(40))
-        result.setImage(Theme.iconImage(.buttonMore), for: .normal)
-        if #unavailable(iOS 26) {
-            result.tintColor = .Signal.accent
-        }
-        return result
-    }()
-
-    private lazy var contextBarButton = UIBarButtonItem(
-        customView: contextButton,
-        accessibilityIdentifier: "registration.verificationCode.contextButton",
-    )
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -290,9 +275,9 @@ class RegistrationVerificationViewController: OWSViewController {
         switch state.exitConfiguration {
         case .noExitAllowed:
             navigationItem.leftBarButtonItem = nil
+
         case .exitReRegistration:
-            navigationItem.leftBarButtonItem = contextBarButton
-            contextButton.setActions(actions: [
+            navigationItem.leftBarButtonItem = .contextMenuButton(actions: [
                 UIAction(
                     title: OWSLocalizedString(
                         "EXIT_REREGISTRATION",
@@ -303,9 +288,9 @@ class RegistrationVerificationViewController: OWSViewController {
                     },
                 ),
             ])
+
         case .exitChangeNumber:
-            navigationItem.leftBarButtonItem = contextBarButton
-            contextButton.setActions(actions: [
+            navigationItem.leftBarButtonItem = .contextMenuButton(actions: [
                 UIAction(
                     title: OWSLocalizedString(
                         "EXIT_CHANGE_NUMBER",

@@ -146,21 +146,6 @@ class RegistrationPinViewController: OWSViewController {
 
     // MARK: Rendering
 
-    private lazy var moreButton: ContextMenuButton = {
-        let result = ContextMenuButton(empty: ())
-        result.setImage(Theme.iconImage(.buttonMore), for: .normal)
-        if #unavailable(iOS 26) {
-            result.tintColor = .Signal.accent
-        }
-        result.autoSetDimensions(to: .square(40))
-        return result
-    }()
-
-    private lazy var moreBarButton = UIBarButtonItem(
-        customView: moreButton,
-        accessibilityIdentifier: "registration.pin.disablePinButton",
-    )
-
     private lazy var backButton: UIButton = {
         let result = UIButton()
         result.setTemplateImage(
@@ -330,19 +315,15 @@ class RegistrationPinViewController: OWSViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.background
-        navigationItem.rightBarButtonItem = {
-            let barButtonItem = UIBarButtonItem(
-                title: CommonStrings.nextButton,
-                style: .done,
-                target: self,
-                action: #selector(didTapNext),
-                accessibilityIdentifier: "registration.pin.nextButton",
-            )
-            barButtonItem.tintColor = .Signal.accent
-            return barButtonItem
-        }()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: CommonStrings.nextButton,
+            style: .done,
+            target: self,
+            action: #selector(didTapNext),
+            accessibilityIdentifier: "registration.pin.nextButton",
+        )
 
-        self.stackView = addStaticContentStackView(
+        stackView = addStaticContentStackView(
             arrangedSubviews: [titleLabel, explanationView, pinTextField],
             isScrollable: true,
             shouldAvoidKeyboard: true,
@@ -399,9 +380,7 @@ class RegistrationPinViewController: OWSViewController {
     }
 
     private func configureUIForCreatingNewPin() {
-        navigationItem.leftBarButtonItem = moreBarButton
-
-        moreButton.setActions(actions: [
+        navigationItem.leftBarButtonItem = .contextMenuButton(actions: [
             UIAction(
                 title: OWSLocalizedString(
                     "PIN_CREATION_LEARN_MORE",
@@ -462,9 +441,7 @@ class RegistrationPinViewController: OWSViewController {
         skippability: RegistrationPinState.Skippability,
         remainingAttempts: UInt?,
     ) {
-        navigationItem.leftBarButtonItem = moreBarButton
-        var actions = [UIMenuElement]()
-
+        var actions = [UIAction]()
         if skippability.canSkip {
             actions.append(UIAction(
                 title: OWSLocalizedString(
@@ -493,7 +470,7 @@ class RegistrationPinViewController: OWSViewController {
             actions.append(exitAction)
         }
 
-        moreButton.setActions(actions: actions)
+        navigationItem.leftBarButtonItem = .contextMenuButton(actions: actions)
 
         showAttemptWarningIfNecessary(
             remainingAttempts: remainingAttempts,

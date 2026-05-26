@@ -32,6 +32,9 @@ public class RegistrationNavigationController: OWSNavigationController {
         if #available(iOS 26.0, *) {
             interactiveContentPopGestureRecognizer?.isEnabled = false
         }
+        if #unavailable(iOS 26) {
+            navigationBar.tintColor = .Signal.accent
+        }
     }
 
     override public func viewWillAppear(_ animated: Bool) {

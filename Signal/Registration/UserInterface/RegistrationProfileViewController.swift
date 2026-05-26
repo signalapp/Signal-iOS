@@ -259,7 +259,6 @@ class RegistrationProfileViewController: OWSViewController {
 
         view.backgroundColor = .Signal.background
 
-        navigationItem.rightBarButtonItem?.tintColor = .Signal.accent
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: CommonStrings.nextButton,
             style: .done,

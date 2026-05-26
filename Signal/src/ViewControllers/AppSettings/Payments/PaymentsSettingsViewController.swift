@@ -309,13 +309,35 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
             return
         }
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: nil,
-            image: Theme.iconImage(.buttonMore),
-            primaryAction: UIAction { [weak self] _ in
-                self?.showSettingsActionSheet()
+        navigationItem.rightBarButtonItem = .contextMenuButton(actions: [
+            UIAction(title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE",
+                comment: "Label for the 'transfer to exchange' button in the payment settings.",
+            )) { [weak self] _ in
+                self?.didTapTransferToExchangeButton()
             },
-        )
+            UIAction(title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_SET_CURRENCY",
+                comment: "Title for the 'set currency' view in the app settings.",
+            )) { [weak self] _ in
+                self?.didTapSetCurrencyButton()
+            },
+            UIAction(title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS",
+                comment: "Label for 'deactivate payments' button in the app settings.",
+            )) { [weak self] _ in
+                self?.didTapDeactivatePaymentsButton()
+            },
+            UIAction(title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE",
+                comment: "Label for 'view payments recovery passphrase' button in the app settings.",
+            )) { [weak self] _ in
+                self?.didTapViewPaymentsPassphraseButton()
+            },
+            UIAction(title: CommonStrings.help) { [weak self] _ in
+                self?.didTapHelpButton()
+            },
+        ])
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -1021,61 +1043,6 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
     }
 
     // MARK: -
-
-    private func showSettingsActionSheet() {
-        let actionSheet = ActionSheetController(title: nil, message: nil)
-
-        actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString(
-                "SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE",
-                comment: "Label for the 'transfer to exchange' button in the payment settings.",
-            ),
-            style: .default,
-        ) { [weak self] _ in
-            self?.didTapTransferToExchangeButton()
-        })
-
-        actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString(
-                "SETTINGS_PAYMENTS_SET_CURRENCY",
-                comment: "Title for the 'set currency' view in the app settings.",
-            ),
-            style: .default,
-        ) { [weak self] _ in
-            self?.didTapSetCurrencyButton()
-        })
-
-        actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString(
-                "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS",
-                comment: "Label for 'deactivate payments' button in the app settings.",
-            ),
-            style: .default,
-        ) { [weak self] _ in
-            self?.didTapDeactivatePaymentsButton()
-        })
-
-        actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString(
-                "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE",
-                comment: "Label for 'view payments recovery passphrase' button in the app settings.",
-            ),
-            style: .default,
-        ) { [weak self] _ in
-            self?.didTapViewPaymentsPassphraseButton()
-        })
-
-        actionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.help,
-            style: .default,
-        ) { [weak self] _ in
-            self?.didTapHelpButton()
-        })
-
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-
-        presentActionSheet(actionSheet)
-    }
 
     private func showConfirmDeactivatePaymentsUI() {
         let actionSheet = ActionSheetController(

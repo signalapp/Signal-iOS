@@ -129,16 +129,6 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
     // MARK: UI
 
-    private lazy var contextButton: ContextMenuButton = {
-        let result = ContextMenuButton(empty: ())
-        result.setImage(Theme.iconImage(.buttonMore), for: .normal)
-        if #unavailable(iOS 26) {
-            result.tintColor = .Signal.accent
-        }
-        result.autoSetDimensions(to: .square(40))
-        return result
-    }()
-
     private lazy var titleLabel: UILabel = {
         let result = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
             "REGISTRATION_PHONE_NUMBER_TITLE",
@@ -178,21 +168,13 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
         view.backgroundColor = .Signal.background
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            customView: contextButton,
-            accessibilityIdentifier: "registration.verificationCode.contextButton",
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: CommonStrings.nextButton,
+            style: .done,
+            target: self,
+            action: #selector(didTapNext),
+            accessibilityIdentifier: "registration.phonenumber.nextButton",
         )
-        navigationItem.rightBarButtonItem = {
-            let barButtonItem = UIBarButtonItem(
-                title: CommonStrings.nextButton,
-                style: .done,
-                target: self,
-                action: #selector(didTapNext),
-                accessibilityIdentifier: "registration.phonenumber.nextButton",
-            )
-            barButtonItem.tintColor = .Signal.accent
-            return barButtonItem
-        }()
 
         let stackView = addStaticContentStackView(
             arrangedSubviews: [
@@ -276,7 +258,8 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                 },
             ))
         }
-        contextButton.setActions(actions: actions)
+
+        navigationItem.leftBarButtonItem = .contextMenuButton(actions: actions)
 
         let now = Date()
 

@@ -30,11 +30,11 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
     private lazy var gradientProtectionView = GradientView(colors: [])
     private var gradientProtectionViewHeightConstraint: NSLayoutConstraint?
 
-    private var contextButton: ContextMenuButton!
+    private var contextButton: UIButton!
     private var bottomContentVStack: UIStackView!
     init(
         item: StoryItem,
-        contextButton: ContextMenuButton,
+        contextButton: UIButton,
         spoilerState: SpoilerRenderState,
         delegate: StoryItemMediaViewDelegate,
     ) {
@@ -105,7 +105,7 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
         lastTruncationWidth = nil
     }
 
-    func updateItem(_ newItem: StoryItem, newContextButton: ContextMenuButton) {
+    func updateItem(_ newItem: StoryItem, newContextButton: UIButton) {
         let oldItem = self.item
         self.item = newItem
 
@@ -337,7 +337,7 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
     }()
 
     private lazy var authorRow = UIStackView()
-    private func updateAuthorRow(newContextButton contextButton: ContextMenuButton) {
+    private func updateAuthorRow(newContextButton contextButton: UIButton) {
         let (avatarView, nameLabel) = SSKEnvironment.shared.databaseStorageRef.read { (
             buildAvatarView(transaction: $0),
             buildNameLabel(transaction: $0),
