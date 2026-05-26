@@ -1,2 +1,2 @@
-• Hem afegit missatges informatius i confirmacions addicionals a l'app per ajudar als usuaris de Signal a protegir-se dels atacs de <em>phishing</em> i d'enginyeria social. Recorda: no responguis a missatges que es facin passar per Signal i no comparteixis amb ningú el teu PIN ni cap clau de verificació o recuperació.
+• Hem afegit missatges informatius i confirmacions addicionals a l'app per ajudar als usuaris de Signal a protegir-se dels atacs de phishing i d'enginyeria social. Recorda: no responguis a missatges que es facin passar per Signal i no comparteixis amb ningú el teu PIN ni cap clau de verificació o recuperació.
 • Millores a la funció de cerca de GIF animats.
