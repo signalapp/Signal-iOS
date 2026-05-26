@@ -194,14 +194,13 @@ class CVAttachmentProgressView: ManualLayoutView {
                 applyState(.tapToDownload, animated: animateStateChange)
             case .enqueuedOrDownloading:
                 applyState(.unknownProgress, animated: animateStateChange)
-
-                NotificationCenter.default.addObserver(
-                    self,
-                    selector: #selector(processDownloadNotification(notification:)),
-                    name: AttachmentDownloads.attachmentDownloadProgressNotification,
-                    object: nil,
-                )
             }
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(processDownloadNotification(notification:)),
+                name: AttachmentDownloads.attachmentDownloadProgressNotification,
+                object: nil,
+            )
         }
     }
 

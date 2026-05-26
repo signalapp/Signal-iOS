@@ -135,7 +135,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         let progressView = CVAttachmentProgressView(
             direction: .download(
                 attachmentPointer: attachmentPointer,
-                downloadState: .enqueuedOrDownloading,
+                downloadState: .none,
             ),
             configuration: .forMediaOverlay(),
         )
