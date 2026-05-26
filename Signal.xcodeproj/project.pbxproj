@@ -10229,15 +10229,6 @@
 			path = DoubleTapToEdit;
 			sourceTree = "<group>";
 		};
-		6640DD612ACDD5CD00CE9A8C /* LocalStorage */ = {
-			isa = PBXGroup;
-			children = (
-				C14D49CD2D667F830033BA69 /* AccountKeyStore.swift */,
-				6640DD622ACDD5DE00CE9A8C /* SVRLocalStorage.swift */,
-			);
-			path = LocalStorage;
-			sourceTree = "<group>";
-		};
 		6645F30629BF8D1000B58EBD /* AccountAttributes */ = {
 			isa = PBXGroup;
 			children = (
@@ -10368,15 +10359,20 @@
 		6673FF6A2978B5B900F96CFD /* SecureValueRecovery */ = {
 			isa = PBXGroup;
 			children = (
-				D9EDF2762E4D29F0001D4BEC /* AccountEntropyPool */,
-				6640DD612ACDD5CD00CE9A8C /* LocalStorage */,
-				66C2B13B2A0E9108008DDE72 /* SVR2 */,
-				D94AEB392D28837A00B03D7A /* MasterKey.swift */,
-				666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */,
+				66C2B14F2A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift */,
 				66138FB5298326C7002E0CFE /* SecureValueRecovery.swift */,
+				662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */,
+				66C2B14C2A13E2C7008DDE72 /* SgxWebsocketConfigurator.swift */,
+				66C2B14A2A13E2AC008DDE72 /* SgxWebsocketConnection.swift */,
+				66C2B1482A13E2A0008DDE72 /* SgxWebsocketConnectionFactory.swift */,
+				66C2B13C2A0E9116008DDE72 /* SVR2AuthCredential.swift */,
+				50A26F192FB6991F000A2D8B /* SVR2PinHash.swift */,
+				669947B92A20129000E4DC0C /* SVR2Shims.swift */,
+				66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */,
 				66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */,
 				6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */,
 				6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */,
+				6640DD622ACDD5DE00CE9A8C /* SVRLocalStorage.swift */,
 				66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */,
 			);
 			path = SecureValueRecovery;
@@ -10719,18 +10715,6 @@
 			path = V2;
 			sourceTree = "<group>";
 		};
-		66C2B13B2A0E9108008DDE72 /* SVR2 */ = {
-			isa = PBXGroup;
-			children = (
-				662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */,
-				66C2B13C2A0E9116008DDE72 /* SVR2AuthCredential.swift */,
-				50A26F192FB6991F000A2D8B /* SVR2PinHash.swift */,
-				669947B92A20129000E4DC0C /* SVR2Shims.swift */,
-				66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */,
-			);
-			path = SVR2;
-			sourceTree = "<group>";
-		};
 		66C2B1422A12E043008DDE72 /* SecureValueRecovery */ = {
 			isa = PBXGroup;
 			children = (
@@ -10738,25 +10722,6 @@
 				6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */,
 			);
 			path = SecureValueRecovery;
-			sourceTree = "<group>";
-		};
-		66C2B1472A13E290008DDE72 /* SgxWebsocketConnection */ = {
-			isa = PBXGroup;
-			children = (
-				66C2B14E2A13F0BC008DDE72 /* Mocks */,
-				66C2B14C2A13E2C7008DDE72 /* SgxWebsocketConfigurator.swift */,
-				66C2B14A2A13E2AC008DDE72 /* SgxWebsocketConnection.swift */,
-				66C2B1482A13E2A0008DDE72 /* SgxWebsocketConnectionFactory.swift */,
-			);
-			path = SgxWebsocketConnection;
-			sourceTree = "<group>";
-		};
-		66C2B14E2A13F0BC008DDE72 /* Mocks */ = {
-			isa = PBXGroup;
-			children = (
-				66C2B14F2A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift */,
-			);
-			path = Mocks;
 			sourceTree = "<group>";
 		};
 		66CD25572B0685CF00139E17 /* Archivers */ = {
@@ -11654,6 +11619,7 @@
 		88E34F2522F269B600966CC2 /* StorageService */ = {
 			isa = PBXGroup;
 			children = (
+				F9C5CB12289453B200548EEE /* StorageService.swift */,
 				88E34F2622F269E900966CC2 /* StorageServiceManager.swift */,
 				88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */,
 				D927372C2CD2DD0D00E15D95 /* StorageServiceRecordIkmMigrator.swift */,
@@ -14150,15 +14116,6 @@
 			path = DisappearingMessages;
 			sourceTree = "<group>";
 		};
-		D9EDF2762E4D29F0001D4BEC /* AccountEntropyPool */ = {
-			isa = PBXGroup;
-			children = (
-				C18D6FDF2D4D8FB40085E3B9 /* AccountEntropyPool.swift */,
-				D9EDF2772E4D2A1E001D4BEC /* AccountEntropyPoolManager.swift */,
-			);
-			path = AccountEntropyPool;
-			sourceTree = "<group>";
-		};
 		D9F6553029D6530B002A330A /* SDSCodableModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -15077,11 +15034,16 @@
 				6646572F2AC369EB0099DE1C /* PhoneNumberDiscoverabilityManager */,
 				6659A0242A7C112700066AB7 /* PreKeys */,
 				661170BF2ABA458800A1B16D /* TSAccountManager */,
+				C18D6FDF2D4D8FB40085E3B9 /* AccountEntropyPool.swift */,
+				D9EDF2772E4D2A1E001D4BEC /* AccountEntropyPoolManager.swift */,
+				C14D49CD2D667F830033BA69 /* AccountKeyStore.swift */,
 				50F401CB2D483BF40094CA56 /* DeviceId.swift */,
 				50D6BDEE2ED6724600CC012E /* DeviceType.swift */,
 				D9F399AC2A95798A001599EC /* IdentityKeyChecker.swift */,
 				D9F399B12A96D65D001599EC /* IdentityKeyMismatchManager.swift */,
 				5033D46629D76BD0007FEADA /* LocalIdentifiers.swift */,
+				D94AEB392D28837A00B03D7A /* MasterKey.swift */,
+				666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */,
 				72552EF32C9EF9E7008614AF /* OWSIdentity.swift */,
 				D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */,
 				C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */,
@@ -15351,7 +15313,6 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CAD3289453B200548EEE /* API */,
-				66C2B1472A13E290008DDE72 /* SgxWebsocketConnection */,
 				88DF819328E112F600F8BA80 /* SignalProxy */,
 				669E8FE528B4149200043D28 /* BaseOWSURLSessionMock.swift */,
 				F9C5CAC4289453B200548EEE /* ChatConnectionManager.swift */,
@@ -15537,7 +15498,6 @@
 				7634F08C2A21963600BB93D5 /* Sounds.swift */,
 				F9613CDB2981F11400894B55 /* SqliteUtil.swift */,
 				F9C5CB47289453B200548EEE /* SSKPreferences.swift */,
-				F9C5CB12289453B200548EEE /* StorageService.swift */,
 				72DB95AD2C8C7C7B00FD2266 /* String+OWS.swift */,
 				F9C5CB09289453B200548EEE /* String+SSK.swift */,
 				668A010A2C2B602F007B8808 /* StringSanitizer.swift */,
