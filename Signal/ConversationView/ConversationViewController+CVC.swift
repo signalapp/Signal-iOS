@@ -545,6 +545,14 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
         }
 
+        if
+            scrollAction.action == .none,
+            update.loadRequest.preferredScrollContinuityAnchorInteractionId != nil,
+            isScrolledToBottom
+        {
+            scrollAction = CVScrollAction(action: .bottomOfLoadWindow, isAnimated: false)
+        }
+
         if .loadOlder == renderState.loadType {
             scrollAction = .none
         }
