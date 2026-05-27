@@ -11,17 +11,14 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
 
     init(thread: TSGroupThread) {
         self.thread = thread
+
         super.init()
-    }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        updateBarButtons()
-        updateTableContents()
-    }
-
-    private func updateBarButtons() {
         title = thread.groupNameOrDefault
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
         navigationItem.rightBarButtonItem = .contextMenuButton(actions: [
             UIAction(
@@ -42,17 +39,20 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
                 },
             ),
         ])
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
 
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
         updateTableContents()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        updateTableContents()
+    }
+
     private var isShowingAllViewers = false
+
     private func updateTableContents(shouldReload: Bool = true) {
         let contents = OWSTableContents()
         defer { self.setContents(contents, shouldReload: shouldReload) }
@@ -120,8 +120,8 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
 
                     let rowLabel = UILabel()
                     rowLabel.text = CommonStrings.seeAllButton
-                    rowLabel.textColor = Theme.primaryTextColor
-                    rowLabel.font = OWSTableItem.primaryLabelFont
+                    rowLabel.textColor = .Signal.label
+                    rowLabel.font = .dynamicTypeBodyClamped
                     rowLabel.lineBreakMode = .byTruncatingTail
 
                     let contentRow = UIStackView(arrangedSubviews: [iconView, rowLabel])
@@ -141,13 +141,17 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
 
         let deleteSection = OWSTableSection()
         contents.add(deleteSection)
-        deleteSection.add(.actionItem(
-            withText: OWSLocalizedString(
-                "GROUP_STORY_SETTINGS_DELETE_BUTTON",
-                comment: "Button to delete the story on the 'group story settings' view",
-            ),
-            textColor: .ows_accentRed,
-            accessibilityIdentifier: nil,
+        deleteSection.add(OWSTableItem(
+            customCellBlock: {
+                return OWSTableItem.buildCell(
+                    itemName: OWSLocalizedString(
+                        "GROUP_STORY_SETTINGS_DELETE_BUTTON",
+                        comment: "Button to delete the story on the 'group story settings' view",
+                    ),
+                    textColor: .Signal.red,
+                    accessoryType: .none,
+                )
+            },
             actionBlock: { [weak self] in
                 self?.deleteStoryWithConfirmation()
             },
