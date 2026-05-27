@@ -101,7 +101,7 @@ private extension ContactSupportViewController.Filter {
     }
 }
 
-final class ContactSupportViewController: OWSTableViewController2 {
+final class ContactSupportViewController: OWSTableViewController2, TextViewWithPlaceholderDelegate {
     enum Filter: CaseIterable {
         case featureRequest
         case question
@@ -245,11 +245,9 @@ final class ContactSupportViewController: OWSTableViewController2 {
             self.showSpinnerOnNextButton = false
         }
     }
-}
 
-// MARK: - <TextViewWithPlaceholderDelegate>
+    // MARK: - TextViewWithPlaceholderDelegate
 
-extension ContactSupportViewController: TextViewWithPlaceholderDelegate {
     func textViewDidUpdateText(_ textView: TextViewWithPlaceholder) {
         updateRightBarButton()
 
@@ -258,11 +256,8 @@ extension ContactSupportViewController: TextViewWithPlaceholderDelegate {
 
         _textViewDidUpdateText(textView)
     }
-}
 
-// MARK: - Table view content builders
-
-extension ContactSupportViewController {
+    // MARK: - Table view content builders
 
     private func constructContents() -> OWSTableContents {
 
@@ -291,20 +286,36 @@ extension ContactSupportViewController {
                 OWSTableItem(
                     customCellBlock: { [weak self] in
                         guard let self else { return UITableViewCell() }
-                        return OWSTableItem.buildCell(
+                        let selectReasonButton = UIButton(
+                            configuration: .plain(),
+                        )
+                        if let selectedFilter = self.selectedFilter {
+                            selectReasonButton.configuration?.title = selectedFilter.localizedShortString
+                            selectReasonButton.configuration?.baseForegroundColor = .Signal.secondaryLabel
+                        } else {
+                            selectReasonButton.configuration?.title = OWSLocalizedString(
+                                "CONTACT_SUPPORT_SELECT_A_FILTER",
+                                comment: "Placeholder telling user they must select a filter.",
+                            )
+                            selectReasonButton.configuration?.baseForegroundColor = .Signal.tertiaryLabel
+                        }
+                        selectReasonButton.configuration?.contentInsets.leading = 2
+                        selectReasonButton.configuration?.contentInsets.trailing = 0
+                        selectReasonButton.configuration?.titleAlignment = .trailing
+                        selectReasonButton.setContentHuggingHorizontalHigh()
+                        selectReasonButton.setCompressionResistanceHorizontalHigh()
+                        selectReasonButton.showsMenuAsPrimaryAction = true
+                        selectReasonButton.menu = self.selectReasonMenu()
+
+                        let cell = OWSTableItem.buildCell(
                             itemName: OWSLocalizedString(
                                 "CONTACT_SUPPORT_FILTER_PROMPT",
                                 comment: "Prompt telling the user to select a filter for their support request.",
                             ),
-                            accessoryText: self.selectedFilter?.localizedShortString ?? OWSLocalizedString(
-                                "CONTACT_SUPPORT_SELECT_A_FILTER",
-                                comment: "Placeholder telling user they must select a filter.",
-                            ),
-                            accessoryTextColor: self.selectedFilter == nil ? .placeholderText : nil,
+                            accessoryContentView: selectReasonButton,
                         )
-                    },
-                    actionBlock: { [weak self] in
-                        self?.showFilterPicker()
+
+                        return cell
                     },
                 ),
 
@@ -348,6 +359,7 @@ extension ContactSupportViewController {
 
     private func createDebugLogCell() -> UITableViewCell {
         let cell = OWSTableItem.newCell()
+        cell.accessoryView = debugSwitch
 
         let label = UILabel()
         label.text = OWSLocalizedString(
@@ -357,27 +369,35 @@ extension ContactSupportViewController {
         label.font = UIFont.dynamicTypeBody
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
-        label.textColor = .label
+        label.lineBreakMode = .byWordWrapping
+        label.textColor = .Signal.label
 
-        let infoButton = OWSButton(imageName: "help", tintColor: .Signal.secondaryLabel) { [weak self] in
-            let vc = SFSafariViewController(url: URL.Support.debugLogs)
-            self?.present(vc, animated: true)
-        }
+        let infoButton = UIButton(
+            configuration: .plain(),
+            primaryAction: UIAction { [weak self] _ in
+                let vc = SFSafariViewController(url: URL.Support.debugLogs)
+                self?.present(vc, animated: true)
+            },
+        )
+        infoButton.configuration?.image = UIImage(imageLiteralResourceName: "help")
+        infoButton.configuration?.baseForegroundColor = .Signal.secondaryLabel
+        infoButton.setContentHuggingHorizontalHigh()
         infoButton.accessibilityLabel = OWSLocalizedString(
             "DEBUG_LOG_INFO_BUTTON",
             comment: "Accessibility label for the ? vector asset used to get info about debug logs",
         )
 
-        cell.contentView.addSubview(label)
-        cell.contentView.addSubview(infoButton)
-        cell.accessoryView = debugSwitch
-
-        label.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
-        label.setCompressionResistanceHigh()
-
-        infoButton.autoPinHeightToSuperviewMargins()
-        infoButton.autoPinLeading(toTrailingEdgeOf: label, offset: 6)
-        infoButton.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
+        let hStack = UIStackView(arrangedSubviews: [label, infoButton])
+        hStack.spacing = 6
+        hStack.alignment = .center
+        hStack.translatesAutoresizingMaskIntoConstraints = false
+        cell.contentView.addSubview(hStack)
+        NSLayoutConstraint.activate([
+            hStack.topAnchor.constraint(equalTo: cell.contentView.layoutMarginsGuide.topAnchor),
+            hStack.leadingAnchor.constraint(equalTo: cell.contentView.layoutMarginsGuide.leadingAnchor),
+            hStack.trailingAnchor.constraint(lessThanOrEqualTo: cell.contentView.layoutMarginsGuide.trailingAnchor),
+            hStack.bottomAnchor.constraint(equalTo: cell.contentView.layoutMarginsGuide.bottomAnchor),
+        ])
 
         return cell
     }
@@ -385,8 +405,7 @@ extension ContactSupportViewController {
     private func createEmojiFooterView() -> UIView {
         let containerView = UIView()
 
-        // These constants were pulled from OWSTableViewController to get things to line up right
-        let horizontalEdgeInset: CGFloat = UIDevice.current.isPlusSizePhone ? 20 : 16
+        let horizontalEdgeInset = OWSTableViewController2.defaultHOuterMargin
         containerView.directionalLayoutMargins.leading = horizontalEdgeInset
         containerView.directionalLayoutMargins.trailing = horizontalEdgeInset
 
@@ -395,22 +414,14 @@ extension ContactSupportViewController {
         return containerView
     }
 
-    private func showFilterPicker() {
-        let actionSheet = ActionSheetController(title: OWSLocalizedString(
-            "CONTACT_SUPPORT_FILTER_PROMPT",
-            comment: "Prompt telling the user to select a filter for their support request.",
-        ))
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-
-        for filter in Filter.allCases {
-            let action = ActionSheetAction(title: filter.localizedString) { [weak self] _ in
+    private func selectReasonMenu() -> UIMenu {
+        let actions = Filter.allCases.map { filter in
+            UIAction(title: filter.localizedString) { [weak self] _ in
                 self?.selectedFilter = filter
                 self?.updateRightBarButton()
                 self?.rebuildTableContents()
             }
-            actionSheet.addAction(action)
         }
-
-        presentActionSheet(actionSheet)
+        return UIMenu(children: actions)
     }
 }
