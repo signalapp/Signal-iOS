@@ -11,24 +11,36 @@ protocol PreviewWallpaperDelegate: AnyObject {
     func previewWallpaperDidComplete(_ vc: PreviewWallpaperViewController)
 }
 
-class PreviewWallpaperViewController: UIViewController {
+class PreviewWallpaperViewController: OWSViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate,
+    MockConversationDelegate
+{
     enum Mode {
         case preset(selectedWallpaper: Wallpaper)
         case photo(selectedPhoto: UIImage)
     }
 
     private(set) var mode: Mode { didSet { modeDidChange() }}
-    let thread: TSThread?
+
+    private var standalonePage: WallpaperPage?
+
+    private let thread: TSThread?
+
     weak var delegate: PreviewWallpaperDelegate?
-    lazy var blurButton = BlurButton { [weak self] shouldBlur in self?.standalonePage?.shouldBlur = shouldBlur }
 
-    let pageViewController = UIPageViewController(
-        transitionStyle: .scroll,
-        navigationOrientation: .horizontal,
-        options: [:],
-    )
+    private lazy var blurButton = BlurButton { [weak self] shouldBlur in self?.standalonePage?.shouldBlur = shouldBlur }
 
-    lazy var mockConversationView = MockConversationView(
+    private lazy var pageViewController: UIPageViewController = {
+        let viewController = UIPageViewController(
+            transitionStyle: .scroll,
+            navigationOrientation: .horizontal,
+            options: [:],
+        )
+        viewController.dataSource = self
+        viewController.delegate = self
+        return viewController
+    }()
+
+    private lazy var mockConversationView = MockConversationView(
         model: buildMockConversationModel(),
         hasWallpaper: true,
         customChatColor: nil,
@@ -39,7 +51,7 @@ class PreviewWallpaperViewController: UIViewController {
         self.thread = thread
         self.delegate = delegate
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         mockConversationView.delegate = self
     }
@@ -52,81 +64,62 @@ class PreviewWallpaperViewController: UIViewController {
         return UIDevice.current.isIPad ? .all : .portrait
     }
 
-    override func loadView() {
-        view = UIView()
-
-        view.backgroundColor = Theme.backgroundColor
-
-        view.addSubview(mockConversationView)
-        mockConversationView.autoPinWidthToSuperview()
-        mockConversationView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 20)
-        mockConversationView.isUserInteractionEnabled = false
-
-        modeDidChange()
-
-        let buttonStack = UIStackView()
-        buttonStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
-        buttonStack.axis = .horizontal
-
-        view.addSubview(buttonStack)
-        buttonStack.autoPinWidthToSuperview()
-        buttonStack.autoPinEdge(toSuperviewSafeArea: .bottom)
-        buttonStack.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
-
-        let cancelButton = OWSButton(title: CommonStrings.cancelButton) { [weak self] in
-            guard let self else { return }
-            self.delegate?.previewWallpaperDidCancel(self)
-        }
-        cancelButton.setTitleColor(Theme.primaryTextColor, for: .normal)
-        buttonStack.addArrangedSubview(cancelButton)
-
-        let divider = UIView()
-        let dividerLine = UIView()
-        dividerLine.backgroundColor = UIColor(rgbHex: 0xc4c4c4)
-        divider.addSubview(dividerLine)
-        dividerLine.autoPinWidthToSuperview()
-        dividerLine.autoPinHeightToSuperview(withMargin: 8)
-        dividerLine.autoSetDimension(.width, toSize: 1)
-
-        buttonStack.addArrangedSubview(divider)
-
-        let setButton = OWSButton(title: CommonStrings.setButton) { [weak self] in
-            self?.setCurrentWallpaperAndDismiss()
-        }
-        setButton.setTitleColor(Theme.primaryTextColor, for: .normal)
-        buttonStack.addArrangedSubview(setButton)
-
-        cancelButton.autoMatch(.width, to: .width, of: setButton)
-
-        let safeAreaCover = UIView()
-        safeAreaCover.backgroundColor = Theme.backgroundColor
-        view.addSubview(safeAreaCover)
-        safeAreaCover.autoPinEdge(toSuperviewEdge: .bottom)
-        safeAreaCover.autoPinWidthToSuperview()
-        safeAreaCover.autoPinEdge(.top, to: .bottom, of: buttonStack)
-
-        view.addSubview(blurButton)
-        blurButton.autoPinEdge(.bottom, to: .top, of: buttonStack, withOffset: -24)
-        blurButton.autoHCenterInSuperview()
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.hidesBackButton = true
-        title = OWSLocalizedString("WALLPAPER_PREVIEW_TITLE", comment: "Title for the wallpaper preview view.")
+        view.backgroundColor = .Signal.background
+
+        if #unavailable(iOS 26), let navigationBar = navigationController?.navigationBar {
+            // Make navigation bar have a translucent background.
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithDefaultBackground()
+            navigationBar.standardAppearance = appearance
+            navigationBar.compactAppearance = appearance
+            navigationBar.scrollEdgeAppearance = appearance
+        }
+
+        navigationItem.title = OWSLocalizedString(
+            "WALLPAPER_PREVIEW_TITLE",
+            comment: "Title for the wallpaper preview view.",
+        )
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            guard let self else { return }
+            self.delegate?.previewWallpaperDidCancel(self)
+        }
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in
+            self?.setCurrentWallpaperAndDismiss()
+        }
+
+        mockConversationView.isUserInteractionEnabled = false
+        mockConversationView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(mockConversationView)
+
+        blurButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(blurButton)
+
+        NSLayoutConstraint.activate([
+            mockConversationView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            mockConversationView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mockConversationView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+
+            blurButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            blurButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -24),
+        ])
+
+        modeDidChange()
     }
 
-    func setCurrentWallpaperAndDismiss() {
+    private func setCurrentWallpaperAndDismiss() {
         let croppedAndScaledPhoto: UIImage?
         let preset: Wallpaper?
         switch self.mode {
         case .photo:
-            guard let standalonePage = self.standalonePage else {
+            guard let standalonePage else {
                 return owsFailDebug("Missing standalone page for photo")
             }
             croppedAndScaledPhoto = standalonePage.generateSnapshotImage()
             preset = nil
+
         case .preset(let selectedWallpaper):
             croppedAndScaledPhoto = nil
             preset = selectedWallpaper
@@ -148,42 +141,65 @@ class PreviewWallpaperViewController: UIViewController {
         }
     }
 
-    private var standalonePage: WallpaperPage?
-    func modeDidChange() {
+    private func modeDidChange() {
         let resolvedWallpaper: Wallpaper
         switch mode {
         case .photo(let selectedPhoto):
             owsAssertDebug(self.standalonePage == nil)
             resolvedWallpaper = .photo
+
             let standalonePage = WallpaperPage(wallpaper: resolvedWallpaper, thread: thread, photo: selectedPhoto)
-            self.standalonePage = standalonePage
             view.insertSubview(standalonePage.view, at: 0)
             addChild(standalonePage)
-            standalonePage.view.autoPinEdgesToSuperviewEdges()
+            standalonePage.view.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                standalonePage.view.topAnchor.constraint(equalTo: view.topAnchor),
+                standalonePage.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                standalonePage.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                standalonePage.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            ])
+
             blurButton.isHidden = false
+            self.standalonePage = standalonePage
+
         case .preset(let selectedWallpaper):
             resolvedWallpaper = selectedWallpaper
             if pageViewController.view.superview == nil {
                 view.insertSubview(pageViewController.view, at: 0)
                 addChild(pageViewController)
-                pageViewController.view.autoPinEdgesToSuperviewEdges()
+                pageViewController.view.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    pageViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+                    pageViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                    pageViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                    pageViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                ])
+
                 pageViewController.dataSource = self
                 pageViewController.delegate = self
             }
             currentPage = WallpaperPage(wallpaper: selectedWallpaper, thread: thread)
+
             blurButton.isHidden = true
         }
-        mockConversationView.model = buildMockConversationModel()
-        mockConversationView.customChatColor = SSKEnvironment.shared.databaseStorageRef.read { tx in
+
+        let chatColor = SSKEnvironment.shared.databaseStorageRef.read { tx in
             DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
                 for: thread,
                 previewWallpaper: resolvedWallpaper,
                 tx: tx,
             )
         }
+
+        mockConversationView.model = buildMockConversationModel()
+        mockConversationView.customChatColor = chatColor
+
+        if #available(iOS 26, *) {
+            navigationItem.rightBarButtonItem?.tintColor = chatColor.asValue.asChatUIElementTintColor()
+        }
     }
 
-    func buildMockConversationModel() -> MockConversationView.MockModel {
+    private func buildMockConversationModel() -> MockConversationView.MockModel {
         let outgoingText: String = {
             guard let thread else {
                 return OWSLocalizedString(
@@ -220,13 +236,13 @@ class PreviewWallpaperViewController: UIViewController {
             .outgoing(text: outgoingText),
         ])
     }
-}
 
-// MARK: -
+    // MARK: - UIPageViewController
 
-extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
-
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+    func pageViewController(
+        _ pageViewController: UIPageViewController,
+        viewControllerBefore viewController: UIViewController,
+    ) -> UIViewController? {
         guard let currentPage, currentPage.wallpaper != .photo else { return nil }
         return WallpaperPage(
             wallpaper: wallpaper(before: currentPage.wallpaper),
@@ -234,7 +250,10 @@ extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPage
         )
     }
 
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+    func pageViewController(
+        _ pageViewController: UIPageViewController,
+        viewControllerAfter viewController: UIViewController,
+    ) -> UIViewController? {
         guard let currentPage, currentPage.wallpaper != .photo else { return nil }
         return WallpaperPage(
             wallpaper: wallpaper(after: currentPage.wallpaper),
@@ -270,7 +289,7 @@ extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPage
         }
     }
 
-    func wallpaper(after: Wallpaper) -> Wallpaper {
+    private func wallpaper(after: Wallpaper) -> Wallpaper {
         guard let index = Wallpaper.defaultWallpapers.firstIndex(where: { $0 == after }) else {
             owsFailDebug("Unexpectedly missing index for wallpaper \(after)")
             return Wallpaper.defaultWallpapers.first!
@@ -283,7 +302,7 @@ extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPage
         }
     }
 
-    func wallpaper(before: Wallpaper) -> Wallpaper {
+    private func wallpaper(before: Wallpaper) -> Wallpaper {
         guard let index = Wallpaper.defaultWallpapers.firstIndex(where: { $0 == before }) else {
             owsFailDebug("Unexpectedly missing index for wallpaper \(before)")
             return Wallpaper.defaultWallpapers.first!
@@ -295,13 +314,17 @@ extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPage
             return Wallpaper.defaultWallpapers[index - 1]
         }
     }
+
+    // MARK: - MockConversationDelegate
+
+    var mockConversationViewWidth: CGFloat { self.view.width }
 }
 
-private class WallpaperPage: UIViewController {
+private class WallpaperPage: UIViewController, UIScrollViewDelegate {
+
     let wallpaper: Wallpaper
-    let thread: TSThread?
-    let photo: UIImage?
-    var shouldBlur = false { didSet { updatePhoto() } }
+    private let thread: TSThread?
+    private let photo: UIImage?
 
     init(
         wallpaper: Wallpaper,
@@ -321,19 +344,24 @@ private class WallpaperPage: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    var wallpaperViewHeightPriorityConstraints = [NSLayoutConstraint]()
-    var wallpaperViewWidthPriorityConstraints = [NSLayoutConstraint]()
-    var wallpaperViewHeightAndWidthPriorityConstraints = [NSLayoutConstraint]()
+    private var blurredPhoto: UIImage?
+    var shouldBlur = false { didSet { updatePhoto() } }
 
-    var wallpaperView: WallpaperView?
-    var wallpaperPreviewView: UIView?
-    var scrollView: UIScrollView?
+    private var wallpaperViewHeightPriorityConstraints: [NSLayoutConstraint]!
+    private var wallpaperViewWidthPriorityConstraints: [NSLayoutConstraint]!
+    private var wallpaperViewHeightAndWidthPriorityConstraints: [NSLayoutConstraint]!
+
+    private var wallpaperView: WallpaperView?
+    private var wallpaperPreviewView: UIView?
+
+    private var scrollView: UIScrollView?
+    private var previousReferenceSize: CGSize = .zero
 
     override func loadView() {
         let rootView = ManualLayoutViewWithLayer(name: "rootView")
         rootView.shouldDeactivateConstraints = false
         rootView.translatesAutoresizingMaskIntoConstraints = true
-        rootView.backgroundColor = Theme.darkThemeBackgroundColor
+        rootView.backgroundColor = .black
         view = rootView
 
         let shouldDimInDarkTheme = SSKEnvironment.shared.databaseStorageRef.read { transaction in
@@ -351,10 +379,9 @@ private class WallpaperPage: UIViewController {
             owsFailDebug("Failed to create photo wallpaper view")
             return
         }
-        self.wallpaperView = wallpaperView
 
         let wallpaperPreviewView = wallpaperView.asPreviewView()
-        self.wallpaperPreviewView = wallpaperPreviewView
+        wallpaperPreviewView.translatesAutoresizingMaskIntoConstraints = false
 
         // If this is a photo, embed it in a scrollView for pinch & zoom
         if case .photo = wallpaper, let photo {
@@ -363,72 +390,72 @@ private class WallpaperPage: UIViewController {
             scrollView.maximumZoomScale = 6.0
             scrollView.contentInsetAdjustmentBehavior = .never
             scrollView.delegate = self
+            scrollView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(scrollView)
-            scrollView.autoPinEdgesToSuperviewEdges()
+
             scrollView.addSubview(wallpaperPreviewView)
             self.scrollView = scrollView
 
-            wallpaperPreviewView.autoPinEdgesToSuperviewEdges()
+            NSLayoutConstraint.activate([
+                scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
+                scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+                wallpaperPreviewView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+                wallpaperPreviewView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+                wallpaperPreviewView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+                wallpaperPreviewView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            ])
 
             wallpaperViewWidthPriorityConstraints = [
-                wallpaperPreviewView.autoMatch(
-                    .width,
-                    to: .width,
-                    of: scrollView,
-                ),
-                wallpaperPreviewView.autoMatch(
-                    .height,
-                    to: .width,
-                    of: scrollView,
-                    withMultiplier: 1 / photo.size.aspectRatio,
+                wallpaperPreviewView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+                wallpaperPreviewView.heightAnchor.constraint(
+                    equalTo: scrollView.frameLayoutGuide.widthAnchor,
+                    multiplier: 1 / photo.size.aspectRatio,
                 ),
             ]
-            wallpaperViewWidthPriorityConstraints.forEach { $0.isActive = false }
 
             wallpaperViewHeightPriorityConstraints = [
-                wallpaperPreviewView.autoMatch(
-                    .height,
-                    to: .height,
-                    of: scrollView,
+                wallpaperPreviewView.widthAnchor.constraint(
+                    equalTo: scrollView.frameLayoutGuide.heightAnchor,
+                    multiplier: photo.size.aspectRatio,
                 ),
-                wallpaperPreviewView.autoMatch(
-                    .width,
-                    to: .height,
-                    of: scrollView,
-                    withMultiplier: photo.size.aspectRatio,
-                ),
+                wallpaperPreviewView.heightAnchor.constraint(equalTo: scrollView.frameLayoutGuide.heightAnchor),
             ]
-            wallpaperViewHeightPriorityConstraints.forEach { $0.isActive = false }
 
             wallpaperViewHeightAndWidthPriorityConstraints = [
-                wallpaperPreviewView.autoMatch(
-                    .height,
-                    to: .height,
-                    of: scrollView,
-                ),
-                wallpaperPreviewView.autoMatch(
-                    .width,
-                    to: .width,
-                    of: scrollView,
-                ),
+                wallpaperPreviewView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+                wallpaperPreviewView.heightAnchor.constraint(equalTo: scrollView.frameLayoutGuide.heightAnchor),
             ]
-            wallpaperViewHeightAndWidthPriorityConstraints.forEach { $0.isActive = false }
 
             updateWallpaperConstraints(reference: view.bounds.size)
         } else {
             view.addSubview(wallpaperPreviewView)
-            wallpaperPreviewView.autoPinEdgesToSuperviewEdges()
+            NSLayoutConstraint.activate([
+                wallpaperPreviewView.topAnchor.constraint(equalTo: view.topAnchor),
+                wallpaperPreviewView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                wallpaperPreviewView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                wallpaperPreviewView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            ])
         }
+
+        self.wallpaperView = wallpaperView
+        self.wallpaperPreviewView = wallpaperPreviewView
     }
 
     private func updatePhoto() {
         guard let wallpaperImageView = wallpaperView?.contentView as? UIImageView else { return }
-        UIView.transition(with: wallpaperImageView, duration: 0.2, options: .transitionCrossDissolve) {
+
+        UIView.transition(
+            with: wallpaperImageView,
+            duration: 0.2,
+            options: .transitionCrossDissolve,
+        ) {
             wallpaperImageView.image = self.shouldBlur ? self.blurredPhoto : self.photo
-        } completion: { _ in }
+        }
     }
 
-    private var blurredPhoto: UIImage?
     private func prepareBlurredPhoto() {
         Task { [weak self, photo] in
             do {
@@ -446,14 +473,18 @@ private class WallpaperPage: UIViewController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
+
+        guard scrollView != nil else { return }
+
         coordinator.animate { _ in
             self.updateWallpaperConstraints(reference: size)
         } completion: { _ in }
     }
 
-    private var previousReferenceSize: CGSize = .zero
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
+
+        guard scrollView != nil else { return }
 
         let referenceSize = view.bounds.size
         guard referenceSize != previousReferenceSize else { return }
@@ -462,11 +493,11 @@ private class WallpaperPage: UIViewController {
     }
 
     func updateWallpaperConstraints(reference: CGSize) {
-        guard let imageSize = photo?.size else { return }
+        guard scrollView != nil, let imageSize = photo?.size else { return }
 
-        wallpaperViewWidthPriorityConstraints.forEach { $0.isActive = false }
-        wallpaperViewHeightPriorityConstraints.forEach { $0.isActive = false }
-        wallpaperViewHeightAndWidthPriorityConstraints.forEach { $0.isActive = false }
+        NSLayoutConstraint.deactivate(wallpaperViewWidthPriorityConstraints)
+        NSLayoutConstraint.deactivate(wallpaperViewHeightPriorityConstraints)
+        NSLayoutConstraint.deactivate(wallpaperViewHeightAndWidthPriorityConstraints)
 
         let imageSizeMatchingReferenceHeight = CGSize(
             width: reference.height * imageSize.aspectRatio,
@@ -479,11 +510,11 @@ private class WallpaperPage: UIViewController {
         )
 
         if imageSizeMatchingReferenceHeight.width >= reference.width {
-            wallpaperViewHeightPriorityConstraints.forEach { $0.isActive = true }
+            NSLayoutConstraint.activate(wallpaperViewHeightPriorityConstraints)
         } else if imageSizeMatchingReferenceWidth.height >= reference.height {
-            wallpaperViewWidthPriorityConstraints.forEach { $0.isActive = true }
+            NSLayoutConstraint.activate(wallpaperViewWidthPriorityConstraints)
         } else {
-            wallpaperViewHeightAndWidthPriorityConstraints.forEach { $0.isActive = true }
+            NSLayoutConstraint.activate(wallpaperViewHeightAndWidthPriorityConstraints)
         }
     }
 
@@ -504,52 +535,52 @@ private class WallpaperPage: UIViewController {
         )
         return viewForSnapshotting.renderAsImage()
     }
-}
 
-extension WallpaperPage: UIScrollViewDelegate {
+    // MARK: - UIScrollViewDelegate
+
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return wallpaperPreviewView
     }
 }
 
-class BlurButton: UIButton {
-    let checkImageView = UIImageView()
-    let label = UILabel()
-    let action: (Bool) -> Void
-    let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+private class BlurButton: UIButton {
+
+    private let action: (Bool) -> Void
 
     init(action: @escaping (Bool) -> Void) {
         self.action = action
+
         super.init(frame: .zero)
 
-        addTarget(self, action: #selector(didTap), for: .touchUpInside)
+        addAction(
+            UIAction { [weak self] _ in
+                self?.didTap()
+            },
+            for: .primaryActionTriggered,
+        )
 
-        layoutMargins = UIEdgeInsets(top: 3, leading: 10, bottom: 3, trailing: 12)
-        autoSetDimension(.height, toSize: 28, relation: .greaterThanOrEqual)
-
-        backgroundView.clipsToBounds = true
-        backgroundView.isUserInteractionEnabled = false
-        addSubview(backgroundView)
-        backgroundView.autoPinEdgesToSuperviewEdges()
-
-        addSubview(checkImageView)
-        checkImageView.autoPinEdge(toSuperviewMargin: .leading)
-        checkImageView.autoPinHeightToSuperviewMargins()
-        checkImageView.autoSetDimension(.width, toSize: 16)
-        checkImageView.contentMode = .scaleAspectFit
-        checkImageView.isUserInteractionEnabled = false
-
-        label.font = .semiboldFont(ofSize: 14)
-        label.textColor = .white
-        label.text = OWSLocalizedString(
+        var configuration = UIButton.Configuration.borderless()
+        configuration.baseForegroundColor = .white
+        configuration.title = OWSLocalizedString(
             "WALLPAPER_PREVIEW_BLUR_BUTTON",
             comment: "Blur button on wallpaper preview.",
         )
-        addSubview(label)
-        label.autoPinHeightToSuperviewMargins()
-        label.autoPinEdge(toSuperviewMargin: .trailing)
-        label.autoPinEdge(.leading, to: .trailing, of: checkImageView, withOffset: 10)
-        label.isUserInteractionEnabled = false
+        configuration.attributedTitle?.font = .dynamicTypeSubheadline.semibold()
+        configuration.image = UIImage(imageLiteralResourceName: "circle-compact")
+        configuration.imagePlacement = .leading
+        configuration.imageColorTransformer = UIConfigurationColorTransformer { _ in
+            .Signal.accent
+        }
+        configuration.imagePadding = 8
+        configuration.contentInsets = .init(top: 6, leading: 8, bottom: 6, trailing: 12)
+        configuration.cornerStyle = .capsule
+        configuration.background = {
+            var background = UIBackgroundConfiguration.clear()
+            background.customView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+            return background
+        }()
+
+        self.configuration = configuration
 
         isSelected = false
     }
@@ -558,30 +589,23 @@ class BlurButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        backgroundView.layer.cornerRadius = height / 2
-    }
-
     override var isSelected: Bool {
         didSet {
-            UIView.transition(with: checkImageView, duration: 0.15, options: .transitionCrossDissolve) {
-                self.checkImageView.image = self.isSelected
-                    ? UIImage(imageLiteralResourceName: "check-circle-fill-compact")
-                    : UIImage(imageLiteralResourceName: "circle-compact")
+            let image = isSelected
+                ? UIImage(imageLiteralResourceName: "check-circle-fill-compact")
+                : UIImage(imageLiteralResourceName: "circle-compact")
+            UIView.transition(
+                with: self,
+                duration: 0.15,
+                options: .transitionCrossDissolve,
+            ) {
+                self.configuration?.image = image
             } completion: { _ in }
         }
     }
 
-    @objc
     private func didTap() {
         isSelected = !isSelected
         action(isSelected)
     }
-}
-
-// MARK: -
-
-extension PreviewWallpaperViewController: MockConversationDelegate {
-    var mockConversationViewWidth: CGFloat { self.view.width }
 }
