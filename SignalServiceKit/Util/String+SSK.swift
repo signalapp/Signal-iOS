@@ -62,7 +62,7 @@ public extension String {
 
         // Create the result string and set up a capacity close to the final string
         var result = ""
-        result.reserveCapacity(self.count)
+        result.reserveCapacity(self.utf8.count)
 
         // Iterate through the ranges, appending the string between the last
         // match and the next, and then appending the replacement string
