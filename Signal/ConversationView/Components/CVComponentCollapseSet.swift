@@ -65,7 +65,7 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
         let hasWallpaper = conversationStyle.hasWallpaper
         let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
         let isReusing = componentView.rootView.superview != nil
-            && componentView.label.superview != nil
+            && componentView.innerStack.superview != nil
             && !wallpaperModeHasChanged
 
         if !isReusing {
@@ -75,19 +75,32 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
         componentView.hasWallpaper = hasWallpaper
 
         labelConfig.applyForRendering(label: componentView.label)
+        chevronConfig.applyForRendering(label: componentView.chevronLabel)
 
         if isReusing {
+            componentView.innerStack.configureForReuse(
+                config: innerStackConfig,
+                cellMeasurement: cellMeasurement,
+                measurementKey: Self.measurementKey_innerStack,
+            )
             componentView.outerStack.configureForReuse(
                 config: outerStackConfig,
                 cellMeasurement: cellMeasurement,
                 measurementKey: Self.measurementKey_outerStack,
             )
         } else {
+            componentView.innerStack.configure(
+                config: innerStackConfig,
+                cellMeasurement: cellMeasurement,
+                measurementKey: Self.measurementKey_innerStack,
+                subviews: [componentView.label, componentView.chevronContainer],
+            )
+
             componentView.outerStack.configure(
                 config: outerStackConfig,
                 cellMeasurement: cellMeasurement,
                 measurementKey: Self.measurementKey_outerStack,
-                subviews: [componentView.label],
+                subviews: [componentView.innerStack],
             )
 
             let bubbleView: UIView
@@ -110,12 +123,19 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
             }
             componentView.outerStack.addSubview(bubbleView)
             componentView.outerStack.sendSubviewToBack(bubbleView)
-            // This seemed easier than adding an entirely new ManualStackView
-            // just to constrain the label and background to
-            componentView.outerStack.addLayoutBlock { [label = componentView.label] _ in
-                bubbleView.frame = label.frame.inset(by: Self.backgroundLayoutInsets)
+            componentView.outerStack.addLayoutBlock { [innerStack = componentView.innerStack] _ in
+                bubbleView.frame = innerStack.frame.inset(by: Self.backgroundLayoutInsets)
+            }
+            componentView.innerStack.addLayoutBlock { [chevronContainer = componentView.chevronContainer, chevronLabel = componentView.chevronLabel] _ in
+                chevronLabel.bounds.size = chevronContainer.bounds.size
+                chevronLabel.center = CGPoint(x: chevronContainer.bounds.midX, y: chevronContainer.bounds.midY)
             }
         }
+
+        componentView.isShowingExpanded = collapseSet.isExpanded
+        componentView.chevronLabel.transform = collapseSet.isExpanded
+            ? CGAffineTransform(rotationAngle: -.pi)
+            : .identity
 
         if
             hasWallpaper,
@@ -147,6 +167,34 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
         componentView: CVComponentView,
         renderItem: CVRenderItem,
     ) -> Bool {
+        if let componentView = componentView as? CVComponentViewCollapseSet {
+            let wasExpanded = componentView.isShowingExpanded
+            let willBeExpanded = !wasExpanded
+            let expandedRotation: CGFloat = -.pi
+            let isRTL = componentView.chevronLabel.effectiveUserInterfaceLayoutDirection == .rightToLeft
+
+            let fromAngle: CGFloat
+            let toAngle: CGFloat
+            if willBeExpanded {
+                fromAngle = 0
+                toAngle = isRTL ? CGFloat.pi : -CGFloat.pi
+            } else {
+                fromAngle = expandedRotation
+                toAngle = isRTL ? -2 * CGFloat.pi : 0
+            }
+
+            componentView.isShowingExpanded = willBeExpanded
+            componentView.chevronLabel.transform = willBeExpanded
+                ? CGAffineTransform(rotationAngle: expandedRotation)
+                : .identity
+
+            let animation = CABasicAnimation(keyPath: "transform.rotation.z")
+            animation.fromValue = fromAngle
+            animation.toValue = toAngle
+            animation.duration = 0.2
+            animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            componentView.chevronLabel.layer.add(animation, forKey: "chevronRotation")
+        }
         componentDelegate.didTapCollapseSet(collapseSetId: interaction.uniqueId)
         return true
     }
@@ -154,6 +202,7 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
     // MARK: - Measurement
 
     fileprivate static let measurementKey_outerStack = "CVComponentCollapseSet.outerStack"
+    fileprivate static let measurementKey_innerStack = "CVComponentCollapseSet.innerStack"
 
     func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
@@ -161,17 +210,37 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
             0,
             maxWidth - outerStackConfig.layoutMargins.totalWidth,
         )
-        let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: availableWidth)
+        let chevronSize = CVText.measureLabel(config: chevronConfig, maxWidth: availableWidth)
+        let labelMaxWidth = max(0, availableWidth - chevronSize.width - innerStackConfig.spacing)
+        let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: labelMaxWidth)
+        let innerMeasurement = ManualStackView.measure(
+            config: innerStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_innerStack,
+            subviewInfos: [
+                labelSize.asManualSubviewInfo(hasFixedWidth: true),
+                chevronSize.asManualSubviewInfo(hasFixedSize: true),
+            ],
+        )
         let outerMeasurement = ManualStackView.measure(
             config: outerStackConfig,
             measurementBuilder: measurementBuilder,
             measurementKey: Self.measurementKey_outerStack,
-            subviewInfos: [labelSize.asManualSubviewInfo(hasFixedWidth: true)],
+            subviewInfos: [innerMeasurement.measuredSize.asManualSubviewInfo(hasFixedWidth: true)],
         )
         return outerMeasurement.measuredSize
     }
 
     // MARK: - Layout
+
+    private var innerStackConfig: CVStackViewConfig {
+        CVStackViewConfig(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: 4,
+            layoutMargins: .zero,
+        )
+    }
 
     private var outerStackConfig: CVStackViewConfig {
         CVStackViewConfig(
@@ -233,7 +302,6 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
         )
 
         let nbsp = SignalSymbol.LeadingCharacter.nonBreakingSpace.rawValue
-        let chevron: SignalSymbol = collapseSet.isExpanded ? .chevronUp : .chevronDown
 
         let result = NSMutableAttributedString()
         result.append(leadingIcon.attributedString(
@@ -242,18 +310,33 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
             attributes: [.foregroundColor: UIColor.Signal.label],
         ))
         result.append(NSAttributedString(
-            string: "\(nbsp)\(labelText)\(nbsp)",
+            string: "\(nbsp)\(labelText)",
             attributes: [
                 .font: labelFont,
                 .foregroundColor: UIColor.Signal.label,
             ],
         ))
-        result.append(chevron.attributedString(
+        return result
+    }
+
+    private var chevronConfig: CVLabelConfig {
+        CVLabelConfig(
+            text: .attributedText(chevronAttributedString),
+            displayConfig: .forUnstyledText(font: labelFont, textColor: .Signal.label),
+            font: labelFont,
+            textColor: .Signal.label,
+            numberOfLines: 1,
+            lineBreakMode: .byClipping,
+            textAlignment: .center,
+        )
+    }
+
+    private var chevronAttributedString: NSAttributedString {
+        SignalSymbol.chevronDown.attributedString(
             for: .footnote,
             clamped: false,
             attributes: [.foregroundColor: UIColor.Signal.label],
-        ))
-        return result
+        )
     }
 
     private var titleString: String {
@@ -322,8 +405,13 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
     class CVComponentViewCollapseSet: NSObject, CVComponentView {
 
         fileprivate let outerStack = ManualStackView(name: "collapseSet.outerStack")
+        fileprivate let innerStack = ManualStackView(name: "collapseSet.innerStack")
         fileprivate let label = CVLabel()
+        fileprivate let chevronContainer = UIView()
+        fileprivate let chevronLabel = CVLabel()
         fileprivate let solidBackgroundView = UIView()
+
+        fileprivate var isShowingExpanded = false
 
         fileprivate var wallpaperBlurView: CVWallpaperBlurView?
         fileprivate func ensureWallpaperBlurView() -> CVWallpaperBlurView {
@@ -341,14 +429,24 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
 
         var rootView: UIView { outerStack }
 
+        override init() {
+            super.init()
+            chevronContainer.addSubview(chevronLabel)
+        }
+
         func setIsCellVisible(_ isCellVisible: Bool) {}
 
         func reset() {
             label.reset()
+            chevronLabel.reset()
+            chevronLabel.transform = .identity
+            chevronLabel.layer.removeAnimation(forKey: "chevronRotation")
+            isShowingExpanded = false
             solidBackgroundView.backgroundColor = nil
             wallpaperBlurView?.removeFromSuperview()
             wallpaperBlurView = nil
             hasWallpaper = false
+            innerStack.reset()
             outerStack.reset()
         }
     }
