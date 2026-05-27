@@ -20,35 +20,35 @@ class StringSanitizerTests: XCTestCase {
     }
 
     func testCombiningMarks() {
-        let string = "abx̧c"
+        let string = "abx\u{327}c"
         let sanitized = StringSanitizer.sanitize(string)
         XCTAssertEqual(sanitized, string)
     }
 
     func testEmoji() {
-        let string = "a👩🏿‍❤️‍💋‍👩🏻b"
+        let string = "a\u{1f469}\u{1f3ff}\u{200d}\u{2764}\u{fe0f}\u{200d}\u{1f48b}\u{200d}\u{1f469}\u{1f3fb}b"
         let sanitized = StringSanitizer.sanitize(string)
         XCTAssertEqual(sanitized, string)
     }
 
     func testZalgo() {
-        let string = "x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝abx̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝👩🏿‍❤️‍💋‍👩🏻cx̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝"
+        let string = "x\u{338}\u{306}\u{344}\u{31b}\u{306}\u{33f}\u{344}\u{31a}\u{305}\u{33d}\u{346}\u{35d}\u{344}\u{33f}\u{314}\u{34c}\u{319}\u{31d}\u{322}\u{348}\u{348}\u{316}\u{327}\u{333}\u{317}\u{330}abx\u{338}\u{306}\u{344}\u{31b}\u{306}\u{33f}\u{344}\u{31a}\u{305}\u{33d}\u{346}\u{35d}\u{344}\u{33f}\u{314}\u{34c}\u{319}\u{31d}\u{322}\u{348}\u{348}\u{316}\u{327}\u{333}\u{317}\u{330}x\u{338}\u{306}\u{344}\u{31b}\u{306}\u{33f}\u{344}\u{31a}\u{305}\u{33d}\u{346}\u{35d}\u{344}\u{33f}\u{314}\u{34c}\u{319}\u{31d}\u{322}\u{348}\u{348}\u{316}\u{327}\u{333}\u{317}\u{330}\u{1f469}\u{1f3ff}\u{200d}\u{2764}\u{fe0f}\u{200d}\u{1f48b}\u{200d}\u{1f469}\u{1f3fb}cx\u{338}\u{306}\u{344}\u{31b}\u{306}\u{33f}\u{344}\u{31a}\u{305}\u{33d}\u{346}\u{35d}\u{344}\u{33f}\u{314}\u{34c}\u{319}\u{31d}\u{322}\u{348}\u{348}\u{316}\u{327}\u{333}\u{317}\u{330}"
         let sanitized = StringSanitizer.sanitize(string)
-        let expected = "�ab��👩🏿‍❤️‍💋‍👩🏻c�"
+        let expected = "\u{fffd}ab\u{fffd}\u{fffd}\u{1f469}\u{1f3ff}\u{200d}\u{2764}\u{fe0f}\u{200d}\u{1f48b}\u{200d}\u{1f469}\u{1f3fb}c\u{fffd}"
         XCTAssertEqual(sanitized, expected)
     }
 
     func testSingleZalgo() {
-        let string = "x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝"
+        let string = "x\u{338}\u{306}\u{344}\u{31b}\u{306}\u{33f}\u{344}\u{31a}\u{305}\u{33d}\u{346}\u{35d}\u{344}\u{33f}\u{314}\u{34c}\u{319}\u{31d}\u{322}\u{348}\u{348}\u{316}\u{327}\u{333}\u{317}\u{330}"
         let sanitized = StringSanitizer.sanitize(string)
-        let expected = "�"
+        let expected = "\u{fffd}"
         XCTAssertEqual(sanitized, expected)
     }
 
     func testTwoZalgo() {
-        let string = "x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝"
+        let string = "x\u{338}\u{306}\u{344}\u{31b}\u{306}\u{33f}\u{344}\u{31a}\u{305}\u{33d}\u{346}\u{35d}\u{344}\u{33f}\u{314}\u{34c}\u{319}\u{31d}\u{322}\u{348}\u{348}\u{316}\u{327}\u{333}\u{317}\u{330}x\u{338}\u{306}\u{344}\u{31b}\u{306}\u{33f}\u{344}\u{31a}\u{305}\u{33d}\u{346}\u{35d}\u{344}\u{33f}\u{314}\u{34c}\u{319}\u{31d}\u{322}\u{348}\u{348}\u{316}\u{327}\u{333}\u{317}\u{330}"
         let sanitized = StringSanitizer.sanitize(string)
-        let expected = "��"
+        let expected = "\u{fffd}\u{fffd}"
         XCTAssertEqual(sanitized, expected)
     }
 }
