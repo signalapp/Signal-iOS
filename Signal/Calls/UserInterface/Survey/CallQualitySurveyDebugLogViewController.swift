@@ -16,10 +16,12 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
     private let tableViewController = OWSTableViewController2()
 
     private var shouldSubmitDebugLogs = false
+    private var logs: DebugLogs
 
     private let rating: CallQualitySurvey.Rating
 
     init(rating: CallQualitySurvey.Rating) {
+        self.logs = DebugLogs(dumper: .fromGlobals())
         self.rating = rating
         super.init(nibName: nil, bundle: nil)
     }
@@ -129,7 +131,8 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
         let container = UIView()
 
         let textView = LinkingTextView { [weak self] in
-            self?.showDebugLogPreview()
+            guard let self else { return }
+            self.logs.showPreview(from: self)
         }
         textView.attributedText = .composed(of: [
             OWSLocalizedString(
@@ -193,12 +196,6 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
         present(nav, animated: true)
     }
 
-    private func showDebugLogPreview() {
-        let vc = DebugLogPreviewViewController()
-        let nav = OWSNavigationController(rootViewController: vc)
-        present(nav, animated: true)
-    }
-
     override func customSheetHeight() -> CGFloat? {
         let headerHeight = headerContainer.height
         let collectionViewHeight = tableViewController.tableView.contentSize.height + tableViewController.tableView.contentInset.totalHeight
@@ -209,7 +206,7 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
     private func submit() {
         sheetNav?.submit(
             rating: self.rating,
-            shouldSubmitDebugLogs: self.shouldSubmitDebugLogs,
+            logsToSubmit: shouldSubmitDebugLogs ? logs : nil,
         )
     }
 }

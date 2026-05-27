@@ -500,7 +500,8 @@ public class RegistrationNavigationController: OWSNavigationController {
             ))
             self.present(navVc, animated: true)
         } else {
-            DebugLogs.submitLogs(supportTag: "Registration", dumper: .fromGlobals())
+            let logs = DebugLogs(dumper: .fromGlobals())
+            logs.promptToSubmitLogs(from: self, supportTag: "Registration")
         }
     }
 }

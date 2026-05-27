@@ -148,7 +148,11 @@ class ProvisioningController: NSObject {
     @objc
     @MainActor
     private func submitLogs() {
-        DebugLogs.submitLogs(supportTag: "Onboarding", dumper: .fromGlobals())
+        guard let viewController = CurrentAppContext().frontmostViewController() else {
+            return
+        }
+        let logs = DebugLogs(dumper: .fromGlobals())
+        logs.promptToSubmitLogs(from: viewController, supportTag: "Onboarding")
     }
 
     // MARK: - Transitions

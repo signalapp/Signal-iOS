@@ -366,11 +366,13 @@ public class NotificationActionHandler {
 
     @MainActor
     private class func submitDebugLogs(supportTag: String?) async {
-        await withCheckedContinuation { continuation in
-            DebugLogs.submitLogs(supportTag: supportTag, dumper: .fromGlobals()) {
-                continuation.resume()
-            }
+        guard let viewController = CurrentAppContext().frontmostViewController() else {
+            return
         }
+        await DebugLogs(dumper: .fromGlobals()).promptToSubmitLogs(
+            from: viewController,
+            supportTag: supportTag,
+        )
     }
 
     @MainActor

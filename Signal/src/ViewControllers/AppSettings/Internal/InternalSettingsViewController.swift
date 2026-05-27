@@ -88,8 +88,10 @@ class InternalSettingsViewController: OWSTableViewController2 {
         ))
 
         if mode == .registration {
-            debugSection.add(.actionItem(withText: "Submit debug logs") {
-                DebugLogs.submitLogs(supportTag: "Registration", dumper: .fromGlobals())
+            debugSection.add(.actionItem(withText: "Submit debug logs") { [weak self] in
+                guard let self else { return }
+                let logs = DebugLogs(dumper: .fromGlobals())
+                logs.promptToSubmitLogs(from: self, supportTag: "Registration")
             })
         }
 

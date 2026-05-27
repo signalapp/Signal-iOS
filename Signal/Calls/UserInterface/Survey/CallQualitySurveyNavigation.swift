@@ -82,10 +82,13 @@ final class CallQualitySurveyNavigationController: UINavigationController {
         pushViewController(vc, animated: false)
     }
 
-    func submit(rating: CallQualitySurvey.Rating, shouldSubmitDebugLogs: Bool) {
+    func submit(
+        rating: CallQualitySurvey.Rating,
+        logsToSubmit: DebugLogs?,
+    ) {
         callQualitySurveyManager.submit(
             rating: rating,
-            shouldSubmitDebugLogs: shouldSubmitDebugLogs,
+            logsToSubmit: logsToSubmit,
         )
         let host = presentingViewController
         dismiss(animated: true) {

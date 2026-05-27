@@ -192,13 +192,16 @@ class CallQualitySurveyManager {
         return proto
     }
 
-    func submit(rating: CallQualitySurvey.Rating, shouldSubmitDebugLogs: Bool) {
+    func submit(
+        rating: CallQualitySurvey.Rating,
+        logsToSubmit logs: DebugLogs?,
+    ) {
         var proto = buildProto(rating: rating)
 
         Task {
-            if shouldSubmitDebugLogs {
+            if let logs {
                 do {
-                    let debugLogURL = try await DebugLogs.uploadLogs(dumper: .fromGlobals())
+                    let debugLogURL = try await logs.uploadLogs()
                     proto.debugLogURL = debugLogURL.absoluteString
                 } catch {
                     logger.error("Failed to submit debug logs: \(error)")

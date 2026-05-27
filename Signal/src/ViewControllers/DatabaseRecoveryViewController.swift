@@ -210,12 +210,10 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
     @objc
     private func didRequestToSubmitDebugLogs() {
-        self.dismiss(animated: true) {
-            DebugLogs.submitLogs(
-                supportTag: "LaunchFailure_DatabaseRecoveryFailed",
-                dumper: .preLaunch(),
-            )
-        }
+        DebugLogs(dumper: .preLaunch()).promptToSubmitLogs(
+            from: self,
+            supportTag: "LaunchFailure_DatabaseRecoveryFailed",
+        )
     }
 
     private func attemptRecovery() {

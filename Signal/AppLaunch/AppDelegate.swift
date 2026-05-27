@@ -1250,14 +1250,20 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             switch action {
             case .submitDebugLogsAndCrash:
                 addSubmitDebugLogsAction {
-                    DebugLogs.submitLogs(supportTag: supportTag, dumper: logDumper) {
+                    DebugLogs(dumper: logDumper).promptToSubmitLogs(
+                        from: viewController,
+                        supportTag: supportTag,
+                    ) {
                         owsFail("Exiting after submitting debug logs")
                     }
                 }
 
             case .submitDebugLogsAndLaunchApp(let window, let launchContext):
                 addSubmitDebugLogsAction { [unowned window] in
-                    DebugLogs.submitLogs(supportTag: supportTag, dumper: logDumper) {
+                    DebugLogs(dumper: logDumper).promptToSubmitLogs(
+                        from: viewController,
+                        supportTag: supportTag,
+                    ) {
                         ignoreErrorAndLaunchApp(in: window, launchContext: launchContext)
                     }
                 }

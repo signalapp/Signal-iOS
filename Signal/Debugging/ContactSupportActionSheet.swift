@@ -47,11 +47,12 @@ enum ContactSupportActionSheet {
         let submitWithLogAction = ActionSheetAction(title: submitWithLogTitle, style: .default) { [weak fromViewController] _ in
             guard let fromViewController else { return }
 
+            let logs = DebugLogs(dumper: logDumper)
             let emailRequest = SupportEmailModel(
                 userDescription: nil,
                 emojiMood: nil,
                 supportFilter: emailFilter.asString,
-                debugLogPolicy: .requireUpload(logDumper),
+                debugLogPolicy: .requireUpload(logs),
                 hasRecentChallenge: logDumper.challengeReceivedRecently(),
             )
 

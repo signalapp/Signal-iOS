@@ -12,10 +12,10 @@ struct SupportEmailModel {
     enum LogPolicy {
         /// Attempt to upload the logs and include the resulting URL in the email body
         /// If the upload fails for one reason or another, continue anyway
-        case attemptUpload(DebugLogDumper)
+        case attemptUpload(DebugLogs)
 
         /// Upload the logs. If they fail to upload, fail the operation
-        case requireUpload(DebugLogDumper)
+        case requireUpload(DebugLogs)
 
         /// Don't upload new logs, instead use the provided link
         case link(URL)
@@ -157,15 +157,15 @@ final class ComposeSupportEmailOperation: NSObject {
             debugUrlString = nil
         case .link(let url):
             debugUrlString = url.absoluteString
-        case .attemptUpload(let dumper):
+        case .attemptUpload(let logs):
             do {
-                debugUrlString = try await uploadDebugLogWithTimeout(dumper: dumper).absoluteString
+                debugUrlString = try await uploadDebugLogWithTimeout(logs: logs).absoluteString
             } catch {
                 debugUrlString = "[Support note: Log upload failed — \(error.userErrorDescription)]"
             }
-        case .requireUpload(let dumper):
+        case .requireUpload(let logs):
             do {
-                debugUrlString = try await uploadDebugLogWithTimeout(dumper: dumper).absoluteString
+                debugUrlString = try await uploadDebugLogWithTimeout(logs: logs).absoluteString
             } catch {
                 throw EmailError.logUploadFailure(underlyingError: (error as? LocalizedError))
             }
@@ -187,17 +187,16 @@ final class ComposeSupportEmailOperation: NSObject {
         }
     }
 
-    private func uploadDebugLogWithTimeout(dumper: DebugLogDumper) async throws -> URL {
+    private func uploadDebugLogWithTimeout(logs: DebugLogs) async throws -> URL {
         do {
             return try await withCooperativeTimeout(seconds: 60) {
-                do throws(DebugLogs.UploadDebugLogError) {
-                    return try await DebugLogs.uploadLogs(dumper: dumper)
+                do throws(DebugLogs.DebugLogsError) {
+                    return try await logs.uploadLogs()
                 } catch {
-                    // FIXME: Should we do something with the local log file?
-                    if let logArchiveOrDirectoryPath = error.logArchiveOrDirectoryPath {
-                        _ = OWSFileSystem.deleteFile(logArchiveOrDirectoryPath)
+                    if case .uploadError(zipFilePath: let zipPath) = error {
+                        OWSFileSystem.deleteFile(zipPath)
                     }
-                    throw DebugLogsUploadError(localizedDescription: error.localizedErrorMessage)
+                    throw error
                 }
             }
         } catch is CooperativeTimeoutError {
@@ -284,13 +283,5 @@ final class ComposeSupportEmailOperation: NSObject {
         return bodyComponents
             .compactMap { $0 }
             .joined(separator: "\r\n")
-    }
-}
-
-struct DebugLogsUploadError: Error, LocalizedError, UserErrorDescriptionProvider {
-    let localizedDescription: String
-
-    var errorDescription: String? {
-        localizedDescription
     }
 }

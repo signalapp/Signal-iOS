@@ -9,6 +9,16 @@ import SignalUI
 final class DebugLogPreviewViewController: OWSViewController {
 
     private let textView = UITextView()
+    private let logFilePaths: [String]
+    private let onSubmit: (() -> Void)?
+    private let onCancel: (() -> Void)?
+
+    init(logFilePaths: [String], onSubmit: (() -> Void)? = nil, onCancel: (() -> Void)? = nil) {
+        self.logFilePaths = logFilePaths
+        self.onSubmit = onSubmit
+        self.onCancel = onCancel
+        super.init()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,7 +32,7 @@ final class DebugLogPreviewViewController: OWSViewController {
 
         view.backgroundColor = .Signal.groupedBackground
 
-        navigationItem.rightBarButtonItem = .cancelButton(dismissingFrom: self)
+        navigationItem.rightBarButtonItem = .cancelButton(dismissingFrom: self, completion: onCancel)
 
         // UITableView does not have the text-rendering optimizations that
         // UITextView with scrolling enabled has, and the app freezes when
@@ -64,12 +74,31 @@ final class DebugLogPreviewViewController: OWSViewController {
         textView.textContainerInset = .init(margin: 20)
         textView.textContainer.lineFragmentPadding = 0
         textView.verticalScrollIndicatorInsets = .init(hMargin: 0, vMargin: OWSTableViewController2.cellRounding / 2)
+
+        if let onSubmit {
+            cellContainer.setContentHuggingPriority(.defaultLow, for: .vertical)
+
+            let submitButton = UIButton(
+                configuration: .largePrimary(title: OWSLocalizedString(
+                    "DEBUG_LOG_PREVIEW_SUBMIT_BUTTON",
+                    comment: "Button below the debug log preview which continues the submission flow",
+                )),
+                primaryAction: UIAction { _ in
+                    onSubmit()
+                },
+            )
+            stackView.addArrangedSubview(submitButton)
+            submitButton.autoPinWidthToSuperviewMargins()
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.presentationController?.delegate = self
     }
 
     private func loadLogs() {
-        Logger.flush()
-
-        self.textView.text = DebugLogger.shared.allLogFilePaths.reduce(
+        self.textView.text = self.logFilePaths.reduce(
             into: "",
         ) { partialResult, logFilePath in
             do {
@@ -88,4 +117,12 @@ final class DebugLogPreviewViewController: OWSViewController {
         }
     }
 
+}
+
+// MARK: - UIAdaptivePresentationControllerDelegate
+
+extension DebugLogPreviewViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        onCancel?()
+    }
 }

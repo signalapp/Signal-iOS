@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 import zlib
 
-public struct DebugLogDumper {
+struct DebugLogDumper {
     fileprivate var accountManager: (any TSAccountManager)?
     fileprivate var appVersion: any AppVersion
     fileprivate var db: (any DB)?
@@ -25,7 +25,7 @@ public struct DebugLogDumper {
         )
     }
 
-    public func challengeReceivedRecently() -> Bool {
+    func challengeReceivedRecently() -> Bool {
         guard let db else {
             return false
         }
@@ -57,34 +57,134 @@ public struct DebugLogDumper {
     }
 }
 
-enum DebugLogs {
+final class DebugLogs {
+    private let dumper: DebugLogDumper
+    private var logsDirPath: String?
 
+    init(dumper: DebugLogDumper) {
+        self.dumper = dumper
+        self.logsDirPath = DebugLogs.collectAndFlushLogs(dumper: dumper)
+    }
+
+    deinit {
+        if let logsDirPath {
+            OWSFileSystem.deleteFile(logsDirPath)
+        }
+    }
+
+    func showPreview(
+        from viewController: UIViewController,
+        onSubmit: (() -> Void)? = nil,
+        onCancel: (() -> Void)? = nil,
+    ) {
+        guard let logsDirPath else {
+            Logger.error("No logs path found for preview")
+            handleError(error: .noLogs, viewController: viewController)
+            onCancel?()
+            return
+        }
+        let logFilePaths = ((try? FileManager.default.contentsOfDirectory(atPath: logsDirPath)) ?? []).map {
+            URL(fileURLWithPath: logsDirPath).appendingPathComponent($0).path
+        }
+        let previewVC = DebugLogPreviewViewController(logFilePaths: logFilePaths, onSubmit: onSubmit, onCancel: onCancel)
+        let nav = OWSNavigationController(rootViewController: previewVC)
+        viewController.present(nav, animated: true)
+    }
+
+    /// Presents a log preview with an option to submit. Completion is only
+    /// called if the user submits, after the submission is completed.
     @MainActor
-    static func submitLogs(supportTag: String? = nil, dumper: DebugLogDumper, completion: (() -> Void)? = nil) {
-        let submitLogsCompletion = {
-            if let completion {
-                // Wait a moment. If the user opens a URL, it needs a moment to complete.
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+    func promptToSubmitLogs(
+        from viewController: UIViewController,
+        supportTag: String? = nil,
+        completion: (() -> Void)? = nil,
+    ) {
+        showPreview(from: viewController, onSubmit: {
+            Task {
+                await viewController.awaitableDismiss(animated: true)
+                await self.submitLogs(supportTag: supportTag)
+                if let completion {
+                    try? await Task.sleep(nanoseconds: 2 * NSEC_PER_SEC)
                     completion()
                 }
             }
-        }
+        })
+    }
 
+    @MainActor
+    func promptToSubmitLogs(
+        from viewController: UIViewController,
+        supportTag: String? = nil,
+    ) async {
+        let didSubmit = await withCheckedContinuation { continuation in
+            showPreview(
+                from: viewController,
+                onSubmit: {
+                    continuation.resume(returning: true)
+                },
+                onCancel: {
+                    continuation.resume(returning: false)
+                },
+            )
+        }
+        if didSubmit {
+            await viewController.awaitableDismiss(animated: true)
+            await submitLogs(supportTag: supportTag)
+        }
+    }
+
+    enum DebugLogsError: LocalizedError {
+        case noLogs
+        case couldNotPackageLogs
+        case uploadError(zipFilePath: String)
+
+        var errorDescription: String? { localizedErrorMessage }
+        var localizedErrorMessage: String {
+            switch self {
+            case .noLogs:
+                OWSLocalizedString(
+                    "DEBUG_LOG_ALERT_NO_LOGS",
+                    comment: "Error indicating that no debug logs could be found.",
+                )
+            case .couldNotPackageLogs:
+                OWSLocalizedString(
+                    "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS",
+                    comment: "Error indicating that the debug logs could not be packaged.",
+                )
+            case .uploadError:
+                OWSLocalizedString(
+                    "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG",
+                    comment: "Error indicating that a debug log could not be uploaded.",
+                )
+            }
+        }
+    }
+
+    @MainActor
+    private func submitLogs(supportTag: String?) async {
         var supportFilter = "Signal - iOS Debug Log"
         if let supportTag {
             supportFilter += " - \(supportTag)"
         }
 
         guard let frontmostViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts else {
-            submitLogsCompletion()
             return
         }
-        uploadLogsUsingViewController(frontmostViewController, dumper: dumper) { url in
-            guard let presentingViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts else {
-                submitLogsCompletion()
-                return
-            }
 
+        let url: URL?
+        do {
+            url = try await uploadLogsWithUI(from: frontmostViewController)
+        } catch {
+            self.handleError(error: error, viewController: frontmostViewController)
+            return
+        }
+        guard let url else { return }
+
+        guard let presentingViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts else {
+            return
+        }
+
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             let alert = ActionSheetController(
                 title: NSLocalizedString("DEBUG_LOG_ALERT_TITLE", comment: "Title of the debug log alert."),
                 message: NSLocalizedString("DEBUG_LOG_ALERT_MESSAGE", comment: "Message of the debug log alert."),
@@ -102,10 +202,10 @@ enum DebugLogs {
                             await ComposeSupportEmailOperation.sendEmailWithDefaultErrorHandling(
                                 supportFilter: supportFilter,
                                 logUrl: url,
-                                hasRecentChallenge: dumper.challengeReceivedRecently(),
+                                hasRecentChallenge: self.dumper.challengeReceivedRecently(),
                             )
                         }
-                        submitLogsCompletion()
+                        continuation.resume()
                     },
                 ))
             }
@@ -118,7 +218,7 @@ enum DebugLogs {
                 handler: { _ in
                     UIPasteboard.general.string = url.absoluteString
                     presentingViewController.presentToast(text: CommonStrings.copiedToClipboardToast, image: .copy)
-                    submitLogsCompletion()
+                    continuation.resume()
                 },
             ))
             alert.addAction(ActionSheetAction(
@@ -131,67 +231,39 @@ enum DebugLogs {
                     AttachmentSharing.showShareUI(
                         for: url.absoluteString,
                         sender: nil,
-                        completion: submitLogsCompletion,
+                        completion: { continuation.resume() },
                     )
                 },
             ))
             alert.addAction(ActionSheetAction(
                 title: CommonStrings.cancelButton,
                 style: .cancel,
-                handler: { _ in submitLogsCompletion() },
+                handler: { _ in continuation.resume() },
             ))
             presentingViewController.presentActionSheet(alert)
         }
     }
 
     @MainActor
-    private static func uploadLogsUsingViewController(_ viewController: UIViewController, dumper: DebugLogDumper, completion: @escaping (URL) -> Void) {
-        AssertIsOnMainThread()
-
-        ModalActivityIndicatorViewController.present(
-            fromViewController: viewController,
+    private func uploadLogsWithUI(from viewController: UIViewController) async throws(DebugLogsError) -> URL? {
+        return try await ModalActivityIndicatorViewController.presentAndPropagateResult(
+            from: viewController,
             canCancel: true,
-            asyncBlock: { await _uploadLogs(dumper: dumper, modalActivityIndicator: $0, completion: completion) },
-        )
-    }
-
-    @MainActor
-    private static func _uploadLogs(dumper: DebugLogDumper, modalActivityIndicator: ModalActivityIndicatorViewController, completion: @escaping (URL) -> Void) async {
-        do {
-            let url = try await uploadLogs(dumper: dumper)
-            guard !modalActivityIndicator.wasCancelled else { return }
-            modalActivityIndicator.dismiss {
-                completion(url)
-            }
-        } catch {
-            guard !modalActivityIndicator.wasCancelled else {
-                if let logArchiveOrDirectoryPath = error.logArchiveOrDirectoryPath {
-                    OWSFileSystem.deleteFile(logArchiveOrDirectoryPath)
+        ) { () throws(DebugLogsError) -> URL? in
+            do throws(DebugLogsError) {
+                return try await self.uploadLogs()
+            } catch {
+                if Task.isCancelled {
+                    return nil
                 }
-                return
-            }
-
-            modalActivityIndicator.dismiss {
-                DebugLogs.showFailureAlert(
-                    with: error.localizedErrorMessage,
-                    logArchiveOrDirectoryPath: error.logArchiveOrDirectoryPath,
-                )
+                throw error
             }
         }
     }
 
     // MARK: - Collecting & uploading
 
-    private struct NoLogsError: Error {
-        var errorString: String {
-            OWSLocalizedString(
-                "DEBUG_LOG_ALERT_NO_LOGS",
-                comment: "Error indicating that no debug logs could be found.",
-            )
-        }
-    }
-
-    private static func collectLogs() -> Result<String, NoLogsError> {
+    private static func collectLogs() -> String? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd hh.mm.ss"
         let dateString = dateFormatter.string(from: Date())
@@ -203,7 +275,7 @@ enum DebugLogs {
 
         let logFilePaths = DebugLogger.shared.allLogFilePaths
         if logFilePaths.isEmpty {
-            return .failure(NoLogsError())
+            return nil
         }
 
         for logFilePath in logFilePaths {
@@ -219,50 +291,44 @@ enum DebugLogs {
             OWSFileSystem.protectFileOrFolder(atPath: copyFilePath)
         }
 
-        return .success(zipDirPath)
+        return zipDirPath
     }
 
-    static func exportLogs() {
+    func exportLogs(viewController: UIViewController) {
         AssertIsOnMainThread()
-        switch collectLogs() {
-        case let .success(logsDirPath):
-            AttachmentSharing.showShareUI(for: URL(fileURLWithPath: logsDirPath), sender: nil) {
-                OWSFileSystem.deleteFile(logsDirPath)
-            }
-        case let .failure(error):
-            Self.showFailureAlert(with: error.errorString, logArchiveOrDirectoryPath: nil)
-            return
+        guard let logsDirPath else {
+            return handleError(
+                error: .noLogs,
+                viewController: viewController,
+            )
+        }
+        AttachmentSharing.showShareUI(for: URL(fileURLWithPath: logsDirPath), sender: nil) {
+            OWSFileSystem.deleteFile(logsDirPath)
         }
     }
 
-    struct UploadDebugLogError: Error {
-        var localizedErrorMessage: String
-        var logArchiveOrDirectoryPath: String?
-    }
-
-    /// - Note: Various dependencies might not be initialized yet when this
-    /// method is called from the database recovery flow. Notably, the database
-    /// isn't available in that flow.
-    static func uploadLogs(dumper: DebugLogDumper) async throws(UploadDebugLogError) -> URL {
-        // Phase 1: Dump any additional details that are relevant.
+    private static func collectAndFlushLogs(
+        dumper: DebugLogDumper,
+    ) -> String? {
+        // Dump any additional details that are relevant.
         dumper.dump()
         Logger.info("About to zip debug logs")
 
-        // Phase 2: Flush pending logs to disk.
+        // Flush pending logs to disk.
         Logger.flush()
 
-        // Phase 3: Make a local copy of all of the log files.
-        let zipDirPath: String
-        switch collectLogs() {
-        case let .success(logsDirPath):
-            zipDirPath = logsDirPath
-        case let .failure(error):
-            throw UploadDebugLogError(localizedErrorMessage: error.errorString)
+        // Make a local copy of all of the log files.
+        return collectLogs()
+    }
+
+    func uploadLogs() async throws(DebugLogsError) -> URL {
+        guard let logsDirPath else {
+            throw DebugLogsError.noLogs
         }
 
-        // Phase 4: Zip up the log files.
-        let zipDirUrl = URL(fileURLWithPath: zipDirPath)
-        let zipFileUrl = URL(fileURLWithPath: (zipDirPath as NSString).appendingPathExtension("zip")!)
+        // Zip up the log files.
+        let zipDirUrl = URL(fileURLWithPath: logsDirPath)
+        let zipFileUrl = URL(fileURLWithPath: (logsDirPath as NSString).appendingPathExtension("zip")!)
         let fileCoordinator = NSFileCoordinator()
         var zipError: NSError?
         fileCoordinator.coordinate(readingItemAt: zipDirUrl, options: [.forUploading], error: &zipError) { temporaryFileUrl in
@@ -273,38 +339,44 @@ enum DebugLogs {
             }
         }
         if zipError != nil || !OWSFileSystem.fileOrFolderExists(url: zipFileUrl) {
-            let errorMessage = OWSLocalizedString(
-                "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS",
-                comment: "Error indicating that the debug logs could not be packaged.",
-            )
-            throw UploadDebugLogError(localizedErrorMessage: errorMessage, logArchiveOrDirectoryPath: zipDirPath)
+            throw DebugLogsError.couldNotPackageLogs
         }
 
         OWSFileSystem.protectFileOrFolder(atPath: zipFileUrl.path)
-        OWSFileSystem.deleteFile(zipDirPath)
 
-        // Phase 5: Upload the log files.
+        // Upload the log files.
         do {
             let url = try await DebugLogUploader.uploadFile(fileUrl: zipFileUrl, mimeType: MimeType.applicationZip.rawValue)
             try OWSFileSystem.deleteFile(url: zipFileUrl)
             return url
         } catch {
-            let errorMessage = OWSLocalizedString(
-                "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG",
-                comment: "Error indicating that a debug log could not be uploaded.",
-            )
-            throw UploadDebugLogError(localizedErrorMessage: errorMessage, logArchiveOrDirectoryPath: zipFileUrl.path)
+            throw DebugLogsError.uploadError(zipFilePath: zipFileUrl.path)
         }
     }
 
-    private static func showFailureAlert(with message: String, logArchiveOrDirectoryPath: String?) {
-        let deleteArchive: (String) -> Void = { filePath in
-            OWSFileSystem.deleteFile(filePath)
+    private func handleError(
+        error: DebugLogsError,
+        viewController: UIViewController,
+    ) {
+        let logsPath: String?
+        let completion: (() -> Void)?
+        switch error {
+        case .noLogs:
+            logsPath = nil
+            completion = nil
+        case .couldNotPackageLogs:
+            logsPath = self.logsDirPath
+            completion = nil
+        case .uploadError(let zipFilePath):
+            logsPath = zipFilePath
+            completion = {
+                OWSFileSystem.deleteFile(zipFilePath)
+            }
         }
 
-        let alert = ActionSheetController(title: nil, message: message)
+        let alert = ActionSheetController(message: error.localizedErrorMessage)
 
-        if let logArchiveOrDirectoryPath {
+        if let logsPath {
             alert.addAction(.init(
                 title: OWSLocalizedString(
                     "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE",
@@ -312,23 +384,18 @@ enum DebugLogs {
                 ),
             ) { _ in
                 AttachmentSharing.showShareUI(
-                    for: URL(fileURLWithPath: logArchiveOrDirectoryPath),
+                    for: URL(fileURLWithPath: logsPath),
                     sender: nil,
-                    completion: {
-                        deleteArchive(logArchiveOrDirectoryPath)
-                    },
+                    completion: completion,
                 )
             })
         }
 
         alert.addAction(.init(title: CommonStrings.okButton) { _ in
-            if let logArchiveOrDirectoryPath {
-                deleteArchive(logArchiveOrDirectoryPath)
-            }
+            completion?()
         })
 
-        let presentingViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts
-        presentingViewController?.presentActionSheet(alert)
+        viewController.presentActionSheet(alert)
     }
 }
 

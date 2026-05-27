@@ -676,7 +676,10 @@ private final class BackupArchiveErrorHeroSheet: HeroSheetViewController {
                 title: "Submit debug log",
                 action: { sheet in
                     sheet.dismiss(animated: true) {
-                        DebugLogs.submitLogs(supportTag: "BackupArchive", dumper: .fromGlobals())
+                        DebugLogs(dumper: .fromGlobals()).promptToSubmitLogs(
+                            from: fromViewController,
+                            supportTag: "BackupArchive",
+                        )
                     }
                 },
             ),

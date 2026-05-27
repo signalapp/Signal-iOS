@@ -214,11 +214,15 @@ final class ContactSupportViewController: OWSTableViewController2, TextViewWithP
 
     private func didTapNext() {
         let logDumper = DebugLogDumper.fromGlobals()
+        var logPolicy: SupportEmailModel.LogPolicy?
+        if debugSwitch.isOn {
+            logPolicy = .attemptUpload(DebugLogs(dumper: logDumper))
+        }
         let emailRequest = SupportEmailModel(
             userDescription: descriptionField.text,
             emojiMood: emojiPicker.selectedMood,
             supportFilter: selectedFilter.map { "iOS \($0.emailFilterString)" },
-            debugLogPolicy: debugSwitch.isOn ? .attemptUpload(logDumper) : nil,
+            debugLogPolicy: logPolicy,
             hasRecentChallenge: logDumper.challengeReceivedRecently(),
         )
 
