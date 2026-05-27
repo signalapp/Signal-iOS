@@ -135,49 +135,47 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             return qrCodeView
         }()
 
-        let copyUsernameButton: UIButton = {
-            let button = OWSButton(block: { [weak self] in
+        var buttonConfiguration = UIButton.Configuration.plain()
+        buttonConfiguration.title = username
+        buttonConfiguration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped.semibold())
+        buttonConfiguration.image = Theme.iconImage(.buttonCopy)
+        buttonConfiguration.imagePadding = 6
+        buttonConfiguration.imagePlacement = .leading
+        buttonConfiguration.baseForegroundColor = qrCodeColor.username
+        let copyUsernameButton = UIButton(
+            configuration: buttonConfiguration,
+            primaryAction: UIAction { [weak self] _ in
                 guard let self else { return }
 
                 UIPasteboard.general.string = self.username
                 self.showUsernameCopiedToast()
-            })
-
-            button.setTitle(username, for: .normal)
-            button.setTitleColor(qrCodeColor.username, for: .normal)
-            button.titleLabel!.font = .dynamicTypeHeadline.semibold()
-
-            button.setTemplateImage(
-                Theme.iconImage(.buttonCopy),
-                tintColor: qrCodeColor.username,
-            )
-
-            button.imageView!.autoSetDimensions(to: .square(24))
-            button.ows_titleEdgeInsets = UIEdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 0)
-            button.configureForMultilineTitle()
-
-            button.dimsWhenHighlighted = true
-
-            return button
-        }()
+            },
+        )
 
         let wrapperView = UIView()
         wrapperView.backgroundColor = qrCodeColor.background
         wrapperView.layer.cornerRadius = 24
-        wrapperView.layoutMargins = UIEdgeInsets(hMargin: 40, vMargin: 32)
 
         wrapperView.addSubview(qrCodeView)
         wrapperView.addSubview(copyUsernameButton)
 
-        qrCodeView.autoPinTopToSuperviewMargin()
-        qrCodeView.autoSetDimensions(to: .square(214))
-        qrCodeView.autoHCenterInSuperview()
+        qrCodeView.translatesAutoresizingMaskIntoConstraints = false
+        copyUsernameButton.translatesAutoresizingMaskIntoConstraints = false
 
-        qrCodeView.autoPinEdge(.bottom, to: .top, of: copyUsernameButton, withOffset: -16)
+        let qrCodeViewMargin: CGFloat = 32
+        let buttonVMargin: CGFloat = 16
+        NSLayoutConstraint.activate([
+            qrCodeView.widthAnchor.constraint(equalToConstant: 214),
+            qrCodeView.heightAnchor.constraint(equalTo: qrCodeView.widthAnchor),
+            qrCodeView.topAnchor.constraint(equalTo: wrapperView.topAnchor, constant: qrCodeViewMargin),
+            qrCodeView.leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor, constant: qrCodeViewMargin),
+            qrCodeView.centerXAnchor.constraint(equalTo: wrapperView.centerXAnchor),
 
-        copyUsernameButton.autoPinLeadingToSuperviewMargin()
-        copyUsernameButton.autoPinTrailingToSuperviewMargin()
-        copyUsernameButton.autoPinBottomToSuperviewMargin()
+            copyUsernameButton.topAnchor.constraint(equalTo: qrCodeView.bottomAnchor, constant: buttonVMargin),
+            copyUsernameButton.leadingAnchor.constraint(greaterThanOrEqualTo: qrCodeView.leadingAnchor, constant: 16),
+            copyUsernameButton.centerXAnchor.constraint(equalTo: wrapperView.centerXAnchor),
+            copyUsernameButton.bottomAnchor.constraint(equalTo: wrapperView.bottomAnchor, constant: -buttonVMargin),
+        ])
 
         return wrapperView
     }
