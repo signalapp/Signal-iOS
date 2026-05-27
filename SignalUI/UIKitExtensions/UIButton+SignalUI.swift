@@ -25,41 +25,6 @@ private extension NSDirectionalEdgeInsets {
 // MARK: - UIButton
 
 public extension UIButton {
-    /// Add spacing between a button's image and its title.
-    ///
-    /// Modified from [this project][0], licensed under the MIT License.
-    ///
-    /// [0]: https://github.com/noahsark769/NGUIButtonInsetsExample
-    func setPaddingBetweenImageAndText(to padding: CGFloat, isRightToLeft: Bool) {
-        if isRightToLeft {
-            ows_contentEdgeInsets = .init(
-                top: ows_contentEdgeInsets.top,
-                left: padding,
-                bottom: ows_contentEdgeInsets.bottom,
-                right: ows_contentEdgeInsets.right,
-            )
-            ows_titleEdgeInsets = .init(
-                top: ows_titleEdgeInsets.top,
-                left: -padding,
-                bottom: ows_titleEdgeInsets.bottom,
-                right: padding,
-            )
-        } else {
-            ows_contentEdgeInsets = .init(
-                top: ows_contentEdgeInsets.top,
-                left: ows_contentEdgeInsets.left,
-                bottom: ows_contentEdgeInsets.bottom,
-                right: padding,
-            )
-            ows_titleEdgeInsets = .init(
-                top: ows_titleEdgeInsets.top,
-                left: padding,
-                bottom: ows_titleEdgeInsets.bottom,
-                right: -padding,
-            )
-        }
-    }
-
     func setTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) {
         guard let templateImage else {
             owsFailDebug("Missing image")
@@ -75,18 +40,6 @@ public extension UIButton {
             return
         }
         setTemplateImage(image, tintColor: tintColor)
-    }
-
-    class func withTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) -> UIButton {
-        let button = UIButton()
-        button.setTemplateImage(templateImage, tintColor: tintColor)
-        return button
-    }
-
-    class func withTemplateImageName(_ imageName: String, tintColor: UIColor) -> UIButton {
-        let button = UIButton()
-        button.setTemplateImageName(imageName, tintColor: tintColor)
-        return button
     }
 
     func setImage(_ image: UIImage?, animated: Bool) {
