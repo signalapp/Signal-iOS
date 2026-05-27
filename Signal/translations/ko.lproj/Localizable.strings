@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "자동 백업 비활성화됨";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "보유한 메시지 수가 저장 용량 한도를 초과했습니다. 일부 메시지를 삭제하고 다시 시도하세요.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "백업을 만드는 중 오류가 발생했습니다. 다시 시도하거나 지원팀에 문의하세요.";
@@ -2749,6 +2749,9 @@
 /* Header text displayed above the debug log preview */
 "DEBUG_LOG_PREVIEW_HEADER" = "제출한 로그는 별도의 비공개 URL에 30일 동안 게시됩니다.";
 
+/* Button below the debug log preview which continues the submission flow */
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "디버그 로그";
 
@@ -3977,7 +3980,7 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%1$@ 님이 그룹 통화를 시작했습니다.";
 
 /* Text displayed when trying to turn on ringing when calling a large group. */
-"GROUP_CALL_TOO_LARGE_TO_RING" = "단체 참여자가 너무 많아 통화를 진행할 수 없습니다.";
+"GROUP_CALL_TOO_LARGE_TO_RING" = "그룹 인원이 너무 많아 전화를 걸 수 없습니다.";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ 및 %2$@ 님이 통화 중입니다.";
@@ -4574,7 +4577,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "새 관리자 선택";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "새 관리자 선택";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "권장 멤버 수 한도에 도달했습니다.";
@@ -4682,13 +4685,13 @@
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "정기후원을 설정하려면 '계속'을 탭하여 은행을 통해 %1$@ 청구를 확인해 주세요. 확인이 완료되면 청구 금액은 자동으로 환불되며, 내 계좌에서 월 %2$@ 정기후원이 승인됩니다.";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "아무 곳이나 그려서 가릴 수 있습니다";
+"IMAGE_EDITOR_BLUR_HINT" = "원하는 곳을 그려서 흐림 처리하세요";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "얼굴 가리기";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "다른 사람의 얼굴이나 영역을 그려서 가릴 수 있습니다";
+"IMAGE_EDITOR_BLUR_TOAST" = "다른 얼굴 또는 영역을 그려서 흐림 처리하세요";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "항목 %1$@개를 초과하여 공유할 수 없습니다.";
@@ -5588,7 +5591,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "%1$@ 님이 나에게 메시지를 보내고, 내 이름과 사진을 공유하도록 허용할까요? 이 사용자는 내가 이전에 삭제했던 사용자입니다.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "신고";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "차단 해제";
@@ -5877,9 +5880,6 @@
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "새 그룹 스토리";
-
-/* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "스토리 유형 선택";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
 "NICKNAME_BUTTON_TITLE" = "별칭";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "암호화 인증 중…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "전화번호를 통해 연결된 연락처의 경우, Signal은 키 투명성이라는 프로세스를 사용하여 연결이 안전한지 자동으로 확인할 수 있습니다. 하지만 더 강력한 보안을 원한다면, QR 코드를 사용하거나 안전 번호를 대조하여 수동으로 연결을 인증하는 것도 가능합니다.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "전화번호를 통해 연결된 사용자의 경우, Signal은 키 투명성이라는 프로세스를 사용하여 연결이 안전한지 자동으로 확인할 수 있습니다. 하지만 더 강력한 보안을 원한다면, QR 코드를 사용하거나 안전 번호를 대조하여 수동으로 연결을 인증하는 것도 가능합니다.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "이제 키 암호화를 자동으로 인증할 수 있어요";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal이 이 채팅의 암호화를 자동으로 인증할 수 없습니다. %1$@ 님이 전화번호 또는 전화번호 개인정보보호 설정을 변경하여 발생한 문제일 수 있습니다. 이전 화면의 숫자를 대조하거나, 상대방 기기의 코드를 스캔하여 종단간 암호화를 수동으로 인증해 주세요.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "이 채팅에 더 이상 자동 인증을 사용할 수 없습니다";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "계정";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "계정 설정 열기";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "내 계정 데이터";
@@ -8307,9 +8307,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "디버그 로그 보내기";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "오류 로그";
 
 /* Information on sheet about changing the app icon - first line */
 "SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "홈 화면, 알림, 앱 보관함에 앱 이름 'Signal'이 표시됩니다.";
@@ -8390,7 +8387,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "전화번호";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "전화번호를 변경할 수 없음";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "현재 전화번호를 새 전화번호로 바꿀 수 있으며, 변경 후에는 되돌릴 수 없습니다.\n\n변경하기 전에, 새 전화번호로 SMS 메시지나 전화를 받을 수 있는지 확인하세요.";
@@ -8689,6 +8686,9 @@
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "PIN 업데이트";
 
+/* Accessibility label for the information button on the payments settings screen. */
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "잘못된 지갑 주소";
 
@@ -8871,6 +8871,9 @@
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "결제 복원 문구 기록";
+
+/* Accessibility label for the refresh button on the payments settings screen. */
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "잔액";
@@ -10148,10 +10151,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "사용자 이름은 인터넷에 연결됐을 때만 업데이트할 수 있습니다.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "인증 코드 요청됨";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "인증 코드를 다른 사람과 공유하지 마세요. Signal은 절대 인증 코드를 요청하는 메시지를 보내지 않습니다. Signal을 사칭한 메시지를 받았다면 사기일 수 있으니, 유의해 주세요.\n본인이 직접 코드를 요청하신 경우, 이 메시지는 무시하셔도 됩니다.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%1$@ 님을 검증하지 않았다고 표시했습니다.";

@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Automatikus biztonsági mentések letiltva";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "Az üzeneteid száma meghaladja a tárhelykorlátot. Törölj néhány üzenetet, és próbáld újra.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Hiba történt a biztonsági mentés létrehozásakor. Próbáld újra, vagy vedd fel a kapcsolatot a támogatással!";
@@ -2749,6 +2749,9 @@
 /* Header text displayed above the debug log preview */
 "DEBUG_LOG_PREVIEW_HEADER" = "A beküldést követően a napló 30 napig lesz elérhető online egy egyedi, nem publikus URL-címen.";
 
+/* Button below the debug log preview which continues the submission flow */
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "Fejlesztői napló";
 
@@ -4574,7 +4577,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Új admin választása";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Új admin választása";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Elérted a javasolt létszám limitet";
@@ -5588,7 +5591,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Engedélyezed, hogy %1$@ üzenetet küldjön neked, és megosztod vele a neved és a fényképed? A múltban eltávolítottad ezt a személyt.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Jelentés";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Tiltás feloldása";
@@ -5877,9 +5880,6 @@
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Új Csoport Történet";
-
-/* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Történet típusának kiválasztása";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
 "NICKNAME_BUTTON_TITLE" = "Becenév";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Titkosítás ellenőrzése…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Azoknál a névjegyeknél, amelyekhez telefonszámon keresztül kapcsolódsz, a Signal egy kulcsátláthatóságnak nevezett folyamat segítségével automatikusan megerősítheti, hogy a kapcsolat biztonságos-e. A fokozott biztonság érdekében továbbra is ellenőrizheted manuálisan a névjegyeket egy QR-kóddal vagy biztonsági számok összehasonlításával.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Azoknál a személyeknél, akikhez telefonszámon keresztül kapcsolódsz, a Signal egy kulcsátláthatóságnak nevezett folyamat segítségével automatikusan megerősítheti, hogy a kapcsolat biztonságos-e. A fokozott biztonság érdekében továbbra is ellenőrizheted manuálisan a névjegyeket egy QR-kóddal vagy a biztonsági számok összehasonlításával.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "A Signal mostantól automatikusan ellenőrizheti a titkosítást.";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "A Signal nem tudja automatikusan ellenőrizni a titkosítást ennél a csevegésnél. Ennek az lehet az oka, hogy %1$@ megváltoztatta a telefonszámát vagy a telefonszám adatvédelmi beállításait. Ellenőrizd manuálisan a végpontok közötti titkosítást az előző képernyőn látható számok összehasonlításával vagy az eszközön található kód beolvasásával.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Az automatikus ellenőrzés már nem érhető el ehhez a csevegéshez";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "Fiók";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "Fiókbeállítok megnyitása";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Fiókadataid";
@@ -8307,9 +8307,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Hibanapló továbbítása";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Hibanaplók";
 
 /* Information on sheet about changing the app icon - first line */
 "SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "A „Signal” alkalmazás neve látható lesz a Kezdőképernyőn, az Értesítéseknél és az Alkalmazáskönyvtárban.";
@@ -8390,7 +8387,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Telefonszám";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "A telefonszám nem módosítható";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Itt a Signal által regisztrált, aktuálisan használt telefonszámodat változtathatod meg egy másikra. Ez a művelet nem vonható vissza.\n\nKezdés előtt győződj meg róla, hogy az új számon tudsz SMS-t, vagy hívást fogadni!";
@@ -8689,6 +8686,9 @@
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Frissítsd a PIN kódodat";
 
+/* Accessibility label for the information button on the payments settings screen. */
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Érvénytelen tárca cím";
 
@@ -8871,6 +8871,9 @@
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Fizetési helyreállítási kifejezés rögzítése";
+
+/* Accessibility label for the refresh button on the payments settings screen. */
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Maradék egyenleg";
@@ -10148,10 +10151,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "A felhasználónevek csak akkor frissíthetők, ha csatlakozva vagy az internetre.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "Egy megerősítő kód lekérésre került";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Ne add meg senkinek a megerősítő kódodat. A Signal soha nem fog üzenni neked emiatt. Ha üzenetet kaptál valakitől, aki a Signalnak adta ki magát, az átverés.\nHa te magad kérted a kódot, nyugodtan figyelmen kívül hagyhatod ezt az üzenetet.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%1$@ ismerősödet Nem Ellenőrzöttnek jelölted.";

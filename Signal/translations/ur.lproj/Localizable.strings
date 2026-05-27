@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "خود کار بیک اپس غیر فعال ہیں";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "آپ کے پاس موجود میسجز کی تعداد اسٹوریج کی حد سے زیادہ ہے۔ کچھ میسجز حذف کریں اور دوبارہ کوشش کریں۔";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "آپ کا بیک اپ تخلیق کرنے میں کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں یا سپورٹ سے رابطہ کریں۔";
@@ -2749,6 +2749,9 @@
 /* Header text displayed above the debug log preview */
 "DEBUG_LOG_PREVIEW_HEADER" = "جمع کروانے پر، آپ کا لاگ 30 دنوں کے لیے ایک منفرد، غیر شائع شدہ URL پر آن لائن پوسٹ کیا جائے گا۔";
 
+/* Button below the debug log preview which continues the submission flow */
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "ڈی بگ لاگ";
 
@@ -4574,7 +4577,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "نیا ایڈمن منتخب کریں";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "نیا ایڈمن منتخب کریں";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "تجویز کردہ ممبر کی حد ہوگئی";
@@ -5588,7 +5591,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "%1$@ کو خود کو میسج کرنے اور اپنا نام اور تصویر ان کے ساتھ شیئر کرنے کی اجازت دیں؟ آپ ماضی میں اس فرد کو ہٹا چکے ہیں۔";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "رپورٹ کریں";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "اَن بلاک کریں";
@@ -5877,9 +5880,6 @@
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "نئی گروپ سٹوری";
-
-/* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "سٹوری کی قسم منتخب کریں";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
 "NICKNAME_BUTTON_TITLE" = "عرفی نام";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "انکرپشن کی تصدیق ہو رہی ہے…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "ان رابطوں کے لیے جن کے ساتھ آپ فون نمبر کے ذریعے مربوط ہیں، Signal خود کار طور پر کیی ٹرانسپیرینسی نامی طریقہ کار استعمال کرتے ہوئے یہ تصدیق کر سکتا ہے کہ آیا کنیکشن محفوظ ہے۔ اضافی تحفظ کے لیے، آپ اب بھی کنیکشنز کی دستی طور پر QR کوڈ یا حفاظتی نمبر کا موازنہ کر کے تصدیق کر سکتے ہیں۔";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "ان لوگوں کے لیے جن کے ساتھ آپ فون نمبر کے ذریعے مربوط ہیں، Signal خود کار طور پر کیی ٹرانسپیرینسی نامی طریقہ کار استعمال کرتے ہوئے یہ تصدیق کر سکتا ہے کہ آیا کنیکشن محفوظ ہے۔ اضافی سیکیورٹی کے لیے، آپ پھر بھی QR کوڈ کا استعمال کر کے دستی طور پر یا حفاظتی نمبرز کا موازنہ کر کے کنیکشنز کی تصدیق کر سکتے ہیں۔";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "اب Signal خود کار طور پر انکرپشن کی تصدیق کر سکتا ہے";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal اس چیٹ کے لیے خود کار طور پر انکرپشن کی تصدیق نہیں کر سکتا۔ ایسا اس لیے ہو سکتا ہے کیونکہ %1$@ نے اپنا فون نمبر یا اپنے فون نمبر کی پرائیویسی سیٹنگز تبدیل کی ہیں۔ پچھلی اسکرین پر موجود نمبرز کا موازنہ کر کے یا ان کی ڈیوائس پر کوڈ اسکین کر کے دستی طور پر آخر سے آخر تک انکرپشن کی تصدیق کریں۔";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "اس چیٹ کے لیے خود کار تصدیق مزید دستیاب نہیں ہے";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "اکاؤنٹ";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "اکاؤنٹ کی سیٹنگز کھولیں";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "آپ کا اکاؤنٹ ڈیٹا";
@@ -8307,9 +8307,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "ڈی بَگ لاگ پیش کریں";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "لاگز میں غلطی";
 
 /* Information on sheet about changing the app icon - first line */
 "SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "\"Signal\" نامی ایپ ہوم اسکرین پر، اطلاعات اور ایپ لائبریری میں ظاہر ہو گی۔";
@@ -8390,7 +8387,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "فون نمبر";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "فون نمبر تبدیل نہیں ہو سکتا";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "اپنا موجودہ فون نمبر کسی نئے فون نمبر پر تبدیل کرنے کے لیے اس کا استعمال کریں۔ آپ اس تبدیلی کو کالعدم نہیں کر سکتے۔\n\nجاری رکھنے سے پہلے، یقینی بنائیں کہ آپ کا نیا نمبر SMS یا کالز وصول کر سکتا ہے۔";
@@ -8689,6 +8686,9 @@
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "اپنا پن اپ ڈیٹ کریں";
 
+/* Accessibility label for the information button on the payments settings screen. */
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Wallet کا غلط پتہ";
 
@@ -8871,6 +8871,9 @@
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "ریکارڈ ادائیگیوں کی بازیابی کا جملہ";
+
+/* Accessibility label for the refresh button on the payments settings screen. */
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "باقی بیلنس";
@@ -10148,10 +10151,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "یوزر نیمز صرف انٹرنیٹ سے مربوط ہونے کی صورت میں ہی اپ ڈیٹ کیے جا سکتے ہیں۔";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "ایک تصدیقی کوڈ کی درخواست کی گئی تھی";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "اپنا تصدیقی کوڈ کسی کو نہ دیں۔ Signal اس کے لیے کبھی بھی آپ کو میسج نہیں کرے گا۔ اگر آپ کو Signal کا دکھاوا کرنے والے کسی فرد کی جانب سے کوئی میسج موصول ہوتا ہے، تو یہ اسکیم ہے۔\nاگر آپ نے خود اس کوڈ کی درخواست کی ہے تو آپ محفوظ انداز میں اس میسج کو نظر انداز کر سکتے ہیں۔";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "آپ نے تصدیق کے طور پر %1$@نشان نہیں لگایا۔";

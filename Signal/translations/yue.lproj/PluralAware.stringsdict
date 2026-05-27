@@ -1361,9 +1361,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>因為你註冊咗呢個帳戶無耐，而家改唔到電話冧把住。俾少少耐性等一陣，可以幫你保護帳戶安全。
 
-Try again in %1$d hours.</string>
+請你喺 %1$d 個鐘頭之後再試啦。</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

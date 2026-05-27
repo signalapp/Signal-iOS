@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Automatinės atsarginės kopijos išjungtos";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "Jūsų turimų žinučių skaičius viršija saugyklos limitą. Ištrinkite keletą žinučių ir bandykite dar kartą.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Įvyko klaida kuriant atsarginę kopiją. Bandykite dar kartą arba susisiekite su aptarnavimo komanda.";
@@ -2749,6 +2749,9 @@
 /* Header text displayed above the debug log preview */
 "DEBUG_LOG_PREVIEW_HEADER" = "Kai pateiksite, jūsų žurnalas bus 30-čiai dienų paskelbtas internete unikaliu neskelbiamu URL adresu.";
 
+/* Button below the debug log preview which continues the submission flow */
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "Derinimo žurnalas";
 
@@ -4574,7 +4577,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Pasirinkti naują administratorių";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Pasirinkti naują administratorių";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Pasiekta rekomenduojamo narių skaičiaus riba";
@@ -5588,7 +5591,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Leisti, kad %1$@ siųstų tau žinutes, ir bendrinti su šiuo žmogumi savo vardą bei nuotrauką? Anksčiau tu pašalinai šį asmenį.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Pranešti";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Atblokuoti";
@@ -5877,9 +5880,6 @@
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Nauja grupės istorija";
-
-/* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Pasirinkti istorijos tipą";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
 "NICKNAME_BUTTON_TITLE" = "Slapyvardis";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Tikrinamas šifravimas…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Jei su adresatais bendraujate naudodami telefono numerius, „Signal“ automatiškai patvirtins, ar ryšys saugus, pagal rakto skaidrumo procesą. Dėl papildomo saugumo ryšius vis dar galite patvirtinti patys, naudodami QR kodą arba palygindami saugumo numerius.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Jei su žmonėmis bendraujate naudodami telefono numerius, „Signal“ automatiškai patvirtins, ar ryšys saugus, pagal rakto skaidrumo procesą. Dėl papildomo saugumo ryšius vis dar galite patvirtinti patys, naudodami QR kodą arba palygindami saugumo numerius.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "„Signal“ dabar gali automatiškai patvirtinti šifravimą";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "„Signal“ negali automatiškai patvirtinti šio pokalbio šifravimo. Tikėtina, kad taip yra todėl, jog %1$@ pasikeitė telefono numerį arba telefono numerio privatumo nustatymus. Patvirtinkite ištisinį šifravimą rankiniu būdu, palygindami ankstesniame ekrane pateiktus skaičius arba nuskaitydami kodą jų įrenginyje.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Automatinis patvirtinimas šiam pokalbiui nebepasiekiamas";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "Paskyra";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "Atverti paskyros nustatymus";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Tavo paskyros duomenys";
@@ -8307,9 +8307,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Pateikti derinimo žurnalą";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Klaidų žurnalai";
 
 /* Information on sheet about changing the app icon - first line */
 "SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Programėlės pavadinimas „Signal“ bus matomas pagrindiniame ekrane, pranešimuose ir programėlių bibliotekoje.";
@@ -8390,7 +8387,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Telefono numeris";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Telefono numerio pakeisti negalima";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Naudokite tai, norėdami pasikeisti dabartinį telefono numerį į naują numerį. Šio pakeitimo nebegalėsite atšaukti.\n\nPrieš tęsdami, įsitikinkite, kad į naują numerį galite gauti SMS žinutes bei priimti skambučius.";
@@ -8689,6 +8686,9 @@
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Atnaujinti savo PIN kodą";
 
+/* Accessibility label for the information button on the payments settings screen. */
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Netinkamas piniginės adresas";
 
@@ -8871,6 +8871,9 @@
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Užsirašykite mokėjimų atkūrimo frazę";
+
+/* Accessibility label for the refresh button on the payments settings screen. */
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Likęs likutis";
@@ -10148,10 +10151,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Naudotojų vardus atnaujinti galima tik prisijungus prie interneto.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "Paprašėte patvirtinimo kodo";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Savo patvirtinimo kodu nesidalinkite su niekuo. „Signal“ niekada nesiųs žinučių su prašymais jį pateikti. Jei gavote žinutę iš ko nors, apsimetančio „Signal“, tai sukčiai.\nJei kodo paprašėte patys, galite nekreipti dėmesio į šią žinutę.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Jūs pažymėjote %1$@ kaip nepatvirtintą.";

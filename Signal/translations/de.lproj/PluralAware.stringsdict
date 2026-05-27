@@ -1555,13 +1555,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Weil du dieses Konto erst kürzlich registriert hast, kannst du deine Telefonnummer derzeit nicht ändern. Diese kurze Wartezeit dient dem Schutz deines Kontos.
 
-Try again in %1$d hour.</string>
+Versuche es in %1$d Stunde erneut.</string>
 			<key>other</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Weil du dieses Konto erst kürzlich registriert hast, kannst du deine Telefonnummer derzeit nicht ändern. Diese kurze Wartezeit dient dem Schutz deines Kontos.
 
-Try again in %1$d hours.</string>
+Versuche es in %1$d Stunden erneut.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

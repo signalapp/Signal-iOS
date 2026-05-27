@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "স্বয়ংক্রিয় ব্যাকআপ নিষ্ক্রিয় করা হয়েছে";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "আপনার কাছে থাকা মেসেজের সংখ্যা স্টোরেজ সীমা ছাড়িয়ে গেছে। কিছু মেসেজ মুছে আবার চেষ্টা করুন।";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "আপনার ব্যাকআপ তৈরি করার সময় কিছু একটা সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন অথবা সহায়তায় যোগাযোগ করুন।";
@@ -2749,6 +2749,9 @@
 /* Header text displayed above the debug log preview */
 "DEBUG_LOG_PREVIEW_HEADER" = "জমা দিলে, আপনার লগটি 30 দিনের জন্য একটি বিশেষ, অপ্রকাশিত URL আকারে অনলাইনে পোস্ট করা হবে।";
 
+/* Button below the debug log preview which continues the submission flow */
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "ডিবাগ লগ";
 
@@ -4574,7 +4577,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "নতুন অ্যাডমিন বেছে নিন";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "নতুন অ্যাডমিন বেছে নিন";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "সুপারিশকৃত সদস্য সর্বোচ্চ সীমায় পৌঁছেছে";
@@ -5588,7 +5591,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "%1$@-কে আপনাকে মেসেজ দিতে দিন এবং তার সাথে আপনার নাম ও ছবি শেয়ার করুন? আপনি অতীতে এই ব্যক্তিকে মুছে ফেলেছিলেন।";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "রিপোর্ট করুন";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "আনব্লক করুন";
@@ -5877,9 +5880,6 @@
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "নতুন গ্রুপ স্টোরি";
-
-/* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "স্টোরি-র ধরণ বেছে নিন";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
 "NICKNAME_BUTTON_TITLE" = "ডাকনাম";
@@ -7943,7 +7943,7 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal এখন স্বয়ংক্রিয়ভাবে এনক্রিপশন যাচাই করতে পারে";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal এই চ্যাটের এনক্রিপশন স্বয়ংক্রিয়ভাবে যাচাই করতে পারবে না। এর কারণ হতে পারে যে %1$@ তার ফোন নম্বর অথবা ফোন নম্বরের গোপনীয়তা সেটিংস পরিবর্তন করেছেন। আগের স্ক্রিনে থাকা নম্বর তুলনা করে অথবা তাদের ডিভাইসে কোড স্ক্যান করে ম্যানুয়ালি এন্ড-টু-এন্ড এনক্রিপশন যাচাই করুন।";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "এই চ্যাটের ক্ষেত্রে আর স্বয়ংক্রিয়-যাচাইকরণের সুবিধা নেই";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "অ্যাকাউন্ট";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "অ্যাকাউন্ট সেটিংস খুলুন";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "আপনার অ্যাকাউন্টের ডেটা";
@@ -8307,9 +8307,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "ডিবাগ লগ জমা দিন";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "ত্রুটি লগসমূহ";
 
 /* Information on sheet about changing the app icon - first line */
 "SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "অ্যাপের নাম “Signal” হোম স্ক্রিনে, নোটিফিকেশনে ও অ্যাপ লাইব্রেরিতে দেখা যাবে।";
@@ -8390,7 +8387,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "ফোন নম্বর";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "ফোন নম্বর পরিবর্তন করা যাবে না";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "আপনার বর্তমান ফোন নম্বরটি একটি নতুন ফোন নম্বরে পরিবর্তন করতে এটি ব্যবহার করুন। আপনি এই পরিবর্তনটি পূর্বাবস্থায় ফিরিয়ে নিতে পারবেন না।\n\nএগিয়ে যাওয়ার আগে, নিশ্চিত করুন যে আপনার নতুন নম্বরটি এসএমএস বা কল পেতে পারে।";
@@ -8689,6 +8686,9 @@
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "আপনার পিন আপডেট করুন";
 
+/* Accessibility label for the information button on the payments settings screen. */
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "ওয়ালেট ঠিকানাটি অবৈধ";
 
@@ -8871,6 +8871,9 @@
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "পেমেন্ট রিকভারি ফ্রেজ রেকর্ড করুন";
+
+/* Accessibility label for the refresh button on the payments settings screen. */
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "অবশিষ্ট ব্যালেন্স";
@@ -10148,10 +10151,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "শুধুমাত্র ইন্টারনেটের সাথে সংযুক্ত হলেই ব্যবহারকারীর নাম আপডেট করা যাবে।";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "একটি যাচাইকরণ কোড অনুরোধ করা হয়েছে";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "আপনার যাচাইকরণ কোডটি কাউকে দেবেন না। Signal কখনোই এটি চেয়ে আপনাকে মেসেজ করবে না। যদি আপনি Signal-এর ছদ্মবেশধারী অন্য কারো কাছ থেকে কোনো মেসেজ পেয়ে থাকেন, তবে এটি প্রতারণা।\nআপনি যদি নিজেই কোডটির জন্য অনুরোধ করে থাকেন, তাহলে এই মেসেজটি নিশ্চিন্তে উপেক্ষা করতে পারেন।";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "আপনি %1$@ কে অযাচাইকৃত হিসেবে চিহ্নিত করেছেন";

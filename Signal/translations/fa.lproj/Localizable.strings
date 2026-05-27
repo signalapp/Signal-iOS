@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "پشتیبان‌گیری خودکار غیرفعال شد";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "تعداد پیام‌های شما از حد مجاز حافظه بیشتر شده است. چند پیام را حذف کنید و دوباره امتحان کنید.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "مشکلی حین ایجاد نسخه پشتیبان شما پیش آمد. لطفاً دوباره تلاش کنید، یا با پشتیبانی تماس بگیرید.";
@@ -2749,6 +2749,9 @@
 /* Header text displayed above the debug log preview */
 "DEBUG_LOG_PREVIEW_HEADER" = "وقتی ارسال شد، گزارشتان به‌مدت ۳۰ روز در یک نشانی اینترنتی منحصربه‌فرد و منتشرنشده‌ به‌صورت آنلاین انتشار خواهد یافت.";
 
+/* Button below the debug log preview which continues the submission flow */
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "گزارش خطا";
 
@@ -4574,7 +4577,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "انتخاب مدیر جدید";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "انتخاب مدیر جدید";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "تعداد اعضا به انتها رسیده است";
@@ -5588,7 +5591,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "اجازه می‌دهید که %1$@ به شما پیام بفرستد و نام و عکس‌تان با او به اشتراک گذاشته شود؟ این شخص را در گذشته حذف کرده‌اید.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "گزارش";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "رفع مسدودیت";
@@ -5877,9 +5880,6 @@
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "استوری گروهی جدید";
-
-/* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "انتخاب نوع استوری";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
 "NICKNAME_BUTTON_TITLE" = "نام مستعار";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "در حال تأیید رمزگذاری…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "برای مخاطبانی که از طریق شماره تلفن به آن‌ها متصل هستید، سیگنال می‌تواند با استفاده از فرایندی به نام «شفافیت کلید» به‌طور خودکار تأیید کند که اتصال امن است. برای امنیت بیشتر، همچنان می‌توانید مخاطبان را به‌صورت دستی و با استفاده از کد QR یا مقایسه شماره ایمنی تأیید کنید.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "برای افرادی که از طریق شماره تلفن به آن‌ها متصل هستید، سیگنال می‌تواند با استفاده از فرایندی به نام «شفافیت کلید» به‌طور خودکار تأیید کند که اتصال امن است. برای امنیت بیشتر، همچنان می‌توانید مخاطبان را به‌صورت دستی و با استفاده از کد QR یا مقایسه شماره ایمنی تأیید کنید.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "سیگنال اکنون می‌تواند به‌طور خودکار رمزگذاری را تأیید کند";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "سیگنال نمی‌تواند رمزگذاری برای این گفتگو را به‌طور خودکار تأیید کند. احتمالاً چون %1$@ شماره تلفن یا تنظیمات حریم خصوصی شماره تلفن خود را تغییر داده است. با مقایسه اعداد در صفحه قبلی یا اسکن کردن کد روی دستگاه او، رمزگذاری سرتاسری را به‌صورت دستی تأیید کنید.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "تأیید خودکار دیگر برای این گفتگو در دسترس نیست";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "حساب کاربری";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "باز کردن «تنظیمات حساب»";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "اطلاعات حساب شما";
@@ -8307,9 +8307,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "ارسال گزارش رفع عیب";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Error Logs";
 
 /* Information on sheet about changing the app icon - first line */
 "SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "نام برنامه «سیگنال» در صفحه اصلی، در اعلان‌ها و «کتابخانۀ برنامه» قابل مشاهده خواهد بود.";
@@ -8390,7 +8387,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "شماره تلفن";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "تغییر شماره تلفن امکان‌پذیر نیست";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "از این گزینه برای تغییر شماره تلفن فعلی خود به یک شماره تلفن جدید استفاده کنید. شما نمی‌توانید این تغییر را بازگردانی کنید.\n\nقبل از ادامه، مطمئن شوید که شمارهٔ جدید شما می‌تواند پیامک یا تماس دریافت کند.";
@@ -8689,6 +8686,9 @@
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "پین خود را به‌روزرسانی کنید";
 
+/* Accessibility label for the information button on the payments settings screen. */
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "نشانی کیف پول نامعتبر";
 
@@ -8871,6 +8871,9 @@
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "ذخیره عبارت بازیابی پرداخت‌ها";
+
+/* Accessibility label for the refresh button on the payments settings screen. */
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "موجودی باقی‌مانده";
@@ -10148,10 +10151,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "نام کاربری را فقط می‌توان زمانی به‌روز کرد که به اینترنت متصل باشید.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "کد تأیید درخواست شد";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "کد تأیید خود را به دیگران ندهید. سیگنال هیچ‌وقت برای آن به شما پیام نمی‌فرستد. اگر پیامی از کسی دریافت کردید که وانمود می‌کرد از طرف سیگنال است، کلاهبرداری است.\nاگر خودتان کد را درخواست کرده‌اید، می‌توانید با خیال راحت این پیام را نادیده بگیرید.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "شما %1$@ را به عنوان تأییدنشده علامت‌گذاری کردید.";

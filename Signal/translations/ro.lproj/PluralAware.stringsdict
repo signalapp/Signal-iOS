@@ -1749,17 +1749,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Pentru că ai înregistrat recent acest cont, nu poți schimba numerele de telefon chiar acum. Există o perioadă scurtă de așteptare care ajută la protejarea contului.
 
-Try again in %1$d hour.</string>
+ Încearcă din nou în %1$d oră.</string>
 			<key>few</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Pentru că ai înregistrat recent acest cont, nu poți schimba numerele de telefon chiar acum. Există o perioadă scurtă de așteptare care ajută la protejarea contului.
 
-Try again in %1$d hours.</string>
+ Încearcă din nou în %1$d ore.</string>
 			<key>other</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Pentru că ai înregistrat recent acest cont, nu poți schimba numerele de telefon chiar acum. Există o perioadă scurtă de așteptare care ajută la protejarea contului.
 
-Try again in %1$d hours.</string>
+ Încearcă din nou în %1$d de ore.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

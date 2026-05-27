@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Cúltacaí Uathoibríocha Díchumasaithe";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "Sáraíonn líon na dteachtaireachtaí atá agat an teorainn stórála. Scrios roinnt teachtaireachtaí agus triail arís.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Chuaigh rud éigin amú agus do chúltaca á chruthú. Triail arís nó déan teagmháil leis an bhfoireann tacaíochta.";
@@ -2749,6 +2749,9 @@
 /* Header text displayed above the debug log preview */
 "DEBUG_LOG_PREVIEW_HEADER" = "Agus é curtha isteach, postálfar do loga ar líne go ceann 30 lá ag URL uathúil neamhfhoilsithe.";
 
+/* Button below the debug log preview which continues the submission flow */
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "Loga dífhabhtaithe";
 
@@ -4574,7 +4577,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Riarthóir Nua";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Riarthóir Nua";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Recommended member limit reached";
@@ -5588,7 +5591,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Lig do %1$@ teachtaireachtaí a sheoladh chugat agus comhroinn d'ainm agus grianghraf leis/léi? Bhain tú an duine sin roimhe.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Tuairiscigh";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Bain an bac";
@@ -5877,9 +5880,6 @@
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Scéal Grúpa Nua";
-
-/* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Roghnaigh Cineál Scéil";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
 "NICKNAME_BUTTON_TITLE" = "Leasainm";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Criptiú á Fhíorú…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "I gcás teagmhálaithe lena bhfuil tú nasctha le huimhir ghutháin, is féidir le Signal slánú an naisc a dheimhniú go huathoibríoch agus próiseas ar a dtugtar trédhearcacht eochracha in úsáid. Mar shlánú sa bhreis, is féidir leat naisc a fhíorú de láimh fós agus cód QR in úsáid nó trí uimhreacha sábháilteachta a chur i gcomparáid le chéile.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "I gcás daoine lena bhfuil tú nasctha le huimhir ghutháin, is féidir le Signal slánú an naisc a dheimhniú go huathoibríoch agus próiseas ar a dtugtar trédhearcacht eochracha in úsáid. Mar shlánú sa bhreis, is féidir leat naisc a fhíorú de láimh fós agus cód QR in úsáid nó trí uimhreacha sábháilteachta a chur i gcomparáid le chéile.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Tá Signal in ann criptiú a fhíorú go huathoibríoch anois";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Ní féidir le Signal an criptiú a uathfhíorú don chomhrá seo. D'fhéadfaí gurbh é gur athraigh %1$@ a (h)uimhir ghutháin nó socruithe príobháideachais ar an uimhir ghutháin is cúis leis sin. Fíoraigh an criptiú ó cheann ceann de láimh ach na huimhreacha ar an scáileán roimhe a chur i gcomparáid le chéile nó an cód ar ghléas an duine a scanadh.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Níl an t-uathfhíorú ar fáil don chomhrá seo a thuilleadh";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "Cuntas";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "Oscail Socruithe an Chuntais";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Sonraí do Chuntais";
@@ -8307,9 +8307,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Seol an Logchomhad Dífhabhtaithe";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Logchomhaid Earráide";
 
 /* Information on sheet about changing the app icon - first line */
 "SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Beidh ainm na haipe \"Signal\" infheicthe ar an scáileán baile, i bhfógraí agus sa leabharlann aipeanna.";
@@ -8390,7 +8387,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Uimhir Ghutháin";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Ní Féidir an Uimhir Ghutháin a Athrú";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Úsáid é seo le d'uimhir ghutháin reatha a athrú chuig uimhir ghutháin eile. Ní féidir leat an t-athrú sin a chealú.\n\nRoimh leanúint ar aghaidh, cinntigh gur féidir le d'uimhir nua SMS nó glaonna a ghlacadh.";
@@ -8689,6 +8686,9 @@
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Update your PIN";
 
+/* Accessibility label for the information button on the payments settings screen. */
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
 
@@ -8871,6 +8871,9 @@
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Record Payments Recovery Phrase";
+
+/* Accessibility label for the refresh button on the payments settings screen. */
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Remaining balance";
@@ -10148,10 +10151,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Ní féidir ainmneacha úsáideora a nuashonrú ach nuair a bhíonn nasc leis an Idirlíon.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "Cód Fíoraithe Iarrtha";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Ná tabhair do chód fíoraithe do dhuine ar bith. Ní sheolfaidh Signal teachtaireacht chugat dó. Más é go bhfuair tú teachtaireacht ó dhuine a ligeann gur Signal atá ann, is camscéim í.\nIs féidir leat neamhaird a thabhairt go sábháilte ar an teachtaireacht seo más é gur tusa a d'iarr é.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Mharcáil tú %1$@ neamhdheimhnithe.";

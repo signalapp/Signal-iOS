@@ -1943,21 +1943,21 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Kadangi neseniai užregistravote šią paskyrą, šiuo metu telefono numerių pakeisti negalite. Trumpu laukimo laikotarpiu padedame apsaugoti jūsų paskyrą.
 
-Try again in %1$d hour.</string>
+Bandykite vėl po %1$d val.</string>
 			<key>few</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Kadangi neseniai užregistravote šią paskyrą, šiuo metu telefono numerių pakeisti negalite. Trumpu laukimo laikotarpiu padedame apsaugoti jūsų paskyrą.
 
-Try again in %1$d hours.</string>
+Bandykite vėl po %1$d val.</string>
 			<key>many</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Kadangi neseniai užregistravote šią paskyrą, šiuo metu telefono numerių pakeisti negalite. Trumpu laukimo laikotarpiu padedame apsaugoti jūsų paskyrą.
 
-Try again in %1$d hours.</string>
+Bandykite vėl po %1$d val.</string>
 			<key>other</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Kadangi neseniai užregistravote šią paskyrą, šiuo metu telefono numerių pakeisti negalite. Trumpu laukimo laikotarpiu padedame apsaugoti jūsų paskyrą.
 
-Try again in %1$d hours.</string>
+Bandykite vėl po %1$d val.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

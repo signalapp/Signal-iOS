@@ -2137,25 +2137,25 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Ós rud é gur chláraigh tú an cuntas seo le déanaí, ní féidir leat uimhreacha gutháin a athrú díreach anois. Cabhraíonn tréimhse feithimh ghearr le do chuntas a chosaint.
 
-Try again in %1$d hour.</string>
+ Triail arís i gceann %1$d uair an chloig.</string>
 			<key>two</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Ós rud é gur chláraigh tú an cuntas seo le déanaí, ní féidir leat uimhreacha gutháin a athrú díreach anois. Cabhraíonn tréimhse feithimh ghearr le do chuntas a chosaint.
 
-Try again in %1$d hours.</string>
+ Triail arís i gceann %1$d uair an chloig.</string>
 			<key>few</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Ós rud é gur chláraigh tú an cuntas seo le déanaí, ní féidir leat uimhreacha gutháin a athrú díreach anois. Cabhraíonn tréimhse feithimh ghearr le do chuntas a chosaint.
 
-Try again in %1$d hours.</string>
+ Triail arís i gceann %1$d uair an chloig.</string>
 			<key>many</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Ós rud é gur chláraigh tú an cuntas seo le déanaí, ní féidir leat uimhreacha gutháin a athrú díreach anois. Cabhraíonn tréimhse feithimh ghearr le do chuntas a chosaint.
 
-Try again in %1$d hours.</string>
+ Triail arís i gceann %1$d n-uair an chloig.</string>
 			<key>other</key>
-			<string>Because you recently registered this account, you can’t change phone numbers right now. A short waiting period helps protect your account.
+			<string>Ós rud é gur chláraigh tú an cuntas seo le déanaí, ní féidir leat uimhreacha gutháin a athrú díreach anois. Cabhraíonn tréimhse feithimh ghearr le do chuntas a chosaint.
 
-Try again in %1$d hours.</string>
+ Triail arís i gceann %1$d uair an chloig.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

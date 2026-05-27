@@ -716,7 +716,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "Αυτόματα αντίγραφα ασφαλείας απενεργοποιημένα";
 
 /* Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "The number of messages you have exceeds the storage limit. Delete some messages and try again.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_FILE_TOO_LARGE" = "Ο αριθμός των μηνυμάτων που έχεις υπερβαίνει το όριο αποθήκευσης. Διάγραψε ορισμένα μηνύματα και δοκίμασε ξανά.";
 
 /* Message for an action sheet explaining that performing a backup failed with a generic error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_GENERIC_ERROR" = "Κάτι πήγε στραβά με τη δημιουργία του αντιγράφου ασφαλείας σου. Παρακαλώ δοκίμασε ξανά ή επικοινώνησε με την υποστήριξη.";
@@ -2749,6 +2749,9 @@
 /* Header text displayed above the debug log preview */
 "DEBUG_LOG_PREVIEW_HEADER" = "Όταν υποβληθεί, το αρχείο καταγραφής θα αναρτηθεί στο διαδίκτυο για 30 ημέρες, σε ένα μοναδικό και μη δημοσιευμένο σύνδεσμο URL.";
 
+/* Button below the debug log preview which continues the submission flow */
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "Αρχείο καταγραφής αποσφαλμάτωσης";
 
@@ -4574,7 +4577,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Επιλογή νέου διαχειριστή";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Επιλογή νέου διαχειριστή";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Έφτασες το προτεινόμενο όριο μελών";
@@ -5588,7 +5591,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Να μπορεί ο/η %1$@ να σου στείλει μηνύματα και να μοιραστείς το όνομα και τη φωτογραφία σου μαζί του/της; Έχεις αφαιρέσει αυτό το άτομο στο παρελθόν.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Report";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Αναφορά";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Κατάργηση αποκλεισμού";
@@ -5877,9 +5880,6 @@
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Νέα ιστορία ομάδας";
-
-/* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Επιλογή τύπου ιστορίας";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
 "NICKNAME_BUTTON_TITLE" = "Ψευδώνυμο";
@@ -7937,13 +7937,13 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Επαλήθευση κρυπτογράφησης…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Για τις επαφές με τις οποίες έχεις συνδεθεί μέσω αριθμού τηλεφώνου, το Signal μπορεί να επιβεβαιώσει αυτόματα εάν η σύνδεση είναι ασφαλής χρησιμοποιώντας μια διαδικασία που ονομάζεται διαφάνεια κλειδιού. Για επιπλέον ασφάλεια, μπορείς ακόμα να επαληθεύσεις τις συνδέσεις χειροκίνητα χρησιμοποιώντας έναν κωδικό QR ή ή συγκρίνοντας τους αριθμούς ασφαλείας.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Για τα άτομα με τα οποία έχεις συνδεθεί μέσω αριθμού τηλεφώνου, το Signal μπορεί να επιβεβαιώσει αυτόματα εάν η σύνδεση είναι ασφαλής χρησιμοποιώντας μια διαδικασία που ονομάζεται διαφάνεια κλειδιού. Για επιπλέον ασφάλεια, μπορείς ακόμα να επαληθεύσεις τις συνδέσεις χειροκίνητα χρησιμοποιώντας έναν κωδικό QR ή ή συγκρίνοντας τους αριθμούς ασφαλείας.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Το Signal μπορεί πλέον να επαληθεύει αυτόματα την κρυπτογράφηση";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal cannot automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number or their phone number privacy settings. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Το Signal δεν μπορεί να επαληθεύσει αυτόματα την κρυπτογράφηση για αυτήν τη συνομιλία. Αυτό πιθανότατα οφείλεται στο γεγονός ότι ο χρήστης %1$@ άλλαξε τον αριθμό τηλεφώνου του ή τις ρυθμίσεις απορρήτου του τηλεφώνου του. Επαλήθευσε την κρυπτογράφηση από άκρο σε άκρο χειροκίνητα συγκρίνοντας τους αριθμούς στην προηγούμενη οθόνη ή σαρώνοντας τον κωδικό στη συσκευή τους.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Η αυτόματη επαλήθευση δεν είναι πλέον διαθέσιμη για αυτήν τη συνομιλία";
@@ -8258,7 +8258,7 @@
 "SETTINGS_ACCOUNT" = "Λογαριασμός";
 
 /* Label for button in Safety Tips to go to 'account' page in settings. */
-"SETTINGS_ACCOUNT_BUTTON" = "Open Account Settings";
+"SETTINGS_ACCOUNT_BUTTON" = "Άνοιγμα ρυθμίσεων λογαριασμού";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Τα δεδομένα του λογαριασμού σου";
@@ -8307,9 +8307,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Υποβολή αρχείου αποσφαλμάτωσης";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Αρχεία καταγραφής σφαλμάτων";
 
 /* Information on sheet about changing the app icon - first line */
 "SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Το όνομα της εφαρμογής \"Signal\" θα είναι ορατό στην Αρχική οθόνη, στις ειδοποιήσεις και στη Βιβλιοθήκη εφαρμογών.";
@@ -8390,7 +8387,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Αριθμός τηλεφώνου";
 
 /* Title text for sheet displaying the 'Can't change phone number splash' message. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Can’t Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_CANT_CHANGE_TITLE" = "Αδυναμία αλλαγής αριθμού τηλεφώνου";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Με αυτό μπορείς να αλλάξεις τον τωρινό αριθμό τηλεφώνου σου σε νέο αριθμό. Δεν μπορείς να αναιρέσεις αυτήν την αλλαγή.\n\nΠριν συνεχίσεις, επιβεβαίωσε πως μπορείς να λάβεις SMS ή κλήσεις στον νέο αριθμό.";
@@ -8689,6 +8686,9 @@
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Ενημέρωση του PIN";
 
+/* Accessibility label for the information button on the payments settings screen. */
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Μη Έγκυρη Διεύθυνση Πορτοφολιού";
 
@@ -8871,6 +8871,9 @@
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Καταγραφή φράσης ανάκτησης πληρωμών";
+
+/* Accessibility label for the refresh button on the payments settings screen. */
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Εναπομείναν υπόλοιπο";
@@ -10148,10 +10151,10 @@
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Τα ονόματα χρήστη μπορούν να ενημερωθούν μόνο όταν υπάρχει σύνδεση στο διαδίκτυο.";
 
 /* First part of body for a hero sheet informing the user a verification code was requested. {{ Embeds time the code was requested }} */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "A Verification Code Was Requested";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "Ζητήθηκε κωδικός επαλήθευσης";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Do not give your verification code to anyone. Signal will never message you for it. If you received a message from someone pretending to be Signal, it is a scam.\nYou can safely ignore this message if you requested the code yourself.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Μην κοινοποιείς τον κωδικό επαλήθευσής σου σε κανέναν. Το Signal δεν θα σου στείλει ποτέ μήνυμα γι αυτό. Αν έλαβες μήνυμα από κάποιον που προσποιείται ότι είναι το Signal, πρόκειται για απάτη.\nΜπορείς να αγνοήσεις αυτό το μήνυμα αν ζήτησες εσύ τον κωδικό.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Σημείωσες τον/την %1$@ ως μη επιβεβαιωμένο/η.";
