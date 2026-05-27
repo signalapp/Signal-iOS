@@ -2302,23 +2302,14 @@ private extension CallsListViewController {
         }()
 
         private func makeStartCallButton(viewModel: CallViewModel) -> UIButton {
-            var config = UIButton.Configuration.gray()
-            config.cornerStyle = .capsule
-            config.background.backgroundInsets = .init(margin: 2)
-            config.baseBackgroundColor = UIColor.Signal.tertiaryFill
-            config.baseForegroundColor = UIColor.Signal.label
-
             let icon: ThemeIcon = switch viewModel.medium {
             case .audio:
                 .buttonVoiceCall
             case .video, .link:
                 .buttonVideoCall
             }
-
-            config.image = Theme.iconImage(icon)
-
             let button = UIButton(
-                configuration: config,
+                configuration: .roundGray(image: Theme.iconImage(icon)),
                 primaryAction: UIAction { [weak self] _ in
                     self?.detailsTapped(viewModel: viewModel)
                 },

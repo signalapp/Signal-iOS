@@ -174,6 +174,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     SSKEnvironment.shared.databaseStorageRef.read { transaction in
                         let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asLocalUser)
                         configuration.allowUserInteraction = true
+                        configuration.avatarSizeClass = .forty
 
                         if canApproveMemberRequests {
                             configuration.accessoryView = self.buildMemberRequestButtons(address: address)
@@ -204,33 +205,26 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     }
 
     private func buildMemberRequestButtons(address: SignalServiceAddress) -> ContactCellAccessoryView {
-        let buttonHeight: CGFloat = 28
+        let denyButton = UIButton(
+            configuration: .roundGray(image: UIImage(resource: .x)),
+            primaryAction: UIAction { [weak self] _ in
+                self?.denyMemberRequest(address: address)
+            },
+        )
+        denyButton.configuration?.contentInsets = .init(margin: 8) // makes 40 dp button
+        let denyButtonSize = denyButton.intrinsicContentSize
 
-        let denyButton = OWSButton()
-        denyButton.layer.cornerRadius = buttonHeight / 2
-        denyButton.clipsToBounds = true
-        denyButton.setBackgroundImage(UIImage.image(color: Theme.secondaryBackgroundColor), for: .normal)
-        denyButton.setTemplateImageName("x-20", tintColor: Theme.primaryIconColor)
-        denyButton.accessibilityIdentifier = "member-request-deny"
-        denyButton.block = { [weak self] in
-            self?.denyMemberRequest(address: address)
-        }
-
-        let approveButton = OWSButton()
-        approveButton.layer.cornerRadius = buttonHeight / 2
-        approveButton.clipsToBounds = true
-        approveButton.setBackgroundImage(UIImage.image(color: Theme.secondaryBackgroundColor), for: .normal)
-        approveButton.setTemplateImageName("check-20", tintColor: Theme.primaryIconColor)
-        approveButton.accessibilityIdentifier = "member-request-approveButton"
-        approveButton.block = { [weak self] in
-            self?.approveMemberRequest(address: address)
-        }
+        let approveButton = UIButton(
+            configuration: .roundGray(image: UIImage(resource: .check)),
+            primaryAction: UIAction { [weak self] _ in
+                self?.approveMemberRequest(address: address)
+            },
+        )
+        approveButton.configuration?.contentInsets = .init(margin: 8) // makes 40 dp button
+        let approvedButtonSize = approveButton.intrinsicContentSize
 
         let denyWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(denyButton)
         let approveWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(approveButton)
-
-        let denyButtonSize = CGSize.square(buttonHeight)
-        let approveButtonSize = CGSize.square(buttonHeight)
 
         let stackView = ManualStackView(name: "stackView")
         let stackConfig = CVStackViewConfig(
@@ -244,7 +238,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             subviews: [denyWrapper, approveWrapper],
             subviewInfos: [
                 denyButtonSize.asManualSubviewInfo,
-                approveButtonSize.asManualSubviewInfo,
+                approvedButtonSize.asManualSubviewInfo,
             ],
         )
         let stackSize = stackMeasurement.measuredSize
@@ -315,7 +309,13 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         }
 
                         cell.selectionStyle = canRevokeInvites ? .default : .none
-                        cell.configureWithSneakyTransaction(address: address, localUserDisplayMode: .asUser)
+
+                        SSKEnvironment.shared.databaseStorageRef.read { transaction in
+                            let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
+                            configuration.avatarSizeClass = .forty
+                            cell.configure(configuration: configuration, transaction: transaction)
+                        }
+
                         return cell
                     },
                     actionBlock: { [weak self] in
@@ -367,6 +367,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
                         databaseStorage.read { transaction in
                             let configuration = ContactCellConfiguration(address: inviterAddress, localUserDisplayMode: .asUser)
+                            configuration.avatarSizeClass = .forty
                             let inviterName = contactManager.displayName(for: inviterAddress, tx: transaction).resolvedValue()
                             let format = OWSLocalizedString(
                                 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d",

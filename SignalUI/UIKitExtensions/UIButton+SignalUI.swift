@@ -219,6 +219,17 @@ public extension UIButton.Configuration {
         configuration.contentInsets = .init(margin: 10) // 44 dp wide and tall if icon is a standard 24x24
         return configuration
     }
+
+    /// Round button with the flat gray background.
+    static func roundGray(image: UIImage) -> Self {
+        var configuration: UIButton.Configuration = .gray()
+        configuration.image = image
+        configuration.contentInsets = .init(margin: 10) // 44 dp wide and tall if icon is a standard 24x24
+        configuration.baseForegroundColor = .Signal.label
+        configuration.baseBackgroundColor = .Signal.tertiaryFill
+        configuration.cornerStyle = .capsule
+        return configuration
+    }
 }
 
 // MARK: - UIBarButtonItem
