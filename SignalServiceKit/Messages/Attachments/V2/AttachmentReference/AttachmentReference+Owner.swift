@@ -244,6 +244,17 @@ extension AttachmentReference {
                 case .contactAvatar(let metadata): metadata.receivedAtTimestamp
                 }
             }
+
+            public var threadRowId: Int64 {
+                switch self {
+                case .bodyAttachment(let metadata): metadata.threadRowId
+                case .oversizeText(let metadata): metadata.threadRowId
+                case .linkPreview(let metadata): metadata.threadRowId
+                case .quotedReply(let metadata): metadata.threadRowId
+                case .sticker(let metadata): metadata.threadRowId
+                case .contactAvatar(let metadata): metadata.threadRowId
+                }
+            }
         }
 
         // MARK: - Story Message

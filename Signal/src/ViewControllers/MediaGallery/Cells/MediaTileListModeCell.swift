@@ -19,6 +19,7 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
     private var constraintWithoutSelectionButton: NSLayoutConstraint!
 
     var item: MediaGalleryCellItem?
+    var downloadTask: Task<Void, Never>?
 
     /// Since UICollectionView doesn't support separators, we have to do it ourselves. Show the
     /// separator at the bottom of each item except when last in a section.
@@ -163,5 +164,23 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
 
     func mediaPresentationContext(collectionView: UICollectionView, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
         return nil
+    }
+
+    func downloadItemIfNeeded() {
+        guard
+            let item,
+            downloadTask == nil
+        else {
+            return
+        }
+        downloadTask = MediaGallery.createGalleryItemDownloadTask(
+            item: item,
+            priority: .userInitiated,
+            completion: nil,
+        )
+        Task {
+            await downloadTask?.value
+            downloadTask = nil
+        }
     }
 }

@@ -12,7 +12,6 @@ protocol MediaItemViewControllerDelegate: AnyObject {
     func mediaItemViewControllerDidTapMedia(_ viewController: MediaItemViewController)
     func mediaItemViewControllerWillBeginZooming(_ viewController: MediaItemViewController)
     func mediaItemViewControllerFullyZoomedOut(_ viewController: MediaItemViewController)
-    func mediaItemViewControllerDidUpdateGalleryItem(_ viewController: MediaItemViewController, item: MediaGalleryItem)
 }
 
 protocol VideoPlaybackStatusProvider: AnyObject {
@@ -286,38 +285,15 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
         addProgressViewIfNeeded()
 
-        if let downloadTask {
-            downloadTask.cancel()
-        }
+        downloadTask?.cancel()
 
-        let attachmentId = galleryItem.referencedAttachment.reference.attachmentRowId
-        downloadTask = Task {
-            await withTaskCancellationHandler(
-                operation: {
-                    do {
-                        try await DependenciesBridge.shared.attachmentDownloadManager.downloadReferencedAttachment(
-                            referencedAttachment: galleryItem.referencedAttachment,
-                            priority: userInitiated ? .userInitiated : .default,
-                            progress: nil,
-                        )
-
-                        delegate?.mediaItemViewControllerDidUpdateGalleryItem(self, item: galleryItem)
-                    } catch {
-                        progressView?.state = .tapToDownload
-                    }
-                },
-                onCancel: {
-                    DependenciesBridge.shared.db.write { tx in
-                        DependenciesBridge.shared.attachmentDownloadManager.cancelDownload(
-                            for: attachmentId,
-                            tx: tx,
-                        )
-                    }
-                    Task { @MainActor in
-                        progressView?.state = .tapToDownload
-                    }
-                },
-            )
+        downloadTask = MediaGallery.createGalleryItemDownloadTask(
+            item: galleryItem,
+            priority: userInitiated ? .userInitiated : .default,
+        ) { [weak self] success in
+            if !success {
+                self?.progressView?.state = .tapToDownload
+            }
         }
 
         Task {

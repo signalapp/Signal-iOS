@@ -32,13 +32,19 @@ class MediaGalleryAlbum {
     }
 }
 
-struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
+struct MediaGalleryItem:
+    Equatable,
+    Hashable,
+    MediaGallerySectionItem,
+    MediaGallery.DownloadableItem
+{
     struct Sender {
         let name: String
         let abbreviatedName: String
     }
 
     let message: TSMessage
+    let threadRowId: Int64
     let sender: Sender?
     let referencedAttachment: ReferencedAttachment
     let receivedAtDate: Date
@@ -51,6 +57,8 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     let numItemsInAlbum: Int
     let orderingKey: MediaGalleryItemOrderingKey
 
+    var receivedAtTimestamp: UInt64 { message.receivedAtTimestamp }
+
     init(
         message: TSMessage,
         sender: Sender?,
@@ -58,6 +66,7 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         albumIndex: Int,
         numItemsInAlbum: Int,
         spoilerState: SpoilerRenderState,
+        threadRowId: Int64,
         transaction: DBReadTransaction,
     ) {
         self.message = message
@@ -68,6 +77,7 @@ struct MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         self.albumIndex = albumIndex
         self.numItemsInAlbum = numItemsInAlbum
         self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.sortId, attachmentSortKey: albumIndex)
+        self.threadRowId = threadRowId
         if let captionText = referencedAttachment.reference.legacyMessageCaption?.filterForDisplay {
             self.captionForDisplay = .attachmentStreamCaption(captionText)
         } else if let body = message.body {
@@ -292,6 +302,12 @@ class MediaGallery {
     typealias Update = Sections.Update
     typealias Journal = [JournalingOrderedDictionaryChange<Sections.ItemChange>]
 
+    protocol DownloadableItem {
+        var referencedAttachment: ReferencedAttachment { get }
+        var threadRowId: Int64 { get }
+        var receivedAtTimestamp: UInt64 { get }
+    }
+
     private let threadUniqueId: String
 
     // Used for filtering.
@@ -511,6 +527,7 @@ class MediaGallery {
     ) -> MediaGalleryItem? {
 
         let message: TSMessage
+        let threadRowId: Int64
         switch attachment.reference.owner {
         case .message(let messageSource):
             if
@@ -525,6 +542,7 @@ class MediaGallery {
                 Logger.warn("message was unexpectedly nil")
                 return nil
             }
+            threadRowId = messageSource.threadRowId
         case .storyMessage, .thread:
             return nil
         }
@@ -585,6 +603,7 @@ class MediaGallery {
             albumIndex: Int(albumIndex),
             numItemsInAlbum: itemsInAlbum.count,
             spoilerState: spoilerState,
+            threadRowId: threadRowId,
             transaction: transaction,
         )
     }
@@ -1061,6 +1080,53 @@ class MediaGallery {
 
         // already at last item
         return nil
+    }
+
+    static func createGalleryItemDownloadTask(
+        item: DownloadableItem,
+        priority: AttachmentDownloadPriority,
+        completion: ((Bool) -> Void)? = nil,
+    ) -> Task<Void, Never> {
+        return Task {
+            await withTaskCancellationHandler(
+                operation: {
+                    do {
+                        try await DependenciesBridge.shared.attachmentDownloadManager.downloadReferencedAttachment(
+                            referencedAttachment: item.referencedAttachment,
+                            priority: priority,
+                            progress: nil,
+                        )
+                        let change = MediaGalleryChangeInfo(
+                            referenceId: item.referencedAttachment.reference.referenceId,
+                            threadGrdbId: item.threadRowId,
+                            timestamp: item.receivedAtTimestamp,
+                        )
+                        Task { @MainActor in
+                            NotificationCenter.default.post(
+                                name: MediaGalleryChangeInfo.newAttachmentsAvailableNotification,
+                                object: [change],
+                            )
+                            completion?(true)
+                        }
+                    } catch {
+                        Task { @MainActor in
+                            completion?(false)
+                        }
+                    }
+                },
+                onCancel: {
+                    DependenciesBridge.shared.db.write { tx in
+                        DependenciesBridge.shared.attachmentDownloadManager.cancelDownload(
+                            for: item.referencedAttachment.attachment.id,
+                            tx: tx,
+                        )
+                    }
+                    Task { @MainActor in
+                        completion?(false)
+                    }
+                },
+            )
+        }
     }
 }
 

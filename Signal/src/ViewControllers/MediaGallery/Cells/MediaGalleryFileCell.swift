@@ -58,7 +58,7 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             return cellHeight
         }
 
-        guard let attachment = item.referencedAttachment?.asReferencedStream else {
+        guard let attachment = item.referencedAttachment.asReferencedStream else {
             return defaultCellHeight
         }
         let genericAttachment = CVComponentState.GenericAttachment(
@@ -242,7 +242,10 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             itemModel: itemModel,
             genericAttachment: .init(attachment: attachmentType),
         )
-        if
+
+        if fileItem?.referencedAttachment.asReferencedStream == nil {
+            downloadItemIfNeeded()
+        } else if
             PKAddPassesViewController.canAddPasses(),
             let pkPass = genericAttachment.representedPKPass(),
             let addPassesVC = PKAddPassesViewController(pass: pkPass)

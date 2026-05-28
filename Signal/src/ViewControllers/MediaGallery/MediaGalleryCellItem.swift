@@ -17,12 +17,12 @@ protocol MediaGalleryCollectionViewCell: UICollectionViewCell {
     func indexPathDidChange(_ indexPath: IndexPath, itemCount: Int)
 }
 
-enum MediaGalleryCellItem {
+enum MediaGalleryCellItem: MediaGallery.DownloadableItem {
     case photoVideo(MediaGalleryCellItemPhotoVideo)
     case audio(MediaGalleryCellItemAudio)
     case otherFile(MediaGalleryCellItemOtherFile)
 
-    var referencedAttachment: ReferencedAttachment? {
+    var referencedAttachment: ReferencedAttachment {
         switch self {
         case .photoVideo(let item):
             return item.galleryItem.referencedAttachment
@@ -30,6 +30,28 @@ enum MediaGalleryCellItem {
             return audioItem.referencedAttachment
         case .otherFile(let fileItem):
             return fileItem.referencedAttachment
+        }
+    }
+
+    var receivedAtTimestamp: UInt64 {
+        switch self {
+        case .photoVideo(let item):
+            return item.galleryItem.message.receivedAtTimestamp
+        case .audio(let item):
+            return item.message.receivedAtTimestamp
+        case .otherFile(let item):
+            return item.message.receivedAtTimestamp
+        }
+    }
+
+    var threadRowId: Int64 {
+        switch self {
+        case .photoVideo(let item):
+            return item.galleryItem.threadRowId
+        case .audio(let item):
+            return item.thread.grdbId!.int64Value
+        case .otherFile(let item):
+            return item.thread.grdbId!.int64Value
         }
     }
 }

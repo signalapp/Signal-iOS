@@ -26,6 +26,12 @@ public struct MediaGalleryChangeInfo {
     public var threadGrdbId: Int64
     public var timestamp: UInt64
 
+    public init(referenceId: AttachmentReferenceId, threadGrdbId: Int64, timestamp: UInt64) {
+        self.referenceId = referenceId
+        self.threadGrdbId = threadGrdbId
+        self.timestamp = timestamp
+    }
+
     /// A notification for when an attachment stream becomes available (incoming attachment downloaded, or outgoing
     /// attachment loaded).
     ///

@@ -271,18 +271,19 @@ class AudioCell: MediaTileListModeCell {
 
     @objc
     private func handleTapGesture(_ sender: UITapGestureRecognizer) {
-        // TODO: When adding support for undownloaded attachments, tapping should cancel or retry downloading.
-        // See the logic in CVComponentAudioAttachment.handleTap(sender:,componentDelegate:,componentView:,renderItem:)
         guard let itemModel, let audioMessageView, let audioItem, let audioAttachment else {
             return
         }
-        guard case .attachmentStream = audioAttachment.state else { return }
-        if audioMessageView.handleTap(sender: sender, itemModel: itemModel) {
-            return
+        if case .attachmentStream = audioAttachment.state {
+            if audioMessageView.handleTap(sender: sender, itemModel: itemModel) {
+                return
+            }
+            let cvAudioPlayer = AppEnvironment.shared.cvAudioPlayerRef
+            cvAudioPlayer.setPlaybackRate(itemModel.itemViewState.audioPlaybackRate, forThreadUniqueId: audioItem.thread.uniqueId)
+            cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
+        } else {
+            downloadItemIfNeeded()
         }
-        let cvAudioPlayer = AppEnvironment.shared.cvAudioPlayerRef
-        cvAudioPlayer.setPlaybackRate(itemModel.itemViewState.audioPlaybackRate, forThreadUniqueId: audioItem.thread.uniqueId)
-        cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
     }
 
     private func setUpAccessibility(item: MediaGalleryCellItemAudio?) {

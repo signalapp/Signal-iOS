@@ -61,6 +61,13 @@ class MediaPageViewController: UIPageViewController {
         dataSource = self
         delegate = self
         transitioningDelegate = self
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(Self.newAttachmentsAvailable(_:)),
+            name: MediaGalleryChangeInfo.newAttachmentsAvailableNotification,
+            object: nil,
+        )
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -569,6 +576,26 @@ class MediaPageViewController: UIPageViewController {
         AttachmentSharing.showShareUI(for: attachmentStream, sender: sender)
     }
 
+    @objc
+    private func newAttachmentsAvailable(_ notification: Notification) {
+        AssertIsOnMainThread()
+        let incomingNewAttachments = notification.object as! [MediaGalleryChangeInfo]
+        guard
+            incomingNewAttachments.first(where: {
+                $0.referenceId == currentItem.referencedAttachment.reference.referenceId
+            }) != nil
+        else {
+            return
+        }
+
+        if
+            let newItem = mediaGallery.reloadGalleryItem(item: currentItem),
+            newItem.referencedAttachment.reference.referenceId == currentItem.referencedAttachment.reference.referenceId
+        {
+            replaceCurrentItem(item: newItem)
+        }
+    }
+
     // MARK: -
 
     private func saveCurrentMediaToPhotos() {
@@ -878,15 +905,6 @@ extension MediaPageViewController: MediaItemViewControllerDelegate {
 
     func mediaItemViewControllerFullyZoomedOut(_ viewController: MediaItemViewController) {
         setShouldHideToolbars(false, animated: true)
-    }
-
-    func mediaItemViewControllerDidUpdateGalleryItem(_ viewController: MediaItemViewController, item: MediaGalleryItem) {
-        if
-            let newItem = mediaGallery.reloadGalleryItem(item: item),
-            newItem.referencedAttachment.reference.referenceId == currentItem.referencedAttachment.reference.referenceId
-        {
-            replaceCurrentItem(item: newItem)
-        }
     }
 }
 
