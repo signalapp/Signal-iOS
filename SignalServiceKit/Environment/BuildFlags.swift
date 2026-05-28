@@ -155,7 +155,7 @@ public enum DebugFlags {
     public static let extraDebugLogs = build <= .internal
 
     public static let mediaGalleryOnlyAllowDownloaded = TestableFlag(
-        true,
+        !SSKEnvironment.shared.remoteConfigManagerRef.currentConfig().isOptimizeStorageEnabled,
         title: LocalizationNotNeeded("Media Gallery: only allow downloaded"),
         details: LocalizationNotNeeded("Only allow downloaded media to appear in the Media Gallery."),
     )

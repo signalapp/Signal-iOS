@@ -8,7 +8,9 @@ import GRDB
 import XCTest
 @testable import SignalServiceKit
 
-class MediaGalleryAttachmentFinderTest: XCTestCase {
+class MediaGalleryAttachmentFinderTest: SSKBaseTest {
+    // TODO: Convert this back to an XCTestCase once the
+    // `mediaGalleryOnlyAllowDownloaded` TestableFlag is removed.
 
     private let attachmentStore = AttachmentStore()
     private var db: InMemoryDB!
