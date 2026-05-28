@@ -42,9 +42,6 @@ class InternalDiskUsageViewController: OWSTableViewController2 {
         let voiceMessageCacheSize = folderSizeRecursive(of: VoiceMessageInterruptedDraftStore.draftVoiceMessageDirectory)
         let librarySize = folderSizeRecursive(ofPath: OWSFileSystem.appLibraryDirectoryPath()) ?? 0
         let libraryCachesSize = folderSizeRecursive(ofPath: OWSFileSystem.cachesDirectoryPath()) ?? 0
-        let documentsSize = folderSizeRecursive(ofPath: OWSFileSystem.appDocumentDirectoryPath())
-        let sharedDataSize = folderSizeRecursive(ofPath: OWSFileSystem.appSharedDataDirectoryPath())
-
         let bundleSize = folderSizeRecursive(ofPath: Bundle.main.bundlePath)
         let tmpSize = folderSizeRecursive(ofPath: NSTemporaryDirectory())
     }
@@ -55,10 +52,8 @@ class InternalDiskUsageViewController: OWSTableViewController2 {
     nonisolated static func build() async -> InternalDiskUsageViewController {
         await Task.yield()
         try! await DependenciesBridge.shared.orphanedAttachmentCleaner.runUntilFinished()
-        let diskUsageTask = Task { DiskUsage() }
-        let orphanedAttachmentByteCountTask = Task { await Self.orphanAttachmentByteCount() }
-        let diskUsage = await diskUsageTask.value
-        let orphanedAttachmentByteCount = await orphanedAttachmentByteCountTask.value
+        async let orphanedAttachmentByteCount = Self.orphanAttachmentByteCount()
+        let diskUsage = DiskUsage()
         return await InternalDiskUsageViewController(
             diskUsage: diskUsage,
             orphanedAttachmentByteCount: orphanedAttachmentByteCount,
@@ -87,29 +82,6 @@ class InternalDiskUsageViewController: OWSTableViewController2 {
 
         let byteCountFormatter = ByteCountFormatter()
 
-        let knownFilesSize: UInt64 = [UInt64?](
-            arrayLiteral:
-            diskUsage.dbSize,
-            diskUsage.dbWalSize,
-            diskUsage.dbShmSize,
-            diskUsage.attachmentSize,
-            diskUsage.emojiCacheSize,
-            diskUsage.stickerCacheSize,
-            diskUsage.avatarCacheSize,
-            diskUsage.voiceMessageCacheSize,
-            diskUsage.librarySize,
-        )
-        .compacted()
-        .reduce(0, +)
-        var totalFilesystemSize: UInt64 = [UInt64?](
-            arrayLiteral:
-            diskUsage.librarySize,
-            diskUsage.documentsSize,
-            diskUsage.sharedDataSize,
-        )
-        .compacted()
-        .reduce(0, +)
-
         let diskUsageSection = OWSTableSection(title: "Disk Usage")
         diskUsageSection.add(.copyableItem(label: "DB Size", value: byteCountFormatter.string(for: diskUsage.dbSize)))
         diskUsageSection.add(.copyableItem(label: "DB WAL Size", value: byteCountFormatter.string(for: diskUsage.dbWalSize)))
@@ -120,35 +92,11 @@ class InternalDiskUsageViewController: OWSTableViewController2 {
         diskUsageSection.add(.copyableItem(label: "Sticker cache size", value: byteCountFormatter.string(for: diskUsage.stickerCacheSize)))
         diskUsageSection.add(.copyableItem(label: "Avatar cache size", value: byteCountFormatter.string(for: diskUsage.avatarCacheSize)))
         diskUsageSection.add(.copyableItem(label: "Voice message drafts size", value: byteCountFormatter.string(for: diskUsage.voiceMessageCacheSize)))
-        diskUsageSection.add(.copyableItem(label: "Library (minus caches) folder size", value: byteCountFormatter.string(for: diskUsage.librarySize - diskUsage.libraryCachesSize)))
+        diskUsageSection.add(.copyableItem(label: "Library folder size (includes Caches)", value: byteCountFormatter.string(for: diskUsage.librarySize)))
         diskUsageSection.add(.copyableItem(label: "Caches folder size", value: byteCountFormatter.string(for: diskUsage.libraryCachesSize)))
-        diskUsageSection.add(.copyableItem(label: "Ancillary files size", value: byteCountFormatter.string(for: totalFilesystemSize - knownFilesSize)))
-
-        if TSConstants.isUsingProductionService {
-            let stagingSharedDataSize = folderSizeRecursive(
-                ofPath: FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: TSConstantsStaging().applicationGroup)!.path,
-            )
-            diskUsageSection.add(.copyableItem(label: "Staging app group size", value: byteCountFormatter.string(for: stagingSharedDataSize)))
-            totalFilesystemSize += stagingSharedDataSize ?? 0
-        } else {
-            let prodSharedDataSize = folderSizeRecursive(
-                ofPath: FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: TSConstantsProduction().applicationGroup)!.path,
-            )
-            diskUsageSection.add(.copyableItem(label: "Prod app group size", value: byteCountFormatter.string(for: prodSharedDataSize)))
-            totalFilesystemSize += prodSharedDataSize ?? 0
-        }
-        diskUsageSection.add(.copyableItem(
-            label: "Total filesystem size",
-            subtitle: "Should match \"Documents & Data\" in Settings>General>Storage>Signal",
-            value: byteCountFormatter.string(for: totalFilesystemSize),
-        ))
+        diskUsageSection.add(.copyableItem(label: "Tmp size", value: byteCountFormatter.string(for: diskUsage.tmpSize)))
+        diskUsageSection.add(.copyableItem(label: "Bundle size", value: byteCountFormatter.string(for: diskUsage.bundleSize)))
         contents.add(diskUsageSection)
-
-        let otherDiskUsageSection = OWSTableSection(title: "Other Disk Usage")
-        otherDiskUsageSection.add(.copyableItem(label: "Tmp size", value: byteCountFormatter.string(for: diskUsage.tmpSize)))
-        otherDiskUsageSection.add(.copyableItem(label: "Bundle size", value: byteCountFormatter.string(for: diskUsage.bundleSize)))
-
-        contents.add(otherDiskUsageSection)
 
         self.contents = contents
     }
