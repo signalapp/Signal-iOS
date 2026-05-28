@@ -139,7 +139,6 @@ public class DependenciesBridge {
     public let accountKeyStore: AccountKeyStore
     let localProfileChecker: LocalProfileChecker
     public let localUsernameManager: LocalUsernameManager
-    public let masterKeySyncManager: MasterKeySyncManager
     public let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
     public let messageStickerManager: MessageStickerManager
     public let nicknameManager: any NicknameManager
@@ -283,7 +282,6 @@ public class DependenciesBridge {
         accountKeyStore: AccountKeyStore,
         localProfileChecker: LocalProfileChecker,
         localUsernameManager: LocalUsernameManager,
-        masterKeySyncManager: MasterKeySyncManager,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
         messageStickerManager: MessageStickerManager,
         nicknameManager: any NicknameManager,
@@ -426,7 +424,6 @@ public class DependenciesBridge {
         self.accountKeyStore = accountKeyStore
         self.localProfileChecker = localProfileChecker
         self.localUsernameManager = localUsernameManager
-        self.masterKeySyncManager = masterKeySyncManager
         self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
         self.messageStickerManager = messageStickerManager
         self.nicknameManager = nicknameManager

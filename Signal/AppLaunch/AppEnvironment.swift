@@ -253,7 +253,6 @@ public class AppEnvironment: NSObject {
             let db = DependenciesBridge.shared.db
             let groupCallPeekClient = SSKEnvironment.shared.groupCallManagerRef.groupCallPeekClient
             let interactionStore = DependenciesBridge.shared.interactionStore
-            let masterKeySyncManager = DependenciesBridge.shared.masterKeySyncManager
             let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
             let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
             let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
@@ -323,12 +322,6 @@ public class AppEnvironment: NSObject {
                     registeredState: registeredState,
                 )
             } else {
-            }
-
-            Task {
-                await db.awaitableWrite { tx in
-                    masterKeySyncManager.runStartupJobs(tx: tx)
-                }
             }
 
             Task {

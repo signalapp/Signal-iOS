@@ -1080,7 +1080,6 @@
 		665FAE8C2A02C0D400FA298D /* SpoilerRevealState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */; };
 		6660725E2BAB36960084B3D2 /* AttachmentDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660725D2BAB36960084B3D2 /* AttachmentDataSource.swift */; };
 		6664B9AB2A314EBD008EF74B /* SpoilerRevealStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */; };
-		666654212AD0B03F00B23B32 /* MasterKeySyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */; };
 		66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */; };
 		6671DC872CD44CA8002620EF /* LastVisibleInteractionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6671DC862CD44C9B002620EF /* LastVisibleInteractionStore.swift */; };
 		66734F012CA1ED3F00558494 /* BackupAttachmentUploadScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66734F002CA1ED3A00558494 /* BackupAttachmentUploadScheduler.swift */; };
@@ -5353,7 +5352,6 @@
 		665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealState.swift; sourceTree = "<group>"; };
 		6660725D2BAB36960084B3D2 /* AttachmentDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDataSource.swift; sourceTree = "<group>"; };
 		6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealStateTests.swift; sourceTree = "<group>"; };
-		666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKeySyncManager.swift; sourceTree = "<group>"; };
 		66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadStoreTests.swift; sourceTree = "<group>"; };
 		6671DC862CD44C9B002620EF /* LastVisibleInteractionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastVisibleInteractionStore.swift; sourceTree = "<group>"; };
 		66734F002CA1ED3A00558494 /* BackupAttachmentUploadScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadScheduler.swift; sourceTree = "<group>"; };
@@ -15021,7 +15019,6 @@
 				D9F399B12A96D65D001599EC /* IdentityKeyMismatchManager.swift */,
 				5033D46629D76BD0007FEADA /* LocalIdentifiers.swift */,
 				D94AEB392D28837A00B03D7A /* MasterKey.swift */,
-				666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */,
 				72552EF32C9EF9E7008614AF /* OWSIdentity.swift */,
 				D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */,
 				C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */,
@@ -19368,7 +19365,6 @@
 				F9C5CDF6289453B400548EEE /* LRUCache.swift in Sources */,
 				F9C5CDE3289453B400548EEE /* MailtoLink.swift in Sources */,
 				D94AEB3A2D28837F00B03D7A /* MasterKey.swift in Sources */,
-				666654212AD0B03F00B23B32 /* MasterKeySyncManager.swift in Sources */,
 				F9C5CE08289453B400548EEE /* Math+OWS.swift in Sources */,
 				66BED7E32B9B8FDF00236BAD /* MediaBandwidthPreferenceStore.swift in Sources */,
 				66BED7E62B9B929600236BAD /* MediaBandwidthPreferenceStoreImpl.swift in Sources */,

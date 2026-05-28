@@ -1284,13 +1284,6 @@ extension AppSetup.GlobalsContinuation {
             tsAccountManager: tsAccountManager,
         )
 
-        let masterKeySyncManager = MasterKeySyncManagerImpl(
-            dateProvider: dateProvider,
-            svr: svr,
-            syncManager: syncManager,
-            tsAccountManager: tsAccountManager,
-        )
-
         let messageStickerManager = MessageStickerManagerImpl(
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
@@ -1774,7 +1767,6 @@ extension AppSetup.GlobalsContinuation {
             accountKeyStore: accountKeyStore,
             localProfileChecker: localProfileChecker,
             localUsernameManager: localUsernameManager,
-            masterKeySyncManager: masterKeySyncManager,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             messageStickerManager: messageStickerManager,
             nicknameManager: nicknameManager,
