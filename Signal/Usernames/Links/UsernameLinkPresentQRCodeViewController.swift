@@ -390,33 +390,21 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     }
 
     private func buildResetButtonView() -> UIView {
-        let button = OWSRoundedButton { [weak self] in
-            self?.tappedResetButton()
-        }
+        let button = UIButton(
+            configuration: .smallSecondary(title: resetButtonString),
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapResetButton()
+            },
+        )
 
-        button.setTitle(resetButtonString, for: .normal)
-
-        button.ows_contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
-        button.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_whiteAlpha70
-        button.titleLabel!.font = .dynamicTypeSubheadline.bold()
-        button.setTitleColor(Theme.primaryTextColor, for: .normal)
-
-        button.configureForMultilineTitle()
-
-        button.dimsWhenHighlighted = true
-        button.dimsWhenDisabled = true
-
-        switch usernameLinkState {
-        case .resetting:
+        if case .resetting = usernameLinkState {
             button.isEnabled = false
-        case .available, .corrupted:
-            button.isEnabled = true
         }
 
         return CenteringStackView(centeredSubviews: [button])
     }
 
-    private func tappedResetButton() {
+    private func didTapResetButton() {
         let actionSheet = ActionSheetController(message: OWSLocalizedString(
             "USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE",
             comment: "A message explaining what will happen if the user resets their QR code.",
