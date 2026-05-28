@@ -70,7 +70,7 @@ class MockClient {
 
     func generateMockPreKey() -> LibSignalClient.PreKeyRecord {
         let preKeyId = UInt32(Int32.random(in: 0...Int32.max))
-        let preKey = try! PreKeyRecord(id: preKeyId, privateKey: PrivateKey.generate())
+        let preKey = try! LibSignalClient.PreKeyRecord(id: preKeyId, privateKey: PrivateKey.generate())
         try! self.preKeyStore.storePreKey(preKey, id: preKeyId, context: NullContext())
         return preKey
     }

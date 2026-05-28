@@ -404,7 +404,7 @@ public enum DatabaseRecovery {
             BlockedRecipient.databaseTableName,
             BlockedGroup.databaseTableName,
             StoryRecipient.databaseTableName,
-            PreKey.databaseTableName,
+            PreKeyRecord.databaseTableName,
             KyberPreKeyUseRecord.databaseTableName,
             SignalServiceKit.SessionRecord.databaseTableName,
         ]

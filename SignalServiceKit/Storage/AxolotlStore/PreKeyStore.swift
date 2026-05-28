@@ -30,7 +30,7 @@ struct PreKeyStore {
     func removeAll(tx: DBWriteTransaction) {
         Logger.info("")
         failIfThrows {
-            _ = try PreKey.deleteAll(tx.database)
+            _ = try PreKeyRecord.deleteAll(tx.database)
         }
     }
 
@@ -48,17 +48,17 @@ struct PreKeyStore {
 
     func setReplacedAtIfNil(
         to now: Date,
-        in namespace: PreKey.Namespace,
+        in namespace: PreKeyRecord.Namespace,
         identity: OWSIdentity,
         isOneTime: Bool,
         exceptFor exceptForPreKeyIds: [UInt32],
         tx: DBWriteTransaction,
     ) {
-        let keyIdColumn = Column(PreKey.CodingKeys.keyId.rawValue)
-        let replacedAtColumn = Column(PreKey.CodingKeys.replacedAt.rawValue)
-        let isOneTimeColumn = Column(PreKey.CodingKeys.isOneTime.rawValue)
+        let keyIdColumn = Column(PreKeyRecord.CodingKeys.keyId.rawValue)
+        let replacedAtColumn = Column(PreKeyRecord.CodingKeys.replacedAt.rawValue)
+        let isOneTimeColumn = Column(PreKeyRecord.CodingKeys.isOneTime.rawValue)
         failIfThrows {
-            _ = try PreKey.baseQuery(in: namespace, identity: identity)
+            _ = try PreKeyRecord.baseQuery(in: namespace, identity: identity)
                 .filter(isOneTimeColumn == isOneTime)
                 .filter(replacedAtColumn == nil)
                 .filter(!exceptForPreKeyIds.contains(keyIdColumn))
@@ -69,17 +69,17 @@ struct PreKeyStore {
     func cullPreKeys(gracePeriod: TimeInterval, tx: DBWriteTransaction) {
         let now = Date().timeIntervalSince1970
         let delay = PreKeyManagerImpl.Constants.maxUnacknowledgedSessionAge + gracePeriod
-        let replacedAt = Column(PreKey.CodingKeys.replacedAt.rawValue)
+        let replacedAt = Column(PreKeyRecord.CodingKeys.replacedAt.rawValue)
         failIfThrows {
             var rowIds = [Int64]()
-            let query = PreKey.filter(replacedAt < Int64(now - delay) || replacedAt > Int64(now + delay))
+            let query = PreKeyRecord.filter(replacedAt < Int64(now - delay) || replacedAt > Int64(now + delay))
             let cursor = try query.fetchCursor(tx.database)
             while let preKey = try cursor.next() {
                 Logger.info("removing prekey \(preKey.namespace) \(preKey.keyId), replacedAt \(preKey.replacedAt!)")
                 rowIds.append(preKey.rowId)
             }
             for rowId in rowIds {
-                try PreKey.deleteOne(tx.database, key: rowId)
+                try PreKeyRecord.deleteOne(tx.database, key: rowId)
             }
         }
     }
@@ -92,15 +92,15 @@ class PreKeyStoreForIdentity {
         self.identity = identity
     }
 
-    private func baseQuery(in namespace: PreKey.Namespace) -> QueryInterfaceRequest<PreKey> {
-        return PreKey.baseQuery(in: namespace, identity: self.identity)
+    private func baseQuery(in namespace: PreKeyRecord.Namespace) -> QueryInterfaceRequest<PreKeyRecord> {
+        return PreKeyRecord.baseQuery(in: namespace, identity: self.identity)
     }
 
-    func fetchPreKey(in namespace: PreKey.Namespace, for keyId: UInt32, tx: DBReadTransaction) -> PreKey? {
+    func fetchPreKey(in namespace: PreKeyRecord.Namespace, for keyId: UInt32, tx: DBReadTransaction) -> PreKeyRecord? {
         failIfThrows {
             do {
                 return try baseQuery(in: namespace)
-                    .filter(Column(PreKey.CodingKeys.keyId.rawValue) == keyId)
+                    .filter(Column(PreKeyRecord.CodingKeys.keyId.rawValue) == keyId)
                     .fetchOne(tx.database)
             } catch {
                 throw error.grdbErrorForLogging
@@ -108,7 +108,7 @@ class PreKeyStoreForIdentity {
         }
     }
 
-    private func fetchSerializedRecord(in namespace: PreKey.Namespace, for keyId: UInt32, tx: DBReadTransaction) throws -> Data {
+    private func fetchSerializedRecord(in namespace: PreKeyRecord.Namespace, for keyId: UInt32, tx: DBReadTransaction) throws -> Data {
         let preKey = fetchPreKey(in: namespace, for: keyId, tx: tx)
         guard let serializedRecord = preKey?.serializedRecord else {
             throw PreKeyStore.Error.noPreKeyWithId(keyId)
@@ -119,7 +119,7 @@ class PreKeyStoreForIdentity {
     func upsertPreKeyRecord(
         _ serializedRecord: Data,
         keyId: UInt32,
-        in namespace: PreKey.Namespace,
+        in namespace: PreKeyRecord.Namespace,
         isOneTime: Bool,
         tx: DBWriteTransaction,
     ) {
@@ -131,12 +131,12 @@ class PreKeyStoreForIdentity {
                 // We use "OR REPLACE" to keep the latest key if such a conflict occurs.
                 try tx.database.execute(
                     sql: """
-                    INSERT OR REPLACE INTO \(PreKey.databaseTableName) (
-                        \(PreKey.CodingKeys.namespace.rawValue),
-                        \(PreKey.CodingKeys.identity.rawValue),
-                        \(PreKey.CodingKeys.keyId.rawValue),
-                        \(PreKey.CodingKeys.isOneTime.rawValue),
-                        \(PreKey.CodingKeys.serializedRecord.rawValue)
+                    INSERT OR REPLACE INTO \(PreKeyRecord.databaseTableName) (
+                        \(PreKeyRecord.CodingKeys.namespace.rawValue),
+                        \(PreKeyRecord.CodingKeys.identity.rawValue),
+                        \(PreKeyRecord.CodingKeys.keyId.rawValue),
+                        \(PreKeyRecord.CodingKeys.isOneTime.rawValue),
+                        \(PreKeyRecord.CodingKeys.serializedRecord.rawValue)
                     ) VALUES (?, ?, ?, ?, ?)
                     """,
                     arguments: [namespace.rawValue, self.identity.rawValue, keyId, isOneTime, serializedRecord],
@@ -147,8 +147,8 @@ class PreKeyStoreForIdentity {
         }
     }
 
-    func removePreKey(in namespace: PreKey.Namespace, keyId: UInt32, tx: DBWriteTransaction) {
-        let keyIdColumn = Column(PreKey.CodingKeys.keyId.rawValue)
+    func removePreKey(in namespace: PreKeyRecord.Namespace, keyId: UInt32, tx: DBWriteTransaction) {
+        let keyIdColumn = Column(PreKeyRecord.CodingKeys.keyId.rawValue)
         failIfThrows {
             _ = try baseQuery(in: namespace).filter(keyIdColumn == keyId).deleteAll(tx.database)
         }
@@ -156,9 +156,9 @@ class PreKeyStoreForIdentity {
 
 #if TESTABLE_BUILD
 
-    func fetchCount(in namespace: PreKey.Namespace, isOneTime: Bool, tx: DBReadTransaction) throws -> Int {
+    func fetchCount(in namespace: PreKeyRecord.Namespace, isOneTime: Bool, tx: DBReadTransaction) throws -> Int {
         return try baseQuery(in: namespace)
-            .filter(Column(PreKey.CodingKeys.isOneTime.rawValue) == isOneTime)
+            .filter(Column(PreKeyRecord.CodingKeys.isOneTime.rawValue) == isOneTime)
             .fetchCount(tx.database)
     }
 

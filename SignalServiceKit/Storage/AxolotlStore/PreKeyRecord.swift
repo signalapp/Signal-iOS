@@ -6,8 +6,7 @@
 import Foundation
 import GRDB
 
-// TODO: Rename to PreKeyRecord when decodeDeprecatedPreKeys is turned off.
-struct PreKey: Codable, FetchableRecord, PersistableRecord {
+struct PreKeyRecord: Codable, FetchableRecord, PersistableRecord {
     static let databaseTableName: String = "PreKey"
 
     let rowId: Int64
@@ -49,9 +48,9 @@ struct PreKey: Codable, FetchableRecord, PersistableRecord {
         case serializedRecord
     }
 
-    static func baseQuery(in namespace: PreKey.Namespace, identity: OWSIdentity) -> QueryInterfaceRequest<PreKey> {
-        return PreKey
-            .filter(Column(PreKey.CodingKeys.identity.rawValue) == identity.rawValue)
-            .filter(Column(PreKey.CodingKeys.namespace.rawValue) == namespace.rawValue)
+    static func baseQuery(in namespace: PreKeyRecord.Namespace, identity: OWSIdentity) -> QueryInterfaceRequest<PreKeyRecord> {
+        return PreKeyRecord
+            .filter(Column(PreKeyRecord.CodingKeys.identity.rawValue) == identity.rawValue)
+            .filter(Column(PreKeyRecord.CodingKeys.namespace.rawValue) == namespace.rawValue)
     }
 }
