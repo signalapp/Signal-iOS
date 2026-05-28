@@ -521,50 +521,45 @@ public extension UIToolbar {
 #if DEBUG
 
 private class ButtonPreviewViewController: UIViewController {
-    private let buttonConfiguration: UIButton.Configuration
-
-    init(_ buttonConfiguration: UIButton.Configuration) {
-        self.buttonConfiguration = buttonConfiguration
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) { fatalError("") }
 
     override func viewDidLoad() {
-        let button = UIButton(configuration: buttonConfiguration)
-        view.addSubview(button)
-        button.autoCenterInSuperviewMargins()
+        super.viewDidLoad()
+
+        let buttonStack = UIStackView(arrangedSubviews: [
+            UIButton(configuration: .largePrimary(title: "Large Primary")),
+            UIButton(configuration: .largeSecondary(title: "Large Secondary")),
+            UIButton(configuration: .mediumSecondary(title: "Medium Secondary")),
+            UIButton(configuration: .mediumBorderless(title: "Medium Borderless")),
+            UIButton(configuration: .smallSecondary(title: "Small Secondary")),
+            UIButton(configuration: .smallBorderless(title: "Small Borderless")),
+            UIStackView(arrangedSubviews: [
+                UILabel.subheadlineLabel(text: "Round:"),
+                .spacer(withWidth: 12),
+                UIButton(configuration: .round(themeIcon: .buttonX)),
+            ]),
+            UIStackView(arrangedSubviews: [
+                UILabel.subheadlineLabel(text: "Round Gray:"),
+                .spacer(withWidth: 12),
+                UIButton(configuration: .roundGray(image: Theme.iconImage(.buttonX))),
+            ]),
+        ])
+        buttonStack.axis = .vertical
+        buttonStack.alignment = .center
+        buttonStack.spacing = 16
+        view.addSubview(buttonStack)
+        buttonStack.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            buttonStack.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 16),
+            buttonStack.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            buttonStack.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            buttonStack.bottomAnchor.constraint(lessThanOrEqualTo: view.layoutMarginsGuide.bottomAnchor),
+        ])
     }
 }
 
 @available(iOS 17, *)
-#Preview("Large Primary") {
-    return ButtonPreviewViewController(.largePrimary(title: "Large Primary"))
-}
-
-@available(iOS 17, *)
-#Preview("Large Secondary") {
-    return ButtonPreviewViewController(.largeSecondary(title: "Large Secondary"))
-}
-
-@available(iOS 17, *)
-#Preview("Medium Secondary") {
-    return ButtonPreviewViewController(.mediumSecondary(title: "Medium Secondary"))
-}
-
-@available(iOS 17, *)
-#Preview("Medium Borderless") {
-    return ButtonPreviewViewController(.mediumBorderless(title: "Medium Borderless"))
-}
-
-@available(iOS 17, *)
-#Preview("Small Secondary") {
-    return ButtonPreviewViewController(.smallSecondary(title: "Small Secondary"))
-}
-
-@available(iOS 17, *)
-#Preview("Small Borderless") {
-    return ButtonPreviewViewController(.smallBorderless(title: "Small Borderless"))
+#Preview("Button Styles") {
+    return ButtonPreviewViewController(nibName: nil, bundle: nil)
 }
 
 #endif
