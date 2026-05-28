@@ -114,9 +114,7 @@ class CVAttachmentProgressView: ManualLayoutView {
 
         addLayoutBlock { view in
             guard let view = view as? CVAttachmentProgressView else { return }
-            DispatchQueue.main.async {
-                view.loadInitialStateIfNeeded()
-            }
+            view.loadInitialStateIfNeeded()
         }
     }
 
