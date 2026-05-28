@@ -411,6 +411,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         infoStack.autoPinTrailingToSuperviewMargin()
 
         if let usernameLinkButton = profileCellUsernameLinkButton() {
+            usernameLinkButton.sizeToFit() // this is required
             cell.accessoryView = usernameLinkButton
         } else {
             cell.accessoryType = .disclosureIndicator
@@ -509,11 +510,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         return profileInfoStack
     }
 
-    /// If we have a username, produces a button that takes the user to their
-    /// username link QR code.
-    ///
-    /// Note that this button does not use autolayout, so as to play nice with
-    /// ``UITableViewCell``'s accessory view.
+    /// If we have a username, produces a button that takes the user to their username link QR code.
     private func profileCellUsernameLinkButton() -> UIButton? {
         let localUsername: String
         let localUsernameLink: Usernames.UsernameLink
@@ -526,34 +523,26 @@ class AppSettingsViewController: OWSTableViewController2 {
             localUsernameLink = usernameLink
         }
 
-        let usernameLinkButton = OWSRoundedButton { [weak self] in
-            guard let self else { return }
+        var buttonConfiguration = UIButton.Configuration.roundGray(image: .qrCode)
+        buttonConfiguration.contentInsets = .init(margin: 8) // makes 40 dp button
+        return UIButton(
+            configuration: buttonConfiguration,
+            primaryAction: UIAction { [weak self] _ in
+                guard let self else { return }
 
-            let usernameLinkController = UsernameLinkQRCodeContentController(
-                db: DependenciesBridge.shared.db,
-                localUsernameManager: DependenciesBridge.shared.localUsernameManager,
-                username: localUsername,
-                usernameLink: localUsernameLink,
-                changeDelegate: self,
-                scanDelegate: self,
-            )
+                let usernameLinkController = UsernameLinkQRCodeContentController(
+                    db: DependenciesBridge.shared.db,
+                    localUsernameManager: DependenciesBridge.shared.localUsernameManager,
+                    username: localUsername,
+                    usernameLink: localUsernameLink,
+                    changeDelegate: self,
+                    scanDelegate: self,
+                )
 
-            let navController = OWSNavigationController(rootViewController: usernameLinkController)
-            self.present(navController, animated: true)
-        }
-
-        if Theme.isDarkThemeEnabled {
-            usernameLinkButton.backgroundColor = .ows_gray65
-            usernameLinkButton.setTemplateImage(Theme.iconImage(.qrCode), tintColor: .ows_gray15)
-        } else {
-            usernameLinkButton.backgroundColor = .ows_gray05
-            usernameLinkButton.setImage(Theme.iconImage(.qrCode), for: .normal)
-        }
-
-        usernameLinkButton.bounds = CGRect(origin: .zero, size: .square(36))
-        usernameLinkButton.imageView?.autoSetDimensions(to: .square(20))
-
-        return usernameLinkButton
+                let navController = OWSNavigationController(rootViewController: usernameLinkController)
+                self.present(navController, animated: true)
+            },
+        )
     }
 
     private func didTapDonate() {
