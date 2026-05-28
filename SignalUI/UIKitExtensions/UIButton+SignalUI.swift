@@ -206,41 +206,16 @@ public extension UIButton.Configuration {
         return configuration
     }
 
-    /// Round button that has glass material background on iOS 26+ and no background on older iOS versions.
-    static func round(image: UIImage) -> Self {
-        var configuration: UIButton.Configuration
-        if #available(iOS 26, *) {
-            configuration = .glass()
-        } else {
-            configuration = .plain()
-        }
-        configuration.image = image
-        configuration.baseForegroundColor = .Signal.label
-        configuration.cornerStyle = .capsule
-        configuration.contentInsets = .init(margin: 10) // 44 dp wide and tall if icon is a standard 24x24
-        return configuration
-    }
-
-    /// Round button that has glass material background on iOS 26+ and no background on older iOS versions.
     static func round(themeIcon: ThemeIcon) -> Self {
-        round(image: Theme.iconImage(themeIcon))
-    }
-
-    /// Round button that has glass material background on iOS 26+ and "system chrome" blur on older iOS versions.
-    static func roundMaterial(image: UIImage) -> Self {
         var configuration: UIButton.Configuration
         if #available(iOS 26, *) {
             configuration = .glass()
+            configuration.cornerStyle = .capsule
         } else {
             configuration = .plain()
-
-            var backgroundConfiguration = UIBackgroundConfiguration.clear()
-            backgroundConfiguration.customView = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
-            configuration.background = backgroundConfiguration
         }
-        configuration.image = image
+        configuration.image = Theme.iconImage(themeIcon)
         configuration.baseForegroundColor = .Signal.label
-        configuration.cornerStyle = .capsule
         configuration.contentInsets = .init(margin: 10) // 44 dp wide and tall if icon is a standard 24x24
         return configuration
     }
