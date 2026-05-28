@@ -2883,7 +2883,6 @@
 		D968B4982C9E1AD1006B14E1 /* SmsLockIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D968B4972C9E1AC3006B14E1 /* SmsLockIconView.swift */; };
 		D968F71E2C34884B00AB318B /* BackupArchiveReleaseNotesRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D968F71D2C34884B00AB318B /* BackupArchiveReleaseNotesRecipientArchiver.swift */; };
 		D96A94A72954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */; };
-		D96BE42E292EF04200E4FE1A /* PaypalButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96BE42D292EF04200E4FE1A /* PaypalButton.swift */; };
 		D97046062E81D4240034C05D /* InfoMessageGroupUpdateMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97046052E81D41F0034C05D /* InfoMessageGroupUpdateMigrator.swift */; };
 		D970460A2E81D5C00034C05D /* InfoMessageGroupUpdateMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97046092E81D5BB0034C05D /* InfoMessageGroupUpdateMigratorTest.swift */; };
 		D970541A2CFE49E400AC7954 /* SubscriptionFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97054192CFE49E200AC7954 /* SubscriptionFetcher.swift */; };
@@ -7170,7 +7169,6 @@
 		D968F71D2C34884B00AB318B /* BackupArchiveReleaseNotesRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveReleaseNotesRecipientArchiver.swift; sourceTree = "<group>"; };
 		D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+MonthlyPaypalDonation.swift"; sourceTree = "<group>"; };
 		D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+Subscriptions.swift"; sourceTree = "<group>"; };
-		D96BE42D292EF04200E4FE1A /* PaypalButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaypalButton.swift; sourceTree = "<group>"; };
 		D97046052E81D41F0034C05D /* InfoMessageGroupUpdateMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoMessageGroupUpdateMigrator.swift; sourceTree = "<group>"; };
 		D97046092E81D5BB0034C05D /* InfoMessageGroupUpdateMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoMessageGroupUpdateMigratorTest.swift; sourceTree = "<group>"; };
 		D97054192CFE49E200AC7954 /* SubscriptionFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionFetcher.swift; sourceTree = "<group>"; };
@@ -14563,7 +14561,6 @@
 				F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */,
 				D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */,
 				F9A8ACC6280A175E00AFC6A7 /* DonationSettingsViewController.swift */,
-				D96BE42D292EF04200E4FE1A /* PaypalButton.swift */,
 			);
 			path = Donations;
 			sourceTree = "<group>";
@@ -18551,7 +18548,6 @@
 				3495FF0525F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift in Sources */,
 				3495FF0F25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift in Sources */,
 				34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */,
-				D96BE42E292EF04200E4FE1A /* PaypalButton.swift in Sources */,
 				667AF9DE2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift in Sources */,
 				C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */,
 				4C5250D221E7BD7D00CE3D95 /* PhoneNumberValidator.swift in Sources */,

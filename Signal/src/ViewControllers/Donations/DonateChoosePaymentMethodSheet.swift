@@ -211,11 +211,24 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
         }
     }
 
-    private func createPaypalButton() -> PaypalButton {
-        PaypalButton { [weak self] in
-            guard let self else { return }
-            self.didChoosePaymentMethod(self, .paypal)
+    private func createPaypalButton() -> UIButton {
+        var configuration: UIButton.Configuration = if #available(iOS 26, *) { .prominentGlass() } else { .borderedProminent() }
+        configuration.image = UIImage(resource: .paypalLogo)
+        configuration.baseBackgroundColor = UIColor(rgbHex: 0xF6C757)
+        if #available(iOS 26, *) {
+            configuration.cornerStyle = .capsule
+        } else {
+            configuration.cornerStyle = .fixed
+            configuration.background.cornerRadius = 12
         }
+
+        return UIButton(
+            configuration: configuration,
+            primaryAction: UIAction { [weak self] _ in
+                guard let self else { return }
+                self.didChoosePaymentMethod(self, .paypal)
+            },
+        )
     }
 
     private func createCreditOrDebitCardButton() -> UIButton {
