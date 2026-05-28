@@ -162,8 +162,11 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     @objc
     private func didTapProgressView() {
-        if downloadTask != nil {
-            downloadTask?.cancel()
+        if
+            let downloadTask,
+            !downloadTask.isCancelled
+        {
+            downloadTask.cancel()
         } else if galleryItem.referencedAttachment.asReferencedStream == nil {
             downloadFullsizeIfNeeded(userInitiated: true)
         }
