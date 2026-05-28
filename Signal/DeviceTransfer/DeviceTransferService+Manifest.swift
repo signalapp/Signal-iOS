@@ -32,9 +32,6 @@ extension DeviceTransferService {
             let wal: DeviceTransferProtoFile = try {
                 let file = SSKEnvironment.shared.databaseStorageRef.grdbStorage.databaseWALFilePath
                 let size = try OWSFileSystem.fileSize(ofPath: file)
-                guard size > 0 else {
-                    throw OWSAssertionError("database wal is empty")
-                }
                 estimatedTotalSize += size
                 let fileBuilder = DeviceTransferProtoFile.builder(
                     identifier: DeviceTransferService.databaseWALIdentifier,

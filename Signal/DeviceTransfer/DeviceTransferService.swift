@@ -5,6 +5,7 @@
 
 import CryptoKit
 import Foundation
+import GRDB
 import MultipeerConnectivity
 import SignalServiceKit
 
@@ -366,7 +367,15 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
             taskGroup.addTask {
                 // Make a copy of the database files within a write transaction so we can be confident
                 // they aren't mutated during the copy. We then transfer these copies.
-                let dbCopy = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { _ in
+                let dbCopy = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                    // The MultipeerConnectivity framework stalls if we try to send an empty
+                    // file. The receiver requires a non-empty file. We can't send garbage
+                    // (because that would corrupt the database), so mutate the database, force
+                    // it to be written to the WAL file, and then send that result to our peer.
+                    let store = NewKeyValueStore(collection: "DeviceTransferWAL")
+                    store.writeValue(Randomness.generateRandomBytes(32), forKey: "MustBeNonEmpty", tx: tx)
+                    store.removeValue(forKey: "MustBeNonEmpty", tx: tx)
+                    sqlite3_db_cacheflush(tx.database.sqliteConnection!)
                     do {
                         let dbCopy = try Self.makeLocalCopy(databaseFile: database.database)
                         let walCopy = try Self.makeLocalCopy(databaseFile: database.wal)
