@@ -1454,8 +1454,6 @@
 		729E0B0A2CA4AEB0002EC961 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 729E0B082CA4ADE2002EC961 /* Threading.swift */; };
 		72A132A52CA210C7000ACED6 /* DarwinNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72A132A42CA210C2000ACED6 /* DarwinNotificationCenter.swift */; };
 		72A132A72CA25EF0000ACED6 /* SDSCrossProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72A132A62CA25EE9000ACED6 /* SDSCrossProcess.swift */; };
-		72B0C2402C9EEA8200B57DAD /* PreKeyRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B0C23F2C9EEA7700B57DAD /* PreKeyRecord.swift */; };
-		72B0C2422C9EED0E00B57DAD /* SignedPreKeyRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B0C2412C9EED0800B57DAD /* SignedPreKeyRecord.swift */; };
 		72B4819D2BD60FDF008B8BA1 /* OWSMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B4819C2BD60FDF008B8BA1 /* OWSMath.swift */; };
 		72B994DB2BE950DB000CBBFD /* TestAppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B994DA2BE950DB000CBBFD /* TestAppContext.swift */; };
 		72C905892B9A28BF00E586B8 /* Sounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7634F08C2A21963600BB93D5 /* Sounds.swift */; };
@@ -5659,8 +5657,6 @@
 		729E0B082CA4ADE2002EC961 /* Threading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Threading.swift; sourceTree = "<group>"; };
 		72A132A42CA210C2000ACED6 /* DarwinNotificationCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DarwinNotificationCenter.swift; sourceTree = "<group>"; };
 		72A132A62CA25EE9000ACED6 /* SDSCrossProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDSCrossProcess.swift; sourceTree = "<group>"; };
-		72B0C23F2C9EEA7700B57DAD /* PreKeyRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyRecord.swift; sourceTree = "<group>"; };
-		72B0C2412C9EED0800B57DAD /* SignedPreKeyRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignedPreKeyRecord.swift; sourceTree = "<group>"; };
 		72B4819C2BD60FDF008B8BA1 /* OWSMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSMath.swift; sourceTree = "<group>"; };
 		72B994DA2BE950DB000CBBFD /* TestAppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppContext.swift; sourceTree = "<group>"; };
 		72DB95AD2C8C7C7B00FD2266 /* String+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+OWS.swift"; sourceTree = "<group>"; };
@@ -15260,8 +15256,6 @@
 			isa = PBXGroup;
 			children = (
 				5010B6B32C6BD41E00314CD4 /* PreKeyBundle.swift */,
-				72B0C23F2C9EEA7700B57DAD /* PreKeyRecord.swift */,
-				72B0C2412C9EED0800B57DAD /* SignedPreKeyRecord.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -19690,7 +19684,6 @@
 				5050A8792B76E2E100E9BFA4 /* PreKeyId.swift in Sources */,
 				F9C5CCAC289453B300548EEE /* PreKeyManager.swift in Sources */,
 				6659A0262A7C11A800066AB7 /* PrekeyManagerImpl.swift in Sources */,
-				72B0C2402C9EEA8200B57DAD /* PreKeyRecord.swift in Sources */,
 				50589CDE2E8C44D5003EF42A /* PreKeyStore.swift in Sources */,
 				F9C5CD52289453B300548EEE /* PreKeyStoreImpl.swift in Sources */,
 				C17345BB2A5E000300C6426D /* PreKeyTarget.swift in Sources */,
@@ -19842,7 +19835,6 @@
 				F9C5CC9A289453B300548EEE /* SignalService.pb.swift in Sources */,
 				F9C5CCE2289453B300548EEE /* SignalServiceAddress.swift in Sources */,
 				F9C5CDBB289453B400548EEE /* SignalServiceProfile.swift in Sources */,
-				72B0C2422C9EED0E00B57DAD /* SignedPreKeyRecord.swift in Sources */,
 				F9C5CD33289453B300548EEE /* SignedPreKeyStoreImpl.swift in Sources */,
 				F9C5CC51289453B300548EEE /* SMKError.swift in Sources */,
 				F9C5CC53289453B300548EEE /* SMKSecretSessionCipher.swift in Sources */,

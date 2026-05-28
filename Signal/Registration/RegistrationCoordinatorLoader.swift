@@ -261,9 +261,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
     private enum CodingKeys: String, CodingKey {
         case newE164
         case pniIdentityKeyPair
-        case localDevicePniSignedPreKeyRecord // deprecated
         case localDevicePniSignedPreKeyRecordData
-        case localDevicePniPqLastResortPreKeyRecord // deprecated
         case localDevicePniPqLastResortPreKeyRecordData
         case localDevicePniRegistrationId
     }
@@ -276,11 +274,6 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
 
         if let modernValue = try container.decodeIfPresent(Data.self, forKey: .localDevicePniPqLastResortPreKeyRecordData) {
             self.localDevicePniPqLastResortPreKeyRecord = .success(try LibSignalClient.KyberPreKeyRecord(bytes: modernValue))
-        } else if
-            BuildFlags.decodeDeprecatedPreKeys,
-            let deprecatedValue = try container.decodeIfPresent(KyberRecordKeyData.self, forKey: .localDevicePniPqLastResortPreKeyRecord)
-        {
-            self.localDevicePniPqLastResortPreKeyRecord = .success(try LibSignalClient.KyberPreKeyRecord(bytes: deprecatedValue.keyData))
         } else {
             // We don't want to fail the ENTIRE registration operation when this is
             // missing -- we can recover in this case, but we need to communicate the
@@ -294,19 +287,6 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
 
         if let modernValue = try container.decodeIfPresent(Data.self, forKey: .localDevicePniSignedPreKeyRecordData) {
             self.localDevicePniSignedPreKeyRecord = .success(try LibSignalClient.SignedPreKeyRecord(bytes: modernValue))
-        } else if
-            BuildFlags.decodeDeprecatedPreKeys,
-            let deprecatedValue = try container.decodeIfPresent(Data.self, forKey: .localDevicePniSignedPreKeyRecord)
-        {
-            guard let signedPreKeyRecord = try NSKeyedUnarchiver.unarchivedObject(ofClass: SignalServiceKit.SignedPreKeyRecord.self, from: deprecatedValue) else {
-                throw DecodingError.dataCorruptedError(forKey: .localDevicePniSignedPreKeyRecord, in: container, debugDescription: "")
-            }
-            self.localDevicePniSignedPreKeyRecord = .success(try LibSignalClient.SignedPreKeyRecord(
-                id: UInt32(bitPattern: signedPreKeyRecord.id),
-                timestamp: signedPreKeyRecord.generatedAt.ows_millisecondsSince1970,
-                privateKey: signedPreKeyRecord.keyPair.keyPair.privateKey,
-                signature: signedPreKeyRecord.signature,
-            ))
         } else {
             // We don't want to fail the ENTIRE registration operation when this is
             // missing -- we can recover in this case, but we need to communicate the
@@ -343,12 +323,6 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
             toEncodingContainer: &container,
             forKey: .pniIdentityKeyPair,
         )
-    }
-
-    /// A shim of the former KyberPreKeyRecord that contains what's necessary to
-    /// maintain continuity with historically-encoded values.
-    private struct KyberRecordKeyData: Codable {
-        var keyData: Data
     }
 
     // MARK: NSKeyed[Un]Archiver

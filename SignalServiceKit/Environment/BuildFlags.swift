@@ -54,11 +54,6 @@ public enum BuildFlags {
     static let netBuildVariant: Net.BuildVariant = build <= .beta ? .beta : .production
 
     // Turn this off after all still-registered clients have run this
-    // migration. That should happen by 2026-06-01. Then, delete all the code
-    // that's now dead because this is false.
-    public static let decodeDeprecatedPreKeys = true
-
-    // Turn this off after all still-registered clients have run this
     // migration. That should happen by 2026-08-04. Then, delete all the code
     // that's now dead because this is false.
     public static let migrateDeprecatedSessions = true

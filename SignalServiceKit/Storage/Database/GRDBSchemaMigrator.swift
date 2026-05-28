@@ -4857,9 +4857,6 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.addPreKey) { tx in
             try createPreKey(tx: tx)
-            if BuildFlags.decodeDeprecatedPreKeys {
-                try migratePreKeys(tx: tx)
-            }
             try dropOldPreKeys(tx: tx)
             return .success(())
         }
@@ -7313,113 +7310,6 @@ public class GRDBSchemaMigrator {
             columns: ["identity", "namespace", "isOneTime", "keyId"],
             condition: Column("replacedAt") == nil,
         )
-    }
-
-    static func migratePreKeys(tx: DBWriteTransaction) throws {
-        // If these ever change, you'll need to add a new migration to update the
-        // PreKey table and replace the old constants with the new constants.
-        assert(PreKey.Namespace.oneTime.rawValue == 0)
-        assert(PreKey.Namespace.kyber.rawValue == 1)
-        assert(PreKey.Namespace.signed.rawValue == 2)
-
-        try migratePreKeys(
-            in: (aci: "TSStorageManagerPreKeyStoreCollection", pni: "TSStorageManagerPNIPreKeyStoreCollection"),
-            namespace: 0,
-            tx: tx,
-        ) { encodedValue in
-            guard let decodedValue = try NSKeyedUnarchiver.unarchivedObject(ofClass: SignalServiceKit.PreKeyRecord.self, from: encodedValue) else {
-                throw OWSGenericError("missing decoded value")
-            }
-            let keyId = UInt32(bitPattern: decodedValue.id)
-            return (
-                keyId: keyId,
-                isOneTime: true,
-                replacedAt: decodedValue.replacedAt,
-                serializedRecord: try LibSignalClient.PreKeyRecord(
-                    id: keyId,
-                    privateKey: decodedValue.keyPair.keyPair.privateKey,
-                ).serialize(),
-            )
-        }
-
-        try migratePreKeys(
-            in: (aci: "TSStorageManagerSignedPreKeyStoreCollection", pni: "TSStorageManagerPNISignedPreKeyStoreCollection"),
-            namespace: 2,
-            tx: tx,
-        ) { encodedValue in
-            guard let decodedValue = try NSKeyedUnarchiver.unarchivedObject(ofClass: SignalServiceKit.SignedPreKeyRecord.self, from: encodedValue) else {
-                throw OWSGenericError("missing decoded value")
-            }
-            let keyId = UInt32(bitPattern: decodedValue.id)
-            return (
-                keyId: keyId,
-                isOneTime: false,
-                replacedAt: decodedValue.replacedAt,
-                serializedRecord: try LibSignalClient.SignedPreKeyRecord(
-                    id: keyId,
-                    timestamp: decodedValue.createdAt?.ows_millisecondsSince1970 ?? 0,
-                    privateKey: decodedValue.keyPair.keyPair.privateKey,
-                    signature: decodedValue.signature,
-                ).serialize(),
-            )
-        }
-
-        try migratePreKeys(
-            in: (aci: "SSKKyberPreKeyStoreACIKeyStore", pni: "SSKKyberPreKeyStorePNIKeyStore"),
-            namespace: 1,
-            tx: tx,
-        ) { encodedValue in
-            let decodedValue = try JSONDecoder().decode(SignalServiceKit.KyberPreKeyRecord.self, from: encodedValue)
-            return (
-                keyId: decodedValue.libSignalRecord.id,
-                isOneTime: !decodedValue.isLastResort,
-                replacedAt: decodedValue.replacedAt,
-                serializedRecord: decodedValue.libSignalRecord.serialize(),
-            )
-        }
-    }
-
-    static func migratePreKeys(
-        in collections: (aci: String, pni: String),
-        namespace: Int64,
-        tx: DBWriteTransaction,
-        decodeValue: (Data) throws -> (keyId: UInt32, isOneTime: Bool, replacedAt: Date?, serializedRecord: Data),
-    ) throws {
-        // If these ever change, you'll need to add a new migration to update the
-        // PreKey table and replace the old constants with the new constants.
-        assert(OWSIdentity.aci.rawValue == 0)
-        assert(OWSIdentity.pni.rawValue == 1)
-        for (collection, identity) in [(collections.aci, 0), (collections.pni, 1)] {
-            let keys = try String.fetchAll(
-                tx.database,
-                sql: "SELECT key FROM keyvalue WHERE collection = ?",
-                arguments: [collection],
-            )
-            for key in keys { try autoreleasepool {
-                let dataValue = try Data.fetchOne(
-                    tx.database,
-                    sql: "SELECT value FROM keyvalue WHERE collection = ? AND key = ?",
-                    arguments: [collection, key],
-                )!
-                guard let decodedValue = try? decodeValue(dataValue) else {
-                    // We don't expect any failures, but if there are failures, it's safe to
-                    // throw away the malformed values. We'll eventually recover organically.
-                    Logger.warn("Skipping \(key) in \(collection) that couldn't be decoded")
-                    return
-                }
-                try tx.database.execute(
-                    sql: "INSERT INTO PreKey (identity, namespace, keyId, isOneTime, replacedAt, serializedRecord) VALUES (?, ?, ?, ?, ?, ?)",
-                    arguments: [
-                        identity,
-                        namespace,
-                        decodedValue.keyId,
-                        decodedValue.isOneTime,
-                        decodedValue.replacedAt.map { Int64($0.timeIntervalSince1970) },
-                        decodedValue.serializedRecord,
-                    ],
-                )
-            }}
-        }
     }
 
     static func dropOldPreKeys(tx: DBWriteTransaction) throws {
