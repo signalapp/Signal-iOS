@@ -399,9 +399,9 @@ extension BaseMemberViewController: RecipientPickerDelegate {
 
     public func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        accessoryViewForRecipient recipient: PickedRecipient,
+        contactCellAccessoryForRecipient recipient: PickedRecipient,
         transaction: DBReadTransaction,
-    ) -> ContactCellAccessoryView? {
+    ) -> ContactCellView.Accessory? {
         guard let address = recipient.address else {
             owsFailDebug("Missing address.")
             return nil
@@ -441,7 +441,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
             accessoryView = SelectionIndicatorView()
         }
         let accessoryViewWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(accessoryView)
-        return ContactCellAccessoryView(accessoryView: accessoryViewWrapper, size: .square(24))
+        return ContactCellView.Accessory(accessoryView: accessoryViewWrapper, size: .square(24))
     }
 
     public func recipientPicker(

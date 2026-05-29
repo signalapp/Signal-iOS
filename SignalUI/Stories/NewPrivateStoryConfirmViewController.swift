@@ -142,7 +142,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
                     cell.selectionStyle = .none
 
                     SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                        let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
+                        let configuration = ContactCellView.Configuration(address: address, localUserDisplayMode: .asUser)
                         cell.configure(configuration: configuration, transaction: transaction)
                     }
                     return cell

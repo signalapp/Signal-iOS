@@ -159,7 +159,7 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
 
                     cell.selectionStyle = .none
 
-                    let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asLocalUser)
+                    var configuration = ContactCellView.Configuration(address: address, localUserDisplayMode: .asLocalUser)
                     configuration.forceDarkAppearance = self?.forceDarkMode ?? false
 
                     if

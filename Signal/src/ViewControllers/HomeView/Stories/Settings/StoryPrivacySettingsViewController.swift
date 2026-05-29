@@ -253,7 +253,7 @@ private class StoryThreadCell: ContactTableViewCell {
     // MARK: - ContactTableViewCell
 
     func configure(conversationItem: StoryConversationItem, transaction: DBReadTransaction) {
-        let configuration: ContactCellConfiguration
+        var configuration: ContactCellView.Configuration
         switch conversationItem.messageRecipient {
         case .contact:
             owsFailDebug("Unexpected recipient for story")
@@ -268,21 +268,21 @@ private class StoryThreadCell: ContactTableViewCell {
                 owsFailDebug("Failed to find group thread")
                 return
             }
-            configuration = ContactCellConfiguration(groupThread: groupThread, localUserDisplayMode: .noteToSelf)
+            configuration = ContactCellView.Configuration(groupThread: groupThread, localUserDisplayMode: .noteToSelf)
         case .privateStory(_, let isMyStory):
             if isMyStory {
                 guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
                     owsFailDebug("Unexpectedly missing local address")
                     return
                 }
-                configuration = ContactCellConfiguration(address: localAddress, localUserDisplayMode: .asUser)
+                configuration = ContactCellView.Configuration(address: localAddress, localUserDisplayMode: .asUser)
                 configuration.customName = conversationItem.title(transaction: transaction)
             } else {
                 guard let image = conversationItem.image else {
                     owsFailDebug("Unexpectedly missing image for private story")
                     return
                 }
-                configuration = ContactCellConfiguration(name: conversationItem.title(transaction: transaction), avatar: image)
+                configuration = ContactCellView.Configuration(name: conversationItem.title(transaction: transaction), avatar: image)
             }
         }
 

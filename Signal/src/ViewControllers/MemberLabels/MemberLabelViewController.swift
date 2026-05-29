@@ -501,7 +501,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         for (memberAddress, memberLabel) in sortedNonLocalMembers {
             let cell = ContactCellView()
             SSKEnvironment.shared.databaseStorageRef.read { tx in
-                let configuration = ContactCellConfiguration(address: memberAddress, localUserDisplayMode: .asLocalUser)
+                var configuration = ContactCellView.Configuration(address: memberAddress, localUserDisplayMode: .asLocalUser)
 
                 configuration.memberLabel = memberLabel
 

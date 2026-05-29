@@ -1021,11 +1021,11 @@ extension RecipientPickerViewController {
     private func addressCell(for address: SignalServiceAddress, recipient: PickedRecipient, tableView: UITableView) -> UITableViewCell? {
         guard let cell = tableView.dequeueReusableCell(ContactTableViewCell.self) else { return nil }
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .noteToSelf)
+            var configuration = ContactCellView.Configuration(address: address, localUserDisplayMode: .noteToSelf)
             if let delegate {
                 cell.selectionStyle = delegate.recipientPicker(self, selectionStyleForRecipient: recipient, transaction: transaction)
-                if let accessoryView = delegate.recipientPicker(self, accessoryViewForRecipient: recipient, transaction: transaction) {
-                    configuration.accessoryView = accessoryView
+                if let accessory = delegate.recipientPicker(self, contactCellAccessoryForRecipient: recipient, transaction: transaction) {
+                    configuration.accessory = accessory
                 } else {
                     let accessoryMessage = delegate.recipientPicker(self, accessoryMessageForRecipient: recipient, transaction: transaction)
                     configuration.accessoryMessage = accessoryMessage
@@ -1051,7 +1051,7 @@ extension RecipientPickerViewController {
             SSKEnvironment.shared.databaseStorageRef.read { tx in
                 cell.selectionStyle = delegate.recipientPicker(self, selectionStyleForRecipient: recipient, transaction: tx)
                 cell.accessoryMessage = delegate.recipientPicker(self, accessoryMessageForRecipient: recipient, transaction: tx)
-                cell.customAccessoryView = delegate.recipientPicker(self, accessoryViewForRecipient: recipient, transaction: tx)?.accessoryView
+                cell.customAccessoryView = delegate.recipientPicker(self, contactCellAccessoryForRecipient: recipient, transaction: tx)?.accessoryView
             }
         }
 

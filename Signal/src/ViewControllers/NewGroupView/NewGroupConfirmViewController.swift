@@ -194,11 +194,8 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                         }
 
                         cell.selectionStyle = .none
+                        cell.configureWithSneakyTransaction(address: address, localUserDisplayMode: .asUser)
 
-                        SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                            let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
-                            cell.configure(configuration: configuration, transaction: transaction)
-                        }
                         return cell
                     },
                 ))

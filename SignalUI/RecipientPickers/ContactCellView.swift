@@ -3,102 +3,88 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 public import SignalServiceKit
-
-public class ContactCellAccessoryView: NSObject {
-    let accessoryView: UIView
-    let size: CGSize
-
-    public init(accessoryView: UIView, size: CGSize) {
-        self.accessoryView = accessoryView
-        self.size = size
-    }
-}
-
-// MARK: -
-
-public class ContactCellConfiguration: NSObject {
-    fileprivate enum CellDataSource {
-        case address(SignalServiceAddress)
-        case groupThread(TSGroupThread)
-        case `static`(name: String, avatar: UIImage)
-    }
-
-    fileprivate let dataSource: CellDataSource
-
-    public let localUserDisplayMode: LocalUserDisplayMode
-
-    public var forceDarkAppearance = false
-
-    public var accessoryMessage: String?
-
-    public var customName: String?
-
-    public var accessoryView: ContactCellAccessoryView?
-
-    public var attributedSubtitle: NSAttributedString?
-
-    public var shouldShowContactIcon = false
-
-    public var allowUserInteraction = false
-
-    public var badged = true // TODO: Badges — Default false? Configure each use-case?
-
-    public var storyState: StoryContextViewState?
-
-    public var hasAccessoryText: Bool {
-        accessoryMessage?.nilIfEmpty != nil
-    }
-
-    public var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass?
-
-    public var memberLabel: MemberLabelForRendering?
-
-    public init(address: SignalServiceAddress, localUserDisplayMode: LocalUserDisplayMode) {
-        self.dataSource = .address(address)
-        self.localUserDisplayMode = localUserDisplayMode
-        super.init()
-    }
-
-    public init(groupThread: TSGroupThread, localUserDisplayMode: LocalUserDisplayMode) {
-        self.dataSource = .groupThread(groupThread)
-        self.localUserDisplayMode = localUserDisplayMode
-        super.init()
-    }
-
-    public init(name: String, avatar: UIImage) {
-        self.dataSource = .static(name: name, avatar: avatar)
-        self.localUserDisplayMode = .asUser
-        super.init()
-    }
-
-    public func useVerifiedSubtitle() {
-        let text = NSMutableAttributedString()
-        text.append(SignalSymbol.safetyNumber.attributedString(for: .caption1, clamped: true))
-        text.append(" ", attributes: [:])
-        text.append(SafetyNumberStrings.verified, attributes: [:])
-        self.attributedSubtitle = text
-    }
-}
-
-// MARK: -
 
 public class ContactCellView: ManualStackView {
 
-    private var configuration: ContactCellConfiguration? {
-        didSet {
-            ensureObservers()
+    public struct Configuration {
+        fileprivate enum CellDataSource {
+            case address(SignalServiceAddress)
+            case groupThread(TSGroupThread)
+            case `static`(name: String, avatar: UIImage)
+        }
+
+        fileprivate let dataSource: CellDataSource
+
+        public let localUserDisplayMode: LocalUserDisplayMode
+
+        public var forceDarkAppearance = false
+
+        public var accessoryMessage: String?
+
+        public var customName: String?
+
+        public var accessory: ContactCellView.Accessory?
+
+        public var attributedSubtitle: NSAttributedString?
+
+        public var shouldShowContactIcon = false
+
+        public var allowUserInteraction = false
+
+        public var badged = true // TODO: Badges — Default false? Configure each use-case?
+
+        public var storyState: StoryContextViewState?
+
+        public var hasAccessoryText: Bool {
+            accessoryMessage?.nilIfEmpty != nil
+        }
+
+        public var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass?
+
+        public var memberLabel: MemberLabelForRendering?
+
+        public init(address: SignalServiceAddress, localUserDisplayMode: LocalUserDisplayMode) {
+            self.dataSource = .address(address)
+            self.localUserDisplayMode = localUserDisplayMode
+        }
+
+        public init(groupThread: TSGroupThread, localUserDisplayMode: LocalUserDisplayMode) {
+            self.dataSource = .groupThread(groupThread)
+            self.localUserDisplayMode = localUserDisplayMode
+        }
+
+        public init(name: String, avatar: UIImage) {
+            self.dataSource = .static(name: name, avatar: avatar)
+            self.localUserDisplayMode = .asUser
+        }
+
+        public mutating func useVerifiedSubtitle() {
+            let text = NSMutableAttributedString()
+            text.append(SignalSymbol.safetyNumber.attributedString(for: .caption1, clamped: true))
+            text.append(" ", attributes: [:])
+            text.append(SafetyNumberStrings.verified, attributes: [:])
+            self.attributedSubtitle = text
+        }
+    }
+
+    public struct Accessory {
+        let accessoryView: UIView
+        let size: CGSize
+
+        public init(accessoryView: UIView, size: CGSize) {
+            self.accessoryView = accessoryView
+            self.size = size
         }
     }
 
     public static var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass { .thirtySix }
-    private var avatarDataSource: ConversationAvatarDataSource? {
-        switch configuration?.dataSource {
+
+    private func avatarDataSource(configuration: Configuration) -> ConversationAvatarDataSource {
+        switch configuration.dataSource {
         case .groupThread(let thread): return .thread(thread)
         case .address(let address): return .address(address)
         case .static(_, let avatar): return .asset(avatar: avatar, badge: nil)
-        case nil: return nil
         }
     }
 
@@ -165,15 +151,16 @@ public class ContactCellView: ManualStackView {
     }
 
     public func configure(
-        configuration: ContactCellConfiguration,
+        configuration: Configuration,
         transaction: DBReadTransaction,
     ) {
-        AssertIsOnMainThread()
         owsAssertDebug(!shouldDeactivateConstraints)
 
-        self.configuration = configuration
+        setupObservations(configuration: configuration)
 
-        self.isUserInteractionEnabled = configuration.allowUserInteraction
+        isUserInteractionEnabled = configuration.allowUserInteraction
+
+        let avatarDataSource = avatarDataSource(configuration: configuration)
 
         avatarView.update(transaction) { config in
             config.dataSource = avatarDataSource
@@ -189,16 +176,13 @@ public class ContactCellView: ManualStackView {
             }
         }
 
-        if
-            avatarDataSource?.isGroupAvatar ?? false,
-            let storyState = configuration.storyState
-        {
+        if avatarDataSource.isGroupAvatar, let storyState = configuration.storyState {
             // Group story. Add badge
             avatarView.addSubview(groupStoryBadgeView)
             let badgeColor: UIColor
             switch storyState {
             case .unviewed:
-                badgeColor = .ows_accentBlue
+                badgeColor = .Signal.accent
             case .viewed, .noStories:
                 badgeColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray25
             }
@@ -277,17 +261,18 @@ public class ContactCellView: ManualStackView {
                 rootStackSubviewInfos.append(textStackMeasurement.measuredSize.asManualSubviewInfo)
             }
 
+            var accessory = configuration.accessory
             if let accessoryMessage = configuration.accessoryMessage {
                 accessoryLabel.text = accessoryMessage
                 let labelSize = accessoryLabel.sizeThatFits(.square(.greatestFiniteMagnitude))
-                configuration.accessoryView = ContactCellAccessoryView(
+                accessory = Accessory(
                     accessoryView: accessoryLabel,
                     size: labelSize,
                 )
             }
-            if let accessoryView = configuration.accessoryView {
-                rootStackSubviews.append(accessoryView.accessoryView)
-                rootStackSubviewInfos.append(accessoryView.size.asManualSubviewInfo(hasFixedSize: true))
+            if let accessory {
+                rootStackSubviews.append(accessory.accessoryView)
+                rootStackSubviewInfos.append(accessory.size.asManualSubviewInfo(hasFixedSize: true))
             }
 
             let rootStackConfig = ManualStackView.Config(
@@ -310,32 +295,44 @@ public class ContactCellView: ManualStackView {
 
     // MARK: - Notifications
 
-    private func ensureObservers() {
-        NotificationCenter.default.removeObserver(self)
-        if case .address = configuration?.dataSource {
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(otherUsersProfileChanged(notification:)),
+    private var observation: NotificationCenter.Observer?
+
+    private func setupObservations(configuration: Configuration) {
+        if let observation {
+            NotificationCenter.default.removeObserver(observation)
+            self.observation = nil
+        }
+
+        if case .address = configuration.dataSource {
+            observation = NotificationCenter.default.addObserver(
                 name: UserProfileNotifications.otherUsersProfileDidChange,
-                object: nil,
-            )
+            ) { [weak self] notification in
+                guard
+                    let changedAddress = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
+                    changedAddress.isValid
+                else {
+                    owsFailDebug("changedAddress was unexpectedly nil")
+                    return
+                }
+                if case .address(changedAddress) = configuration.dataSource {
+                    self?.updateNameLabelsWithSneakyTransaction(configuration: configuration)
+                }
+            }
         }
     }
 
     // MARK: -
 
-    private func updateNameLabelsWithSneakyTransaction(configuration: ContactCellConfiguration) {
+    private func updateNameLabelsWithSneakyTransaction(configuration: Configuration) {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             updateNameLabels(configuration: configuration, transaction: transaction)
         }
     }
 
     private func updateNameLabels(
-        configuration: ContactCellConfiguration,
+        configuration: Configuration,
         transaction: DBReadTransaction,
     ) {
-        AssertIsOnMainThread()
-
         let textColor = self.nameLabelColor(forceDarkAppearance: configuration.forceDarkAppearance)
 
         let nameString = { () -> NSAttributedString in
@@ -389,9 +386,10 @@ public class ContactCellView: ManualStackView {
     override public func reset() {
         super.reset()
 
-        NotificationCenter.default.removeObserver(self)
-
-        configuration = nil
+        if let observation {
+            NotificationCenter.default.removeObserver(observation)
+            self.observation = nil
+        }
 
         avatarView.reset()
         textStack.reset()
@@ -399,25 +397,5 @@ public class ContactCellView: ManualStackView {
         nameLabel.text = nil
         subtitleLabel.text = nil
         accessoryLabel.text = nil
-    }
-
-    @objc
-    private func otherUsersProfileChanged(notification: Notification) {
-        AssertIsOnMainThread()
-
-        guard let configuration = self.configuration else {
-            return
-        }
-        guard
-            let changedAddress = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
-            changedAddress.isValid
-        else {
-            owsFailDebug("changedAddress was unexpectedly nil")
-            return
-        }
-
-        if case .address(changedAddress) = configuration.dataSource {
-            updateNameLabelsWithSneakyTransaction(configuration: configuration)
-        }
     }
 }

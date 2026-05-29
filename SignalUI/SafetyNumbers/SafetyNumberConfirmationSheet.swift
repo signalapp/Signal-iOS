@@ -682,7 +682,7 @@ private class SafetyNumberCell: ContactTableViewCell {
         }
 
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            let configuration = ContactCellConfiguration(address: item.address, localUserDisplayMode: .asUser)
+            var configuration = ContactCellView.Configuration(address: item.address, localUserDisplayMode: .asUser)
             configuration.allowUserInteraction = true
 
             configuration.forceDarkAppearance = traitCollection.userInterfaceStyle == .dark
@@ -690,7 +690,7 @@ private class SafetyNumberCell: ContactTableViewCell {
             let buttonSize = button.intrinsicContentSize
             button.removeFromSuperview()
             let buttonWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(button)
-            configuration.accessoryView = ContactCellAccessoryView(
+            configuration.accessory = ContactCellView.Accessory(
                 accessoryView: buttonWrapper,
                 size: buttonSize,
             )
@@ -720,7 +720,7 @@ private class SafetyNumberCell: ContactTableViewCell {
         }
     }
 
-    override func configure(configuration: ContactCellConfiguration, transaction: DBReadTransaction) {
+    override func configure(configuration: ContactCellView.Configuration, transaction: DBReadTransaction) {
         super.configure(configuration: configuration, transaction: transaction)
         backgroundColor = nil
     }

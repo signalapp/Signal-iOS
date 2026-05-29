@@ -264,7 +264,7 @@ struct PollDetailsView: View {
 
         private func addressCell(address: SignalServiceAddress) -> ManualStackView? {
             let cell = ContactCellView()
-            let config = ContactCellConfiguration(address: address, localUserDisplayMode: .asLocalUser)
+            var config = ContactCellView.Configuration(address: address, localUserDisplayMode: .asLocalUser)
             config.avatarSizeClass = .twentyEight
 
             SSKEnvironment.shared.databaseStorageRef.read { transaction in

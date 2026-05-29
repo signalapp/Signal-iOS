@@ -89,10 +89,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
                     return UITableViewCell()
                 }
 
-                SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                    let configuration = ContactCellConfiguration(address: viewerAddress, localUserDisplayMode: .asLocalUser)
-                    cell.configure(configuration: configuration, transaction: transaction)
-                }
+                cell.configureWithSneakyTransaction(address: viewerAddress, localUserDisplayMode: .asLocalUser)
 
                 return cell
             }, actionBlock: { [weak self] in

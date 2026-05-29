@@ -95,10 +95,7 @@ class BlockListViewController: OWSTableViewController2 {
             OWSTableItem(
                 dequeueCellBlock: { [weak self] tableView in
                     let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as! ContactTableViewCell
-                    let config = ContactCellConfiguration(
-                        address: address,
-                        localUserDisplayMode: .asUser,
-                    )
+                    let config = ContactCellView.Configuration(address: address, localUserDisplayMode: .asUser)
                     if self != nil {
                         SSKEnvironment.shared.databaseStorageRef.read { transaction in
                             cell.configure(configuration: config, transaction: transaction)

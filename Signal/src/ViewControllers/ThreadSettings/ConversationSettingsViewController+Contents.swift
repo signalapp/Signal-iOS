@@ -913,7 +913,7 @@ extension ConversationSettingsViewController {
                 }
 
                 SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                    let configuration = ContactCellConfiguration(address: memberAddress, localUserDisplayMode: .asLocalUser)
+                    var configuration = ContactCellView.Configuration(address: memberAddress, localUserDisplayMode: .asLocalUser)
                     let isGroupAdmin = groupMembership.isFullMemberAndAdministrator(memberAddress)
                     let isVerified = verificationState == .verified
                     let isNoLongerVerified = verificationState == .noLongerVerified

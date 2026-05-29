@@ -125,6 +125,7 @@ extension NewCallViewController: RecipientContextMenuHelperDelegate {
 // MARK: - RecipientPickerDelegate
 
 extension NewCallViewController: RecipientPickerDelegate, UsernameLinkScanDelegate {
+
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         selectionStyleForRecipient recipient: PickedRecipient,
@@ -133,7 +134,10 @@ extension NewCallViewController: RecipientPickerDelegate, UsernameLinkScanDelega
         return .default
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController, didSelectRecipient recipient: PickedRecipient) {
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        didSelectRecipient recipient: PickedRecipient,
+    ) {
         switch recipient.identifier {
         case let .address(address):
             let thread = TSContactThread.getOrCreateThread(contactAddress: address)
@@ -143,7 +147,12 @@ extension NewCallViewController: RecipientPickerDelegate, UsernameLinkScanDelega
         }
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController, accessoryViewForRecipient recipient: PickedRecipient, transaction: DBReadTransaction) -> ContactCellAccessoryView? {
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        contactCellAccessoryForRecipient recipient: PickedRecipient,
+        transaction: DBReadTransaction,
+    ) -> ContactCellView.Accessory? {
+
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = 20

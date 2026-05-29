@@ -172,12 +172,12 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     let cell = ContactTableViewCell(style: .default, reuseIdentifier: nil)
 
                     SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                        let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asLocalUser)
+                        var configuration = ContactCellView.Configuration(address: address, localUserDisplayMode: .asLocalUser)
                         configuration.allowUserInteraction = true
                         configuration.avatarSizeClass = .forty
 
                         if canApproveMemberRequests {
-                            configuration.accessoryView = self.buildMemberRequestButtons(address: address)
+                            configuration.accessory = self.buildMemberRequestButtons(address: address)
                         }
 
                         if address.isLocalAddress {
@@ -204,7 +204,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         contents.add(section)
     }
 
-    private func buildMemberRequestButtons(address: SignalServiceAddress) -> ContactCellAccessoryView {
+    private func buildMemberRequestButtons(address: SignalServiceAddress) -> ContactCellView.Accessory {
         let denyButton = UIButton(
             configuration: .roundGray(image: UIImage(resource: .x)),
             primaryAction: UIAction { [weak self] _ in
@@ -242,7 +242,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             ],
         )
         let stackSize = stackMeasurement.measuredSize
-        return ContactCellAccessoryView(accessoryView: stackView, size: stackSize)
+        return ContactCellView.Accessory(accessoryView: stackView, size: stackSize)
     }
 
     private func approveMemberRequest(address: SignalServiceAddress) {
@@ -311,7 +311,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         cell.selectionStyle = canRevokeInvites ? .default : .none
 
                         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                            let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
+                            var configuration = ContactCellView.Configuration(address: address, localUserDisplayMode: .asUser)
                             configuration.avatarSizeClass = .forty
                             cell.configure(configuration: configuration, transaction: transaction)
                         }
@@ -366,8 +366,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         cell.selectionStyle = canRevokeInvites ? .default : .none
 
                         databaseStorage.read { transaction in
-                            let configuration = ContactCellConfiguration(address: inviterAddress, localUserDisplayMode: .asUser)
-                            configuration.avatarSizeClass = .forty
+                            var configuration = ContactCellView.Configuration(address: inviterAddress, localUserDisplayMode: .asUser)
                             let inviterName = contactManager.displayName(for: inviterAddress, tx: transaction).resolvedValue()
                             let format = OWSLocalizedString(
                                 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d",
@@ -375,6 +374,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                                 comment: "Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member }}.",
                             )
                             configuration.customName = String.localizedStringWithFormat(format, invitedAddresses.count, inviterName)
+                            configuration.avatarSizeClass = .forty
                             cell.configure(configuration: configuration, transaction: transaction)
                         }
 

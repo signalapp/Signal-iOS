@@ -25,9 +25,9 @@ public protocol RecipientPickerDelegate: RecipientContextMenuHelperDelegate {
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        accessoryViewForRecipient recipient: PickedRecipient,
+        contactCellAccessoryForRecipient recipient: PickedRecipient,
         transaction: DBReadTransaction,
-    ) -> ContactCellAccessoryView?
+    ) -> ContactCellView.Accessory?
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
@@ -58,9 +58,9 @@ public extension RecipientPickerDelegate {
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        accessoryViewForRecipient recipient: PickedRecipient,
+        contactCellAccessoryForRecipient recipient: PickedRecipient,
         transaction: DBReadTransaction,
-    ) -> ContactCellAccessoryView? { nil }
+    ) -> ContactCellView.Accessory? { nil }
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,

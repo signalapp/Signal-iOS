@@ -56,7 +56,7 @@ open class ContactTableViewCell: UITableViewCell, ReusableTableViewCell {
         localUserDisplayMode: LocalUserDisplayMode,
         transaction: DBReadTransaction,
     ) {
-        let configuration = ContactCellConfiguration(
+        let configuration = ContactCellView.Configuration(
             address: address,
             localUserDisplayMode: localUserDisplayMode,
         )
@@ -68,7 +68,7 @@ open class ContactTableViewCell: UITableViewCell, ReusableTableViewCell {
         localUserDisplayMode: LocalUserDisplayMode,
         transaction: DBReadTransaction,
     ) {
-        let configuration = ContactCellConfiguration(
+        let configuration = ContactCellView.Configuration(
             address: thread.contactAddress,
             localUserDisplayMode: localUserDisplayMode,
         )
@@ -76,7 +76,7 @@ open class ContactTableViewCell: UITableViewCell, ReusableTableViewCell {
     }
 
     open func configure(
-        configuration: ContactCellConfiguration,
+        configuration: ContactCellView.Configuration,
         transaction: DBReadTransaction,
     ) {
         OWSTableItem.configureCell(self)

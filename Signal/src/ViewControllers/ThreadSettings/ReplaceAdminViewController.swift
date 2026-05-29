@@ -82,12 +82,7 @@ class ReplaceAdminViewController: OWSTableViewController2 {
                         owsFailDebug("Missing cell.")
                         return UITableViewCell()
                     }
-
-                    SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                        let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
-                        cell.configure(configuration: configuration, transaction: transaction)
-                    }
-
+                    cell.configureWithSneakyTransaction(address: address, localUserDisplayMode: .asUser)
                     return cell
                 },
                 actionBlock: { [weak self] in

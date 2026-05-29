@@ -1295,10 +1295,10 @@ class ConversationPickerCell: ContactTableViewCell {
     // MARK: - ContactTableViewCell
 
     func configure(conversationItem: ConversationItem, transaction: DBReadTransaction) {
-        let configuration: ContactCellConfiguration
+        var configuration: ContactCellView.Configuration
         switch conversationItem.messageRecipient {
         case .contact(let address):
-            configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .noteToSelf)
+            configuration = ContactCellView.Configuration(address: address, localUserDisplayMode: .noteToSelf)
         case .group(let groupThreadId):
             guard
                 let groupThread = TSGroupThread.fetchGroupThreadViaCache(
@@ -1309,27 +1309,27 @@ class ConversationPickerCell: ContactTableViewCell {
                 owsFailDebug("Failed to find group thread")
                 return
             }
-            configuration = ContactCellConfiguration(groupThread: groupThread, localUserDisplayMode: .noteToSelf)
+            configuration = ContactCellView.Configuration(groupThread: groupThread, localUserDisplayMode: .noteToSelf)
         case .privateStory(_, let isMyStory):
             if isMyStory {
                 guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
                     owsFailDebug("Unexpectedly missing local address")
                     return
                 }
-                configuration = ContactCellConfiguration(address: localAddress, localUserDisplayMode: .asUser)
+                configuration = ContactCellView.Configuration(address: localAddress, localUserDisplayMode: .asUser)
                 configuration.customName = conversationItem.title(transaction: transaction)
             } else {
                 guard let image = conversationItem.image else {
                     owsFailDebug("Unexpectedly missing image for private story")
                     return
                 }
-                configuration = ContactCellConfiguration(name: conversationItem.title(transaction: transaction), avatar: image)
+                configuration = ContactCellView.Configuration(name: conversationItem.title(transaction: transaction), avatar: image)
             }
         }
         if conversationItem.isBlocked {
             configuration.accessoryMessage = MessageStrings.conversationIsBlocked
         } else {
-            configuration.accessoryView = buildAccessoryView(disappearingMessagesConfig: conversationItem.disappearingMessagesConfig)
+            configuration.accessory = buildContactCellAccessory(disappearingMessagesConfig: conversationItem.disappearingMessagesConfig)
         }
 
         if let storyItem = conversationItem as? StoryConversationItem {
@@ -1355,7 +1355,7 @@ class ConversationPickerCell: ContactTableViewCell {
 
     private lazy var selectionView = SelectionIndicatorView()
 
-    func buildAccessoryView(disappearingMessagesConfig: DisappearingMessagesConfigurationRecord?) -> ContactCellAccessoryView {
+    func buildContactCellAccessory(disappearingMessagesConfig: DisappearingMessagesConfigurationRecord?) -> ContactCellView.Accessory {
 
         selectionView.removeFromSuperview()
         let selectionWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(selectionView)
@@ -1364,7 +1364,7 @@ class ConversationPickerCell: ContactTableViewCell {
             let disappearingMessagesConfig,
             disappearingMessagesConfig.isEnabled
         else {
-            return ContactCellAccessoryView(
+            return ContactCellView.Accessory(
                 accessoryView: selectionWrapper,
                 size: selectionView.intrinsicContentSize,
             )
@@ -1389,7 +1389,7 @@ class ConversationPickerCell: ContactTableViewCell {
             ],
         )
         let stackSize = stackMeasurement.measuredSize
-        return ContactCellAccessoryView(accessoryView: stackView, size: stackSize)
+        return ContactCellView.Accessory(accessoryView: stackView, size: stackSize)
     }
 }
 

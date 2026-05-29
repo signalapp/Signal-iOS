@@ -522,8 +522,8 @@ class MessageDetailViewController: OWSTableViewController2 {
                 }
 
                 SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                    let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
-                    configuration.accessoryView = self.buildAccessoryView(
+                    var configuration = ContactCellView.Configuration(address: address, localUserDisplayMode: .asUser)
+                    configuration.accessory = self.buildContactCellAccessory(
                         text: accessoryText,
                         displayUDIndicator: displayUDIndicator,
                         transaction: transaction,
@@ -548,11 +548,11 @@ class MessageDetailViewController: OWSTableViewController2 {
         expiryLabel?.attributedText = expiryLabelAttributedText
     }
 
-    private func buildAccessoryView(
+    private func buildContactCellAccessory(
         text: String,
         displayUDIndicator: Bool,
         transaction: DBReadTransaction,
-    ) -> ContactCellAccessoryView {
+    ) -> ContactCellView.Accessory {
         let label = CVLabel()
         label.textAlignment = .right
         let labelConfig = CVLabelConfig.unstyledText(
@@ -566,7 +566,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         let shouldShowUD = SSKEnvironment.shared.preferencesRef.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
 
         guard displayUDIndicator, shouldShowUD else {
-            return ContactCellAccessoryView(accessoryView: label, size: labelSize)
+            return .init(accessoryView: label, size: labelSize)
         }
 
         let imageView = CVImageView()
@@ -589,7 +589,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             ],
         )
         let hStackSize = hStackMeasurement.measuredSize
-        return ContactCellAccessoryView(accessoryView: hStack, size: hStackSize)
+        return .init(accessoryView: hStack, size: hStackSize)
     }
 
     private static func valueLabelAttributedText(name: String, value: String) -> NSAttributedString {

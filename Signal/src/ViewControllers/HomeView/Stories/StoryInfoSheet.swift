@@ -301,9 +301,9 @@ class StoryInfoSheet: OWSTableViewController2, DatabaseChangeDelegate, UIAdaptiv
             }
 
             SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
+                var configuration = ContactCellView.Configuration(address: address, localUserDisplayMode: .asUser)
                 configuration.forceDarkAppearance = true
-                configuration.accessoryView = self.buildAccessoryView(
+                configuration.accessory = self.buildContactCellAccessory(
                     text: accessoryText,
                     transaction: transaction,
                 )
@@ -325,10 +325,10 @@ class StoryInfoSheet: OWSTableViewController2, DatabaseChangeDelegate, UIAdaptiv
         })
     }
 
-    private func buildAccessoryView(
+    private func buildContactCellAccessory(
         text: String,
         transaction: DBReadTransaction,
-    ) -> ContactCellAccessoryView {
+    ) -> ContactCellView.Accessory {
         let label = CVLabel()
         let labelConfig = CVLabelConfig.unstyledText(
             text,
@@ -338,7 +338,7 @@ class StoryInfoSheet: OWSTableViewController2, DatabaseChangeDelegate, UIAdaptiv
         labelConfig.applyForRendering(label: label)
         let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: .greatestFiniteMagnitude)
 
-        return ContactCellAccessoryView(accessoryView: label, size: labelSize)
+        return .init(accessoryView: label, size: labelSize)
     }
 
     // MARK: - DatabaseChangeDelegate
