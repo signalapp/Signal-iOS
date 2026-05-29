@@ -12,6 +12,7 @@ import Testing
 @MainActor
 struct RemoteReleaseNotesFetchingManagerTests {
     private let db = InMemoryDB()
+    private let experienceUpgradeStore = ExperienceUpgradeStore()
     private let remoteReleaseNotesFetchingManager: RemoteReleaseNotesFetchingManager
 
     init() {
@@ -26,7 +27,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
         try await remoteReleaseNotesFetchingManager.syncRemoteReleaseNotes()
 
         db.read { tx in
-            ExperienceUpgrade.anyEnumerate(transaction: tx) { upgrade, _ in
+            experienceUpgradeStore.enumerateExperienceUpgrades(tx: tx) { upgrade in
                 switch upgrade.manifest {
                 case .remoteMegaphone(let megaphone):
                     #expect(megaphone.translation.title == "Donate Today")

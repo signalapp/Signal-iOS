@@ -36,7 +36,7 @@ public struct RemoteMegaphoneModel: Codable {
     /// been fetched and cached for this megaphone it is immutable - if this
     /// changes in the future, ensure that previously-fetched images are handled
     /// appropriately.
-    mutating func update(withRefetched newMegaphone: RemoteMegaphoneModel) {
+    mutating func updateSelectively(newRemoteMegaphoneModel newMegaphone: RemoteMegaphoneModel) {
         guard id == newMegaphone.id else {
             owsFailDebug("Attempting to update remote megaphone, but IDs do not match! Current: \(id), new: \(newMegaphone.id)")
             return

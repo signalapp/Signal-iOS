@@ -6,7 +6,9 @@
 import Foundation
 public import GRDB
 
-public class ExperienceUpgrade: SDSCodableModel, Decodable {
+public class ExperienceUpgrade: Codable, FetchableRecord, PersistableRecord {
+    public typealias IDType = Int64
+
     public static let databaseTableName = "model_ExperienceUpgrade"
     private static var recordType: SDSRecordType { .experienceUpgrade }
 
@@ -22,25 +24,26 @@ public class ExperienceUpgrade: SDSCodableModel, Decodable {
         case manifest
     }
 
-    public var id: RowId?
+    public var id: IDType?
+
     public var uniqueId: String {
         manifest.uniqueId
     }
 
     /// Timestamp when this upgrade was first viewed.
-    public private(set) var firstViewedTimestamp: TimeInterval
+    public var firstViewedTimestamp: TimeInterval
 
     /// Timestamp when this upgrade was last snoozed.
-    public internal(set) var lastSnoozedTimestamp: TimeInterval
+    public var lastSnoozedTimestamp: TimeInterval
 
     /// Number of times this upgrade has been snoozed.
-    public internal(set) var snoozeCount: UInt
+    public var snoozeCount: UInt
 
     /// Whether this upgrade should be considered fully complete.
-    public private(set) var isComplete: Bool
+    public var isComplete: Bool
 
     /// Identifies and holds metadata about this ``ExperienceUpgrade``.
-    public private(set) var manifest: ExperienceUpgradeManifest
+    public var manifest: ExperienceUpgradeManifest
 
     private init(manifest: ExperienceUpgradeManifest) {
         self.firstViewedTimestamp = 0
@@ -55,6 +58,21 @@ public class ExperienceUpgrade: SDSCodableModel, Decodable {
         ExperienceUpgrade(manifest: manifest)
     }
 
+    // MARK: - PersistableRecord
+
+    public func didInsert(with rowID: Int64, for column: String?) {
+        id = rowID
+    }
+
+    public static let persistenceConflictPolicy: PersistenceConflictPolicy = PersistenceConflictPolicy(
+        insert: .replace,
+        update: .replace,
+    )
+
+    public func upsert(tx: DBWriteTransaction) throws {
+        try self.insert(tx.database)
+    }
+
     // MARK: - Codable
 
     public required init(from decoder: Decoder) throws {
@@ -63,7 +81,7 @@ public class ExperienceUpgrade: SDSCodableModel, Decodable {
         let decodedRecordType = try container.decode(Int64.self, forKey: .recordType)
         owsAssertDebug(decodedRecordType == Self.recordType.rawValue, "Unexpectedly decoded record with wrong type.")
 
-        id = try container.decodeIfPresent(RowId.self, forKey: .id)
+        id = try container.decodeIfPresent(IDType.self, forKey: .id)
 
         firstViewedTimestamp = try container.decode(TimeInterval.self, forKey: .firstViewedTimestamp)
         lastSnoozedTimestamp = try container.decode(TimeInterval.self, forKey: .lastSnoozedTimestamp)
@@ -130,86 +148,5 @@ public class ExperienceUpgrade: SDSCodableModel, Decodable {
         }
 
         return Int(clamping: daysSinceFirstView) > manifest.numberOfDaysToShowFor
-    }
-
-    // MARK: - Removal
-
-    public func anyDidRemove(transaction: DBWriteTransaction) {
-        switch manifest {
-        case
-            .introducingPins,
-            .notificationPermissionReminder,
-            .newLinkedDeviceNotification,
-            .createUsernameReminder,
-            .inactiveLinkedDeviceReminder,
-            .inactivePrimaryDeviceReminder,
-            .pinReminder,
-            .contactPermissionReminder,
-            .backupKeyReminder,
-            .enableBackupsReminder,
-            .haveEnabledBackupsNotification,
-            .unrecognized:
-            return
-        case .remoteMegaphone(let megaphone):
-            guard megaphone.translation.hasImage else {
-                return
-            }
-
-            do {
-                let imageLocalUrl = RemoteMegaphoneModel.imagesDirectory.appendingPathComponent(megaphone.translation.imageLocalRelativePath)
-                try FileManager.default.removeItem(at: imageLocalUrl)
-            } catch let error {
-                owsFailDebug("Failed to remove image file for removed remote megaphone with ID \(megaphone.id)! \(error)")
-            }
-        }
-    }
-
-    // MARK: - Mark as <state>
-
-    public func markAsSnoozed(transaction: DBWriteTransaction) {
-        upsert(withTransaction: transaction) { upgrade in
-            upgrade.lastSnoozedTimestamp = Date().timeIntervalSince1970
-            upgrade.snoozeCount += 1
-        }
-    }
-
-    public func markAsComplete(transaction: DBWriteTransaction) {
-        upsert(withTransaction: transaction) { $0.isComplete = true }
-    }
-
-    public func markAsViewed(transaction: DBWriteTransaction) {
-        upsert(withTransaction: transaction) { upgrade in
-            guard upgrade.firstViewedTimestamp == 0 else { return }
-            upgrade.firstViewedTimestamp = Date().timeIntervalSince1970
-        }
-    }
-
-    /// If an upgrade is already persisted with our `uniqueId`, performs `block`
-    /// on it and updates. Otherwise, performs `block` on ourself and inserts
-    /// ourself. Skips calling `block` if this upgrade should not be saved.
-    private func upsert(withTransaction transaction: DBWriteTransaction, inBlock block: (ExperienceUpgrade) -> Void) {
-        guard manifest.shouldSave else {
-            return
-        }
-
-        let experienceToUpgrade = ExperienceUpgrade.anyFetch(uniqueId: uniqueId, transaction: transaction) ?? self
-        block(experienceToUpgrade)
-        experienceToUpgrade.anyUpsert(transaction: transaction)
-    }
-
-    // MARK: - Update remote megaphone info
-
-    /// Updates a subset of properties on the existing manifest with the given
-    /// re-fetched megaphone. Does nothing if the given megaphone does not
-    /// match the existing.
-    public func updateManifestRemoteMegaphone(withRefetchedMegaphone refetchedMegaphone: RemoteMegaphoneModel) {
-        guard case .remoteMegaphone(var megaphone) = manifest else {
-            owsFailDebug("Attempting to update remote megaphone, but upgrade is not a remote megaphone: \(manifest)")
-            return
-        }
-
-        megaphone.update(withRefetched: refetchedMegaphone)
-
-        manifest = .remoteMegaphone(megaphone: megaphone)
     }
 }

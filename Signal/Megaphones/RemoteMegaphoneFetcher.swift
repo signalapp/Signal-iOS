@@ -8,20 +8,36 @@ public import SignalServiceKit
 
 /// Handles fetching and parsing remote megaphones.
 public class RemoteMegaphoneFetcher: RemoteReleaseNotesFetcher<RemoteMegaphoneModel.Manifest, RemoteMegaphoneModel.Translation> {
+    private let experienceUpgradeStore: ExperienceUpgradeStore
+
+    override init(
+        db: DB,
+        remoteReleaseNotesService: any RemoteReleaseNotesServiceProtocol,
+    ) {
+        self.experienceUpgradeStore = ExperienceUpgradeStore()
+
+        super.init(
+            db: db,
+            remoteReleaseNotesService: remoteReleaseNotesService,
+        )
+    }
+
     /// Update our local persisted megaphone state with freshly-fetched
     /// megaphones from the service. Updates existing megaphones if present,
     /// and creates new ones if necessary. Removes any locally-persisted
     /// megaphones that no longer exist on the service.
     override func updatePersistedData(
         withFetchedData fetchedTranslations: [(RemoteMegaphoneModel.Manifest, RemoteMegaphoneModel.Translation)],
-        transaction: DBWriteTransaction,
+        transaction tx: DBWriteTransaction,
     ) {
-        // Get the current remote megaphones.
-        var localRemoteMegaphones: [String: ExperienceUpgrade] = [:]
-        ExperienceUpgrade.anyEnumerate(transaction: transaction) { upgrade, _ in
-            if case .remoteMegaphone = upgrade.manifest {
-                localRemoteMegaphones[upgrade.uniqueId] = upgrade
+        // Get any persisted ExperienceUpgrades for the remote megaphones.
+        var experienceUpgradesByMegaphoneId: [String: ExperienceUpgrade] = [:]
+        experienceUpgradeStore.enumerateExperienceUpgrades(tx: tx) { experienceUpgrade in
+            guard case .remoteMegaphone(let model) = experienceUpgrade.manifest else {
+                return
             }
+
+            experienceUpgradesByMegaphoneId[model.manifest.id] = experienceUpgrade
         }
 
         // Insert all megaphones we got from the service. If we already have a
@@ -30,23 +46,28 @@ public class RemoteMegaphoneFetcher: RemoteReleaseNotesFetcher<RemoteMegaphoneMo
         // For example, if the user's locale has changed we may have updated
         // translations.
         for (manifest, translation) in fetchedTranslations {
-            let serviceMegaphone = RemoteMegaphoneModel(manifest: manifest, translation: translation)
-            if let existingLocalMegaphone = localRemoteMegaphones[serviceMegaphone.id] {
-                existingLocalMegaphone.updateManifestRemoteMegaphone(withRefetchedMegaphone: serviceMegaphone)
-                existingLocalMegaphone.anyUpsert(transaction: transaction)
-
-                localRemoteMegaphones.removeValue(forKey: serviceMegaphone.id)
+            let remoteMegaphoneModel = RemoteMegaphoneModel(manifest: manifest, translation: translation)
+            let experienceUpgrade: ExperienceUpgrade
+            if let persisted = experienceUpgradesByMegaphoneId.removeValue(forKey: manifest.id) {
+                experienceUpgrade = persisted
             } else {
-                ExperienceUpgrade
-                    .makeNew(withManifest: .remoteMegaphone(megaphone: serviceMegaphone))
-                    .anyInsert(transaction: transaction)
+                experienceUpgrade = .makeNew(withManifest: .remoteMegaphone(megaphone: remoteMegaphoneModel))
             }
+
+            experienceUpgradeStore.upsertRemoteMegaphone(
+                experienceUpgrade: experienceUpgrade,
+                newRemoteMegaphoneModel: remoteMegaphoneModel,
+                tx: tx,
+            )
         }
 
         // Remove records for any remaining local megaphones, which are no
         // longer on the service.
-        for (_, experienceUpgradeToRemove) in localRemoteMegaphones {
-            experienceUpgradeToRemove.anyRemove(transaction: transaction)
+        for (_, experienceUpgradeToRemove) in experienceUpgradesByMegaphoneId {
+            experienceUpgradeStore.remove(
+                experienceUpgrade: experienceUpgradeToRemove,
+                tx: tx,
+            )
         }
     }
 

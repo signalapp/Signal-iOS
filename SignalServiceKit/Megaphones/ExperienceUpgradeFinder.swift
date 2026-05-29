@@ -9,34 +9,23 @@ public class ExperienceUpgradeFinder {
 
     // MARK: -
 
-    public class func markAsViewed(experienceUpgrade: ExperienceUpgrade, transaction: DBWriteTransaction) {
-        Logger.info("marking experience upgrade as seen \(experienceUpgrade.uniqueId)")
-        experienceUpgrade.markAsViewed(transaction: transaction)
+    public class func markAsViewed(experienceUpgrade: ExperienceUpgrade, transaction tx: DBWriteTransaction) {
+        ExperienceUpgradeStore().markAsViewed(experienceUpgrade: experienceUpgrade, tx: tx)
     }
 
-    public class func markAsSnoozed(experienceUpgrade: ExperienceUpgrade, transaction: DBWriteTransaction) {
-        Logger.info("marking experience upgrade as snoozed \(experienceUpgrade.uniqueId)")
-
-        experienceUpgrade.markAsSnoozed(transaction: transaction)
+    public class func markAsSnoozed(experienceUpgrade: ExperienceUpgrade, transaction tx: DBWriteTransaction) {
+        ExperienceUpgradeStore().markAsSnoozed(experienceUpgrade: experienceUpgrade, tx: tx)
     }
 
     public class func markAsComplete(
-        experienceUpgradeManifest manifest: ExperienceUpgradeManifest,
-        transaction: DBWriteTransaction,
+        experienceUpgradeManifest: ExperienceUpgradeManifest,
+        transaction tx: DBWriteTransaction,
     ) {
-        markAsComplete(
-            experienceUpgrade: ExperienceUpgrade.makeNew(withManifest: manifest),
-            transaction: transaction,
-        )
+        markAsComplete(experienceUpgrade: .makeNew(withManifest: experienceUpgradeManifest), transaction: tx)
     }
 
-    public class func markAsComplete(experienceUpgrade: ExperienceUpgrade, transaction: DBWriteTransaction) {
-        guard experienceUpgrade.manifest.shouldComplete else {
-            return Logger.info("Skipping marking complete for experience upgrade with uniqueId: \(experienceUpgrade.uniqueId)")
-        }
-
-        Logger.info("Marking complete experience upgrade with uniqueId: \(experienceUpgrade.uniqueId)")
-        experienceUpgrade.markAsComplete(transaction: transaction)
+    public class func markAsComplete(experienceUpgrade: ExperienceUpgrade, transaction tx: DBWriteTransaction) {
+        ExperienceUpgradeStore().markAsComplete(experienceUpgrade: experienceUpgrade, tx: tx)
     }
 
     public class func markAllCompleteForNewUser(transaction: DBWriteTransaction) {
@@ -51,13 +40,13 @@ public class ExperienceUpgradeFinder {
     /// persisted record if one exists and is applicable, and an in-memory
     /// model otherwise.
     public class func allKnownExperienceUpgrades(
-        transaction: DBReadTransaction,
+        transaction tx: DBReadTransaction,
     ) -> [ExperienceUpgrade] {
         var experienceUpgrades = [ExperienceUpgrade]()
         var localManifestsWithoutRecords = ExperienceUpgradeManifest.wellKnownLocalUpgradeManifests
 
         // Load any experience upgrades with persisted records...
-        ExperienceUpgrade.anyEnumerate(transaction: transaction) { experienceUpgrade, _ in
+        ExperienceUpgradeStore().enumerateExperienceUpgrades(tx: tx) { experienceUpgrade in
             if case .unrecognized = experienceUpgrade.manifest {
                 // Ignore any no-longer-recognized records.
                 return

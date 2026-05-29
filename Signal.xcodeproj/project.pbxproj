@@ -2897,6 +2897,7 @@
 		D9791BC42EAADF010016AA5A /* HTTPResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9791BC32EAADEFD0016AA5A /* HTTPResponse.swift */; };
 		D97992A12D9E55F20080A4F5 /* CurrencyFormatterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97992A02D9E55E10080A4F5 /* CurrencyFormatterTest.swift */; };
 		D97992A32D9E55FB0080A4F5 /* CurrencyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97992A22D9E55F80080A4F5 /* CurrencyFormatter.swift */; };
+		D97992AC2FC147C5002E79F3 /* ExperienceUpgradeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97992AB2FC147C2002E79F3 /* ExperienceUpgradeStore.swift */; };
 		D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */; };
 		D979CC292AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC222AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift */; };
 		D979CC2B2AD3933B006AAC49 /* InteractionStore+CallRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC242AD3933B006AAC49 /* InteractionStore+CallRecord.swift */; };
@@ -7183,6 +7184,7 @@
 		D9791BC32EAADEFD0016AA5A /* HTTPResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPResponse.swift; sourceTree = "<group>"; };
 		D97992A02D9E55E10080A4F5 /* CurrencyFormatterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatterTest.swift; sourceTree = "<group>"; };
 		D97992A22D9E55F80080A4F5 /* CurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatter.swift; sourceTree = "<group>"; };
+		D97992AB2FC147C2002E79F3 /* ExperienceUpgradeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeStore.swift; sourceTree = "<group>"; };
 		D979CC1F2AD3933B006AAC49 /* IndividualCallRecordManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCallRecordManager.swift; sourceTree = "<group>"; };
 		D979CC202AD3933B006AAC49 /* IncomingCallEventSyncMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncomingCallEventSyncMessageManager.swift; sourceTree = "<group>"; };
 		D979CC222AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessageManager.swift; sourceTree = "<group>"; };
@@ -13327,6 +13329,7 @@
 				D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */,
 				F9C5CB5B289453B200548EEE /* ExperienceUpgradeFinder.swift */,
 				D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */,
+				D97992AB2FC147C2002E79F3 /* ExperienceUpgradeStore.swift */,
 				040506FB2F7FE3D50078B769 /* RemoteAnnouncementModel.swift */,
 				D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */,
 				040506FF2F8049910078B769 /* RemoteReleaseNotesService.swift */,
@@ -19232,6 +19235,7 @@
 				D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */,
 				F9C5CE2D289453B400548EEE /* ExperienceUpgradeFinder.swift in Sources */,
 				D9C7CECB28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift in Sources */,
+				D97992AC2FC147C5002E79F3 /* ExperienceUpgradeStore.swift in Sources */,
 				D98BC5332EE387A30052A81F /* ExpirationJob.swift in Sources */,
 				C1FB9B752B16498C00D51A3B /* ExternalPendingDonationStore.swift in Sources */,
 				F9C5CE57289453B400548EEE /* Factories.swift in Sources */,
