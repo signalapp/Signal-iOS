@@ -594,6 +594,7 @@
 		4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */; };
 		4C751BE523FA0284002A8AF1 /* ContactSupportActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C751BE423FA0284002A8AF1 /* ContactSupportActionSheet.swift */; };
 		4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest.swift */; };
+		C0D1E5012F0C000000000001 /* ThreadUtilSignalUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D1E5002F0C000000000001 /* ThreadUtilSignalUITest.swift */; };
 		4C8A6DFC22E5499300469AE7 /* MediaZoomAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */; };
 		4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A6DFD22E54AFA00469AE7 /* MediaInteractiveDismiss.swift */; };
 		4C9D347B23679C25006A4307 /* ContactStreamTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347923679C13006A4307 /* ContactStreamTest.swift */; };
@@ -4828,6 +4829,7 @@
 		4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalUBSan.supp; sourceTree = "<group>"; };
 		4C751BE423FA0284002A8AF1 /* ContactSupportActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportActionSheet.swift; sourceTree = "<group>"; };
 		4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalBaseTest.swift; sourceTree = "<group>"; };
+		C0D1E5002F0C000000000001 /* ThreadUtilSignalUITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadUtilSignalUITest.swift; sourceTree = "<group>"; };
 		4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaZoomAnimationController.swift; sourceTree = "<group>"; };
 		4C8A6DFD22E54AFA00469AE7 /* MediaInteractiveDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaInteractiveDismiss.swift; sourceTree = "<group>"; };
 		4C9D347923679C13006A4307 /* ContactStreamTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStreamTest.swift; sourceTree = "<group>"; };
@@ -11645,6 +11647,7 @@
 				50791B1B2D037A7800D747F8 /* RecipientPickers */,
 				661278052996BA6700A1D5A1 /* Registration */,
 				040507132F80639B0078B769 /* RemoteReleaseNotes */,
+				C0D1E5022F0C000000000001 /* Sending */,
 				4C3EF8002109184A0007EBF7 /* SSKTests */,
 				D97046082E81D5B60034C05D /* Storage */,
 				E75DD3DC2810CD3500E32C36 /* subscriptions */,
@@ -11666,6 +11669,14 @@
 				45D062F427D7F49800BD505E /* OWSContactsManagerTest.swift */,
 			);
 			path = contact;
+			sourceTree = "<group>";
+		};
+		C0D1E5022F0C000000000001 /* Sending */ = {
+			isa = PBXGroup;
+			children = (
+				C0D1E5002F0C000000000001 /* ThreadUtilSignalUITest.swift */,
+			);
+			path = Sending;
 			sourceTree = "<group>";
 		};
 		B660F69D1C29868000687D6E /* Supporting Files */ = {
@@ -18874,6 +18885,7 @@
 				4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */,
 				8803FF6628EF89B50023574A /* StorySharingTests.swift in Sources */,
 				E75DD3E02810CDBD00E32C36 /* SubscriptionModelsTest.swift in Sources */,
+				C0D1E5012F0C000000000001 /* ThreadUtilSignalUITest.swift in Sources */,
 				5033D47329DCB3FF007FEADA /* UrlOpenerTest.swift in Sources */,
 				45A3579827DAAC6A0051CE8B /* UserProfileTest.swift in Sources */,
 				5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */,

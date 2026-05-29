@@ -16,6 +16,10 @@ public final class ThreadUtil {
     // same order in which they are enqueued.
     public static var enqueueSendQueue = SerialTaskQueue()
 
+    // A serial queue for work that must happen after an outgoing message is
+    // visible but before its sender job is enqueued.
+    public static var sendFinalizationQueue = SerialTaskQueue()
+
     public static func enqueueSendAsyncWrite(_ block: @escaping (DBWriteTransaction) -> Void) {
         enqueueSendQueue.enqueue {
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in

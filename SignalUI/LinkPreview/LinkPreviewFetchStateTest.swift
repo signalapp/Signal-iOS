@@ -165,6 +165,46 @@ class LinkPreviewFetchStateTest: XCTestCase {
         XCTAssertEqual(mockLinkPreviewFetcher.fetchedURLs, [validURL])
     }
 
+    func testLinkPreviewDraftForSendingTaskSurvivesClearingCurrentText() async throws {
+        let linkPreviewFetchState = self.linkPreviewFetchState()
+
+        let validURL = try XCTUnwrap(URL(string: "https://signal.org"))
+        let pendingFetchState = AtomicValue(PendingFetchState(expectedCount: 1), lock: .init())
+        mockLinkPreviewFetcher.fetchLinkPreviewBlock = { fetchedURL in
+            return try await withCheckedThrowingContinuation { continuation in
+                pendingFetchState.update {
+                    $0.deferredBlocks.append {
+                        continuation.resume(returning: OWSLinkPreviewDraft(url: fetchedURL, title: "Website Title", isForwarded: false))
+                    }
+                    $0.resolveIfReady()
+                }
+            }
+        }
+
+        let updateTask = linkPreviewFetchState.update(.init(text: "https://signal.org", ranges: .empty))
+        XCTAssert(linkPreviewFetchState.currentState.isLoading)
+        XCTAssertNil(linkPreviewFetchState.linkPreviewDraftIfLoaded)
+
+        let linkPreviewDraftForSendingTask = try XCTUnwrap(
+            linkPreviewFetchState.consumeLinkPreviewDraftForSendingTask(),
+        )
+
+        linkPreviewFetchState.update(.init(text: "", ranges: .empty))
+        XCTAssert(linkPreviewFetchState.currentState.isNone)
+        XCTAssertNil(linkPreviewFetchState.currentUrl)
+
+        pendingFetchState.update {
+            $0.isReady = true
+            $0.resolveIfReady()
+        }
+
+        await updateTask?.value
+        let linkPreviewDraft = await linkPreviewDraftForSendingTask.value
+
+        XCTAssertEqual(linkPreviewDraft?.url, validURL)
+        XCTAssertEqual(mockLinkPreviewFetcher.fetchedURLs, [validURL])
+    }
+
     func testUpdateObsolete() async throws {
         let linkPreviewFetchState = self.linkPreviewFetchState()
 

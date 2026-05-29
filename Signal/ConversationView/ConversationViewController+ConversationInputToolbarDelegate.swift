@@ -136,6 +136,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 // If its cleared, "change" it to nothing (clear it).
                 quotedReplyEdit: inputToolbar.quotedReplyDraft == nil ? .change(()) : .keep,
                 linkPreviewDraft: inputToolbar.linkPreviewDraft,
+                linkPreviewDraftForSending: inputToolbar.consumeLinkPreviewDraftForSendingTask(),
                 editTarget: editTarget,
                 persistenceCompletionHandler: {
                     AssertIsOnMainThread()
@@ -148,6 +149,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 thread: self.thread,
                 quotedReplyDraft: inputToolbar.quotedReplyDraft,
                 linkPreviewDraft: inputToolbar.linkPreviewDraft,
+                linkPreviewDraftForSending: inputToolbar.consumeLinkPreviewDraftForSendingTask(),
                 persistenceCompletionHandler: {
                     AssertIsOnMainThread()
                     self.loadCoordinator.enqueueReload()

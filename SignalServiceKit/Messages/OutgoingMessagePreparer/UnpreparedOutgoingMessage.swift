@@ -90,6 +90,71 @@ public class UnpreparedOutgoingMessage {
         return try self._prepare(tx: tx)
     }
 
+    public struct DeferredPersistedMessage: Sendable {
+        public let messageUniqueId: String
+        public let messageRowId: Int64
+    }
+
+    public func preparePersistableMessageForDeferredSend(
+        tx: DBWriteTransaction,
+    ) throws -> DeferredPersistedMessage {
+        switch messageType {
+        case .persistable(let message):
+            let preparedMessageType = try preparePersistableMessage(message, tx: tx)
+            guard case .persisted(let persistedMessage) = preparedMessageType else {
+                throw OWSAssertionError("Unexpected deferred message type.")
+            }
+            return DeferredPersistedMessage(
+                messageUniqueId: persistedMessage.message.uniqueId,
+                messageRowId: persistedMessage.rowId,
+            )
+        case .editMessage, .story, .transient:
+            throw OWSAssertionError("Only persistable messages can be deferred.")
+        }
+    }
+
+    public static func applyLinkPreviewDataSourceToDeferredMessage(
+        _ linkPreviewDataSource: LinkPreviewDataSource,
+        messageUniqueId: String,
+        messageRowId: Int64,
+        tx: DBWriteTransaction,
+    ) throws -> TSOutgoingMessage {
+        guard
+            let message = TSOutgoingMessage.fetchOutgoingMessageViaCache(uniqueId: messageUniqueId, transaction: tx),
+            message.sqliteRowId == messageRowId
+        else {
+            throw OWSAssertionError("Missing deferred message.")
+        }
+        guard
+            let thread = message.thread(tx: tx),
+            let threadRowId = thread.sqliteRowId
+        else {
+            throw OWSAssertionError("Deferred message missing thread.")
+        }
+
+        let linkPreviewManager = DependenciesBridge.shared.linkPreviewManager
+        let validatedLinkPreview = try linkPreviewManager.validateDataSource(dataSource: linkPreviewDataSource, tx: tx)
+        message.update(with: validatedLinkPreview.preview, transaction: tx)
+
+        if let imageDataSource = validatedLinkPreview.imageDataSource {
+            let attachmentID = try DependenciesBridge.shared.attachmentManager.createAttachmentStream(
+                from: OwnedAttachmentDataSource(
+                    dataSource: imageDataSource,
+                    owner: .messageLinkPreview(.init(
+                        messageRowId: messageRowId,
+                        receivedAtTimestamp: message.receivedAtTimestamp,
+                        threadRowId: threadRowId,
+                        isPastEditRevision: message.isPastEditRevision(),
+                    )),
+                ),
+                tx: tx,
+            )
+            Logger.info("Created deferred link preview attachment \(attachmentID) for outgoing message \(message.timestamp)")
+        }
+
+        return message
+    }
+
     public var messageTimestampForLogging: UInt64 {
         switch messageType {
         case .persistable(let message):

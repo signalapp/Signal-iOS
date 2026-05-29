@@ -33,6 +33,12 @@ import LibSignalClient
 public class MessageSenderJobQueue {
     private var jobSerializer = CompletionSerializer()
 
+    public struct DeferredJob: Sendable {
+        fileprivate let uniqueId: String
+        fileprivate let isHighPriority: Bool
+        fileprivate let isInMemoryOnly: Bool
+    }
+
     public init(appReadiness: AppReadiness) {
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.setUp()
@@ -72,6 +78,110 @@ public class MessageSenderJobQueue {
         }
     }
 
+    public func addDeferred(
+        _ namespace: PromiseNamespace,
+        message: PreparedOutgoingMessage,
+        limitToCurrentProcessLifetime: Bool = false,
+        isHighPriority: Bool = false,
+        transaction: DBWriteTransaction,
+    ) -> (DeferredJob, Promise<Void>) {
+        let deferredJob = DeferredJob(
+            uniqueId: UUID().uuidString,
+            isHighPriority: isHighPriority,
+            isInMemoryOnly: limitToCurrentProcessLifetime,
+        )
+        let promise = Promise<Void> { future in
+            // Mark as sending now so the UI updates immediately.
+            message.updateAllUnsentRecipientsAsSending(tx: transaction)
+            self.state.update {
+                $0.pendingJobs.append(.deferred(deferredJob))
+                $0.jobFutures[deferredJob.uniqueId] = future
+            }
+        }
+        transaction.addSyncCompletion {
+            self.startPendingJobRecordsIfPossible()
+        }
+
+        return (deferredJob, promise)
+    }
+
+    public func startDeferredJob(
+        _ deferredJob: DeferredJob,
+        message: PreparedOutgoingMessage,
+        transaction: DBWriteTransaction,
+    ) throws {
+        guard self.state.get().pendingJobs.contains(where: { $0.deferredJobUniqueId == deferredJob.uniqueId }) else {
+            throw OWSAssertionError("Missing deferred message sender job.")
+        }
+
+        let jobRecord: MessageSenderJobRecord
+        do {
+            jobRecord = try message.asMessageSenderJobRecord(isHighPriority: deferredJob.isHighPriority, tx: transaction)
+        } catch {
+            message.updateWithAllSendingRecipientsMarkedAsFailed(error: error, tx: transaction)
+            self.rejectDeferredJob(deferredJob, error: error, transaction: transaction)
+            throw error
+        }
+        owsAssertDebug(jobRecord.status == .ready)
+        if deferredJob.isInMemoryOnly {
+            // Nothing to do. Just don't insert it into the database.
+        } else {
+            jobRecord.anyInsert(transaction: transaction)
+        }
+
+        let job = Job(record: jobRecord, isInMemoryOnly: deferredJob.isInMemoryOnly)
+        var didReplaceDeferredJob = false
+        self.state.update {
+            guard
+                let pendingJobIndex = $0.pendingJobs.firstIndex(where: {
+                    $0.deferredJobUniqueId == deferredJob.uniqueId
+                })
+            else {
+                return
+            }
+            $0.pendingJobs[pendingJobIndex] = .job(job)
+            if let future = $0.jobFutures.removeValue(forKey: deferredJob.uniqueId) {
+                $0.jobFutures[jobRecord.uniqueId] = future
+            }
+            didReplaceDeferredJob = true
+        }
+        guard didReplaceDeferredJob else {
+            if !deferredJob.isInMemoryOnly {
+                jobRecord.anyRemove(transaction: transaction)
+            }
+            throw OWSAssertionError("Missing deferred message sender job.")
+        }
+
+        transaction.addSyncCompletion {
+            self.startPendingJobRecordsIfPossible()
+        }
+    }
+
+    public func cancelDeferredJob(
+        _ deferredJob: DeferredJob,
+        error: any Error,
+        transaction: DBWriteTransaction,
+    ) {
+        self.rejectDeferredJob(deferredJob, error: error, transaction: transaction)
+    }
+
+    private func rejectDeferredJob(
+        _ deferredJob: DeferredJob,
+        error: any Error,
+        transaction: DBWriteTransaction,
+    ) {
+        transaction.addSyncCompletion {
+            let future = self.state.update { state in
+                state.pendingJobs.removeAll {
+                    $0.deferredJobUniqueId == deferredJob.uniqueId
+                }
+                return state.jobFutures.removeValue(forKey: deferredJob.uniqueId)
+            }
+            future?.reject(error)
+            self.startPendingJobRecordsIfPossible()
+        }
+    }
+
     private func add(
         message: PreparedOutgoingMessage,
         exclusiveToCurrentProcessIdentifier: Bool,
@@ -97,7 +207,7 @@ public class MessageSenderJobQueue {
         }
 
         self.state.update {
-            $0.pendingJobs.append(Job(record: jobRecord, isInMemoryOnly: exclusiveToCurrentProcessIdentifier))
+            $0.pendingJobs.append(.job(Job(record: jobRecord, isInMemoryOnly: exclusiveToCurrentProcessIdentifier)))
             if let future {
                 $0.jobFutures[jobRecord.uniqueId] = future
             }
@@ -114,6 +224,29 @@ public class MessageSenderJobQueue {
     private struct Job {
         let record: MessageSenderJobRecord
         let isInMemoryOnly: Bool
+    }
+
+    private enum PendingJob {
+        case job(Job)
+        case deferred(DeferredJob)
+
+        var job: Job? {
+            switch self {
+            case .job(let job):
+                return job
+            case .deferred:
+                return nil
+            }
+        }
+
+        var deferredJobUniqueId: String? {
+            switch self {
+            case .job:
+                return nil
+            case .deferred(let deferredJob):
+                return deferredJob.uniqueId
+            }
+        }
     }
 
     /// A job that's been queued but hasn't started yet.
@@ -214,7 +347,7 @@ public class MessageSenderJobQueue {
 
     private struct State {
         var isLoaded = false
-        var pendingJobs = [Job]()
+        var pendingJobs = [PendingJob]()
         var isTransferringPendingJobs = false
         var queueStates = [QueueKey: QueueState]()
         var jobFutures = [String: Future<Void>]()
@@ -277,8 +410,9 @@ public class MessageSenderJobQueue {
         pendingJobQueue.async {
             let pendingJobs = self.state.update {
                 if $0.isLoaded {
-                    let result = $0.pendingJobs
-                    $0.pendingJobs = []
+                    let readyJobCount = $0.pendingJobs.prefix(while: { $0.job != nil }).count
+                    let result = $0.pendingJobs.prefix(readyJobCount).compactMap(\.job)
+                    $0.pendingJobs.removeFirst(readyJobCount)
                     return result
                 }
                 $0.isTransferringPendingJobs = true
@@ -342,12 +476,15 @@ public class MessageSenderJobQueue {
                     let jobRecords = try await jobRecordFinder.loadRunnableJobs(updateRunnableJobRecord: { jobRecord, tx in
                         self.didMarkAsReady(oldJobRecord: jobRecord, transaction: tx)
                     })
-                    let jobRecordUniqueIds = Set(jobRecords.lazy.map(\.uniqueId))
                     self.state.update {
-                        var newlyPendingJobs = $0.pendingJobs
-                        newlyPendingJobs.removeAll(where: { jobRecordUniqueIds.contains($0.record.uniqueId) })
-                        $0.pendingJobs = jobRecords.map { Job(record: $0, isInMemoryOnly: false) }
-                        $0.pendingJobs.append(contentsOf: newlyPendingJobs)
+                        let pendingJobs = $0.pendingJobs
+                        let pendingJobRecordUniqueIds = Set(pendingJobs.lazy.compactMap { $0.job?.record.uniqueId })
+                        $0.pendingJobs = Array(
+                            jobRecords.lazy
+                                .filter { !pendingJobRecordUniqueIds.contains($0.uniqueId) }
+                                .map { .job(Job(record: $0, isInMemoryOnly: false)) },
+                        )
+                        $0.pendingJobs.append(contentsOf: pendingJobs)
                     }
                 } catch {
                     owsFailDebug("Couldn't load existing message send jobs: \(error)")

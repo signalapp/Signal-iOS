@@ -16,12 +16,14 @@ extension ThreadUtil {
         thread: TSThread,
         quotedReplyDraft: DraftQuotedReplyModel? = nil,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
+        linkPreviewDraftForSending: Task<OWSLinkPreviewDraft?, Never>? = nil,
         persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
     ) {
         let messageTimestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
 
         let benchEventId = sendMessageBenchEventStart(messageTimestamp: messageTimestamp)
         self.enqueueSendQueue.enqueue {
+            let pendingLinkPreviewDraftTask = linkPreviewDraft == nil ? linkPreviewDraftForSending : nil
             let unpreparedMessage: UnpreparedOutgoingMessage
             do {
                 let messageBody = try await messageBody.mapAsync {
@@ -56,12 +58,22 @@ extension ThreadUtil {
                 return
             }
 
-            await Self.enqueueMessageSync(
-                unpreparedMessage,
-                benchEventId: benchEventId,
-                thread: thread,
-                persistenceCompletionHandler: persistenceCompletion,
-            )
+            guard
+                let deferredSend = await Self.prepareMessageForDeferredSend(
+                    unpreparedMessage,
+                    persistenceCompletionHandler: persistenceCompletion,
+                )
+            else {
+                return
+            }
+
+            Self.sendFinalizationQueue.enqueue {
+                await Self.finalizeDeferredSend(
+                    deferredSend,
+                    pendingLinkPreviewDraftForSending: pendingLinkPreviewDraftTask,
+                    benchEventId: benchEventId,
+                )
+            }
         }
     }
 
@@ -70,6 +82,7 @@ extension ThreadUtil {
         thread: TSThread,
         quotedReplyEdit: MessageEdits.Edit<Void>,
         linkPreviewDraft: OWSLinkPreviewDraft?,
+        linkPreviewDraftForSending: Task<OWSLinkPreviewDraft?, Never>? = nil,
         editTarget: TSOutgoingMessage,
         persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
     ) {
@@ -85,7 +98,11 @@ extension ThreadUtil {
                     try await DependenciesBridge.shared.attachmentContentValidator
                         .prepareOversizeTextIfNeeded($0)
                 } ?? nil
-                let linkPreviewDataSource = try await linkPreviewDraft.mapAsync {
+                let resolvedLinkPreviewDraft = await Self.resolveLinkPreviewDraftForSending(
+                    linkPreviewDraft: linkPreviewDraft,
+                    linkPreviewDraftForSending: linkPreviewDraftForSending,
+                )
+                let linkPreviewDataSource = try await resolvedLinkPreviewDraft.mapAsync {
                     try await DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
                 }
 
@@ -129,6 +146,18 @@ extension ThreadUtil {
         }
     }
 
+    private static func resolveLinkPreviewDraftForSending(
+        linkPreviewDraft: OWSLinkPreviewDraft?,
+        linkPreviewDraftForSending: Task<OWSLinkPreviewDraft?, Never>?,
+    ) async -> OWSLinkPreviewDraft? {
+        guard let linkPreviewDraftForSending else {
+            return linkPreviewDraft
+        }
+
+        // Preserve send/edit action order when a current link preview is still resolving.
+        return await linkPreviewDraftForSending.value
+    }
+
     /// WARNING: MUST be called on enqueueSendQueue!
     private class func enqueueMessageSync(
         _ unpreparedMessage: UnpreparedOutgoingMessage,
@@ -163,6 +192,135 @@ extension ThreadUtil {
             {
                 thread.donateSendMessageIntent(for: messageForIntent, transaction: writeTransaction)
             }
+        }
+    }
+
+    /// WARNING: MUST be called on enqueueSendQueue!
+    private struct DeferredSend {
+        let message: UnpreparedOutgoingMessage.DeferredPersistedMessage
+        let job: MessageSenderJobQueue.DeferredJob
+        let promise: Promise<Void>
+    }
+
+    /// WARNING: MUST be called on enqueueSendQueue!
+    private class func prepareMessageForDeferredSend(
+        _ unpreparedMessage: UnpreparedOutgoingMessage,
+        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
+    ) async -> DeferredSend? {
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { writeTransaction in
+            do {
+                let deferredMessage = try unpreparedMessage.preparePersistableMessageForDeferredSend(tx: writeTransaction)
+                guard
+                    let message = TSOutgoingMessage.fetchOutgoingMessageViaCache(
+                        uniqueId: deferredMessage.messageUniqueId,
+                        transaction: writeTransaction,
+                    ),
+                    message.sqliteRowId == deferredMessage.messageRowId
+                else {
+                    throw OWSAssertionError("Failed to enqueue deferred message sender job.")
+                }
+                let (deferredJob, promise) = SSKEnvironment.shared.messageSenderJobQueueRef.addDeferred(
+                    .promise,
+                    message: PreparedOutgoingMessage.preprepared(
+                        forResending: message,
+                        messageRowId: deferredMessage.messageRowId,
+                    ),
+                    transaction: writeTransaction,
+                )
+                if let persistenceCompletion {
+                    writeTransaction.addSyncCompletion {
+                        Task { @MainActor in
+                            persistenceCompletion()
+                        }
+                    }
+                }
+                return DeferredSend(message: deferredMessage, job: deferredJob, promise: promise)
+            } catch {
+                owsFailDebug("Failed to prepare deferred message")
+                return nil
+            }
+        }
+    }
+
+    /// WARNING: MUST be called on sendFinalizationQueue!
+    private class func finalizeDeferredSend(
+        _ deferredSend: DeferredSend,
+        pendingLinkPreviewDraftForSending: Task<OWSLinkPreviewDraft?, Never>?,
+        benchEventId: String,
+    ) async {
+        let deferredMessage = deferredSend.message
+        let linkPreviewDataSource: LinkPreviewDataSource?
+        do {
+            let linkPreviewDraft = await pendingLinkPreviewDraftForSending?.value
+            linkPreviewDataSource = try await linkPreviewDraft.mapAsync {
+                try await DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
+            }
+        } catch {
+            owsFailDebug("Failed to build deferred link preview")
+            await Self.markDeferredMessageAsFailed(deferredSend, error: error)
+            return
+        }
+
+        do {
+            try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { writeTransaction in
+                let message: TSOutgoingMessage
+                if let linkPreviewDataSource {
+                    message = try UnpreparedOutgoingMessage.applyLinkPreviewDataSourceToDeferredMessage(
+                        linkPreviewDataSource,
+                        messageUniqueId: deferredMessage.messageUniqueId,
+                        messageRowId: deferredMessage.messageRowId,
+                        tx: writeTransaction,
+                    )
+                } else {
+                    guard
+                        let fetchedMessage = TSOutgoingMessage.fetchOutgoingMessageViaCache(
+                            uniqueId: deferredMessage.messageUniqueId,
+                            transaction: writeTransaction,
+                        ),
+                        fetchedMessage.sqliteRowId == deferredMessage.messageRowId
+                    else {
+                        throw OWSAssertionError("Missing deferred message.")
+                    }
+                    message = fetchedMessage
+                }
+                try SSKEnvironment.shared.messageSenderJobQueueRef.startDeferredJob(
+                    deferredSend.job,
+                    message: PreparedOutgoingMessage.preprepared(
+                        forResending: message,
+                        messageRowId: deferredMessage.messageRowId,
+                    ),
+                    transaction: writeTransaction,
+                )
+            }
+
+            _ = deferredSend.promise.done(on: DispatchQueue.global()) {
+                BenchEventComplete(eventId: benchEventId)
+            }
+        } catch {
+            owsFailDebug("Failed to finalize deferred message")
+            await Self.markDeferredMessageAsFailed(deferredSend, error: error)
+        }
+    }
+
+    private class func markDeferredMessageAsFailed(
+        _ deferredSend: DeferredSend,
+        error: any Error,
+    ) async {
+        let deferredMessage = deferredSend.message
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { writeTransaction in
+            if
+                let message = TSOutgoingMessage.fetchOutgoingMessageViaCache(
+                    uniqueId: deferredMessage.messageUniqueId,
+                    transaction: writeTransaction,
+                )
+            {
+                message.updateWithAllSendingRecipientsMarkedAsFailed(error: error, transaction: writeTransaction)
+            }
+            SSKEnvironment.shared.messageSenderJobQueueRef.cancelDeferredJob(
+                deferredSend.job,
+                error: error,
+                transaction: writeTransaction,
+            )
         }
     }
 

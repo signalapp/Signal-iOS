@@ -2001,6 +2001,12 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         return linkPreviewFetchState.linkPreviewDraftIfLoaded
     }
 
+    func consumeLinkPreviewDraftForSendingTask() -> Task<OWSLinkPreviewDraft?, Never>? {
+        AssertIsOnMainThread()
+
+        return linkPreviewFetchState.consumeLinkPreviewDraftForSendingTask()
+    }
+
     private func updateInputLinkPreview() {
         AssertIsOnMainThread()
 

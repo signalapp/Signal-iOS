@@ -32,8 +32,18 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
 
     private let textView = BodyRangesTextView()
     private let footerView = ApprovalFooterView()
+    private var approvalTask: Task<Void, Never>?
+    private var isApproving = false {
+        didSet {
+            textView.isEditable = !isApproving
+            footerView.updateContents()
+        }
+    }
 
     private var approvalMode: ApprovalMode {
+        if isApproving {
+            return .loading
+        }
         guard let delegate else {
             return .send
         }
@@ -55,6 +65,10 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
         linkPreviewFetchState.onStateChange = { [weak self] in self?.updateLinkPreviewView() }
     }
 
+    deinit {
+        approvalTask?.cancel()
+    }
+
     // MARK: - View Lifecycle
 
     override public func viewDidLoad() {
@@ -73,7 +87,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
 
         navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
             guard let self else { return }
-            self.delegate?.textApprovalDidCancel(self)
+            self.cancelApproval()
         }
 
         let stackView = UIStackView(arrangedSubviews: [linkPreviewView, textView])
@@ -118,6 +132,13 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
         }
         footerView.setNamesText(recipientsDescription, animated: false)
         footerView.isHidden = false
+    }
+
+    private func cancelApproval() {
+        approvalTask?.cancel()
+        approvalTask = nil
+        isApproving = false
+        delegate?.textApprovalDidCancel(self)
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -207,8 +228,31 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
 
 extension TextApprovalViewController: ApprovalFooterDelegate {
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
-        let linkPreviewDraft = linkPreviewFetchState.linkPreviewDraftIfLoaded
-        delegate?.textApproval(self, didApproveMessage: textView.messageBodyForSending, linkPreviewDraft: linkPreviewDraft)
+        guard !isApproving else {
+            return
+        }
+
+        let messageBody = textView.messageBodyForSending
+        if let linkPreviewDraft = linkPreviewFetchState.linkPreviewDraftIfLoaded {
+            delegate?.textApproval(self, didApproveMessage: messageBody, linkPreviewDraft: linkPreviewDraft)
+            return
+        }
+
+        guard let linkPreviewDraftForSendingTask = linkPreviewFetchState.consumeLinkPreviewDraftForSendingTask() else {
+            delegate?.textApproval(self, didApproveMessage: messageBody, linkPreviewDraft: nil)
+            return
+        }
+
+        isApproving = true
+        approvalTask = Task { @MainActor [weak self] in
+            let linkPreviewDraft = await linkPreviewDraftForSendingTask.value
+            guard !Task.isCancelled, let self else {
+                return
+            }
+            self.approvalTask = nil
+            self.isApproving = false
+            self.delegate?.textApproval(self, didApproveMessage: messageBody, linkPreviewDraft: linkPreviewDraft)
+        }
     }
 
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {

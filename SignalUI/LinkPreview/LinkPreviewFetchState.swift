@@ -56,6 +56,7 @@ public class LinkPreviewFetchState {
     }
 
     private var fetchTask: Task<Void, Never>?
+    private var fetchDraftTask: Task<OWSLinkPreviewDraft?, Never>?
 
     /// Invoked when `currentState` is updated.
     public var onStateChange: (() -> Void)?
@@ -83,6 +84,20 @@ public class LinkPreviewFetchState {
             return nil
         case .loaded(let linkPreviewDraft):
             return linkPreviewDraft
+        }
+    }
+
+    public func consumeLinkPreviewDraftForSendingTask() -> Task<OWSLinkPreviewDraft?, Never>? {
+        switch currentState {
+        case .none, .failed:
+            return nil
+        case .loaded(let linkPreviewDraft):
+            return Task { linkPreviewDraft }
+        case .loading:
+            let fetchDraftTask = self.fetchDraftTask
+            self.fetchTask = nil
+            self.fetchDraftTask = nil
+            return fetchDraftTask
         }
     }
 
@@ -117,6 +132,8 @@ public class LinkPreviewFetchState {
 
         self.fetchTask?.cancel()
         self.fetchTask = nil
+        self.fetchDraftTask?.cancel()
+        self.fetchDraftTask = nil
 
         guard let proposedUrl else {
             _currentState = (.none, nil)
@@ -125,21 +142,27 @@ public class LinkPreviewFetchState {
 
         _currentState = (.loading, proposedUrl)
 
-        self.fetchTask = Task { @MainActor [weak self, linkPreviewFetcher] in
+        let fetchDraftTask: Task<OWSLinkPreviewDraft?, Never> = Task { @MainActor [weak self, linkPreviewFetcher] in
             do {
                 let linkPreviewDraft = try await linkPreviewFetcher.fetchLinkPreview(for: proposedUrl)
-                guard let self else { return }
+                guard let self else { return linkPreviewDraft }
                 // Obsolete callback.
-                guard self.currentUrl == proposedUrl else { return }
+                guard self.currentUrl == proposedUrl else { return linkPreviewDraft }
 
                 self._currentState = (.loaded(linkPreviewDraft), proposedUrl)
+                return linkPreviewDraft
             } catch {
-                guard let self else { return }
+                guard let self else { return nil }
                 // Obsolete callback.
-                guard self.currentUrl == proposedUrl else { return }
+                guard self.currentUrl == proposedUrl else { return nil }
 
                 self._currentState = (.failed(error), proposedUrl)
+                return nil
             }
+        }
+        self.fetchDraftTask = fetchDraftTask
+        self.fetchTask = Task {
+            _ = await fetchDraftTask.value
         }
         return self.fetchTask
     }

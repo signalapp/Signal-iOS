@@ -69,6 +69,64 @@ class MessageSenderJobQueueTest: SSKBaseTest {
         XCTAssertEqual(fakeMessageSender.sentMessages.map { $0.uniqueId }, messages.map { $0.uniqueId })
     }
 
+    func test_deferredJobBlocksLaterJobsUntilStarted() async throws {
+        let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
+        let (messages, deferredJob, promises) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            let contactThread = ContactThreadFactory().create(transaction: tx)
+            let outgoingMessageFactory = OutgoingMessageFactory()
+            outgoingMessageFactory.threadCreator = { _ in contactThread }
+            let messages = (1...2).map { _ in outgoingMessageFactory.create(transaction: tx) }
+            let preparedMessages = try messages.map {
+                let jobRecord = try MessageSenderJobRecord(
+                    persistedMessage: .init(
+                        rowId: $0.sqliteRowId!,
+                        message: $0,
+                    ),
+                    isHighPriority: false,
+                    transaction: tx,
+                )
+                return PreparedOutgoingMessage.restore(from: jobRecord, tx: tx)!
+            }
+            let (deferredJob, firstPromise) = jobQueue.addDeferred(
+                .promise,
+                message: preparedMessages[0],
+                transaction: tx,
+            )
+            let secondPromise = jobQueue.add(.promise, message: preparedMessages[1], transaction: tx)
+            return (messages, deferredJob, [firstPromise, secondPromise])
+        }
+
+        XCTAssertEqual(
+            self.messageSenderJobMessageIds(),
+            [messages[1].uniqueId],
+            "Deferred jobs should block later jobs in memory without becoming runnable persisted jobs before finalization.",
+        )
+
+        fakeMessageSender.stubbedFailingErrors = [nil, nil]
+        jobQueue.setUp()
+        try await Task.sleep(nanoseconds: 50 * NSEC_PER_MSEC)
+        XCTAssertEqual(fakeMessageSender.sentMessages.map { $0.uniqueId }, [])
+
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            let message = try XCTUnwrap(TSOutgoingMessage.fetchOutgoingMessageViaCache(
+                uniqueId: messages[0].uniqueId,
+                transaction: tx,
+            ))
+            try jobQueue.startDeferredJob(
+                deferredJob,
+                message: PreparedOutgoingMessage.preprepared(
+                    forResending: message,
+                    messageRowId: try XCTUnwrap(message.sqliteRowId),
+                ),
+                transaction: tx,
+            )
+        }
+        for promise in promises {
+            try await promise.awaitable()
+        }
+        XCTAssertEqual(fakeMessageSender.sentMessages.map { $0.uniqueId }, messages.map { $0.uniqueId })
+    }
+
     func test_sendingInvisibleMessage() async throws {
         let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
         fakeMessageSender.stubbedFailingErrors = [nil]
@@ -183,5 +241,20 @@ class MessageSenderJobQueueTest: SSKBaseTest {
 private extension MessageSenderJobRecord {
     func fetchLatest(transaction: DBReadTransaction) -> Self? {
         return Self.anyFetch(uniqueId: uniqueId, transaction: transaction)
+    }
+}
+
+private extension MessageSenderJobQueueTest {
+    func messageSenderJobMessageIds() -> [String] {
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
+            MessageSenderJobRecord.anyFetchAll(transaction: tx)
+                .sorted { ($0.id ?? 0) < ($1.id ?? 0) }
+                .compactMap { jobRecord -> String? in
+                    guard case .persisted(let messageId, _) = jobRecord.messageType else {
+                        return nil
+                    }
+                    return messageId
+                }
+        }
     }
 }
