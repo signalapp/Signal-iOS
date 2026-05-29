@@ -195,16 +195,22 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             if safetySection.shouldShowProfileNamesEducation {
                 innerViews.append(UIView.spacer(withHeight: vSpacingNotVerifiedLabel))
 
-                let nameNotVerifiedButton = componentView.profileNamesEducationButton
+                var buttonConfiguration = headerButtonConfigurationBase()
+                buttonConfiguration.baseBackgroundColor = .Signal.warningLabel.withAlphaComponent(0.2)
+                buttonConfiguration.contentInsets = notVerifierButtonContentInsets
+
                 let nameNotVerifiedButtonLabelConfig = nameNotVerifiedConfig()
-                nameNotVerifiedButtonLabelConfig.applyForRendering(button: nameNotVerifiedButton)
-                nameNotVerifiedButton.backgroundColor = UIColor.Signal.warningLabel.withAlphaComponent(0.2)
-                nameNotVerifiedButton.ows_contentEdgeInsets = .init(hMargin: hPaddingNotVerifiedButton, vMargin: vPaddingNotVerifiedButton)
-                nameNotVerifiedButton.dimsWhenHighlighted = true
-                nameNotVerifiedButton.block = {
-                    componentDelegate.didTapNameEducation(type: safetySection.threadType)
-                }
+                nameNotVerifiedButtonLabelConfig.applyForRendering(buttonConfiguration: &buttonConfiguration)
+
+                let nameNotVerifiedButton = UIButton(
+                    configuration: buttonConfiguration,
+                    primaryAction: UIAction { _ in
+                        componentDelegate.didTapNameEducation(type: safetySection.threadType)
+                    },
+                )
                 innerViews.append(nameNotVerifiedButton)
+
+                componentView.profileNamesEducationButton = nameNotVerifiedButton
             } else if safetySection.isOfficialChat {
                 innerViews.append(UIView.spacer(withHeight: vSpacingNotVerifiedLabel))
 
@@ -254,19 +260,25 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             }
 
             if safetySection.shouldShowSafetyTipsButton {
-                let showTipsButton = componentView.showTipsButton
-                safetyTipsButtonLabelConfig.applyForRendering(buttonConfiguration: &showTipsButton.configuration!)
-                showTipsButton.configuration?.baseBackgroundColor =
+                var buttonConfiguration = headerButtonConfigurationBase()
+                buttonConfiguration.contentInsets = safetyButtonContentInsets
+                buttonConfiguration.baseBackgroundColor =
                     conversationStyle.hasWallpaper ? .Signal.MaterialBase.button : .Signal.secondaryFill
-                showTipsButton.addAction(
-                    UIAction { _ in
+
+                let safetyTipsButtonLabelConfig = safetyTipsButtonLabelConfig()
+                safetyTipsButtonLabelConfig.applyForRendering(buttonConfiguration: &buttonConfiguration)
+
+                let showTipsButton = UIButton(
+                    configuration: buttonConfiguration,
+                    primaryAction: UIAction { _ in
                         componentDelegate.didTapSafetyTips()
                     },
-                    for: .primaryActionTriggered,
                 )
 
                 innerViews.append(UIView.spacer(withHeight: vSpacingSafetyButton))
                 innerViews.append(showTipsButton)
+
+                componentView.showTipsButton = showTipsButton
             }
         }
 
@@ -449,7 +461,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         )
     }
 
-    private var safetyTipsButtonLabelConfig: CVLabelConfig {
+    private func safetyTipsButtonLabelConfig() -> CVLabelConfig {
         CVLabelConfig.unstyledText(
             OWSLocalizedString(
                 "SAFETY_TIPS_BUTTON_ACTION_TITLE",
@@ -643,10 +655,14 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     private let vSpacingSafetySectionDefault: CGFloat = 8
 
     private let safetyButtonContentInsets = NSDirectionalEdgeInsets(hMargin: 12, vMargin: 5)
-    private let hPaddingGroupDetails: CGFloat = 25
+    private let notVerifierButtonContentInsets = NSDirectionalEdgeInsets(hMargin: 12, vMargin: 2)
+    private func headerButtonConfigurationBase() -> UIButton.Configuration {
+        var configuration = UIButton.Configuration.filled()
+        configuration.cornerStyle = .capsule
+        return configuration
+    }
 
-    private let vPaddingNotVerifiedButton: CGFloat = 2
-    private let hPaddingNotVerifiedButton: CGFloat = 12
+    private let hPaddingGroupDetails: CGFloat = 25
 
     private let vOffsetThreadDetailsOutline: CGFloat = 16
 
@@ -689,20 +705,18 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         if let safetySection = threadDetails.safetySection {
             if safetySection.shouldShowProfileNamesEducation {
                 innerSubviewInfos.append(CGSize(square: vSpacingNotVerifiedLabel).asManualSubviewInfo)
-                let notVerifiedSize = CVText.measureLabel(
+                let buttonSize = CVText.measureLabel(
                     config: nameNotVerifiedConfig(),
                     maxWidth: maxContentWidth,
-                )
-                let notVerifiedSizeWithPadding = CGSize(width: notVerifiedSize.width + hPaddingNotVerifiedButton * 2, height: notVerifiedSize.height + vPaddingNotVerifiedButton * 2)
-                innerSubviewInfos.append(notVerifiedSizeWithPadding.asManualSubviewInfo)
+                ) + notVerifierButtonContentInsets.asSize
+                innerSubviewInfos.append(buttonSize.asManualSubviewInfo)
             } else if safetySection.isOfficialChat {
                 innerSubviewInfos.append(CGSize(square: vSpacingNotVerifiedLabel).asManualSubviewInfo)
-                let officialLabelSize = CVText.measureLabel(
+                let buttonSize = CVText.measureLabel(
                     config: officialLabelConfig(),
                     maxWidth: maxContentWidth,
-                )
-                let officialLabelSizeWithPadding = CGSize(width: officialLabelSize.width + hPaddingNotVerifiedButton * 2, height: officialLabelSize.height + vPaddingNotVerifiedButton * 2)
-                innerSubviewInfos.append(officialLabelSizeWithPadding.asManualSubviewInfo)
+                ) + notVerifierButtonContentInsets.asSize
+                innerSubviewInfos.append(buttonSize.asManualSubviewInfo)
             }
         }
 
@@ -738,7 +752,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             if safetySection.shouldShowSafetyTipsButton {
                 innerSubviewInfos.append(CGSize(square: vSpacingSafetyButton).asManualSubviewInfo)
                 let buttonSize = CVText.measureLabel(
-                    config: safetyTipsButtonLabelConfig,
+                    config: safetyTipsButtonLabelConfig(),
                     maxWidth: maxContentWidth,
                 ) + safetyButtonContentInsets.asSize
                 innerSubviewInfos.append(buttonSize.asManualSubviewInfo)
@@ -787,7 +801,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         if let safetySection = threadDetails.safetySection {
             if
                 safetySection.shouldShowSafetyTipsButton,
-                componentView.showTipsButton.bounds.contains(sender.location(in: componentView.showTipsButton))
+                let showTipsButton = componentView.showTipsButton,
+                showTipsButton.bounds.contains(sender.location(in: componentView.showTipsButton))
             {
                 componentDelegate.didTapSafetyTips()
                 return true
@@ -804,7 +819,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
             if
                 safetySection.shouldShowProfileNamesEducation,
-                componentView.profileNamesEducationButton.bounds.contains(sender.location(in: componentView.profileNamesEducationButton))
+                let profileNamesEducationButton = componentView.profileNamesEducationButton,
+                profileNamesEducationButton.bounds.contains(sender.location(in: componentView.profileNamesEducationButton))
             {
                 componentDelegate.didTapNameEducation(type: safetySection.threadType)
                 return true
@@ -839,17 +855,13 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate let titleButton = CVButton()
         fileprivate let bioLabel = CVLabel()
 
-        fileprivate let profileNamesEducationButton = OWSRoundedButton()
+        fileprivate var profileNamesEducationButton: UIButton?
         fileprivate let officialLabel = CVLabel()
 
         fileprivate let reviewCarefullyLabel = CVLabel()
         fileprivate let detailsButton = CVButton()
         fileprivate let mutualGroupsLabel = CVLabel()
-        fileprivate let showTipsButton: UIButton = {
-            let button = UIButton(configuration: .gray())
-            button.configuration?.contentInsets = NSDirectionalEdgeInsets(hMargin: 10, vMargin: 5)
-            return button
-        }()
+        fileprivate var showTipsButton: UIButton?
 
         fileprivate let groupDescriptionPreviewView = GroupDescriptionPreviewView(
             shouldDeactivateConstraints: true,

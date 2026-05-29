@@ -196,7 +196,27 @@ public struct CVLabelConfig {
     }
 
     public func applyForRendering(buttonConfiguration: inout UIButton.Configuration) {
-        buttonConfiguration.titleTextAttributesTransformer = .defaultFont(font)
+        var attributedTitle: AttributedString = switch text {
+        case .text(let text):
+            AttributedString(text)
+
+        case .attributedText(let attributedText):
+            AttributedString(attributedText)
+
+        case .messageBody(let hydratedMessageBody):
+            AttributedString(hydratedMessageBody.asAttributedStringForDisplay(
+                config: displayConfig,
+                isDarkThemeEnabled: Theme.isDarkThemeEnabled,
+            ))
+        }
+
+        // Set text color and default font for parts that don't have those attributes.
+        var defaults = AttributeContainer()
+        defaults.font = font
+        defaults.foregroundColor = textColor
+        attributedTitle.mergeAttributes(defaults, mergePolicy: .keepCurrent)
+        buttonConfiguration.attributedTitle = attributedTitle
+
         buttonConfiguration.titleLineBreakMode = lineBreakMode
         buttonConfiguration.titleAlignment = switch textAlignment ?? .natural {
         case .left: .leading
@@ -205,20 +225,6 @@ public struct CVLabelConfig {
         case .natural: .automatic
         case .justified: .automatic
         @unknown default: .automatic
-        }
-        buttonConfiguration.baseForegroundColor = textColor
-
-        switch text {
-        case .text(let text):
-            buttonConfiguration.title = text
-        case .attributedText(let attributedText):
-            buttonConfiguration.attributedTitle = try? AttributedString(attributedText, including: \.uiKit)
-        case .messageBody(let hydratedMessageBody):
-            let attributedText = hydratedMessageBody.asAttributedStringForDisplay(
-                config: displayConfig,
-                isDarkThemeEnabled: Theme.isDarkThemeEnabled,
-            )
-            buttonConfiguration.attributedTitle = try? AttributedString(attributedText, including: \.uiKit)
         }
     }
 
