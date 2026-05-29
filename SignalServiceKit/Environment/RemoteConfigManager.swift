@@ -200,6 +200,10 @@ public class RemoteConfig {
         interval(.replaceableInteractionExpiration, defaultInterval: .hour)
     }
 
+    public var requirePqRatio: Double {
+        getDoubleValue(forFlag: .requirePqRatio, defaultValue: 0.0)
+    }
+
     public var messageSendLogEntryLifetime: TimeInterval {
         interval(.messageSendLogEntryLifetime, defaultInterval: 2 * .week)
     }
@@ -487,6 +491,18 @@ public class RemoteConfig {
         )
     }
 
+    // MARK: - Float values
+
+    private func getDoubleValue(
+        forFlag flag: ValueFlag,
+        defaultValue: Double,
+    ) -> Double {
+        getStringConvertibleValue(
+            forFlag: flag,
+            defaultValue: defaultValue,
+        )
+    }
+
     private func getStringConvertibleValue<V>(
         forFlag flag: ValueFlag,
         defaultValue: V,
@@ -716,6 +732,7 @@ private enum ValueFlag: String, FlagType {
     case postRegistrationWaitingPeriodSeconds = "global.changeNumber.postRegistrationWaitingPeriodSeconds"
     case reactiveProfileKeyAttemptInterval = "ios.reactiveProfileKeyAttemptInterval"
     case replaceableInteractionExpiration = "ios.replaceableInteractionExpiration"
+    case requirePqRatio = "ios.requirePqRatio"
     case ringrtcDredDuration = "ios.ringrtcDredDuration"
     case ringrtcVp9DeviceModelDenylist = "ios.ringrtcVp9DeviceModelDenylist"
     case ringrtcVp9DeviceModelEnablelist = "ios.ringrtcVp9DeviceModelEnablelist"
@@ -762,6 +779,7 @@ private enum ValueFlag: String, FlagType {
         case .postRegistrationWaitingPeriodSeconds: true
         case .reactiveProfileKeyAttemptInterval: true
         case .replaceableInteractionExpiration: false
+        case .requirePqRatio: true
         case .ringrtcDredDuration: true
         case .ringrtcVp9DeviceModelDenylist: true
         case .ringrtcVp9DeviceModelEnablelist: true

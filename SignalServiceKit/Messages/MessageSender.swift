@@ -33,7 +33,7 @@ public class MessageSender {
             guard let session = try sessionStore.loadSession(forServiceId: serviceId, deviceId: deviceId, tx: tx) else {
                 return nil
             }
-            guard session.hasCurrentState(requirePqRatio: 0, now: Date()) else {
+            guard session.hasCurrentState(requirePqRatio: RemoteConfig.current.requirePqRatio, now: Date()) else {
                 return nil
             }
             return session
@@ -1613,6 +1613,14 @@ public class MessageSender {
         localDeviceId: DeviceId,
         tx: DBWriteTransaction,
     ) throws -> DeviceMessage {
+        // This check is not necessary for the functioning of buildDeviceMessage; it's
+        // instead here to make sure that we check hasCurrentState for the current session
+        // on each send.  This allows us to guarantee that PQ protection is enabled on
+        // all necessary sessions.
+        if try validSession(for: serviceId, deviceId: deviceId, tx: tx) == nil {
+            throw SignalError.sessionNotFound("")
+        }
+
         do {
             switch encryptionStyle {
             case .whisper:
