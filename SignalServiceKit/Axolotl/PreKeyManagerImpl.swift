@@ -27,10 +27,6 @@ public class PreKeyManagerImpl: PreKeyManager {
         /// `MAX_UNACKNOWLEDGED_SESSION_AGE` (from LibSignalClient) value currently
         /// in use by any client.
         static let maxUnacknowledgedSessionAge: TimeInterval = 30 * .day
-
-        fileprivate static let preKeyRotationVersion = 1
-        fileprivate static let aciPreKeyRotationVersionKey = "ACIPreKeyRotationVersion"
-        fileprivate static let pniPreKeyRotationVersionKey = "PNIPreKeyRotationVersion"
     }
 
     /// PreKey state lives in two places - on the client and on the service.
@@ -250,44 +246,6 @@ public class PreKeyManagerImpl: PreKeyManager {
     /// If we try, they will fail, and we will count the joint pni+aci operation as failed.
     private func hasPniIdentityKey(tx: DBReadTransaction) -> Bool {
         return self.identityManager.identityKeyPair(for: .pni, tx: tx) != nil
-    }
-
-    public func rotatePreKeysOnUpgradeIfNecessary(for identity: OWSIdentity) async throws {
-        let keyValueStoreKey: String = {
-            switch identity {
-            case .aci:
-                return Constants.aciPreKeyRotationVersionKey
-            case .pni:
-                return Constants.pniPreKeyRotationVersionKey
-            }
-        }()
-        let preKeyRotationVersion = db.read { tx in
-            return keyValueStore.getInt(keyValueStoreKey, defaultValue: 0, transaction: tx)
-        }
-        guard preKeyRotationVersion < Constants.preKeyRotationVersion else {
-            return
-        }
-        try await Retry.performWithBackoff(maxAttempts: .max, isRetryable: { _ in true }) {
-            guard db.read(block: tsAccountManager.registrationState(tx:)).isRegistered else {
-                // If we're not registered, we don't need to do this. Our pre keys will be
-                // rotated when we re-register.
-                return
-            }
-            do {
-                try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
-                try await refreshOneTimePreKeys(forIdentity: identity, alsoRefreshSignedPreKey: true)
-            } catch {
-                logger.warn("Couldn't rotate pre keys: \(error)")
-                throw error
-            }
-        }
-        await db.awaitableWrite { [keyValueStore] tx in
-            keyValueStore.setInt(
-                Constants.preKeyRotationVersion,
-                key: keyValueStoreKey,
-                transaction: tx,
-            )
-        }
     }
 
     // MARK: - Change Number

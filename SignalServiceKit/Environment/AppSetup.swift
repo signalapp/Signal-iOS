@@ -2119,21 +2119,13 @@ extension AppSetup.FinalContinuation {
             versionedProfiles: sskEnvironment.versionedProfilesRef,
         ).migrateIfNeeded()
 
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [appContext, dependenciesBridge, sskEnvironment] in
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [appContext, sskEnvironment] in
             sskEnvironment.localUserLeaveGroupJobQueueRef.start(appContext: appContext)
             sskEnvironment.callRecordDeleteAllJobQueueRef.start(appContext: appContext)
             sskEnvironment.bulkDeleteInteractionJobQueueRef.start(appContext: appContext)
             sskEnvironment.donationReceiptCredentialRedemptionJobQueue.start(appContext: appContext)
             sskEnvironment.smJobQueuesRef.incomingContactSyncJobQueue.start(appContext: appContext)
             sskEnvironment.smJobQueuesRef.sendGiftBadgeJobQueue.start(appContext: appContext)
-
-            let preKeyManager = dependenciesBridge.preKeyManager
-            Task {
-                // Rotate ACI keys first since PNI keys may block on incoming messages.
-                // TODO: Don't block ACI operations if PNI operations are blocked.
-                try await preKeyManager.rotatePreKeysOnUpgradeIfNecessary(for: .aci)
-                try await preKeyManager.rotatePreKeysOnUpgradeIfNecessary(for: .pni)
-            }
         }
     }
 

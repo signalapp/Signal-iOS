@@ -12,7 +12,6 @@ class MockPreKeyManager: PreKeyManager {
     func isAppLockedDueToPreKeyUpdateFailures(tx: SignalServiceKit.DBReadTransaction) -> Bool { false }
     func refreshOneTimePreKeysCheckDidSucceed() { }
     func checkPreKeysIfNecessary() async throws { }
-    func rotatePreKeysOnUpgradeIfNecessary(for identity: OWSIdentity) async throws { }
     var attemptedRefreshes: [(OWSIdentity, Bool)] = []
 
     func createPreKeysForRegistration() async -> RegistrationPreKeyUploadBundles {
