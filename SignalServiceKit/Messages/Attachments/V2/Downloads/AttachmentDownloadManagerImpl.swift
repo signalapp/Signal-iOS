@@ -365,23 +365,34 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             mimeType: referencedAttachment.attachment.mimeType,
             tx: tx,
         )
-        switch downloadability {
-        case .downloadable:
-            attachmentDownloadStore.enqueueDownloadOfAttachment(
-                withId: referencedAttachment.reference.attachmentRowId,
-                source: sourceToUse,
-                priority: priority,
-                tx: tx,
+        do throws(AttachmentDownloads.Error) {
+            switch downloadability {
+            case .downloadable:
+                attachmentDownloadStore.enqueueDownloadOfAttachment(
+                    withId: referencedAttachment.reference.attachmentRowId,
+                    source: sourceToUse,
+                    priority: priority,
+                    tx: tx,
+                )
+                return sourceToUse
+            case .blockedByActiveCall:
+                throw .blockedByActiveCall
+            case .blockedByPendingMessageRequest:
+                throw .blockedByPendingMessageRequest
+            case .blockedByAutoDownloadSettings:
+                throw .blockedByAutoDownloadSettings
+            case .blockedByNetworkState:
+                throw .blockedByNetworkState
+            }
+        } catch {
+            NotificationCenter.default.postOnMainThread(
+                name: AttachmentDownloads.attachmentDownloadStoppedNotification,
+                object: nil,
+                userInfo: [
+                    AttachmentDownloads.attachmentDownloadAttachmentIDKey: referencedAttachment.reference.attachmentRowId,
+                ],
             )
-            return sourceToUse
-        case .blockedByActiveCall:
-            throw .blockedByActiveCall
-        case .blockedByPendingMessageRequest:
-            throw .blockedByPendingMessageRequest
-        case .blockedByAutoDownloadSettings:
-            throw .blockedByAutoDownloadSettings
-        case .blockedByNetworkState:
-            throw .blockedByNetworkState
+            throw error
         }
     }
 
@@ -1924,6 +1935,19 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                 if let resumeData = ((error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data)?.nilIfEmpty {
                     await resumeDataCache.set(key: downloadState, value: resumeData)
+                }
+
+                switch downloadState.type {
+                case .backup, .transientAttachment:
+                    break
+                case .attachment(_, let attachmentId):
+                    NotificationCenter.default.postOnMainThread(
+                        name: AttachmentDownloads.attachmentDownloadStoppedNotification,
+                        object: nil,
+                        userInfo: [
+                            AttachmentDownloads.attachmentDownloadAttachmentIDKey: attachmentId,
+                        ],
+                    )
                 }
 
                 if case URLError.cancelled = error {

@@ -15,6 +15,11 @@ public enum AttachmentDownloads {
     /// attachmentDownloadProgressNotification in this case.
     public static let attachmentDownloadProgressNotification = Notification.Name("AttachmentDownloadProgressNotification")
 
+    /// Notification that the current attempt to download has stopped.  This could be due to ineligibility, cancellation, or other errors.
+    /// The download may  restart based on the type of error, or user interaction, which would result
+    /// in `attachmentDownloadProgressNotification` notifications being sent once download progress begins again.
+    public static let attachmentDownloadStoppedNotification = Notification.Name("attachmentDownloadStoppedNotification")
+
     /// Key for a CGFloat progress value from 0 to 1
     public static var attachmentDownloadProgressKey: String { "attachmentDownloadProgressKey" }
 

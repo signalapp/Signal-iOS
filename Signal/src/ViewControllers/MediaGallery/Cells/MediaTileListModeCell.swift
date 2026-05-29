@@ -176,7 +176,6 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
         downloadTask = MediaGallery.createGalleryItemDownloadTask(
             item: item,
             priority: .userInitiated,
-            completion: nil,
         )
         Task {
             await downloadTask?.value

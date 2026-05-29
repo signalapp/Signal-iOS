@@ -290,12 +290,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         downloadTask = MediaGallery.createGalleryItemDownloadTask(
             item: galleryItem,
             priority: userInitiated ? .userInitiated : .default,
-        ) { [weak self] success in
-            if !success {
-                self?.progressView?.state = .tapToDownload
-            }
-        }
-
+        )
         Task {
             await downloadTask?.value
             downloadTask = nil

@@ -1085,7 +1085,6 @@ class MediaGallery {
     static func createGalleryItemDownloadTask(
         item: DownloadableItem,
         priority: AttachmentDownloadPriority,
-        completion: ((Bool) -> Void)? = nil,
     ) -> Task<Void, Never> {
         return Task {
             await withTaskCancellationHandler(
@@ -1106,12 +1105,9 @@ class MediaGallery {
                                 name: MediaGalleryChangeInfo.newAttachmentsAvailableNotification,
                                 object: [change],
                             )
-                            completion?(true)
                         }
                     } catch {
-                        Task { @MainActor in
-                            completion?(false)
-                        }
+                        Logger.warn("Error downloading attachment")
                     }
                 },
                 onCancel: {
@@ -1120,9 +1116,6 @@ class MediaGallery {
                             for: item.referencedAttachment.attachment.id,
                             tx: tx,
                         )
-                    }
-                    Task { @MainActor in
-                        completion?(false)
                     }
                 },
             )

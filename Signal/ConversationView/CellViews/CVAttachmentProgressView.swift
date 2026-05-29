@@ -199,6 +199,12 @@ class CVAttachmentProgressView: ManualLayoutView {
                 name: AttachmentDownloads.attachmentDownloadProgressNotification,
                 object: nil,
             )
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(processDownloadStoppedNotification(notification:)),
+                name: AttachmentDownloads.attachmentDownloadStoppedNotification,
+                object: nil,
+            )
         }
     }
 
@@ -355,6 +361,22 @@ class CVAttachmentProgressView: ManualLayoutView {
             return
         }
         applyState(.progress(progress: progress), animated: window != nil)
+    }
+
+    @objc
+    private func processDownloadStoppedNotification(notification: Notification) {
+        AssertIsOnMainThread()
+
+        guard
+            let attachmentId = notification.userInfo?[AttachmentDownloads.attachmentDownloadAttachmentIDKey] as? Attachment.IDType
+        else {
+            owsFailDebug("Missing notificationAttachmentId.")
+            return
+        }
+        guard attachmentId == self.attachmentId else {
+            return
+        }
+        applyState(.tapToDownload, animated: window != nil)
     }
 
     @objc
