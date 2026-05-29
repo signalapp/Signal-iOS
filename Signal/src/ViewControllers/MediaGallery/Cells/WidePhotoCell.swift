@@ -36,6 +36,8 @@ class WidePhotoCell: MediaTileListModeCell {
         return label
     }()
 
+    var progressView: UIView?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -73,6 +75,36 @@ class WidePhotoCell: MediaTileListModeCell {
         )
     }
 
+    private lazy var tapGestureRecognizer: UITapGestureRecognizer = {
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
+        gestureRecognizer.delegate = self
+        return gestureRecognizer
+    }()
+
+    @objc
+    private func handleTapGesture(_ sender: UITapGestureRecognizer) {
+        let galleryItem: MediaGalleryItem
+        switch item {
+        case .photoVideo(let photoGridItem):
+            galleryItem = photoGridItem.galleryItem
+        case .audio, .otherFile, .none:
+            return
+        }
+
+        guard galleryItem.referencedAttachment.asReferencedStream == nil else {
+            return
+        }
+
+        if
+            let downloadTask,
+            !downloadTask.isCancelled
+        {
+            downloadTask.cancel()
+        } else {
+            downloadItemIfNeeded()
+        }
+    }
+
     override func prepareForReuse() {
         super.prepareForReuse()
 
@@ -104,6 +136,38 @@ class WidePhotoCell: MediaTileListModeCell {
         case .photoVideo(let photoGridItem):
             super.configure(item: item, spoilerState: spoilerState)
             configure(photoGridItem)
+
+            progressView?.removeFromSuperview()
+            if
+                photoGridItem.galleryItem.referencedAttachment.asReferencedStream == nil,
+                photoGridItem.galleryItem.referencedAttachment.asReferencedBackupThumbnail == nil,
+                let pointer = photoGridItem.galleryItem.referencedAttachment.asReferencedAnyPointer
+            {
+                let progressView = CVAttachmentProgressView(
+                    direction: .download(
+                        attachmentPointer: pointer.attachmentPointer,
+                        downloadState: .none,
+                    ),
+                    configuration: .forMediaOverlay(),
+                )
+
+                progressView.addGestureRecognizer(tapGestureRecognizer)
+
+                let manualLayoutView = ManualLayoutView(name: "progressViewContainer")
+                thumbnailView.addSubview(manualLayoutView)
+
+                manualLayoutView.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    manualLayoutView.topAnchor.constraint(equalTo: thumbnailView.topAnchor),
+                    manualLayoutView.bottomAnchor.constraint(equalTo: thumbnailView.bottomAnchor),
+                    manualLayoutView.leadingAnchor.constraint(equalTo: thumbnailView.leadingAnchor),
+                    manualLayoutView.trailingAnchor.constraint(equalTo: thumbnailView.trailingAnchor),
+                ])
+
+                manualLayoutView.addSubview(progressView)
+                manualLayoutView.centerSubviewOnSuperview(progressView, size: .square(44))
+                self.progressView = manualLayoutView
+            }
         default:
             owsFail("Unexpected item type \(item)")
         }
@@ -218,6 +282,21 @@ class WidePhotoCell: MediaTileListModeCell {
                 width: thumbnailSize.width,
                 height: thumbnailSize.height,
             )
+        }
+    }
+}
+
+extension WidePhotoCell: UIGestureRecognizerDelegate {
+
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard !allowsMultipleSelection else {
+            return false
+        }
+        switch item {
+        case .photoVideo(let photoGridItem):
+            return photoGridItem.galleryItem.referencedAttachment.asReferencedStream == nil
+        default:
+            return false
         }
     }
 }
