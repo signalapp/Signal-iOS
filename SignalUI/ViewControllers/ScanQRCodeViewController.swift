@@ -185,7 +185,7 @@ public class QRCodeScanViewController: OWSViewController {
         fileprivate var backgroundColor: UIColor {
             switch self {
             case .framed:
-                return .ows_black
+                return .Signal.background
             case .unadorned:
                 return .clear
             }
@@ -219,39 +219,26 @@ public class QRCodeScanViewController: OWSViewController {
         return true
     }
 
-    private lazy var uploadPhotoButton: UIButton = {
-        let button = OWSRoundedButton { [weak self] in
+    private lazy var uploadPhotoButton = UIButton(
+        configuration: .roundMaterial(image: Theme.iconImage(.buttonPhotoLibrary)),
+        primaryAction: UIAction { [weak self] _ in
             guard let self else { return }
             self.delegate?.didTapUploadPhotoButton(self)
-        }
-
-        button.ows_contentEdgeInsets = UIEdgeInsets(margin: 14)
-
-        // Always use dark theming since it sits over the scan mask.
-        button.setTemplateImageName(
-            Theme.iconName(.buttonPhotoLibrary),
-            tintColor: .ows_white,
-        )
-        button.backgroundColor = .ows_whiteAlpha20
-
-        return button
-    }()
+        },
+    )
 
     // MARK: - View Lifecycle
 
     override public func viewDidLoad() {
-        AssertIsOnMainThread()
-
         super.viewDidLoad()
 
+        overrideUserInterfaceStyle = .dark
         view.backgroundColor = appearance.backgroundColor
 
         addObservers()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
-        AssertIsOnMainThread()
-
         super.viewDidAppear(animated)
 
         tryToStartScanning()
@@ -266,8 +253,6 @@ public class QRCodeScanViewController: OWSViewController {
     }
 
     override public func viewDidDisappear(_ animated: Bool) {
-        AssertIsOnMainThread()
-
         super.viewDidDisappear(animated)
 
         stopScanning()
@@ -276,8 +261,6 @@ public class QRCodeScanViewController: OWSViewController {
     // MARK: - Notifications
 
     private func addObservers() {
-        AssertIsOnMainThread()
-
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didEnterBackground),
@@ -306,15 +289,11 @@ public class QRCodeScanViewController: OWSViewController {
 
     @objc
     private func didEnterBackground() {
-        AssertIsOnMainThread()
-
         stopScanning()
     }
 
     @objc
     private func didBecomeActive() {
-        AssertIsOnMainThread()
-
         if self.view.window != nil {
             tryToStartScanning()
         }
@@ -354,8 +333,6 @@ public class QRCodeScanViewController: OWSViewController {
 
     @objc
     public func tryToStartScanning() {
-        AssertIsOnMainThread()
-
         guard nil == scanner else {
             Logger.info("Early return because scanner is not nil")
             return
@@ -403,8 +380,6 @@ public class QRCodeScanViewController: OWSViewController {
     }
 
     private func startScanning() {
-        AssertIsOnMainThread()
-
         guard scanner == nil else {
             owsFailDebug("already scanning")
             return
@@ -828,8 +803,6 @@ private class QRCodeScanner {
     }
 
     func startVideoCapture(initialOrientation: UIInterfaceOrientation) -> Promise<Void> {
-        AssertIsOnMainThread()
-
         guard !Platform.isSimulator else {
             // Trying to actually set up the capture session will fail on a simulator
             // since we don't have actual capture devices. But it's useful to be able
