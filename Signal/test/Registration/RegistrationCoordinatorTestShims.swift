@@ -173,28 +173,28 @@ public class _RegistrationCoordinator_PreKeyManagerMock: PreKeyManager {
     public func rotateSignedPreKeysIfNeeded() async throws { fatalError() }
     public func refreshOneTimePreKeys(forIdentity identity: OWSIdentity, alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool) async throws { fatalError() }
 
-    public typealias CreatePreKeysMock = () -> Task<RegistrationPreKeyUploadBundles, Never>
+    public typealias CreatePreKeysMock = () async -> RegistrationPreKeyUploadBundles
     private var createPreKeysMocks = [CreatePreKeysMock]()
     public func addCreatePreKeysMock(_ mock: @escaping CreatePreKeysMock) { createPreKeysMocks.append(mock) }
     public func createPreKeysForRegistration() async -> RegistrationPreKeyUploadBundles {
         run.addObservedStep(.createPreKeys)
-        return await createPreKeysMocks.removeFirst()().value
+        return await createPreKeysMocks.removeFirst()()
     }
 
-    public typealias FinalizePreKeysMock = (Bool) -> Task<Void, Never>
+    public typealias FinalizePreKeysMock = (Bool) async -> Void
     private var finalizePreKeysMocks = [FinalizePreKeysMock]()
     public func addFinalizePreKeyMock(_ mock: @escaping FinalizePreKeysMock) { finalizePreKeysMocks.append(mock) }
     public func finalizeRegistrationPreKeys(_ bundles: RegistrationPreKeyUploadBundles, uploadDidSucceed: Bool) async {
         run.addObservedStep(.finalizePreKeys)
-        await finalizePreKeysMocks.removeFirst()(uploadDidSucceed).value
+        await finalizePreKeysMocks.removeFirst()(uploadDidSucceed)
     }
 
-    public typealias RotateOneTimePreKeysMock = (ChatServiceAuth) -> Task<Void, any Error>
+    public typealias RotateOneTimePreKeysMock = (ChatServiceAuth) async throws -> Void
     private var rotateOneTimePreKeysMocks = [RotateOneTimePreKeysMock]()
     public func addRotateOneTimePreKeyMock(_ mock: @escaping RotateOneTimePreKeysMock) { rotateOneTimePreKeysMocks.append(mock) }
     public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws {
         run.addObservedStep(.rotateOneTimePreKeys)
-        return try await rotateOneTimePreKeysMocks.removeFirst()(auth).value
+        return try await rotateOneTimePreKeysMocks.removeFirst()(auth)
     }
 
     public func setIsChangingNumber(_ isChangingNumber: Bool) {
