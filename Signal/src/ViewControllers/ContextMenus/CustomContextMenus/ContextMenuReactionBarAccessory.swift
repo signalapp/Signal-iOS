@@ -93,7 +93,7 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
         if let focusedEmoji = reactionPicker.focusedEmoji {
             switch focusedEmoji {
             case .more:
-                didSelectAnyEmoji()
+                didSelectShowFullEmojiPicker()
             case .emoji(let emoji):
                 let isRemoving = emoji == self.itemViewModel?.reactionState?.localUserEmoji
                 if let index = reactionPicker.currentEmojiSet().firstIndex(of: emoji) {
@@ -125,7 +125,7 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
         }
     }
 
-    func didSelectAnyEmoji() {
+    func didSelectShowFullEmojiPicker() {
         guard let message = itemViewModel?.interaction as? TSMessage else {
             owsFailDebug("Not sending reaction for unexpected interaction type")
             return

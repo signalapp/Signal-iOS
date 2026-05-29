@@ -3,13 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 import SignalUI
 
 protocol MessageReactionPickerDelegate: AnyObject {
     func didSelectReaction(reaction: String, isRemoving: Bool, inPosition position: Int)
-    func didSelectAnyEmoji()
+    func didSelectShowFullEmojiPicker()
 }
 
 class MessageReactionPicker: UIStackView {
@@ -28,11 +27,20 @@ class MessageReactionPicker: UIStackView {
 
     weak var delegate: MessageReactionPickerDelegate?
 
-    let pickerDiameter: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 50 : 56
-    let reactionFontSize: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 30 : 32
-    let pickerPadding: CGFloat = 6
-    var reactionHeight: CGFloat { return pickerDiameter - (pickerPadding * 2) }
-    var selectedBackgroundHeight: CGFloat { return pickerDiameter - 4 }
+    private enum LayoutConstants {
+        /// Total height of the picker control.
+        static let pickerHeight: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 50 : 56
+
+        /// Along top and bottom edges - always.
+        /// Along leading and trailing edges when style is not `.inline`.
+        static let pickerPadding: CGFloat = 6
+
+        /// Size of the tapable emoji control.
+        static let reactionHeight = pickerHeight - (pickerPadding * 2)
+
+        /// Diameter of the circular background that indicates currently selected reaction.
+        static let selectedBackgroundHeight = pickerHeight - 4
+    }
 
     enum Emoji: Equatable {
         case emoji(String)
@@ -40,7 +48,7 @@ class MessageReactionPicker: UIStackView {
     }
 
     private enum Button: Equatable {
-        case emoji(emoji: String, button: OWSFlatButton)
+        case emoji(emoji: String, button: EmojiButton)
         case more(UIView)
 
         var emoji: Emoji {
@@ -50,7 +58,7 @@ class MessageReactionPicker: UIStackView {
             }
         }
 
-        var emojiButton: OWSFlatButton? {
+        var emojiButton: EmojiButton? {
             switch self {
             case .emoji(_, let button): button
             case .more: nil
@@ -115,7 +123,7 @@ class MessageReactionPicker: UIStackView {
         case (.configure, false), (.contextMenu(allowGlass: _), _):
             backgroundView = addBackgroundView(
                 withBackgroundColor: .Signal.secondaryGroupedBackground,
-                cornerRadius: pickerDiameter / 2,
+                cornerRadius: LayoutConstants.pickerHeight / 2,
             )
             backgroundView?.layer.cornerCurve = .continuous
             backgroundView?.layer.shadowColor = UIColor.black.cgColor
@@ -125,7 +133,7 @@ class MessageReactionPicker: UIStackView {
 
             let shadowView = UIView()
             shadowView.backgroundColor = .Signal.secondaryGroupedBackground
-            shadowView.layer.cornerRadius = pickerDiameter / 2
+            shadowView.layer.cornerRadius = LayoutConstants.pickerHeight / 2
             shadowView.layer.shadowColor = UIColor.black.cgColor
             shadowView.layer.shadowRadius = 12
             shadowView.layer.shadowOpacity = 0.3
@@ -135,109 +143,106 @@ class MessageReactionPicker: UIStackView {
             backgroundContentView = backgroundView
         }
 
-        autoSetDimension(.height, toSize: pickerDiameter)
+        autoSetDimension(.height, toSize: LayoutConstants.pickerHeight)
 
         isLayoutMarginsRelativeArrangement = true
         // Inline picker's scroll view should go to the edge
         layoutMargins = .init(
-            top: pickerPadding,
-            leading: style.isInline ? 0 : pickerPadding,
-            bottom: pickerPadding,
-            trailing: style.isInline ? 4 : pickerPadding,
+            top: LayoutConstants.pickerPadding,
+            leading: style.isInline ? 0 : LayoutConstants.pickerPadding,
+            bottom: LayoutConstants.pickerPadding,
+            trailing: style.isInline ? 4 : LayoutConstants.pickerPadding,
         )
 
         let emojiSet = currentEmojiSetOnDisk(style: style)
 
-        var addAnyButton = !style.isConfigure
-
+        var addShowAllEmojiButton = style.isConfigure == false
         if
-            !style.isConfigure,
+            addShowAllEmojiButton,
             let selectedEmoji = self.selectedEmoji,
             nil == emojiSet.firstIndex(of: selectedEmoji)
         {
-            addAnyButton = false
+            addShowAllEmojiButton = false
         }
 
         switch style {
         case .contextMenu, .configure:
-            self.addArrangedSubview(emojiStackView)
+            addArrangedSubview(emojiStackView)
         case .inline:
             let scrollView = FadingHScrollView()
             scrollView.showsHorizontalScrollIndicator = false
             scrollView.addSubview(emojiStackView)
             scrollView.contentInset = .init(top: 0, leading: OWSTableViewController2.defaultHOuterMargin, bottom: 0, trailing: 0)
             emojiStackView.autoPinEdgesToSuperviewEdges()
-            self.addArrangedSubview(scrollView)
+            addArrangedSubview(scrollView)
         }
 
         for (index, emoji) in emojiSet.enumerated() {
-            let button = OWSFlatButton()
-            button.autoSetDimensions(to: CGSize(square: reactionHeight))
-            button.setTitle(
-                title: emoji.rawValue,
-                font: .systemFont(ofSize: reactionFontSize),
-                titleColor: .Signal.label,
-            )
-            button.setPressedBlock { [weak self] in
-                // current title of button may have changed in the meantime
-                if let currentEmoji = button.button.title(for: .normal) {
+            let button = EmojiButton(emoji: emoji.rawValue)
+            button.addAction(
+                UIAction { [weak self] action in
+                    guard
+                        let self,
+                        let delegate = self.delegate,
+                        let button = action.sender as? EmojiButton
+                    else { return }
+
+                    let currentEmoji = button.emoji
                     ImpactHapticFeedback.impactOccurred(style: .light)
-                    self?.delegate?.didSelectReaction(reaction: currentEmoji, isRemoving: currentEmoji == self?.selectedEmoji?.rawValue, inPosition: index)
-                }
-            }
+                    delegate.didSelectReaction(
+                        reaction: currentEmoji,
+                        isRemoving: currentEmoji == self.selectedEmoji?.rawValue,
+                        inPosition: index,
+                    )
+                },
+                for: .touchUpInside,
+            )
             buttonForEmoji.append(.emoji(emoji: emoji.rawValue, button: button))
             emojiStackView.addArrangedSubview(button)
 
             // Add a circle behind the currently selected emoji
-            if self.selectedEmoji == emoji {
+            if self.selectedEmoji == emoji, let backgroundContentView {
                 let selectedBackgroundView = UIView()
                 selectedBackgroundView.backgroundColor = .Signal.secondaryFill
                 selectedBackgroundView.clipsToBounds = true
-                selectedBackgroundView.layer.cornerRadius = selectedBackgroundHeight / 2
-                backgroundContentView?.addSubview(selectedBackgroundView)
-                selectedBackgroundView.autoSetDimensions(to: CGSize(square: selectedBackgroundHeight))
+                selectedBackgroundView.layer.cornerRadius = LayoutConstants.selectedBackgroundHeight / 2
+                backgroundContentView.addSubview(selectedBackgroundView)
+                selectedBackgroundView.autoSetDimensions(to: CGSize(square: LayoutConstants.selectedBackgroundHeight))
                 selectedBackgroundView.autoAlignAxis(.horizontal, toSameAxisOf: button)
                 selectedBackgroundView.autoAlignAxis(.vertical, toSameAxisOf: button)
             }
         }
 
-        if addAnyButton {
-            let button = OWSButton { [weak self] in
-                self?.delegate?.didSelectAnyEmoji()
-            }
-            button.autoSetDimensions(to: CGSize(square: reactionHeight))
-            button.dimsWhenHighlighted = true
+        if addShowAllEmojiButton {
+            let buttonSize = LayoutConstants.reactionHeight
+            let visibleButtonSize: CGFloat = 32
+            let buttonImage = UIImage(resource: .more)
 
-            let imageView = UIImageView(image: UIImage(resource: .more))
-            imageView.contentMode = .scaleAspectFit
-            imageView.tintColor = .Signal.secondaryLabel
+            var buttonConfiguration = UIButton.Configuration.roundGray(image: buttonImage)
+            buttonConfiguration.baseForegroundColor = .Signal.secondaryLabel
+            buttonConfiguration.contentInsets = .init(
+                hMargin: 0.5 * (buttonSize - buttonImage.size.width),
+                vMargin: 0.5 * (buttonSize - buttonImage.size.height),
+            )
+            buttonConfiguration.background.backgroundInsets = .init(margin: 0.5 * (buttonSize - visibleButtonSize))
 
-            let imageBackground = UIView()
-            imageBackground.backgroundColor = .Signal.primaryFill
-
-            // Fill colors are translucent, so place over a normal background
-            // so it looks solid when being pushed up.
-            let backgroundBackground = UIView()
-            backgroundBackground.backgroundColor = .Signal.background
-
-            backgroundBackground.addSubview(imageBackground)
-            imageBackground.autoPinEdgesToSuperviewEdges()
-
-            backgroundBackground.addSubview(imageView)
-            imageView.autoPinEdgesToSuperviewEdges(with: .init(margin: 2))
-
-            button.addSubview(backgroundBackground)
-            let size: CGFloat = 32
-            backgroundBackground.autoSetDimensions(to: .square(size))
-            backgroundBackground.layer.cornerRadius = size / 2
-            backgroundBackground.clipsToBounds = true
-            backgroundBackground.autoCenterInSuperview()
-            backgroundBackground.isUserInteractionEnabled = false
+            let button = UIButton(
+                configuration: buttonConfiguration,
+                primaryAction: UIAction { [weak self] _ in
+                    self?.delegate?.didSelectShowFullEmojiPicker()
+                },
+            )
 
             buttonForEmoji.append(.more(button))
-            self.addArrangedSubview(button)
+            addArrangedSubview(button)
         }
     }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Configuring
 
     private func currentEmojiSetOnDisk(style: Style) -> [EmojiWithSkinTones] {
         var emojiSet = SSKEnvironment.shared.databaseStorageRef.read { transaction in
@@ -271,7 +276,7 @@ class MessageReactionPicker: UIStackView {
             return savedReactions + recentReactions
         }
 
-        if !style.isConfigure, let selectedEmoji = self.selectedEmoji {
+        if !style.isConfigure, let selectedEmoji {
             // If the local user reacted with any of the default emoji set,
             // we should show it in the normal place in the picker bar.
             // NOTE: This used to match independent of skin tone, but we decided to drop that behavior.
@@ -287,16 +292,17 @@ class MessageReactionPicker: UIStackView {
 
     func updateReactionPickerEmojis() {
         let currentEmojis = currentEmojiSetOnDisk(style: self.style)
-        for (index, emoji) in self.currentEmojiSet().enumerated() {
+        for (index, emoji) in currentEmojiSet().enumerated() {
             if let newEmoji = currentEmojis[safe: index]?.rawValue {
-                self.replaceEmojiReaction(emoji, newEmoji: newEmoji, inPosition: index)
+                replaceEmojiReaction(emoji, newEmoji: newEmoji, inPosition: index)
             }
         }
     }
 
     func replaceEmojiReaction(_ oldEmoji: String, newEmoji: String, inPosition position: Int) {
         guard let button = buttonForEmoji[position].emojiButton else { return }
-        button.setTitle(title: newEmoji, font: .systemFont(ofSize: reactionFontSize), titleColor: .Signal.label)
+
+        button.emoji = newEmoji
         buttonForEmoji.replaceSubrange(
             position...position,
             with: [.emoji(emoji: newEmoji, button: button)],
@@ -351,6 +357,8 @@ class MessageReactionPicker: UIStackView {
         } completion: { _ in }
     }
 
+    // MARK: - Presentation Animations
+
     func playPresentationAnimation(duration: TimeInterval, completion: (() -> Void)? = nil) {
         CATransaction.begin()
         if let completion {
@@ -384,7 +392,10 @@ class MessageReactionPicker: UIStackView {
         }
     }
 
+    // MARK: - Focusing
+
     var focusedEmoji: Emoji?
+
     func updateFocusPosition(_ position: CGPoint, animated: Bool) {
         var previouslyFocusedButton: UIView?
         var focusedButton: UIView?
@@ -416,7 +427,7 @@ class MessageReactionPicker: UIStackView {
         }
     }
 
-    func focusArea(for button: UIView) -> CGRect {
+    private func focusArea(for button: UIView) -> CGRect {
         var focusArea = button.frame
 
         // This button is currently focused, restore identity while we get the frame
@@ -435,15 +446,13 @@ class MessageReactionPicker: UIStackView {
         focusArea.origin.y -= 20
 
         // Encompasses the width of the reaction, plus half of the padding on either side
-        focusArea.size.width = reactionHeight + pickerPadding
-        focusArea.origin.x -= pickerPadding / 2
+        focusArea.size.width = LayoutConstants.reactionHeight + LayoutConstants.pickerPadding
+        focusArea.origin.x -= LayoutConstants.pickerPadding / 2
 
         return focusArea
     }
 
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    // MARK: - Custom Views
 
     private class FadingHScrollView: UIScrollView {
         var fadeLocation: CGFloat = 31 / 32
@@ -469,5 +478,56 @@ class MessageReactionPicker: UIStackView {
                 self.contentOffset = CGPoint(x: offset, y: 0)
             }
         }
+    }
+
+    // Built-in UIButton configurations have margins around title label built in.
+    // Since we only want a one symbol text label inside, it's simpler to do custom class like this.
+    private class EmojiButton: UIButton {
+
+        private static let font: UIFont = {
+            let fontSize: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 30 : 32
+            return .systemFont(ofSize: fontSize)
+        }()
+
+        var emoji: String {
+            didSet {
+                label.text = emoji
+            }
+        }
+
+        init(emoji: String) {
+            self.emoji = emoji
+
+            super.init(frame: .zero)
+
+            label.font = EmojiButton.font
+            label.textColor = .Signal.label
+            label.textAlignment = .center
+            label.text = emoji
+            addSubview(label)
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            label.frame = bounds
+        }
+
+        override var intrinsicContentSize: CGSize {
+            CGSize(square: LayoutConstants.reactionHeight)
+        }
+
+        override var isHighlighted: Bool {
+            didSet {
+                label.alpha = isHighlighted ? 0.7 : 1
+            }
+        }
+
+        // MARK: - Layout
+
+        private let label = UILabel()
     }
 }

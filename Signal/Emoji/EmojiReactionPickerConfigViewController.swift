@@ -113,7 +113,7 @@ extension EmojiReactionPickerConfigViewController: MessageReactionPickerDelegate
         present(picker, animated: true)
     }
 
-    func didSelectAnyEmoji() {
+    func didSelectShowFullEmojiPicker() {
         // No-op for configuration
     }
 }

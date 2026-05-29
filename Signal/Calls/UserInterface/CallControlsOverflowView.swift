@@ -240,7 +240,7 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
         self.react(with: reaction)
     }
 
-    func didSelectAnyEmoji() {
+    func didSelectShowFullEmojiPicker() {
         let sheet = EmojiPickerSheet(
             message: nil,
             reactionPickerConfigurationListener: self,
