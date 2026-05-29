@@ -4,13 +4,11 @@
 //
 
 import AVFoundation
-import Foundation
 import LibSignalClient
 import Lottie
 import Photos
 import SignalServiceKit
 import SignalUI
-import UIKit
 
 protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewControllerDidFinish(_ photoCaptureViewController: PhotoCaptureViewController)
@@ -36,7 +34,10 @@ protocol PhotoCaptureViewControllerDataSource: AnyObject {
     func addMedia(attachment: PreviewableAttachment)
 }
 
-class PhotoCaptureViewController: OWSViewController, OWSNavigationChildController {
+class PhotoCaptureViewController: OWSViewController, OWSNavigationChildController, SheetDismissalDelegate,
+    CameraCaptureSessionDelegate, CameraZoomSelectionControlDelegate, InteractiveDismissDelegate,
+    LinkPreviewAttachmentViewControllerDelegate, QRCodeSampleBufferScannerDelegate, TextStoryComposerViewDelegate
+{
     private let attachmentLimits: OutgoingAttachmentLimits
 
     init(attachmentLimits: OutgoingAttachmentLimits) {
@@ -755,11 +756,8 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             updateOrientation()
         }
     }
-}
 
-// MARK: - Text Editor
-
-extension PhotoCaptureViewController {
+    // MARK: - Text Editor
 
     private func initializeTextEditorUIIfNecessary() {
         guard !textEditorUIInitialized else { return }
@@ -1043,9 +1041,8 @@ extension PhotoCaptureViewController {
         guard composerMode == .text else { return }
         setComposerMode(.camera, animated: true)
     }
-}
 
-extension PhotoCaptureViewController: TextStoryComposerViewDelegate {
+    // MARK: - TextStoryComposerViewDelegate
 
     fileprivate func textStoryComposerDidBeginEditing(_ textStoryComposer: TextStoryComposerView) {
         updateBottomBarVisibility(animated: true)
@@ -1060,9 +1057,8 @@ extension PhotoCaptureViewController: TextStoryComposerViewDelegate {
     fileprivate func textStoryComposerDidChange(_ textStoryComposer: TextStoryComposerView) {
         bottomBar.proceedButton.isEnabled = !textStoryComposer.isEmpty
     }
-}
 
-extension PhotoCaptureViewController: LinkPreviewAttachmentViewControllerDelegate {
+    // MARK: - LinkPreviewAttachmentViewControllerDelegate
 
     func linkPreviewAttachmentViewController(
         _ viewController: LinkPreviewAttachmentViewController,
@@ -1071,11 +1067,8 @@ extension PhotoCaptureViewController: LinkPreviewAttachmentViewControllerDelegat
         textStoryComposerView.linkPreviewDraft = linkPreview
         viewController.dismiss(animated: true)
     }
-}
 
-// MARK: - Button Actions
-
-extension PhotoCaptureViewController {
+    // MARK: - Button Actions
 
     @objc
     private func didTapClose() {
@@ -1142,11 +1135,8 @@ extension PhotoCaptureViewController {
         guard let newComposerMode = ComposerMode(rawValue: bottomBar.contentTypeSelectionControl.selectedSegmentIndex) else { return }
         setComposerMode(newComposerMode, animated: true)
     }
-}
 
-// MARK: - Camera Gesture Recognizers
-
-extension PhotoCaptureViewController {
+    // MARK: - Camera Gesture Recognizers
 
     private func configureCameraGestures() {
         previewView.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(didPinchZoom(pinchGesture:))))
@@ -1213,11 +1203,8 @@ extension PhotoCaptureViewController {
         guard bottomBar.captureControl.state == .initial else { return }
         setComposerMode(.text, animated: true)
     }
-}
 
-// MARK: - Tap to Focus
-
-extension PhotoCaptureViewController {
+    // MARK: - Tap to Focus
 
     private func positionTapToFocusView(center: CGPoint) {
         tapToFocusCenterXConstraint.constant = center.x
@@ -1238,11 +1225,8 @@ extension PhotoCaptureViewController {
 
         tapToFocusView.play(toProgress: 1.0)
     }
-}
 
-// MARK: - Photo Capture
-
-extension PhotoCaptureViewController {
+    // MARK: - Photo Capture
 
     private func setupPhotoCapture() {
         bottomBar.captureControl.delegate = cameraCaptureSession
@@ -1298,9 +1282,8 @@ extension PhotoCaptureViewController {
             sideBar.flashModeButton.setFlashMode(cameraCaptureSession.flashMode, animated: animated)
         }
     }
-}
 
-extension PhotoCaptureViewController: InteractiveDismissDelegate {
+    // MARK: - InteractiveDismissDelegate
 
     func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
         view.backgroundColor = .clear
@@ -1319,9 +1302,8 @@ extension PhotoCaptureViewController: InteractiveDismissDelegate {
     func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
         view.backgroundColor = Theme.darkThemeBackgroundColor
     }
-}
 
-extension PhotoCaptureViewController: CameraZoomSelectionControlDelegate {
+    // MARK: - CameraZoomSelectionControlDelegate
 
     func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didSelect camera: CameraCaptureSession.CameraType) {
         let position: AVCaptureDevice.Position = cameraZoomControl == frontCameraZoomControl ? .front : .back
@@ -1331,11 +1313,9 @@ extension PhotoCaptureViewController: CameraZoomSelectionControlDelegate {
     func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didChangeZoomFactor zoomFactor: CGFloat) {
         cameraCaptureSession.changeVisibleZoomFactor(to: zoomFactor, animated: true)
     }
-}
 
-// MARK: - QRCodeSampleBufferScannerDelegate
+    // MARK: - QRCodeSampleBufferScannerDelegate
 
-extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
     var shouldProcessQRCodes: Bool {
         _shouldProcessQRCodes.get()
     }
@@ -1468,22 +1448,17 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
             dismissalDelegate: self,
         )
     }
-}
 
-// MARK: - SheetDismissalDelegate
+    // MARK: - SheetDismissalDelegate
 
-extension PhotoCaptureViewController: SheetDismissalDelegate {
     func didDismissPresentedSheet() {
         // Allow another QR code to be scanned
         qrCodeScanned = false
     }
-}
 
-// MARK: - CameraCaptureSessionDelegate
+    // MARK: - CameraCaptureSessionDelegate
 
-extension PhotoCaptureViewController: CameraCaptureSessionDelegate {
-
-    // MARK: - Photo
+    // MARK: Photo
 
     func cameraCaptureSessionDidStart(_ session: CameraCaptureSession) {
         let captureFeedbackView = UIView()
@@ -1533,7 +1508,7 @@ extension PhotoCaptureViewController: CameraCaptureSessionDelegate {
         delegate?.photoCaptureViewControllerDidTryToCaptureTooMany(self)
     }
 
-    // MARK: - Video
+    // MARK: Video
 
     func cameraCaptureSessionWillStartVideoRecording(_ session: CameraCaptureSession) {
         setIsRecordingVideo(true, animated: true)

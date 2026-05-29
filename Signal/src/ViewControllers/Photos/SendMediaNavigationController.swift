@@ -73,7 +73,10 @@ class CameraFirstCaptureNavigationController: SendMediaNavigationController {
     }
 }
 
-class SendMediaNavigationController: OWSNavigationController {
+class SendMediaNavigationController: OWSNavigationController, AttachmentApprovalViewControllerDelegate,
+    AttachmentApprovalViewControllerDataSource, PhotoCaptureViewControllerDelegate, PhotoCaptureViewControllerDataSource,
+    PHPickerViewControllerDelegate, StickerPickerSheetDelegate, UIAdaptivePresentationControllerDelegate
+{
 
     fileprivate var requiresContactPickerToProceed: Bool {
         false
@@ -269,11 +272,6 @@ class SendMediaNavigationController: OWSNavigationController {
             self.presentActionSheet(alert)
         }
     }
-}
-
-extension SendMediaNavigationController {
-
-    // MARK: - Too Many
 
     func showTooManySelectedToast() {
         let toastFormat = OWSLocalizedString(
@@ -286,9 +284,8 @@ extension SendMediaNavigationController {
         let toastController = ToastController(text: toastText)
         toastController.presentToastView(from: .bottom, of: view, inset: view.layoutMargins.bottom + 10)
     }
-}
 
-extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
+    // MARK: - PhotoCaptureViewControllerDelegate
 
     func photoCaptureViewControllerDidFinish(_ photoCaptureViewController: PhotoCaptureViewController) {
         owsPrecondition(numberOfMediaItems > 0)
@@ -373,9 +370,8 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     func photoCaptureViewControllerCanShowTextEditor(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool {
         return canSendToStories
     }
-}
 
-extension SendMediaNavigationController: PhotoCaptureViewControllerDataSource {
+    // MARK: - PhotoCaptureViewControllerDataSource
 
     var numberOfMediaItems: Int {
         return self.pendingAttachments.count
@@ -387,9 +383,9 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDataSource {
             approvalItem: AttachmentApprovalItem(attachment: attachment, canSave: true),
         ))
     }
-}
 
-extension SendMediaNavigationController: PHPickerViewControllerDelegate {
+    // MARK: - PHPickerViewControllerDelegate
+
     private struct PHPickerResultsLoadResult {
         let resolvablePendingAttachments: [() async throws -> PendingAttachment]
         let didAddAttachments: Bool
@@ -524,17 +520,8 @@ extension SendMediaNavigationController: PHPickerViewControllerDelegate {
             pickerViewController: picker,
         )
     }
-}
 
-extension SendMediaNavigationController: UIAdaptivePresentationControllerDelegate {
-    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-        // The user swiped the photo picker down
-        self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
-    }
-}
-
-private extension SendMediaNavigationController {
-    func showApprovalAfterProcessing(
+    fileprivate func showApprovalAfterProcessing(
         resolvablePendingAttachments: [() async throws -> PendingAttachment],
         pickerViewController: PHPickerViewController,
     ) {
@@ -571,9 +558,15 @@ private extension SendMediaNavigationController {
             },
         )
     }
-}
 
-extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegate {
+    // MARK: - UIAdaptivePresentationControllerDelegate
+
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        // The user swiped the photo picker down
+        self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
+    }
+
+    // MARK: - AttachmentApprovalViewControllerDelegate
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
         sendMediaNavDelegate?.sendMediaNav(self, didChangeMessageBody: newMessageBody)
@@ -638,9 +631,8 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
         // the picker for _additional_ photos.
         present(vc, animated: true)
     }
-}
 
-extension SendMediaNavigationController: AttachmentApprovalViewControllerDataSource {
+    // MARK: - AttachmentApprovalViewControllerDataSource
 
     var attachmentApprovalTextInputContextIdentifier: String? {
         sendMediaNavDataSource?.sendMediaNavTextInputContextIdentifier
@@ -657,9 +649,9 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDataSou
     func attachmentApprovalMentionCacheInvalidationKey() -> String {
         sendMediaNavDataSource?.sendMediaNavMentionCacheInvalidationKey() ?? UUID().uuidString
     }
-}
 
-extension SendMediaNavigationController: StickerPickerSheetDelegate {
+    // MARK: - StickerPickerSheetDelegate
+
     func makeManageStickersViewController(for stickerPickerSheet: StickerPickerSheet) -> UIViewController {
         let manageStickersView = ManageStickersViewController()
         let navigationController = OWSNavigationController(rootViewController: manageStickersView)
