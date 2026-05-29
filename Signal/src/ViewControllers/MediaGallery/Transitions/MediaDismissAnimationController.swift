@@ -112,23 +112,6 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
         let toMediaContext = toContextProvider.mediaPresentationContext(item: item, in: containerView)
 
-        guard let presentationImage = item.image else {
-            owsFailDebug("presentationImage was unexpectedly nil")
-            // Complete transition immediately.
-            fromContextProvider.mediaWillPresent(fromContext: fromMediaContext)
-            if let toMediaContext {
-                toContextProvider.mediaWillPresent(toContext: toMediaContext)
-            }
-            DispatchQueue.main.async {
-                fromContextProvider.mediaDidPresent(fromContext: fromMediaContext)
-                if let toMediaContext {
-                    toContextProvider.mediaDidPresent(toContext: toMediaContext)
-                }
-                transitionContext.completeTransition(true)
-            }
-            return
-        }
-
         // All is good, set up the view hierarchy and view animations.
 
         let isTransitionInteractive = transitionContext.isInteractive
@@ -160,13 +143,19 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
         clippingView.addSubview(transitionView)
         self.transitionView = transitionView
 
-        let imageView = MediaTransitionImageView(image: presentationImage)
-        imageView.contentMode = .scaleAspectFill
-        imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        imageView.layer.masksToBounds = true
-        imageView.shape = fromMediaContext.mediaViewShape
-        imageView.frame = transitionView.bounds
-        transitionView.addSubview(imageView)
+        let transitionImageView: MediaTransitionImageView?
+        if let presentationImage = item.image {
+            let imageView = MediaTransitionImageView(image: presentationImage)
+            imageView.contentMode = .scaleAspectFill
+            imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            imageView.layer.masksToBounds = true
+            imageView.shape = fromMediaContext.mediaViewShape
+            imageView.frame = transitionView.bounds
+            transitionView.addSubview(imageView)
+            transitionImageView = imageView
+        } else {
+            transitionImageView = nil
+        }
 
         // Because toggling `isHidden` causes UIStack view layouts to change, we instead toggle `alpha`
         fromMediaContext.mediaView.alpha = 0
@@ -209,7 +198,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                     }
                 }
 
-                imageView.shape = destinationMediaViewShape
+                transitionImageView?.shape = destinationMediaViewShape
                 transitionView.transform = .identity
                 transitionView.frame = clippingView.convert(destinationFrame, from: containerView)
                 transitionView.layer.shadowOpacity = 0
