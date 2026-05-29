@@ -98,6 +98,7 @@ public enum SignalSymbol: Character {
     case plus = "\u{E1D1}"
     case plusCircle = "\u{E1D2}"
     case poll = "\u{E082}"
+    case qrcode = "\u{E0C2}"
     case refresh = "\u{E0C4}"
     case reply = "\u{E06D}"
     case safetyNumber = "\u{E06F}"

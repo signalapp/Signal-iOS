@@ -93,31 +93,39 @@ public class FindByUsernameViewController: OWSTableViewController2 {
         let qrButtonSection = OWSTableSection(items: [
             OWSTableItem(customCellBlock: { [weak self] in
                 let cell = OWSTableItem.newCell()
-                let button = OWSRoundedButton {
-                    self?.findByUsernameDelegate?.openQRCodeScanner()
-                }
-                let font = UIFont.dynamicTypeSubheadline
-                let title = NSAttributedString.composed(of: [
-                    NSAttributedString.with(image: Theme.iconImage(.qrCode), font: font),
-                    " ",
-                    OWSLocalizedString(
-                        "FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON",
-                        comment: "A button below the username text field which opens a username QR code scanner",
+
+                // Font taken from UIButton.Configuration.smallSecondary
+                let buttonTitleFont = UIFont.dynamicTypeSubheadlineClamped.medium()
+                var attributedButtonTitle = AttributedString(
+                    SignalSymbol.qrcode.attributedString(
+                        dynamicTypeBaseSize: buttonTitleFont.pointSize,
                     ),
-                ]).styled(
-                    with: .font(font.medium()),
-                    .color(Theme.primaryTextColor),
                 )
-                button.setAttributedTitle(title, for: .normal)
-                button.backgroundColor = Theme.tableCell2PresentedBackgroundColor
-                button.dimsWhenHighlighted = true
-                button.ows_contentEdgeInsets = .init(hMargin: 16, vMargin: 6)
-                cell.addSubview(button)
-                button.autoPinEdge(toSuperviewMargin: .top)
-                button.autoPinEdge(toSuperviewMargin: .bottom)
-                button.autoCenterInSuperviewMargins()
-                button.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
-                button.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
+                attributedButtonTitle.append(AttributedString(" "))
+                attributedButtonTitle.append(AttributedString(OWSLocalizedString(
+                    "FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON",
+                    comment: "A button below the username text field which opens a username QR code scanner",
+                )))
+                var defaults = AttributeContainer()
+                defaults.font = buttonTitleFont
+                attributedButtonTitle.mergeAttributes(defaults, mergePolicy: .keepCurrent)
+
+                let button = UIButton(
+                    configuration: .smallSecondary(title: ""),
+                    primaryAction: UIAction { [weak self] _ in
+                        self?.findByUsernameDelegate?.openQRCodeScanner()
+                    },
+                )
+                button.configuration?.titleTextAttributesTransformer = nil // otherwise `attributedTitle` won't work.
+                button.configuration?.attributedTitle = attributedButtonTitle
+                button.translatesAutoresizingMaskIntoConstraints = false
+                cell.contentView.addSubview(button)
+                NSLayoutConstraint.activate([
+                    button.topAnchor.constraint(equalTo: cell.contentView.layoutMarginsGuide.topAnchor),
+                    button.leadingAnchor.constraint(greaterThanOrEqualTo: cell.contentView.layoutMarginsGuide.leadingAnchor),
+                    button.centerXAnchor.constraint(equalTo: cell.contentView.layoutMarginsGuide.centerXAnchor),
+                    button.bottomAnchor.constraint(equalTo: cell.contentView.layoutMarginsGuide.bottomAnchor),
+                ])
                 return cell
             }),
         ])
