@@ -329,6 +329,7 @@ public class GRDBSchemaMigrator {
         case dropAttachmentContentTypeAUTrigger
         case addOrphanedAttachmentTimestamp
         case migrateSecureValueRecovery
+        case wipeCachedSVRBAuthCredentials
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5166,6 +5167,14 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.migrateSecureValueRecovery) { tx in
             try migrateSecureValueRecovery(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.wipeCachedSVRBAuthCredentials) { tx in
+            try tx.database.execute(sql: """
+            DELETE FROM keyvalue
+            WHERE collection = 'SVR🐝AuthCredential'
+            """)
             return .success(())
         }
 

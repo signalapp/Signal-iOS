@@ -107,39 +107,22 @@ extension BackupImportSource {
         logger: PrefixedLogger,
     ) async throws -> MessageBackupKey {
         switch self {
-        case let .remote(key, noneSource):
+        case let .remote(key, nonceSource):
             let forwardSecrecyToken: BackupForwardSecrecyToken?
-            switch noneSource {
+            switch nonceSource {
             case let .provisioningMessage(token):
                 forwardSecrecyToken = token
             case let .svrB(metadataHeader, chatAuth):
-                do {
-                    forwardSecrecyToken = try await self.fetchForwardSecrecyTokenFromSvr(
-                        key: key,
-                        metadataHeader: metadataHeader,
-                        chatAuth: chatAuth,
-                        forceRefreshSVRBAuthCredential: false,
-                        backupRequestManager: backupRequestManager,
-                        db: db,
-                        libsignalNet: libsignalNet,
-                        nonceStore: nonceStore,
-                        logger: logger,
-                    )
-                } catch SignalError.webSocketError {
-                    // This may represent an "expired auth" error from the SVRB
-                    // servers. Try again, force-refreshing credentials.
-                    forwardSecrecyToken = try await self.fetchForwardSecrecyTokenFromSvr(
-                        key: key,
-                        metadataHeader: metadataHeader,
-                        chatAuth: chatAuth,
-                        forceRefreshSVRBAuthCredential: true,
-                        backupRequestManager: backupRequestManager,
-                        db: db,
-                        libsignalNet: libsignalNet,
-                        nonceStore: nonceStore,
-                        logger: logger,
-                    )
-                }
+                forwardSecrecyToken = try await self.fetchForwardSecrecyTokenFromSvr(
+                    key: key,
+                    metadataHeader: metadataHeader,
+                    chatAuth: chatAuth,
+                    backupRequestManager: backupRequestManager,
+                    db: db,
+                    libsignalNet: libsignalNet,
+                    nonceStore: nonceStore,
+                    logger: logger,
+                )
             }
 
             return try MessageBackupKey(
@@ -161,29 +144,17 @@ extension BackupImportSource {
         key: MessageRootBackupKey,
         metadataHeader: BackupNonce.MetadataHeader,
         chatAuth: ChatServiceAuth,
-        forceRefreshSVRBAuthCredential: Bool,
         backupRequestManager: BackupRequestManager,
         db: any DB,
         libsignalNet: LibSignalClient.Net,
         nonceStore: BackupNonceMetadataStore,
         logger: PrefixedLogger,
     ) async throws -> BackupForwardSecrecyToken {
-        let svrBAuth: LibSignalClient.Auth
-        do {
-            svrBAuth = try await backupRequestManager.fetchSVRBAuthCredential(
-                key: key,
-                chatServiceAuth: chatAuth,
-                forceRefresh: forceRefreshSVRBAuthCredential,
-                logger: logger,
-            )
-        } catch let error as CancellationError {
-            throw error
-        } catch let error where error.isNetworkFailureOrTimeout {
-            throw error
-        } catch let error {
-            owsFailDebug("Permanently failed to fetch svrB auth! \(error)")
-            throw SVRBError.unrecoverable
-        }
+        let svrBAuth = try await backupRequestManager.fetchSVRBAuthCredential(
+            key: key,
+            chatServiceAuth: chatAuth,
+            logger: logger,
+        )
 
         let svrB = libsignalNet.svrB(auth: svrBAuth)
 
@@ -212,7 +183,6 @@ extension BackupImportSource {
                 key: key,
                 metadataHeader: metadataHeader,
                 chatAuth: chatAuth,
-                forceRefreshSVRBAuthCredential: false,
                 backupRequestManager: backupRequestManager,
                 db: db,
                 libsignalNet: libsignalNet,
@@ -273,29 +243,14 @@ extension BackupExportPurpose {
     ) async throws -> EncryptionMetadata {
         switch self {
         case let .remoteExport(key, chatAuth):
-            do {
-                return try await storeEncryptionMetadataToSVRB(
-                    key: key,
-                    chatAuth: chatAuth,
-                    forceRefreshSVRBAuthCredential: false,
-                    backupRequestManager: backupRequestManager,
-                    db: db,
-                    libsignalNet: libsignalNet,
-                    nonceStore: nonceStore,
-                )
-            } catch SignalError.webSocketError {
-                // This may represent an "expired auth" error from the SVRB
-                // servers. Try again, force-refreshing credentials.
-                return try await storeEncryptionMetadataToSVRB(
-                    key: key,
-                    chatAuth: chatAuth,
-                    forceRefreshSVRBAuthCredential: true,
-                    backupRequestManager: backupRequestManager,
-                    db: db,
-                    libsignalNet: libsignalNet,
-                    nonceStore: nonceStore,
-                )
-            }
+            return try await storeEncryptionMetadataToSVRB(
+                key: key,
+                chatAuth: chatAuth,
+                backupRequestManager: backupRequestManager,
+                db: db,
+                libsignalNet: libsignalNet,
+                nonceStore: nonceStore,
+            )
         case let .linkNsync(ephemeralKey, aci):
             let backupId = ephemeralKey.deriveBackupId(aci: aci)
             let encryptionKey = try MessageBackupKey(
@@ -315,28 +270,16 @@ extension BackupExportPurpose {
     private func storeEncryptionMetadataToSVRB(
         key: MessageRootBackupKey,
         chatAuth: ChatServiceAuth,
-        forceRefreshSVRBAuthCredential: Bool,
         backupRequestManager: BackupRequestManager,
         db: any DB,
         libsignalNet: LibSignalClient.Net,
         nonceStore: BackupNonceMetadataStore,
     ) async throws -> EncryptionMetadata {
-        let svrBAuth: LibSignalClient.Auth
-        do {
-            svrBAuth = try await backupRequestManager.fetchSVRBAuthCredential(
-                key: key,
-                chatServiceAuth: chatAuth,
-                forceRefresh: forceRefreshSVRBAuthCredential,
-                logger: logger,
-            )
-        } catch let error as CancellationError {
-            throw error
-        } catch let error where error.isNetworkFailureOrTimeout {
-            throw error
-        } catch let error {
-            owsFailDebug("Permanently failed to fetch svrB auth. \(error)")
-            throw SVRBError.unrecoverable
-        }
+        let svrBAuth = try await backupRequestManager.fetchSVRBAuthCredential(
+            key: key,
+            chatServiceAuth: chatAuth,
+            logger: logger,
+        )
 
         let svrB = libsignalNet.svrB(auth: svrBAuth)
 
@@ -374,7 +317,6 @@ extension BackupExportPurpose {
             return try await storeEncryptionMetadataToSVRB(
                 key: key,
                 chatAuth: chatAuth,
-                forceRefreshSVRBAuthCredential: false,
                 backupRequestManager: backupRequestManager,
                 db: db,
                 libsignalNet: libsignalNet,
@@ -387,7 +329,6 @@ extension BackupExportPurpose {
             return try await storeEncryptionMetadataToSVRB(
                 key: key,
                 chatAuth: chatAuth,
-                forceRefreshSVRBAuthCredential: false,
                 backupRequestManager: backupRequestManager,
                 db: db,
                 libsignalNet: libsignalNet,

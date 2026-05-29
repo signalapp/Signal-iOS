@@ -154,7 +154,6 @@ public protocol BackupRequestManager {
     func fetchSVRBAuthCredential(
         key: MessageRootBackupKey,
         chatServiceAuth auth: ChatServiceAuth,
-        forceRefresh: Bool,
         logger: PrefixedLogger,
     ) async throws -> LibSignalClient.Auth
 }
@@ -485,13 +484,11 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
     public func fetchSVRBAuthCredential(
         key: MessageRootBackupKey,
         chatServiceAuth auth: ChatServiceAuth,
-        forceRefresh: Bool,
         logger: PrefixedLogger,
     ) async throws -> LibSignalClient.Auth {
         return try await backupAuthCredentialManager.fetchSVRBAuthCredential(
             key: key,
             chatServiceAuth: auth,
-            forceRefresh: forceRefresh,
             logger: logger,
         )
     }
@@ -679,7 +676,6 @@ public class BackupRequestManagerMock: BackupRequestManager {
     public func fetchSVRBAuthCredential(
         key: SignalServiceKit.MessageRootBackupKey,
         chatServiceAuth auth: SignalServiceKit.ChatServiceAuth,
-        forceRefresh: Bool,
         logger: PrefixedLogger,
     ) async throws -> LibSignalClient.Auth {
         return LibSignalClient.Auth(username: "", password: "")

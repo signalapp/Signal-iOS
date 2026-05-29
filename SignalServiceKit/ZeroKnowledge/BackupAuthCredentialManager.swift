@@ -52,7 +52,6 @@ public protocol BackupAuthCredentialManager {
     func fetchSVRBAuthCredential(
         key: MessageRootBackupKey,
         chatServiceAuth: ChatServiceAuth,
-        forceRefresh: Bool,
         logger: PrefixedLogger,
     ) async throws -> LibSignalClient.Auth
 }
@@ -189,14 +188,12 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
     func fetchSVRBAuthCredential(
         key: MessageRootBackupKey,
         chatServiceAuth auth: ChatServiceAuth,
-        forceRefresh: Bool,
         logger: PrefixedLogger,
     ) async throws -> LibSignalClient.Auth {
         try await serialTaskQueue.run {
             try await _fetchSVRBAuthCredential(
                 key: key,
                 chatServiceAuth: auth,
-                forceRefresh: forceRefresh,
                 logger: logger,
             )
         }
@@ -205,20 +202,8 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
     private func _fetchSVRBAuthCredential(
         key: MessageRootBackupKey,
         chatServiceAuth auth: ChatServiceAuth,
-        forceRefresh: Bool,
         logger: PrefixedLogger,
     ) async throws -> LibSignalClient.Auth {
-        let now = dateProvider()
-
-        if
-            !forceRefresh,
-            let cachedCredential = db.read(block: { tx in
-                authCredentialStore.svrBAuthCredential(now: now, tx: tx)
-            })
-        {
-            return cachedCredential
-        }
-
         let backupServiceAuth = try await _fetchBackupServiceAuth(
             key: key,
             localAci: key.aci,
@@ -237,10 +222,6 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
             username: receivedSVRBAuthCredential.username,
             password: receivedSVRBAuthCredential.password,
         )
-
-        await db.awaitableWrite { tx in
-            authCredentialStore.setSVRBAuthCredential(svrBAuth, now: now, tx: tx)
-        }
 
         return svrBAuth
     }
