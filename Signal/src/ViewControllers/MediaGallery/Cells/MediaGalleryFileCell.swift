@@ -243,7 +243,13 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             genericAttachment: .init(attachment: attachmentType),
         )
 
-        if fileItem?.referencedAttachment.asReferencedStream == nil {
+        if
+            let downloadTask,
+            !downloadTask.isCancelled
+        {
+            downloadTask.cancel()
+            self.downloadTask = nil
+        } else if fileItem?.referencedAttachment.asReferencedStream == nil {
             downloadItemIfNeeded()
         } else if
             PKAddPassesViewController.canAddPasses(),

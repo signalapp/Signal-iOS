@@ -281,6 +281,12 @@ class AudioCell: MediaTileListModeCell {
             let cvAudioPlayer = AppEnvironment.shared.cvAudioPlayerRef
             cvAudioPlayer.setPlaybackRate(itemModel.itemViewState.audioPlaybackRate, forThreadUniqueId: audioItem.thread.uniqueId)
             cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
+        } else if
+            let downloadTask,
+            !downloadTask.isCancelled
+        {
+            downloadTask.cancel()
+            self.downloadTask = nil
         } else {
             downloadItemIfNeeded()
         }
