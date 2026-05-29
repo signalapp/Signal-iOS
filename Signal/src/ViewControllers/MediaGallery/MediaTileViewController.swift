@@ -1768,9 +1768,20 @@ private extension IndexPath {
     }
 }
 
-private class MediaTileCollectionViewCell: PhotoGridViewCell, MediaGalleryCollectionViewCell {
-
+private class MediaTileCollectionViewCell:
+    PhotoGridViewCell,
+    MediaGalleryCollectionViewCell,
+    UIGestureRecognizerDelegate
+{
     var item: MediaGalleryCellItem?
+    var downloadTask: Task<Void, Never>?
+    var progressView: UIView?
+
+    private lazy var tapGestureRecognizer: UITapGestureRecognizer = {
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
+        gestureRecognizer.delegate = self
+        return gestureRecognizer
+    }()
 
     func setAllowsMultipleSelection(_ allowed: Bool, animated: Bool) {
         allowsMultipleSelection = allowed
@@ -1783,7 +1794,81 @@ private class MediaTileCollectionViewCell: PhotoGridViewCell, MediaGalleryCollec
             return
         }
         super.configure(item: mediaGalleryCellItemPhotoVideo)
+
+        progressView?.removeFromSuperview()
+        if
+            item.referencedAttachment.asReferencedStream == nil,
+            item.referencedAttachment.asReferencedBackupThumbnail == nil,
+            let pointer = item.referencedAttachment.asReferencedAnyPointer
+        {
+            let progressView = CVAttachmentProgressView(
+                direction: .download(
+                    attachmentPointer: pointer.attachmentPointer,
+                    downloadState: .none,
+                ),
+                configuration: .forMediaOverlay(),
+            )
+
+            progressView.addGestureRecognizer(tapGestureRecognizer)
+
+            let manualLayoutView = ManualLayoutView(name: "progressViewContainer")
+            contentView.addSubview(manualLayoutView)
+
+            manualLayoutView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                manualLayoutView.topAnchor.constraint(equalTo: contentView.topAnchor),
+                manualLayoutView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+                manualLayoutView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                manualLayoutView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            ])
+
+            manualLayoutView.addSubview(progressView)
+            manualLayoutView.centerSubviewOnSuperview(progressView, size: .square(44))
+            self.progressView = progressView
+        }
     }
 
     func indexPathDidChange(_ indexPath: IndexPath, itemCount: Int) { }
+
+    @objc
+    private func handleTapGesture(_ sender: UITapGestureRecognizer) {
+        if
+            let downloadTask,
+            !downloadTask.isCancelled
+        {
+            downloadTask.cancel()
+            self.downloadTask = nil
+        } else {
+            downloadItemIfNeeded()
+        }
+    }
+
+    private func downloadItemIfNeeded() {
+        guard
+            let item,
+            downloadTask == nil
+        else {
+            return
+        }
+        downloadTask = MediaGallery.createGalleryItemDownloadTask(
+            item: item,
+            priority: .userInitiated,
+        )
+        Task {
+            await downloadTask?.value
+            downloadTask = nil
+        }
+    }
+
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard !allowsMultipleSelection else {
+            return false
+        }
+
+        guard item?.referencedAttachment.asReferencedStream == nil else {
+            return false
+        }
+
+        return true
+    }
 }
