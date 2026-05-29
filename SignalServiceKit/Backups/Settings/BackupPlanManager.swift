@@ -114,7 +114,6 @@ class BackupPlanManagerImpl: BackupPlanManager {
         let oldBackupPlan = backupPlan(tx: tx)
 
         guard oldBackupPlan != newBackupPlan else {
-            logger.warn("Attempting to set BackupPlan to existing value: aborting. \(oldBackupPlan)")
             return
         }
 

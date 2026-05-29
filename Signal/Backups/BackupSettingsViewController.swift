@@ -147,7 +147,7 @@ class BackupSettingsViewController:
                 ),
                 hasBackupFailed: backupFailureStateManager.hasFailedBackup(tx: tx),
                 isBackgroundAppRefreshDisabled: Self.isBackgroundAppRefreshDisabled(),
-                isOptimizeStorageEnabled: remoteConfig.currentConfig().isOptimizeStorageEnabled,
+                isOptimizeStorageRemoteConfigEnabled: remoteConfig.currentConfig().isOptimizeStorageEnabled,
             )
 
             return viewModel
@@ -621,28 +621,88 @@ class BackupSettingsViewController:
         final class WelcomeToBackupsSheet: HeroSheetViewController {
             override var canBeDismissed: Bool { false }
 
-            init(onConfirm: @escaping () -> Void) {
+            init(
+                optimizeLocalStorage: (isOn: Bool, onValueChanged: (Bool) -> Void)?,
+                onConfirm: @escaping (HeroSheetViewController) -> Void,
+            ) {
+                let toggle: HeroSheetViewController.Body.Toggle?
+                if let (isOn, onValueChanged) = optimizeLocalStorage {
+                    toggle = HeroSheetViewController.Body.Toggle(
+                        title: OWSLocalizedString(
+                            "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE",
+                            comment: "Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature.",
+                        ),
+                        footer: OWSLocalizedString(
+                            "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER",
+                            comment: "Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature.",
+                        ),
+                        isOn: isOn,
+                        onValueChanged: onValueChanged,
+                    )
+                } else {
+                    toggle = nil
+                }
+
                 super.init(
                     hero: .image(.backupsSubscribed),
                     title: OWSLocalizedString(
                         "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE",
                         comment: "Title for a sheet shown after the user enables backups.",
                     ),
-                    body: OWSLocalizedString(
-                        "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE",
-                        comment: "Message for a sheet shown after the user enables backups.",
+                    body: HeroSheetViewController.Body(
+                        textContent: .plain(OWSLocalizedString(
+                            "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE",
+                            comment: "Message for a sheet shown after the user enables backups.",
+                        )),
+                        toggle: toggle,
                     ),
-                    primaryButton: HeroSheetViewController.Button(
-                        title: CommonStrings.okButton,
-                        action: { _ in onConfirm() },
-                    ),
+                    primary: .button(HeroSheetViewController.Button(
+                        title: OWSLocalizedString(
+                            "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE",
+                            comment: "Title for a button in a sheet shown after the user enables backups.",
+                        ),
+                        action: { onConfirm($0) },
+                    )),
+                    secondary: nil,
                 )
             }
         }
 
-        let welcomeToBackupsSheet = WelcomeToBackupsSheet { [self] in
-            viewModel.performManualBackup()
-            dismiss(animated: true)
+        let backupPlan = db.read { tx in
+            backupPlanManager.backupPlan(tx: tx)
+        }
+
+        let welcomeToBackupsSheet: WelcomeToBackupsSheet
+        switch backupPlan {
+        case _ where !viewModel.isOptimizeStorageRemoteConfigEnabled,
+             .disabled,
+             .disabling,
+             .free:
+            welcomeToBackupsSheet = WelcomeToBackupsSheet(
+                optimizeLocalStorage: nil,
+                onConfirm: { sheet in
+                    sheet.dismiss(animated: true) { [self] in
+                        viewModel.performManualBackup()
+                    }
+                },
+            )
+        case .paid,
+             .paidAsTester,
+             .paidExpiringSoon:
+            var isOptimizeStorageEnabled = true
+
+            welcomeToBackupsSheet = WelcomeToBackupsSheet(
+                optimizeLocalStorage: (
+                    isOn: isOptimizeStorageEnabled,
+                    onValueChanged: { isOptimizeStorageEnabled = $0 },
+                ),
+                onConfirm: { sheet in
+                    sheet.dismiss(animated: true) { [self] in
+                        setOptimizeLocalStorage(isOptimizeStorageEnabled)
+                        viewModel.performManualBackup()
+                    }
+                },
+            )
         }
 
         present(welcomeToBackupsSheet, animated: true)
@@ -1021,35 +1081,33 @@ class BackupSettingsViewController:
     // MARK: -
 
     fileprivate func setOptimizeLocalStorage(_ newOptimizeLocalStorage: Bool) {
-        let isPaidPlanTester: Bool = db.write { tx in
+        let hasMadeAtLeastOneBackup: Bool = db.write { tx in
             let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
-            let newBackupPlan: BackupPlan
-            let isPaidPlanTester: Bool
+            let lastBackupDetails = backupSettingsStore.lastBackupDetails(tx: tx)
 
+            let newBackupPlan: BackupPlan
             switch currentBackupPlan {
             case .disabled, .disabling, .free:
-                owsFailDebug("Shouldn't be setting Optimize Local Storage: \(currentBackupPlan)")
-                return false
+                owsFail("Shouldn't be setting Optimize Local Storage: \(currentBackupPlan)")
             case .paid:
                 newBackupPlan = .paid(optimizeLocalStorage: newOptimizeLocalStorage)
-                isPaidPlanTester = false
             case .paidExpiringSoon:
                 newBackupPlan = .paidExpiringSoon(optimizeLocalStorage: newOptimizeLocalStorage)
-                isPaidPlanTester = false
             case .paidAsTester:
                 newBackupPlan = .paidAsTester(optimizeLocalStorage: newOptimizeLocalStorage)
-                isPaidPlanTester = true
             }
 
             backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
-            return isPaidPlanTester
+            return lastBackupDetails != nil
         }
 
-        // If disabling Optimize Local Storage, offer to start downloads now.
-        if !newOptimizeLocalStorage {
+        if
+            hasMadeAtLeastOneBackup,
+            !newOptimizeLocalStorage
+        {
+            // If disabling Optimize Local Storage with media potentially
+            // offloaded, offer to start downloads now.
             showDownloadOffloadedMediaSheet()
-        } else if isPaidPlanTester {
-            showOffloadedMediaForTestersWarningSheet(onAcknowledge: {})
         }
     }
 
@@ -1088,44 +1146,15 @@ class BackupSettingsViewController:
         presentActionSheet(actionSheet)
     }
 
-    private func showOffloadedMediaForTestersWarningSheet(
-        onAcknowledge: @escaping () -> Void,
-    ) {
-        let actionSheet = ActionSheetController(
-            title: OWSLocalizedString(
-                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE",
-                comment: "Title for an action sheet warning users who are testers about the Optimize Local Storage feature.",
-            ),
-            message: OWSLocalizedString(
-                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE",
-                comment: "Message for an action sheet warning users who are testers about the Optimize Local Storage feature.",
-            ),
-        )
-        actionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.okButton,
-            handler: { _ in
-                onAcknowledge()
-            },
-        ))
-
-        presentActionSheet(actionSheet)
-    }
-
     // MARK: -
 
     fileprivate func setIsBackupDownloadQueueSuspended(_ isSuspended: Bool, backupPlan: BackupPlan) {
         if isSuspended {
             switch backupPlan {
-            case .disabled, .disabling, .free, .paid:
+            case .disabled, .disabling, .free, .paid, .paidAsTester:
                 db.write { tx in
                     backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
                 }
-            case .paidAsTester:
-                showOffloadedMediaForTestersWarningSheet(onAcknowledge: { [self] in
-                    db.write { tx in
-                        backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
-                    }
-                })
             case .paidExpiringSoon:
                 let warningSheet = ActionSheetController(
                     title: OWSLocalizedString(
@@ -1542,7 +1571,9 @@ private class BackupSettingsViewModel: ObservableObject {
     /// from running.)
     @Published var isBackgroundAppRefreshDisabled: Bool
 
-    @Published var isOptimizeStorageEnabled: Bool
+    /// Whether the "Optimze Storage" feature is available to this user, per
+    /// remote config. Not to be confused with `isOptimizeLocalStorageAvailable`.
+    @Published var isOptimizeStorageRemoteConfigEnabled: Bool
 
     weak var actionsDelegate: ActionsDelegate?
 
@@ -1560,7 +1591,7 @@ private class BackupSettingsViewModel: ObservableObject {
         mediaTierCapacityOverflow: UInt64?,
         hasBackupFailed: Bool,
         isBackgroundAppRefreshDisabled: Bool,
-        isOptimizeStorageEnabled: Bool,
+        isOptimizeStorageRemoteConfigEnabled: Bool,
     ) {
         self.backupSubscriptionConfiguration = backupSubscriptionConfiguration
 
@@ -1581,7 +1612,7 @@ private class BackupSettingsViewModel: ObservableObject {
         self.hasBackupFailed = hasBackupFailed
         self.isBackgroundAppRefreshDisabled = isBackgroundAppRefreshDisabled
 
-        self.isOptimizeStorageEnabled = isOptimizeStorageEnabled
+        self.isOptimizeStorageRemoteConfigEnabled = isOptimizeStorageRemoteConfigEnabled
     }
 
     // MARK: -
@@ -1640,7 +1671,9 @@ private class BackupSettingsViewModel: ObservableObject {
 
     // MARK: -
 
-    var optimizeLocalStorageAvailable: Bool {
+    /// Whether the "Optimze Storage" feature is available, per the current
+    /// `BackupPlan`. Not to be confused with `isOptimizeStorageRemoteConfigEnabled`.
+    var isOptimizeLocalStorageAvailable: Bool {
         switch backupPlan {
         case .disabled, .disabling, .free:
             false
@@ -1649,7 +1682,7 @@ private class BackupSettingsViewModel: ObservableObject {
         }
     }
 
-    var optimizeLocalStorage: Bool {
+    var isOptimizeLocalStorageEnabled: Bool {
         switch backupPlan {
         case .disabled, .disabling, .free:
             false
@@ -1922,29 +1955,21 @@ struct BackupSettingsView: View {
                         viewModel: viewModel,
                     )
 
-                    if viewModel.isOptimizeStorageEnabled {
+                    if viewModel.isOptimizeStorageRemoteConfigEnabled {
                         Toggle(
                             OWSLocalizedString(
                                 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE",
                                 comment: "Title for a toggle allowing users to change the Optimize Local Storage setting.",
                             ),
                             isOn: Binding(
-                                get: { viewModel.optimizeLocalStorage },
+                                get: { viewModel.isOptimizeLocalStorageEnabled },
                                 set: { viewModel.setOptimizeLocalStorage($0) },
                             ),
-                        ).disabled(!viewModel.optimizeLocalStorageAvailable)
+                        ).disabled(!viewModel.isOptimizeLocalStorageAvailable)
                     }
                 } footer: {
-                    if viewModel.isOptimizeStorageEnabled {
-                        let footerText: String = if
-                            viewModel.optimizeLocalStorageAvailable,
-                            viewModel.isPaidPlanTester
-                        {
-                            OWSLocalizedString(
-                                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS",
-                                comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester.",
-                            )
-                        } else if viewModel.optimizeLocalStorageAvailable {
+                    if viewModel.isOptimizeStorageRemoteConfigEnabled {
+                        let footerText: String = if viewModel.isOptimizeLocalStorageAvailable {
                             OWSLocalizedString(
                                 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE",
                                 comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available.",
@@ -3178,7 +3203,7 @@ private extension BackupSettingsViewModel {
             mediaTierCapacityOverflow: mediaTierCapacityOverflow,
             hasBackupFailed: hasBackupFailed,
             isBackgroundAppRefreshDisabled: isBackgroundAppRefreshDisabled,
-            isOptimizeStorageEnabled: false,
+            isOptimizeStorageRemoteConfigEnabled: true,
         )
         let actionsDelegate = PreviewActionsDelegate()
         viewModel.actionsDelegate = actionsDelegate
