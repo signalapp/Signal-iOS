@@ -14,7 +14,6 @@ public enum RegistrationBackupRestoreError {
     case incorrectRecoveryKey
     case recoveryKeyRegistrationFailed
     case versionMismatch
-    case retryableSVRBError
     case unretryableSVRBError
     case networkError
     case rateLimited
@@ -81,14 +80,10 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
             return .versionMismatch
         case let error as SVRBError:
             switch error {
-            case .retryableAutomatically, .retryableByUser:
-                return .retryableSVRBError
             case .unrecoverable:
                 return .unretryableSVRBError
             case .incorrectRecoveryKey:
                 return .incorrectRecoveryKey
-            case .cancellationError:
-                return .cancellation
             }
         default:
             return .generic
@@ -271,7 +266,7 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
                     )
                 }
             })
-        case .retryableSVRBError, .cancellation:
+        case .cancellation:
             title = OWSLocalizedString(
                 "REGISTRATION_BACKUP_RESTORE_ERROR_RETRYABLE_SERVER_ERROR_TITLE",
                 comment: "Title for a sheet telling users to try restoring a backup again after a server error.",

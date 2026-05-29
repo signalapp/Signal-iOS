@@ -84,35 +84,12 @@ extension BackupExportPurpose {
 
 // MARK: - Errors
 
-public enum SVRBError: Error, Equatable, IsRetryableProvider {
-    /// Network errors and other transient errors that
-    /// can usually be resolved by an automatic retry, at
-    /// computer time scale.
-    case retryableAutomatically
-    /// Some error that may be resolved by trying again later (e.g. temporary outage)
-    /// at human time scale.
-    case retryableByUser
+public enum SVRBError: Error, Equatable {
     /// An unrecoverable error; SVRB data is potentially lost forever.
     case unrecoverable
     /// Couldn't recover SVRB data because the backup key is incorrect;
     /// may be recoverable by entering a different AEP.
     case incorrectRecoveryKey
-    /// A caught-and-rethrown `CancellationError`.
-    case cancellationError
-
-    public var isRetryableProvider: Bool {
-        switch self {
-        case .retryableAutomatically:
-            return true
-        case .retryableByUser:
-            // This is for automatic retries;
-            // these errors can be retried by
-            // the user.
-            return false
-        case .unrecoverable, .incorrectRecoveryKey, .cancellationError:
-            return false
-        }
-    }
 }
 
 // MARK: - Encryption Key Derivation
@@ -136,30 +113,33 @@ extension BackupImportSource {
             case let .provisioningMessage(token):
                 forwardSecrecyToken = token
             case let .svrB(metadataHeader, chatAuth):
-                var isRetry = false
-                forwardSecrecyToken = try await Retry.performWithBackoff(
-                    maxAttempts: 2,
-                    block: {
-                        do throws(SVRBError) {
-                            return try await self.fetchForwardSecrecyTokenFromSvr(
-                                key: key,
-                                metadataHeader: metadataHeader,
-                                chatAuth: chatAuth,
-                                isRetry: isRetry,
-                                backupRequestManager: backupRequestManager,
-                                db: db,
-                                libsignalNet: libsignalNet,
-                                nonceStore: nonceStore,
-                                logger: logger,
-                            )
-                        } catch .cancellationError {
-                            throw CancellationError()
-                        } catch let error {
-                            isRetry = true
-                            throw error
-                        }
-                    },
-                )
+                do {
+                    forwardSecrecyToken = try await self.fetchForwardSecrecyTokenFromSvr(
+                        key: key,
+                        metadataHeader: metadataHeader,
+                        chatAuth: chatAuth,
+                        forceRefreshSVRBAuthCredential: false,
+                        backupRequestManager: backupRequestManager,
+                        db: db,
+                        libsignalNet: libsignalNet,
+                        nonceStore: nonceStore,
+                        logger: logger,
+                    )
+                } catch SignalError.webSocketError {
+                    // This may represent an "expired auth" error from the SVRB
+                    // servers. Try again, force-refreshing credentials.
+                    forwardSecrecyToken = try await self.fetchForwardSecrecyTokenFromSvr(
+                        key: key,
+                        metadataHeader: metadataHeader,
+                        chatAuth: chatAuth,
+                        forceRefreshSVRBAuthCredential: true,
+                        backupRequestManager: backupRequestManager,
+                        db: db,
+                        libsignalNet: libsignalNet,
+                        nonceStore: nonceStore,
+                        logger: logger,
+                    )
+                }
             }
 
             return try MessageBackupKey(
@@ -181,34 +161,28 @@ extension BackupImportSource {
         key: MessageRootBackupKey,
         metadataHeader: BackupNonce.MetadataHeader,
         chatAuth: ChatServiceAuth,
-        isRetry: Bool,
+        forceRefreshSVRBAuthCredential: Bool,
         backupRequestManager: BackupRequestManager,
         db: any DB,
         libsignalNet: LibSignalClient.Net,
         nonceStore: BackupNonceMetadataStore,
         logger: PrefixedLogger,
-    ) async throws(SVRBError) -> BackupForwardSecrecyToken {
+    ) async throws -> BackupForwardSecrecyToken {
         let svrBAuth: LibSignalClient.Auth
         do {
             svrBAuth = try await backupRequestManager.fetchSVRBAuthCredential(
                 key: key,
                 chatServiceAuth: chatAuth,
-                // Force fetch new credentials on retries to make sure
-                // it wasn't stale credentials that caused the problem.
-                forceRefresh: isRetry,
+                forceRefresh: forceRefreshSVRBAuthCredential,
                 logger: logger,
             )
-        } catch is CancellationError {
-            throw .cancellationError
+        } catch let error as CancellationError {
+            throw error
+        } catch let error where error.isNetworkFailureOrTimeout {
+            throw error
         } catch let error {
-            if error.isNetworkFailureOrTimeout {
-                throw .retryableAutomatically
-            } else if error.isRetryable {
-                throw .retryableAutomatically
-            } else {
-                owsFailDebug("Permanently failed to fetch svrB auth")
-                throw .unrecoverable
-            }
+            owsFailDebug("Permanently failed to fetch svrB auth! \(error)")
+            throw SVRBError.unrecoverable
         }
 
         let svrB = libsignalNet.svrB(auth: svrBAuth)
@@ -219,48 +193,35 @@ extension BackupImportSource {
                 backupKey: key.backupKey,
                 metadata: metadataHeader.data,
             )
-        } catch is CancellationError {
-            throw .cancellationError
-        } catch let error {
-            switch error as? LibSignalClient.SignalError {
-            case .invalidArgument:
-                // Metadata is malformed. Totally unrecoverable.
-                logger.error("SVRB metadata header malformed; cannot recover backup")
-                throw .unrecoverable
-            case .svrRestoreFailed:
-                // Some SVRB error that means data is lost. Totally unrecoverable.
-                logger.error("SVRB restore failed; cannot recover backup")
-                throw .unrecoverable
-            case .svrDataMissing:
-                logger.error("SVRB data missing; cannot recover backup")
-                throw .incorrectRecoveryKey
-            case .rateLimitedError(let retryAfter, _):
-                // Do a quite rudimentary thing where we just wait
-                // for the retry time, which will leave the user with
-                // a spinner. But we never really expect this to happen.
-                logger.warn("Rate-limited SVRB restore, waiting...")
-                try? await Task.sleep(nanoseconds: retryAfter.clampedNanoseconds)
-                return try await fetchForwardSecrecyTokenFromSvr(
-                    key: key,
-                    metadataHeader: metadataHeader,
-                    chatAuth: chatAuth,
-                    isRetry: false, /* not that kind of retry */
-                    backupRequestManager: backupRequestManager,
-                    db: db,
-                    libsignalNet: libsignalNet,
-                    nonceStore: nonceStore,
-                    logger: logger,
-                )
-            case .connectionFailed, .connectionTimeoutError, .ioError, .webSocketError:
-                // Network-level failures mostly end up in these buckets;
-                // these can be retried automatically.
-                throw .retryableAutomatically
-            default:
-                // Everything else let the user retry. This will inevitably
-                // include things that are bugs, leaving users in retry loops.
-                logger.error("Failed SVRB restore w/ unknown error: \(error)")
-                throw .retryableByUser
-            }
+        } catch SignalError.invalidArgument {
+            // Metadata is malformed. Totally unrecoverable.
+            logger.error("SVRB metadata header malformed!")
+            throw SVRBError.unrecoverable
+        } catch SignalError.svrRestoreFailed {
+            // Some SVRB error that means data is lost. Totally unrecoverable.
+            logger.error("SVRB restore failed!")
+            throw SVRBError.unrecoverable
+        } catch SignalError.svrDataMissing {
+            logger.error("SVRB data missing!")
+            throw SVRBError.incorrectRecoveryKey
+        } catch SignalError.rateLimitedError(let retryAfter, _) {
+            // We never really expect this to happen.
+            logger.warn("Rate-limited SVRB restore. retryAfter: \(retryAfter)")
+            try await Task.sleep(nanoseconds: retryAfter.clampedNanoseconds)
+            return try await fetchForwardSecrecyTokenFromSvr(
+                key: key,
+                metadataHeader: metadataHeader,
+                chatAuth: chatAuth,
+                forceRefreshSVRBAuthCredential: false,
+                backupRequestManager: backupRequestManager,
+                db: db,
+                libsignalNet: libsignalNet,
+                nonceStore: nonceStore,
+                logger: logger,
+            )
+        } catch {
+            logger.warn("Failed SVRB restore! \(error)")
+            throw error
         }
 
         let forwardSecrecyToken = response.forwardSecrecyToken
@@ -312,28 +273,29 @@ extension BackupExportPurpose {
     ) async throws -> EncryptionMetadata {
         switch self {
         case let .remoteExport(key, chatAuth):
-            var isRetry = false
-            return try await Retry.performWithBackoff(
-                maxAttempts: 2,
-                block: {
-                    do throws(SVRBError) {
-                        return try await storeEncryptionMetadataToSVRB(
-                            key: key,
-                            chatAuth: chatAuth,
-                            isRetry: isRetry,
-                            backupRequestManager: backupRequestManager,
-                            db: db,
-                            libsignalNet: libsignalNet,
-                            nonceStore: nonceStore,
-                        )
-                    } catch .cancellationError {
-                        throw CancellationError()
-                    } catch let error {
-                        isRetry = true
-                        throw error
-                    }
-                },
-            )
+            do {
+                return try await storeEncryptionMetadataToSVRB(
+                    key: key,
+                    chatAuth: chatAuth,
+                    forceRefreshSVRBAuthCredential: false,
+                    backupRequestManager: backupRequestManager,
+                    db: db,
+                    libsignalNet: libsignalNet,
+                    nonceStore: nonceStore,
+                )
+            } catch SignalError.webSocketError {
+                // This may represent an "expired auth" error from the SVRB
+                // servers. Try again, force-refreshing credentials.
+                return try await storeEncryptionMetadataToSVRB(
+                    key: key,
+                    chatAuth: chatAuth,
+                    forceRefreshSVRBAuthCredential: true,
+                    backupRequestManager: backupRequestManager,
+                    db: db,
+                    libsignalNet: libsignalNet,
+                    nonceStore: nonceStore,
+                )
+            }
         case let .linkNsync(ephemeralKey, aci):
             let backupId = ephemeralKey.deriveBackupId(aci: aci)
             let encryptionKey = try MessageBackupKey(
@@ -353,33 +315,27 @@ extension BackupExportPurpose {
     private func storeEncryptionMetadataToSVRB(
         key: MessageRootBackupKey,
         chatAuth: ChatServiceAuth,
-        isRetry: Bool,
+        forceRefreshSVRBAuthCredential: Bool,
         backupRequestManager: BackupRequestManager,
         db: any DB,
         libsignalNet: LibSignalClient.Net,
         nonceStore: BackupNonceMetadataStore,
-    ) async throws(SVRBError) -> EncryptionMetadata {
+    ) async throws -> EncryptionMetadata {
         let svrBAuth: LibSignalClient.Auth
         do {
             svrBAuth = try await backupRequestManager.fetchSVRBAuthCredential(
                 key: key,
                 chatServiceAuth: chatAuth,
-                // Force fetch new credentials on retries to make sure
-                // it wasn't stale credentials that caused the problem.
-                forceRefresh: isRetry,
+                forceRefresh: forceRefreshSVRBAuthCredential,
                 logger: logger,
             )
+        } catch let error as CancellationError {
+            throw error
+        } catch let error where error.isNetworkFailureOrTimeout {
+            throw error
         } catch let error {
-            if error is CancellationError {
-                throw .cancellationError
-            } else if error.isNetworkFailureOrTimeout {
-                throw .retryableAutomatically
-            } else if error.isRetryable {
-                throw .retryableAutomatically
-            } else {
-                owsFailDebug("Permanently failed to fetch svrB auth")
-                throw .unrecoverable
-            }
+            owsFailDebug("Permanently failed to fetch svrB auth. \(error)")
+            throw SVRBError.unrecoverable
         }
 
         let svrB = libsignalNet.svrB(auth: svrBAuth)
@@ -408,51 +364,38 @@ extension BackupExportPurpose {
         let response: SvrB.StoreBackupResponse
         do {
             response = try await svrB.store(backupKey: key.backupKey, previousSecretData: mostRecentSecretData.data)
-        } catch is CancellationError {
-            throw .cancellationError
-        } catch let error {
-            switch error as? LibSignalClient.SignalError {
-            case .invalidArgument:
-                // This happens when the "previousSecretData" is invalid.
-                // To recover, we have to start over with `createNewBackupChain`.
-                logger.error("Failed SVRB store w/ invalid argument, wiping next secret metadata")
-                await db.awaitableWrite { tx in
-                    nonceStore.deleteNextSecretMetadata(tx: tx)
-                }
-                return try await storeEncryptionMetadataToSVRB(
-                    key: key,
-                    chatAuth: chatAuth,
-                    isRetry: false, /* Its not that kind of retry */
-                    backupRequestManager: backupRequestManager,
-                    db: db,
-                    libsignalNet: libsignalNet,
-                    nonceStore: nonceStore,
-                )
-            case .rateLimitedError(let retryAfter, _):
-                // Do a quite rudimentary thing where we just wait
-                // for the retry time, which will leave the user with
-                // a spinner. But we never really expect this to happen.
-                logger.warn("Rate-limited SVRB store, waiting...")
-                try? await Task.sleep(nanoseconds: NSEC_PER_MSEC * UInt64(retryAfter * 1000))
-                return try await storeEncryptionMetadataToSVRB(
-                    key: key,
-                    chatAuth: chatAuth,
-                    isRetry: false, /* Its not that kind of retry */
-                    backupRequestManager: backupRequestManager,
-                    db: db,
-                    libsignalNet: libsignalNet,
-                    nonceStore: nonceStore,
-                )
-            case .connectionFailed, .connectionTimeoutError, .ioError, .webSocketError:
-                // Network-level failures mostly end up in these buckets;
-                // these can be retried automatically.
-                throw .retryableAutomatically
-            default:
-                // Everything else let the user retry. This will inevitably
-                // include things that are bugs, leaving users in retry loops.
-                logger.error("Failed SVRB store w/ unknown error: \(error)")
-                throw .retryableByUser
+        } catch SignalError.invalidArgument {
+            // This happens when the "previousSecretData" is invalid.
+            // To recover, we have to start over with `createNewBackupChain`.
+            logger.error("Failed SVRB store w/ invalid argument, wiping next secret metadata")
+            await db.awaitableWrite { tx in
+                nonceStore.deleteNextSecretMetadata(tx: tx)
             }
+            return try await storeEncryptionMetadataToSVRB(
+                key: key,
+                chatAuth: chatAuth,
+                forceRefreshSVRBAuthCredential: false,
+                backupRequestManager: backupRequestManager,
+                db: db,
+                libsignalNet: libsignalNet,
+                nonceStore: nonceStore,
+            )
+        } catch SignalError.rateLimitedError(let retryAfter, _) {
+            // We never really expect this to happen.
+            logger.warn("Rate-limited SVRB store. retryAfter: \(retryAfter)")
+            try await Task.sleep(nanoseconds: retryAfter.clampedNanoseconds)
+            return try await storeEncryptionMetadataToSVRB(
+                key: key,
+                chatAuth: chatAuth,
+                forceRefreshSVRBAuthCredential: false,
+                backupRequestManager: backupRequestManager,
+                db: db,
+                libsignalNet: libsignalNet,
+                nonceStore: nonceStore,
+            )
+        } catch let error {
+            logger.warn("Failed SVRB store! \(error)")
+            throw error
         }
 
         let encryptionKey: MessageBackupKey
@@ -464,7 +407,7 @@ extension BackupExportPurpose {
             )
         } catch {
             owsFailDebug("Failed to derive encryption key!")
-            throw .unrecoverable
+            throw SVRBError.unrecoverable
         }
 
         return BackupExportPurpose.EncryptionMetadata(
