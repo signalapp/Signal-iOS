@@ -1741,6 +1741,7 @@
 		A1A018521805C5E800A052A6 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
 		A1A018531805C60D00A052A6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A091169C9E5E00537ABF /* CoreGraphics.framework */; };
 		A5E7C675248C5443007C949A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A5E7C673248C5442007C949A /* InfoPlist.strings */; };
+		A68C407AAE86CE67FAC11F79 /* LiveAudioWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484486DA7CD91AB4D8E771E /* LiveAudioWaveformView.swift */; };
 		B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
@@ -4230,6 +4231,7 @@
 		0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSReleaseNotesThread.swift; sourceTree = "<group>"; };
 		047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphoneTests.swift; sourceTree = "<group>"; };
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledNotificationMegaphone.swift; sourceTree = "<group>"; };
+		0484486DA7CD91AB4D8E771E /* LiveAudioWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LiveAudioWaveformView.swift; path = Signal/ConversationView/CellViews/LiveAudioWaveformView.swift; sourceTree = SOURCE_ROOT; };
 		0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDeleteRecord.swift; sourceTree = "<group>"; };
 		0484CECF2F44BCFB009AB2CB /* AdminDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDeleteManager.swift; sourceTree = "<group>"; };
 		0484CED12F44DCFF009AB2CB /* OutgoingAdminDeleteMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingAdminDeleteMessage.swift; sourceTree = "<group>"; };
@@ -11961,6 +11963,7 @@
 				D221A08C169C9E5E00537ABF /* Frameworks */,
 				D221A08A169C9E5E00537ABF /* Products */,
 				07B6BFA4D17E1353B0696C14 /* Pods */,
+				0484486DA7CD91AB4D8E771E /* LiveAudioWaveformView.swift */,
 			);
 			indentWidth = 4;
 			sourceTree = "<group>";
@@ -18794,6 +18797,7 @@
 				45069FC629D3A7C800D0DD14 /* WideMediaTileViewLayout.swift in Sources */,
 				45906C6B29D238560025906D /* WidePhotoCell.swift in Sources */,
 				76616C9D2A266A05005F7001 /* WindowManager.swift in Sources */,
+				A68C407AAE86CE67FAC11F79 /* LiveAudioWaveformView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -260,6 +260,13 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         finishRecordingVoiceMessage(sendImmediately: false)
     }
 
+    public func voiceMemoAveragePower() -> Float? {
+        AssertIsOnMainThread()
+        guard let draft = viewState.inProgressVoiceMessage else { return nil }
+        draft.updateMeters()
+        return draft.averagePower()
+    }
+
     func sendVoiceMemoDraft(_ voiceMemoDraft: VoiceMessageInterruptedDraft) {
         AssertIsOnMainThread()
 
