@@ -2435,6 +2435,12 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     private lazy var voiceMemoLiveWaveformView: LiveAudioWaveformView = {
         let view = LiveAudioWaveformView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Force the view to expand to fill available space
+        let expandConstraint = view.widthAnchor.constraint(equalToConstant: 9999)
+        expandConstraint.priority = .defaultLow
+        expandConstraint.isActive = true
+        
         return view
     }()
     private var voiceMemoTooltipView: UIView?
@@ -2476,6 +2482,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         label.textAlignment = .right
         label.attributedText = cancelString
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.setContentHuggingHigh()
         label.sizeToFit()
         return label
     }()
@@ -2576,8 +2583,8 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             voiceMemoDurationLabel.centerYAnchor.constraint(equalTo: voiceMemoContentView.centerYAnchor),
             
             voiceMemoLiveWaveformView.leadingAnchor.constraint(equalTo: voiceMemoDurationLabel.trailingAnchor, constant: 12),
-            voiceMemoLiveWaveformView.trailingAnchor.constraint(lessThanOrEqualTo: voiceMemoCancelLabel.leadingAnchor, constant: -12),
-            voiceMemoLiveWaveformView.widthAnchor.constraint(greaterThanOrEqualToConstant: 50),
+            voiceMemoLiveWaveformView.trailingAnchor.constraint(equalTo: voiceMemoCancelLabel.leadingAnchor, constant: -12),
+            voiceMemoLiveWaveformView.widthAnchor.constraint(greaterThanOrEqualToConstant: 20),
             voiceMemoLiveWaveformView.centerYAnchor.constraint(equalTo: voiceMemoContentView.centerYAnchor),
             voiceMemoLiveWaveformView.heightAnchor.constraint(equalToConstant: 24),
 
@@ -2636,7 +2643,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         // Start recording timer.
         voiceMemoUpdateTimer?.invalidate()
-        voiceMemoUpdateTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
+        voiceMemoUpdateTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] timer in
             guard let self else {
                 timer.invalidate()
                 return
@@ -2753,6 +2760,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         voiceMemoContentView.addConstraints([
             cancelButton.centerYAnchor.constraint(equalTo: voiceMemoContentView.centerYAnchor),
             cancelButton.trailingAnchor.constraint(equalTo: voiceMemoContentView.trailingAnchor, constant: -16),
+            voiceMemoLiveWaveformView.trailingAnchor.constraint(equalTo: cancelButton.leadingAnchor, constant: -12),
         ])
 
         voiceMemoCancelLabel.removeFromSuperview()
