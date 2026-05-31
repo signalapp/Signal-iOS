@@ -10,16 +10,6 @@
 
 @implementation UIButton (DeprecationWorkaround)
 
-- (BOOL)ows_adjustsImageWhenDisabled
-{
-    return self.adjustsImageWhenDisabled;
-}
-
-- (void)ows_setAdjustsImageWhenDisabled:(BOOL)adjustsImageWhenDisabled
-{
-    self.adjustsImageWhenDisabled = adjustsImageWhenDisabled;
-}
-
 - (BOOL)ows_adjustsImageWhenHighlighted
 {
     return self.adjustsImageWhenHighlighted;
@@ -48,16 +38,6 @@
 - (void)ows_setImageEdgeInsets:(UIEdgeInsets)imageEdgeInsets
 {
     self.imageEdgeInsets = imageEdgeInsets;
-}
-
-- (UIEdgeInsets)ows_titleEdgeInsets
-{
-    return self.titleEdgeInsets;
-}
-
-- (void)ows_setTitleEdgeInsets:(UIEdgeInsets)titleEdgeInsets
-{
-    self.titleEdgeInsets = titleEdgeInsets;
 }
 
 @end

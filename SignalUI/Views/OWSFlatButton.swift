@@ -40,24 +40,6 @@ open class OWSFlatButton: UIView {
         }
     }
 
-    public var titleEdgeInsets: UIEdgeInsets {
-        get {
-            return button.ows_titleEdgeInsets
-        }
-        set {
-            button.ows_titleEdgeInsets = newValue
-        }
-    }
-
-    public var contentEdgeInsets: UIEdgeInsets {
-        get {
-            return button.ows_contentEdgeInsets
-        }
-        set {
-            button.ows_contentEdgeInsets = newValue
-        }
-    }
-
     override public var tintColor: UIColor! {
         get {
             return button.tintColor

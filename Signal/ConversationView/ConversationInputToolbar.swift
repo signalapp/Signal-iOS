@@ -1219,7 +1219,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         lazy var sendButton: UIButton = {
             let button = UIButton(type: .system)
             button.accessibilityLabel = MessageStrings.sendButton
-            button.ows_adjustsImageWhenDisabled = true
             button.isPointerInteractionEnabled = true
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "sendButton")
             button.setImage(UIImage(imageLiteralResourceName: "send-blue-28"), for: .normal)

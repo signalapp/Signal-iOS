@@ -14,15 +14,7 @@ open class OWSButton: UIButton {
         didSet { updateAlpha() }
     }
 
-    public var dimsWhenDisabled = false {
-        didSet { updateAlpha() }
-    }
-
     override public var isHighlighted: Bool {
-        didSet { updateAlpha() }
-    }
-
-    override public var isEnabled: Bool {
         didSet { updateAlpha() }
     }
 
@@ -69,34 +61,6 @@ open class OWSButton: UIButton {
         self.tintColor = tintColor
     }
 
-    /// Creates a button with a title and image.
-    /// - Parameters:
-    ///   - title: The title for the button label.
-    ///   - imageName: The image for the button.
-    ///   - tintColor: The tint color for the image.
-    ///   Note that this does not tint the text.
-    ///   - spacing: The spacing between the image and title.
-    ///   - block: The action to perform on tap.
-    public init(
-        title: String,
-        imageName: String,
-        tintColor: UIColor?,
-        spacing: CGFloat,
-        block: @escaping () -> Void = {},
-    ) {
-        super.init(frame: .zero)
-
-        setTitle(title, for: .normal)
-
-        setImage(imageName: imageName)
-        self.tintColor = tintColor
-
-        addImageTitleSpacing(spacing)
-
-        self.block = block
-        addTarget(self, action: #selector(didTap), for: .touchUpInside)
-    }
-
     public func setImage(imageName: String?) {
         guard let imageName else {
             setImage(nil, for: .normal)
@@ -109,33 +73,8 @@ open class OWSButton: UIButton {
         }
     }
 
-    /// Configure the button for a potentially multiline label.
-    ///
-    /// UIButton's intrinsic content size won't respect a multiline label, and
-    /// consequently the label might grow outside the bounds of the button.
-    ///
-    /// Note that this method uses autolayout.
-    public func configureForMultilineTitle(lineBreakMode: NSLineBreakMode = .byCharWrapping) {
-        titleLabel!.numberOfLines = 0
-        titleLabel!.lineBreakMode = lineBreakMode
-
-        // Without this, the label may grow taller than the button, which won't
-        // grow its intrinsic content size to compensate for a multiline label.
-        autoPinHeight(toHeightOf: titleLabel!, relation: .greaterThanOrEqual)
-    }
-
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    /// Adds spacing between the image and title.
-    ///
-    /// Does so by modifying `contentEdgeInsets` and `titleEdgeInsets`,
-    /// so call this after setting those.
-    public func addImageTitleSpacing(_ spacing: CGFloat) {
-        ows_contentEdgeInsets.trailing += spacing
-        ows_titleEdgeInsets.leading += spacing
-        ows_titleEdgeInsets.trailing -= spacing
     }
 
     // MARK: - Common Style Reuse
@@ -152,30 +91,6 @@ open class OWSButton: UIButton {
         return button
     }
 
-    /// Mimics a UIBarButtonItem of type .cancel, but with a shadow.
-    public class func shadowedCancelButton(block: @escaping () -> Void) -> OWSButton {
-        let cancelButton = OWSButton(title: CommonStrings.cancelButton, block: block)
-        cancelButton.setTitleColor(.white, for: .normal)
-        if let titleLabel = cancelButton.titleLabel {
-            titleLabel.font = UIFont.systemFont(ofSize: 18.0)
-            titleLabel.layer.shadowColor = UIColor.black.cgColor
-            titleLabel.setShadow()
-        } else {
-            owsFailDebug("Missing titleLabel.")
-        }
-        cancelButton.sizeToFit()
-        return cancelButton
-    }
-
-    public class func navigationBarButton(imageName: String, block: @escaping () -> Void) -> OWSButton {
-        let button = OWSButton(imageName: imageName, tintColor: .white, block: block)
-        button.layer.shadowColor = UIColor.black.cgColor
-        button.layer.shadowRadius = 2
-        button.layer.shadowOpacity = 0.66
-        button.layer.shadowOffset = .zero
-        return button
-    }
-
     // MARK: -
 
     @objc
@@ -184,10 +99,7 @@ open class OWSButton: UIButton {
     }
 
     private func updateAlpha() {
-        let isDimmed = (
-            (dimsWhenHighlighted && isHighlighted) ||
-                (dimsWhenDisabled && !isEnabled),
-        )
+        let isDimmed = (dimsWhenHighlighted && isHighlighted)
         alpha = isDimmed ? 0.4 : 1
     }
 }
