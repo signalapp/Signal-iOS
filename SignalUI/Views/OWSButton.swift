@@ -191,11 +191,3 @@ open class OWSButton: UIButton {
         alpha = isDimmed ? 0.4 : 1
     }
 }
-
-/// A button whose leading and trailing edges are round.
-open class OWSRoundedButton: OWSButton {
-    override open func layoutSubviews() {
-        super.layoutSubviews()
-        layer.cornerRadius = height / 2
-    }
-}
