@@ -1768,7 +1768,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             return false
         }
         let isVideo = isVideoCall(intent)
-        appReadiness.runNowOrWhenAppDidBecomeReadySync {
+
+        Task { @MainActor [appReadiness, screenLockUI] in
+            do {
+                try await appReadiness.waitForAppReady()
+                try await screenLockUI.waitForScreenUnlockThrowingPrevious()
+            } catch {
+                return
+            }
+
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 Logger.warn("Ignoring user activity; not registered.")
@@ -1799,6 +1807,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             callService.initiateCall(to: callTarget, isVideo: isVideo)
         }
+
         return true
     }
 
@@ -1928,7 +1937,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         withCompletionHandler completionHandler: @escaping () -> Void,
     ) {
         let startDate = MonotonicDate()
-        Task { @MainActor [appReadiness] () -> Void in
+        Task { @MainActor [appReadiness, screenLockUI] () -> Void in
             defer { completionHandler() }
 
             try await self.appReadiness.waitForAppReady()
@@ -1942,7 +1951,11 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 let elapsedDuration = (MonotonicDate() - startDate).seconds
                 try await withCooperativeTimeout(seconds: 27 - elapsedDuration) {
                     // Do the actual thing we care about.
-                    try await NotificationActionHandler.handleNotificationResponse(response, appReadiness: appReadiness)
+                    try await NotificationActionHandler.handleNotificationResponse(
+                        response,
+                        appReadiness: appReadiness,
+                        screenLockUI: screenLockUI,
+                    )
 
                     // Then wait for any enqueued messages (e.g., read receipts) to be sent.
                     try await backgroundMessageFetcher.waitForFetchingProcessingAndSideEffects()

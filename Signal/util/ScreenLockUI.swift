@@ -65,7 +65,39 @@ class ScreenLockUI {
     // * The user is also locked out if they spend more than
     //   "timeout" seconds outside the app.  When the user leaves
     //   the app, a "countdown" begins.
-    private var isScreenLockLocked: Bool = false
+    private var isScreenLockLocked: Bool = false {
+        didSet {
+            AssertIsOnMainThread()
+            guard !isScreenLockLocked else { return }
+            if let pending = pendingScreenUnlockContinuation {
+                pendingScreenUnlockContinuation = nil
+                pending.resume()
+            }
+        }
+    }
+
+    struct ScreenUnlockActionReplacedError: Error {}
+
+    private var pendingScreenUnlockContinuation: CheckedContinuation<Void, Error>?
+
+    @MainActor
+    func waitForScreenUnlockThrowingPrevious() async throws {
+        AssertIsOnMainThread()
+
+        tryToActivateScreenLockBasedOnCountdown()
+        ensureUI()
+
+        if !isScreenLockLocked {
+            return
+        }
+        if let existing = pendingScreenUnlockContinuation {
+            pendingScreenUnlockContinuation = nil
+            existing.resume(throwing: ScreenUnlockActionReplacedError())
+        }
+        try await withCheckedThrowingContinuation { continuation in
+            self.pendingScreenUnlockContinuation = continuation
+        }
+    }
 
     // The "countdown" until screen lock takes effect.
     private var screenLockCountdownTimestamp: UInt64?

@@ -15,6 +15,7 @@ public class NotificationActionHandler {
     class func handleNotificationResponse(
         _ response: UNNotificationResponse,
         appReadiness: AppReadinessSetter,
+        screenLockUI: ScreenLockUI,
     ) async throws {
         owsAssertDebug(appReadiness.isAppReady)
 
@@ -63,6 +64,7 @@ public class NotificationActionHandler {
             }
             switch responseAction {
             case .callBack:
+                try await screenLockUI.waitForScreenUnlockThrowingPrevious()
                 try await self.callBack(userInfo: userInfo)
             case .markAsRead:
                 try await markAsRead(userInfo: userInfo)
