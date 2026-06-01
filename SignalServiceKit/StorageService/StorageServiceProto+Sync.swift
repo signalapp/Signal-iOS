@@ -2077,6 +2077,12 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
         // The story has been deleted on another device, record that
         // and ensure we don't try and put it back.
         guard record.deletedAtTimestamp == 0 else {
+            if uniqueId.uuidString == TSPrivateStoryThread.myStoryUniqueId {
+                // My Story should never be deleted. If someone put such in
+                // Storage Service, ignore and overwrite it.
+                return .merged(needsUpdate: true, identifier)
+            }
+
             if let existingStory {
                 threadRemover.remove(existingStory, tx: transaction)
             }

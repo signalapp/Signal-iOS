@@ -82,7 +82,7 @@ private class MyStorySettingsDataSource: NSObject {
             myStoryThread,
             myStoryThreadRecipientIds,
         ) = databaseStorage.read { transaction -> (Bool, TSPrivateStoryThread, [SignalRecipient.RowId]) in
-            let myStoryThread: TSPrivateStoryThread = TSPrivateStoryThread.getMyStory(transaction: transaction)
+            let myStoryThread: TSPrivateStoryThread = TSPrivateStoryThread.getMyStory(transaction: transaction)!
             return (
                 StoryManager.hasSetMyStoriesPrivacy(transaction: transaction),
                 myStoryThread,
@@ -249,7 +249,7 @@ private class MyStorySettingsDataSource: NSObject {
 
     @objc
     private func didToggleReplies(_ toggle: UISwitch) {
-        let myStoryThread: TSPrivateStoryThread! = SSKEnvironment.shared.databaseStorageRef.read { TSPrivateStoryThread.getMyStory(transaction: $0) }
+        let myStoryThread: TSPrivateStoryThread = SSKEnvironment.shared.databaseStorageRef.read { TSPrivateStoryThread.getMyStory(transaction: $0)! }
         guard myStoryThread.allowsReplies != toggle.isOn else { return }
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             myStoryThread.updateWithAllowsReplies(toggle.isOn, updateStorageService: true, transaction: transaction)

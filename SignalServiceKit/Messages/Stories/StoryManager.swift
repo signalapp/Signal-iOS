@@ -14,13 +14,20 @@ public class StoryManager {
         cacheAreViewReceiptsEnabled()
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
-                // Create My Story thread if necessary
-                TSPrivateStoryThread.getOrCreateMyStory(transaction: transaction)
+            let db = DependenciesBridge.shared.db
+            let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
+            let privateStoryThreadDeletionManager = DependenciesBridge.shared.privateStoryThreadDeletionManager
+
+            db.asyncWrite { tx in
+                if TSPrivateStoryThread.getMyStory(transaction: tx) == nil {
+                    let myStory = TSPrivateStoryThread.getOrCreateMyStory(transaction: tx)
+                    storageServiceManager.recordPendingUpdates(
+                        updatedStoryDistributionListIds: [myStory.distributionListIdentifier!],
+                    )
+                }
 
                 if CurrentAppContext().isMainApp {
-                    DependenciesBridge.shared.privateStoryThreadDeletionManager
-                        .cleanUpDeletedTimestamps(tx: transaction)
+                    privateStoryThreadDeletionManager.cleanUpDeletedTimestamps(tx: tx)
                 }
             }
         }

@@ -331,6 +331,7 @@ public class GRDBSchemaMigrator {
         case migrateSecureValueRecovery
         case wipeCachedSVRBAuthCredentials
         case addMimeTypeToMessageAttachmentReference
+        case purgeMyStoryDeletedAtTimestamp
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -454,7 +455,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 143
+    public static let grdbSchemaVersionLatest: UInt = 144
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5181,6 +5182,24 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.addMimeTypeToMessageAttachmentReference) { tx in
             try Self.addMimeTypeToMessageAttachmentReference(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.purgeMyStoryDeletedAtTimestamp) { tx in
+            // "My Story" should never be deleted, but we've seen reports where
+            // it has been marked as such. Remove it from the deleted-story
+            // store if necessary; we (at the time of writing) create the My Story
+            // thread on app launch and have guards against deleting it again in
+            // the future.
+            try tx.database.execute(
+                sql: """
+                DELETE FROM keyvalue WHERE collection = ? AND key = ?
+                """,
+                arguments: [
+                    "TSPrivateStoryThread+DeletedAtTimestamp",
+                    "00000000-0000-0000-0000-000000000000",
+                ],
+            )
             return .success(())
         }
 

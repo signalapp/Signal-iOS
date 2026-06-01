@@ -84,7 +84,15 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
             return
         }
 
-        guard let uniqueId = identifier.uuidString else { return }
+        guard let uniqueId = identifier.uuidString else {
+            return
+        }
+
+        if uniqueId == TSPrivateStoryThread.myStoryUniqueId {
+            owsFailDebug("Refusing to record My Story as deleted.", logger: logger)
+            return
+        }
+
         deletedAtTimestampStore.setUInt64(timestamp, key: uniqueId, transaction: tx)
     }
 

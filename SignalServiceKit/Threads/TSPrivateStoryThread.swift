@@ -145,7 +145,7 @@ public final class TSPrivateStoryThread: TSThread {
         "00000000-0000-0000-0000-000000000000"
     }
 
-    public class func getMyStory(transaction: DBReadTransaction) -> TSPrivateStoryThread! {
+    public class func getMyStory(transaction: DBReadTransaction) -> TSPrivateStoryThread? {
         fetchPrivateStoryThreadViaCache(uniqueId: myStoryUniqueId, transaction: transaction)
     }
 
