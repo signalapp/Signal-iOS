@@ -36,8 +36,6 @@ class WidePhotoCell: MediaTileListModeCell {
         return label
     }()
 
-    var progressView: UIView?
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -137,36 +135,16 @@ class WidePhotoCell: MediaTileListModeCell {
             super.configure(item: item, spoilerState: spoilerState)
             configure(photoGridItem)
 
-            progressView?.removeFromSuperview()
             if
                 photoGridItem.galleryItem.referencedAttachment.asReferencedStream == nil,
                 photoGridItem.galleryItem.referencedAttachment.asReferencedBackupThumbnail == nil,
                 let pointer = photoGridItem.galleryItem.referencedAttachment.asReferencedAnyPointer
             {
-                let progressView = CVAttachmentProgressView(
-                    direction: .download(
-                        attachmentPointer: pointer.attachmentPointer,
-                        downloadState: .none,
-                    ),
-                    configuration: .forMediaOverlay(),
+                let progressView = MediaGallery.addDownloadProgressView(
+                    attachmentPointer: pointer.attachmentPointer,
+                    toView: thumbnailView,
                 )
-
                 progressView.addGestureRecognizer(tapGestureRecognizer)
-
-                let manualLayoutView = ManualLayoutView(name: "progressViewContainer")
-                thumbnailView.addSubview(manualLayoutView)
-
-                manualLayoutView.translatesAutoresizingMaskIntoConstraints = false
-                NSLayoutConstraint.activate([
-                    manualLayoutView.topAnchor.constraint(equalTo: thumbnailView.topAnchor),
-                    manualLayoutView.bottomAnchor.constraint(equalTo: thumbnailView.bottomAnchor),
-                    manualLayoutView.leadingAnchor.constraint(equalTo: thumbnailView.leadingAnchor),
-                    manualLayoutView.trailingAnchor.constraint(equalTo: thumbnailView.trailingAnchor),
-                ])
-
-                manualLayoutView.addSubview(progressView)
-                manualLayoutView.centerSubviewOnSuperview(progressView, size: .square(44))
-                self.progressView = manualLayoutView
             }
         default:
             owsFail("Unexpected item type \(item)")

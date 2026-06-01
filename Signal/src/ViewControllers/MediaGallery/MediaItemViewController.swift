@@ -130,33 +130,12 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         guard let attachmentPointer = galleryItem.referencedAttachment.attachment.asAnyPointer() else {
             return
         }
-
-        let progressView = CVAttachmentProgressView(
-            direction: .download(
-                attachmentPointer: attachmentPointer,
-                downloadState: .none,
-            ),
-            configuration: .forMediaOverlay(),
+        self.progressView = MediaGallery.addDownloadProgressView(
+            attachmentPointer: attachmentPointer,
+            toView: view,
         )
-
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapProgressView))
-        progressView.addGestureRecognizer(tapGesture)
-
-        let manualLayoutView = ManualLayoutView(name: "progressViewContainer")
-        view.addSubview(manualLayoutView)
-
-        manualLayoutView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            manualLayoutView.topAnchor.constraint(equalTo: view.topAnchor),
-            manualLayoutView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            manualLayoutView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            manualLayoutView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        ])
-
-        manualLayoutView.addSubview(progressView)
-        manualLayoutView.centerSubviewOnSuperview(progressView, size: .square(44))
-
-        self.progressView = progressView
+        progressView?.addGestureRecognizer(tapGesture)
     }
 
     @objc

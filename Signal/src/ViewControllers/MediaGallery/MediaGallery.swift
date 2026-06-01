@@ -1121,6 +1121,28 @@ class MediaGallery {
             )
         }
     }
+
+    static func addDownloadProgressView(
+        attachmentPointer: AttachmentPointer,
+        toView view: UIView,
+    ) -> CVAttachmentProgressView {
+        let progressView = CVAttachmentProgressView(
+            direction: .download(
+                attachmentPointer: attachmentPointer,
+                downloadState: .none,
+            ),
+            configuration: .forMediaOverlay(),
+        )
+
+        view.addSubview(progressView)
+        progressView.preferredSize = .square(44)
+        progressView.shouldDeactivateConstraints = false
+        NSLayoutConstraint.activate([
+            progressView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            progressView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
+        return progressView
+    }
 }
 
 extension MediaGallery: DatabaseChangeDelegate {

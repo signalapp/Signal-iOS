@@ -1801,29 +1801,11 @@ private class MediaTileCollectionViewCell:
             item.referencedAttachment.asReferencedBackupThumbnail == nil,
             let pointer = item.referencedAttachment.asReferencedAnyPointer
         {
-            let progressView = CVAttachmentProgressView(
-                direction: .download(
-                    attachmentPointer: pointer.attachmentPointer,
-                    downloadState: .none,
-                ),
-                configuration: .forMediaOverlay(),
+            let progressView = MediaGallery.addDownloadProgressView(
+                attachmentPointer: pointer.attachmentPointer,
+                toView: contentView,
             )
-
             progressView.addGestureRecognizer(tapGestureRecognizer)
-
-            let manualLayoutView = ManualLayoutView(name: "progressViewContainer")
-            contentView.addSubview(manualLayoutView)
-
-            manualLayoutView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                manualLayoutView.topAnchor.constraint(equalTo: contentView.topAnchor),
-                manualLayoutView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-                manualLayoutView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                manualLayoutView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            ])
-
-            manualLayoutView.addSubview(progressView)
-            manualLayoutView.centerSubviewOnSuperview(progressView, size: .square(44))
             self.progressView = progressView
         }
     }
