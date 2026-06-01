@@ -539,7 +539,7 @@ public class RemoteConfig {
     ///
     /// - Parameter csvString: a CSV containing `<country-code>:<parts-per-million>` pairs
     /// - Parameter key: a key to use as part of bucketing
-    static func isCountryCodeBucketEnabled(csvString: String, key: String, localIdentifiers: LocalIdentifiers) -> Bool {
+    public static func isCountryCodeBucketEnabled(csvString: String, key: String, localIdentifiers: LocalIdentifiers) -> Bool {
         guard
             let countryCodeValue = countryCodeBucketValue(
                 csvString: csvString,

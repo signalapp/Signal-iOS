@@ -77,7 +77,6 @@
 		046092262FBCD2DA00A8765F /* SafetyTipsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046092232FBCC7E700A8765F /* SafetyTipsManager.swift */; };
 		046926092E8EBAAE00B1FC74 /* TSInfoMessage+Polls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */; };
 		0477BE322FA4FC41002F9B47 /* TSReleaseNotesThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */; };
-		047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */; };
 		0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */; };
 		0484CECE2F44B7BE009AB2CB /* AdminDeleteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */; };
 		0484CED02F44BD00009AB2CB /* AdminDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CECF2F44BCFB009AB2CB /* AdminDeleteManager.swift */; };
@@ -93,7 +92,6 @@
 		04A573702E4D4BD50019651F /* OWSPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A5736F2E4D4BD30019651F /* OWSPoll.swift */; };
 		04A573722E53A3BF0019651F /* SupportKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A573712E53A3B40019651F /* SupportKeyValueStore.swift */; };
 		04A573762E75B00B0019651F /* DebugLogPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A573752E75B00A0019651F /* DebugLogPreviewViewController.swift */; };
-		04AA85BC2E0EFC5C0051C0A7 /* BackupEnablementReminderMegaphoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */; };
 		04AB61C62E5E37A800405699 /* PollRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB61C52E5E37A400405699 /* PollRecord.swift */; };
 		04AB61C82E5E399700405699 /* PollOptionRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB61C72E5E399400405699 /* PollOptionRecord.swift */; };
 		04AB61CA2E5E449100405699 /* PollManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB61C92E5E448A00405699 /* PollManagerTest.swift */; };
@@ -4166,7 +4164,6 @@
 		040507142F8063A40078B769 /* RemoteReleaseNotesFetchingManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteReleaseNotesFetchingManagerTests.swift; sourceTree = "<group>"; };
 		04127D902F23B3B000B4E95B /* CVCapsuleLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVCapsuleLabel.swift; sourceTree = "<group>"; };
 		041A5F062E05B3F000FAED05 /* BackupEnablementMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupEnablementMegaphone.swift; sourceTree = "<group>"; };
-		041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupEnablementReminderMegaphoneTests.swift; sourceTree = "<group>"; };
 		042223B92EDF30B300158556 /* OutgoingUnpinMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingUnpinMessage.swift; sourceTree = "<group>"; };
 		0426758A2EC4D5BF00124C5F /* PinnedMessageIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageIconView.swift; sourceTree = "<group>"; };
 		0426758F2EC529F500124C5F /* TSInfoMessage+PinnedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+PinnedMessage.swift"; sourceTree = "<group>"; };
@@ -4224,7 +4221,6 @@
 		046092232FBCC7E700A8765F /* SafetyTipsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyTipsManager.swift; sourceTree = "<group>"; };
 		046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Polls.swift"; sourceTree = "<group>"; };
 		0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSReleaseNotesThread.swift; sourceTree = "<group>"; };
-		047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyReminderMegaphoneTests.swift; sourceTree = "<group>"; };
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledNotificationMegaphone.swift; sourceTree = "<group>"; };
 		0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDeleteRecord.swift; sourceTree = "<group>"; };
 		0484CECF2F44BCFB009AB2CB /* AdminDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDeleteManager.swift; sourceTree = "<group>"; };
@@ -13890,8 +13886,6 @@
 			children = (
 				D90AA32E2CC9616A00021CB0 /* Signal-Message-Backup-Tests */,
 				D90AA6182CC961ED00021CB0 /* BackupArchiveIntegrationTests.swift */,
-				041A5F082E05D3AC00FAED05 /* BackupEnablementReminderMegaphoneTests.swift */,
-				047A6DCF2E00B5640048EDF4 /* BackupKeyReminderMegaphoneTests.swift */,
 				04E66D432E00AB3A0059DBAC /* BackupSettingsStoreTests.swift */,
 				D9A36B922C7FEDA100CEC0E7 /* LineByLineStringDiff.swift */,
 			);
@@ -20073,8 +20067,6 @@
 				D90AA6192CC961ED00021CB0 /* BackupArchiveIntegrationTests.swift in Sources */,
 				66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */,
 				66C795302C9B83A200C13937 /* BackupAttachmentUploadStoreTests.swift in Sources */,
-				04AA85BC2E0EFC5C0051C0A7 /* BackupEnablementReminderMegaphoneTests.swift in Sources */,
-				047A6DD02E00B5720048EDF4 /* BackupKeyReminderMegaphoneTests.swift in Sources */,
 				66A1F4EB2E07CEA50095DE4B /* BackupListMediaManagerTests.swift in Sources */,
 				04E66D452E00AB6A0059DBAC /* BackupSettingsStoreTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,

@@ -136,12 +136,8 @@ class MegaphoneView: UIView {
 
     // MARK: -
 
-    private var hasPresented = false
-
     func present(fromViewController: UIViewController) {
         AssertIsOnMainThread()
-
-        guard !hasPresented else { return owsFailDebug("can only present once") }
 
         let labelStack = createLabelStack()
 
@@ -170,17 +166,10 @@ class MegaphoneView: UIView {
         UIView.animate(withDuration: 0.2) {
             self.alpha = 1
         }
-
-        hasPresented = true
     }
 
-    func dismiss(animated: Bool = true, completion: (() -> Void)? = nil) {
-        UIView.animate(withDuration: animated ? 0.2 : 0, animations: {
-            self.alpha = 0
-        }) { _ in
-            self.removeFromSuperview()
-            completion?()
-        }
+    func dismiss() {
+        removeFromSuperview()
     }
 
     // MARK: -

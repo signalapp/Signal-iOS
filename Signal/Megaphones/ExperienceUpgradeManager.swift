@@ -3,37 +3,61 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Contacts
 import SignalServiceKit
 import SignalUI
 
 class ExperienceUpgradeManager {
 
     private enum StoreKeys {
-        static let lastExperienceUpgradeDismissDate = "lastExperienceUpgradeDismissDate"
+        static let lastMegaphoneDismissDate = "lastExperienceUpgradeDismissDate"
     }
 
-    // The Megaphone is retained for the lifetime of the MegaphoneView.
-    private weak static var lastPresentedMegaphone: Megaphone?
-    private weak static var lastPresentedMegaphoneView: MegaphoneView?
+    private static var lastPresentedMegaphone: Megaphone?
+    private static var lastPresentedMegaphoneView: MegaphoneView?
 
+    private static var accountKeyStore: AccountKeyStore { DependenciesBridge.shared.accountKeyStore }
     private static let backupSettingsStore = BackupSettingsStore()
+    private static let dateProvider: DateProvider = { Date() }
     private static var db: DB { DependenciesBridge.shared.db }
     private static var deviceStore: OWSDeviceStore { DependenciesBridge.shared.deviceStore }
+    private static var donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore { DependenciesBridge.shared.donationReceiptCredentialResultStore }
     private static let experienceUpgradeStore = ExperienceUpgradeStore()
+    private static var inactiveLinkedDeviceFinder: InactiveLinkedDeviceFinder { DependenciesBridge.shared.inactiveLinkedDeviceFinder }
+    private static var inactivePrimaryDeviceStore: InactivePrimaryDeviceStore { DependenciesBridge.shared.inactivePrimaryDeviceStore }
     private static let keyValueStore = NewKeyValueStore(collection: "ExperienceUpgradeManager")
+    private static var localUsernameManager: LocalUsernameManager { DependenciesBridge.shared.localUsernameManager }
+    private static var networkManager: NetworkManager { SSKEnvironment.shared.networkManagerRef }
+    private static var ows2FAManager: OWS2FAManager { SSKEnvironment.shared.ows2FAManagerRef }
+    private static var profileManager: ProfileManager { SSKEnvironment.shared.profileManagerRef }
+    private static var reachabilityManager: SSKReachabilityManager { SSKEnvironment.shared.reachabilityManagerRef }
     private static var remoteConfigManager: RemoteConfigManager { SSKEnvironment.shared.remoteConfigManagerRef }
+    private static var storageServiceManager: StorageServiceManager { SSKEnvironment.shared.storageServiceManagerRef }
+    private static var usernameEducationManager: UsernameEducationManager { DependenciesBridge.shared.usernameEducationManager }
     private static var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
+    private static var usernameSelectionCoordinator: UsernameSelectionCoordinator {
+        UsernameSelectionCoordinator(
+            currentUsername: nil,
+            context: UsernameSelectionCoordinator.Context(
+                databaseStorage: db,
+                networkManager: networkManager,
+                storageServiceManager: storageServiceManager,
+                usernameEducationManager: usernameEducationManager,
+                localUsernameManager: localUsernameManager,
+            ),
+        )
+    }
 
     static func reconcilePresentedExperienceUpgrade(fromViewController: UIViewController) {
         let now = Date()
         var shouldClearNewDeviceNotification = false
         var shouldClearBackupsEnabledDetails = false
 
-        let lastExperienceUpgradeDismissDate: Date
-        let nextExperienceUpgrade: ExperienceUpgrade?
+        let lastMegaphoneDismissDate: Date
+        let nextMegaphone: Megaphone?
         (
-            lastExperienceUpgradeDismissDate,
-            nextExperienceUpgrade,
+            lastMegaphoneDismissDate,
+            nextMegaphone,
         ) = db.read { tx in
             guard
                 let registeredState = try? tsAccountManager.registeredState(tx: tx),
@@ -42,97 +66,149 @@ class ExperienceUpgradeManager {
                 return (.distantPast, nil)
             }
 
-            let lastExperienceUpgradeDismissDate = keyValueStore.fetchValue(
+            let lastMegaphoneDismissDate = keyValueStore.fetchValue(
                 Date.self,
-                forKey: StoreKeys.lastExperienceUpgradeDismissDate,
+                forKey: StoreKeys.lastMegaphoneDismissDate,
                 tx: tx,
             ) ?? .distantPast
 
-            let nextExperienceUpgrade = allKnownExperienceUpgrades(transaction: tx)
-                .first { upgrade in
-                    guard
-                        !upgrade.isComplete,
-                        !upgrade.isSnoozed(now: now),
-                        !upgrade.hasPassedNumberOfDaysToShow(now: now),
-                        now.timeIntervalSince(registrationDate) > upgrade.manifest.delayAfterRegistration,
-                        now < upgrade.manifest.expirationDate,
-                        (registeredState.isPrimary || upgrade.manifest.showOnLinkedDevices)
-                    else {
-                        return false
-                    }
-
-                    switch upgrade.manifest {
-                    case .introducingPins:
-                        return ExperienceUpgradeManifest
-                            .checkPreconditionsForIntroducingPins(transaction: tx)
-                    case .notificationPermissionReminder:
-                        return ExperienceUpgradeManifest
-                            .checkPreconditionsForNotificationsPermissionsReminder()
-                    case .newLinkedDeviceNotification:
-                        let result = ExperienceUpgradeManifest
-                            .checkPreconditionsForNewLinkedDeviceNotification(tx: tx)
-                        switch result {
-                        case .display:
-                            return true
-                        case .skip:
-                            return false
-                        case .clearNotification:
-                            shouldClearNewDeviceNotification = true
-                            return false
-                        }
-                    case .createUsernameReminder:
-                        return ExperienceUpgradeManifest
-                            .checkPreconditionsForCreateUsernameReminder(transaction: tx)
-                    case .remoteMegaphone(let megaphone):
-                        return ExperienceUpgradeManifest
-                            .checkPreconditionsForRemoteMegaphone(megaphone, tx: tx)
-                    case .inactiveLinkedDeviceReminder:
-                        return ExperienceUpgradeManifest
-                            .checkPreconditionsForInactiveLinkedDeviceReminder(tx: tx)
-                    case .inactivePrimaryDeviceReminder:
-                        return ExperienceUpgradeManifest
-                            .checkPreconditionsForInactivePrimaryDeviceReminder(tx: tx)
-                    case .pinReminder:
-                        return ExperienceUpgradeManifest
-                            .checkPreconditionsForPinReminder(transaction: tx)
-                    case .contactPermissionReminder:
-                        return ExperienceUpgradeManifest
-                            .checkPreconditionsForContactsPermissionReminder()
-                    case .backupKeyReminder:
-                        return ExperienceUpgradeManifest
-                            .checkPreconditionsForRecoveryKeyReminder(
-                                backupSettingsStore: backupSettingsStore,
-                                tsAccountManager: tsAccountManager,
-                                transaction: tx,
-                            )
-                    case .enableBackupsReminder:
-                        return ExperienceUpgradeManifest
-                            .checkPreconditionsForBackupEnablementReminder(
-                                backupSettingsStore: backupSettingsStore,
-                                remoteConfigProvider: remoteConfigManager,
-                                tsAccountManager: tsAccountManager,
-                                transaction: tx,
-                            )
-                    case .haveEnabledBackupsNotification:
-                        let result = ExperienceUpgradeManifest
-                            .checkPreconditionsForEnabledBackupsNotification(tx: tx)
-                        switch result {
-                        case .display:
-                            return true
-                        case .skip:
-                            return false
-                        case .clearStoredDetails:
-                            shouldClearBackupsEnabledDetails = true
-                            return false
-                        }
-                    case .unrecognized:
-                        return false
-                    }
+            var nextMegaphone: Megaphone?
+            for upgrade in allKnownExperienceUpgrades(tx: tx) {
+                if nextMegaphone != nil {
+                    break
                 }
 
+                guard
+                    !upgrade.isComplete,
+                    !upgrade.isSnoozed(now: now),
+                    !upgrade.hasPassedNumberOfDaysToShow(now: now),
+                    now.timeIntervalSince(registrationDate) > upgrade.manifest.delayAfterRegistration,
+                    now < upgrade.manifest.expirationDate,
+                    (registeredState.isPrimary || upgrade.manifest.showOnLinkedDevices)
+                else {
+                    continue
+                }
+
+                switch upgrade.manifest {
+                case .introducingPins:
+                    if checkPreconditionsForIntroducingPins(tx: tx) {
+                        nextMegaphone = IntroducingPinsMegaphone(
+                            experienceUpgrade: upgrade,
+                            fromViewController: fromViewController,
+                        )
+                    }
+                case .notificationPermissionReminder:
+                    if checkPreconditionsForNotificationsPermissionsReminder() {
+                        nextMegaphone = NotificationPermissionReminderMegaphone(
+                            experienceUpgrade: upgrade,
+                            fromViewController: fromViewController,
+                        )
+                    }
+                case .newLinkedDeviceNotification:
+                    switch checkPreconditionsForNewLinkedDeviceNotification(tx: tx) {
+                    case .display(let mostRecentlyLinkedDeviceDetails):
+                        nextMegaphone = NewLinkedDeviceNotificationMegaphone(
+                            db: db,
+                            deviceStore: deviceStore,
+                            experienceUpgrade: upgrade,
+                            mostRecentlyLinkedDeviceDetails: mostRecentlyLinkedDeviceDetails,
+                        )
+                    case .skip:
+                        break
+                    case .clearNotification:
+                        shouldClearNewDeviceNotification = true
+                    }
+                case .createUsernameReminder:
+                    if checkPreconditionsForCreateUsernameReminder(tx: tx) {
+                        nextMegaphone = CreateUsernameMegaphone(
+                            usernameSelectionCoordinator: usernameSelectionCoordinator,
+                            experienceUpgrade: upgrade,
+                            fromViewController: fromViewController,
+                        )
+                    }
+                case .remoteMegaphone(let remoteMegaphoneModel):
+                    if
+                        checkPreconditionsForRemoteMegaphone(
+                            remoteMegaphoneModel: remoteMegaphoneModel,
+                            now: now,
+                            tx: tx,
+                        )
+                    {
+                        nextMegaphone = RemoteMegaphone(
+                            experienceUpgrade: upgrade,
+                            remoteMegaphoneModel: remoteMegaphoneModel,
+                            fromViewController: fromViewController,
+                        )
+                    }
+                case .inactiveLinkedDeviceReminder:
+                    if let inactiveLinkedDevice = checkPreconditionsForInactiveLinkedDeviceReminder(tx: tx) {
+                        nextMegaphone = InactiveLinkedDeviceReminderMegaphone(
+                            inactiveLinkedDevice: inactiveLinkedDevice,
+                            fromViewController: fromViewController,
+                            experienceUpgrade: upgrade,
+                        )
+                    }
+                case .inactivePrimaryDeviceReminder:
+                    if checkPreconditionsForInactivePrimaryDeviceReminder(tx: tx) {
+                        nextMegaphone = InactivePrimaryDeviceReminderMegaphone(
+                            fromViewController: fromViewController,
+                            experienceUpgrade: upgrade,
+                        )
+                    }
+                case .pinReminder:
+                    if checkPreconditionsForPinReminder(tx: tx) {
+                        nextMegaphone = PinReminderMegaphone(
+                            experienceUpgrade: upgrade,
+                            fromViewController: fromViewController,
+                        )
+                    }
+                case .contactPermissionReminder:
+                    if checkPreconditionsForContactsPermissionReminder() {
+                        nextMegaphone = ContactPermissionReminderMegaphone(
+                            experienceUpgrade: upgrade,
+                            fromViewController: fromViewController,
+                        )
+                    }
+                case .backupKeyReminder:
+                    if checkPreconditionsForRecoveryKeyReminder(tx: tx) {
+                        nextMegaphone = RecoveryKeyReminderMegaphone(
+                            experienceUpgrade: upgrade,
+                            fromViewController: fromViewController,
+                        )
+                    }
+                case .enableBackupsReminder:
+                    if checkPreconditionsForBackupEnablementReminder(tx: tx) {
+                        nextMegaphone = BackupEnablementMegaphone(
+                            experienceUpgrade: upgrade,
+                            fromViewController: fromViewController,
+                        )
+                    }
+                case .haveEnabledBackupsNotification:
+                    switch checkPreconditionsForEnabledBackupsNotification(
+                        now: now,
+                        tx: tx,
+                    ) {
+                    case .display(let lastBackupEnabledDetails):
+                        nextMegaphone = BackupsEnabledNotificationMegaphone(
+                            experienceUpgrade: upgrade,
+                            fromViewController: fromViewController,
+                            backupsEnabledTime: lastBackupEnabledDetails.enabledTime,
+                            db: db,
+                            backupSettingsStore: backupSettingsStore,
+                        )
+                    case .skip:
+                        break
+                    case .clearStoredDetails:
+                        shouldClearBackupsEnabledDetails = true
+                    }
+                case .unrecognized:
+                    break
+                }
+            }
+
             return (
-                lastExperienceUpgradeDismissDate,
-                nextExperienceUpgrade,
+                lastMegaphoneDismissDate,
+                nextMegaphone,
             )
         }
 
@@ -148,14 +224,14 @@ class ExperienceUpgradeManager {
             }
         }
 
-        guard let nextExperienceUpgrade else {
+        guard let nextMegaphone else {
             _ = dismissLastPresented(now: now)
             return
         }
 
         if
             let lastPresentedMegaphone,
-            lastPresentedMegaphone.experienceUpgrade.manifest == nextExperienceUpgrade.manifest
+            lastPresentedMegaphone.experienceUpgrade.manifest == nextMegaphone.experienceUpgrade.manifest
         {
             return
         }
@@ -163,25 +239,18 @@ class ExperienceUpgradeManager {
         // If we're dismissing a megaphone, don't immediately present another.
         if dismissLastPresented(now: now) {
             return
-        }
-
-        if
-            now.timeIntervalSince(lastExperienceUpgradeDismissDate) > .day,
-            let megaphone = self.megaphone(
-                forExperienceUpgrade: nextExperienceUpgrade,
-                fromViewController: fromViewController,
-            )
+        } else if
+            now.timeIntervalSince(lastMegaphoneDismissDate) > .day
         {
-            let megaphoneView = megaphone.buildView()
-            ObjectRetainer.retainObject(megaphone, forLifetimeOf: megaphoneView)
-
+            let megaphoneView = nextMegaphone.buildView()
             megaphoneView.present(fromViewController: fromViewController)
-            lastPresentedMegaphone = megaphone
+
+            lastPresentedMegaphone = nextMegaphone
             lastPresentedMegaphoneView = megaphoneView
 
             db.write { tx in
                 experienceUpgradeStore.markAsViewed(
-                    experienceUpgrade: nextExperienceUpgrade,
+                    experienceUpgrade: nextMegaphone.experienceUpgrade,
                     tx: tx,
                 )
             }
@@ -192,7 +261,7 @@ class ExperienceUpgradeManager {
     /// persisted record if one exists and is applicable, and an in-memory
     /// model otherwise.
     private static func allKnownExperienceUpgrades(
-        transaction tx: DBReadTransaction,
+        tx: DBReadTransaction,
     ) -> [ExperienceUpgrade] {
         var experienceUpgrades = [ExperienceUpgrade]()
         var localManifestsWithoutRecords = ExperienceUpgradeManifest.wellKnownLocalUpgradeManifests
@@ -232,157 +301,368 @@ class ExperienceUpgradeManager {
         db.write { tx in
             keyValueStore.writeValue(
                 now,
-                forKey: StoreKeys.lastExperienceUpgradeDismissDate,
+                forKey: StoreKeys.lastMegaphoneDismissDate,
                 tx: tx,
             )
         }
 
-        lastPresentedMegaphoneView.dismiss(animated: false, completion: nil)
+        lastPresentedMegaphoneView.dismiss()
         self.lastPresentedMegaphone = nil
         self.lastPresentedMegaphoneView = nil
         return true
     }
 
-    // MARK: -
+    // MARK: - Megaphone Preconditions
 
-    private static func hasMegaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> Bool {
-        switch experienceUpgrade.manifest {
-        case
-            .introducingPins,
-            .pinReminder,
-            .notificationPermissionReminder,
-            .newLinkedDeviceNotification,
-            .createUsernameReminder,
-            .inactiveLinkedDeviceReminder,
-            .inactivePrimaryDeviceReminder,
-            .contactPermissionReminder,
-            .backupKeyReminder,
-            .enableBackupsReminder,
-            .haveEnabledBackupsNotification:
+    private static func checkPreconditionsForIntroducingPins(
+        tx: DBReadTransaction,
+    ) -> Bool {
+        // The PIN setup flow requires an internet connection and you to not already have a PIN
+        if
+            reachabilityManager.isReachable,
+            tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
+            accountKeyStore.getMasterKey(tx: tx) == nil
+        {
             return true
-        case .remoteMegaphone:
-            // Remote megaphones are always presentable. We filter out any with
-            // unpresentable fields (e.g., unrecognized actions) before we get
-            // out of the `ExperienceUpgradeFinder`.
-            return true
-        case .unrecognized:
+        }
+
+        return false
+    }
+
+    private static func checkPreconditionsForNotificationsPermissionsReminder() -> Bool {
+        let (promise, future) = Promise<Bool>.pending()
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                future.resolve(settings.authorizationStatus == .authorized)
+            }
+        }
+
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) {
+            guard promise.result == nil else { return }
+            future.reject(OWSGenericError("timeout fetching notification permissions"))
+        }
+
+        do {
+            return !(try promise.wait())
+        } catch {
+            Logger.warn("failed to query notification permission")
             return false
         }
     }
 
-    private static func megaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) -> Megaphone? {
-        let db = DependenciesBridge.shared.db
-        let deviceStore = DependenciesBridge.shared.deviceStore
-        let localUsernameManager = DependenciesBridge.shared.localUsernameManager
-        let inactiveLinkedDeviceFinder = DependenciesBridge.shared.inactiveLinkedDeviceFinder
+    private enum NewLinkedDeviceNotificationResult {
+        case display(MostRecentlyLinkedDeviceDetails)
+        case skip
+        case clearNotification
+    }
 
-        switch experienceUpgrade.manifest {
-        case .introducingPins:
-            return IntroducingPinsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .pinReminder:
-            return PinReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .notificationPermissionReminder:
-            return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .newLinkedDeviceNotification:
-            let mostRecentlyLinkedDeviceDetails = db.read { tx in
-                deviceStore.mostRecentlyLinkedDeviceDetails(tx: tx)
-            }
-
-            guard let mostRecentlyLinkedDeviceDetails else {
-                owsFailDebug("Missing mostRecentlyLinkedDeviceDetails")
-                return nil
-            }
-
-            return NewLinkedDeviceNotificationMegaphone(
-                db: DependenciesBridge.shared.db,
-                deviceStore: DependenciesBridge.shared.deviceStore,
-                experienceUpgrade: experienceUpgrade,
-                mostRecentlyLinkedDeviceDetails: mostRecentlyLinkedDeviceDetails,
-            )
-        case .createUsernameReminder:
-            let usernameIsUnset: Bool = db.read { tx in
-                return localUsernameManager.usernameState(tx: tx).isExplicitlyUnset
-            }
-
-            guard usernameIsUnset else {
-                owsFailDebug("Should never try and show this megaphone if a username is set!")
-                return nil
-            }
-
-            return CreateUsernameMegaphone(
-                usernameSelectionCoordinator: .init(
-                    currentUsername: nil,
-                    context: .init(
-                        databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-                        networkManager: SSKEnvironment.shared.networkManagerRef,
-                        storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
-                        usernameEducationManager: DependenciesBridge.shared.usernameEducationManager,
-                        localUsernameManager: DependenciesBridge.shared.localUsernameManager,
-                    ),
-                ),
-                experienceUpgrade: experienceUpgrade,
-                fromViewController: fromViewController,
-            )
-        case .inactiveLinkedDeviceReminder:
-            let inactiveLinkedDevice: InactiveLinkedDevice? = db.read { tx in
-                return inactiveLinkedDeviceFinder.findLeastActiveLinkedDevice(tx: tx)
-            }
-
-            guard let inactiveLinkedDevice else {
-                owsFailDebug("Trying to show inactive linked device megaphone, but have no device!")
-                return nil
-            }
-
-            return InactiveLinkedDeviceReminderMegaphone(
-                inactiveLinkedDevice: inactiveLinkedDevice,
-                fromViewController: fromViewController,
-                experienceUpgrade: experienceUpgrade,
-            )
-        case .inactivePrimaryDeviceReminder:
-            let isPrimaryDevice = db.read { tx in
-                // If isPrimaryDevice is nil, it means we aren't registered yet, and shouldn't show the megaphone.
-                return DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? true
-            }
-
-            guard !isPrimaryDevice else {
-                owsFailDebug("Trying to show inactive primary device megaphone, but this is the primary device or an unregistered device")
-                return nil
-            }
-
-            return InactivePrimaryDeviceReminderMegaphone(fromViewController: fromViewController, experienceUpgrade: experienceUpgrade)
-        case .contactPermissionReminder:
-            return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .remoteMegaphone(let megaphone):
-            return RemoteMegaphone(
-                experienceUpgrade: experienceUpgrade,
-                remoteMegaphoneModel: megaphone,
-                fromViewController: fromViewController,
-            )
-        case .backupKeyReminder:
-            return RecoveryKeyReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .enableBackupsReminder:
-            return BackupEnablementMegaphone(
-                experienceUpgrade: experienceUpgrade,
-                fromViewController: fromViewController,
-            )
-        case .haveEnabledBackupsNotification:
-            let lastBackupsEnabledDetails = db.read { tx in
-                backupSettingsStore.lastBackupEnabledDetails(tx: tx)
-            }
-
-            guard let lastBackupsEnabledDetails else {
-                owsFailDebug("Missing lastBackupsEnabledDetails")
-                return nil
-            }
-
-            return BackupsEnabledNotificationMegaphone(
-                experienceUpgrade: experienceUpgrade,
-                fromViewController: fromViewController,
-                backupsEnabledTime: lastBackupsEnabledDetails.enabledTime,
-                db: db,
-            )
-        case .unrecognized:
-            return nil
+    private static func checkPreconditionsForNewLinkedDeviceNotification(
+        tx: DBReadTransaction,
+    ) -> NewLinkedDeviceNotificationResult {
+        guard
+            let mostRecentlyLinkedDeviceDetails = deviceStore.mostRecentlyLinkedDeviceDetails(tx: tx)
+        else {
+            return .skip
         }
+
+        // No need to show a megaphone if notifications are on, which we happen
+        // to already check for the notification permission megaphone.
+        return if !checkPreconditionsForNotificationsPermissionsReminder() {
+            .clearNotification
+        } else if Date() > mostRecentlyLinkedDeviceDetails.shouldRemindUserAfter {
+            .display(mostRecentlyLinkedDeviceDetails)
+        } else {
+            .skip
+        }
+    }
+
+    private enum BackupsEnabledNotificationResult {
+        case display(BackupSettingsStore.LastBackupEnabledDetails)
+        case skip
+        case clearStoredDetails
+    }
+
+    private static func checkPreconditionsForEnabledBackupsNotification(
+        now: Date,
+        tx: DBReadTransaction,
+    ) -> BackupsEnabledNotificationResult {
+        guard let lastBackupEnabledDetails = backupSettingsStore.lastBackupEnabledDetails(tx: tx) else {
+            return .skip
+        }
+
+        // Don't show the megaphone if notifications are enabled, we'll send
+        // a notification instead. Clear the stored details so we don't show
+        // a stale megaphone in the future.
+        guard checkPreconditionsForNotificationsPermissionsReminder() else {
+            return .clearStoredDetails
+        }
+
+        if now > lastBackupEnabledDetails.shouldRemindUserAfter {
+            return .display(lastBackupEnabledDetails)
+        } else {
+            return .skip
+        }
+    }
+
+    private static func checkPreconditionsForCreateUsernameReminder(
+        tx: DBReadTransaction,
+    ) -> Bool {
+        guard
+            localUsernameManager.usernameState(
+                tx: tx,
+            ).isExplicitlyUnset
+        else {
+            // If we have a username, do not show the reminder.
+            return false
+        }
+        if tsAccountManager.phoneNumberDiscoverability(tx: tx).orDefault.isDiscoverable {
+            // If phone number discovery is enabled, do not prompt to create a
+            // username.
+            return false
+        }
+
+        /// The elapsed interval since the user disabled phone number
+        /// discovery. Note that we need to invert the sign as this date will
+        /// be in the past.
+        let timeIntervalSinceDisabledDiscovery = tsAccountManager
+            .lastSetIsDiscoverableByPhoneNumber(tx: tx)
+            .timeIntervalSinceNow * -1
+
+        let requiredDelayAfterDisablingDiscovery: TimeInterval = 3 * .day
+
+        return timeIntervalSinceDisabledDiscovery > requiredDelayAfterDisablingDiscovery
+    }
+
+    private static func checkPreconditionsForInactiveLinkedDeviceReminder(
+        tx: DBReadTransaction,
+    ) -> InactiveLinkedDevice? {
+        return inactiveLinkedDeviceFinder.findLeastActiveLinkedDevice(tx: tx)
+    }
+
+    private static func checkPreconditionsForInactivePrimaryDeviceReminder(
+        tx: DBReadTransaction,
+    ) -> Bool {
+        return inactivePrimaryDeviceStore.valueForInactivePrimaryDeviceAlert(transaction: tx)
+    }
+
+    private static func checkPreconditionsForPinReminder(
+        tx: DBReadTransaction,
+    ) -> Bool {
+        return ows2FAManager.isDueForV2Reminder(transaction: tx)
+    }
+
+    private static func checkPreconditionsForContactsPermissionReminder() -> Bool {
+        switch CNContactStore.authorizationStatus(for: .contacts) {
+        case .authorized, .limited:
+            return false
+        case .restricted:
+            // If this isn't allowed by device policy, don't nag.
+            return false
+        case .denied, .notDetermined:
+            return true
+        @unknown default:
+            return false
+        }
+    }
+
+    private static func checkPreconditionsForRecoveryKeyReminder(
+        tx: DBReadTransaction,
+    ) -> Bool {
+        guard tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice else {
+            return false
+        }
+
+        switch backupSettingsStore.backupPlan(tx: tx) {
+        case .disabled, .disabling:
+            return false
+        case .free, .paid, .paidExpiringSoon, .paidAsTester:
+            break
+        }
+
+        guard let firstBackupDate = backupSettingsStore.lastBackupDetails(tx: tx)?.firstBackupDate else {
+            return false
+        }
+
+        let lastReminderDate = backupSettingsStore.lastRecoveryKeyReminderDate(tx: tx)
+
+        let fourteenDaysAgo = Date().addingTimeInterval(-14 * .day)
+        guard let lastReminderDate else {
+            // Return true if the first backup happened over 2 weeks ago
+            // and we haven't shown a reminder yet.
+            return firstBackupDate < fourteenDaysAgo
+        }
+
+        // Return true if there's been no reminder within 6 months.
+        return lastReminderDate < Date().addingTimeInterval(-6 * .month)
+    }
+
+    private static func checkPreconditionsForBackupEnablementReminder(
+        tx: DBReadTransaction,
+    ) -> Bool {
+        guard
+            remoteConfigManager.currentConfig().backupsMegaphone,
+            tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
+        else {
+            return false
+        }
+
+        guard !backupSettingsStore.haveBackupsEverBeenEnabled(tx: tx) else {
+            return false
+        }
+
+        return InteractionFinder.outgoingAndIncomingMessageCount(transaction: tx, limit: 1) >= 1
+    }
+
+    // MARK: Remote megaphone
+
+    private static func checkPreconditionsForRemoteMegaphone(
+        remoteMegaphoneModel: RemoteMegaphoneModel,
+        now: Date,
+        tx: DBReadTransaction,
+    ) -> Bool {
+        let manifest = remoteMegaphoneModel.manifest
+        let translation = remoteMegaphoneModel.translation
+
+        let minimumVersion = AppVersionNumber(manifest.minAppVersion)
+        let currentVersion = AppVersionNumber(AppVersionImpl.shared.currentAppVersion)
+        guard currentVersion >= minimumVersion else {
+            return false
+        }
+
+        guard now.timeIntervalSince1970 > TimeInterval(manifest.dontShowBefore) else {
+            return false
+        }
+
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
+            return false
+        }
+
+        guard
+            RemoteConfig.isCountryCodeBucketEnabled(
+                csvString: manifest.countries,
+                key: manifest.id,
+                localIdentifiers: localIdentifiers,
+            )
+        else {
+            return false
+        }
+
+        guard
+            validateRemoteMegaphone(
+                conditionalCheck: manifest.conditionalCheck,
+                tx: tx,
+            )
+        else {
+            return false
+        }
+
+        guard
+            validateRemoteMegaphone(
+                action: manifest.primaryAction,
+                withText: translation.primaryActionText,
+            )
+        else {
+            return false
+        }
+
+        guard
+            validateRemoteMegaphone(
+                action: manifest.secondaryAction,
+                withText: translation.secondaryActionText,
+            )
+        else {
+            return false
+        }
+
+        return true
+    }
+
+    private static func validateRemoteMegaphone(
+        conditionalCheck: RemoteMegaphoneModel.Manifest.ConditionalCheck?,
+        tx: DBReadTransaction,
+    ) -> Bool {
+        guard let conditionalCheck else {
+            // Having no conditional check is valid.
+            return true
+        }
+
+        switch conditionalCheck {
+        case .standardDonate:
+            if profileManager.localUserProfile(tx: tx)?.hasBadge == true {
+                // Fail the check if we currently have a badge.
+                return false
+            } else if
+                donationReceiptCredentialResultStore
+                    .hasAnyPaymentsStillProcessing(tx: tx)
+            {
+                // Fail the check if we have any in-progress payments.
+                return false
+            }
+
+            return true
+        case .internalUser:
+            // Show this megaphone to all internal users, even if they already
+            // have a badge.
+            return DebugFlags.internalMegaphoneEligible
+        case .unrecognized(let conditionalId):
+            Logger.warn("Found unrecognized conditional check with ID \(conditionalId), bailing.")
+            return false
+        }
+    }
+
+    private static func validateRemoteMegaphone(
+        action: RemoteMegaphoneModel.Manifest.Action?,
+        withText text: String?,
+    ) -> Bool {
+        guard let action else {
+            // Having no action is valid...
+            return true
+        }
+
+        guard action.isRecognized else {
+            // ...but we need to recognize it...
+            Logger.warn("Found unrecognized action with ID \(action.actionId), bailing.")
+            return false
+        }
+
+        guard text != nil else {
+            // ...and have text for it.
+            Logger.warn("Missing action text for action \(action.actionId)")
+            return false
+        }
+
+        return true
+    }
+}
+
+// MARK: -
+
+private extension RemoteMegaphoneModel.Manifest.Action {
+    var isRecognized: Bool {
+        if case .unrecognized = self {
+            return false
+        }
+
+        return true
+    }
+}
+
+// MARK: -
+
+private extension DonationReceiptCredentialResultStore {
+    /// Do we have any payments that have been initiated, but are still
+    /// in-progress?
+    func hasAnyPaymentsStillProcessing(tx: DBReadTransaction) -> Bool {
+        for requestErrorMode in Mode.allCases {
+            if
+                let requestError = getRequestError(errorMode: requestErrorMode, tx: tx),
+                case .paymentStillProcessing = requestError.errorCode
+            {
+                return true
+            }
+        }
+
+        return false
     }
 }

@@ -8,7 +8,7 @@ import SignalUI
 
 class UsernameSelectionCoordinator {
     struct Context {
-        let databaseStorage: SDSDatabaseStorage
+        let databaseStorage: DB
         let networkManager: NetworkManager
         let storageServiceManager: StorageServiceManager
         let usernameEducationManager: UsernameEducationManager

@@ -87,11 +87,11 @@ extension RemoteMegaphoneModel {
 
         /// Priority of this megaphone relative to other remote megaphones.
         /// Higher numbers indicate greater priority.
-        fileprivate(set) var priority: Int
+        public fileprivate(set) var priority: Int
 
         /// Version string representing the minimum app version for which this
         /// upgrade should be shown.
-        let minAppVersion: String
+        public let minAppVersion: String
 
         /// A CSV string of `<country-code>:<parts-per-million>` pairs
         /// representing the fraction of users to which this megaphone should
@@ -99,21 +99,21 @@ extension RemoteMegaphoneModel {
         ///
         /// This is the same format used in remote-config country-code
         /// restrictions.
-        fileprivate(set) var countries: String
+        public fileprivate(set) var countries: String
 
         /// Epoch time before which this megaphone should not be shown.
-        let dontShowBefore: EpochSeconds
+        public let dontShowBefore: EpochSeconds
 
         /// Epoch time after which this megaphone should not be shown.
-        let dontShowAfter: EpochSeconds
+        public let dontShowAfter: EpochSeconds
 
         /// Number of days after this megaphone is first presented that it
         /// should continue to be shown, if the user does not interact with it.
-        let showForNumberOfDays: Int
+        public let showForNumberOfDays: Int
 
         /// Represents a condition that must be satisfied in order for this
         /// megaphone to be presented.
-        fileprivate(set) var conditionalCheck: ConditionalCheck?
+        public fileprivate(set) var conditionalCheck: ConditionalCheck?
 
         /// Represents an action to be performed in response to user selection
         /// of the "primary" call-to-action in the presented megaphone.
@@ -121,7 +121,7 @@ extension RemoteMegaphoneModel {
 
         /// Represents data associated with the performance of the primary
         /// action.
-        fileprivate(set) var primaryActionData: ActionData?
+        public fileprivate(set) var primaryActionData: ActionData?
 
         /// Represents an action to be performed in response to user selection
         /// of the "secondary" call-to-action in the presented megaphone.
@@ -129,7 +129,7 @@ extension RemoteMegaphoneModel {
 
         /// Represents data associated with the performance of the seocndary
         /// action.
-        fileprivate(set) var secondaryActionData: ActionData?
+        public fileprivate(set) var secondaryActionData: ActionData?
 
         public init(
             id: String,
@@ -293,7 +293,7 @@ extension RemoteMegaphoneModel.Manifest {
         case donateFriend
         case unrecognized(actionId: String)
 
-        var actionId: String {
+        public var actionId: String {
             switch self {
             case .finish:
                 return "finish"

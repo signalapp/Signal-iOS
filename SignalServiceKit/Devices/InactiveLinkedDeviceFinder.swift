@@ -43,13 +43,6 @@ public protocol InactiveLinkedDeviceFinder {
 #endif
 }
 
-public extension InactiveLinkedDeviceFinder {
-    /// Whether the user has an "inactive" linked device.
-    func hasInactiveLinkedDevice(tx: DBReadTransaction) -> Bool {
-        return findLeastActiveLinkedDevice(tx: tx) != nil
-    }
-}
-
 class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
     private enum Constants {
         /// How long we should wait between device state refreshes.

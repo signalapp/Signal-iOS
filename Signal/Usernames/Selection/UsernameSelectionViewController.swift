@@ -23,7 +23,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
     /// A wrapper for injected dependencies.
     struct Context {
         let networkManager: NetworkManager
-        let databaseStorage: SDSDatabaseStorage
+        let databaseStorage: DB
         let localUsernameManager: LocalUsernameManager
         let storageServiceManager: StorageServiceManager
     }

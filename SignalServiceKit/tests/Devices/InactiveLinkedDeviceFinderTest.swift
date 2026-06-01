@@ -129,14 +129,14 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         mockDB.write { inactiveLinkedDeviceFinder.permanentlyDisableFinders(tx: $0) }
         try await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
         XCTAssertEqual(mockDevicesService.refreshCount, 0)
-        XCTAssertFalse(mockDB.read { inactiveLinkedDeviceFinder.hasInactiveLinkedDevice(tx: $0) })
+        XCTAssertFalse(mockDB.read { inactiveLinkedDeviceFinder.findLeastActiveLinkedDevice(tx: $0) != nil })
 
         // Re-enable (only available in tests) and run more tests, to prove the
         // disabling is why the first battery passed.
         mockDB.write { inactiveLinkedDeviceFinder.reenablePermanentlyDisabledFinders(tx: $0) }
         try await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
         XCTAssertEqual(mockDevicesService.refreshCount, 1)
-        XCTAssertTrue(mockDB.read { inactiveLinkedDeviceFinder.hasInactiveLinkedDevice(tx: $0) })
+        XCTAssertTrue(mockDB.read { inactiveLinkedDeviceFinder.findLeastActiveLinkedDevice(tx: $0) != nil })
     }
 
     private func setMockDevices(_ devices: [OWSDevice]) {
