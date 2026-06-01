@@ -7,7 +7,7 @@ import Lottie
 import SignalServiceKit
 import SignalUI
 
-class MegaphoneView: UIView {
+class Megaphone {
     struct Button {
         let title: String
         let action: () -> Void
@@ -20,11 +20,94 @@ class MegaphoneView: UIView {
     var bodyText: String?
     var buttons: [Button] = []
 
+    init(experienceUpgrade: ExperienceUpgrade) {
+        self.experienceUpgrade = experienceUpgrade
+    }
+
+    func buildView() -> MegaphoneView {
+        guard let titleText, let bodyText else {
+            owsFail("Megaphone missing title or body text!")
+        }
+        guard (1...2).contains(buttons.count) else {
+            owsFail("Megaphone must have 1 or 2 buttons!")
+        }
+
+        return MegaphoneView(
+            image: image,
+            imageContentMode: imageContentMode,
+            titleText: titleText,
+            bodyText: bodyText,
+            buttons: buttons,
+        )
+    }
+
+    func snoozeButton(
+        fromViewController: UIViewController,
+        snoozeTitle: String,
+    ) -> Button {
+        return Button(title: snoozeTitle) { [weak self, weak fromViewController] in
+            guard let self, let fromViewController else { return }
+
+            markAsSnoozedWithSneakyTransaction()
+            fromViewController.presentToast(text: MegaphoneStrings.weWillRemindYouLater)
+        }
+    }
+
+    // MARK: -
+
+    func markAsSnoozedWithSneakyTransaction() {
+        let db = DependenciesBridge.shared.db
+        let experienceUpgradeStore = ExperienceUpgradeStore()
+
+        db.write { tx in
+            experienceUpgradeStore.markAsSnoozed(
+                experienceUpgrade: experienceUpgrade,
+                tx: tx,
+            )
+        }
+
+        NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
+    }
+
+    func markAsCompleteWithSneakyTransaction() {
+        let db = DependenciesBridge.shared.db
+        let experienceUpgradeStore = ExperienceUpgradeStore()
+
+        db.write { tx in
+            experienceUpgradeStore.markAsComplete(
+                experienceUpgrade: experienceUpgrade,
+                tx: tx,
+            )
+        }
+
+        NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
+    }
+}
+
+// MARK: -
+
+class MegaphoneView: UIView {
+    private let image: UIImage?
+    private let imageContentMode: UIView.ContentMode
+    private let titleText: String
+    private let bodyText: String
+    private let buttons: [Megaphone.Button]
+
     private let darkThemeBackgroundOverlay = UIView()
     private let stackView = UIStackView()
 
-    init(experienceUpgrade: ExperienceUpgrade) {
-        self.experienceUpgrade = experienceUpgrade
+    init(
+        image: UIImage?,
+        imageContentMode: UIView.ContentMode,
+        titleText: String,
+        bodyText: String,
+        buttons: [Megaphone.Button],
+    ) {
+        self.image = image
+        self.imageContentMode = imageContentMode
+        self.titleText = titleText
+        self.bodyText = bodyText
+        self.buttons = buttons
 
         super.init(frame: .zero)
 
@@ -59,10 +142,6 @@ class MegaphoneView: UIView {
         AssertIsOnMainThread()
 
         guard !hasPresented else { return owsFailDebug("can only present once") }
-
-        guard titleText != nil, bodyText != nil, !buttons.isEmpty else {
-            owsFail("Megaphone missing required properties!")
-        }
 
         let labelStack = createLabelStack()
 
@@ -153,7 +232,10 @@ class MegaphoneView: UIView {
         return container
     }
 
-    private func createButtonView(_ button: Button, font: UIFont = .regularFont(ofSize: 15)) -> OWSFlatButton {
+    private func createButtonView(
+        _ button: Megaphone.Button,
+        font: UIFont = .regularFont(ofSize: 15),
+    ) -> OWSFlatButton {
         let buttonView = OWSFlatButton()
 
         buttonView.setTitle(title: button.title, font: font, titleColor: Theme.darkThemePrimaryColor)
@@ -170,13 +252,16 @@ class MegaphoneView: UIView {
 
         switch buttons.count {
         case 1:
-            buttonsStack.addArrangedSubview(createButtonView(buttons[0]))
+            buttonsStack.addArrangedSubview(createButtonView(
+                buttons[0],
+                font: .regularFont(ofSize: 15),
+            ))
         case 2:
             var previousButton: UIView?
             for button in buttons {
                 let buttonView = createButtonView(
                     button,
-                    font: previousButton == nil ? UIFont.semiboldFont(ofSize: 15) : .regularFont(ofSize: 15),
+                    font: previousButton == nil ? .semiboldFont(ofSize: 15) : .regularFont(ofSize: 15),
                 )
                 buttonsStack.insertArrangedSubview(buttonView, at: 0)
 
@@ -198,44 +283,5 @@ class MegaphoneView: UIView {
         }
 
         return buttonsStack
-    }
-
-    func snoozeButton(fromViewController: UIViewController, snoozeTitle: String = MegaphoneStrings.remindMeLater) -> Button {
-        return Button(title: snoozeTitle) { [weak self, weak fromViewController] in
-            guard let self, let fromViewController else { return }
-
-            markAsSnoozedWithSneakyTransaction()
-            presentToast(text: MegaphoneStrings.weWillRemindYouLater, fromViewController: fromViewController)
-        }
-    }
-
-    // MARK: -
-
-    func markAsSnoozedWithSneakyTransaction() {
-        let db = DependenciesBridge.shared.db
-        let experienceUpgradeStore = ExperienceUpgradeStore()
-
-        db.write { tx in
-            experienceUpgradeStore.markAsSnoozed(
-                experienceUpgrade: experienceUpgrade,
-                tx: tx,
-            )
-        }
-
-        NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
-    }
-
-    func markAsCompleteWithSneakyTransaction() {
-        let db = DependenciesBridge.shared.db
-        let experienceUpgradeStore = ExperienceUpgradeStore()
-
-        db.write { tx in
-            experienceUpgradeStore.markAsComplete(
-                experienceUpgrade: experienceUpgrade,
-                tx: tx,
-            )
-        }
-
-        NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
     }
 }

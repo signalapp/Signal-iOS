@@ -6,7 +6,7 @@
 import SafariServices
 import SignalServiceKit
 
-final class InactivePrimaryDeviceReminderMegaphone: MegaphoneView {
+final class InactivePrimaryDeviceReminderMegaphone: Megaphone {
     init(
         fromViewController: UIViewController,
         experienceUpgrade: ExperienceUpgrade,

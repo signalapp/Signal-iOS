@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ContactPermissionReminderMegaphone: MegaphoneView {
+class ContactPermissionReminderMegaphone: Megaphone {
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
         super.init(experienceUpgrade: experienceUpgrade)
 
@@ -25,7 +25,7 @@ class ContactPermissionReminderMegaphone: MegaphoneView {
             comment: "Action text for contact permission reminder megaphone",
         )
 
-        let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) {
+        let primaryButton = Button(title: primaryButtonTitle) {
             let actionSheetController = ActionSheetController()
             actionSheetController.isCancelable = true
 

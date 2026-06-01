@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
-class PinReminderMegaphone: MegaphoneView {
+class PinReminderMegaphone: Megaphone {
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
         super.init(experienceUpgrade: experienceUpgrade)
 
@@ -17,7 +17,7 @@ class PinReminderMegaphone: MegaphoneView {
 
         let primaryButtonTitle = OWSLocalizedString("PIN_REMINDER_MEGAPHONE_ACTION", comment: "Action text for PIN reminder megaphone")
 
-        let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak fromViewController] in
+        let primaryButton = Button(title: primaryButtonTitle) { [weak fromViewController] in
             guard let fromViewController else { return }
 
             let vc = PinReminderViewController { [weak self] pinReminderViewController, result in
@@ -104,6 +104,6 @@ class PinReminderMegaphone: MegaphoneView {
             toastText = MegaphoneStrings.weWillRemindYouLater
         }
 
-        presentToast(text: toastText, fromViewController: fromViewController)
+        fromViewController.presentToast(text: toastText)
     }
 }

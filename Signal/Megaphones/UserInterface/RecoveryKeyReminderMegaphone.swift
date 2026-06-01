@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
-class RecoveryKeyReminderMegaphone: MegaphoneView {
+class RecoveryKeyReminderMegaphone: Megaphone {
     init(
         experienceUpgrade: ExperienceUpgrade,
         fromViewController: UIViewController,
@@ -33,7 +33,7 @@ class RecoveryKeyReminderMegaphone: MegaphoneView {
             comment: "Snooze text for Recovery Key reminder megaphone",
         )
 
-        let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) {
+        let primaryButton = Button(title: primaryButtonTitle) {
             let accountKeyStore = DependenciesBridge.shared.accountKeyStore
             let backupSettingsStore = BackupSettingsStore()
             let db = DependenciesBridge.shared.db
@@ -45,9 +45,7 @@ class RecoveryKeyReminderMegaphone: MegaphoneView {
             BackupRecoveryKeyReminderCoordinator(
                 aep: aep,
                 fromViewController: fromViewController,
-                onSuccess: { [weak self] in
-                    guard let self else { return }
-
+                onSuccess: {
                     db.write { tx in
                         backupSettingsStore.setLastRecoveryKeyReminderDate(Date(), tx: tx)
                     }
@@ -56,7 +54,7 @@ class RecoveryKeyReminderMegaphone: MegaphoneView {
                         "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST",
                         comment: "Toast indicating that the Recovery Key was correct.",
                     )
-                    presentToast(text: toastText, fromViewController: fromViewController)
+                    fromViewController.presentToast(text: toastText)
 
                     NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
                 },

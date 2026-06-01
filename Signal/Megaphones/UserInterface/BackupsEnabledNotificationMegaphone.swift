@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
-class BackupsEnabledNotificationMegaphone: MegaphoneView {
+class BackupsEnabledNotificationMegaphone: Megaphone {
     private let db: DB
     private let backupSettingsStore: BackupSettingsStore
     init(
@@ -40,12 +40,12 @@ class BackupsEnabledNotificationMegaphone: MegaphoneView {
             "BACKUPS_VIEW_SETTINGS_BUTTON",
             comment: "Action text for backups enabled megaphone taking user to backup settings",
         )
-        let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
+        let primaryButton = Button(title: primaryButtonTitle) { [weak self] in
             SignalApp.shared.showAppSettings(mode: .backups())
             self?.stopShowing()
         }
 
-        let secondaryButton = MegaphoneView.Button(title: CommonStrings.okButton) { [weak self] in
+        let secondaryButton = Button(title: CommonStrings.okButton) { [weak self] in
             self?.stopShowing()
         }
 

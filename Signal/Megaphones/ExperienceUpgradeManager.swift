@@ -12,7 +12,9 @@ class ExperienceUpgradeManager {
         static let lastExperienceUpgradeDismissDate = "lastExperienceUpgradeDismissDate"
     }
 
-    private weak static var lastPresented: MegaphoneView?
+    // The Megaphone is retained for the lifetime of the MegaphoneView.
+    private weak static var lastPresentedMegaphone: Megaphone?
+    private weak static var lastPresentedMegaphoneView: MegaphoneView?
 
     private static let backupSettingsStore = BackupSettingsStore()
     private static var db: DB { DependenciesBridge.shared.db }
@@ -152,8 +154,8 @@ class ExperienceUpgradeManager {
         }
 
         if
-            let lastPresented,
-            lastPresented.experienceUpgrade.manifest == nextExperienceUpgrade.manifest
+            let lastPresentedMegaphone,
+            lastPresentedMegaphone.experienceUpgrade.manifest == nextExperienceUpgrade.manifest
         {
             return
         }
@@ -170,8 +172,12 @@ class ExperienceUpgradeManager {
                 fromViewController: fromViewController,
             )
         {
-            megaphone.present(fromViewController: fromViewController)
-            lastPresented = megaphone
+            let megaphoneView = megaphone.buildView()
+            ObjectRetainer.retainObject(megaphone, forLifetimeOf: megaphoneView)
+
+            megaphoneView.present(fromViewController: fromViewController)
+            lastPresentedMegaphone = megaphone
+            lastPresentedMegaphoneView = megaphoneView
 
             db.write { tx in
                 experienceUpgradeStore.markAsViewed(
@@ -219,7 +225,7 @@ class ExperienceUpgradeManager {
     /// - Returns
     /// Whether or not we dismissed a megaphone.
     private static func dismissLastPresented(now: Date) -> Bool {
-        guard let lastPresented else {
+        guard lastPresentedMegaphone != nil, let lastPresentedMegaphoneView else {
             return false
         }
 
@@ -231,8 +237,9 @@ class ExperienceUpgradeManager {
             )
         }
 
-        lastPresented.dismiss(animated: false, completion: nil)
-        self.lastPresented = nil
+        lastPresentedMegaphoneView.dismiss(animated: false, completion: nil)
+        self.lastPresentedMegaphone = nil
+        self.lastPresentedMegaphoneView = nil
         return true
     }
 
@@ -263,7 +270,7 @@ class ExperienceUpgradeManager {
         }
     }
 
-    private static func megaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) -> MegaphoneView? {
+    private static func megaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) -> Megaphone? {
         let db = DependenciesBridge.shared.db
         let deviceStore = DependenciesBridge.shared.deviceStore
         let localUsernameManager = DependenciesBridge.shared.localUsernameManager

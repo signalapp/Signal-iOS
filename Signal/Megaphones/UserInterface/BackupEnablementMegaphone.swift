@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
-class BackupEnablementMegaphone: MegaphoneView {
+class BackupEnablementMegaphone: Megaphone {
     init(
         experienceUpgrade: ExperienceUpgrade,
         fromViewController: UIViewController,
@@ -33,7 +33,7 @@ class BackupEnablementMegaphone: MegaphoneView {
             comment: "Snooze text for Backup enablement reminder megaphone",
         )
 
-        let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
+        let primaryButton = Button(title: primaryButtonTitle) { [weak self] in
             SignalApp.shared.showAppSettings(mode: .backups())
             self?.markAsSnoozedWithSneakyTransaction()
         }

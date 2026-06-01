@@ -6,7 +6,7 @@
 import SignalServiceKit
 import UIKit
 
-final class InactiveLinkedDeviceReminderMegaphone: MegaphoneView {
+final class InactiveLinkedDeviceReminderMegaphone: Megaphone {
     private let inactiveLinkedDevice: InactiveLinkedDevice
 
     /// The number of days until the linked device represented by this megaphone

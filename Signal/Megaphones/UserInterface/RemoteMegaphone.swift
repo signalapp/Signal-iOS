@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class RemoteMegaphone: MegaphoneView {
+class RemoteMegaphone: Megaphone {
     private let megaphoneModel: RemoteMegaphoneModel
 
     init(
@@ -31,7 +31,7 @@ class RemoteMegaphone: MegaphoneView {
         }
 
         if let primary = megaphoneModel.presentablePrimaryAction {
-            let primaryButton = MegaphoneView.Button(title: primary.presentableText) { [weak self, weak fromViewController] in
+            let primaryButton = Button(title: primary.presentableText) { [weak self, weak fromViewController] in
                 guard
                     let self,
                     let fromViewController
@@ -45,7 +45,7 @@ class RemoteMegaphone: MegaphoneView {
             }
 
             if let secondary = megaphoneModel.presentableSecondaryAction {
-                let secondaryButton = MegaphoneView.Button(title: secondary.presentableText) { [weak self, weak fromViewController] in
+                let secondaryButton = Button(title: secondary.presentableText) { [weak self, weak fromViewController] in
                     guard
                         let self,
                         let fromViewController

@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-final class NewLinkedDeviceNotificationMegaphone: MegaphoneView {
+final class NewLinkedDeviceNotificationMegaphone: Megaphone {
     private let db: DB
     private let deviceStore: OWSDeviceStore
 

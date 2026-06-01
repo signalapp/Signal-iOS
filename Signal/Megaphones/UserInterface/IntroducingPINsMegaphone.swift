@@ -7,7 +7,7 @@ import SafariServices
 import SignalServiceKit
 import SignalUI
 
-class IntroducingPinsMegaphone: MegaphoneView {
+class IntroducingPinsMegaphone: Megaphone {
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
         super.init(experienceUpgrade: experienceUpgrade)
 
@@ -17,7 +17,7 @@ class IntroducingPinsMegaphone: MegaphoneView {
 
         let primaryButtonTitle = OWSLocalizedString("PINS_MEGAPHONE_ACTION", comment: "Action text for PIN megaphone when user doesn't have a PIN")
 
-        let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
+        let primaryButton = Button(title: primaryButtonTitle) { [weak self] in
             let viewController = PinSetupViewController(
                 mode: .creating,
                 showCancelButton: true,
@@ -27,20 +27,20 @@ class IntroducingPinsMegaphone: MegaphoneView {
 
                         markAsCompleteWithSneakyTransaction()
 
-                        presentToast(
-                            text: OWSLocalizedString(
-                                "PINS_MEGAPHONE_TOAST",
-                                comment: "Toast indicating that a PIN has been created.",
-                            ),
-                            fromViewController: fromViewController,
-                        )
+                        fromViewController.presentToast(text: OWSLocalizedString(
+                            "PINS_MEGAPHONE_TOAST",
+                            comment: "Toast indicating that a PIN has been created.",
+                        ))
                     }
                 },
             )
             fromViewController.present(OWSNavigationController(rootViewController: viewController), animated: true)
         }
 
-        let secondaryButton = snoozeButton(fromViewController: fromViewController)
+        let secondaryButton = snoozeButton(
+            fromViewController: fromViewController,
+            snoozeTitle: MegaphoneStrings.remindMeLater,
+        )
 
         buttons = [primaryButton, secondaryButton]
     }

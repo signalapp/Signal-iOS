@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
-class CreateUsernameMegaphone: MegaphoneView {
+class CreateUsernameMegaphone: Megaphone {
     private let usernameSelectionCoordinator: UsernameSelectionCoordinator
 
     init(
