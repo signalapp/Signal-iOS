@@ -372,8 +372,8 @@ extension ConversationViewController {
                 timer.invalidate()
                 return
             }
+            // If the view isn't visible, return
             guard self.view.window != nil else {
-                owsFailDebug("Read timer fired when ConversationViewController is not in a view hierarchy")
                 timer.invalidate()
                 return
             }
