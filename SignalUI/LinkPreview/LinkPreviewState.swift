@@ -271,7 +271,17 @@ public class LinkPreviewSent: LinkPreviewState {
         guard let imageAttachment else {
             return .none
         }
-        guard let attachmentStream = imageAttachment.attachment.asStream() else {
+        if let attachmentStream = imageAttachment.attachment.asStream() {
+            switch attachmentStream.contentType {
+            case .image:
+                break
+            default:
+                return .invalid
+            }
+            return .loaded
+        } else if imageAttachment.asReferencedBackupThumbnail?.attachmentBackupThumbnail.image != nil {
+            return .loaded
+        } else {
             if let blurHash = imageAttachment.attachment.blurHash {
                 if isFailedImageAttachmentDownload {
                     return .failed(blurHash: blurHash)
@@ -282,13 +292,6 @@ public class LinkPreviewSent: LinkPreviewState {
                 return .none
             }
         }
-        switch attachmentStream.contentType {
-        case .image:
-            break
-        default:
-            return .invalid
-        }
-        return .loaded
     }
 
     public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality, completion: @escaping (UIImage) -> Void) {
@@ -305,34 +308,41 @@ public class LinkPreviewSent: LinkPreviewState {
                 completion(image)
             }
         case .loaded:
-            guard let attachmentStream = imageAttachment?.attachment.asStream() else {
-                owsFailDebug("Could not load image.")
-                return
-            }
-            DispatchQueue.global().async {
-                switch attachmentStream.contentType {
-                case .image:
-                    guard let imageMetadata = attachmentStream.imageMetadata() else {
-                        owsFailDebug("Failed to get image metadata")
+            if let attachmentStream = imageAttachment?.attachment.asStream() {
+                DispatchQueue.global().async {
+                    switch attachmentStream.contentType {
+                    case .image:
+                        guard let imageMetadata = attachmentStream.imageMetadata() else {
+                            owsFailDebug("Failed to get image metadata")
+                            return
+                        }
+
+                        let image: UIImage?
+                        if imageMetadata.isAnimated {
+                            image = try? attachmentStream.decryptedSDAnimatedImage()
+                        } else {
+                            image = attachmentStream.thumbnailImageSync(quality: thumbnailQuality)
+                        }
+
+                        guard let image else {
+                            owsFailDebug("Failed to load image")
+                            return
+                        }
+                        completion(image)
+                    case .file, .video, .audio:
+                        owsFailDebug("Invalid image.")
                         return
                     }
-
-                    let image: UIImage?
-                    if imageMetadata.isAnimated {
-                        image = try? attachmentStream.decryptedSDAnimatedImage()
-                    } else {
-                        image = attachmentStream.thumbnailImageSync(quality: thumbnailQuality)
-                    }
-
-                    guard let image else {
-                        owsFailDebug("Failed to load image")
-                        return
-                    }
-                    completion(image)
-                case .file, .video, .audio:
-                    owsFailDebug("Invalid image.")
+                }
+            } else if let thumbnail = imageAttachment?.asReferencedBackupThumbnail {
+                guard let image = thumbnail.attachmentBackupThumbnail.image else {
+                    owsFailDebug("Thumbnail missing image")
                     return
                 }
+                completion(image)
+            } else {
+                owsFailDebug("Could not load image.")
+                return
             }
         }
     }
