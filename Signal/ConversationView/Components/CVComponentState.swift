@@ -1373,8 +1373,15 @@ private extension CVComponentState.Builder {
                             .paid(let optimizeLocalStorage),
                             .paidAsTester(let optimizeLocalStorage),
                             .paidExpiringSoon(let optimizeLocalStorage):
-                            if optimizeLocalStorage {
-                                mediaAlbumHasSkippedAttachment = !canAutoDownloadAttachment(referencedAttachment: attachment)
+                            if
+                                optimizeLocalStorage,
+                                canAutoDownloadAttachment(referencedAttachment: attachment),
+                                attachment.attachment.localRelativeFilePathThumbnail != nil
+                            {
+                                // If optimize storage is enabled, auto-downloads are enabled,
+                                // and the backup thumbnail is present, show the backup thumbnail
+                                // as a true attachment (don't show the download icon overlay).
+                                mediaAlbumHasSkippedAttachment = false
                             } else {
                                 mediaAlbumHasSkippedAttachment = true
                             }
