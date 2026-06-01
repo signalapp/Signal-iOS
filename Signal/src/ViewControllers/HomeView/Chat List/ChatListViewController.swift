@@ -239,7 +239,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         appReadiness.setUIIsReady()
 
-        showExperienceUpgradeIfNecessary()
+        presentGetStartedBannerIfNecessary()
+        reconcileExperienceUpgrades()
         requestReviewIfAppropriate()
         showFYISheetIfNecessary()
 
@@ -360,12 +361,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     // MARK: - Experience Upgrades
 
-    /// Show an "experience ugprade" if necessary; this might be an `ExperienceUpgrade`
-    /// proper, or other "onboarding" UX.
-    func showExperienceUpgradeIfNecessary() {
-        if !ExperienceUpgradeManager.presentNext(fromViewController: self) {
-            presentGetStartedBannerIfNecessary()
-        }
+    @objc
+    func reconcileExperienceUpgrades() {
+        ExperienceUpgradeManager.reconcilePresentedExperienceUpgrade(fromViewController: self)
     }
 
     // MARK: - FYI sheets

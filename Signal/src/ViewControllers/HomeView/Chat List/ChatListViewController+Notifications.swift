@@ -111,8 +111,8 @@ extension ChatListViewController {
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(reloadExperienceUpgrades),
-            name: .inactivePrimaryDeviceChanged,
+            selector: #selector(reconcileExperienceUpgrades),
+            name: .megaphoneStateDidChange,
             object: nil,
         )
         NotificationCenter.default.addObserver(
@@ -262,7 +262,7 @@ extension ChatListViewController {
     private func applicationDidBecomeActive(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        showExperienceUpgradeIfNecessary()
+        reconcileExperienceUpgrades()
         updateShouldBeUpdatingView()
     }
 
@@ -340,13 +340,6 @@ extension ChatListViewController {
     private func localUsernameStateDidChange() {
         updateUsernameReminderView()
         loadCoordinator.loadIfNecessary()
-    }
-
-    @objc
-    private func reloadExperienceUpgrades() {
-        AssertIsOnMainThread()
-
-        showExperienceUpgradeIfNecessary()
     }
 }
 

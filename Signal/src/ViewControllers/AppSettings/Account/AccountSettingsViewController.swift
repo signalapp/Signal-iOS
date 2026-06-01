@@ -355,7 +355,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                         SSKEnvironment.shared.ows2FAManagerRef.setAreRemindersEnabled(false, transaction: transaction)
                     }
 
-                    ExperienceUpgradeManager.dismissLastPresented(ifMatching: .pinReminder)
+                    NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
                 } else {
                     self.updateTableContents()
                 }

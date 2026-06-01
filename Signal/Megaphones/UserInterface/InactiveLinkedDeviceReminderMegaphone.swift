@@ -7,10 +7,6 @@ import SignalServiceKit
 import UIKit
 
 final class InactiveLinkedDeviceReminderMegaphone: MegaphoneView {
-    private var inactiveLinkedDeviceFinder: InactiveLinkedDeviceFinder {
-        DependenciesBridge.shared.inactiveLinkedDeviceFinder
-    }
-
     private let inactiveLinkedDevice: InactiveLinkedDevice
 
     /// The number of days until the linked device represented by this megaphone
@@ -57,15 +53,14 @@ final class InactiveLinkedDeviceReminderMegaphone: MegaphoneView {
             "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON",
             comment: "Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded.",
         )) {
-            DependenciesBridge.shared.db.asyncWrite(
-                block: { tx in
-                    self.inactiveLinkedDeviceFinder.permanentlyDisableFinders(tx: tx)
-                },
-                completionQueue: .main,
-                completion: { [weak self] in
-                    self?.dismiss()
-                },
-            )
+            let db = DependenciesBridge.shared.db
+            let inactiveLinkedDeviceFinder = DependenciesBridge.shared.inactiveLinkedDeviceFinder
+
+            db.write { tx in
+                inactiveLinkedDeviceFinder.permanentlyDisableFinders(tx: tx)
+            }
+
+            NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
         }
         let gotItButton = snoozeButton(
             fromViewController: fromViewController,

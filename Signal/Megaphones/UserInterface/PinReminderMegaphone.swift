@@ -17,30 +17,31 @@ class PinReminderMegaphone: MegaphoneView {
 
         let primaryButtonTitle = OWSLocalizedString("PIN_REMINDER_MEGAPHONE_ACTION", comment: "Action text for PIN reminder megaphone")
 
-        let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
-            let vc = PinReminderViewController { result in
+        let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak fromViewController] in
+            guard let fromViewController else { return }
+
+            let vc = PinReminderViewController { [weak self] pinReminderViewController, result in
                 // Always dismiss the PIN reminder view (we dismiss the *megaphone* later).
-                fromViewController.dismiss(animated: true)
+                pinReminderViewController.dismiss(animated: true)
 
                 guard let self else { return }
+
                 switch result {
                 case .succeeded:
-                    self.dismiss(animated: false)
-                    self.presentToastForNewRepetitionInterval(
+                    presentToastForNewRepetitionInterval(
                         wasSuccessful: true,
                         fromViewController: fromViewController,
                     )
                 case .canceled(didGuessWrong: true):
-                    self.dismiss(animated: false)
-                    self.presentToastForNewRepetitionInterval(
+                    presentToastForNewRepetitionInterval(
                         wasSuccessful: false,
                         fromViewController: fromViewController,
                     )
-                case .changedPin:
-                    self.dismiss(animated: false)
-                case .canceled(didGuessWrong: false):
+                case .changedPin, .canceled(didGuessWrong: false):
                     break
                 }
+
+                NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
             }
 
             fromViewController.present(vc, animated: true)

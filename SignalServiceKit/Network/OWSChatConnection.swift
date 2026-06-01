@@ -1141,7 +1141,7 @@ class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<Authentic
 
         // Megaphones might load before we setup the OWSChatConnection
         // so we should notify the UI that the value has changed.
-        NotificationCenter.default.postOnMainThread(name: .inactivePrimaryDeviceChanged, object: nil)
+        NotificationCenter.default.postOnMainThread(name: .megaphoneStateDidChange, object: nil)
     }
 
     func chatConnection(_ chat: AuthenticatedChatConnection, didReceiveAlerts alerts: [String]) {

@@ -80,16 +80,13 @@ class RemoteMegaphone: MegaphoneView {
         switch action {
         case .snooze:
             markAsSnoozedWithSneakyTransaction()
-            dismiss()
         case .finish:
             markAsCompleteWithSneakyTransaction()
-            dismiss()
         case .donate:
             let done = { [weak self] in
                 guard let self else { return }
                 // Snooze regardless of outcome.
                 self.markAsSnoozedWithSneakyTransaction()
-                self.dismiss(animated: false)
             }
 
             guard
@@ -134,7 +131,6 @@ class RemoteMegaphone: MegaphoneView {
                 guard let self else { return }
                 // Snooze regardless of outcome.
                 self.markAsSnoozedWithSneakyTransaction()
-                self.dismiss(animated: false)
             }
 
             guard
@@ -153,7 +149,6 @@ class RemoteMegaphone: MegaphoneView {
             fromViewController.present(navController, animated: true, completion: done)
         case .unrecognized(let actionId):
             owsFailDebug("Unrecognized action with ID \(actionId) should never have made it into \(buttonDescriptor) button!")
-            dismiss()
         }
     }
 }

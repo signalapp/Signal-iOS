@@ -8,38 +8,51 @@ import SignalUI
 
 class ExperienceUpgradeManager {
 
+    private enum StoreKeys {
+        static let lastExperienceUpgradeDismissDate = "lastExperienceUpgradeDismissDate"
+    }
+
     private weak static var lastPresented: MegaphoneView?
 
     private static let backupSettingsStore = BackupSettingsStore()
     private static var db: DB { DependenciesBridge.shared.db }
     private static var deviceStore: OWSDeviceStore { DependenciesBridge.shared.deviceStore }
     private static let experienceUpgradeStore = ExperienceUpgradeStore()
+    private static let keyValueStore = NewKeyValueStore(collection: "ExperienceUpgradeManager")
     private static var remoteConfigManager: RemoteConfigManager { SSKEnvironment.shared.remoteConfigManagerRef }
     private static var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
-    static func presentNext(fromViewController: UIViewController) -> Bool {
-
+    static func reconcilePresentedExperienceUpgrade(fromViewController: UIViewController) {
+        let now = Date()
         var shouldClearNewDeviceNotification = false
         var shouldClearBackupsEnabledDetails = false
 
-        let nextExperienceUpgrade = db.read { tx -> ExperienceUpgrade? in
+        let lastExperienceUpgradeDismissDate: Date
+        let nextExperienceUpgrade: ExperienceUpgrade?
+        (
+            lastExperienceUpgradeDismissDate,
+            nextExperienceUpgrade,
+        ) = db.read { tx in
             guard
                 let registeredState = try? tsAccountManager.registeredState(tx: tx),
                 let registrationDate = tsAccountManager.registrationDate(tx: tx)
             else {
-                return nil
+                return (.distantPast, nil)
             }
 
-            let now = Date()
-            let timeIntervalSinceRegistration = now.timeIntervalSince(registrationDate)
+            let lastExperienceUpgradeDismissDate = keyValueStore.fetchValue(
+                Date.self,
+                forKey: StoreKeys.lastExperienceUpgradeDismissDate,
+                tx: tx,
+            ) ?? .distantPast
 
-            return allKnownExperienceUpgrades(transaction: tx)
+            let nextExperienceUpgrade = allKnownExperienceUpgrades(transaction: tx)
                 .first { upgrade in
                     guard
                         !upgrade.isComplete,
                         !upgrade.isSnoozed(now: now),
                         !upgrade.hasPassedNumberOfDaysToShow(now: now),
-                        timeIntervalSinceRegistration > upgrade.manifest.delayAfterRegistration,
+                        now.timeIntervalSince(registrationDate) > upgrade.manifest.delayAfterRegistration,
                         now < upgrade.manifest.expirationDate,
                         (registeredState.isPrimary || upgrade.manifest.showOnLinkedDevices)
                     else {
@@ -114,6 +127,11 @@ class ExperienceUpgradeManager {
                         return false
                     }
                 }
+
+            return (
+                lastExperienceUpgradeDismissDate,
+                nextExperienceUpgrade,
+            )
         }
 
         if shouldClearNewDeviceNotification {
@@ -129,22 +147,24 @@ class ExperienceUpgradeManager {
         }
 
         guard let nextExperienceUpgrade else {
-            dismissLastPresented()
-            return false
+            _ = dismissLastPresented(now: now)
+            return
         }
 
         if
             let lastPresented,
             lastPresented.experienceUpgrade.manifest == nextExperienceUpgrade.manifest
         {
-            return true
+            return
         }
 
-        // Otherwise, dismiss any currently present experience upgrade. It's
-        // no longer next and may have been completed.
-        dismissLastPresented()
+        // If we're dismissing a megaphone, don't immediately present another.
+        if dismissLastPresented(now: now) {
+            return
+        }
 
         if
+            now.timeIntervalSince(lastExperienceUpgradeDismissDate) > .day,
             let megaphone = self.megaphone(
                 forExperienceUpgrade: nextExperienceUpgrade,
                 fromViewController: fromViewController,
@@ -159,10 +179,6 @@ class ExperienceUpgradeManager {
                     tx: tx,
                 )
             }
-
-            return true
-        } else {
-            return false
         }
     }
 
@@ -200,22 +216,24 @@ class ExperienceUpgradeManager {
         return ExperienceUpgradeManifest.sortedByImportance(experienceUpgrades)
     }
 
-    // MARK: -
-
-    static func dismissLastPresented(ifMatching manifest: ExperienceUpgradeManifest? = nil) {
+    /// - Returns
+    /// Whether or not we dismissed a megaphone.
+    private static func dismissLastPresented(now: Date) -> Bool {
         guard let lastPresented else {
-            return
+            return false
         }
 
-        if
-            let manifest,
-            lastPresented.experienceUpgrade.manifest != manifest
-        {
-            return
+        db.write { tx in
+            keyValueStore.writeValue(
+                now,
+                forKey: StoreKeys.lastExperienceUpgradeDismissDate,
+                tx: tx,
+            )
         }
 
         lastPresented.dismiss(animated: false, completion: nil)
         self.lastPresented = nil
+        return true
     }
 
     // MARK: -

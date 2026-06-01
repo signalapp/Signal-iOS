@@ -7,8 +7,6 @@ import SignalServiceKit
 import SignalUI
 
 class NotificationPermissionReminderMegaphone: MegaphoneView {
-    weak var actionSheetController: ActionSheetController?
-
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
         super.init(experienceUpgrade: experienceUpgrade)
 
@@ -27,10 +25,12 @@ class NotificationPermissionReminderMegaphone: MegaphoneView {
             comment: "Action text for notification permission reminder megaphone",
         )
 
-        let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
-            guard let self else { return }
+        let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) {
+            let actionSheetController = ActionSheetController()
+            actionSheetController.isCancelable = true
 
             let turnOnView = TurnOnPermissionView(
+                fromActionSheetController: actionSheetController,
                 title: OWSLocalizedString(
                     "NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE",
                     comment: "Title for notification permission action sheet",
@@ -64,11 +64,8 @@ class NotificationPermissionReminderMegaphone: MegaphoneView {
                 ],
             )
 
-            let actionSheetController = ActionSheetController()
             actionSheetController.customHeader = turnOnView
-            actionSheetController.isCancelable = true
             fromViewController.presentActionSheet(actionSheetController)
-            self.actionSheetController = actionSheetController
         }
 
         let secondaryButton = snoozeButton(
@@ -85,12 +82,9 @@ class NotificationPermissionReminderMegaphone: MegaphoneView {
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    override func dismiss(animated: Bool = true, completion: (() -> Void)? = nil) {
-        super.dismiss(animated: animated, completion: completion)
-        actionSheetController?.dismiss(animated: animated)
-    }
 }
+
+// MARK: -
 
 class TurnOnPermissionView: UIStackView {
     struct Step {
@@ -98,7 +92,12 @@ class TurnOnPermissionView: UIStackView {
         let text: String
     }
 
-    init(title: String, message: String, steps: [Step], button: UIButton? = nil) {
+    init(
+        fromActionSheetController: ActionSheetController,
+        title: String,
+        message: String,
+        steps: [Step],
+    ) {
         super.init(frame: .zero)
 
         axis = .vertical
@@ -122,10 +121,14 @@ class TurnOnPermissionView: UIStackView {
         }
 
         // Button
-        let primaryButton = button ?? UIButton(
+        let primaryButton = UIButton(
             configuration: .largePrimary(title: CommonStrings.goToSettingsButton),
-            primaryAction: UIAction { [weak self] _ in
-                self?.goToSettings()
+            primaryAction: UIAction { [weak self, weak fromActionSheetController] _ in
+                guard let self, let fromActionSheetController else { return }
+
+                fromActionSheetController.dismiss(animated: true) {
+                    self.goToSettings()
+                }
             },
         )
         let buttonContainer = UIView.container()

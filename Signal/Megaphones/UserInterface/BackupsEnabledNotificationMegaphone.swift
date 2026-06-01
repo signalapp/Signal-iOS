@@ -42,13 +42,11 @@ class BackupsEnabledNotificationMegaphone: MegaphoneView {
         )
         let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
             SignalApp.shared.showAppSettings(mode: .backups())
-            self?.markAsViewed()
-            self?.dismiss(animated: true)
+            self?.stopShowing()
         }
 
         let secondaryButton = MegaphoneView.Button(title: CommonStrings.okButton) { [weak self] in
-            self?.markAsViewed()
-            self?.dismiss(animated: true)
+            self?.stopShowing()
         }
 
         buttons = [primaryButton, secondaryButton]
@@ -58,9 +56,11 @@ class BackupsEnabledNotificationMegaphone: MegaphoneView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func markAsViewed() {
+    private func stopShowing() {
         db.write { tx in
             backupSettingsStore.clearLastBackupEnabledDetails(tx: tx)
         }
+
+        NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
     }
 }

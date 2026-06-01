@@ -526,7 +526,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: .implicit(), tx: tx)
         }
 
-        ExperienceUpgradeManager.dismissLastPresented(ifMatching: .introducingPins)
+        NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
     }
 }
 

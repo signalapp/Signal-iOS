@@ -14,7 +14,7 @@ public class PinReminderViewController: OWSViewController {
         case succeeded
     }
 
-    private let completionHandler: ((PinReminderResult) -> Void)?
+    private let completionHandler: (PinReminderViewController, PinReminderResult) -> Void
 
     private let contentView = UIView()
     private var contentViewBottomEdgeConstraint: NSLayoutConstraint?
@@ -94,7 +94,7 @@ public class PinReminderViewController: OWSViewController {
 
     private let context: ViewControllerContext
 
-    init(completionHandler: ((PinReminderResult) -> Void)? = nil) {
+    init(completionHandler: @escaping (PinReminderViewController, PinReminderResult) -> Void) {
         self.context = ViewControllerContext.shared
         self.completionHandler = completionHandler
         super.init()
@@ -341,7 +341,7 @@ public class PinReminderViewController: OWSViewController {
             showCancelButton: true,
             onSuccess: { [weak self] _ in
                 guard let self else { return }
-                completionHandler?(.changedPin)
+                completionHandler(self, .changedPin)
             },
         )
         present(OWSNavigationController(rootViewController: viewController), animated: true)
@@ -355,7 +355,7 @@ public class PinReminderViewController: OWSViewController {
         // If they didn't try and enter a PIN, we do nothing and leave the megaphone.
         if hasGuessedWrong { SSKEnvironment.shared.ows2FAManagerRef.reminderCompleted(incorrectAttempts: true) }
 
-        self.completionHandler?(.canceled(didGuessWrong: hasGuessedWrong))
+        completionHandler(self, .canceled(didGuessWrong: hasGuessedWrong))
     }
 
     private func submitPressed() {
@@ -382,9 +382,9 @@ public class PinReminderViewController: OWSViewController {
         let success = db.read { tx in twoFactorManager.verifyPin(pin, tx: tx) }
         if success {
             twoFactorManager.reminderCompleted(incorrectAttempts: self.hasGuessedWrong)
-            self.completionHandler?(.succeeded)
+            completionHandler(self, .succeeded)
         } else if !silent {
-            self.validationState = .mismatch
+            validationState = .mismatch
         }
     }
 

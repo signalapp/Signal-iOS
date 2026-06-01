@@ -60,11 +60,9 @@ class MegaphoneView: UIView {
 
         guard !hasPresented else { return owsFailDebug("can only present once") }
 
-        guard titleText != nil, bodyText != nil else {
-            return owsFailDebug("megaphone is not prepared for presentation")
+        guard titleText != nil, bodyText != nil, !buttons.isEmpty else {
+            owsFail("Megaphone missing required properties!")
         }
-
-        // Top section
 
         let labelStack = createLabelStack()
 
@@ -82,22 +80,7 @@ class MegaphoneView: UIView {
         topStackView.layoutMargins = UIEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
 
         stackView.addArrangedSubview(topStackView)
-
-        // Buttons
-
-        if buttons.count > 0 {
-            stackView.addArrangedSubview(createButtonsStack())
-        } else {
-            let dismissButton = UIButton()
-            dismissButton.setTemplateImage(Theme.iconImage(.buttonX), tintColor: Theme.darkThemePrimaryColor)
-            dismissButton.addTarget(self, action: #selector(tappedDismiss), for: .touchUpInside)
-
-            addSubview(dismissButton)
-
-            dismissButton.autoSetDimensions(to: CGSize(square: 40))
-            dismissButton.autoPinEdge(toSuperviewEdge: .trailing)
-            dismissButton.autoPinEdge(toSuperviewEdge: .top)
-        }
+        stackView.addArrangedSubview(createButtonsStack())
 
         fromViewController.view.addSubview(self)
         autoPinEdge(toSuperviewSafeArea: .leading, withInset: 8)
@@ -126,11 +109,6 @@ class MegaphoneView: UIView {
     @objc
     private func applyTheme() {
         darkThemeBackgroundOverlay.isHidden = !Theme.isDarkThemeEnabled
-    }
-
-    @objc
-    private func tappedDismiss() {
-        dismiss()
     }
 
     private func createLabelStack() -> UIStackView {
@@ -216,18 +194,18 @@ class MegaphoneView: UIView {
             divider.autoPinWidthToSuperview()
             divider.autoPinHeightToSuperview(withMargin: 8)
         default:
-            owsFailDebug("only supports 1 or 2 buttons")
+            owsFail("Megaphones must have one or two buttons!")
         }
 
         return buttonsStack
     }
 
     func snoozeButton(fromViewController: UIViewController, snoozeTitle: String = MegaphoneStrings.remindMeLater) -> Button {
-        return Button(title: snoozeTitle) { [weak self] in
-            self?.markAsSnoozedWithSneakyTransaction()
-            self?.dismiss {
-                self?.presentToast(text: MegaphoneStrings.weWillRemindYouLater, fromViewController: fromViewController)
-            }
+        return Button(title: snoozeTitle) { [weak self, weak fromViewController] in
+            guard let self, let fromViewController else { return }
+
+            markAsSnoozedWithSneakyTransaction()
+            presentToast(text: MegaphoneStrings.weWillRemindYouLater, fromViewController: fromViewController)
         }
     }
 
@@ -243,6 +221,8 @@ class MegaphoneView: UIView {
                 tx: tx,
             )
         }
+
+        NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
     }
 
     func markAsCompleteWithSneakyTransaction() {
@@ -255,5 +235,7 @@ class MegaphoneView: UIView {
                 tx: tx,
             )
         }
+
+        NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
     }
 }

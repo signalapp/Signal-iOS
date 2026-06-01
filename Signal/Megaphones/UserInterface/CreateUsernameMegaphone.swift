@@ -56,15 +56,10 @@ class CreateUsernameMegaphone: MegaphoneView {
 
     private func onSetUpTapped(fromViewController: UIViewController) {
         markAsSnoozedWithSneakyTransaction()
-
-        dismiss(animated: true) {
-            self.usernameSelectionCoordinator.present(fromViewController: fromViewController)
-        }
+        usernameSelectionCoordinator.present(fromViewController: fromViewController)
     }
 
     private func onNotNowTapped() {
         markAsSnoozedWithSneakyTransaction()
-
-        dismiss(animated: true)
     }
 }

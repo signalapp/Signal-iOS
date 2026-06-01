@@ -45,15 +45,13 @@ final class NewLinkedDeviceNotificationMegaphone: MegaphoneView {
             ),
         ) { [weak self] in
             SignalApp.shared.showAppSettings(mode: .linkedDevices)
-            self?.markAsViewed()
-            self?.dismiss()
+            self?.stopShowing()
         }
 
         let acknowledgeButton = Button(
             title: CommonStrings.acknowledgeButton,
         ) { [weak self] in
-            self?.markAsViewed()
-            self?.dismiss()
+            self?.stopShowing()
         }
 
         buttons = [acknowledgeButton, viewDeviceButton]
@@ -64,9 +62,11 @@ final class NewLinkedDeviceNotificationMegaphone: MegaphoneView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func markAsViewed() {
+    private func stopShowing() {
         db.write { tx in
             deviceStore.clearMostRecentlyLinkedDeviceDetails(tx: tx)
         }
+
+        NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
     }
 }

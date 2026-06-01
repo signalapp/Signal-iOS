@@ -355,7 +355,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
                 deviceStore.clearMostRecentlyLinkedDeviceDetails(tx: tx)
             }
 
-            ExperienceUpgradeManager.dismissLastPresented(ifMatching: .newLinkedDeviceNotification)
+            NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
         }
 
         SSKEnvironment.shared.notificationPresenterRef.clearDeliveredNewLinkedDevicesNotifications()

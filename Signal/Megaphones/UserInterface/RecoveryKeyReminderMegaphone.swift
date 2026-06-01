@@ -45,12 +45,20 @@ class RecoveryKeyReminderMegaphone: MegaphoneView {
             BackupRecoveryKeyReminderCoordinator(
                 aep: aep,
                 fromViewController: fromViewController,
-                onSuccess: {
-                    self.dismiss()
-                    self.presentToastForNewRepetitionInterval(fromViewController: fromViewController)
+                onSuccess: { [weak self] in
+                    guard let self else { return }
+
                     db.write { tx in
                         backupSettingsStore.setLastRecoveryKeyReminderDate(Date(), tx: tx)
                     }
+
+                    let toastText = OWSLocalizedString(
+                        "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST",
+                        comment: "Toast indicating that the Recovery Key was correct.",
+                    )
+                    presentToast(text: toastText, fromViewController: fromViewController)
+
+                    NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
                 },
             ).presentVerifyFlow()
         }
@@ -65,14 +73,5 @@ class RecoveryKeyReminderMegaphone: MegaphoneView {
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    func presentToastForNewRepetitionInterval(fromViewController: UIViewController) {
-        let toastText = OWSLocalizedString(
-            "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST",
-            comment: "Toast indicating that the Recovery Key was correct.",
-        )
-
-        presentToast(text: toastText, fromViewController: fromViewController)
     }
 }
