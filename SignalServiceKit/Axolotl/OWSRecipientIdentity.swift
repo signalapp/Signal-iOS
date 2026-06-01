@@ -55,7 +55,7 @@ public enum VerificationState: Equatable {
 /// Record for a recipient's identity key and associated fields used to make trust decisions.
 public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_OWSRecipientIdentity"
-    private static var recordType: SDSRecordType { .recipientIdentity }
+    private static let recordType: UInt = 38
 
     public var id: Int64?
     public let uniqueId: String
@@ -94,7 +94,7 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         let decodedRecordType = try container.decode(Int64.self, forKey: .recordType)
-        guard decodedRecordType == Self.recordType.rawValue else {
+        guard decodedRecordType == Self.recordType else {
             owsFailDebug("Unexpected record type: \(decodedRecordType)")
             throw SDSError.invalidValue()
         }
@@ -110,7 +110,7 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(self.id, forKey: .id)
-        try container.encode(Self.recordType.rawValue, forKey: .recordType)
+        try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(self.uniqueId, forKey: .uniqueId)
         try container.encode(self.uniqueId, forKey: .accountId)
         try container.encode(self.identityKey, forKey: .identityKey)

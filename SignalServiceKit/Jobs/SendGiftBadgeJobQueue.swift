@@ -109,7 +109,7 @@ private func jobExists(threadId: String, transaction: DBReadTransaction) -> Bool
     """
     let arguments: StatementArguments = [
         threadId,
-        SDSRecordType.sendGiftBadgeJobRecord.rawValue,
+        JobRecord.JobRecordType.sendGiftBadge.rawValue,
         SendGiftBadgeJobRecord.Status.permanentlyFailed.rawValue,
         SendGiftBadgeJobRecord.Status.obsolete.rawValue,
     ]

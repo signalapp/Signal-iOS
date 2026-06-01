@@ -19,6 +19,7 @@ public import LibSignalClient
 /// doesn't have any devices, then that user isn't registered.
 public struct SignalRecipient: FetchableRecord, PersistableRecord, Codable {
     public static let databaseTableName = "model_SignalRecipient"
+    private static let recordType: UInt = 31
 
     public enum Constants {
         public static let distantPastUnregisteredTimestamp: UInt64 = 1
@@ -109,7 +110,7 @@ public struct SignalRecipient: FetchableRecord, PersistableRecord, Codable {
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING *
                 """,
                 arguments: [
-                    SDSRecordType.signalRecipient.rawValue,
+                    Self.recordType,
                     UUID().uuidString,
                     aci?.serviceIdUppercaseString,
                     phoneNumber?.stringValue,
@@ -141,7 +142,7 @@ public struct SignalRecipient: FetchableRecord, PersistableRecord, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         let decodedRecordType = try container.decode(UInt.self, forKey: .recordType)
-        guard decodedRecordType == SDSRecordType.signalRecipient.rawValue else {
+        guard decodedRecordType == Self.recordType else {
             owsFailDebug("Unexpected record type: \(decodedRecordType)")
             throw SDSError.invalidValue()
         }
@@ -167,7 +168,7 @@ public struct SignalRecipient: FetchableRecord, PersistableRecord, Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
-        try container.encode(SDSRecordType.signalRecipient.rawValue, forKey: .recordType)
+        try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encodeIfPresent(aciString, forKey: .aciString)
         try container.encodeIfPresent(pni?.serviceIdUppercaseString, forKey: .pni)

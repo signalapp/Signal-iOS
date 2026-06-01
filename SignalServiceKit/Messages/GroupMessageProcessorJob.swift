@@ -8,6 +8,7 @@ import GRDB
 
 struct GroupMessageProcessorJob: Codable, PersistableRecord, FetchableRecord {
     static let databaseTableName: String = "model_IncomingGroupsV2MessageJob"
+    private static let recordType: UInt = 63
 
     let id: Int64
     let groupId: Data?
@@ -88,7 +89,7 @@ struct GroupMessageProcessorJob: Codable, PersistableRecord, FetchableRecord {
                     wasReceivedByUD,
                     Int64(bitPattern: serverDeliveryTimestamp),
                     Date().timeIntervalSince1970,
-                    SDSRecordType.incomingGroupsV2MessageJob.rawValue,
+                    Self.recordType,
                     UUID().uuidString,
                 ],
             )!

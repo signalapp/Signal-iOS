@@ -29,7 +29,7 @@ public import LibSignalClient
 /// ACI). Take care if this model is ever extended to include invited members.
 public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_TSGroupMember"
-    private static var recordType: SDSRecordType { .groupMember }
+    private static let recordType: UInt = 69
 
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
@@ -66,7 +66,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         let decodedRecordType = try container.decode(Int64.self, forKey: .recordType)
-        owsAssertDebug(decodedRecordType == Self.recordType.rawValue, "Unexpectedly decoded record with wrong type.")
+        owsAssertDebug(decodedRecordType == Self.recordType, "Unexpectedly decoded record with wrong type.")
 
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
@@ -80,7 +80,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(id, forKey: .id)
-        try container.encode(Self.recordType.rawValue, forKey: .recordType)
+        try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encode(groupThreadId, forKey: .groupThreadId)
         try container.encodeIfPresent(serviceId?.serviceIdUppercaseString, forKey: .serviceId)

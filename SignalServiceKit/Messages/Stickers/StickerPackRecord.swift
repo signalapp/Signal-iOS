@@ -8,7 +8,7 @@ public import GRDB
 
 public final class StickerPackRecord: SDSCodableModel, Decodable, Equatable, NSCopying {
     public static let databaseTableName: String = "model_StickerPack"
-    private static let recordType: SDSRecordType = .stickerPack
+    private static let recordType: UInt = 14
 
     public var id: Int64?
     public let uniqueId: String
@@ -53,7 +53,7 @@ public final class StickerPackRecord: SDSCodableModel, Decodable, Equatable, NSC
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(self.id, forKey: .id)
         try container.encode(self.uniqueId, forKey: .uniqueId)
-        try container.encode(Self.recordType.rawValue, forKey: .recordType)
+        try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(LegacySDSSerializer().serializeAsLegacySDSData(self.info), forKey: .info)
         try container.encodeIfPresent(self.title, forKey: .title)
         try container.encodeIfPresent(self.author, forKey: .author)

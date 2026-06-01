@@ -208,7 +208,7 @@ struct DonationReceiptCredentialRedemptionJobFinder {
             )
         """
         let arguments: StatementArguments = [
-            SDSRecordType.receiptCredentialRedemptionJobRecord.rawValue,
+            JobRecord.JobRecordType.donationReceiptCredentialRedemption.rawValue,
             subscriberID,
         ]
 

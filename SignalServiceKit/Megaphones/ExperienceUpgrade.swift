@@ -10,7 +10,7 @@ public class ExperienceUpgrade: Codable, FetchableRecord, PersistableRecord {
     public typealias IDType = Int64
 
     public static let databaseTableName = "model_ExperienceUpgrade"
-    private static var recordType: SDSRecordType { .experienceUpgrade }
+    private static let recordType: UInt = 55
 
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
@@ -79,7 +79,7 @@ public class ExperienceUpgrade: Codable, FetchableRecord, PersistableRecord {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         let decodedRecordType = try container.decode(Int64.self, forKey: .recordType)
-        owsAssertDebug(decodedRecordType == Self.recordType.rawValue, "Unexpectedly decoded record with wrong type.")
+        owsAssertDebug(decodedRecordType == Self.recordType, "Unexpectedly decoded record with wrong type.")
 
         id = try container.decodeIfPresent(IDType.self, forKey: .id)
 
@@ -105,7 +105,7 @@ public class ExperienceUpgrade: Codable, FetchableRecord, PersistableRecord {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try id.map { try container.encode($0, forKey: .id) }
-        try container.encode(Self.recordType.rawValue, forKey: .recordType)
+        try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
 
         try container.encode(firstViewedTimestamp, forKey: .firstViewedTimestamp)

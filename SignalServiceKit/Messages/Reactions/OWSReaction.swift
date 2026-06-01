@@ -10,7 +10,7 @@ public import LibSignalClient
 @objc(OWSReaction) // Named explicitly to preserve NSKeyedUnarchiving compatability
 public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCoding {
     public static let databaseTableName = "model_OWSReaction"
-    private static var recordType: SDSRecordType { .reaction }
+    private static let recordType: UInt = 62
 
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
@@ -86,7 +86,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         let decodedRecordType = try container.decode(Int64.self, forKey: .recordType)
-        owsAssertDebug(decodedRecordType == Self.recordType.rawValue, "Unexpectedly decoded record with wrong type.")
+        owsAssertDebug(decodedRecordType == Self.recordType, "Unexpectedly decoded record with wrong type.")
 
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
@@ -107,7 +107,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try id.map { try container.encode($0, forKey: .id) }
-        try container.encode(Self.recordType.rawValue, forKey: .recordType)
+        try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
 
         try container.encode(uniqueMessageId, forKey: .uniqueMessageId)
