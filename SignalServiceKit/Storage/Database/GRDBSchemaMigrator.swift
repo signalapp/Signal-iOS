@@ -5277,7 +5277,7 @@ public class GRDBSchemaMigrator {
                 sql: """
                     SELECT *
                     FROM \(TSThread.databaseTableName)
-                    WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)
+                    WHERE \(threadColumn: .recordType) = \(TSThreadType.groupThread.rawValue)
                 """,
                 arguments: [],
             ) { thread, _ in
@@ -5369,7 +5369,7 @@ public class GRDBSchemaMigrator {
         migrator.registerMigration(.dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarDataFixed) { transaction in
             TSThread.anyEnumerate(
                 transaction: transaction,
-                sql: "SELECT * FROM \(TSThread.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
+                sql: "SELECT * FROM \(TSThread.databaseTableName) WHERE \(threadColumn: .recordType) = \(TSThreadType.groupThread.rawValue)",
                 arguments: [],
             ) { thread, _ in
                 // [SDS] TODO: Fetch TSGroupThreads directly.

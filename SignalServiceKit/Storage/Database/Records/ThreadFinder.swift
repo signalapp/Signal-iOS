@@ -61,7 +61,7 @@ public class ThreadFinder {
         let sql = """
             SELECT *
             FROM \(TSThread.databaseTableName)
-            WHERE \(threadColumn: .recordType) = \(SDSRecordType.privateStoryThread.rawValue)
+            WHERE \(threadColumn: .recordType) = \(TSThreadType.privateStoryThread.rawValue)
         """
 
         var cursor = FailIfThrowsRecordCursor {
@@ -85,7 +85,7 @@ public class ThreadFinder {
         let sql = """
             SELECT *
             FROM \(TSThread.databaseTableName)
-            WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)
+            WHERE \(threadColumn: .recordType) = \(TSThreadType.groupThread.rawValue)
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
         """
 
@@ -117,7 +117,7 @@ public class ThreadFinder {
             return try TSThread.fetchCursor(
                 tx.database,
                 sql: sql,
-                arguments: [SDSRecordType.privateStoryThread.rawValue],
+                arguments: [TSThreadType.privateStoryThread.rawValue],
             )
         }
 
@@ -301,7 +301,7 @@ public class ThreadFinder {
                 LIMIT 1
             )
         """
-        let arguments: StatementArguments = [SDSRecordType.groupThread.rawValue]
+        let arguments: StatementArguments = [TSThreadType.groupThread.rawValue]
         return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
@@ -353,7 +353,7 @@ public class ThreadFinder {
             AND \(threadColumn: .storyViewMode) != \(TSThreadStoryViewMode.default.rawValue)
             OR (
                 \(threadColumn: .storyViewMode) = \(TSThreadStoryViewMode.default.rawValue)
-                AND \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)
+                AND \(threadColumn: .recordType) = \(TSThreadType.groupThread.rawValue)
                 AND \(threadColumn: .uniqueId) IN (\(allowedDefaultThreadIds.map { "\"\($0)\"" }.joined(separator: ", ")))
             )
             ORDER BY \(threadColumn: .lastSentStoryTimestamp) DESC

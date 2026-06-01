@@ -8,7 +8,7 @@ public import GRDB
 
 /// Represents a story distribution list.
 public final class TSPrivateStoryThread: TSThread {
-    override public class var recordType: SDSRecordType { .privateStoryThread }
+    override public class var recordType: TSThreadType { .privateStoryThread }
 
     public private(set) var allowsReplies: Bool
     public private(set) var _name: String

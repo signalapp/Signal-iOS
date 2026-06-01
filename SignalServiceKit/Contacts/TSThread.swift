@@ -19,19 +19,27 @@ public enum TSThreadStoryViewMode: UInt {
     case disabled = 3
 }
 
+public enum TSThreadType: UInt {
+    case thread = 2
+    case contactThread = 27
+    case groupThread = 26
+    case privateStoryThread = 72
+    case releaseNotesThread = 80
+}
+
 @objc
 open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
     public static let databaseTableName: String = "model_TSThread"
-    public class var recordType: SDSRecordType { .thread }
+    public class var recordType: TSThreadType { .thread }
 
     static func concreteType(forRecordType recordType: UInt) -> (any InheritableRecord.Type)? {
-        switch recordType {
-        case SDSRecordType.thread.rawValue: TSThread.self
-        case SDSRecordType.contactThread.rawValue: TSContactThread.self
-        case SDSRecordType.groupThread.rawValue: TSGroupThread.self
-        case SDSRecordType.privateStoryThread.rawValue: TSPrivateStoryThread.self
-        case SDSRecordType.releaseNotesThread.rawValue: TSReleaseNotesThread.self
-        default: nil
+        switch TSThreadType(rawValue: recordType) {
+        case .thread: TSThread.self
+        case .contactThread: TSContactThread.self
+        case .groupThread: TSGroupThread.self
+        case .privateStoryThread: TSPrivateStoryThread.self
+        case .releaseNotesThread: TSReleaseNotesThread.self
+        case nil: nil
         }
     }
 

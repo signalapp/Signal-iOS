@@ -7,7 +7,7 @@ import Foundation
 
 /// Represents the Release Notes thread.
 public final class TSReleaseNotesThread: TSThread {
-    override public class var recordType: SDSRecordType { .releaseNotesThread }
+    override public class var recordType: TSThreadType { .releaseNotesThread }
 
     @objc
     public class var releaseNotesUniqueId: String {

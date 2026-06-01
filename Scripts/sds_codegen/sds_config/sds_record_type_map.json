@@ -53,10 +53,8 @@
     "SignalRecipient": 31,
     "StickerPack": 14,
     "TSCall": 20,
-    "TSContactThread": 27,
     "TSErrorMessage": 9,
     "TSGroupMember": 69,
-    "TSGroupThread": 26,
     "TSIncomingMessage": 19,
     "TSInfoMessage": 10,
     "TSInteraction": 16,
@@ -68,9 +66,7 @@
     "TSOutgoingMessage": 21,
     "TSPaymentModel": 67,
     "TSPaymentRequestModel": 66,
-    "TSPrivateStoryThread": 72,
     "TSRecipientReadReceipt": 12,
-    "TSThread": 2,
     "TSUnreadIndicatorInteraction": 4,
     "TestModel": 59
 }

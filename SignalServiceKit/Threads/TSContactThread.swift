@@ -7,7 +7,7 @@ public import GRDB
 import LibSignalClient
 
 open class TSContactThread: TSThread {
-    override public class var recordType: SDSRecordType { .contactThread }
+    override public class var recordType: TSThreadType { .contactThread }
 
     /// Represents the uppercase ServiceId string for this contact.
     /// - Note

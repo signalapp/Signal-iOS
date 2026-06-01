@@ -12,7 +12,6 @@ import GRDB
 @objc
 public enum SDSRecordType: UInt, CaseIterable {
     case invalidIdentityKeyReceivingErrorMessage = 1
-    case thread = 2
     case unreadIndicatorInteraction = 4
     case unknownContactBlockOfferMessage = 5
     case addToProfileWhitelistOfferMessage = 7
@@ -32,8 +31,6 @@ public enum SDSRecordType: UInt, CaseIterable {
     case invalidIdentityKeySendingErrorMessage = 23
     case installedSticker = 24
     case addToContactsOfferMessage = 25
-    case groupThread = 26
-    case contactThread = 27
     case disappearingConfigurationUpdateInfoMessage = 28
     case signalAccount = 30
     case signalRecipient = 31
@@ -76,7 +73,6 @@ public enum SDSRecordType: UInt, CaseIterable {
     case groupMember = 69
     case recoverableDecryptionPlaceholder = 70
     case receiptCredentialRedemptionJobRecord = 71
-    case privateStoryThread = 72
     case sendGiftBadgeJobRecord = 73
     case localUserLeaveGroupJobRecord = 74
     case incomingPaymentMessage = 75
@@ -84,5 +80,4 @@ public enum SDSRecordType: UInt, CaseIterable {
     case paymentActivationRequestFinishedMessage = 77
     case incomingArchivedPaymentMessage = 78
     case outgoingArchivedPaymentMessage = 79
-    case releaseNotesThread = 80
 }

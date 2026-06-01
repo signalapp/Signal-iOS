@@ -541,7 +541,7 @@ extension TSGroupModel {
         TSThread.anyEnumerate(
             transaction: transaction,
             sql: "SELECT * FROM \(TSThread.databaseTableName) WHERE \(threadColumn: .recordType) = ?",
-            arguments: [SDSRecordType.groupThread.rawValue],
+            arguments: [TSThreadType.groupThread.rawValue],
             block: { thread, stop in
                 // [SDS] TODO: Fetch TSGroupThreads directly.
                 guard let avatarHash = (thread as? TSGroupThread)?.groupModel.avatarHash else {

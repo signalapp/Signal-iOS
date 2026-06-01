@@ -13,7 +13,7 @@ extension Notification.Name {
 public let TSGroupThread_NotificationKey_UniqueId = "TSGroupThread_NotificationKey_UniqueId"
 
 open class TSGroupThread: TSThread {
-    override public class var recordType: SDSRecordType { .groupThread }
+    override public class var recordType: TSThreadType { .groupThread }
 
     public private(set) var groupModel: TSGroupModel
 
