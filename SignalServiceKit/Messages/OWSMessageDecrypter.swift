@@ -528,29 +528,10 @@ public class OWSMessageDecrypter {
                 let needsReactiveProfileKeyMessage: Bool = db.read { transaction in
                     // This user is whitelisted, they should have our profile key / be sending UD messages
                     // Send them our profile key in case they somehow lost it.
-                    if
-                        profileManager.isUser(
-                            inProfileWhitelist: SignalServiceAddress(sourceAci),
-                            transaction: transaction,
-                        )
-                    {
-                        return true
-                    }
-
-                    // If we're in a V2 group with this user, they should also have our profile key /
-                    // be sending UD messages. Send them it in case they somehow lost it.
-                    var needsReactiveProfileKeyMessage = false
-                    TSGroupThread.enumerateGroupThreads(
-                        with: SignalServiceAddress(sourceAci),
+                    return profileManager.isUser(
+                        inProfileWhitelist: SignalServiceAddress(sourceAci),
                         transaction: transaction,
-                    ) { thread, stop in
-                        guard thread.isGroupV2Thread else { return }
-                        guard thread.groupModel.groupMembership.isLocalUserFullMember else { return }
-                        guard !thread.isTerminatedGroup else { return }
-                        stop = true
-                        needsReactiveProfileKeyMessage = true
-                    }
-                    return needsReactiveProfileKeyMessage
+                    )
                 }
 
                 if needsReactiveProfileKeyMessage {
