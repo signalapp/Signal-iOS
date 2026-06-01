@@ -61,6 +61,7 @@ extension AttachmentReference {
             knownIdInOwner: KnownIdInOwner,
             renderingFlag: AttachmentReference.RenderingFlag,
             contentType: Attachment.ContentType,
+            mimeType: String,
             caption: String? = nil,
         ) -> AttachmentReference.Owner {
             switch self {
@@ -70,6 +71,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
+                    mimeType: mimeType,
                     isPastEditRevision: metadata.isPastEditRevision,
                     // We ignore captions in modern instances.
                     caption: caption,
@@ -90,6 +92,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
+                    mimeType: mimeType,
                     isPastEditRevision: metadata.isPastEditRevision,
                 )))
             case .messageLinkPreview(let metadata):
@@ -98,6 +101,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
+                    mimeType: mimeType,
                     isPastEditRevision: metadata.isPastEditRevision,
                 )))
             case .quotedReplyAttachment(let metadata):
@@ -106,6 +110,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
+                    mimeType: mimeType,
                     isPastEditRevision: metadata.isPastEditRevision,
                     renderingFlag: renderingFlag,
                 )))
@@ -115,6 +120,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
+                    mimeType: mimeType,
                     isPastEditRevision: metadata.isPastEditRevision,
                     stickerPackId: metadata.stickerPackId,
                     stickerId: metadata.stickerId,
@@ -125,6 +131,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
+                    mimeType: mimeType,
                     isPastEditRevision: metadata.isPastEditRevision,
                 )))
             case .storyMessageMedia(let metadata):

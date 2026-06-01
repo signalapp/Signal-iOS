@@ -354,6 +354,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 receivedAtTimestamp: timestamp,
                 threadRowId: threadRowId,
                 contentType: attachmentRecord.contentType,
+                mimeType: attachmentRecord.mimeType,
                 isPastEditRevision: false,
             )),
         )

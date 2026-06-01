@@ -2269,7 +2269,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             tx: tx,
                         )
                         let newOwnerParams = AttachmentReference.ConstructionParams(
-                            owner: reference.owner.forReassignmentWithContentType(pendingAttachment.contentType),
+                            owner: reference.owner.forReassignmentWithContentType(
+                                pendingAttachment.contentType,
+                                mimeType: pendingAttachment.mimeType,
+                            ),
                             sourceFilename: reference.sourceFilename,
                             sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
                             sourceMediaSizePixels: reference.sourceMediaSizePixels,
@@ -2372,7 +2375,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     }
 
                     let referenceParams = AttachmentReference.ConstructionParams(
-                        owner: firstReference.owner.forReassignmentWithContentType(pendingAttachment.contentType),
+                        owner: firstReference.owner.forReassignmentWithContentType(
+                            pendingAttachment.contentType,
+                            mimeType: pendingAttachment.mimeType,
+                        ),
                         sourceFilename: firstReference.sourceFilename,
                         sourceUnencryptedByteCount: pendingAttachment.unencryptedByteCount,
                         sourceMediaSizePixels: pendingAttachment.mediaPixelSize,
@@ -2467,6 +2473,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     let newOwnerParams = AttachmentReference.ConstructionParams(
                         owner: reference.owner.forReassignmentWithContentType(
                             newAttachmentStream.contentType,
+                            mimeType: newAttachmentStream.mimeType,
                         ),
                         sourceFilename: reference.sourceFilename,
                         sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
@@ -2542,7 +2549,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     }
 
                     let referenceParams = AttachmentReference.ConstructionParams(
-                        owner: firstReference.owner.forReassignmentWithContentType(pendingThumbnailAttachment.contentType),
+                        owner: firstReference.owner.forReassignmentWithContentType(
+                            pendingThumbnailAttachment.contentType,
+                            mimeType: pendingThumbnailAttachment.mimeType,
+                        ),
                         sourceFilename: firstReference.sourceFilename,
                         sourceUnencryptedByteCount: pendingThumbnailAttachment.unencryptedByteCount,
                         sourceMediaSizePixels: pendingThumbnailAttachment.mediaPixelSize,
@@ -2631,7 +2641,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         tx: tx,
                     )
                     let newOwnerParams = AttachmentReference.ConstructionParams(
-                        owner: reference.owner.forReassignmentWithContentType(pendingThumbnailAttachment.contentType),
+                        owner: reference.owner.forReassignmentWithContentType(
+                            pendingThumbnailAttachment.contentType,
+                            mimeType: pendingThumbnailAttachment.mimeType,
+                        ),
                         sourceFilename: reference.sourceFilename,
                         sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
                         sourceMediaSizePixels: reference.sourceMediaSizePixels,

@@ -117,16 +117,12 @@ struct MediaGalleryItem:
         switch referencedAttachment.attachment.contentType {
         case .video:
             return renderingFlag == .shouldLoop
-        case .file, .image, .audio:
-            return false
-        }
-    }
-
-    var isImage: Bool {
-        switch referencedAttachment.attachment.contentType {
         case .image:
-            return true
-        case .file, .video, .audio:
+            // Important that this remains synced with the conditions for the
+            // MessageAttachmentReference/isGifCategory computed column, which
+            // powers the MediaGalleryAttachmentFinder "GIFs" query.
+            return mimeType == MimeType.imageGif.rawValue
+        case .file, .audio:
             return false
         }
     }

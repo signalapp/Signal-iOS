@@ -280,6 +280,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 receivedAtTimestamp: timestamp,
                 threadRowId: threadRowId,
                 contentType: attachment.contentType,
+                mimeType: attachment.mimeType,
                 isPastEditRevision: false,
             )),
         )

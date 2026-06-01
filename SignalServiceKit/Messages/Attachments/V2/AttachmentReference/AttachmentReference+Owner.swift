@@ -101,6 +101,10 @@ extension AttachmentReference {
                 /// referenced attachment, duplicated here for query purposes.
                 public let contentType: Attachment.ContentType
 
+                /// Mirrors the value of ``Attachment/mimeType``, for the
+                /// referenced attachment, duplicated here for query purposes.
+                public let mimeType: String
+
                 /// True if the owning message's ``TSEditState`` is `pastRevision`.
                 public let isPastEditRevision: Bool
 
@@ -109,12 +113,14 @@ extension AttachmentReference {
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
                     contentType: Attachment.ContentType,
+                    mimeType: String,
                     isPastEditRevision: Bool,
                 ) {
                     self.messageRowId = messageRowId
                     self.receivedAtTimestamp = receivedAtTimestamp
                     self.threadRowId = threadRowId
                     self.contentType = contentType
+                    self.mimeType = mimeType
                     self.isPastEditRevision = isPastEditRevision
                 }
             }
@@ -141,6 +147,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
                     contentType: Attachment.ContentType,
+                    mimeType: String,
                     isPastEditRevision: Bool,
                     caption: String?,
                     renderingFlag: RenderingFlag,
@@ -158,6 +165,7 @@ extension AttachmentReference {
                         receivedAtTimestamp: receivedAtTimestamp,
                         threadRowId: threadRowId,
                         contentType: contentType,
+                        mimeType: mimeType,
                         isPastEditRevision: isPastEditRevision,
                     )
                 }
@@ -172,6 +180,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
                     contentType: Attachment.ContentType,
+                    mimeType: String,
                     isPastEditRevision: Bool,
                     renderingFlag: RenderingFlag,
                 ) {
@@ -181,6 +190,7 @@ extension AttachmentReference {
                         receivedAtTimestamp: receivedAtTimestamp,
                         threadRowId: threadRowId,
                         contentType: contentType,
+                        mimeType: mimeType,
                         isPastEditRevision: isPastEditRevision,
                     )
                 }
@@ -196,6 +206,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
                     contentType: Attachment.ContentType,
+                    mimeType: String,
                     isPastEditRevision: Bool,
                     stickerPackId: Data,
                     stickerId: UInt32,
@@ -207,6 +218,7 @@ extension AttachmentReference {
                         receivedAtTimestamp: receivedAtTimestamp,
                         threadRowId: threadRowId,
                         contentType: contentType,
+                        mimeType: mimeType,
                         isPastEditRevision: isPastEditRevision,
                     )
                 }
@@ -356,6 +368,7 @@ extension AttachmentReference.Owner {
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
                 contentType: record.contentType,
+                mimeType: record.mimeType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
                 caption: record.caption,
                 renderingFlag: try .init(rawValue: record.renderingFlag),
@@ -369,6 +382,7 @@ extension AttachmentReference.Owner {
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
                 contentType: record.contentType,
+                mimeType: record.mimeType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
             )))
         case .linkPreview:
@@ -377,6 +391,7 @@ extension AttachmentReference.Owner {
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
                 contentType: record.contentType,
+                mimeType: record.mimeType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
             )))
         case .quotedReplyAttachment:
@@ -385,6 +400,7 @@ extension AttachmentReference.Owner {
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
                 contentType: record.contentType,
+                mimeType: record.mimeType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
                 renderingFlag: try .init(rawValue: record.renderingFlag),
             )))
@@ -400,6 +416,7 @@ extension AttachmentReference.Owner {
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
                 contentType: record.contentType,
+                mimeType: record.mimeType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
                 stickerPackId: stickerPackId,
                 stickerId: stickerId,
@@ -410,6 +427,7 @@ extension AttachmentReference.Owner {
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
                 contentType: record.contentType,
+                mimeType: record.mimeType,
                 isPastEditRevision: record.ownerIsPastEditRevision,
             )))
         }
@@ -449,7 +467,10 @@ extension AttachmentReference.Owner {
     /// When we go from a pointer to a stream (e.g. by downloading) and find another attachment with the same plaintext hash,
     /// we instead reassign the pointer's references to that existing attachment. When we do so, we need to update their contentType
     /// to match the new/old attachment (theyre the same plaintext hash so same content type).
-    public func forReassignmentWithContentType(_ contentType: Attachment.ContentType) -> Self {
+    public func forReassignmentWithContentType(
+        _ contentType: Attachment.ContentType,
+        mimeType: String,
+    ) -> Self {
         switch self {
         case .message(let messageSource):
             return .message({
@@ -460,6 +481,7 @@ extension AttachmentReference.Owner {
                         receivedAtTimestamp: metadata.receivedAtTimestamp,
                         threadRowId: metadata.threadRowId,
                         contentType: contentType,
+                        mimeType: mimeType,
                         isPastEditRevision: metadata.isPastEditRevision,
                         caption: metadata.caption,
                         renderingFlag: metadata.renderingFlag,
@@ -473,6 +495,7 @@ extension AttachmentReference.Owner {
                         receivedAtTimestamp: metadata.receivedAtTimestamp,
                         threadRowId: metadata.threadRowId,
                         contentType: contentType,
+                        mimeType: mimeType,
                         isPastEditRevision: metadata.isPastEditRevision,
                     ))
                 case .linkPreview(let metadata):
@@ -481,6 +504,7 @@ extension AttachmentReference.Owner {
                         receivedAtTimestamp: metadata.receivedAtTimestamp,
                         threadRowId: metadata.threadRowId,
                         contentType: contentType,
+                        mimeType: mimeType,
                         isPastEditRevision: metadata.isPastEditRevision,
                     ))
                 case .quotedReply(let metadata):
@@ -489,6 +513,7 @@ extension AttachmentReference.Owner {
                         receivedAtTimestamp: metadata.receivedAtTimestamp,
                         threadRowId: metadata.threadRowId,
                         contentType: contentType,
+                        mimeType: mimeType,
                         isPastEditRevision: metadata.isPastEditRevision,
                         renderingFlag: metadata.renderingFlag,
                     ))
@@ -498,6 +523,7 @@ extension AttachmentReference.Owner {
                         receivedAtTimestamp: metadata.receivedAtTimestamp,
                         threadRowId: metadata.threadRowId,
                         contentType: contentType,
+                        mimeType: mimeType,
                         isPastEditRevision: metadata.isPastEditRevision,
                         stickerPackId: metadata.stickerPackId,
                         stickerId: metadata.stickerId,
@@ -508,6 +534,7 @@ extension AttachmentReference.Owner {
                         receivedAtTimestamp: metadata.receivedAtTimestamp,
                         threadRowId: metadata.threadRowId,
                         contentType: contentType,
+                        mimeType: mimeType,
                         isPastEditRevision: metadata.isPastEditRevision,
                     ))
                 }

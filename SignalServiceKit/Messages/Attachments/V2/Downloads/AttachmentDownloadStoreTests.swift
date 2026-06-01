@@ -281,6 +281,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 receivedAtTimestamp: interaction.receivedAtTimestamp,
                 threadRowId: thread.sqliteRowId!,
                 contentType: attachmentParams.contentType,
+                mimeType: attachmentParams.mimeType,
                 isPastEditRevision: false,
                 caption: nil,
                 renderingFlag: .default,

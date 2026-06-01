@@ -218,6 +218,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 knownIdInOwner: knownIdFromProto,
                 renderingFlag: .fromProto(proto),
                 contentType: contentType,
+                mimeType: mimeType,
                 // This should be unset for newly-incoming attachments, but it's
                 // still technically in the proto definition.
                 caption: proto.hasCaption ? proto.caption : nil,
@@ -415,6 +416,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                     knownIdInOwner: knownIdFromProto,
                     renderingFlag: ownedProto.renderingFlag,
                     contentType: contentType,
+                    mimeType: mimeType,
                     // Restored legacy attachments might have a caption.
                     caption: proto.hasCaption ? proto.caption : nil,
                 ),
@@ -568,6 +570,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 knownIdInOwner: .none,
                 renderingFlag: existingAttachmentMetadata.renderingFlag,
                 contentType: existingAttachment.contentType,
+                mimeType: existingAttachment.mimeType,
             )
             let referenceParams = AttachmentReference.ConstructionParams(
                 owner: owner,
@@ -587,6 +590,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 knownIdInOwner: .none,
                 renderingFlag: pendingAttachment.renderingFlag,
                 contentType: pendingAttachment.contentType,
+                mimeType: pendingAttachment.mimeType,
             )
             let referenceParams = AttachmentReference.ConstructionParams(
                 owner: owner,
@@ -751,7 +755,10 @@ public class AttachmentManagerImpl: AttachmentManager {
                     tx: tx,
                 )
                 let newOwnerParams = AttachmentReference.ConstructionParams(
-                    owner: reference.owner.forReassignmentWithContentType(pendingAttachment.contentType),
+                    owner: reference.owner.forReassignmentWithContentType(
+                        pendingAttachment.contentType,
+                        mimeType: pendingAttachment.mimeType,
+                    ),
                     sourceFilename: reference.sourceFilename,
                     sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
                     sourceMediaSizePixels: reference.sourceMediaSizePixels,
@@ -1030,6 +1037,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                     knownIdInOwner: .none,
                     renderingFlag: originalAttachmentSource.renderingFlag,
                     contentType: thumbnailContentType,
+                    mimeType: thumbnailMimeType,
                 ),
                 sourceFilename: originalAttachmentSource.sourceFilename,
                 sourceUnencryptedByteCount: originalAttachmentSource.sourceUnencryptedByteCount,

@@ -330,6 +330,7 @@ public class GRDBSchemaMigrator {
         case addOrphanedAttachmentTimestamp
         case migrateSecureValueRecovery
         case wipeCachedSVRBAuthCredentials
+        case addMimeTypeToMessageAttachmentReference
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5178,6 +5179,11 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.addMimeTypeToMessageAttachmentReference) { tx in
+            try Self.addMimeTypeToMessageAttachmentReference(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -5536,6 +5542,66 @@ public class GRDBSchemaMigrator {
     }
 
     // MARK: - Migrations
+
+    static func addMimeTypeToMessageAttachmentReference(tx: DBWriteTransaction) throws {
+        try tx.database.alter(table: "MessageAttachmentReference") { table in
+            // In practice, this column will be NOT NULL. However, we can't
+            // declare it as such without providing a default, and we can't add
+            // a CHECK constraint or similar until we've backfilled it below.
+            table.add(column: "mimeType", .text)
+
+            // New virtual columns and corresponding indices to efficiently
+            // support the compound queries we need for media gallery Photos and
+            // GIFs filters.
+            //
+            // isGifsCategory: "is a looping video, or is image/gif"
+            // isPhotosCategory: "is a photo that's not covered by isGifsCategory"
+            table.addColumn(literal: """
+            isGifsCategory AS (
+                (contentType = 3 AND renderingFlag = 3)
+                OR (contentType = 2 AND mimeType = 'image/gif')
+            ) VIRTUAL
+            """)
+            table.addColumn(literal: """
+            isPhotosCategory AS (
+                contentType = 2 AND mimeType != 'image/gif'
+            ) VIRTUAL
+            """)
+        }
+
+        try tx.database.execute(sql: """
+        UPDATE MessageAttachmentReference
+        SET mimeType = (
+            SELECT mimeType FROM Attachment
+            WHERE Attachment.id = MessageAttachmentReference.attachmentRowId
+        )
+        """)
+
+        try tx.database.create(
+            index: "message_attachment_reference_media_gallery_gifs_index",
+            on: "MessageAttachmentReference",
+            columns: [
+                "threadRowId",
+                "ownerType",
+                "receivedAtTimestamp",
+                "ownerRowId",
+                "orderInMessage",
+            ],
+            condition: Column("isGifsCategory") == true,
+        )
+        try tx.database.create(
+            index: "message_attachment_reference_media_gallery_photos_index",
+            on: "MessageAttachmentReference",
+            columns: [
+                "threadRowId",
+                "ownerType",
+                "receivedAtTimestamp",
+                "ownerRowId",
+                "orderInMessage",
+            ],
+            condition: Column("isPhotosCategory") == true,
+        )
+    }
 
     static func createStoryContextAssociatedData(tx transaction: DBWriteTransaction) throws {
         try transaction.database.create(table: StoryContextAssociatedData.databaseTableName) { table in

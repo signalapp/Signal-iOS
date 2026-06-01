@@ -1570,4 +1570,76 @@ struct GRDBSchemaMigratorTest {
         }
         #expect(Set(nonEmptyCollections) == ["SVR.Potential"])
     }
+
+    @Test
+    func testAddMimeTypeToMessageAttachmentReference() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE Attachment (
+                id INTEGER PRIMARY KEY,
+                mimeType TEXT NOT NULL
+            );
+            CREATE TABLE MessageAttachmentReference (
+                ownerType INTEGER NOT NULL,
+                ownerRowId INTEGER NOT NULL,
+                attachmentRowId INTEGER NOT NULL REFERENCES Attachment(id) ON DELETE CASCADE,
+                receivedAtTimestamp INTEGER NOT NULL,
+                contentType INTEGER,
+                renderingFlag INTEGER NOT NULL,
+                threadRowId INTEGER NOT NULL,
+                orderInMessage INTEGER
+            );
+            """)
+            // Cases the new virtual columns must distinguish:
+            // 1 = still photo (image/jpeg)
+            // 2 = image/gif file
+            // 3 = looping mp4 (renderingFlag=shouldLoop)
+            // 4 = regular mp4 video
+            try db.execute(sql: """
+            INSERT INTO Attachment (id, mimeType) VALUES
+                (1, 'image/jpeg'),
+                (2, 'image/gif'),
+                (3, 'video/mp4'),
+                (4, 'video/mp4');
+            INSERT INTO MessageAttachmentReference
+                (ownerType, ownerRowId, attachmentRowId, receivedAtTimestamp, contentType, renderingFlag, threadRowId, orderInMessage) VALUES
+                (0, 100, 1, 1000, 2, 0, 999, 0),
+                (0, 101, 2, 1001, 2, 0, 999, 0),
+                (0, 102, 3, 1002, 3, 3, 999, 0),
+                (0, 103, 4, 1003, 3, 0, 999, 0);
+            """)
+
+            let tx = DBWriteTransaction(database: db)
+            defer { tx.finalizeTransaction() }
+            try GRDBSchemaMigrator.addMimeTypeToMessageAttachmentReference(tx: tx)
+        }
+
+        // Backfill copied mimeType from each row's Attachment.
+        let backfilled = try databaseQueue.read { db in
+            try Row.fetchAll(db, sql: """
+            SELECT attachmentRowId, mimeType, isGifsCategory, isPhotosCategory
+            FROM MessageAttachmentReference
+            ORDER BY attachmentRowId
+            """)
+        }
+        #expect(backfilled.map { $0["mimeType"] } == [
+            "image/jpeg",
+            "image/gif",
+            "video/mp4",
+            "video/mp4",
+        ])
+        #expect(backfilled.map { $0["isGifsCategory"] } == [
+            false, // jpeg
+            true, // image/gif
+            true, // looping mp4
+            false, // regular mp4
+        ])
+        #expect(backfilled.map { $0["isPhotosCategory"] } == [
+            true, // jpeg
+            false, // image/gif
+            false, // looping mp4
+            false, // regular mp4
+        ])
+    }
 }

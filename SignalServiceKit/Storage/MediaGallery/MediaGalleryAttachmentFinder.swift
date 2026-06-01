@@ -305,16 +305,13 @@ public struct MediaGalleryAttachmentFinder {
         case .otherFiles:
             query = query.filter(literal: "isInvalidOrFileContentType = \(true)")
         case .gifs:
-            query = query
-                .filter(contentTypeColumn == Attachment.ContentType.video.rawValue)
-                .filter(renderingFlagColumn == AttachmentReference.RenderingFlag.shouldLoop.rawValue)
+            query = query.filter(literal: "isGifsCategory = \(true)")
         case .videos:
             query = query
                 .filter(contentTypeColumn == Attachment.ContentType.video.rawValue)
                 .filter(renderingFlagColumn != AttachmentReference.RenderingFlag.shouldLoop.rawValue)
         case .photos:
-            query = query
-                .filter(contentTypeColumn == Attachment.ContentType.image.rawValue)
+            query = query.filter(literal: "isPhotosCategory = \(true)")
         case .voiceMessages:
             query = query
                 .filter(contentTypeColumn == Attachment.ContentType.audio.rawValue)

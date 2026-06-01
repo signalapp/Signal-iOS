@@ -128,6 +128,67 @@ class MediaGalleryAttachmentFinderTest: SSKBaseTest {
         XCTAssertEqual(results[0].orderInMessage, 4)
     }
 
+    func testFiltersDistinguishGifsAndPhotos() throws {
+        let (thread, messageRowId) = insertThreadAndInteraction()
+        let threadRowId = thread.sqliteRowId!
+
+        // Four representative cases the gifs/photos virtual columns must distinguish:
+        // - image/jpeg → photo
+        // - image/gif → gif (regardless of renderingFlag)
+        // - looping mp4 (renderingFlag=shouldLoop) → gif
+        // - non-looping mp4 → video
+        let jpegId = insertAttachment(
+            messageRowId: messageRowId,
+            threadRowId: threadRowId,
+            receivedAtTimestamp: 100,
+            mimeType: "image/jpeg",
+            orderInMessage: 0,
+        )
+        let gifFileId = insertAttachment(
+            messageRowId: messageRowId,
+            threadRowId: threadRowId,
+            receivedAtTimestamp: 200,
+            mimeType: "image/gif",
+            orderInMessage: 1,
+        )
+        let loopingMp4Id = insertAttachment(
+            messageRowId: messageRowId,
+            threadRowId: threadRowId,
+            receivedAtTimestamp: 300,
+            mimeType: "video/mp4",
+            orderInMessage: 2,
+            renderingFlag: .shouldLoop,
+        )
+        let nonLoopingMp4Id = insertAttachment(
+            messageRowId: messageRowId,
+            threadRowId: threadRowId,
+            receivedAtTimestamp: 400,
+            mimeType: "video/mp4",
+            orderInMessage: 3,
+        )
+
+        func attachmentRowIds(filter: AllMediaFilter) throws -> Set<Attachment.IDType> {
+            let finder = MediaGalleryAttachmentFinder(threadId: threadRowId, filter: filter)
+            let query = finder.galleryItemQuery(
+                in: nil,
+                excluding: [],
+                offset: 0,
+                ascending: true,
+            )
+            return try db.read { tx in
+                Set(try query.fetchAll(tx.database).map(\.attachmentRowId))
+            }
+        }
+
+        XCTAssertEqual(try attachmentRowIds(filter: .gifs), [gifFileId, loopingMp4Id])
+        XCTAssertEqual(try attachmentRowIds(filter: .photos), [jpegId])
+        XCTAssertEqual(try attachmentRowIds(filter: .videos), [nonLoopingMp4Id])
+        XCTAssertEqual(
+            try attachmentRowIds(filter: .allPhotoVideoCategory),
+            [jpegId, gifFileId, loopingMp4Id, nonLoopingMp4Id],
+        )
+    }
+
     // MARK: - Index Usage
 
     func testAllQueriesUseIndex() throws {
@@ -227,9 +288,11 @@ class MediaGalleryAttachmentFinderTest: SSKBaseTest {
                     // * we use all the columns up to the ordering columns
                     // * we DONT use expensive B trees for ordering
                     let allowedQueryPlans: [String] = [
-                        "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_single_content_type_index (threadRowId=? AND ownerType=? AND contentType=?",
-                        "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_visualMedia_content_type_index (threadRowId=? AND ownerType=? AND isVisualMediaContentType=?",
-                        "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_fileOrInvalid_content_type_index (threadRowId=? AND ownerType=? AND isInvalidOrFileContentType=?",
+                        "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_single_content_type_index",
+                        "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_visualMedia_content_type_index",
+                        "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_fileOrInvalid_content_type_index",
+                        "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_gifs_index",
+                        "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_photos_index",
                     ]
                     XCTAssert(queryPlan.allSatisfy { queryPlan in
                         for allowedQueryPlan in allowedQueryPlans {
@@ -270,6 +333,7 @@ class MediaGalleryAttachmentFinderTest: SSKBaseTest {
         mimeType: String,
         orderInMessage: UInt32,
         isViewOnce: Bool = false,
+        renderingFlag: AttachmentReference.RenderingFlag = .default,
     ) -> Attachment.IDType {
         db.write { tx in
             var attachmentRecord = Attachment.Record.mockStream(
@@ -285,9 +349,10 @@ class MediaGalleryAttachmentFinderTest: SSKBaseTest {
                     receivedAtTimestamp: receivedAtTimestamp,
                     threadRowId: threadRowId,
                     contentType: attachment.contentType,
+                    mimeType: attachment.mimeType,
                     isPastEditRevision: false,
                     caption: nil,
-                    renderingFlag: .default,
+                    renderingFlag: renderingFlag,
                     orderInMessage: orderInMessage,
                     idInOwner: nil,
                     isViewOnce: isViewOnce,
