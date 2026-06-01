@@ -3962,7 +3962,6 @@
 		F9C5CE29289453B400548EEE /* ModelReadCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB57289453B200548EEE /* ModelReadCache.swift */; };
 		F9C5CE2A289453B400548EEE /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB58289453B200548EEE /* Platform.swift */; };
 		F9C5CE2B289453B400548EEE /* BuildFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB59289453B200548EEE /* BuildFlags.swift */; };
-		F9C5CE2D289453B400548EEE /* ExperienceUpgradeFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB5B289453B200548EEE /* ExperienceUpgradeFinder.swift */; };
 		F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */; };
 		F9C5CE33289453B400548EEE /* LocalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB61289453B200548EEE /* LocalDevice.swift */; };
 		F9C5CE34289453B400548EEE /* AudioWaveformManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB62289453B200548EEE /* AudioWaveformManagerImpl.swift */; };
@@ -8279,7 +8278,6 @@
 		F9C5CB57289453B200548EEE /* ModelReadCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelReadCache.swift; sourceTree = "<group>"; };
 		F9C5CB58289453B200548EEE /* Platform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		F9C5CB59289453B200548EEE /* BuildFlags.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BuildFlags.swift; sourceTree = "<group>"; };
-		F9C5CB5B289453B200548EEE /* ExperienceUpgradeFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeFinder.swift; sourceTree = "<group>"; };
 		F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftSingletons.swift; sourceTree = "<group>"; };
 		F9C5CB61289453B200548EEE /* LocalDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalDevice.swift; sourceTree = "<group>"; };
 		F9C5CB62289453B200548EEE /* AudioWaveformManagerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioWaveformManagerImpl.swift; sourceTree = "<group>"; };
@@ -13327,7 +13325,6 @@
 			isa = PBXGroup;
 			children = (
 				D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */,
-				F9C5CB5B289453B200548EEE /* ExperienceUpgradeFinder.swift */,
 				D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */,
 				D97992AB2FC147C2002E79F3 /* ExperienceUpgradeStore.swift */,
 				040506FB2F7FE3D50078B769 /* RemoteAnnouncementModel.swift */,
@@ -19233,7 +19230,6 @@
 				F9C5CE44289453B400548EEE /* Error+IsRetryable.swift in Sources */,
 				F9C5CE23289453B400548EEE /* Error+SSK.swift in Sources */,
 				D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */,
-				F9C5CE2D289453B400548EEE /* ExperienceUpgradeFinder.swift in Sources */,
 				D9C7CECB28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift in Sources */,
 				D97992AC2FC147C5002E79F3 /* ExperienceUpgradeStore.swift in Sources */,
 				D98BC5332EE387A30052A81F /* ExpirationJob.swift in Sources */,

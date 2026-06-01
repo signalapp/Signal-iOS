@@ -13,7 +13,7 @@ class IntroducingPinsMegaphone: MegaphoneView {
 
         titleText = OWSLocalizedString("PINS_MEGAPHONE_TITLE", comment: "Title for PIN megaphone when user doesn't have a PIN")
         bodyText = OWSLocalizedString("PINS_MEGAPHONE_BODY", comment: "Body for PIN megaphone when user doesn't have a PIN")
-        imageName = "PIN_megaphone"
+        image = .pinMegaphone
 
         let primaryButtonTitle = OWSLocalizedString("PINS_MEGAPHONE_ACTION", comment: "Action text for PIN megaphone when user doesn't have a PIN")
 
@@ -42,7 +42,7 @@ class IntroducingPinsMegaphone: MegaphoneView {
 
         let secondaryButton = snoozeButton(fromViewController: fromViewController)
 
-        setButtons(primary: primaryButton, secondary: secondaryButton)
+        buttons = [primaryButton, secondaryButton]
     }
 
     required init(coder: NSCoder) {

@@ -20,7 +20,7 @@ class NotificationPermissionReminderMegaphone: MegaphoneView {
             "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY",
             comment: "Body for notification permission reminder megaphone",
         )
-        imageName = "notificationMegaphone"
+        image = .notificationMegaphone
 
         let primaryButtonTitle = OWSLocalizedString(
             "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION",
@@ -78,7 +78,8 @@ class NotificationPermissionReminderMegaphone: MegaphoneView {
                 comment: "Snooze action text for contact permission reminder megaphone",
             ),
         )
-        setButtons(primary: primaryButton, secondary: secondaryButton)
+
+        buttons = [primaryButton, secondaryButton]
     }
 
     required init(coder: NSCoder) {

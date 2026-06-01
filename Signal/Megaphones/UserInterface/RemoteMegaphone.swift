@@ -58,9 +58,9 @@ class RemoteMegaphone: MegaphoneView {
                     )
                 }
 
-                setButtons(primary: primaryButton, secondary: secondaryButton)
+                buttons = [primaryButton, secondaryButton]
             } else {
-                setButtons(primary: primaryButton)
+                buttons = [primaryButton]
             }
         }
     }

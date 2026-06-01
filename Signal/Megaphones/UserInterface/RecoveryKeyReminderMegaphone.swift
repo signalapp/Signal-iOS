@@ -22,7 +22,7 @@ class RecoveryKeyReminderMegaphone: MegaphoneView {
             "BACKUP_KEY_REMINDER_MEGAPHONE_BODY",
             comment: "Body for Recovery Key reminder megaphone",
         )
-        imageName = "backups-key"
+        image = .backupsKey
 
         let primaryButtonTitle = OWSLocalizedString(
             "BACKUP_KEY_REMINDER_MEGAPHONE_ACTION",
@@ -60,7 +60,7 @@ class RecoveryKeyReminderMegaphone: MegaphoneView {
             snoozeTitle: secondaryButtonTitle,
         )
 
-        setButtons(primary: primaryButton, secondary: secondaryButton)
+        buttons = [primaryButton, secondaryButton]
     }
 
     required init(coder: NSCoder) {

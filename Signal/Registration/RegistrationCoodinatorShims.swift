@@ -99,18 +99,12 @@ public class _RegistrationCoordinator_CNContactsStoreWrapper: _RegistrationCoord
 
 public protocol _RegistrationCoordinator_ExperienceManagerShim {
 
-    func clearIntroducingPinsExperience(_ tx: DBWriteTransaction)
-
     func enableAllGetStartedCards(_ tx: DBWriteTransaction)
 }
 
 public class _RegistrationCoordinator_ExperienceManagerWrapper: _RegistrationCoordinator_ExperienceManagerShim {
 
     public init() {}
-
-    public func clearIntroducingPinsExperience(_ tx: DBWriteTransaction) {
-        ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: tx)
-    }
 
     public func enableAllGetStartedCards(_ tx: DBWriteTransaction) {
         GetStartedBannerViewController.enableAllCards(writeTx: tx)

@@ -233,16 +233,15 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        defer {
+            hasEverAppeared = true
+        }
 
         appReadiness.setUIIsReady()
 
-        if getStartedBanner == nil, !hasEverPresentedExperienceUpgrade, ExperienceUpgradeManager.presentNext(fromViewController: self) {
-            hasEverPresentedExperienceUpgrade = true
-        } else if !hasEverAppeared {
-            presentGetStartedBannerIfNecessary()
-        }
-
+        showExperienceUpgradeIfNecessary()
         requestReviewIfAppropriate()
+        showFYISheetIfNecessary()
 
         viewState.searchResultsController.viewDidAppear(animated)
 
@@ -253,10 +252,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             }
         }
 
-        showFYISheetIfNecessary()
         Task { try await self.checkForFailedServiceExtensionLaunches() }
 
-        hasEverAppeared = true
         if viewState.multiSelectState.isActive {
             showToolbar()
         } else {
@@ -361,6 +358,16 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
     }
 
+    // MARK: - Experience Upgrades
+
+    /// Show an "experience ugprade" if necessary; this might be an `ExperienceUpgrade`
+    /// proper, or other "onboarding" UX.
+    func showExperienceUpgradeIfNecessary() {
+        if !ExperienceUpgradeManager.presentNext(fromViewController: self) {
+            presentGetStartedBannerIfNecessary()
+        }
+    }
+
     // MARK: - FYI sheets
 
     @objc
@@ -382,7 +389,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
     }
 
-    // MARK: UI Components
+    // MARK: UI Components -
 
     private lazy var emptyChatListView: UIView = {
         let titleLabel = UILabel.explanationTextLabel(text: NSLocalizedString(

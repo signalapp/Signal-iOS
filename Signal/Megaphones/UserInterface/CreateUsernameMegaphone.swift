@@ -29,7 +29,7 @@ class CreateUsernameMegaphone: MegaphoneView {
             comment: "Body text for an interactive in-app prompt to set up a Signal username.",
         )
 
-        imageName = "usernames-48-color"
+        image = .usernames48
         imageContentMode = .center
 
         let setUpButton = Button(title: CommonStrings.learnMore) { [weak self, weak fromViewController] in
@@ -46,7 +46,7 @@ class CreateUsernameMegaphone: MegaphoneView {
             self.onNotNowTapped()
         }
 
-        setButtons(primary: setUpButton, secondary: notNowButton)
+        buttons = [setUpButton, notNowButton]
     }
 
     @available(*, unavailable, message: "Use other constructor!")

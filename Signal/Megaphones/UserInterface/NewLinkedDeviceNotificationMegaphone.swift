@@ -19,7 +19,7 @@ final class NewLinkedDeviceNotificationMegaphone: MegaphoneView {
         self.deviceStore = deviceStore
         super.init(experienceUpgrade: experienceUpgrade)
 
-        imageName = "inactive-linked-device-reminder-megaphone"
+        image = .inactiveLinkedDeviceReminderMegaphone
         imageContentMode = .center
         titleText = OWSLocalizedString(
             "LINKED_DEVICE_NOTIFICATION_TITLE",
@@ -56,7 +56,7 @@ final class NewLinkedDeviceNotificationMegaphone: MegaphoneView {
             self?.dismiss()
         }
 
-        setButtons(primary: acknowledgeButton, secondary: viewDeviceButton)
+        buttons = [acknowledgeButton, viewDeviceButton]
     }
 
     @MainActor

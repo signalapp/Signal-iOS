@@ -67,14 +67,6 @@ public class _RegistrationCoordinator_ExperienceManagerMock: _RegistrationCoordi
 
     public init() {}
 
-    public var didClearIntroducingPinsExperience: Bool = false
-    public var clearIntroducingPinsExperienceMock: (() -> Void)?
-
-    public func clearIntroducingPinsExperience(_ tx: DBWriteTransaction) {
-        didClearIntroducingPinsExperience = true
-        clearIntroducingPinsExperienceMock?()
-    }
-
     public var didEnableAllGetStartedCards: Bool = false
     public var enableAllGetStartedCardsMock: (() -> Void)?
 

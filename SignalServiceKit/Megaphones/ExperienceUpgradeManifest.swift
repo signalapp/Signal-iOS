@@ -148,7 +148,7 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
     ///
     /// Examples of manifests _not_ listed here include upgrades that were once
     /// well-known, but have since been removed.
-    static let wellKnownLocalUpgradeManifests: Set<ExperienceUpgradeManifest> = [
+    public static let wellKnownLocalUpgradeManifests: Set<ExperienceUpgradeManifest> = [
         .newLinkedDeviceNotification,
         .introducingPins,
         .notificationPermissionReminder,
@@ -256,7 +256,7 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
     /// Returns the elements sorted by importance order - i.e., each
     /// element in the returned array should be preferred for presention over
     /// its subsequent elements.
-    static func sortedByImportance(_ upgrades: [ExperienceUpgrade]) -> [ExperienceUpgrade] {
+    public static func sortedByImportance(_ upgrades: [ExperienceUpgrade]) -> [ExperienceUpgrade] {
         return upgrades.sorted { lhs, rhs in
             let lhs = lhs.manifest
             let rhs = rhs.manifest
@@ -271,33 +271,10 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
 
     // MARK: - Metadata
 
-    /// Whether this upgrade should not be shown to brand-new users.
-    var skipForNewUsers: Bool {
-        switch self {
-        case
-            .newLinkedDeviceNotification,
-            .introducingPins,
-            .createUsernameReminder,
-            .remoteMegaphone,
-            .inactiveLinkedDeviceReminder,
-            .inactivePrimaryDeviceReminder,
-            .haveEnabledBackupsNotification:
-            return false
-        case
-            .notificationPermissionReminder,
-            .pinReminder,
-            .contactPermissionReminder,
-            .backupKeyReminder,
-            .enableBackupsReminder,
-            .unrecognized:
-            return true
-        }
-    }
-
     /// Whether we should save state for this upgrade in an ``ExperienceUpgrade``
     /// record. If we track state for this upgrade using other components, we
     /// may not need to persist ``ExperienceUpgrade`` state.
-    var shouldSave: Bool {
+    public var shouldSave: Bool {
         switch self {
         case
             .newLinkedDeviceNotification,

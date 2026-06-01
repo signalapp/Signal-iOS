@@ -22,7 +22,7 @@ class BackupEnablementMegaphone: MegaphoneView {
             "BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_BODY",
             comment: "Body for Backup enablement reminder megaphone",
         )
-        imageName = "backups-logo"
+        image = .backupsLogo
 
         let primaryButtonTitle = OWSLocalizedString(
             "BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION",
@@ -44,7 +44,7 @@ class BackupEnablementMegaphone: MegaphoneView {
             snoozeTitle: secondaryButtonTitle,
         )
 
-        setButtons(primary: primaryButton, secondary: secondaryButton)
+        buttons = [primaryButton, secondaryButton]
     }
 
     required init(coder: NSCoder) {

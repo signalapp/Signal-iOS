@@ -1822,16 +1822,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         scheduleBgAppRefresh()
 
         let attachmentDownloadmanager = DependenciesBridge.shared.attachmentDownloadManager
-        let db = DependenciesBridge.shared.db
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction()
         if let registeredState {
             Logger.info("localAci: \(registeredState.localIdentifiers.aci)")
-
-            db.write { transaction in
-                ExperienceUpgradeFinder.markAllCompleteForNewUser(transaction: transaction)
-            }
 
             attachmentDownloadmanager.beginDownloadingIfNecessary()
 

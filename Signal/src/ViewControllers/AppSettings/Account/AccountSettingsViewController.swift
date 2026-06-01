@@ -355,7 +355,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                         SSKEnvironment.shared.ows2FAManagerRef.setAreRemindersEnabled(false, transaction: transaction)
                     }
 
-                    ExperienceUpgradeManager.dismissPINReminderIfNecessary()
+                    ExperienceUpgradeManager.dismissLastPresented(ifMatching: .pinReminder)
                 } else {
                     self.updateTableContents()
                 }

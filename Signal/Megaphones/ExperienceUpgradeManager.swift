@@ -8,18 +8,21 @@ import SignalUI
 
 class ExperienceUpgradeManager {
 
-    private weak static var lastPresented: ExperienceUpgradeView?
+    private weak static var lastPresented: MegaphoneView?
+
+    private static let backupSettingsStore = BackupSettingsStore()
+    private static var db: DB { DependenciesBridge.shared.db }
+    private static var deviceStore: OWSDeviceStore { DependenciesBridge.shared.deviceStore }
+    private static let experienceUpgradeStore = ExperienceUpgradeStore()
+    private static var remoteConfigManager: RemoteConfigManager { SSKEnvironment.shared.remoteConfigManagerRef }
+    private static var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
     static func presentNext(fromViewController: UIViewController) -> Bool {
-        let db = DependenciesBridge.shared.db
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         var shouldClearNewDeviceNotification = false
         var shouldClearBackupsEnabledDetails = false
 
-        let optionalNext = db.read { transaction -> ExperienceUpgrade? in
-            let tx = transaction
-
+        let nextExperienceUpgrade = db.read { tx -> ExperienceUpgrade? in
             guard
                 let registeredState = try? tsAccountManager.registeredState(tx: tx),
                 let registrationDate = tsAccountManager.registrationDate(tx: tx)
@@ -30,7 +33,7 @@ class ExperienceUpgradeManager {
             let now = Date()
             let timeIntervalSinceRegistration = now.timeIntervalSince(registrationDate)
 
-            return ExperienceUpgradeFinder.allKnownExperienceUpgrades(transaction: tx)
+            return allKnownExperienceUpgrades(transaction: tx)
                 .first { upgrade in
                     guard
                         !upgrade.isComplete,
@@ -46,13 +49,13 @@ class ExperienceUpgradeManager {
                     switch upgrade.manifest {
                     case .introducingPins:
                         return ExperienceUpgradeManifest
-                            .checkPreconditionsForIntroducingPins(transaction: transaction)
+                            .checkPreconditionsForIntroducingPins(transaction: tx)
                     case .notificationPermissionReminder:
                         return ExperienceUpgradeManifest
                             .checkPreconditionsForNotificationsPermissionsReminder()
                     case .newLinkedDeviceNotification:
                         let result = ExperienceUpgradeManifest
-                            .checkPreconditionsForNewLinkedDeviceNotification(tx: transaction)
+                            .checkPreconditionsForNewLinkedDeviceNotification(tx: tx)
                         switch result {
                         case .display:
                             return true
@@ -64,36 +67,36 @@ class ExperienceUpgradeManager {
                         }
                     case .createUsernameReminder:
                         return ExperienceUpgradeManifest
-                            .checkPreconditionsForCreateUsernameReminder(transaction: transaction)
+                            .checkPreconditionsForCreateUsernameReminder(transaction: tx)
                     case .remoteMegaphone(let megaphone):
                         return ExperienceUpgradeManifest
-                            .checkPreconditionsForRemoteMegaphone(megaphone, tx: transaction)
+                            .checkPreconditionsForRemoteMegaphone(megaphone, tx: tx)
                     case .inactiveLinkedDeviceReminder:
                         return ExperienceUpgradeManifest
-                            .checkPreconditionsForInactiveLinkedDeviceReminder(tx: transaction)
+                            .checkPreconditionsForInactiveLinkedDeviceReminder(tx: tx)
                     case .inactivePrimaryDeviceReminder:
                         return ExperienceUpgradeManifest
-                            .checkPreconditionsForInactivePrimaryDeviceReminder(tx: transaction)
+                            .checkPreconditionsForInactivePrimaryDeviceReminder(tx: tx)
                     case .pinReminder:
                         return ExperienceUpgradeManifest
-                            .checkPreconditionsForPinReminder(transaction: transaction)
+                            .checkPreconditionsForPinReminder(transaction: tx)
                     case .contactPermissionReminder:
                         return ExperienceUpgradeManifest
                             .checkPreconditionsForContactsPermissionReminder()
                     case .backupKeyReminder:
                         return ExperienceUpgradeManifest
                             .checkPreconditionsForRecoveryKeyReminder(
-                                backupSettingsStore: BackupSettingsStore(),
-                                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                                transaction: transaction,
+                                backupSettingsStore: backupSettingsStore,
+                                tsAccountManager: tsAccountManager,
+                                transaction: tx,
                             )
                     case .enableBackupsReminder:
                         return ExperienceUpgradeManifest
                             .checkPreconditionsForBackupEnablementReminder(
-                                backupSettingsStore: BackupSettingsStore(),
-                                remoteConfigProvider: SSKEnvironment.shared.remoteConfigManagerRef,
-                                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                                transaction: transaction,
+                                backupSettingsStore: backupSettingsStore,
+                                remoteConfigProvider: remoteConfigManager,
+                                tsAccountManager: tsAccountManager,
+                                transaction: tx,
                             )
                     case .haveEnabledBackupsNotification:
                         let result = ExperienceUpgradeManifest
@@ -105,83 +108,101 @@ class ExperienceUpgradeManager {
                             return false
                         case .clearStoredDetails:
                             shouldClearBackupsEnabledDetails = true
+                            return false
                         }
                     case .unrecognized:
-                        break
+                        return false
                     }
-
-                    return false
                 }
         }
 
         if shouldClearNewDeviceNotification {
-            DependenciesBridge.shared.db.write { tx in
-                DependenciesBridge.shared.deviceStore.clearMostRecentlyLinkedDeviceDetails(tx: tx)
+            db.write { tx in
+                deviceStore.clearMostRecentlyLinkedDeviceDetails(tx: tx)
             }
         }
 
         if shouldClearBackupsEnabledDetails {
-            DependenciesBridge.shared.db.write { tx in
-                BackupSettingsStore().clearLastBackupEnabledDetails(tx: tx)
+            db.write { tx in
+                backupSettingsStore.clearLastBackupEnabledDetails(tx: tx)
             }
         }
 
-        // If we already have presented this experience upgrade, do nothing.
-        guard
-            let next = optionalNext,
-            lastPresented?.experienceUpgrade.manifest != next.manifest
-        else {
-            if optionalNext == nil {
-                dismissLastPresented()
-                return false
-            } else {
-                return true
-            }
+        guard let nextExperienceUpgrade else {
+            dismissLastPresented()
+            return false
+        }
+
+        if
+            let lastPresented,
+            lastPresented.experienceUpgrade.manifest == nextExperienceUpgrade.manifest
+        {
+            return true
         }
 
         // Otherwise, dismiss any currently present experience upgrade. It's
         // no longer next and may have been completed.
         dismissLastPresented()
 
-        let didPresentView: Bool
         if
             let megaphone = self.megaphone(
-                forExperienceUpgrade: next,
+                forExperienceUpgrade: nextExperienceUpgrade,
                 fromViewController: fromViewController,
             )
         {
             megaphone.present(fromViewController: fromViewController)
             lastPresented = megaphone
-            didPresentView = true
-        } else {
-            didPresentView = false
-        }
 
-        db.write { tx in
-            ExperienceUpgradeFinder.markAsViewed(experienceUpgrade: next, transaction: tx)
-        }
-
-        return didPresentView
-    }
-
-    // MARK: - Experience Specific Helpers
-
-    static func dismissPINReminderIfNecessary() {
-        dismissLastPresented(ifMatching: .pinReminder)
-    }
-
-    /// Marks the given upgrade as complete, and dismisses it if currently presented.
-    static func clearExperienceUpgrade(_ manifest: ExperienceUpgradeManifest, transaction: DBWriteTransaction) {
-        ExperienceUpgradeFinder.markAsComplete(experienceUpgradeManifest: manifest, transaction: transaction)
-
-        transaction.addSyncCompletion {
-            Task { @MainActor in
-                dismissLastPresented(ifMatching: manifest)
+            db.write { tx in
+                experienceUpgradeStore.markAsViewed(
+                    experienceUpgrade: nextExperienceUpgrade,
+                    tx: tx,
+                )
             }
+
+            return true
+        } else {
+            return false
         }
     }
 
-    private static func dismissLastPresented(ifMatching manifest: ExperienceUpgradeManifest? = nil) {
+    /// Returns an array of all recognized ``ExperienceUpgrade``s. Contains the
+    /// persisted record if one exists and is applicable, and an in-memory
+    /// model otherwise.
+    private static func allKnownExperienceUpgrades(
+        transaction tx: DBReadTransaction,
+    ) -> [ExperienceUpgrade] {
+        var experienceUpgrades = [ExperienceUpgrade]()
+        var localManifestsWithoutRecords = ExperienceUpgradeManifest.wellKnownLocalUpgradeManifests
+
+        // Load any experience upgrades with persisted records...
+        experienceUpgradeStore.enumerateExperienceUpgrades(tx: tx) { experienceUpgrade in
+            if case .unrecognized = experienceUpgrade.manifest {
+                // Ignore any no-longer-recognized records.
+                return
+            }
+
+            guard experienceUpgrade.manifest.shouldSave else {
+                // Ignore saved records that we no longer persist.
+                return
+            }
+
+            experienceUpgrades.append(experienceUpgrade)
+            localManifestsWithoutRecords.remove(experienceUpgrade.manifest)
+        }
+
+        // ...and instantiate new (in-memory) models for any local manifests
+        // without persisted records.
+        for localManifest in localManifestsWithoutRecords {
+            experienceUpgrades.append(ExperienceUpgrade.makeNew(withManifest: localManifest))
+        }
+
+        return ExperienceUpgradeManifest.sortedByImportance(experienceUpgrades)
+    }
+
+    // MARK: -
+
+    static func dismissLastPresented(ifMatching manifest: ExperienceUpgradeManifest? = nil) {
         guard let lastPresented else {
             return
         }
@@ -197,7 +218,7 @@ class ExperienceUpgradeManager {
         self.lastPresented = nil
     }
 
-    // MARK: - Megaphone
+    // MARK: -
 
     private static func hasMegaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> Bool {
         switch experienceUpgrade.manifest {
@@ -321,7 +342,7 @@ class ExperienceUpgradeManager {
             )
         case .haveEnabledBackupsNotification:
             let lastBackupsEnabledDetails = db.read { tx in
-                BackupSettingsStore().lastBackupEnabledDetails(tx: tx)
+                backupSettingsStore.lastBackupEnabledDetails(tx: tx)
             }
 
             guard let lastBackupsEnabledDetails else {
@@ -337,35 +358,6 @@ class ExperienceUpgradeManager {
             )
         case .unrecognized:
             return nil
-        }
-    }
-}
-
-// MARK: - ExperienceUpgradeView
-
-protocol ExperienceUpgradeView: AnyObject {
-    var experienceUpgrade: ExperienceUpgrade { get }
-    var isPresented: Bool { get }
-    func dismiss(animated: Bool, completion: (() -> Void)?)
-}
-
-extension ExperienceUpgradeView {
-
-    func markAsSnoozedWithSneakyTransaction() {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            ExperienceUpgradeFinder.markAsSnoozed(
-                experienceUpgrade: self.experienceUpgrade,
-                transaction: transaction,
-            )
-        }
-    }
-
-    func markAsCompleteWithSneakyTransaction() {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            ExperienceUpgradeFinder.markAsComplete(
-                experienceUpgrade: self.experienceUpgrade,
-                transaction: transaction,
-            )
         }
     }
 }

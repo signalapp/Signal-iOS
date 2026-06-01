@@ -50,7 +50,7 @@ final class InactiveLinkedDeviceReminderMegaphone: MegaphoneView {
             inactiveLinkedDevice.displayName,
         )
 
-        imageName = "inactive-linked-device-reminder-megaphone"
+        image = .inactiveLinkedDeviceReminderMegaphone
         imageContentMode = .center
 
         let dontRemindMeButton = Button(title: OWSLocalizedString(
@@ -74,7 +74,8 @@ final class InactiveLinkedDeviceReminderMegaphone: MegaphoneView {
                 comment: "Title for a button in an in-app megaphone about a user's inactive linked device, temporarily dismissing the megaphone.",
             ),
         )
-        setButtons(primary: gotItButton, secondary: dontRemindMeButton)
+
+        buttons = [gotItButton, dontRemindMeButton]
     }
 
     @available(*, unavailable, message: "Use other constructor!")

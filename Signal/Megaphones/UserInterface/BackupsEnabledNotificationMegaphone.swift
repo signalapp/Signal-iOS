@@ -34,7 +34,7 @@ class BackupsEnabledNotificationMegaphone: MegaphoneView {
             ),
             backupsEnabledTime.formatted(date: .omitted, time: .shortened),
         )
-        imageName = "backups-logo"
+        image = .backupsLogo
 
         let primaryButtonTitle = OWSLocalizedString(
             "BACKUPS_VIEW_SETTINGS_BUTTON",
@@ -51,7 +51,7 @@ class BackupsEnabledNotificationMegaphone: MegaphoneView {
             self?.dismiss(animated: true)
         }
 
-        setButtons(primary: primaryButton, secondary: secondaryButton)
+        buttons = [primaryButton, secondaryButton]
     }
 
     required init(coder: NSCoder) {

@@ -262,11 +262,8 @@ extension ChatListViewController {
     private func applicationDidBecomeActive(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
+        showExperienceUpgradeIfNecessary()
         updateShouldBeUpdatingView()
-
-        if !ExperienceUpgradeManager.presentNext(fromViewController: self) {
-            presentGetStartedBannerIfNecessary()
-        }
     }
 
     @objc
@@ -349,7 +346,7 @@ extension ChatListViewController {
     private func reloadExperienceUpgrades() {
         AssertIsOnMainThread()
 
-        _ = ExperienceUpgradeManager.presentNext(fromViewController: self)
+        showExperienceUpgradeIfNecessary()
     }
 }
 

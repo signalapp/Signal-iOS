@@ -1431,16 +1431,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 deps.backupArchiveManager.scheduleRestoreFromSVRBBeforeNextExport(tx: tx)
             }
 
-            if
-                inMemoryState.hasBackedUpToSVR
-                || inMemoryState.didHaveSVRBackupsPriorToReg
-                || inMemoryState.backupRestoreState == .finalized
-            {
-                // No need to show the experience if we made the pin
-                // and backed up.
-                deps.experienceManager.clearIntroducingPinsExperience(tx)
-            }
-
             // Persist the AEP. RegCoordinator manages all necessary side
             // effects, like updating Account Attributes and rotating the
             // Storage Service manifest.

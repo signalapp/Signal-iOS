@@ -13,7 +13,7 @@ class PinReminderMegaphone: MegaphoneView {
 
         titleText = OWSLocalizedString("PIN_REMINDER_MEGAPHONE_TITLE", comment: "Title for PIN reminder megaphone")
         bodyText = OWSLocalizedString("PIN_REMINDER_MEGAPHONE_BODY", comment: "Body for PIN reminder megaphone")
-        imageName = "PIN_megaphone"
+        image = .pinMegaphone
 
         let primaryButtonTitle = OWSLocalizedString("PIN_REMINDER_MEGAPHONE_ACTION", comment: "Action text for PIN reminder megaphone")
 
@@ -46,7 +46,7 @@ class PinReminderMegaphone: MegaphoneView {
             fromViewController.present(vc, animated: true)
         }
 
-        setButtons(primary: primaryButton)
+        buttons = [primaryButton]
     }
 
     required init(coder: NSCoder) {

@@ -524,10 +524,9 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             // This just schedules an update to happen eventually; don't wait on
             // the result.
             accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: .implicit(), tx: tx)
-
-            // Clear the experience upgrade if it was pending.
-            ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: tx)
         }
+
+        ExperienceUpgradeManager.dismissLastPresented(ifMatching: .introducingPins)
     }
 }
 

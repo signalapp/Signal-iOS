@@ -353,11 +353,9 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
         if let details, Date() > details.shouldRemindUserAfter {
             db.write { tx in
                 deviceStore.clearMostRecentlyLinkedDeviceDetails(tx: tx)
-                ExperienceUpgradeManager.clearExperienceUpgrade(
-                    .newLinkedDeviceNotification,
-                    transaction: tx,
-                )
             }
+
+            ExperienceUpgradeManager.dismissLastPresented(ifMatching: .newLinkedDeviceNotification)
         }
 
         SSKEnvironment.shared.notificationPresenterRef.clearDeliveredNewLinkedDevicesNotifications()

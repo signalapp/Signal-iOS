@@ -23,7 +23,7 @@ final class InactivePrimaryDeviceReminderMegaphone: MegaphoneView {
             comment: "Body for an in-app megaphone about a user's inactive primary device.",
         )
 
-        imageName = "phone-warning"
+        image = .phoneWarning
         imageContentMode = .center
 
         let viewControllerRef = fromViewController
@@ -41,7 +41,8 @@ final class InactivePrimaryDeviceReminderMegaphone: MegaphoneView {
                 comment: "Title for a button in an in-app megaphone about a user's inactive primary device, temporarily dismissing the megaphone.",
             ),
         )
-        setButtons(primary: gotItButton, secondary: learnMoreButton)
+
+        buttons = [gotItButton, learnMoreButton]
     }
 
     @available(*, unavailable, message: "Use other constructor!")
