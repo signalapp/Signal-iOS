@@ -104,9 +104,6 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        let decodedRecordType = try container.decode(Int64.self, forKey: .recordType)
-        owsAssertDebug(decodedRecordType == Self.recordType, "Unexpectedly decoded record with wrong type!")
-
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
 

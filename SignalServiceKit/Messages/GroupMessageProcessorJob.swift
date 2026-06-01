@@ -18,7 +18,6 @@ struct GroupMessageProcessorJob: Codable, PersistableRecord, FetchableRecord {
     let wasReceivedByUD: Bool
     let serverDeliveryTimestamp: UInt64
 
-    private let recordType: Int64
     private let uniqueId: String
 
     enum CodingKeys: String, CodingKey {
@@ -42,7 +41,6 @@ struct GroupMessageProcessorJob: Codable, PersistableRecord, FetchableRecord {
         self.plaintextData = try container.decodeIfPresent(Data.self, forKey: .plaintextData)
         self.wasReceivedByUD = try container.decode(Bool.self, forKey: .wasReceivedByUD)
         self.serverDeliveryTimestamp = UInt64(bitPattern: try container.decode(Int64.self, forKey: .serverDeliveryTimestamp))
-        self.recordType = try container.decode(Int64.self, forKey: .recordType)
         self.uniqueId = try container.decode(String.self, forKey: .uniqueId)
     }
 
@@ -55,7 +53,7 @@ struct GroupMessageProcessorJob: Codable, PersistableRecord, FetchableRecord {
         try container.encode(self.plaintextData, forKey: .plaintextData)
         try container.encode(self.wasReceivedByUD, forKey: .wasReceivedByUD)
         try container.encode(Int64(bitPattern: self.serverDeliveryTimestamp), forKey: .serverDeliveryTimestamp)
-        try container.encode(self.recordType, forKey: .recordType)
+        try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(self.uniqueId, forKey: .uniqueId)
     }
 

@@ -92,13 +92,6 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        let decodedRecordType = try container.decode(Int64.self, forKey: .recordType)
-        guard decodedRecordType == Self.recordType else {
-            owsFailDebug("Unexpected record type: \(decodedRecordType)")
-            throw SDSError.invalidValue()
-        }
-
         self.id = try container.decode(Int64.self, forKey: .id)
         self.uniqueId = try container.decode(String.self, forKey: .uniqueId)
         self.identityKey = try container.decode(Data.self, forKey: .identityKey)

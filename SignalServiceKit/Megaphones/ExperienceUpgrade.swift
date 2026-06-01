@@ -78,9 +78,6 @@ public class ExperienceUpgrade: Codable, FetchableRecord, PersistableRecord {
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        let decodedRecordType = try container.decode(Int64.self, forKey: .recordType)
-        owsAssertDebug(decodedRecordType == Self.recordType, "Unexpectedly decoded record with wrong type.")
-
         id = try container.decodeIfPresent(IDType.self, forKey: .id)
 
         firstViewedTimestamp = try container.decode(TimeInterval.self, forKey: .firstViewedTimestamp)

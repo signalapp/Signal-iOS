@@ -415,13 +415,6 @@ public final class OWSUserProfile: NSObject, SDSCodableModel, Decodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        let decodedRecordType = try container.decode(Int64.self, forKey: .recordType)
-        guard decodedRecordType == Self.recordType else {
-            owsFailDebug("Unexpected record type: \(decodedRecordType)")
-            throw SDSError.invalidValue()
-        }
-
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
         serviceIdString = try container.decodeIfPresent(String.self, forKey: .serviceIdString)

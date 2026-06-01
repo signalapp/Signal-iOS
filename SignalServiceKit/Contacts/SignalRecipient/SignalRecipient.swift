@@ -140,13 +140,6 @@ public struct SignalRecipient: FetchableRecord, PersistableRecord, Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        let decodedRecordType = try container.decode(UInt.self, forKey: .recordType)
-        guard decodedRecordType == Self.recordType else {
-            owsFailDebug("Unexpected record type: \(decodedRecordType)")
-            throw SDSError.invalidValue()
-        }
-
         id = try container.decode(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
         aciString = try container.decodeIfPresent(String.self, forKey: .aciString)
