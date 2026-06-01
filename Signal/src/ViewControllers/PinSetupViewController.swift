@@ -180,22 +180,20 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
 
     private let showCancelButton: Bool
 
-    // Called once pin setup has finished. Error will be nil upon success
-    private let completionHandler: (PinSetupViewController, Error?) -> Void
-
+    private let onSuccess: (PinSetupViewController) -> Void
     private let context: ViewControllerContext
 
     convenience init(
         mode: Mode,
         showCancelButton: Bool = false,
-        completionHandler: @escaping (PinSetupViewController, Error?) -> Void,
+        onSuccess: @escaping (PinSetupViewController) -> Void,
     ) {
         self.init(
             mode: mode,
             initialMode: mode,
             pinType: .numeric,
             showCancelButton: showCancelButton,
-            completionHandler: completionHandler,
+            onSuccess: onSuccess,
         )
     }
 
@@ -204,14 +202,14 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         initialMode: Mode,
         pinType: OWS2FAManager.PinType,
         showCancelButton: Bool,
-        completionHandler: @escaping (PinSetupViewController, Error?) -> Void,
+        onSuccess: @escaping (PinSetupViewController) -> Void,
     ) {
         assert(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice)
         self.mode = mode
         self.initialMode = initialMode
         self.pinType = pinType
         self.showCancelButton = showCancelButton
-        self.completionHandler = completionHandler
+        self.onSuccess = onSuccess
         // TODO[ViewContextPiping]
         self.context = ViewControllerContext.shared
         super.init()
@@ -339,7 +337,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
                 initialMode: initialMode,
                 pinType: pinType,
                 showCancelButton: false, // we're pushing, so we never need a cancel button
-                completionHandler: completionHandler,
+                onSuccess: onSuccess,
             )
             navigationController?.pushViewController(confirmingVC, animated: true)
         case .confirming:
@@ -436,11 +434,6 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         }
     }
 
-    private enum PinSetupError: Error {
-        case networkFailure
-        case enable2FA
-    }
-
     private func enable2FAAndContinue(withPin pin: String) {
         Logger.debug("")
 
@@ -474,7 +467,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
                 DispatchQueue.main.async {
                     // The completion handler always dismisses this view, so we don't want to animate anything.
                     progressView.stopAnimatingImmediately()
-                    self.completionHandler(self, nil)
+                    self.onSuccess(self)
                 }
             } catch {
                 DispatchQueue.main.async {
@@ -487,53 +480,22 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
                         self.view.isUserInteractionEnabled = true
                         progressView.removeFromSuperview()
 
-                        guard let error = error as? PinSetupError else {
-                            return owsFailDebug("Unexpected error during PIN setup \(error)")
-                        }
-
-                        switch error {
-                        case .networkFailure:
+                        if error.isNetworkFailureOrTimeout {
                             OWSActionSheets.showActionSheet(
-                                title: OWSLocalizedString(
-                                    "PIN_CREATION_NO_NETWORK_ERROR_TITLE",
-                                    comment: "Error title indicating that the attempt to create a PIN failed due to network issues.",
-                                ),
                                 message: OWSLocalizedString(
-                                    "PIN_CREATION_NO_NETWORK_ERROR_MESSAGE",
-                                    comment: "Error body indicating that the attempt to create a PIN failed due to network issues.",
+                                    "PIN_CREATION_NETWORK_ERROR_MESSAGE",
+                                    comment: "Message when a network error occurs while creating a PIN.",
                                 ),
                             )
-                        case .enable2FA:
-                            switch self.initialMode {
-                            case .changing:
-                                OWSActionSheets.showActionSheet(
-                                    title: OWSLocalizedString(
-                                        "PIN_CHANGE_ERROR_TITLE",
-                                        comment: "Error title indicating that the attempt to change a PIN failed.",
-                                    ),
-                                    message: OWSLocalizedString(
-                                        "PIN_CHANGE_ERROR_MESSAGE",
-                                        comment: "Error body indicating that the attempt to change a PIN failed.",
-                                    ),
-                                ) { _ in
-                                    self.completionHandler(self, error)
-                                }
-                            case .creating:
-                                OWSActionSheets.showActionSheet(
-                                    title: OWSLocalizedString(
-                                        "PIN_RECREATION_ERROR_TITLE",
-                                        comment: "Error title indicating that the attempt to recreate a PIN failed.",
-                                    ),
-                                    message: OWSLocalizedString(
-                                        "PIN_RECRETION_ERROR_MESSAGE",
-                                        comment: "Error body indicating that the attempt to recreate a PIN failed.",
-                                    ),
-                                ) { _ in
-                                    self.completionHandler(self, error)
-                                }
-                            case .confirming:
-                                owsFailDebug("Unexpected initial mode")
-                            }
+                        } else {
+                            OWSActionSheets.showContactSupportActionSheet(
+                                message: OWSLocalizedString(
+                                    "PIN_CREATION_GENERIC_ERROR_MESSAGE",
+                                    comment: "Message when a generic error occurs while creating a PIN.",
+                                ),
+                                emailFilter: .custom("PinCreateFailure"),
+                                fromViewController: self,
+                            )
                         }
                     }
                 }
@@ -551,12 +513,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             try await ows2FAManager.enablePin(pin)
         } catch {
             owsFailDebug("Failed to set PIN! \(error)")
-
-            if error.isNetworkFailureOrTimeout {
-                throw PinSetupError.networkFailure
-            }
-
-            throw PinSetupError.enable2FA
+            throw error
         }
 
         await DependenciesBridge.shared.db.awaitableWrite { tx in

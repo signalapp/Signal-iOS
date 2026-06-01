@@ -113,7 +113,7 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
     private func showCreatePin() {
         let viewController = PinSetupViewController(
             mode: .creating,
-            completionHandler: { [weak self] _, _ in
+            onSuccess: { [weak self] _ in
                 guard let self else { return }
                 self.navigationController?.popToViewController(self, animated: true)
                 self.updateTableContents()

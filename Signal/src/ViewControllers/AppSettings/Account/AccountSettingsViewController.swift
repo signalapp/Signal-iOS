@@ -498,7 +498,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     // MARK: -
 
     private func showChangePin() {
-        let vc = PinSetupViewController(mode: .changing) { [weak self] _, _ in
+        let vc = PinSetupViewController(mode: .changing) { [weak self] _ in
             guard let self else { return }
             self.navigationController?.popToViewController(self, animated: true)
         }
@@ -508,7 +508,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     private func showCreatePin() {
         let vc = PinSetupViewController(
             mode: .creating,
-        ) { [weak self] _, _ in
+        ) { [weak self] _ in
             guard let self else { return }
             self.navigationController?.popToViewController(self, animated: true)
         }

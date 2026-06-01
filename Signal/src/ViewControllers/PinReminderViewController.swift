@@ -339,7 +339,10 @@ public class PinReminderViewController: OWSViewController {
         let viewController = PinSetupViewController(
             mode: .creating,
             showCancelButton: true,
-            completionHandler: { [weak self] _, _ in self?.completionHandler?(.changedPin) },
+            onSuccess: { [weak self] _ in
+                guard let self else { return }
+                completionHandler?(.changedPin)
+            },
         )
         present(OWSNavigationController(rootViewController: viewController), animated: true)
     }

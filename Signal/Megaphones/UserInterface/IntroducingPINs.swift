@@ -21,18 +21,17 @@ class IntroducingPinsMegaphone: MegaphoneView {
             let viewController = PinSetupViewController(
                 mode: .creating,
                 showCancelButton: true,
-                completionHandler: { [weak self, weak fromViewController] _, error in
-                    guard let self, let fromViewController else { return }
-                    if let error {
-                        Logger.error("failed to create pin: \(error)")
-                    } else {
-                        // success
-                        self.markAsCompleteWithSneakyTransaction()
-                    }
-                    self.dismiss(animated: false)
-                    fromViewController.dismiss(animated: true) {
-                        self.presentToast(
-                            text: OWSLocalizedString("PINS_MEGAPHONE_TOAST", comment: "Toast indicating that a PIN has been created."),
+                onSuccess: { pinSetupViewController in
+                    pinSetupViewController.dismiss(animated: true) { [weak self, weak fromViewController] in
+                        guard let self, let fromViewController else { return }
+
+                        markAsCompleteWithSneakyTransaction()
+
+                        presentToast(
+                            text: OWSLocalizedString(
+                                "PINS_MEGAPHONE_TOAST",
+                                comment: "Toast indicating that a PIN has been created.",
+                            ),
                             fromViewController: fromViewController,
                         )
                     }
