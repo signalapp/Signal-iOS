@@ -453,6 +453,13 @@ public class QuotedReplyModel {
                 {
                     return image
                 } else if
+                    let image = thumbnailReferencedAttachment
+                        .asReferencedBackupThumbnail?
+                        .attachmentBackupThumbnail
+                        .image
+                {
+                    return image
+                } else if
                     let blurHash = thumbnailReferencedAttachment.attachment.blurHash,
                     let image = BlurHash.image(for: blurHash)
                 {
