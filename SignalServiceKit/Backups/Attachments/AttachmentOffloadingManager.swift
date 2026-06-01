@@ -157,7 +157,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
 
             while let attachment = try cursor.next().map({ Attachment(record: $0) }) {
                 guard
-                    let mostRecentReference = attachmentStore.fetchMostRecentReference(
+                    let mostRecentReference = attachmentStore.fetchMostRecentOffloadableReference(
                         toAttachmentId: attachment.id,
                         tx: tx,
                     )
@@ -217,7 +217,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                 // Refetch the attachment and reference.
                 guard
                     let attachment = attachmentStore.fetch(id: nextAttachment.id, tx: tx),
-                    let mostRecentReference = attachmentStore.fetchMostRecentReference(
+                    let mostRecentReference = attachmentStore.fetchMostRecentOffloadableReference(
                         toAttachmentId: attachment.id,
                         tx: tx,
                     )
@@ -516,12 +516,53 @@ extension AttachmentStore {
         toAttachmentId attachmentId: Attachment.IDType,
         tx: DBReadTransaction,
     ) -> AttachmentReference? {
+        let mostRecentReference = _fetchMostRecentReference(
+            toAttachmentId: attachmentId,
+            tx: tx,
+        )
+        owsAssertDebug(
+            mostRecentReference != nil,
+            "Attachment without an owner! Was the attachment deleted?",
+        )
+        return mostRecentReference
+    }
+
+    fileprivate func fetchMostRecentOffloadableReference(
+        toAttachmentId attachmentId: Attachment.IDType,
+        tx: DBReadTransaction,
+    ) -> AttachmentReference? {
+        return _fetchMostRecentReference(toAttachmentId: attachmentId, tx: tx) { reference in
+            switch reference.owner {
+            case .message(let messageSource):
+                switch messageSource {
+                case .sticker, .oversizeText, .contactAvatar, .quotedReply:
+                    return false
+                case .bodyAttachment, .linkPreview:
+                    return true
+                }
+            case .storyMessage, .thread:
+                return false
+            }
+        }
+    }
+
+    private func _fetchMostRecentReference(
+        toAttachmentId attachmentId: Attachment.IDType,
+        tx: DBReadTransaction,
+        filterBlock: ((AttachmentReference) -> Bool)? = nil,
+    ) -> AttachmentReference? {
         var mostRecentReference: AttachmentReference?
         var maxMessageTimestamp: UInt64 = 0
         self.enumerateAllReferences(
             toAttachmentId: attachmentId,
             tx: tx,
         ) { reference, stop in
+            if
+                let filterBlock,
+                !filterBlock(reference)
+            {
+                return
+            }
             switch reference.owner {
             case .message(let messageSource):
                 switch mostRecentReference?.owner {
@@ -550,11 +591,6 @@ extension AttachmentStore {
                 mostRecentReference = reference
             }
         }
-
-        owsAssertDebug(
-            mostRecentReference != nil,
-            "Attachment without an owner! Was the attachment deleted?",
-        )
         return mostRecentReference
     }
 }
