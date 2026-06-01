@@ -1150,21 +1150,37 @@ class BackupSettingsViewController:
 
     fileprivate func setIsBackupDownloadQueueSuspended(_ isSuspended: Bool, backupPlan: BackupPlan) {
         if isSuspended {
+            let warningTitle: String?
+            let warningMessage: String?
+
             switch backupPlan {
-            case .disabled, .disabling, .free, .paid, .paidAsTester:
-                db.write { tx in
-                    backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
-                }
-            case .paidExpiringSoon:
+            case .disabled, .disabling:
+                warningTitle = OWSLocalizedString(
+                    "BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE",
+                    comment: "Title for a sheet warning the user about skipping downloads while disabling Backups.",
+                )
+                warningMessage = OWSLocalizedString(
+                    "BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE",
+                    comment: "Message for a sheet warning the user about skipping downloads while disabling Backups.",
+                )
+            case .free, .paidExpiringSoon:
+                warningTitle = OWSLocalizedString(
+                    "BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE",
+                    comment: "Title for a sheet warning the user about skipping downloads that will expire.",
+                )
+                warningMessage = OWSLocalizedString(
+                    "BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE",
+                    comment: "Message for a sheet warning the user about skipping downloads that will expire.",
+                )
+            case .paid, .paidAsTester:
+                warningTitle = nil
+                warningMessage = nil
+            }
+
+            if let warningTitle, let warningMessage {
                 let warningSheet = ActionSheetController(
-                    title: OWSLocalizedString(
-                        "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE",
-                        comment: "Title for a sheet warning the user about skipping downloads.",
-                    ),
-                    message: OWSLocalizedString(
-                        "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_MESSAGE",
-                        comment: "Message for a sheet warning the user about skipping downloads.",
-                    ),
+                    title: warningTitle,
+                    message: warningMessage,
                 )
                 warningSheet.addAction(ActionSheetAction(
                     title: OWSLocalizedString(
@@ -1173,9 +1189,31 @@ class BackupSettingsViewController:
                     ),
                     style: .destructive,
                     handler: { [self] _ in
-                        db.write { tx in
-                            backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
-                        }
+                        let secondWarningSheet = ActionSheetController(
+                            title: OWSLocalizedString(
+                                "BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE",
+                                comment: "Title for a double-confirmation sheet warning the user about skipping downloads.",
+                            ),
+                            message: OWSLocalizedString(
+                                "BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE",
+                                comment: "Message for a double-confirmation sheet warning the user about skipping downloads.",
+                            ),
+                        )
+                        secondWarningSheet.addAction(ActionSheetAction(
+                            title: OWSLocalizedString(
+                                "BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP",
+                                comment: "Title for an action in a double-confirmation sheet warning the user about skipping downloads.",
+                            ),
+                            style: .destructive,
+                            handler: { [self] _ in
+                                db.write { tx in
+                                    backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
+                                }
+                            },
+                        ))
+                        secondWarningSheet.addAction(.cancel)
+
+                        presentActionSheet(secondWarningSheet)
                     },
                 ))
                 warningSheet.addAction(ActionSheetAction(
@@ -1190,6 +1228,10 @@ class BackupSettingsViewController:
                 warningSheet.addAction(.cancel)
 
                 presentActionSheet(warningSheet)
+            } else {
+                db.write { tx in
+                    backupSettingsStore.setIsBackupDownloadQueueSuspended(true, tx: tx)
+                }
             }
         } else {
             db.write { tx in

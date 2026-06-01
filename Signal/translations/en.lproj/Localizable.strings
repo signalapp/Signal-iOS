@@ -824,7 +824,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Backups have been turned off and your data has been deleted from Signal’s secure storage service.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, any media that is not on device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, and any media that is not on this device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "An error occurred. Please contact support.";
@@ -1006,14 +1006,29 @@
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Re-enable Backups";
 
+/* Message for a sheet warning the user about skipping downloads while disabling Backups. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "You have backup media that’s not on this device. Undownloaded media will be permanently deleted once backups are disabled.";
+
+/* Title for a sheet warning the user about skipping downloads while disabling Backups. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Skip Download?";
+
+/* Message for a sheet warning the user about skipping downloads that will expire. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "You have backup media that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+
+/* Title for a sheet warning the user about skipping downloads that will expire. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Skip Download?";
+
+/* Title for an action in a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+
+/* Message for a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Are you sure you want to skip downloading your media?";
+
+/* Title for a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Skip Download?";
+
 /* Title for an action in a sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
-
-/* Message for a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_MESSAGE" = "You have backup data that’s not on this device. Your media and attachments will be permanently deleted without a paid subscription.";
-
-/* Title for a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "Skip Download?";
 
 /* Title for detail button in notice that the user's Backups subscription couldn't be redeemed. */
 "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON" = "Details";
