@@ -123,8 +123,10 @@ class BackupSubscriptionRedeemer {
                 /// of access than we had cached.
                 authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
 
-                /// We've successfully redeemed, so any "already redeemed"
-                /// errors are by definition obsolete.
+                // We successfully redeemed, so warnings related to our IAP
+                // subscription are now obsolete.
+                backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionExpired(false, tx: tx)
+                backupSubscriptionIssueStore.setStopWarningIAPSubscriptionExpiringSoon(tx: tx)
                 backupSubscriptionIssueStore.setStopWarningIAPSubscriptionAlreadyRedeemed(tx: tx)
             }
             logger.info("Redemption successful!")

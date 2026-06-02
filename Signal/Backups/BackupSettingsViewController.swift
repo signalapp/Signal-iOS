@@ -16,6 +16,7 @@ class BackupSettingsViewController:
     enum OnAppearAction {
         case presentWelcomeToBackupsSheet
         case automaticallyStartBackup(completion: ((UIViewController) -> Void)?)
+        case disableOptimizeLocalStorage
     }
 
     private let accountEntropyPoolManager: AccountEntropyPoolManager
@@ -122,7 +123,7 @@ class BackupSettingsViewController:
 
         self.onAppearAction = onAppearAction
         switch onAppearAction {
-        case .presentWelcomeToBackupsSheet, nil:
+        case nil, .presentWelcomeToBackupsSheet, .disableOptimizeLocalStorage:
             break
         case .automaticallyStartBackup(let completion):
             self.onBackupComplete = completion
@@ -182,6 +183,8 @@ class BackupSettingsViewController:
             presentWelcomeToBackupsSheet()
         case .automaticallyStartBackup:
             performManualBackup()
+        case .disableOptimizeLocalStorage:
+            setOptimizeLocalStorage(false)
         }
     }
 
@@ -1081,14 +1084,19 @@ class BackupSettingsViewController:
     // MARK: -
 
     fileprivate func setOptimizeLocalStorage(_ newOptimizeLocalStorage: Bool) {
-        let hasMadeAtLeastOneBackup: Bool = db.write { tx in
+        let hasMadeAtLeastOneBackup: Bool? = db.write { tx in
             let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
             let lastBackupDetails = backupSettingsStore.lastBackupDetails(tx: tx)
 
             let newBackupPlan: BackupPlan
             switch currentBackupPlan {
-            case .disabled, .disabling, .free:
-                owsFail("Shouldn't be setting Optimize Local Storage: \(currentBackupPlan)")
+            case .disabled,
+                 .disabling,
+                 .free,
+                 .paid(optimizeLocalStorage: newOptimizeLocalStorage),
+                 .paidExpiringSoon(optimizeLocalStorage: newOptimizeLocalStorage),
+                 .paidAsTester(optimizeLocalStorage: newOptimizeLocalStorage):
+                return nil
             case .paid:
                 newBackupPlan = .paid(optimizeLocalStorage: newOptimizeLocalStorage)
             case .paidExpiringSoon:
@@ -1102,7 +1110,7 @@ class BackupSettingsViewController:
         }
 
         if
-            hasMadeAtLeastOneBackup,
+            hasMadeAtLeastOneBackup == true,
             !newOptimizeLocalStorage
         {
             // If disabling Optimize Local Storage with media potentially
@@ -1719,8 +1727,11 @@ private class BackupSettingsViewModel: ObservableObject {
         switch backupPlan {
         case .disabled, .disabling, .free:
             false
-        case .paid, .paidExpiringSoon, .paidAsTester:
+        case .paid, .paidAsTester:
             true
+        case .paidExpiringSoon(let optimizeLocalStorage):
+            // Only allow disabling Optimize Storage if expiring soon, not enabling.
+            optimizeLocalStorage
         }
     }
 

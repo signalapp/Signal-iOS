@@ -372,11 +372,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     func showFYISheetIfNecessary() {
         let fyiSheetCoordinator = ChatListFYISheetCoordinator(
             backupArchiveErrorStore: BackupArchiveErrorStore(),
+            backupAttachmentDownloadStore: BackupAttachmentDownloadStore(),
             backupExportJobRunner: DependenciesBridge.shared.backupExportJobRunner,
             backupSubscriptionIssueStore: BackupSubscriptionIssueStore(),
+            dateProvider: { Date() },
+            db: DependenciesBridge.shared.db,
             donationReceiptCredentialResultStore: DependenciesBridge.shared.donationReceiptCredentialResultStore,
             donationSubscriptionManager: DependenciesBridge.shared.donationSubscriptionManager,
-            db: DependenciesBridge.shared.db,
             keyTransparencyStore: KeyTransparencyStore(),
             networkManager: SSKEnvironment.shared.networkManagerRef,
             profileManager: SSKEnvironment.shared.profileManagerRef,

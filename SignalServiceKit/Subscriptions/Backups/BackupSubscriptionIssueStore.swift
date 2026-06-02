@@ -28,6 +28,11 @@ public struct BackupSubscriptionIssueStore {
             static let shouldShowChatListMenuItem = "IAPSubscriptionNotFoundLocally.shouldShowChatListMenuItem"
         }
 
+        enum IAPSubscriptionExpiringSoon {
+            static let firstWarningDate = "IAPSubscriptionExpiringSoon.firstWarningDate"
+            static let secondWarningDate = "IAPSubscriptionExpiringSoon.secondWarningDate"
+        }
+
         enum IAPSubscriptionExpired {
             static let shouldWarn = "shouldWarnIAPSubscriptionExpired"
         }
@@ -84,11 +89,11 @@ public struct BackupSubscriptionIssueStore {
         return kvStore.fetchValue(Bool.self, forKey: Keys.IAPSubscriptionAlreadyRedeemed.shouldWarn, tx: tx) ?? false
     }
 
-    public func shouldShowIAPSubscriptionFailedToRenewChatListBadge(tx: DBReadTransaction) -> Bool {
+    public func shouldShowIAPSubscriptionAlreadyRedeemedChatListBadge(tx: DBReadTransaction) -> Bool {
         return kvStore.fetchValue(Bool.self, forKey: Keys.IAPSubscriptionAlreadyRedeemed.shouldShowChatListBadge, tx: tx) ?? false
     }
 
-    public func shouldShowIAPSubscriptionFailedToRenewChatListMenuItem(tx: DBReadTransaction) -> Bool {
+    public func shouldShowIAPSubscriptionAlreadyRedeemedChatListMenuItem(tx: DBReadTransaction) -> Bool {
         return kvStore.fetchValue(Bool.self, forKey: Keys.IAPSubscriptionAlreadyRedeemed.shouldShowChatListMenuItem, tx: tx) ?? false
     }
 
@@ -185,6 +190,79 @@ public struct BackupSubscriptionIssueStore {
         tx.addSyncCompletion {
             NotificationCenter.default.postOnMainThread(name: .backupIAPNotFoundLocallyDidChange, object: nil)
         }
+    }
+
+    // MARK: -
+
+    public enum IAPSubscriptionExpiringSoonWarning {
+        case firstWarning(Date)
+        case secondWarning(Date)
+
+        public var date: Date {
+            switch self {
+            case .firstWarning(let date): date
+            case .secondWarning(let date): date
+            }
+        }
+    }
+
+    public func setShouldWarnIAPSubscriptionExpiringSoon(
+        endOfCurrentPeriod: Date,
+        now: Date,
+        tx: DBWriteTransaction,
+    ) {
+        logger.warn("")
+
+        let halfwayTillEndOfCurrentPeriod = endOfCurrentPeriod.timeIntervalSince(now) / 2
+
+        // Warn twice: once halfway till the expiration (or three days out), and
+        // again two days out.
+        let firstWarningDate = endOfCurrentPeriod.addingTimeInterval(-1 * max(3 * .day, halfwayTillEndOfCurrentPeriod))
+        let secondWarningDate = endOfCurrentPeriod.addingTimeInterval(-2 * .day)
+
+        kvStore.writeValue(firstWarningDate, forKey: Keys.IAPSubscriptionExpiringSoon.firstWarningDate, tx: tx)
+        kvStore.writeValue(secondWarningDate, forKey: Keys.IAPSubscriptionExpiringSoon.secondWarningDate, tx: tx)
+    }
+
+    public func shouldWarnIAPSubscriptionExpiringSoon(tx: DBReadTransaction) -> IAPSubscriptionExpiringSoonWarning? {
+        if
+            let firstWarningDate = kvStore.fetchValue(
+                Date.self,
+                forKey: Keys.IAPSubscriptionExpiringSoon.firstWarningDate,
+                tx: tx,
+            )
+        {
+            return .firstWarning(firstWarningDate)
+        }
+
+        if
+            let secondWarningDate = kvStore.fetchValue(
+                Date.self,
+                forKey: Keys.IAPSubscriptionExpiringSoon.secondWarningDate,
+                tx: tx,
+            )
+        {
+            return .secondWarning(secondWarningDate)
+        }
+
+        return nil
+    }
+
+    public func setDidWarnIAPSubscriptionExpiringSoon(
+        warning: IAPSubscriptionExpiringSoonWarning,
+        tx: DBWriteTransaction,
+    ) {
+        switch warning {
+        case .firstWarning:
+            kvStore.removeValue(forKey: Keys.IAPSubscriptionExpiringSoon.firstWarningDate, tx: tx)
+        case .secondWarning:
+            kvStore.removeValue(forKey: Keys.IAPSubscriptionExpiringSoon.secondWarningDate, tx: tx)
+        }
+    }
+
+    public func setStopWarningIAPSubscriptionExpiringSoon(tx: DBWriteTransaction) {
+        kvStore.removeValue(forKey: Keys.IAPSubscriptionExpiringSoon.firstWarningDate, tx: tx)
+        kvStore.removeValue(forKey: Keys.IAPSubscriptionExpiringSoon.secondWarningDate, tx: tx)
     }
 
     // MARK: -

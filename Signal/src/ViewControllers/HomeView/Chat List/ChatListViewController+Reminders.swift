@@ -273,17 +273,17 @@ extension ChatListViewController {
     }
 
     public func updateBackupSubscriptionFailedToRedeemAlertsWithSneakyTx() {
-        typealias BackupSubscriptionFailedToRedeemAlertType = CLVViewState.BackupSubscriptionFailedToRedeemAlertType
+        typealias BackupSubscriptionAlreadyRedeemedAlertType = CLVViewState.BackupSubscriptionAlreadyRedeemedAlertType
 
         let db = DependenciesBridge.shared.db
         let backupSubscriptionIssueStore = BackupSubscriptionIssueStore()
 
-        viewState.backupSubscriptionFailedToRedeemAlerts = db.read { tx in
-            var alerts = Set<BackupSubscriptionFailedToRedeemAlertType>()
-            if backupSubscriptionIssueStore.shouldShowIAPSubscriptionFailedToRenewChatListBadge(tx: tx) {
+        viewState.backupSubscriptionAlreadyRedeemedAlerts = db.read { tx in
+            var alerts = Set<BackupSubscriptionAlreadyRedeemedAlertType>()
+            if backupSubscriptionIssueStore.shouldShowIAPSubscriptionAlreadyRedeemedChatListBadge(tx: tx) {
                 alerts.insert(.avatarBadge)
             }
-            if backupSubscriptionIssueStore.shouldShowIAPSubscriptionFailedToRenewChatListMenuItem(tx: tx) {
+            if backupSubscriptionIssueStore.shouldShowIAPSubscriptionAlreadyRedeemedChatListMenuItem(tx: tx) {
                 alerts.insert(.menuItem)
             }
             return alerts

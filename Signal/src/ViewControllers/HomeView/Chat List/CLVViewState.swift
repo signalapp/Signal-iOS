@@ -79,16 +79,16 @@ class CLVViewState {
         }
     }
 
-    enum BackupSubscriptionFailedToRedeemAlertType: CaseIterable {
+    enum BackupSubscriptionAlreadyRedeemedAlertType: CaseIterable {
         case avatarBadge
         case menuItem
     }
 
-    var backupSubscriptionFailedToRedeemAlerts: Set<BackupSubscriptionFailedToRedeemAlertType> = [] {
+    var backupSubscriptionAlreadyRedeemedAlerts: Set<BackupSubscriptionAlreadyRedeemedAlertType> = [] {
         didSet {
             settingsButtonCreator.updateState(
-                showBackupsSubscriptionAlreadyRedeemedAvatarBadge: backupSubscriptionFailedToRedeemAlerts.contains(.avatarBadge),
-                showBackupsSubscriptionAlreadyRedeemedMenuItem: backupSubscriptionFailedToRedeemAlerts.contains(.menuItem),
+                showBackupsSubscriptionAlreadyRedeemedAvatarBadge: backupSubscriptionAlreadyRedeemedAlerts.contains(.avatarBadge),
+                showBackupsSubscriptionAlreadyRedeemedMenuItem: backupSubscriptionAlreadyRedeemedAlerts.contains(.menuItem),
             )
         }
     }

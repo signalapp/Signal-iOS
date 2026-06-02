@@ -414,7 +414,10 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         case toFreeTier
         /// Describes a subscription downgrade to "paid, expiring soon". Implies
         /// that the current subscription is "paid, not expiring soon".
-        case toPaidExpiringSoon(optimizeLocalStorage: Bool)
+        case toPaidExpiringSoon(
+            optimizeLocalStorage: Bool,
+            endOfCurrentPeriod: Date,
+        )
     }
 
     /// While we store locally a `BackupPlan`, the ultimate source of truth as
@@ -470,6 +473,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             }
 
             let subscriptionCancelAtEndOfPeriod: Bool
+            let subscriptionEndOfCurrentPeriod: Date
             switch subscription?.status {
             case nil, .canceled:
                 // This means the subscription is "expired", which happens in
@@ -491,6 +495,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 return .toFreeTier
             case .active, .pastDue, .unrecognized:
                 subscriptionCancelAtEndOfPeriod = subscription!.cancelAtEndOfPeriod
+                subscriptionEndOfCurrentPeriod = subscription!.endOfCurrentPeriod
             }
 
             // At this point we have a non-expired subscription, and we have a
@@ -502,7 +507,10 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             {
                 // We're on the paid tier, but our subscription won't renew.
                 logger.warn("IAP subscription not renewing: downgrading to expiring soon.")
-                return .toPaidExpiringSoon(optimizeLocalStorage: paidTierOptimizeLocalStorage)
+                return .toPaidExpiringSoon(
+                    optimizeLocalStorage: paidTierOptimizeLocalStorage,
+                    endOfCurrentPeriod: subscriptionEndOfCurrentPeriod,
+                )
             }
 
             return nil
@@ -528,9 +536,18 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             backupSubscriptionIssueStore.setStopWarningIAPSubscriptionAlreadyRedeemed(tx: tx)
             backupSubscriptionIssueStore.setStopWarningIAPSubscriptionNotFoundLocally(tx: tx)
 
-            // Warn that it expired, though.
+            // Warn that it expired, though...
             backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionExpired(true, tx: tx)
-        case .toPaidExpiringSoon(let optimizeLocalStorage):
+            // ...and stop warning that it's expiring soon.
+            backupSubscriptionIssueStore.setStopWarningIAPSubscriptionExpiringSoon(tx: tx)
+
+        case .toPaidExpiringSoon(let optimizeLocalStorage, let endOfCurrentPeriod):
+            backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionExpiringSoon(
+                endOfCurrentPeriod: endOfCurrentPeriod,
+                now: dateProvider(),
+                tx: tx,
+            )
+
             backupPlanManager.setBackupPlan(
                 .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage),
                 tx: tx,

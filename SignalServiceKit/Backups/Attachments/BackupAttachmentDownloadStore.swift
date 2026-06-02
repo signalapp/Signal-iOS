@@ -166,6 +166,20 @@ public class BackupAttachmentDownloadStore {
         }
     }
 
+    /// - Returns `true` if there are any incomplete downloads we could attempt.
+    public func hasAnyIncompleteDownloads(
+        isThumbnail: Bool,
+        tx: DBReadTransaction,
+    ) -> Bool {
+        let query = QueuedBackupAttachmentDownload
+            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.state) != QueuedBackupAttachmentDownload.State.done.rawValue)
+            .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail) == isThumbnail)
+
+        return failIfThrows {
+            return try !query.isEmpty(tx.database)
+        }
+    }
+
     /// Mark a download as done.
     /// If we mark a fullsize as done, the thumbnail is marked done too
     /// (since we never need a thumbnail once we have a fullsize).

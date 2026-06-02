@@ -27,6 +27,10 @@ class ChatListFYISheetCoordinator {
             let probablyHasCurrentSubscription: Bool
         }
 
+        struct BackupSubscriptionExpiringSoonWithPendingDownloads {
+            let warning: BackupSubscriptionIssueStore.IAPSubscriptionExpiringSoonWarning
+        }
+
         struct BackupSubscriptionExpired {
             enum SubscriptionType {
                 case iap
@@ -49,6 +53,7 @@ class ChatListFYISheetCoordinator {
         case badgeThanks(BadgeThanks)
         case badgeIssue(BadgeIssue)
         case badgeExpiration(BadgeExpiration)
+        case backupSubscriptionExpiringSoonWithPendingDownloads(BackupSubscriptionExpiringSoonWithPendingDownloads)
         case backupSubscriptionExpired(BackupSubscriptionExpired)
         case backupSubscriptionFailedToRenew(BackupSubscriptionFailedToRenew)
         case keyTransparencySelfCheckFailed(KeyTransparencySelfCheckFailed)
@@ -57,11 +62,13 @@ class ChatListFYISheetCoordinator {
     }
 
     private let backupArchiveErrorStore: BackupArchiveErrorStore
+    private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupExportJobRunner: BackupExportJobRunner
     private let backupSubscriptionIssueStore: BackupSubscriptionIssueStore
+    private let dateProvider: DateProvider
+    private let db: DB
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     private let donationSubscriptionManager: DonationSubscriptionManager
-    private let db: DB
     private let keyTransparencyStore: KeyTransparencyStore
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
@@ -69,21 +76,25 @@ class ChatListFYISheetCoordinator {
 
     init(
         backupArchiveErrorStore: BackupArchiveErrorStore,
+        backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupExportJobRunner: BackupExportJobRunner,
         backupSubscriptionIssueStore: BackupSubscriptionIssueStore,
+        dateProvider: @escaping DateProvider,
+        db: DB,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         donationSubscriptionManager: DonationSubscriptionManager,
-        db: DB,
         keyTransparencyStore: KeyTransparencyStore,
         networkManager: NetworkManager,
         profileManager: ProfileManager,
     ) {
         self.backupArchiveErrorStore = backupArchiveErrorStore
+        self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.backupExportJobRunner = backupExportJobRunner
         self.backupSubscriptionIssueStore = backupSubscriptionIssueStore
+        self.dateProvider = dateProvider
+        self.db = db
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
         self.donationSubscriptionManager = donationSubscriptionManager
-        self.db = db
         self.keyTransparencyStore = keyTransparencyStore
         self.networkManager = networkManager
         self.profileManager = profileManager
@@ -106,6 +117,8 @@ class ChatListFYISheetCoordinator {
     // MARK: -
 
     private func nextSheetToPresent(tx: DBReadTransaction) -> FYISheet? {
+        let now = dateProvider()
+
         if let sheet = shouldShowSMSVerificationCodeSentSheet(tx: tx) {
             return sheet
         } else if let sheet = shouldShowBadgeThanksSheet(successMode: .oneTimeBoost, tx: tx) {
@@ -127,6 +140,15 @@ class ChatListFYISheetCoordinator {
                 donationSubscriberID: donationSubscriptionManager.getSubscriberID(tx: tx),
                 mostRecentSubscriptionPaymentMethod: donationSubscriptionManager.getMostRecentSubscriptionPaymentMethod(tx: tx),
                 probablyHasCurrentSubscription: donationSubscriptionManager.probablyHasCurrentSubscription(tx: tx),
+            ))
+        } else if
+            let warning = backupSubscriptionIssueStore.shouldWarnIAPSubscriptionExpiringSoon(tx: tx),
+            warning.date < now,
+            // Only show the warning if there are downloads we still need to do.
+            backupAttachmentDownloadStore.hasAnyIncompleteDownloads(isThumbnail: false, tx: tx)
+        {
+            return .backupSubscriptionExpiringSoonWithPendingDownloads(FYISheet.BackupSubscriptionExpiringSoonWithPendingDownloads(
+                warning: warning,
             ))
         } else if backupSubscriptionIssueStore.shouldWarnIAPSubscriptionExpired(tx: tx) {
             return .backupSubscriptionExpired(FYISheet.BackupSubscriptionExpired(subscriptionType: .iap))
@@ -260,6 +282,8 @@ class ChatListFYISheetCoordinator {
             await _present(badgeIssue: badgeIssue, from: chatListViewController)
         case .badgeExpiration(let badgeExpiration):
             await _present(badgeExpiration: badgeExpiration, from: chatListViewController)
+        case .backupSubscriptionExpiringSoonWithPendingDownloads(let backupSubscriptionExpiringSoonWithPendingDownloads):
+            await _present(backupSubscriptionExpiringSoonWithPendingDownloads: backupSubscriptionExpiringSoonWithPendingDownloads, from: chatListViewController)
         case .backupSubscriptionExpired(let backupSubscriptionExpired):
             await _present(backupSubscriptionExpired: backupSubscriptionExpired, from: chatListViewController)
         case .backupSubscriptionFailedToRenew(let backupSubscriptionFailedToRenew):
@@ -433,6 +457,31 @@ class ChatListFYISheetCoordinator {
     }
 
     private func _present(
+        backupSubscriptionExpiringSoonWithPendingDownloads: FYISheet.BackupSubscriptionExpiringSoonWithPendingDownloads,
+        from chatListViewController: ChatListViewController,
+    ) async {
+        let logger = PrefixedLogger(prefix: "[Backups]")
+        logger.info("Showing BackupSubscriptionExpiringSoonWithPendingDownloads FYI sheet.")
+
+        let warning = backupSubscriptionExpiringSoonWithPendingDownloads.warning
+
+        let sheet = BackupSubscriptionExpiringSoonWithPendingDownloadsHeroSheet(
+            iapSubscriptionExpiringSoonWarning: warning,
+            onDownloadBackupNow: {
+                chatListViewController.showAppSettings(mode: .backups(onAppearAction: .disableOptimizeLocalStorage))
+            },
+        )
+        chatListViewController.present(sheet, animated: true) { [self] in
+            db.write { tx in
+                backupSubscriptionIssueStore.setDidWarnIAPSubscriptionExpiringSoon(
+                    warning: warning,
+                    tx: tx,
+                )
+            }
+        }
+    }
+
+    private func _present(
         backupSubscriptionExpired: FYISheet.BackupSubscriptionExpired,
         from chatListViewController: ChatListViewController,
     ) async {
@@ -540,6 +589,63 @@ extension ChatListViewController: BadgeIssueSheetDelegate {
         case .openDonationView:
             showAppSettings(mode: .donate(donateMode: .oneTime))
         }
+    }
+}
+
+// MARK: -
+
+private class BackupSubscriptionExpiringSoonWithPendingDownloadsHeroSheet: HeroSheetViewController {
+    override var canBeDismissed: Bool { false }
+
+    init(
+        iapSubscriptionExpiringSoonWarning: BackupSubscriptionIssueStore.IAPSubscriptionExpiringSoonWarning,
+        onDownloadBackupNow: @escaping () -> Void,
+    ) {
+        let title = switch iapSubscriptionExpiringSoonWarning {
+        case .firstWarning:
+            OWSLocalizedString(
+                "BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE",
+                comment: "Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads.",
+            )
+        case .secondWarning:
+            OWSLocalizedString(
+                "BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE",
+                comment: "Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads.",
+            )
+        }
+
+        super.init(
+            hero: .circleIcon(
+                icon: .backupErrorBold,
+                iconSize: 40,
+                tintColor: .Signal.red,
+                backgroundColor: UIColor(rgbHex: 0xFFDDDB),
+            ),
+            title: title,
+            body: OWSLocalizedString(
+                "BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY",
+                comment: "Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads.",
+            ),
+            primaryButton: HeroSheetViewController.Button(
+                title: OWSLocalizedString(
+                    "BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON",
+                    comment: "Primary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads.",
+                ),
+                action: { sheet in
+                    sheet.dismiss(animated: true) {
+                        onDownloadBackupNow()
+                    }
+                },
+            ),
+            secondaryButton: HeroSheetViewController.Button(
+                title: OWSLocalizedString(
+                    "BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON",
+                    comment: "Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads.",
+                ),
+                style: .secondaryDestructive,
+                action: .dismiss,
+            ),
+        )
     }
 }
 
