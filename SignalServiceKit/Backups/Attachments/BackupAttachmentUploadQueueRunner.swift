@@ -383,7 +383,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
             // We're about to upload; ensure we aren't also enqueuing a media tier delete.
             // This is only defensive as we should be cancelling any deletes any time we
-            // create an attachmenr stream and enqueue an upload to begin with.
+            // create an attachment stream and enqueue an upload to begin with.
             do {
                 try await db.awaitableWrite { tx in
                     if record.record.isFullsize {
