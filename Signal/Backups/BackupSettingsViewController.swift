@@ -3284,7 +3284,8 @@ private extension BackupSettingsViewModel {
         backupSubscriptionLoadingState: .loaded(.paidButExpiring(
             expirationDate: Date().addingTimeInterval(.week),
         )),
-        backupPlan: .paidExpiringSoon(optimizeLocalStorage: false),
+        backupPlan: .paidExpiringSoon(optimizeLocalStorage: true),
+        latestBackupAttachmentDownloadUpdateState: .suspended,
     ))
 }
 
