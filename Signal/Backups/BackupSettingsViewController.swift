@@ -1435,10 +1435,10 @@ class BackupSettingsViewController:
             onConfirmed: { [weak self] _ in
                 guard let self else { return }
 
-                self.finalizeNewRecoveryKey(newCandidateAEP: newCandidateAEP)
-
                 // Pop all the way back to Backup Settings.
                 navigationController?.popToViewController(self, animated: true) {
+                    self.finalizeNewRecoveryKey(newCandidateAEP: newCandidateAEP)
+
                     self.presentToast(text: OWSLocalizedString(
                         "BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST",
                         comment: "Toast shown when a new Recovery Key has been created successfully.",
