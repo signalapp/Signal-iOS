@@ -50,6 +50,7 @@ enum SafetyTipsSheet {
             ),
             handler: { [weak fromViewController] _ in
                 let safetyTipsVC = SafetyTipsViewController(
+                    mode: .smsRequest,
                     primaryButton: SafetyTipsViewController.Button(
                         title: OWSLocalizedString(
                             "SETTINGS_ACCOUNT_BUTTON",

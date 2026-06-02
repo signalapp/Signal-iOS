@@ -1409,6 +1409,7 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func didTapSafetyTips() {
         let viewController = SafetyTipsViewController(
+            mode: .messageRequest,
             primaryButton: SafetyTipsViewController.Button(
                 title: CommonStrings.viewMoreButton,
                 action: { [weak self] in
