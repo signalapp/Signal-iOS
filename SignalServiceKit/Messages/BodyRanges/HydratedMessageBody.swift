@@ -772,7 +772,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             if
                 $0.value.style.contains(.spoiler),
                 let spoilerId = $0.value.ids[.spoiler],
-                revealedSpoilerIds.contains(spoilerId).negated
+                !revealedSpoilerIds.contains(spoilerId)
             {
                 setRange(
                     value: TappableItem.UnrevealedSpoiler(range: $0.range, id: spoilerId),

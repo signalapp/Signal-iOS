@@ -57,7 +57,7 @@ class StoryListDataSource: NSObject {
     }
 
     var visibleStories: [StoryViewModel] {
-        return syncingModels.exposedModel.stories.filter(\.isHidden.negated)
+        return syncingModels.exposedModel.stories.filter { !$0.isHidden }
     }
 
     var hiddenStories: [StoryViewModel] {
@@ -490,9 +490,9 @@ class StoryListDataSource: NSObject {
     //   * Any system story context with all its stories unviewed is always sorted at the top.
     // * We then show viewed stories, sorted by when they were viewed, with the most recently viewed at the top
     private static func sortStoryModels(lhs: StoryViewModel, rhs: StoryViewModel) -> Bool {
-        if lhs.isSystemStory, lhs.messages.allSatisfy(\.isViewed.negated) {
+        if lhs.isSystemStory, lhs.messages.allSatisfy({ !$0.isViewed }) {
             return true
-        } else if rhs.isSystemStory, rhs.messages.allSatisfy(\.isViewed.negated) {
+        } else if rhs.isSystemStory, rhs.messages.allSatisfy({ !$0.isViewed }) {
             return false
         } else if
             let lhsViewedTimestamp = lhs.latestMessageViewedTimestamp,
@@ -771,7 +771,7 @@ private class SyncingStoryListViewModel {
         trueModel.wrappedValue = changes.newModel
         DispatchQueue.main.async {
             self._threadSafeStoryContexts.set(changes.newModel.stories.map(\.context))
-            self._threadSafeVisibleStoryContexts.set(changes.newModel.stories.lazy.filter(\.isHidden.negated).map(\.context))
+            self._threadSafeVisibleStoryContexts.set(changes.newModel.stories.lazy.filter { !$0.isHidden }.map(\.context))
             self._threadSafeHiddenStoryContexts.set(changes.newModel.stories.lazy.filter(\.isHidden).map(\.context))
             self.exposedModel = changes.newModel
             sync(changes)
@@ -839,7 +839,7 @@ private struct StoryListViewModel {
     }
 
     var visibleStories: [StoryViewModel] {
-        return stories.lazy.filter(\.isHidden.negated)
+        return stories.lazy.filter { !$0.isHidden }
     }
 
     // MARK: Hidden stories

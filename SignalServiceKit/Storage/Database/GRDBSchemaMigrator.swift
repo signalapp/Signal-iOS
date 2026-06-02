@@ -508,10 +508,9 @@ public class GRDBSchemaMigrator {
                 // the migration is complete, and we can take advantage of DB locks to enforce
                 // migrations are only run once across processes.
                 guard
-                    try migrator
+                    try !migrator
                         .appliedIdentifiers(database)
                         .contains(identifier.rawValue)
-                        .negated
                 else {
                     // Already run! Just succeed.
                     Logger.info("Attempting to re-run an already-finished migration, exiting: \(identifier)")

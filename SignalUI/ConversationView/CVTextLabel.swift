@@ -206,7 +206,7 @@ public class CVTextLabel: NSObject {
     }
 
     public static func measureSize(config: Config, maxWidth: CGFloat) -> Measurement {
-        guard config.text.isEmpty.negated else {
+        guard !config.text.isEmpty else {
             return .empty
         }
         let attributedString = Label.formatAttributedString(config: config)
@@ -404,7 +404,7 @@ public class CVTextLabel: NSObject {
             textContainer.maximumNumberOfLines = config.numberOfLines
             textContainer.size = bounds.size
 
-            guard config.text.isEmpty.negated else {
+            guard !config.text.isEmpty else {
                 reset()
                 textStorage.setAttributedString(NSAttributedString())
                 setNeedsDisplay()

@@ -21,7 +21,7 @@ public class StyleOnlyMessageBody: Codable, Equatable {
     public var length: Int { (text as NSString).length }
 
     public var hasStyles: Bool {
-        return collapsedStyles.isEmpty.negated
+        return !collapsedStyles.isEmpty
     }
 
     public convenience init(messageBody: MessageBody) {

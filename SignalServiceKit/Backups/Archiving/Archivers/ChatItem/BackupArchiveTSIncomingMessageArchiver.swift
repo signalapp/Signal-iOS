@@ -196,7 +196,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             dateCreated: incomingMessage.timestamp,
             expireStartDate: expireStartDate,
             expiresInMs: UInt64(incomingMessage.expiresInSeconds) * 1000,
-            isSealedSender: incomingMessage.wasReceivedByUD.negated,
+            isSealedSender: !incomingMessage.wasReceivedByUD,
             chatItemType: chatItemType,
             isSmsPreviouslyRestoredFromBackup: incomingMessage.isSmsMessageRestoredFromBackup,
             threadInfo: threadInfo,

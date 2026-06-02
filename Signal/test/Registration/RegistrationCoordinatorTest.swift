@@ -649,7 +649,7 @@ public class RegistrationCoordinatorTest {
         // And we finalize them after.
         // Set up a list of mocks that should be returned in order
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
-            #expect(didSucceed.negated)
+            #expect(!didSucceed)
         }
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed)
@@ -752,10 +752,10 @@ public class RegistrationCoordinatorTest {
         preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
 
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
-            #expect(didSucceed.negated)
+            #expect(!didSucceed)
         }
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
-            #expect(didSucceed.negated)
+            #expect(!didSucceed)
         }
 
         // Fail the first request; the reglock is invalid.
@@ -848,7 +848,7 @@ public class RegistrationCoordinatorTest {
 
         // And we finalize them after.
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
-            #expect(didSucceed.negated)
+            #expect(!didSucceed)
         }
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed)
@@ -1215,7 +1215,7 @@ public class RegistrationCoordinatorTest {
         preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
 
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
-            #expect(didSucceed.negated)
+            #expect(!didSucceed)
         }
         preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
             #expect(didSucceed)

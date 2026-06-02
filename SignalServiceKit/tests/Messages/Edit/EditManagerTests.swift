@@ -311,7 +311,7 @@ class EditManagerTests: SSKBaseTest {
             }
         }
         // check for any remainging fields in the predefined list
-        if propertySet.isEmpty.negated {
+        if !propertySet.isEmpty {
             XCTFail("Defined list of properties contains field(s) (\(propertySet)) missing on object")
         }
     }

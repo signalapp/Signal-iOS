@@ -230,7 +230,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
         }
 
         XCTAssert(thumbnailRecords.anySatisfy(\.isThumbnail))
-        XCTAssert(fullsizeRecords.anySatisfy(\.isThumbnail.negated))
+        XCTAssert(fullsizeRecords.anySatisfy { !$0.isThumbnail })
         XCTAssertEqual(
             thumbnailRecords.map(\.maxOwnerTimestamp),
             thumbnailTimestamps.sorted().reversed(),

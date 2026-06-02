@@ -162,7 +162,7 @@ final class BackupArchiveGroupUpdateMessageArchiver {
             }
         }
 
-        guard updates.isEmpty.negated else {
+        guard !updates.isEmpty else {
             if groupUpdates.count == skipCount, let latestSkipError {
                 // Its ok; we just skipped everything.
                 return .skippableInteraction(.skippableGroupUpdate(latestSkipError))
@@ -210,12 +210,12 @@ final class BackupArchiveGroupUpdateMessageArchiver {
             return error
         }
 
-        guard persistableUpdates.isEmpty.negated else {
+        guard !persistableUpdates.isEmpty else {
             // We can't have an empty array of updates!
             return .messageFailure(partialErrors + [.restoreFrameError(.invalidProtoData(.emptyGroupUpdates))])
         }
 
-        guard persistableUpdates.isEmpty.negated else {
+        guard !persistableUpdates.isEmpty else {
             // If we got an empty array, that means it got collapsed!
             // Ok to skip, as any updates should be applied to the
             // previous db entry.

@@ -49,7 +49,7 @@ public enum RegistrationRequestFactory {
         sessionId: String,
         logger: PrefixedLogger,
     ) -> TSRequest {
-        owsAssertDebug(sessionId.isEmpty.negated)
+        owsAssertDebug(!sessionId.isEmpty)
 
         let urlPathComponents = URLPathComponents(
             ["v1", "verification", "session", sessionId],
@@ -73,7 +73,7 @@ public enum RegistrationRequestFactory {
         pushChallengeToken: String?,
         logger: PrefixedLogger,
     ) -> TSRequest {
-        owsAssertDebug(sessionId.isEmpty.negated)
+        owsAssertDebug(!sessionId.isEmpty)
         owsAssertDebug(!captchaToken.isEmptyOrNil || !pushChallengeToken.isEmptyOrNil)
 
         let urlPathComponents = URLPathComponents(
@@ -114,7 +114,7 @@ public enum RegistrationRequestFactory {
         transport: VerificationCodeTransport,
         logger: PrefixedLogger,
     ) -> TSRequest {
-        owsAssertDebug(sessionId.isEmpty.negated)
+        owsAssertDebug(!sessionId.isEmpty)
 
         let urlPathComponents = URLPathComponents(
             ["v1", "verification", "session", sessionId, "code"],
@@ -135,7 +135,7 @@ public enum RegistrationRequestFactory {
             }
             languageCodes.append(languageCode)
         }
-        if languageCodes.contains("en").negated {
+        if !languageCodes.contains("en") {
             languageCodes.append("en")
         }
 
@@ -154,8 +154,8 @@ public enum RegistrationRequestFactory {
         code: String,
         logger: PrefixedLogger,
     ) -> TSRequest {
-        owsAssertDebug(sessionId.isEmpty.negated)
-        owsAssertDebug(code.isEmpty.negated)
+        owsAssertDebug(!sessionId.isEmpty)
+        owsAssertDebug(!code.isEmpty)
 
         let urlPathComponents = URLPathComponents(
             ["v1", "verification", "session", sessionId, "code"],

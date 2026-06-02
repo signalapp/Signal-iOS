@@ -173,7 +173,7 @@ private class StickerPacksToolbar: UIView {
             visualEffectView = glassEffectView
         }
         // Blur on earlier iOS versions, but only if "Reduce Transparency" is disabled.
-        else if UIAccessibility.isReduceTransparencyEnabled.negated {
+        else if !UIAccessibility.isReduceTransparencyEnabled {
             let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial))
 
             blurEffectView.contentView.addSubview(stackView)

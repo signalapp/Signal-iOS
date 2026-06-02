@@ -1139,7 +1139,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                     context: context,
                 ))
             }
-            if text.bodyAttachments.isEmpty.negated {
+            if !text.bodyAttachments.isEmpty {
                 downstreamObjectResults.append(attachmentsArchiver.restoreBodyAttachments(
                     text.bodyAttachments,
                     messageRowId: messageRowId,
@@ -1533,7 +1533,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         _ text: BackupProto_Text,
         oversizeTextAttachment: BackupProto_FilePointer?,
     ) -> RestoreInteractionResult<RestoredMessageBody?> {
-        guard text.body.isEmpty.negated else {
+        guard !text.body.isEmpty else {
             return .success(nil)
         }
         return restoreMessageBody(

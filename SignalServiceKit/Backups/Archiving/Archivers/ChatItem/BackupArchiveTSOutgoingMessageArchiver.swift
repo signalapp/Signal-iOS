@@ -495,7 +495,7 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
             recipientAddressStates[recipientAddress] = recipientState
         }
 
-        if recipientAddressStates.isEmpty, outgoingDetails.sendStatus.isEmpty.negated {
+        if recipientAddressStates.isEmpty, !outgoingDetails.sendStatus.isEmpty {
             // We put up with some failures, but if we get no recipients at all
             // fail the whole thing.
             return .messageFailure(partialErrors)

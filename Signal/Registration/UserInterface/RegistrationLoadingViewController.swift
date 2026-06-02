@@ -75,7 +75,7 @@ class RegistrationLoadingViewController: OWSViewController, OWSNavigationChildCo
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if spinnerView.isAnimating.negated {
+        if !spinnerView.isAnimating {
             spinnerView.startAnimating()
         }
     }

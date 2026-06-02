@@ -333,8 +333,8 @@ class RegistrationVerificationViewController: OWSViewController {
         }
 
         explanationLabel.text = explanationLabelText()
-        wrongNumberButton.isHidden = state.canChangeE164.negated
-        helpButton.isHidden = state.showHelpText.negated
+        wrongNumberButton.isHidden = !state.canChangeE164
+        helpButton.isHidden = !state.showHelpText
 
         verificationCodeView.updateColors()
     }

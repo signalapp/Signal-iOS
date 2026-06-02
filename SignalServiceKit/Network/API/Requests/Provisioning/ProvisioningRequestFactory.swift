@@ -15,8 +15,8 @@ public enum ProvisioningRequestFactory {
         apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
         prekeyBundles: RegistrationPreKeyUploadBundles,
     ) -> TSRequest {
-        owsAssertDebug(verificationCode.isEmpty.negated)
-        owsAssertDebug(phoneNumber.isEmpty.negated)
+        owsAssertDebug(!verificationCode.isEmpty)
+        owsAssertDebug(!phoneNumber.isEmpty)
         owsAssertDebug((apnRegistrationId != nil) != attributes.isManualMessageFetchEnabled)
 
         let urlPathComponents = URLPathComponents(

@@ -87,7 +87,7 @@ public class SharingThreadPickerProgressSheet: ActionSheetController {
     // MARK: - Updating UI
 
     private func renderProgress() {
-        guard attachmentIds.isEmpty.negated else {
+        guard !attachmentIds.isEmpty else {
             progressLabel.text = OWSLocalizedString(
                 "MESSAGE_STATUS_SENDING",
                 comment: "message status while message is sending.",

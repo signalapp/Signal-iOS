@@ -441,7 +441,7 @@ public class PaymentsReconciliation {
                 }
             }
 
-            if restoredPayments.isEmpty.negated {
+            if !restoredPayments.isEmpty {
                 // An archived payment at this point means there is something from a backup that is now
                 // being populated from the ledger. For each ArchivedPayment matched above, attempt
                 // to rebuild a TSPaymentModel from the matched public keys and spent key image information.

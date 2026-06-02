@@ -18,7 +18,7 @@ public extension TSMessage {
 
     func hasBodyAttachments(transaction: DBReadTransaction) -> Bool {
         guard let sqliteRowId else { return false }
-        return DependenciesBridge.shared.attachmentStore
+        return !DependenciesBridge.shared.attachmentStore
             .fetchReferences(
                 owners: [
                     .messageOversizeText(messageRowId: sqliteRowId),
@@ -26,7 +26,7 @@ public extension TSMessage {
                 ],
                 tx: transaction,
             )
-            .isEmpty.negated
+            .isEmpty
     }
 
     func hasMediaAttachments(transaction: DBReadTransaction) -> Bool {
@@ -862,7 +862,7 @@ extension TSMessage {
 
         return TSMessageBuilder.hasRenderableContent(
             hasNonemptyBody: body?.nilIfEmpty != nil,
-            hasBodyAttachmentsOrOversizeText: fetchAttachments().isEmpty.negated,
+            hasBodyAttachmentsOrOversizeText: !fetchAttachments().isEmpty,
             hasLinkPreview: linkPreview != nil,
             hasQuotedReply: quotedMessage != nil,
             hasContactShare: contactShare != nil,

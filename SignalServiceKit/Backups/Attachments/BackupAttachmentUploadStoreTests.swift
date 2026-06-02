@@ -309,7 +309,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             // All fullsize rows should be done
             let records = try! QueuedBackupAttachmentUpload.fetchAll(tx.database)
             XCTAssertEqual(8, records.count)
-            XCTAssertEqual(4, records.filter(\.isFullsize.negated).count)
+            XCTAssertEqual(4, records.filter { !$0.isFullsize }.count)
             XCTAssertEqual(4, records.filter(\.isFullsize).count)
             XCTAssertEqual(4, records.filter({ $0.isFullsize && $0.state == .done }).count)
         }

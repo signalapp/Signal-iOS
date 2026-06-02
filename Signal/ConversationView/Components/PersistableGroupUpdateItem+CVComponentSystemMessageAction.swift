@@ -59,7 +59,7 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
                 )
             {
                 owsAssertDebug(
-                    isTail.negated,
+                    !isTail,
                     "Collapsed item with a following request shouldn't be a tail!",
                 )
                 return nextItemAction

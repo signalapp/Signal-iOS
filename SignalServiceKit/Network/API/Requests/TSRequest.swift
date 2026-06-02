@@ -43,7 +43,7 @@ public struct TSRequest: CustomDebugStringConvertible {
         body: Body,
         logger: PrefixedLogger? = nil,
     ) {
-        owsAssertDebug(method.isEmpty.negated)
+        owsAssertDebug(!method.isEmpty)
 
         self.url = url
         self.method = method

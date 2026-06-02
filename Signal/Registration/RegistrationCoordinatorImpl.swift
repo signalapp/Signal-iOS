@@ -881,7 +881,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var hasBackedUpToSVR = false
         var didSkipSVRBackup = false
         var shouldBackUpToSVR: Bool {
-            return hasBackedUpToSVR.negated && didSkipSVRBackup.negated
+            return !hasBackedUpToSVR && !didSkipSVRBackup
         }
 
         var backupMetadataHeader: BackupNonce.MetadataHeader?
@@ -2165,7 +2165,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func loadSVRAuthCredentialCandidates(_ tx: DBReadTransaction) {
         let svr2AuthCredentialCandidates: [SVR2AuthCredential] = deps.svrAuthCredentialStore.getAuthCredentials(tx)
-        if svr2AuthCredentialCandidates.isEmpty.negated {
+        if !svr2AuthCredentialCandidates.isEmpty {
             inMemoryState.svr2AuthCredentialCandidates = svr2AuthCredentialCandidates
         }
     }
@@ -2720,7 +2720,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             guard
                 (
                     inMemoryState.accountEntropyPool != nil ||
-                        persistedState.hasGivenUpTryingToRestoreWithSVR.negated
+                        !persistedState.hasGivenUpTryingToRestoreWithSVR
                 )
             else {
                 // If we haven't set an AEP, and have already exhausted our SVR backup attempts, we are stuck.
@@ -3898,7 +3898,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
             if let reglockToken = self.reglockToken(for: accountIdentity.e164) {
-                if inMemoryState.hasSetReglock.negated {
+                if !inMemoryState.hasSetReglock {
                     return await self.enableReglock(accountIdentity: accountIdentity, reglockToken: reglockToken)
                 }
             } else {
@@ -4370,7 +4370,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         switch mode {
         case .reRegistering(let state):
-            if persistedState.hasResetForReRegistration.negated {
+            if !persistedState.hasResetForReRegistration {
                 db.write { tx in
                     let isPrimaryDevice = deps.tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? true
                     let discoverability = deps.phoneNumberDiscoverabilityManager.phoneNumberDiscoverability(tx: tx)

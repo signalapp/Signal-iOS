@@ -228,17 +228,17 @@ public class StorageServiceUnknownFieldMigrator {
 
     /// Check this before merging records with unknown fields; if true, call ``runMigrationsForRecordsWithUnknownFields``
     public static func needsAnyUnknownFieldsMigrations(tx: DBReadTransaction) -> Bool {
-        return necessaryMigrations(forKey: Keys.lastRunUnknownFieldsMerge, tx: tx).isEmpty.negated
+        return !necessaryMigrations(forKey: Keys.lastRunUnknownFieldsMerge, tx: tx).isEmpty
     }
 
     /// Check this before merging records from a remote manifest; if true, call ``interceptRemoteManifestBeforeMerging``
     public static func shouldInterceptRemoteManifestBeforeMerging(tx: DBReadTransaction) -> Bool {
-        return necessaryMigrations(forKey: Keys.lastSuccessfulStorageServiceWrite, tx: tx).isEmpty.negated
+        return !necessaryMigrations(forKey: Keys.lastSuccessfulStorageServiceWrite, tx: tx).isEmpty
     }
 
     /// Check this before uploading records generated locally; if true, call ``interceptLocalManifestBeforeUploading``
     public static func shouldInterceptLocalManifestBeforeUploading(tx: DBReadTransaction) -> Bool {
-        return necessaryMigrations(forKey: Keys.lastSuccessfulStorageServiceWrite, tx: tx).isEmpty.negated
+        return !necessaryMigrations(forKey: Keys.lastSuccessfulStorageServiceWrite, tx: tx).isEmpty
     }
 
     /// Call this after every succesful write of a manifest to Storage Service.

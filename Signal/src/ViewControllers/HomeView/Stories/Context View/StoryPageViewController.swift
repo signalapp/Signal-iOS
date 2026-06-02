@@ -167,7 +167,7 @@ class StoryPageViewController: UIPageViewController {
         // and an ongoing paging drag transition but the scrollview isn't dragging) and resolve it
         // by closing the transition out ourselves.
         if
-            pendingTransitionViewControllers.isEmpty.negated,
+            !pendingTransitionViewControllers.isEmpty,
             isTransitioningByScroll,
             !isUserDraggingScrollView
         {

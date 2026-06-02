@@ -241,7 +241,7 @@ class LongTextViewController: OWSViewController {
         textView.textAlignment = displayableText.fullTextNaturalAlignment
         linkItems = items
 
-        if items.isEmpty.negated {
+        if !items.isEmpty {
             textView.addGestureRecognizer(UITapGestureRecognizer(
                 target: self,
                 action: #selector(didTapMessageTextView),

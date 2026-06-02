@@ -927,7 +927,7 @@ class MediaGallery {
                 /// instead we'll send a `DeleteForMe` sync about the removed
                 /// attachments.
                 for (message, removedAttachments) in attachmentsRemoved {
-                    let noBodyAttachments = message.hasBodyAttachments(transaction: tx).negated
+                    let noBodyAttachments = !message.hasBodyAttachments(transaction: tx)
                     let finderIsEmptyOfAttachments = mediaGalleryFinder
                         .countAllAttachments(of: message, tx: tx) == 0
 

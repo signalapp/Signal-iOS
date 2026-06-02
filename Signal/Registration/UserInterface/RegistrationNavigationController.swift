@@ -65,7 +65,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             return
         }
 
-        if let loadingMode, step.isSealed.negated {
+        if let loadingMode, !step.isSealed {
             logger.info("Pushing loading controller")
             isLoading = true
 

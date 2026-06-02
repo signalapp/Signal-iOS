@@ -223,9 +223,9 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         let keepMutedChatsArchived = sskPreferences.shouldKeepMutedChatsArchived(tx: context.tx)
         let hasSetMyStoriesPrivacy = storyManager.hasSetMyStoriesPrivacy(tx: context.tx)
         let hasViewedOnboardingStory = systemStoryManager.isOnboardingStoryViewed(tx: context.tx)
-        let storiesDisabled = storyManager.areStoriesEnabled(tx: context.tx).negated
+        let storiesDisabled = !storyManager.areStoriesEnabled(tx: context.tx)
         let hasSeenGroupStoryEducationSheet = systemStoryManager.hasSeenGroupStoryEducationSheet(tx: context.tx)
-        let hasCompletedUsernameOnboarding = usernameEducationManager.shouldShowUsernameEducation(tx: context.tx).negated
+        let hasCompletedUsernameOnboarding = !usernameEducationManager.shouldShowUsernameEducation(tx: context.tx)
         let phoneNumberSharingMode: BackupProto_AccountData.PhoneNumberSharingMode = switch udManager.phoneNumberSharingMode(tx: context.tx).orDefault {
         case .everybody: .everybody
         case .nobody: .nobody
@@ -470,12 +470,12 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             sskPreferences.setShouldKeepMutedChatsArchived(value: settings.keepMutedChatsArchived, tx: context.tx)
             storyManager.setHasSetMyStoriesPrivacy(value: settings.hasSetMyStoriesPrivacy_p, tx: context.tx)
             systemStoryManager.setHasViewedOnboardingStory(value: settings.hasViewedOnboardingStory_p, tx: context.tx)
-            storyManager.setAreStoriesEnabled(value: settings.storiesDisabled.negated, tx: context.tx)
+            storyManager.setAreStoriesEnabled(value: !settings.storiesDisabled, tx: context.tx)
             if settings.hasStoryViewReceiptsEnabled {
                 storyManager.setAreViewReceiptsEnabled(value: settings.storyViewReceiptsEnabled, tx: context.tx)
             }
             systemStoryManager.setHasSeenGroupStoryEducationSheet(value: settings.hasSeenGroupStoryEducationSheet_p, tx: context.tx)
-            usernameEducationManager.setShouldShowUsernameEducation(settings.hasCompletedUsernameOnboarding_p.negated, tx: context.tx)
+            usernameEducationManager.setShouldShowUsernameEducation(!settings.hasCompletedUsernameOnboarding_p, tx: context.tx)
             udManager.setPhoneNumberSharingMode(
                 mode: { () -> PhoneNumberSharingMode in
                     switch settings.phoneNumberSharingMode {

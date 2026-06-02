@@ -40,7 +40,7 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     public let collapsedStyles: [NSRangedValue<CollapsedStyle>]
 
     public var hasRanges: Bool {
-        return mentions.isEmpty.negated || collapsedStyles.isEmpty.negated
+        return !mentions.isEmpty || !collapsedStyles.isEmpty
     }
 
     public init(
@@ -222,10 +222,10 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             startApplyingStyles(at: i)
             let stylesToRemove = endIndexToStyles.removeValue(forKey: i) ?? []
 
-            if newStylesToApply.isEmpty.negated || stylesToRemove.isEmpty.negated {
+            if !newStylesToApply.isEmpty || !stylesToRemove.isEmpty {
                 // We have changes. End the previous style if any, and start a new one.
                 var (startIndex, currentCollapsedStyle) = collapsedStyleAtIndex
-                if currentCollapsedStyle.isEmpty.negated {
+                if !currentCollapsedStyle.isEmpty {
                     finalStyles.append(.init(
                         currentCollapsedStyle,
                         range: NSRange(location: startIndex, length: i - startIndex),
@@ -242,7 +242,7 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             }
         }
 
-        if collapsedStyleAtIndex.1.isEmpty.negated {
+        if !collapsedStyleAtIndex.1.isEmpty {
             finalStyles.append(.init(
                 collapsedStyleAtIndex.1,
                 range: NSRange(

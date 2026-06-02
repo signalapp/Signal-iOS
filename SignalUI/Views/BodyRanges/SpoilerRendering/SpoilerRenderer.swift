@@ -128,7 +128,7 @@ public class SpoilerRenderer {
         var particleViews = view.subviews.compactMap { $0 as? SpoilerParticleView }
         for spec in specs {
             let particleView: SpoilerParticleView = {
-                if particleViews.isEmpty.negated {
+                if !particleViews.isEmpty {
                     let existing = particleViews.remove(at: 0)
                     if !existing.isInUse {
                         existing.isInUse = true
@@ -193,7 +193,7 @@ public class SpoilerRenderer {
                 removedViews.insert($0)
             }
         // Cull from our tracked views.
-        if particleViews.isEmpty.negated {
+        if !particleViews.isEmpty {
             let particleViewsCount = particleViews.count
             for offsetFromEnd in 1...particleViews.count {
                 let index = particleViewsCount - offsetFromEnd

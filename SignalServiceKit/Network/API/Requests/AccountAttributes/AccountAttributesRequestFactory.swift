@@ -49,7 +49,7 @@ public struct AccountAttributesRequestFactory {
         auth: ChatServiceAuth,
     ) -> TSRequest {
         owsPrecondition(
-            (tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false).negated,
+            !(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false),
             "Trying to set seconday device attributes from primary device",
         )
 

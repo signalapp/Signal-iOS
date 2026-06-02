@@ -72,7 +72,7 @@ public class StoryBadgeCountManager {
             if StoryFinder.hasFailedStories(transaction: transaction) {
                 return (0, true)
             }
-            guard self.observer?.isStoriesTabActive.negated ?? false else {
+            guard !(self.observer?.isStoriesTabActive ?? true) else {
                 // Don't bother querying if the stories tab is active.
                 // Set the badge to nil, as everything should be instantly marked read, but
                 // until the update goes through the db queue, we may get a count which would

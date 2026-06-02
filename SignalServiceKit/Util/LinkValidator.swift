@@ -78,7 +78,7 @@ public enum LinkValidator {
                     break
                 }
             }
-            guard parsedUrl.absoluteString.isEmpty.negated else { return }
+            guard !parsedUrl.absoluteString.isEmpty else { return }
             guard
                 LinkPreviewHelper.isPermittedLinkPreviewUrl(
                     parsedUrl,

@@ -1764,10 +1764,10 @@ private extension CVComponentState.Builder {
 
             let caption = referencedAttachment.reference.legacyMessageCaption
             let hasCaption = caption.map {
-                return CVComponentState.displayableCaption(
+                return !CVComponentState.displayableCaption(
                     text: $0,
                     transaction: transaction,
-                ).fullTextValue.isEmpty.negated
+                ).fullTextValue.isEmpty
             } ?? false
 
             switch cvAttachment {

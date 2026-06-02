@@ -374,9 +374,9 @@ extension BackupArchive {
                             self = .ChatItem_StandardMessage_Quote
                         } else if standardMessage.hasLongText {
                             self = .ChatItem_StandardMessage_OversizeText
-                        } else if standardMessage.linkPreview.isEmpty.negated {
+                        } else if !standardMessage.linkPreview.isEmpty {
                             self = .ChatItem_StandardMessage_LinkPreview
-                        } else if standardMessage.attachments.isEmpty.negated {
+                        } else if !standardMessage.attachments.isEmpty {
                             self = .ChatItem_StandardMessage_WithAttachments
                         } else {
                             self = .ChatItem_StandardMessage

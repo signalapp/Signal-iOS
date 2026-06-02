@@ -201,7 +201,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         var outgoingMessage = interactionStore.buildOutgoingMessage(builder: outgoingMessageBuilder, tx: tx)
 
         let hasRenderableContent = outgoingMessageBuilder.hasRenderableContent(
-            hasBodyAttachments: messageParams.attachmentPointerProtos.isEmpty.negated,
+            hasBodyAttachments: !messageParams.attachmentPointerProtos.isEmpty,
             hasLinkPreview: messageParams.validatedLinkPreview != nil,
             hasQuotedReply: messageParams.validatedQuotedReply != nil,
             hasContactShare: messageParams.validatedContactShare != nil,

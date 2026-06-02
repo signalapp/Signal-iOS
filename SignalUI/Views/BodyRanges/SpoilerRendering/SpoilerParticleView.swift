@@ -284,7 +284,7 @@ class SpoilerParticleView: MTKView {
             drawRects.append(drawRect)
         }
 
-        guard drawRects.isEmpty.negated else {
+        guard !drawRects.isEmpty else {
             resetMetalInputs()
             return
         }

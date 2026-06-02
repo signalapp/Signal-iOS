@@ -123,7 +123,7 @@ public struct TextAttachment: Codable, Equatable {
         body: StyleOnlyMessageBody?,
         textStyle: TextStyle,
     ) -> TextContent {
-        guard let body, body.isEmpty.negated else {
+        guard let body, !body.isEmpty else {
             return .empty
         }
         switch textStyle {

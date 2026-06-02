@@ -981,14 +981,14 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         if
             let finishedRecord = backupAttachmentUploadStore.markUploadDone(
                 for: attachment.id,
-                fullsize: isThumbnail.negated,
+                fullsize: !isThumbnail,
                 tx: tx,
                 file: nil,
                 function: nil,
                 line: nil,
             )
         {
-            logger.info("Marked discovered attachment \(attachment.id) done. fullsize? \(isThumbnail.negated)")
+            logger.info("Marked discovered attachment \(attachment.id) done. fullsize? \(!isThumbnail)")
             if finishedRecord.isFullsize {
                 Task {
                     await backupAttachmentUploadProgress.didFinishUploadOfFullsizeAttachment(

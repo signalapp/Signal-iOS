@@ -303,7 +303,7 @@ class MediaGalleryAttachmentFinderTest: SSKBaseTest {
                         return false
                     })
                     // There should NOT be expensive B-TREE usage.
-                    XCTAssert(queryPlan.allSatisfy { $0.contains("USE TEMP B-TREE").negated })
+                    XCTAssert(queryPlan.allSatisfy { !$0.contains("USE TEMP B-TREE") })
                 }
             }
         }

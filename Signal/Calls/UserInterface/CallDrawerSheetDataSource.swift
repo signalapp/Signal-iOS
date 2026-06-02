@@ -290,7 +290,7 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
                 isLocalUser: false,
                 isUnknown: false,
                 isAudioMuted: self.individualCall.isRemoteAudioMuted,
-                isVideoMuted: self.individualCall.isRemoteVideoEnabled.negated,
+                isVideoMuted: !self.individualCall.isRemoteVideoEnabled,
                 isPresenting: self.individualCall.isRemoteSharingScreen,
             ))
         }

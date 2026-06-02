@@ -52,10 +52,11 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
 
         guard !didTapCancel else { return }
 
-        self.isIndeterminate = progress
-            .progress(for: .waitingForBackup)?
-            .isFinished.negated
-            ?? true
+        self.isIndeterminate = !(
+            progress
+                .progress(for: .waitingForBackup)?
+                .isFinished ?? false
+        )
 
         if
             let downloadSource = progress.progressForChild(

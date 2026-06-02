@@ -692,7 +692,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             logger.info("Finished exporting backup")
             bencher.logResults()
         })
-        processErrors(errors: errors, didFail: result.isSuccess.negated)
+        processErrors(errors: errors, didFail: !result.isSuccess)
         return try result.get()
     }
 
@@ -1345,7 +1345,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             return backupInfo
         })
 
-        processErrors(errors: frameErrors, didFail: result.isSuccess.negated)
+        processErrors(errors: frameErrors, didFail: !result.isSuccess)
         return try result.get()
     }
 
