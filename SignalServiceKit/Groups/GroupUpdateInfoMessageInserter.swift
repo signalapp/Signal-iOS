@@ -196,30 +196,25 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         /// update that somehow doesn't produce a diff, we'll get back a list
         /// with a single "generic group update" item in it.
         owsPrecondition(!updateItemsForNewMessage.isEmpty)
-        let infoMessage: TSInfoMessage = .makeForGroupUpdate(
-            timestamp: dateProvider().ows_millisecondsSince1970,
-            spamReportingMetadata: spamReportingMetadata,
-            groupThread: groupThread,
-            updateItems: updateItemsForNewMessage,
-        )
-        infoMessage.anyInsert(transaction: tx)
+        let timestamp = dateProvider().ows_millisecondsSince1970
+        let insertedMessages: [(
+            updateItem: TSInfoMessage.PersistableGroupUpdateItem,
+            message: TSInfoMessage,
+        )] = updateItemsForNewMessage.map { item in
+            let message: TSInfoMessage = .makeForGroupUpdate(
+                timestamp: timestamp,
+                spamReportingMetadata: spamReportingMetadata,
+                groupThread: groupThread,
+                updateItems: [item],
+            )
+            message.anyInsert(transaction: tx)
+            return (item, message)
+        }
 
-        let wasLocalUserInGroup = oldGroupModel?.groupMembership.isLocalUserMemberOfAnyKind ?? false
-        let isLocalUserInGroup = newGroupModel.groupMembership.isLocalUserMemberOfAnyKind
         let wasLocalUserRequestingMember = oldGroupModel?.groupMembership.isLocalUserRequestingMember ?? false
         let isLocalUserRequestingMember = newGroupModel.groupMembership.isLocalUserRequestingMember
 
-        let isTerminatedGroup: Bool
-        if
-            let newGroupModelv2 = newGroupModel as? TSGroupModelV2,
-            let oldGroupModelv2 = oldGroupModel as? TSGroupModelV2,
-            !oldGroupModelv2.isTerminated,
-            newGroupModelv2.isTerminated
-        {
-            isTerminatedGroup = true
-        } else {
-            isTerminatedGroup = false
-        }
+        var isTerminatedGroup = false
 
         let isLocalUserUpdate: Bool
         switch groupUpdateSource {
@@ -229,29 +224,63 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
             isLocalUserUpdate = false
         }
         if isLocalUserUpdate || (!wasLocalUserRequestingMember && isLocalUserRequestingMember) {
-            infoMessage.markAsRead(
-                atTimestamp: NSDate.ows_millisecondTimeStamp(),
-                thread: groupThread,
-                circumstance: .onThisDevice,
-                shouldClearNotifications: true,
-                transaction: tx,
-            )
-        } else if !wasLocalUserInGroup, isLocalUserInGroup {
+            let now = NSDate.ows_millisecondTimeStamp()
+            insertedMessages.map(\.message).forEach { message in
+                message.markAsRead(
+                    atTimestamp: now,
+                    thread: groupThread,
+                    circumstance: .onThisDevice,
+                    shouldClearNotifications: true,
+                    transaction: tx,
+                )
+            }
+        } else {
             // Notify when the local user is added or invited to a group.
-            notificationPresenter.notifyUser(
-                forTSMessage: infoMessage,
-                thread: groupThread,
-                wantsSound: true,
-                transaction: tx,
-            )
-        } else if isTerminatedGroup {
+            for groupJoinMessage in insertedMessages.compactMap({ item, message -> TSInfoMessage? in
+                switch item {
+                case
+                    .localUserWasInvitedByLocalUser,
+                    .localUserWasInvitedByOtherUser,
+                    .localUserWasInvitedByUnknownUser,
+                    .localUserAddedByLocalUser,
+                    .localUserAddedByOtherUser,
+                    .localUserAddedByUnknownUser,
+                    .localUserInvitedAfterMigration,
+                    .localUserJoined,
+                    .localUserJoinedViaInviteLink:
+                    return message
+                default:
+                    return nil
+                }
+            }) {
+                notificationPresenter.notifyUser(
+                    forTSMessage: groupJoinMessage,
+                    thread: groupThread,
+                    wantsSound: true,
+                    transaction: tx,
+                )
+            }
+
             // Notify when the group ends.
-            notificationPresenter.notifyUser(
-                forTSMessage: infoMessage,
-                thread: groupThread,
-                wantsSound: true,
-                transaction: tx,
-            )
+            for groupTerminateMessage in insertedMessages.compactMap({ item, message -> TSInfoMessage? in
+                switch item {
+                case
+                    .groupTerminatedByLocalUser,
+                    .groupTerminatedByOtherUser,
+                    .groupTerminatedByUnknownUser:
+                    return message
+                default:
+                    return nil
+                }
+            }) {
+                notificationPresenter.notifyUser(
+                    forTSMessage: groupTerminateMessage,
+                    thread: groupThread,
+                    wantsSound: true,
+                    transaction: tx,
+                )
+                isTerminatedGroup = true
+            }
         }
 
         // Delete intents for terminated group.
