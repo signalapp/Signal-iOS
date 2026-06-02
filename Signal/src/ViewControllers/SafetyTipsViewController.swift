@@ -12,6 +12,11 @@ public enum SafetyTipsType {
     case group
 }
 
+public enum SafetyTipsMode {
+    case smsRequest
+    case messageRequest
+}
+
 public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollViewDelegate {
     public struct Button {
         let title: String
@@ -20,15 +25,19 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
 
     override public var placeOnGlassIfAvailable: Bool { true }
     let primaryButton: Button
+    let mode: SafetyTipsMode
 
-    init(primaryButton: Button) {
+    init(mode: SafetyTipsMode, primaryButton: Button) {
+        self.mode = mode
         self.primaryButton = primaryButton
     }
 
-    private enum SafetyTips: CaseIterable {
+    private enum SafetyTips {
         case chatsFromSignal
         case reviewNames
         case scams
+        case keepVerificationCodeSafe
+        case enableReglock
 
         var image: UIImage? {
             switch self {
@@ -38,6 +47,10 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
                 return UIImage(resource: .safetytip4802)
             case .scams:
                 return UIImage(resource: .safetytip4803)
+            case .keepVerificationCodeSafe:
+                return UIImage(resource: .safetytip4804)
+            case .enableReglock:
+                return UIImage(resource: .safetytip4805)
             }
         }
 
@@ -58,6 +71,16 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
                     "SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_TITLE",
                     comment: "Message title describing the scams safety tip.",
                 )
+            case .keepVerificationCodeSafe:
+                return OWSLocalizedString(
+                    "SAFETY_TIPS_KEEP_CODE_SAFE_TITLE",
+                    comment: "Message title describing the keeping codes safe safety tip.",
+                )
+            case .enableReglock:
+                return OWSLocalizedString(
+                    "SAFETY_TIPS_ENABLE_REGLOCK_TITLE",
+                    comment: "Message title describing the enable reglock safety tip.",
+                )
             }
         }
 
@@ -77,6 +100,16 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
                 return OWSLocalizedString(
                     "SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY",
                     comment: "Message body describing the scams safety tip.",
+                )
+            case .keepVerificationCodeSafe:
+                return OWSLocalizedString(
+                    "SAFETY_TIPS_KEEP_CODE_SAFE_BODY",
+                    comment: "Message body describing the keeping codes safe safety tip.",
+                )
+            case .enableReglock:
+                return OWSLocalizedString(
+                    "SAFETY_TIPS_ENABLE_REGLOCK_BODY",
+                    comment: "Message body describing the enable reglock safety tip.",
                 )
             }
         }
@@ -129,7 +162,12 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
             stackView.widthAnchor.constraint(equalTo: contentScrollView.frameLayoutGuide.widthAnchor, constant: -48),
         ])
 
-        for bullet in SafetyTips.allCases {
+        let cases: [SafetyTips] = switch mode {
+        case .smsRequest: [.chatsFromSignal, .keepVerificationCodeSafe, .enableReglock]
+        case .messageRequest: [.chatsFromSignal, .reviewNames, .scams]
+        }
+
+        for bullet in cases {
             let bulletView = SafetyBulletView(bullet)
             stackView.addArrangedSubview(bulletView)
         }
