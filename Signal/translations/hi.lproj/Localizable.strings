@@ -2750,7 +2750,7 @@
 "DEBUG_LOG_PREVIEW_HEADER" = "सबमिट करने पर, आपका लॉग एक यूनीक और अनपब्लिश URL पर 30 दिनों के लिए ऑनलाइन पोस्ट हो जाएगा।";
 
 /* Button below the debug log preview which continues the submission flow */
-"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "सबमिट करें";
 
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "डीबग लॉग";
@@ -7975,6 +7975,12 @@
 /* Message title describing the crypto safety tip. */
 "SAFETY_TIPS_CRYPTO_TITLE" = "क्रिप्टो या मनी स्कैम";
 
+/* Message body describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_BODY" = "Protect your account by requiring your Signal PIN, in addition to your verification code, when registering with Signal.";
+
+/* Message title describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_TITLE" = "Turn on registration lock in account settings";
+
 /* Message contents for the safety tip concerning fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_BODY" = "किसी भी बिज़नेस या सरकारी संस्था के मैसेज पर तुरंत भरोसा न करें। टैक्स, कूरियर जैसी सेवाओं के नाम पर आने वाले मैसेज स्पैम हो सकते हैं।";
 
@@ -7983,6 +7989,12 @@
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "सुरक्षा से जुड़े सुझाव";
+
+/* Message body describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+
+/* Message title describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "Keep your verification code safe";
 
 /* Message body describing the scams safety tip. */
 "SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "ऐसे गोलमोल मैसेज से बचें जो आपको जवाब देने के लिए उकसा रहा हो। रुपये-पैसे संबंधी सुझाव और संदिग्ध वेब लिंक के प्रति सतर्क रहें।";
@@ -8687,7 +8699,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "अपना पिन अपडेट करें";
 
 /* Accessibility label for the information button on the payments settings screen. */
-"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "जानकारी";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "वॉलेट पता सही नहीं है";
@@ -8873,7 +8885,7 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "पेमेंट रिकवरी फ़्रेज़ रिकॉर्ड करें";
 
 /* Accessibility label for the refresh button on the payments settings screen. */
-"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "रीफ़्रेश करें";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "बाकी बैलेंस";

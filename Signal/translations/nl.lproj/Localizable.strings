@@ -2750,7 +2750,7 @@
 "DEBUG_LOG_PREVIEW_HEADER" = "Na indienen wordt dit log 30 dagen lang online beschikbaar gesteld op een unieke, nergens onthulde URL.";
 
 /* Button below the debug log preview which continues the submission flow */
-"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Indienen";
 
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "Foutopsporingslog";
@@ -7975,6 +7975,12 @@
 /* Message title describing the crypto safety tip. */
 "SAFETY_TIPS_CRYPTO_TITLE" = "Crypto- of geldscams";
 
+/* Message body describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_BODY" = "Protect your account by requiring your Signal PIN, in addition to your verification code, when registering with Signal.";
+
+/* Message title describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_TITLE" = "Turn on registration lock in account settings";
+
 /* Message contents for the safety tip concerning fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Wees voorzichtig met bedrijven of overheidsinstanties die je benaderen. Berichten van de belastingdienst, koeriers en andere bedrijven kunnen spam zijn.";
 
@@ -7983,6 +7989,12 @@
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "Veiligheidstips";
+
+/* Message body describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+
+/* Message title describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "Keep your verification code safe";
 
 /* Message body describing the scams safety tip. */
 "SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "Vermijd vage berichten die je een reactie proberen te ontlokken. Wees alert op financiële tips en verdachte links.";
@@ -8687,7 +8699,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Nieuwe pincode aanmaken";
 
 /* Accessibility label for the information button on the payments settings screen. */
-"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Informatie";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Portemonnee-adres ongeldig";
@@ -8873,7 +8885,7 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Herstelzin voor betalingen vastleggen";
 
 /* Accessibility label for the refresh button on the payments settings screen. */
-"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Verversen";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Resterend krediet";
@@ -10154,7 +10166,7 @@
 "VERIFICATION_CODE_REQUESTED_HERO_BODY_FIRST" = "Er is een verificatiecode aangevraagd";
 
 /* Second part of body for a hero sheet informing the user a verification code was requested. */
-"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Deel de verificatiecode met niemand. Signal zal je er nooit een bericht over sturen. Als je een bericht hebt ontvangen van iemand die zich voordoet als Signal, dan is dat oplichting.\nJe kunt dit bericht negeren als je de code zelf hebt aangevraagd.";
+"VERIFICATION_CODE_REQUESTED_HERO_BODY_SECOND" = "Deel de verificatiecode met niemand. Signal zal je er nooit een bericht over sturen. Als je een bericht hebt ontvangen van iemand die zich voordoet als Signal, dan is dat oplichting.\nAls je de code zelf hebt aangevraagd, kun je dit bericht negeren.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Je hebt %1$@ gemarkeerd als niet-geverifieerd.";

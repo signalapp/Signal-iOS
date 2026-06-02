@@ -2750,7 +2750,7 @@
 "DEBUG_LOG_PREVIEW_HEADER" = "제출한 로그는 별도의 비공개 URL에 30일 동안 게시됩니다.";
 
 /* Button below the debug log preview which continues the submission flow */
-"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "제출";
 
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "디버그 로그";
@@ -3443,7 +3443,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "안녕하세요.\n\n요즘 iPhone에서 나누는 대화를 안전하게 보호하기 위해 Signal을 사용하고 있습니다. 저희가 나누는 대화와 통화를 안전하게 보호할 수 있도록 Signal을 설치해 주실 수 있을까요?\n\nSignal은 iPhone과 Android, 데스크톱에서 이용할 수 있습니다. %1$@에서 다운로드하실 수 있어요.\n\nSignal은 기존의 메시지 앱과 동일한 방식으로 작동합니다. 사진과 동영상을 보내고, 통화하고, 그룹 대화를 나눌 수도 있죠. 무엇보다 중요한 점은 Signal을 만든 사람조차 우리가 나누는 대화를 볼 수 없다는 거예요.\n\n%2$@에서 Signal에 관해 자세히 알아보세요.";
+"EMAIL_INVITE_BODY" = "안녕하세요!\n\n요즘 휴대폰 대화 보안을 위해 Signal을 쓰고 있는데요, 같이 Signal을 설치해 주시면 저희가 나누는 메시지와 통화가 안전하게 보호될 수 있어요.\n\nSignal은 iPhone과 Android, PC에서 모두 이용 가능합니다. %1$@에서 다운로드해 보세요.\n\nSignal은 기존 메시지 앱과 동일한 방식으로 작동합니다. 사진이랑 동영상도 보낼 수 있고, 1:1 개인 통화와 그룹 통화도 가능합니다. 무엇보다 좋은 점은 Signal 개발팀조차 저희가 나누는 대화를 볼 수 없다는 거예요.\n\nSignal에 관한 자세한 정보는 %2$@에서 확인해 보세요.";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal로 같이 옮겨요";
@@ -3848,19 +3848,19 @@
 "GROUP_CALL_CONTINUE_BUTTON" = "통화 계속하기";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "그룹 통화가 종료됨";
+"GROUP_CALL_ENDED_MESSAGE" = "그룹 통화가 종료되었습니다";
 
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "자세한 정보";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "이 통화에 대한 최대 참가자 수에 도달했습니다. 나중에 다시 시도하세요.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "이 통화는 정원 초과로 종료되었습니다. 나중에 다시 시도해 주세요.";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
 "GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ 님이 그룹에 전화를 거는 중입니다";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "통화 최대 참가자 수 도달";
+"GROUP_CALL_IS_FULL" = "통화 정원 도달";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
 "GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%1$@ 님에게 전화를 거는 중입니다";
@@ -3911,7 +3911,7 @@
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "%1$@ 님의 음성 및 영상 통화를 수신할 수 없습니다.";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "아무도 없음";
+"GROUP_CALL_NO_ONE_HERE" = "참가한 사람이 없어요";
 
 /* Text indicating you can't take this action because you're not a member of the group */
 "GROUP_CALL_NOT_A_MEMBER" = "더 이상 이 그룹의 멤버가 아니므로 이 작업을 수행할 수 없습니다.";
@@ -3947,10 +3947,10 @@
 "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE" = "%1$@ 님을 통화 그룹에서 내보낼까요?";
 
 /* The title of an alert when you've been removed from a group call. */
-"GROUP_CALL_REMOVED" = "통화 참가 제한";
+"GROUP_CALL_REMOVED" = "통화에서 제외되었습니다";
 
 /* The message of an alert when you've been removed from a group call. */
-"GROUP_CALL_REMOVED_MESSAGE" = "통화 그룹에서 제외되었습니다.";
+"GROUP_CALL_REMOVED_MESSAGE" = "다른 참여자가 통화 그룹에서 나를 내보냈습니다.";
 
 /* The title of an alert when tried to join a call using a link but the admin rejected your request. */
 "GROUP_CALL_REQUEST_DENIED" = "참여 요청 거부됨";
@@ -6008,10 +6008,10 @@
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "도움이 필요하신가요?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "올바르지 않은 PIN";
+"ONBOARDING_2FA_INVALID_PIN" = "PIN이 일치하지 않습니다";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "PIN이 올바르지 않습니다. 1번 더 시도할 수 있습니다.";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "PIN이 일치하지 않습니다. 남은 시도 횟수: 1회";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "건너뛴 후 새 PIN 만들기";
@@ -6158,7 +6158,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "PIN에 대해 더 알아보기";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "올바르지 않은 PIN";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN이 일치하지 않습니다";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "PIN 입력 횟수를 모두 초과했으나, 전화번호 인증을 통해 Signal 계정에 다시 접속할 수 있습니다. 보안 및 개인정보 보호를 위해 프로필 정보나 설정 등 저장된 데이터 없이 계정이 복원됩니다.";
@@ -7469,7 +7469,7 @@
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "PIN은 사용자가 만든 4자리 이상의 영숫자 조합 코드입니다. PIN이 기억나지 않는다면 새로운 PIN을 만드세요. 계정을 등록하여 사용할 수 있지만 프로필 정보 등 일부 저장된 설정이 손실됩니다. Signal 안전 백업을 활성화한 경우, 복구 키로 계속할 수 있습니다.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "올바르지 않은 PIN";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN이 일치하지 않습니다";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "환영합니다!";
@@ -7975,6 +7975,12 @@
 /* Message title describing the crypto safety tip. */
 "SAFETY_TIPS_CRYPTO_TITLE" = "암호화폐 또는 금융 사기";
 
+/* Message body describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_BODY" = "Protect your account by requiring your Signal PIN, in addition to your verification code, when registering with Signal.";
+
+/* Message title describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_TITLE" = "Turn on registration lock in account settings";
+
 /* Message contents for the safety tip concerning fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_BODY" = "기업이나 정부 기관을 사칭한 연락에 주의하세요. 국세청 등의 공공기관이나 배송 업체와 관련된 메시지는 스팸일 가능성이 높습니다.";
 
@@ -7983,6 +7989,12 @@
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "안전 팁";
+
+/* Message body describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+
+/* Message title describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "Keep your verification code safe";
 
 /* Message body describing the scams safety tip. */
 "SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "답장을 유도하려는 모호한 메시지에는 응답하지 마시고, 금전 관련 제안이나 의심스러운 웹 링크에 유의하세요.";
@@ -8687,7 +8699,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "PIN 업데이트";
 
 /* Accessibility label for the information button on the payments settings screen. */
-"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "정보";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "잘못된 지갑 주소";
@@ -8873,7 +8885,7 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "결제 복원 문구 기록";
 
 /* Accessibility label for the refresh button on the payments settings screen. */
-"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "새로고침";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "잔액";
@@ -9293,16 +9305,16 @@
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "인증하지 않고 계속할까요?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Signal에서 스팸을 방지하려면 확인을 완료하세요.\n\n확인 후 메시지를 계속 전송할 수 있습니다. 일시 중지된 메시지는 자동으로 전송됩니다.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Signal 서비스 내 스팸 방지를 위해 인증을 완료해 주세요.\n\n인증 완료 후 메시지를 계속 전송할 수 있습니다. 일시 중지된 메시지는 인증 후 자동으로 전송됩니다.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "메시지를 계속하려면 확인";
+"SPAM_CAPTCHA_SHEET_TITLE" = "메시지를 계속 보내려면 인증해 주세요";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "확인 건너뛰기";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "인증 건너뛰기";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "확인 완료";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "인증을 완료해 주세요";
 
 /* Text for a toast confirming that the speakerphone has been turned off for a call. */
 "SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "스피커 꺼짐";

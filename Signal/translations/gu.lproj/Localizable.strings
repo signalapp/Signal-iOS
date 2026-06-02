@@ -2750,7 +2750,7 @@
 "DEBUG_LOG_PREVIEW_HEADER" = "સબમિટ કર્યા પછી, તમારો લૉગ 30 દિવસ માટે એક અનન્ય, અપ્રકાશિત URL પર ઓનલાઇન પોસ્ટ કરવામાં આવશે.";
 
 /* Button below the debug log preview which continues the submission flow */
-"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "સબમિટ કરો";
 
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "ડીબગ લૉગ";
@@ -7975,6 +7975,12 @@
 /* Message title describing the crypto safety tip. */
 "SAFETY_TIPS_CRYPTO_TITLE" = "ક્રિપ્ટો અથવા પૈસાને લગતા સ્કેમ";
 
+/* Message body describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_BODY" = "Protect your account by requiring your Signal PIN, in addition to your verification code, when registering with Signal.";
+
+/* Message title describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_TITLE" = "Turn on registration lock in account settings";
+
 /* Message contents for the safety tip concerning fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_BODY" = "તમારો સંપર્ક કરતાં બિઝનેસ અથવા સરકારી એજન્સીથી સાવચેત રહો. ટેક્સ એજન્સી, કુરિયર વગેરેને શામેલ કરતાં મેસેજ સ્પામ હોઈ શકે છે.";
 
@@ -7983,6 +7989,12 @@
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "સલામતી ટિપ્સ";
+
+/* Message body describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+
+/* Message title describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "Keep your verification code safe";
 
 /* Message body describing the scams safety tip. */
 "SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "એવા અસ્પષ્ટ મેસેજને ટાળો જે તમને જવાબ આપવા માટે પ્રેરિત કરે. નાણાકીય ટિપ્સ અને શંકાસ્પદ વેબ લિંકથી સાવધ રહો.";
@@ -8687,7 +8699,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "તમારો PIN અપડેટ કરો";
 
 /* Accessibility label for the information button on the payments settings screen. */
-"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "માહિતી";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "અમાન્ય વૉલેટ એડ્રેસ";
@@ -8873,7 +8885,7 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "પેમેન્ટ્સ રિકવરી ફ્રેઝને રેકોર્ડ કરો";
 
 /* Accessibility label for the refresh button on the payments settings screen. */
-"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "રિફ્રેશ કરો";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "બાકીનું બેલેન્સ";
