@@ -60,6 +60,7 @@ public struct BackupSettingsStore {
     private enum Keys {
         static let haveEverBeenEnabled = "haveEverBeenEnabledKey2"
         static let shouldOverrideShowBackupsOnboarding = "shouldOverrideShowBackupsOnboarding"
+        static let shouldGenerateThumbnailsOnNextOffloading = "shouldGenerateThumbnailsOnNextOffloading"
         static let plan = "planKey2"
         static let firstBackupDate = "firstBackupDate"
         static let lastBackupDate = "lastBackupDate"
@@ -111,6 +112,20 @@ public struct BackupSettingsStore {
     /// Not intended for production use.
     public func setShouldOverrideShowBackupsOnboarding(_ value: Bool, tx: DBWriteTransaction) {
         kvStore.setBool(value, key: Keys.shouldOverrideShowBackupsOnboarding, transaction: tx)
+    }
+
+    /// Whether to force generation/upload of new thumbnails during the next offloading of attachment.
+    ///
+    /// Not intended for production use.
+    public func shouldGenerateThumbnailsOnNextOffloading(tx: DBReadTransaction) -> Bool {
+        return kvStore.getBool(Keys.shouldGenerateThumbnailsOnNextOffloading, defaultValue: false, transaction: tx)
+    }
+
+    /// Set an override to force generation/upload of new thumbnails during the next offloading of attachment.
+    ///
+    /// Not intended for production use.
+    public func setShouldGenerateThumbnailsOnNextOffloading(_ value: Bool, tx: DBWriteTransaction) {
+        kvStore.setBool(value, key: Keys.shouldGenerateThumbnailsOnNextOffloading, transaction: tx)
     }
 
     // MARK: - BackupPlan

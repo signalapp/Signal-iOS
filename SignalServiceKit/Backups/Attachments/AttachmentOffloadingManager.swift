@@ -124,6 +124,8 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
             throw NeedsListMediaError()
         }
 
+        let forceThumbnailGeneration = db.read(block: backupSettingsStore.shouldGenerateThumbnailsOnNextOffloading(tx:))
+
         let (candidateAttachments, didHitEnd) = try db.read { tx -> ([Attachment], Bool) in
             guard offloadingIsAllowed(tx: tx) else {
                 return ([], false)
@@ -176,7 +178,12 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                     )
                 {
                     attachments.append(attachment)
-                    if self.thumbnailableAttachment(attachment) != nil {
+                    if
+                        self.thumbnailableAttachment(
+                            attachment,
+                            ignoreExisting: forceThumbnailGeneration,
+                        ) != nil
+                    {
                         numAttachmentsNeedingThumbnail += 1
                     }
                 }
@@ -201,10 +208,15 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
             return nil
         }
 
-        try await downloadExistingThumbnails(candidateAttachments)
+        if !forceThumbnailGeneration {
+            try await downloadExistingThumbnails(candidateAttachments)
+        }
 
         // Generate if we can't download
-        let pendingThumbnails = try await generateThumbnails(candidateAttachments)
+        let pendingThumbnails = try await generateThumbnails(
+            candidateAttachments,
+            ignoreExisting: forceThumbnailGeneration,
+        )
 
         await db.awaitableWrite { tx in
             guard offloadingIsAllowed(tx: tx) else {
@@ -278,6 +290,9 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         }
 
         if didHitEnd {
+            await db.awaitableWrite { tx in
+                backupSettingsStore.setShouldGenerateThumbnailsOnNextOffloading(false, tx: tx)
+            }
             return nil
         } else {
             return candidateAttachments.last?.id
@@ -358,9 +373,12 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
     }
 
     /// Returns nil if the attachment cannot or does not need to be thumbnailed.
-    private func thumbnailableAttachment(_ attachment: Attachment) -> ThumbnailableAttachment? {
+    private func thumbnailableAttachment(
+        _ attachment: Attachment,
+        ignoreExisting: Bool,
+    ) -> ThumbnailableAttachment? {
         guard
-            attachment.localRelativeFilePathThumbnail == nil,
+            (ignoreExisting || attachment.localRelativeFilePathThumbnail == nil),
             AttachmentBackupThumbnail.canBeThumbnailed(attachment),
             let stream = attachment.asStream(),
             let mediaName = attachment.mediaName
@@ -403,8 +421,13 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         }
     }
 
-    private func generateThumbnails(_ attachments: [Attachment]) async throws -> [Attachment.IDType: PendingThumbnail] {
-        let attachments = attachments.compactMap(self.thumbnailableAttachment(_:))
+    private func generateThumbnails(
+        _ attachments: [Attachment],
+        ignoreExisting: Bool,
+    ) async throws -> [Attachment.IDType: PendingThumbnail] {
+        let attachments = attachments.compactMap {
+            self.thumbnailableAttachment($0, ignoreExisting: ignoreExisting)
+        }
         if attachments.isEmpty {
             return [:]
         }
