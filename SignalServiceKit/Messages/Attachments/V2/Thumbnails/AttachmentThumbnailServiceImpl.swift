@@ -107,7 +107,6 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
                 with: image,
                 format: .webP,
                 options: [
-                    .encodeWebPMethod: 3,
                     .encodeMaxFileSize: targetMaxFileSize,
                     .encodeMaxPixelSize: targetSize,
                 ],
