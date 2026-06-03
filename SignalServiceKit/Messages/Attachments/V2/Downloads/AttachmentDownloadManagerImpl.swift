@@ -1306,10 +1306,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 // Transit tier can download regardless of reachability
                 break
             case .mediaTierFullsize, .mediaTierThumbnail:
-                guard
-                    backupSettingsStore.shouldAllowBackupDownloadsOnCellular(tx: tx)
-                    || reachabilityManager.isReachable(via: .wifi)
-                else {
+                if
+                    !backupSettingsStore.shouldAllowBackupDownloadsOnCellular(tx: tx),
+                    priority == .backupRestore,
+                    !reachabilityManager.isReachable(via: .wifi)
+                {
                     return .blockedByNetworkState
                 }
             }
