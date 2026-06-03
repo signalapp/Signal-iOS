@@ -111,6 +111,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
         view.addSubview(scrollView)
         scrollView.autoPinEdgesToSuperviewEdges()
+        scrollView.layoutIfNeeded()
 
         // Video Playback controls
         if isVideo {
