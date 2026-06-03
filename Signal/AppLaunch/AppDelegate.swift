@@ -716,6 +716,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // element" should call .restart() on the appropriate job.
         dependenciesBridge.deletedCallRecordExpirationJob.start()
         dependenciesBridge.disappearingMessagesExpirationJob.start()
+        dependenciesBridge.decryptionPlaceholderExpirationJob.start()
         dependenciesBridge.storyMessageExpirationJob.start()
         dependenciesBridge.pinnedMessageExpirationJob.start()
 

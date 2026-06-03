@@ -864,6 +864,13 @@ extension AppSetup.GlobalsContinuation {
             db: db,
             interactionDeleteManager: interactionDeleteManager,
         )
+        let decryptionPlaceholderExpirationJob = OWSDecryptionPlaceholderExpirationJob(
+            dateProvider: dateProvider,
+            db: db,
+            interactionDeleteManager: interactionDeleteManager,
+            messageTimestampGenerator: .sharedInstance,
+            notificationPresenter: notificationPresenter,
+        )
 
         let callRecordDeleteAllJobQueue = CallRecordDeleteAllJobQueue(
             callLinkStore: callLinkStore,
@@ -1727,6 +1734,7 @@ extension AppSetup.GlobalsContinuation {
             currentCallProvider: currentCallProvider,
             databaseChangeObserver: databaseStorage.databaseChangeObserver,
             db: db,
+            decryptionPlaceholderExpirationJob: decryptionPlaceholderExpirationJob,
             deletedCallRecordExpirationJob: deletedCallRecordExpirationJob,
             deletedCallRecordStore: deletedCallRecordStore,
             deleteForMeIncomingSyncMessageManager: deleteForMeIncomingSyncMessageManager,

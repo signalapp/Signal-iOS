@@ -21,9 +21,10 @@ open class ExpirationJob<ExpiringElement> {
 
     private let dateProvider: DateProvider
     private let db: DB
-    private let logger: PrefixedLogger
     private let minIntervalBetweenDeletes: TimeInterval
     private let testHooks: TestHooks?
+
+    public let logger: PrefixedLogger
 
     private struct State {
         var notificationObservers: [NotificationCenter.Observer] = []

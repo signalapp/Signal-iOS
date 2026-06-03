@@ -196,7 +196,7 @@ public enum DebugFlags {
         title: LocalizationNotNeeded("Early placeholder expiration"),
         details: LocalizationNotNeeded("Shortens the valid window for message resend+recovery."),
         toggleHandler: { _ in
-            SSKEnvironment.shared.messageDecrypterRef.cleanUpExpiredPlaceholders()
+            DependenciesBridge.shared.decryptionPlaceholderExpirationJob.restart()
         },
     )
 

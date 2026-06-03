@@ -372,31 +372,32 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    static func enumeratePlaceholders(
-        transaction: DBReadTransaction,
-        block: (OWSRecoverableDecryptionPlaceholder) -> Void,
-    ) {
+    static func nextExpiringPlaceholder(
+        tx: DBReadTransaction,
+    ) -> OWSRecoverableDecryptionPlaceholder? {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
-        \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
-        WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)
+        INDEXED BY index_interactions_on_recoverable_placeholder_expiration
+        WHERE \(interactionColumn: .recordType) = \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)
+        ORDER BY \(interactionColumn: .receivedAtTimestamp)
         """
-        do {
-            let cursor = TSInteraction.grdbFetchCursor(
-                sql: sql,
-                transaction: transaction,
-            )
-            while let result = try cursor.next() {
-                if let placeholder = result as? OWSRecoverableDecryptionPlaceholder {
-                    block(placeholder)
-                } else {
-                    owsFailDebug("Unexpected type: \(type(of: result))")
-                }
-            }
-        } catch {
-            owsFailDebug("unexpected error \(error)")
+
+        let cursor = TSInteraction.grdbFetchCursor(
+            sql: sql,
+            transaction: tx,
+        )
+
+        while
+            // Silently skip malformed TSInteraction rows, lest we become stuck
+            // on a malformed row forever.
+            let interaction = try? cursor.next(),
+            let placeholder = interaction as? OWSRecoverableDecryptionPlaceholder
+        {
+            return placeholder
         }
+
+        return nil
     }
 
     @objc

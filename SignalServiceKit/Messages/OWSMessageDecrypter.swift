@@ -9,10 +9,6 @@ public class OWSMessageDecrypter {
 
     private let senderIdsResetDuringCurrentBatch = AtomicValue<Set<String>>(Set(), lock: .init())
 
-    private var placeholderCleanupTimer: Timer? {
-        didSet { oldValue?.invalidate() }
-    }
-
     public init(appReadiness: AppReadiness) {
         SwiftSingletons.register(self)
 
@@ -23,12 +19,6 @@ public class OWSMessageDecrypter {
                 name: MessageProcessor.messageProcessorDidDrainQueue,
                 object: nil,
             )
-        }
-
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
-            guard let self else { return }
-            guard CurrentAppContext().isMainApp else { return }
-            self.cleanUpExpiredPlaceholders()
         }
     }
 
@@ -232,8 +222,8 @@ public class OWSMessageDecrypter {
                         untrustedGroupId: unsealedEnvelope.untrustedGroupId,
                         transaction: transaction,
                     )
-                    if let recoverableErrorMessage {
-                        schedulePlaceholderCleanupIfNecessary(for: recoverableErrorMessage)
+                    if recoverableErrorMessage != nil {
+                        DependenciesBridge.shared.decryptionPlaceholderExpirationJob.restart()
                     }
                     errorMessage = recoverableErrorMessage
                 case .implicit:
@@ -705,83 +695,6 @@ public class OWSMessageDecrypter {
             )
         } catch {
             Logger.warn("Ignoring Pni signature message: \(error)")
-        }
-    }
-
-    private func schedulePlaceholderCleanupIfNecessary(for placeholder: OWSRecoverableDecryptionPlaceholder) {
-        DispatchQueue.main.async {
-            self.schedulePlaceholderCleanup(noLaterThan: placeholder.expirationDate)
-        }
-    }
-
-    private func schedulePlaceholderCleanup(noLaterThan expirationDate: Date) {
-        let fireDate = placeholderCleanupTimer?.fireDate ?? .distantFuture
-        // Only change the fireDate if it's changed "enough", where we consider
-        // about 5 seconds of leeway sufficient.
-        let latestAcceptableFireDate = expirationDate.addingTimeInterval(5)
-
-        if latestAcceptableFireDate < fireDate {
-            placeholderCleanupTimer = Timer.scheduledTimer(
-                withTimeInterval: expirationDate.timeIntervalSinceNow,
-                repeats: false,
-                block: { [weak self] _ in self?.cleanUpExpiredPlaceholders() },
-            )
-        }
-    }
-
-    func cleanUpExpiredPlaceholders() {
-        Task { await self._cleanUpExpiredPlaceholders() }
-    }
-
-    private func _cleanUpExpiredPlaceholders() async {
-        let (expiredPlaceholderIds, nextExpirationDate) = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            var expiredPlaceholderIds = [String]()
-            var nextExpirationDate: Date?
-            InteractionFinder.enumeratePlaceholders(transaction: tx) { placeholder in
-                guard placeholder.expirationDate.isBeforeNow else {
-                    nextExpirationDate = [nextExpirationDate, placeholder.expirationDate].compacted().min()
-                    return
-                }
-                expiredPlaceholderIds.append(placeholder.uniqueId)
-            }
-            return (expiredPlaceholderIds, nextExpirationDate)
-        }
-
-        let batchSize = 25
-        var remainingPlaceholderIds = expiredPlaceholderIds[...]
-        while !remainingPlaceholderIds.isEmpty {
-            let thisBatchPlaceholderIds = remainingPlaceholderIds.prefix(batchSize)
-            remainingPlaceholderIds = remainingPlaceholderIds.dropFirst(batchSize)
-
-            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                for placeholderId in thisBatchPlaceholderIds {
-                    guard
-                        let placeholder = OWSRecoverableDecryptionPlaceholder.fetchRecoverableDecryptionPlaceholderViaCache(
-                            uniqueId: placeholderId,
-                            transaction: tx,
-                        )
-                    else {
-                        continue
-                    }
-                    Logger.info("Cleaning up placeholder \(placeholder.timestamp)")
-                    DependenciesBridge.shared.interactionDeleteManager
-                        .delete(placeholder, sideEffects: .default(), tx: tx)
-                    guard let thread = placeholder.thread(tx: tx) else {
-                        return
-                    }
-                    let errorMessage: TSErrorMessage = .failedDecryption(
-                        thread: thread,
-                        timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
-                        sender: placeholder.sender,
-                    )
-                    errorMessage.anyInsert(transaction: tx)
-                    SSKEnvironment.shared.notificationPresenterRef.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: tx)
-                }
-            }
-        }
-
-        if let nextExpirationDate {
-            await MainActor.run { self.schedulePlaceholderCleanup(noLaterThan: nextExpirationDate) }
         }
     }
 

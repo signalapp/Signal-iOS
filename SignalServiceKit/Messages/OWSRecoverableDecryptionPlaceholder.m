@@ -123,11 +123,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
-- (BOOL)supportsReplacement
-{
-    return [self.expirationDate isAfterNow] && !self.wasRead;
-}
-
 - (NSString *)previewTextWithTransaction:(DBReadTransaction *)transaction
 {
     NSString *_Nullable senderName = nil;

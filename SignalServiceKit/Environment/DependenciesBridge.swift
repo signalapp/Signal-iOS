@@ -99,6 +99,7 @@ public class DependenciesBridge {
     public let currentCallProvider: any CurrentCallProvider
     public let databaseChangeObserver: DatabaseChangeObserver
     public let db: any DB
+    public let decryptionPlaceholderExpirationJob: OWSDecryptionPlaceholderExpirationJob
     public let deletedCallRecordExpirationJob: DeletedCallRecordExpirationJob
     let deletedCallRecordStore: DeletedCallRecordStore
     let deleteForMeIncomingSyncMessageManager: DeleteForMeIncomingSyncMessageManager
@@ -242,6 +243,7 @@ public class DependenciesBridge {
         currentCallProvider: any CurrentCallProvider,
         databaseChangeObserver: DatabaseChangeObserver,
         db: any DB,
+        decryptionPlaceholderExpirationJob: OWSDecryptionPlaceholderExpirationJob,
         deletedCallRecordExpirationJob: DeletedCallRecordExpirationJob,
         deletedCallRecordStore: DeletedCallRecordStore,
         deleteForMeIncomingSyncMessageManager: DeleteForMeIncomingSyncMessageManager,
@@ -384,6 +386,7 @@ public class DependenciesBridge {
         self.currentCallProvider = currentCallProvider
         self.databaseChangeObserver = databaseChangeObserver
         self.db = db
+        self.decryptionPlaceholderExpirationJob = decryptionPlaceholderExpirationJob
         self.deletedCallRecordExpirationJob = deletedCallRecordExpirationJob
         self.deletedCallRecordStore = deletedCallRecordStore
         self.deleteForMeIncomingSyncMessageManager = deleteForMeIncomingSyncMessageManager

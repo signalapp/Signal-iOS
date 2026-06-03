@@ -332,6 +332,7 @@ public class GRDBSchemaMigrator {
         case wipeCachedSVRBAuthCredentials
         case addMimeTypeToMessageAttachmentReference
         case purgeMyStoryDeletedAtTimestamp
+        case addRecoverablePlaceholderExpirationIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5199,6 +5200,17 @@ public class GRDBSchemaMigrator {
                     "00000000-0000-0000-0000-000000000000",
                 ],
             )
+            return .success(())
+        }
+
+        migrator.registerMigration(.addRecoverablePlaceholderExpirationIndex) { tx in
+            try tx.database.create(
+                index: "index_interactions_on_recoverable_placeholder_expiration",
+                on: "model_TSInteraction",
+                columns: ["receivedAtTimestamp"],
+                condition: Column("recordType") == SDSRecordType.recoverableDecryptionPlaceholder.rawValue,
+            )
+
             return .success(())
         }
 
