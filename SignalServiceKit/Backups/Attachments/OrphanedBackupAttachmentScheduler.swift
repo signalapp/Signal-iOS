@@ -53,13 +53,16 @@ public class OrphanedBackupAttachmentSchedulerImpl: OrphanedBackupAttachmentSche
         withMediaName mediaName: String,
         tx: DBWriteTransaction,
     ) {
-        try! OrphanedBackupAttachment
-            .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
-            .deleteAll(tx.database)
+        failIfThrows {
+            try OrphanedBackupAttachment
+                .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
+                .deleteAll(tx.database)
+        }
         let mediaKey = accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx)
         for type in OrphanedBackupAttachment.SizeType.allCases {
+            let mediaId: Data
             do {
-                let mediaId = try mediaKey.deriveMediaId(
+                mediaId = try mediaKey.deriveMediaId(
                     {
                         switch type {
                         case .fullsize:
@@ -70,13 +73,15 @@ public class OrphanedBackupAttachmentSchedulerImpl: OrphanedBackupAttachmentSche
                         }
                     }(),
                 )
-                try! OrphanedBackupAttachment
-                    .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == mediaId)
-                    .deleteAll(tx.database)
             } catch {
                 owsFailDebug("Unexpected encryption material error")
+                continue
             }
-
+            failIfThrows {
+                try OrphanedBackupAttachment
+                    .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == mediaId)
+                    .deleteAll(tx.database)
+            }
         }
     }
 
