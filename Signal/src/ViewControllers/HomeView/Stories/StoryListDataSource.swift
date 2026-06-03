@@ -706,7 +706,11 @@ class StoryListDataSource: NSObject {
 
 extension StoryListDataSource: DatabaseChangeDelegate {
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        updateStories(forRowIds: databaseChanges.storyMessageRowIds)
+        if databaseChanges.didUpdate(tableName: NicknameRecord.databaseTableName) {
+            reloadStories()
+        } else {
+            updateStories(forRowIds: databaseChanges.storyMessageRowIds)
+        }
     }
 
     func databaseChangesDidUpdateExternally() {
