@@ -98,7 +98,7 @@ struct MediaGalleryItem:
     var isVideo: Bool {
         switch referencedAttachment.attachment.contentType {
         case .video:
-            return true
+            return renderingFlag != .shouldLoop
         case .file, .image, .audio:
             return false
         }
