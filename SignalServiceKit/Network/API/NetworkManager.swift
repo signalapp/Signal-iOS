@@ -96,21 +96,8 @@ public class NetworkManager: NetworkManagerProtocol {
             }
         }
 
-        if shouldEnableReflectorProxy(appReadiness: appReadiness) {
-            Logger.info("Applying reflector proxy settings to libsignal Net.")
-            libsignalNet.INTERNAL_TESTING_setReflectorProxy(true)
-            return
-        }
-
         // This may be clearing a system proxy, or a previously set in-app proxy that is no longer in use.
         libsignalNet.clearProxy()
-    }
-
-    private static func shouldEnableReflectorProxy(appReadiness: AppReadiness) -> Bool {
-        guard appReadiness.isAppReady else {
-            return false
-        }
-        return RemoteConfig.current.enableReflectorsTest
     }
 
     // MARK: -

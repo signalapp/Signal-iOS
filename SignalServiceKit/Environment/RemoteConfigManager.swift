@@ -316,13 +316,6 @@ public class RemoteConfig {
         return !isEnabled(.serviceExtensionFailureKillSwitch)
     }
 
-    public var enableReflectorsTest: Bool {
-        guard BuildFlags.reflectorProxyTest else {
-            return false
-        }
-        return isEnabled(.enableReflectorsTest)
-    }
-
     public var groupTerminateReceiveEnabled: Bool {
         guard BuildFlags.GroupTerminate.receive else {
             return false
@@ -657,7 +650,6 @@ private enum IsEnabledFlag: String, FlagType {
     case dynamicSendMessageTimeoutKillSwitch = "ios.dynamicSendMessageTimeoutKillSwitch"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
-    case enableReflectorsTest = "ios.enableReflectorsTest"
     case groupTerminateReceiveKillSwitch = "ios.groupTerminateReceiveKillSwitch"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
     case optimizeStorageEnabled = "ios.optimizeStorageEnabled"
@@ -688,7 +680,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .dynamicSendMessageTimeoutKillSwitch: true
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
-        case .enableReflectorsTest: true
         case .groupTerminateReceiveKillSwitch: true
         case .messageResendKillSwitch: false
         case .optimizeStorageEnabled: true
