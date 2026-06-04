@@ -8,7 +8,10 @@ import SignalUI
 import StoreKit
 import SwiftUI
 
-class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
+class ChooseBackupPlanViewController:
+    HostingController<ChooseBackupPlanView>,
+    ChooseBackupPlanViewModel.ActionsDelegate
+{
     typealias OnConfirmPlanSelectionBlock = (ChooseBackupPlanViewController, PlanSelection) -> Void
 
     enum StoreKitAvailability {
@@ -118,11 +121,9 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
             onConfirmPlanSelectionBlock: onConfirmPlanSelectionBlock,
         )
     }
-}
 
-// MARK: - ChooseBackupPlanViewModel.ActionsDelegate
+    // MARK: - ChooseBackupPlanViewModel.ActionsDelegate
 
-extension ChooseBackupPlanViewController: ChooseBackupPlanViewModel.ActionsDelegate {
     fileprivate func confirmSelection(_ planSelection: PlanSelection) {
         switch (initialPlanSelection, planSelection) {
         case (.free, .free), (.paid, .paid):
@@ -233,7 +234,7 @@ struct ChooseBackupPlanView: View {
 
                 Spacer().frame(height: 20)
 
-                PlanOptionView(
+                BackupPlanOptionView(
                     title: OWSLocalizedString(
                         "CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE",
                         comment: "Title for the free plan option, when choosing a Backup plan.",
@@ -247,11 +248,11 @@ struct ChooseBackupPlanView: View {
                         viewModel.freeMediaTierDays,
                     ),
                     bullets: [
-                        PlanOptionView.BulletPoint(iconKey: "thread", text: OWSLocalizedString(
+                        BackupPlanOptionView.BulletPoint(icon: .thread, text: OWSLocalizedString(
                             "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP",
                             comment: "Text for a bullet point in a list of Backup features, describing that all text messages are included.",
                         )),
-                        PlanOptionView.BulletPoint(iconKey: "album-tilt", text: String.localizedStringWithFormat(
+                        BackupPlanOptionView.BulletPoint(icon: .albumTilt, text: String.localizedStringWithFormat(
                             OWSLocalizedString(
                                 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d",
                                 tableName: "PluralAware",
@@ -269,7 +270,7 @@ struct ChooseBackupPlanView: View {
 
                 Spacer().frame(height: 16)
 
-                PlanOptionView(
+                BackupPlanOptionView(
                     title: {
                         switch viewModel.storeKitAvailability {
                         case .available(let paidPlanDisplayPrice):
@@ -292,15 +293,15 @@ struct ChooseBackupPlanView: View {
                         comment: "Subtitle for the paid plan option, when choosing a Backup plan.",
                     ),
                     bullets: [
-                        PlanOptionView.BulletPoint(iconKey: "thread", text: OWSLocalizedString(
+                        BackupPlanOptionView.BulletPoint(icon: .thread, text: OWSLocalizedString(
                             "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP",
                             comment: "Text for a bullet point in a list of Backup features, describing that all text messages are included.",
                         )),
-                        PlanOptionView.BulletPoint(iconKey: "album-tilt", text: OWSLocalizedString(
+                        BackupPlanOptionView.BulletPoint(icon: .albumTilt, text: OWSLocalizedString(
                             "CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP",
                             comment: "Text for a bullet point in a list of Backup features, describing that all media is included.",
                         )),
-                        PlanOptionView.BulletPoint(iconKey: "data", text: String.nonPluralLocalizedStringWithFormat(
+                        BackupPlanOptionView.BulletPoint(icon: .data, text: String.nonPluralLocalizedStringWithFormat(
                             OWSLocalizedString(
                                 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT",
                                 comment: "Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}.",
@@ -378,106 +379,6 @@ struct ChooseBackupPlanView: View {
             })
             .foregroundStyle(Color.Signal.secondaryLabel)
             .tint(Color.Signal.secondaryLabel)
-    }
-}
-
-// MARK: -
-
-private struct PlanOptionView: View {
-    struct BulletPoint {
-        let iconKey: String
-        let text: String
-    }
-
-    let title: String
-    let subtitle: String
-    let bullets: [BulletPoint]
-    let isCurrentPlan: Bool
-    let isSelected: Bool
-    let onTap: () -> Void
-
-    var body: some View {
-        Button(action: onTap) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading) {
-                    if isCurrentPlan {
-                        Label(
-                            OWSLocalizedString(
-                                "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL",
-                                comment: "A label indicating that a given Backup plan option is what the user has already enabled.",
-                            ),
-                            systemImage: "checkmark",
-                        )
-                        .font(.footnote)
-                        .foregroundStyle(Color.Signal.secondaryLabel)
-                        .padding(.vertical, 4)
-                        .padding(.horizontal, 12)
-                        .background {
-                            Capsule().fill(Color.Signal.secondaryFill)
-                        }
-                    }
-
-                    Text(title)
-                        .font(.headline)
-                        .multilineTextAlignment(.leading)
-                    Text(subtitle).foregroundStyle(Color.Signal.secondaryLabel)
-
-                    ForEach(bullets, id: \.iconKey) { bullet in
-                        Label {
-                            Text(bullet.text).font(.subheadline)
-                        } icon: {
-                            Image(bullet.iconKey)
-                                .foregroundStyle(
-                                    isSelected
-                                        ? Color.Signal.ultramarine
-                                        : Color.Signal.label,
-                                )
-                        }
-                        .padding(.leading, 20)
-                        .padding(.vertical, 2)
-                    }
-                }
-
-                Spacer()
-
-                Group {
-                    if isSelected {
-                        Circle()
-                            .fill(Color.Signal.ultramarine)
-                            .overlay {
-                                Image(systemName: "checkmark")
-                                    .resizable()
-                                    .foregroundColor(.white)
-                                    .padding(6)
-                            }
-                    } else {
-                        Circle()
-                            .stroke(Color.Signal.secondaryLabel, lineWidth: 2)
-                            .opacity(0.3)
-                    }
-                }
-                .frame(width: 24, height: 24)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 20)
-            .padding(.leading, 20)
-            .padding(.trailing, 16)
-            .background(Color.Signal.secondaryGroupedBackground)
-            .cornerRadius(16)
-            .overlay {
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(
-                        Color.Signal.ultramarine,
-                        lineWidth: isSelected ? 3 : 0,
-                    )
-            }
-            .shadow(
-                color: isSelected ? .black.opacity(0.12) : .clear,
-                radius: 8,
-                y: 2,
-            )
-        }
-        .buttonStyle(.plain)
     }
 }
 

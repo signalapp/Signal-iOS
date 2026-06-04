@@ -2700,6 +2700,7 @@
 		D92812E22FA95C1400667DCF /* DisplayableAccountEntropyPoolTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92812E12FA95C0D00667DCF /* DisplayableAccountEntropyPoolTest.swift */; };
 		D92A1CDA2E314BD400C91E21 /* DebugUIPrompts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92A1CD92E314BD000C91E21 /* DebugUIPrompts.swift */; };
 		D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */; };
+		D92B55EF2FD0D9210083B070 /* BackupPlanOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92B55EE2FD0D9210083B070 /* BackupPlanOptionView.swift */; };
 		D92C57552A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */; };
 		D92CA9EF2F500EA500FDE32D /* LeaveGroupCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92CA9EE2F500EA500FDE32D /* LeaveGroupCoordinator.swift */; };
 		D92CB5562F030F8300537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */; };
@@ -6976,6 +6977,7 @@
 		D92812E12FA95C0D00667DCF /* DisplayableAccountEntropyPoolTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayableAccountEntropyPoolTest.swift; sourceTree = "<group>"; };
 		D92A1CD92E314BD000C91E21 /* DebugUIPrompts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIPrompts.swift; sourceTree = "<group>"; };
 		D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManager.swift; sourceTree = "<group>"; };
+		D92B55EE2FD0D9210083B070 /* BackupPlanOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupPlanOptionView.swift; sourceTree = "<group>"; };
 		D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+DisplayableGroupUpdateItemTest.swift"; sourceTree = "<group>"; };
 		D92CA9EE2F500EA500FDE32D /* LeaveGroupCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveGroupCoordinator.swift; sourceTree = "<group>"; };
 		D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionAlreadyRedeemedSheet.swift; sourceTree = "<group>"; };
@@ -13500,6 +13502,7 @@
 				D97C9FF12DD3FB7200191CE2 /* BackupDisablingManager.swift */,
 				D93FA5BE2DE77E440013879E /* BackupEnablingManager.swift */,
 				D93BDD932E43063B00779BD8 /* BackupKeepKeySafeSheet.swift */,
+				D92B55EE2FD0D9210083B070 /* BackupPlanOptionView.swift */,
 				D98CA2B22DF2450E0060370E /* BackupRecordKeyViewController.swift */,
 				04E66D412DFF3A3E0059DBAC /* BackupRecoveryKeyReminderCoordinator.swift */,
 				04B975452E43A4AA00E20364 /* BackupRefreshManager.swift */,
@@ -18037,6 +18040,7 @@
 				D999345A2DE97BBC002C9196 /* BackupOnboardingCoordinator.swift in Sources */,
 				D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroViewController.swift in Sources */,
 				D98CA2AD2DF14A890060370E /* BackupOnboardingKeyIntroViewController.swift in Sources */,
+				D92B55EF2FD0D9210083B070 /* BackupPlanOptionView.swift in Sources */,
 				D98CA2B32DF245140060370E /* BackupRecordKeyViewController.swift in Sources */,
 				04E66D422DFF3A4B0059DBAC /* BackupRecoveryKeyReminderCoordinator.swift in Sources */,
 				50438A8E2ECBBDF600FCB28F /* BackupRefreshManager.swift in Sources */,
