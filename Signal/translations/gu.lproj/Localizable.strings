@@ -652,6 +652,15 @@
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "ક્લિપબોર્ડમાં કૉપિ કરો";
 
+/* Body for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, warning them not to share it with anyone. */
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal will <bold>never</bold> message you for your recovery key. Do not respond to a chat pretending to be Signal. Store your recovery key somewhere safe and do not share it with anyone.";
+
+/* Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy. */
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Got It";
+
+/* Title for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard. */
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "Do Not Share Your Recovery Key";
+
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "નવી કી બનાવો";
 
@@ -824,7 +833,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "બેકઅપ બંધ કરવામાં આવ્યા છે અને તમારો ડેટા Signalની સુરક્ષિત સ્ટોરેજ સેવામાંથી ડિલીટ કરવામાં આવ્યો છે.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "બેકઅપ બંધ કરવામાં આવ્યા છે, ડિવાઇસ પર ન હોય તેવા કોઈ પણ મીડિયા હવે ડાઉનલોડ થઈ રહ્યાં છે. ડાઉનલોડ થઈ ગયા પછી તમારા ડેટા Signalની સુરક્ષિત સ્ટોરેજ સેવામાંથી ડિલીટ કરવામાં આવશે.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, and any media that is not on this device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "એક ભૂલ આવી. કૃપા કરીને સપોર્ટનો સંપર્ક કરો.";
@@ -988,23 +997,14 @@
 /* Title for an action sheet allowing users to download their offloaded media. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "ઓફલોડ કરેલા મીડિયા ડાઉનલોડ કરીએ?";
 
-/* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "જ્યાં સુધી તમે TestFlightનો ઉપયોગ કરી રહ્યા છો ત્યાં સુધી ઓફલોડ થયેલ મીડિયા ઉપલબ્ધ રહેશે. ટેસ્ટ પ્રોગ્રામ છોડતા પહેલાં તમારા બધા મીડિયા ડાઉનલોડ કરવાનું ભૂલશો નહીં.";
-
-/* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "ઓફલોડ કરેલ મીડિયાનું ટેસ્ટિંગ";
-
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "ન વપરાયેલ મીડિયાને ઓફલોડ કરવામાં આવશે, પરંતુ તમારા બેકઅપમાંથી ગમે ત્યારે ડાઉનલોડ કરી શકાય છે.";
-
-/* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "ન વપરાયેલ મીડિયા ઓફલોડ કરવામાં આવશે, પરંતુ તમે જ્યાં સુધી TestFlightનો ઉપયોગ કરશો ત્યાં સુધી તમારા બેકઅપમાંથી ગમે ત્યારે ડાઉનલોડ કરી શકાય છે.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "સ્ટોરેજ ઑપ્ટિમાઇઝેશનનો ઉપયોગ માત્ર Signal બેકઅપના પેઇડ ટીયર સાથે જ થઈ શકે છે. આ સુવિધાનો ઉપયોગ શરૂ કરવા માટે તમારા બેકઅપ પ્લાનને અપગ્રેડ કરો.";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "ડિવાઇસ પરના સ્ટોરેજને ઑપ્ટિમાઇઝ કરો";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize Signal Storage";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "તમે તમારી બેકઅપ સ્ટોરેજ મર્યાદા સુધી પહોંચી ગયા છો. ચેટ અને મીડિયાનો બેકઅપ લેવાનું ચાલુ રાખવા માટે Signalમાં જગ્યા ખાલી કરો.";
@@ -1015,14 +1015,29 @@
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "બેકઅપ ફરીથી સક્ષમ કરો";
 
+/* Message for a sheet warning the user about skipping downloads while disabling Backups. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted once backups are disabled.";
+
+/* Title for a sheet warning the user about skipping downloads while disabling Backups. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Skip Download?";
+
+/* Message for a sheet warning the user about skipping downloads that will expire. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+
+/* Title for a sheet warning the user about skipping downloads that will expire. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Skip Download?";
+
+/* Title for an action in a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+
+/* Message for a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Are you sure you want to skip downloading your media?";
+
+/* Title for a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Skip Download?";
+
 /* Title for an action in a sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "ડાઉનલોડ કરવાનું છોડો";
-
-/* Message for a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_MESSAGE" = "તમારી પાસે બેકઅપ ડેટા છે જે આ ડિવાઇસ પર નથી. તમારા મીડિયા અને એટેચમેન્ટ સશુલ્ક સબ્સ્ક્રિપ્શન વિના કાયમી ધોરણે ડિલીટ કરવામાં આવશે.";
-
-/* Title for a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "ડાઉનલોડ કરવાનું છોડીએ?";
 
 /* Title for detail button in notice that the user's Backups subscription couldn't be redeemed. */
 "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON" = "વિગતો";
@@ -1060,11 +1075,35 @@
 /* Subtitle for a progress bar tracking active uploading. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "અપલોડ થઈ રહ્યુ છે…";
 
+/* Title for a button in a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Back Up Now";
+
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "તમારા બેકઅપની સાઇઝના આધારે, આમાં વધુ સમય લાગી શકે છે. જ્યારે બેકઅપ લેવામાં આવે ત્યારે તમે સામાન્ય રીતે કરતા હો, તેમ Signalનો ઉપયોગ કરી શકો છો.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "This could take a while. You can use Signal normally while backing up.";
+
+/* Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+
+/* Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimize Signal Storage";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Signal સુરક્ષિત બેકઅપમાં આપનું સ્વાગત છે. હવે તમારું બેકઅપ શરૂ કરો.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "You're all set. Start your backup now.";
+
+/* Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "You have media in your backup that's not on this device. Undownloaded media will be permanently deleted without a paid subscription.\n\nYou can begin paying for backups again at any time to continue backing up your media.";
+
+/* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Download Your Backup Media";
+
+/* Primary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Download Backup Now";
+
+/* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Download Your Backup Media Today";
+
+/* Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Don't Download Backup";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "તમારી ચુકવણી પદ્ધતિ અપ ટૂ ડેટ છે તેની ખાતરી કરવા માટે તપાસો. સબ્સ્ક્રિપ્શન મેનેજ કરો > Signal > ચુકવણી પદ્ધતિ અપડેટ કરો પર ટેપ કરો.";
@@ -2750,7 +2789,7 @@
 "DEBUG_LOG_PREVIEW_HEADER" = "સબમિટ કર્યા પછી, તમારો લૉગ 30 દિવસ માટે એક અનન્ય, અપ્રકાશિત URL પર ઓનલાઇન પોસ્ટ કરવામાં આવશે.";
 
 /* Button below the debug log preview which continues the submission flow */
-"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "સબમિટ કરો";
 
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "ડીબગ લૉગ";
@@ -6808,12 +6847,6 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "પિન";
 
-/* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "તમારો નવો પિન બનાવી ન શક્યા. તમારો વર્તમાન પિન અક્ષમ કરવામાં આવ્યો છે. તમારું કનેક્શન તપાસો અને ફરી પ્રયાસ કરો.";
-
-/* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "પિન બદલવાનું નિષ્ફળ";
-
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN ઓછામાં ઓછા 4 અક્ષરોનો હોવો જોઈએ";
 
@@ -6844,6 +6877,9 @@
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "PIN એન્ક્રિપ્ટ થયેલ Signal સાથે માહિતીને સંગ્રહિત રાખે છે જેથી ફક્ત તમે જ તેને ઍક્સેસ કરી શકો. જ્યારે તમે ફરીથી ઇન્સ્ટોલ કરો ત્યારે તમારી પ્રોફાઇલ, સેટિંગ્સ અને સંપર્કો રિસ્ટોર થશે. એપ્લિકેશન ઓપન કરવા માટે તમારે તમારા PIN ની જરૂર નહીં પડે.";
 
+/* Message when a generic error occurs while creating a PIN. */
+"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Something went wrong creating your PIN. Please contact support.";
+
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "પિન વિશે વધુ માહિતી";
 
@@ -6856,11 +6892,8 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN મેળ ખાતા નથી. ફરીથી પ્રયત્ન કરો.";
 
-/* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "તમારું કનેક્શન તપાસો અને ફરી પ્રયાસ કરો.";
-
-/* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "નેટવર્ક કનેક્શન નથી";
+/* Message when a network error occurs while creating a PIN. */
+"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Something went wrong creating your PIN. Check your connection and try again.";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN ઓછામાં ઓછો 4 અંકનો હોવો જોઈએ";
@@ -6891,12 +6924,6 @@
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
 "PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "રિકવરી કીનો ઉપયોગ કરો";
-
-/* Error title indicating that the attempt to recreate a PIN failed. */
-"PIN_RECREATION_ERROR_TITLE" = "PIN બનાવવાનું નિષ્ફળ થયું";
-
-/* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "તમારો પિન ન બનાવી શક્યા. તમારું કનેક્શન તપાસો અને ફરી પ્રયાસ કરો.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "તમને તમારો PIN યાદ રાખવામાં મદદ કરવા માટે, અમે તમને તે સમયાંતરે દાખલ કરવા માટે કહીશું. અમે સમય જતાં ઓછુ પૂછશું.";
@@ -7874,7 +7901,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "આ ડિવાઇસ પર %1$@ ખાલી કરો";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "તમારી પાસે બેકઅપ ડેટા છે જે આ ડિવાઇસ પર નથી. તમારા મીડિયા અને એટેચમેન્ટ સશુલ્ક સબ્સ્ક્રિપ્શન વિના કાયમી ધોરણે ડિલીટ કરવામાં આવશે.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "જો તમે ડાઉનલોડ કરવાનું છોડી દો છો તો તમારા બેકઅપમાંના બાકીના મીડિયા અને અટેચમેન્ટ જ્યારે સ્ટોરેજ સ્પેસ ઉપલબ્ધ થાય ત્યારે પછીના સમયે ડાઉનલોડ કરી શકાય છે.";
@@ -7975,6 +8002,12 @@
 /* Message title describing the crypto safety tip. */
 "SAFETY_TIPS_CRYPTO_TITLE" = "ક્રિપ્ટો અથવા પૈસાને લગતા સ્કેમ";
 
+/* Message body describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_BODY" = "Signal સાથે રજીસ્ટર કરાવતી વખતે તમારા વેરિફિકેશન કોડ ઉપરાંત, તમારા Signal પિનને જરૂરી બનાવીને તમારા એકાઉન્ટને સુરક્ષિત કરો.";
+
+/* Message title describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_TITLE" = "એકાઉન્ટ સેટિંગ્સમાં રજીસ્ટ્રેશન લૉક ચાલુ કરો";
+
 /* Message contents for the safety tip concerning fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_BODY" = "તમારો સંપર્ક કરતાં બિઝનેસ અથવા સરકારી એજન્સીથી સાવચેત રહો. ટેક્સ એજન્સી, કુરિયર વગેરેને શામેલ કરતાં મેસેજ સ્પામ હોઈ શકે છે.";
 
@@ -7983,6 +8016,12 @@
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "સલામતી ટિપ્સ";
+
+/* Message body describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+
+/* Message title describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "તમારો વેરિફિકેશન કોડ સુરક્ષિત રાખો";
 
 /* Message body describing the scams safety tip. */
 "SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "એવા અસ્પષ્ટ મેસેજને ટાળો જે તમને જવાબ આપવા માટે પ્રેરિત કરે. નાણાકીય ટિપ્સ અને શંકાસ્પદ વેબ લિંકથી સાવધ રહો.";
@@ -8687,7 +8726,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "તમારો PIN અપડેટ કરો";
 
 /* Accessibility label for the information button on the payments settings screen. */
-"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "માહિતી";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "અમાન્ય વૉલેટ એડ્રેસ";
@@ -8873,7 +8912,7 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "પેમેન્ટ્સ રિકવરી ફ્રેઝને રેકોર્ડ કરો";
 
 /* Accessibility label for the refresh button on the payments settings screen. */
-"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "રિફ્રેશ કરો";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "બાકીનું બેલેન્સ";

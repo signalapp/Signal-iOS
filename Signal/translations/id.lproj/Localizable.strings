@@ -652,6 +652,15 @@
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Salin ke Papan Klip";
 
+/* Body for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, warning them not to share it with anyone. */
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal will <bold>never</bold> message you for your recovery key. Do not respond to a chat pretending to be Signal. Store your recovery key somewhere safe and do not share it with anyone.";
+
+/* Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy. */
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Got It";
+
+/* Title for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard. */
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "Do Not Share Your Recovery Key";
+
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Buat Kunci Baru";
 
@@ -824,7 +833,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Pencadangan telah dinonaktifkan dan data Anda telah dihapus dari layanan penyimpanan aman Signal.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Signal Backups telah dinonaktifkan, media apa pun yang belum ada di perangkat ini akan diunduh sekarang. Setelah diunduh, data Anda akan dihapus dari layanan penyimpanan aman Signal.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, and any media that is not on this device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Terjadi kesalahan. Silakan hubungi tim dukungan.";
@@ -988,23 +997,14 @@
 /* Title for an action sheet allowing users to download their offloaded media. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Unduh Media yang Di-offload?";
 
-/* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Media yang di-offload akan tetap tersedia selama Anda masih menggunakan TestFlight. Pastikan Anda mengunduh semua media sebelum keluar dari program pengujian.";
-
-/* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Menguji Media yang Di-offload";
-
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Media yang tidak digunakan akan di-offload, tetapi dapat diunduh dari cadangan Anda kapan saja.";
-
-/* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Media yang tidak digunakan akan di-offload, tetapi dapat diunduh dari cadangan Anda kapan saja selagi Anda masih menggunakan TestFlight.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Pengoptimalan penyimpanan hanya dapat digunakan dengan Signal Backups berbayar. Upgrade paket pencadangan Anda untuk mulai menggunakan fitur ini.";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimalkan Penyimpanan di Perangkat";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize Signal Storage";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "Anda telah mencapai batas penyimpanan cadangan. Hapus beberapa file untuk mengosongkan ruang penyimpanan di Signal agar dapat terus mencadangkan chat dan media.";
@@ -1015,14 +1015,29 @@
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Aktifkan Kembali Cadangan";
 
+/* Message for a sheet warning the user about skipping downloads while disabling Backups. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted once backups are disabled.";
+
+/* Title for a sheet warning the user about skipping downloads while disabling Backups. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Skip Download?";
+
+/* Message for a sheet warning the user about skipping downloads that will expire. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+
+/* Title for a sheet warning the user about skipping downloads that will expire. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Skip Download?";
+
+/* Title for an action in a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+
+/* Message for a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Are you sure you want to skip downloading your media?";
+
+/* Title for a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Skip Download?";
+
 /* Title for an action in a sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "Lewati Pengunduhan";
-
-/* Message for a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_MESSAGE" = "Ada data cadangan yang belum tersimpan di perangkat ini. Tanpa langganan berbayar, media dan lampiran akan dihapus permanen.";
-
-/* Title for a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "Lewati Pengunduhan?";
 
 /* Title for detail button in notice that the user's Backups subscription couldn't be redeemed. */
 "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON" = "Detail";
@@ -1060,11 +1075,35 @@
 /* Subtitle for a progress bar tracking active uploading. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "Mengunggah …";
 
+/* Title for a button in a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Back Up Now";
+
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Apabila volume data cadangan cukup besar, proses ini bisa jadi berlangsung cukup lama. Signal dapat digunakan seperti biasa saat pencadangan berlangsung.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "This could take a while. You can use Signal normally while backing up.";
+
+/* Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+
+/* Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimize Signal Storage";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Selamat datang di Signal Secure Backups. Mulai pencadangan data Anda sekarang.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "You're all set. Start your backup now.";
+
+/* Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "You have media in your backup that's not on this device. Undownloaded media will be permanently deleted without a paid subscription.\n\nYou can begin paying for backups again at any time to continue backing up your media.";
+
+/* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Download Your Backup Media";
+
+/* Primary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Download Backup Now";
+
+/* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Download Your Backup Media Today";
+
+/* Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Don't Download Backup";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Cek dan pastikan metode pembayaran Anda sudah yang terbaru. Ketuk Kelola Langganan > Signal > Perbarui Metode Pembayaran.";
@@ -2750,7 +2789,7 @@
 "DEBUG_LOG_PREVIEW_HEADER" = "Saat dikirimkan, log Anda akan diposting online selama 30 hari pada URL unik yang tidak dipublikasikan.";
 
 /* Button below the debug log preview which continues the submission flow */
-"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Kirim";
 
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "Catatan Debug";
@@ -6808,12 +6847,6 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "Pin";
 
-/* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Tidak dapat membuat PIN baru Anda. PIN yang sudah ada telah dinonaktifkan. Periksa koneksi Anda dan coba lagi.";
-
-/* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "Penggantian PIN Gagal";
-
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN minimal harus 4 karakter";
 
@@ -6844,6 +6877,9 @@
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "PIN menjaga informasi yang disimpan dengan Signal terenkripsi sehingga hanya Anda yang dapat mengaksesnya. Profil Anda, pengaturan, dan kontak-kontak akan dipulihkan saat Anda memasang ulang aplikasi. Anda tidak memerlukan PIN untuk membuka aplikasinya.";
 
+/* Message when a generic error occurs while creating a PIN. */
+"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Something went wrong creating your PIN. Please contact support.";
+
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Selengkapnya Tentang PIN";
 
@@ -6856,11 +6892,8 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN tidak cocok. Coba lagi.";
 
-/* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Periksa koneksi Anda dan coba lagi.";
-
-/* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Tidak Ada Koneksi";
+/* Message when a network error occurs while creating a PIN. */
+"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Something went wrong creating your PIN. Check your connection and try again.";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN minimal harus 4 karakter";
@@ -6891,12 +6924,6 @@
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
 "PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "Gunakan Kunci Pemulihan";
-
-/* Error title indicating that the attempt to recreate a PIN failed. */
-"PIN_RECREATION_ERROR_TITLE" = "Gagal membuat PIN";
-
-/* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Tidak dapat membuat PIN Anda. Periksa koneksi Anda dan coba lagi.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Untuk membantu Anda mengingat PIN, kami akan meminta Anda untuk memasukkannya secara berkala. Kami akan memintanya lebih jarang dari waktu ke waktu.";
@@ -7733,7 +7760,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Konfirmasi Nomor: %1$@";
 
 /* A button allowing user to cancel registration and edit a phone number */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Sunting";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Edit";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Memverifikasi %1$@…";
@@ -7874,7 +7901,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Kosongkan ruang %1$@ di perangkat ini";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "Ada data cadangan yang belum tersimpan di perangkat ini. Tanpa langganan berbayar, media dan lampiran akan dihapus permanen.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "Jika Anda melewati pengunduhan, media dan lampiran yang masih ada di cadangan dapat diunduh lain waktu, ketika ruang penyimpanan telah tersedia.";
@@ -7975,6 +8002,12 @@
 /* Message title describing the crypto safety tip. */
 "SAFETY_TIPS_CRYPTO_TITLE" = "Penipuan uang atau kripto";
 
+/* Message body describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_BODY" = "Lindungi akun dengan mewajibkan PIN Signal, sebagai tambahan untuk kode verifikasi, saat mendaftar di Signal.";
+
+/* Message title describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_TITLE" = "Aktifkan kunci registrasi di pengaturan akun";
+
 /* Message contents for the safety tip concerning fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Waspadai perusahaan atau badan pemerintahan yang menghubungi Anda. Pesan yang melibatkan agen pajak, kurir, atau lainnya bisa jadi adalah spam.";
 
@@ -7983,6 +8016,12 @@
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "Tips Keamanan";
+
+/* Message body describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+
+/* Message title describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "Pastikan kode verifikasi Anda aman";
 
 /* Message body describing the scams safety tip. */
 "SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "Hindari pesan tidak jelas yang meminta Anda untuk membalas. Waspadai tips finansial dan tautan web mencurigakan.";
@@ -8360,7 +8399,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Sampaikan semua panggilan melalui peladen Signal untuk menghindari pengungkapan alamat IP Anda oleh kontak Anda. Mengaktifkannya akan mengurangi kualitas panggilan.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Sunting Nomor";
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit nomor";
 
 /* Label for button in settings views to change phone number */
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Ganti Nomor Telepon";
@@ -8687,7 +8726,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Perbarui PIN Anda";
 
 /* Accessibility label for the information button on the payments settings screen. */
-"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Informasi";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Alamat Dompet Digital Salah";
@@ -8873,7 +8912,7 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Rekam Frasa Pemulihan Pembayaran";
 
 /* Accessibility label for the refresh button on the payments settings screen. */
-"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Segarkan";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Saldo tersisa";

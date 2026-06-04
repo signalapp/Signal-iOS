@@ -652,6 +652,15 @@
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "クリップボードにコピー";
 
+/* Body for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, warning them not to share it with anyone. */
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal will <bold>never</bold> message you for your recovery key. Do not respond to a chat pretending to be Signal. Store your recovery key somewhere safe and do not share it with anyone.";
+
+/* Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy. */
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Got It";
+
+/* Title for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard. */
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "Do Not Share Your Recovery Key";
+
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "新しいキーを作成";
 
@@ -824,7 +833,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "バックアップがオフになり、データはSignalの安全なストレージサービスから消去されました。";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "バックアップはオフになっています。現在、端末上にないメディアをダウンロード中です。ダウンロードが完了すると、データはSignalの安全なストレージサービスから消去されます。";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, and any media that is not on this device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "エラーが発生しました。サポートにお問い合わせください。";
@@ -988,23 +997,14 @@
 /* Title for an action sheet allowing users to download their offloaded media. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "オフロード済みのメディアをダウンロードしますか？";
 
-/* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "オフロードされたメディアは、TestFlightを使用している間はご利用になれます。テストプログラムを終了する前に、必ずすべてのメディアをダウンロードしてください。";
-
-/* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "オフロードメディアのテスト中";
-
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "未使用のメディアはオフロードされますが、バックアップからいつでもダウンロードできます。";
-
-/* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "未使用のメディアはオフロードされますが、TestFlightを使用している間はいつでもバックアップからダウンロードできます。";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "ストレージの最適化は、Signalバックアップの有料版でのみご利用いただけます。この機能をご利用になるには、バックアッププランをアップグレードしてください。";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "端末上のストレージを最適化";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize Signal Storage";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "バックアップストレージの上限に達しました。チャットやメディアのバックアップを続けるには、Signalの空き容量を増やしてください。";
@@ -1015,14 +1015,29 @@
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "バックアップを再度有効化";
 
+/* Message for a sheet warning the user about skipping downloads while disabling Backups. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted once backups are disabled.";
+
+/* Title for a sheet warning the user about skipping downloads while disabling Backups. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Skip Download?";
+
+/* Message for a sheet warning the user about skipping downloads that will expire. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+
+/* Title for a sheet warning the user about skipping downloads that will expire. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Skip Download?";
+
+/* Title for an action in a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+
+/* Message for a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Are you sure you want to skip downloading your media?";
+
+/* Title for a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Skip Download?";
+
 /* Title for an action in a sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "ダウンロードをスキップ";
-
-/* Message for a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_MESSAGE" = "この端末に保存されていないバックアップデータがあります。有料のサブスクリプションに加入しない場合は、メディアと添付ファイルは、完全に消去されます。";
-
-/* Title for a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "ダウンロードをスキップしますか？";
 
 /* Title for detail button in notice that the user's Backups subscription couldn't be redeemed. */
 "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON" = "詳細";
@@ -1060,11 +1075,35 @@
 /* Subtitle for a progress bar tracking active uploading. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "アップロードしています…";
 
+/* Title for a button in a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Back Up Now";
+
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "バックアップのサイズによっては、時間がかかる場合があります。バックアップが実行されている間でも、通常どおりSignalを使用できます。";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "This could take a while. You can use Signal normally while backing up.";
+
+/* Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+
+/* Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimize Signal Storage";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Signalセキュアバックアップへようこそ。今すぐバックアップを開始しましょう。";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "You're all set. Start your backup now.";
+
+/* Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "You have media in your backup that's not on this device. Undownloaded media will be permanently deleted without a paid subscription.\n\nYou can begin paying for backups again at any time to continue backing up your media.";
+
+/* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Download Your Backup Media";
+
+/* Primary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Download Backup Now";
+
+/* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Download Your Backup Media Today";
+
+/* Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Don't Download Backup";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "お支払い方法が現在も有効なものであるかをご確認ください。「サブスクリプションを管理する」>「Signal」>「支払い方法をアップデートする」をタップします。";
@@ -2750,7 +2789,7 @@
 "DEBUG_LOG_PREVIEW_HEADER" = "提出すると、ログは非公開の固有URLで30日間オンライン上に掲載されます。";
 
 /* Button below the debug log preview which continues the submission flow */
-"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "送信";
 
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "デバッグログ";
@@ -6808,12 +6847,6 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "ピン留め";
 
-/* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "新規のPINを作成できず、既存のPINは無効化されました。インターネット接続を確認して再度試してください。";
-
-/* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PINの変更に失敗しました";
-
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PINは4文字以上にしてください";
 
@@ -6844,6 +6877,9 @@
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "Signal内に保存された情報は、PINにより暗号化を保持されるため、あなたのみアクセスできます。PINを使うことで、Signalの再インストール時にあなたのプロフィール、設定および連絡先が復元されます。アプリを開く際にはPINは必要はありません。";
 
+/* Message when a generic error occurs while creating a PIN. */
+"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Something went wrong creating your PIN. Please contact support.";
+
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "PIN とは？";
 
@@ -6856,11 +6892,8 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINが一致しません。再度試してください。";
 
-/* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "インターネット接続を確認して再度試してください。";
-
-/* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "ネットワーク接続がありません";
+/* Message when a network error occurs while creating a PIN. */
+"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Something went wrong creating your PIN. Check your connection and try again.";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PINは4桁以上の数字にしてください";
@@ -6891,12 +6924,6 @@
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
 "PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "回復キーを使用する";
-
-/* Error title indicating that the attempt to recreate a PIN failed. */
-"PIN_RECREATION_ERROR_TITLE" = "PINの作成に失敗しました";
-
-/* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "PINを作成できませんでした。インターネット接続を確認して再度試してください。";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "PINを覚えていただくため、定期的に入力をお願いしています。頻度は次第に少なくなります。";
@@ -7874,7 +7901,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "端末に%1$@のストレージを確保してください";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "この端末に保存されていないバックアップデータがあります。有料のサブスクリプションに加入しない場合は、メディアと添付ファイルは、完全に消去されます。";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "ダウンロードをスキップした場合、バックアップ内の残りのメディアと添付ファイルは、ストレージ容量が確保できたときにダウンロードできます。";
@@ -7975,6 +8002,12 @@
 /* Message title describing the crypto safety tip. */
 "SAFETY_TIPS_CRYPTO_TITLE" = "暗号通貨または金銭詐欺";
 
+/* Message body describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_BODY" = "Signalの登録時に、確認コードに加えてSignal PINの入力も必須とすることで、アカウントを保護できます。";
+
+/* Message title describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_TITLE" = "アカウント設定で登録ロックを有効にしてください";
+
 /* Message contents for the safety tip concerning fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_BODY" = "企業や政府機関からの連絡にはご注意ください。税務署や宅配業者などのメッセージはスパムである可能性があります。";
 
@@ -7983,6 +8016,12 @@
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "安全な使い方のヒント";
+
+/* Message body describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+
+/* Message title describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "確認コードの取り扱いは厳重にしてください";
 
 /* Message body describing the scams safety tip. */
 "SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "返信させようとする怪しいメッセージは無視してください。また、利益をうたったものや不審なウェブリンクに注意してください。";
@@ -8687,7 +8726,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "PINの更新";
 
 /* Accessibility label for the information button on the payments settings screen. */
-"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "情報";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "無効なウォレットアドレスです";
@@ -8873,7 +8912,7 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "決済機能リカバリーフレーズの保管";
 
 /* Accessibility label for the refresh button on the payments settings screen. */
-"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "リフレッシュ";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "残高";

@@ -652,6 +652,15 @@
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Copiere în clipboard";
 
+/* Body for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, warning them not to share it with anyone. */
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal will <bold>never</bold> message you for your recovery key. Do not respond to a chat pretending to be Signal. Store your recovery key somewhere safe and do not share it with anyone.";
+
+/* Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy. */
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Got It";
+
+/* Title for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard. */
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "Do Not Share Your Recovery Key";
+
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Creează un cod nou";
 
@@ -755,13 +764,13 @@
 "BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Ultimul backup nu a putut fi finalizat. Atinge „Creează o copie de rezervă acum” și încearcă din nou.";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Actualizează";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "Îmbunătățește";
 
 /* Text describing the user's free backup plan when they have Backups disabled. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_AND_DISABLED_DESCRIPTION" = "Ai dezactivat copiile de rezervă";
 
 /* Text describing the user's free backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "Planul tău de back-up este gratuit";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "Planul tău de backup este gratuit";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "A apărut o eroare. Contactează serviciul de asistență.";
@@ -824,7 +833,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Backup-urile au fost dezactivate și datele tale au fost eliminate din serviciul de stocare securizată de la Signal.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Copiile de rezervă au fost dezactivate, orice fișier media care nu se află pe dispozitiv se descarcă acum. După descărcare, datele tale vor fi șterse din serviciul de stocare securizată al Signal.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, and any media that is not on this device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "A apărut o eroare. Contactează serviciul de asistență.";
@@ -941,7 +950,7 @@
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "Ai %1$@ fișiere media care nu se află pe acest dispozitiv. Fără un abonament plătit, conținutul media nu poate fi descărcat.";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
-"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Efectuează backup folosind date mobile";
+"BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Fă backup folosind datele mobile";
 
 /* Label for a menu item explaining the size of the user's backup. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_SIZE_LABEL" = "Dimensiunea backup-ului";
@@ -971,7 +980,7 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Abonamentul nu a fost găsit";
 
 /* Title for a button allowing users to trigger a manual backup. */
-"BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Faceți un backup acum";
+"BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Fă un backup acum";
 
 /* Title for a button shown under a progress bar tracking a manual backup, which lets the user cancel the backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_CANCEL_BUTTON" = "Anulare copie de rezervă";
@@ -988,23 +997,14 @@
 /* Title for an action sheet allowing users to download their offloaded media. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Descarci fișiere media mutate?";
 
-/* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "Conținutul media descărcat va fi disponibil atâta timp cât folosești TestFlight. Asigură-te că descarci toate fișierele media înainte de a părăsi programul de testare.";
-
-/* Title for an action sheet warning users who are testers about the Optimize Local Storage feature. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_TITLE" = "Testarea suporturilor media descărcate";
-
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Fișierele neutilizate vor fi mutate, dar pot fi descărcate oricând din backup.";
-
-/* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available and they are a tester. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Fișierele media neutilizate vor fi descărcate, dar pot fi descărcate din copia de rezervă oricând, cât timp folosești TestFlight.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Optimizarea stocării poate fi utilizată numai cu nivelul plătit de Backup-uri Signal. Actualizează-ți planul de backup pentru a începe să folosești această funcție.";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimizează stocarea pe dispozitiv";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize Signal Storage";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "Ai atins limita de stocare pentru backup. Eliberează spațiu în Signal pentru a continua să faci backup la conversații și fișiere media.";
@@ -1015,14 +1015,29 @@
 /* Title for a button allowing users to re-enable Backups, after it had been previously disabled. */
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Reactivează backup-urile";
 
+/* Message for a sheet warning the user about skipping downloads while disabling Backups. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted once backups are disabled.";
+
+/* Title for a sheet warning the user about skipping downloads while disabling Backups. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Skip Download?";
+
+/* Message for a sheet warning the user about skipping downloads that will expire. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+
+/* Title for a sheet warning the user about skipping downloads that will expire. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Skip Download?";
+
+/* Title for an action in a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+
+/* Message for a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Are you sure you want to skip downloading your media?";
+
+/* Title for a double-confirmation sheet warning the user about skipping downloads. */
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Skip Download?";
+
 /* Title for an action in a sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "Omite descărcarea";
-
-/* Message for a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_MESSAGE" = "Ai date de backup care nu sunt pe acest dispozitiv. Fișierele media și atașamentele vor fi șterse definitiv fără un abonament plătit.";
-
-/* Title for a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "Omiți descărcarea?";
 
 /* Title for detail button in notice that the user's Backups subscription couldn't be redeemed. */
 "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON" = "Detalii";
@@ -1060,11 +1075,35 @@
 /* Subtitle for a progress bar tracking active uploading. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "Se încarcă…";
 
+/* Title for a button in a sheet shown after the user enables backups. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Back Up Now";
+
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "În funcție de dimensiunea backup-ului, acest lucru poate dura mult timp. Poți utiliza Signal ca de obicei în timp ce are loc backup-ul.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "This could take a while. You can use Signal normally while backing up.";
+
+/* Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+
+/* Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimize Signal Storage";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Bun venit la Backup-uri securizate Signal. Începe backup-ul acum.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "You're all set. Start your backup now.";
+
+/* Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "You have media in your backup that's not on this device. Undownloaded media will be permanently deleted without a paid subscription.\n\nYou can begin paying for backups again at any time to continue backing up your media.";
+
+/* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Download Your Backup Media";
+
+/* Primary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Download Backup Now";
+
+/* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Download Your Backup Media Today";
+
+/* Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Don't Download Backup";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Asigură-te că metoda ta de plată este actualizată. Atinge Gestionează abonamentul > Signal > Actualizează metoda de plată.";
@@ -1343,7 +1382,7 @@
 "CALL_LINK_COPY" = "Copiază Link";
 
 /* Navigation bar title for the sheet used to create & configure a Call Link. */
-"CALL_LINK_CREATE" = "Creează un link de apel";
+"CALL_LINK_CREATE" = "Creează o legătură pentru apel";
 
 /* Displayed in a full screen modal view when creating a Call Link */
 "CALL_LINK_CREATING_MODAL" = "Se creează…";
@@ -2600,7 +2639,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Alege codul țării";
 
 /* Label for button that enables you to make a new call link. */
-"CREATE_CALL_LINK_LABEL" = "Creează un Link de Apel";
+"CREATE_CALL_LINK_LABEL" = "Creează o legătură pentru apel";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_BODY" = "Introducerea confidențialității numărului de telefon, nume de utilizator și link-uri opționale.";
@@ -2750,7 +2789,7 @@
 "DEBUG_LOG_PREVIEW_HEADER" = "După trimitere, jurnalul tău va fi publicat online timp de 30 de zile la o adresă URL unică și nepublicată.";
 
 /* Button below the debug log preview which continues the submission flow */
-"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Submit";
+"DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "Trimite";
 
 /* Title for the debug log preview screen */
 "DEBUG_LOG_PREVIEW_TITLE" = "Jurnalul de depanare";
@@ -5738,7 +5777,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Împărtășește Doar Cu…";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "Poveștile Mele";
+"MY_STORIES_TITLE" = "Poveștile mele";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "Povestea Mea";
@@ -6284,7 +6323,7 @@
 "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "Eroare necunoscută";
 
 /* Action button to backup before continuing. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_BACKUP_ACTION" = "Faceți un backup acum";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_BACKUP_ACTION" = "Fă un backup acum";
 
 /* Body text describing the outgoing transfer. */
 "OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_BODY" = "Fă backup acum înainte de transfer. Este posibil să fi primit mesaje pentru care nu s-a făcut încă backup.";
@@ -6808,12 +6847,6 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "Fixare";
 
-/* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Noul tău PIN nu a putut fi creat. PIN-ul existent a fost dezactivat. Verifică-ți conexiunea și încearcă din nou.";
-
-/* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "Schimbarea PIN-ului a eșuat.";
-
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-ul trebuie să aibă cel puțin 4 caractere.";
 
@@ -6844,6 +6877,9 @@
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "PIN-urile păstrează informațiile stocate în Signal criptate, astfel încât numai tu să le poți accesa. Profilul, setările și contactele se vor restabili atunci când reinstalezi Signal. Nu ai nevoie de PIN pentru a deschide aplicația.";
 
+/* Message when a generic error occurs while creating a PIN. */
+"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Something went wrong creating your PIN. Please contact support.";
+
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Mai multe despre PIN-uri";
 
@@ -6856,11 +6892,8 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-urile nu se potrivesc. Încearcă din nou.";
 
-/* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Verifică-ți conexiunea și încearcă din nou.";
-
-/* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Lipsă conexiune la rețea";
+/* Message when a network error occurs while creating a PIN. */
+"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Something went wrong creating your PIN. Check your connection and try again.";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN-ul trebuie să aibă cel puțin 4 cifre";
@@ -6891,12 +6924,6 @@
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
 "PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "Folosește codul de recuperare";
-
-/* Error title indicating that the attempt to recreate a PIN failed. */
-"PIN_RECREATION_ERROR_TITLE" = "Crearea PIN-ului a eșuat";
-
-/* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "PIN-ul tău nu a putut fi creat. Verifică-ți conexiunea și încearcă din nou.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Pentru a te ajuta să memorezi codul PIN, te vom ruga să îl introduci periodic. În timp, o să-l cerem mai rar.";
@@ -7874,7 +7901,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Eliberează %1$@ pe acest dispozitiv";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "Ai fișiere media de backup care nu se află pe acest dispozitiv. Fișierele media și atașamentele vor fi șterse definitiv fără un abonament plătit.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "Dacă omiți descărcarea, fișierele media rămase și atașamentele din backup pot fi descărcate mai târziu, când spațiul de stocare devine disponibil.";
@@ -7975,6 +8002,12 @@
 /* Message title describing the crypto safety tip. */
 "SAFETY_TIPS_CRYPTO_TITLE" = "Escrocherii cu cripto sau bani";
 
+/* Message body describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_BODY" = "Protejează-ți contul cerând PIN-ul Signal, în plus pe lângă codul de verificare, la înregistrarea pe Signal.";
+
+/* Message title describing the enable reglock safety tip. */
+"SAFETY_TIPS_ENABLE_REGLOCK_TITLE" = "Activează blocarea înregistrării din setările de cont";
+
 /* Message contents for the safety tip concerning fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Ai grijă la companiile sau agențiile guvernamentale care te contactează. Mesajele care implică agențiile fiscale, curierii și multe altele pot fi spam.";
 
@@ -7983,6 +8016,12 @@
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "Sfaturi de siguranță";
+
+/* Message body describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+
+/* Message title describing the keeping codes safe safety tip. */
+"SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "Păstrează-ți codul de verificare în siguranță";
 
 /* Message body describing the scams safety tip. */
 "SAFETY_TIPS_LOOK_OUT_FOR_SCAMS_BODY" = "Evită mesajele vagi care încearcă să te convingă să răspunzi. Ai grijă la sfaturi financiare și linkuri web suspicioase.";
@@ -8687,7 +8726,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Actualizează-ți PIN-ul";
 
 /* Accessibility label for the information button on the payments settings screen. */
-"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Information";
+"SETTINGS_PAYMENTS_INFORMATION_BUTTON_ACCESSIBILITY_LABEL" = "Informații";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Adresă portofel invalidă";
@@ -8873,7 +8912,7 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Transcrie fraza de recuperare plăți";
 
 /* Accessibility label for the refresh button on the payments settings screen. */
-"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Refresh";
+"SETTINGS_PAYMENTS_REFRESH_BUTTON_ACCESSIBILITY_LABEL" = "Reîmprospătare";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Sold rămas";
