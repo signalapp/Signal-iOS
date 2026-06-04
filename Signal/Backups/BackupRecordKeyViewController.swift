@@ -115,7 +115,7 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
                     comment: "Title for a button allowing users to copy their 'Recovery Key' to the clipboard.",
                 )),
                 primaryAction: UIAction { [weak self] _ in
-                    self?.copyToClipboard()
+                    self?.copyToClipboardWithConfirmation()
                 },
             ),
         ]
@@ -173,6 +173,53 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
         )
         stackView.spacing = 24
         stackView.setCustomSpacing(32, after: aepTextView)
+    }
+
+    private func copyToClipboardWithConfirmation() {
+        let bodyText: NSAttributedString = OWSLocalizedString(
+            "BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY",
+            comment: "Body for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, warning them not to share it with anyone.",
+        ).styled(
+            with: .font(.dynamicTypeSubheadline),
+            .xmlRules([.style("bold", StringStyle(.font(.dynamicTypeSubheadline.bold())))]),
+        )
+
+        let warningSheet = HeroSheetViewController(
+            hero: .circleIcon(
+                icon: .errorTriangle,
+                iconSize: 40,
+                tintColor: .Signal.red,
+                backgroundColor: UIColor(rgbHex: 0xF8E0D9),
+            ),
+            title: OWSLocalizedString(
+                "BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE",
+                comment: "Title for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard.",
+            ),
+            body: HeroSheetViewController.Body(
+                textContent: .attributed(bodyText),
+            ),
+            primary: .button(HeroSheetViewController.Button(
+                title: OWSLocalizedString(
+                    "BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE",
+                    comment: "Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy.",
+                ),
+                action: { sheet in
+                    sheet.dismiss(animated: true) { [weak self] in
+                        guard let self else { return }
+                        copyToClipboard()
+                    }
+                },
+            )),
+            secondary: .button(HeroSheetViewController.Button(
+                title: CommonStrings.learnMore,
+                style: .secondary,
+                action: .custom({ sheet in
+                    UIApplication.shared.open(.Support.phishingPrevention)
+                }),
+            )),
+        )
+
+        present(warningSheet, animated: true)
     }
 
     private func copyToClipboard() {

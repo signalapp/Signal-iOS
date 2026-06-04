@@ -13,6 +13,7 @@ extension URL {
         public static let groups: URL = .supportArticle("360007319331")
         public static let inactivePrimaryDevice: URL = .supportArticle("9021007554074")
         public static let linkedDevices: URL = .supportArticle("360007320551")
+        public static let phishingPrevention: URL = .supportArticle("9932566320410")
         public static let pin: URL = .supportArticle("360007059792")
         public static let profilesAndMessageRequests: URL = .supportArticle("360007459591")
         public static let proxies: URL = .supportArticle("360056052052")
