@@ -119,5 +119,5 @@ public protocol SecureValueRecovery {
         fromProvisioningMessage provisioningMessage: LinkingProvisioningMessage,
         authedDevice: AuthedDevice,
         tx: DBWriteTransaction,
-    ) throws(SVR.KeysError)
+    )
 }

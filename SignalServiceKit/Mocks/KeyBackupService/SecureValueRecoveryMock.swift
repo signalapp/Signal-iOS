@@ -45,7 +45,7 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         fromProvisioningMessage provisioningMessage: LinkingProvisioningMessage,
         authedDevice: AuthedDevice,
         tx: DBWriteTransaction,
-    ) throws(SVR.KeysError) {
+    ) {
         let masterKey = switch provisioningMessage.rootKey {
         case .accountEntropyPool(let aep): aep.getMasterKey()
         case .masterKey(let masterKey): masterKey

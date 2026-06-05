@@ -92,7 +92,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         fromProvisioningMessage provisioningMessage: LinkingProvisioningMessage,
         authedDevice: AuthedDevice,
         tx: DBWriteTransaction,
-    ) throws(SVR.KeysError) {
+    ) {
         Logger.info("")
         accountKeyStore.setMediaRootBackupKey(provisioningMessage.mrbk, tx: tx)
 

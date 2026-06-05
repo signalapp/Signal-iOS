@@ -362,23 +362,11 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             self.tsAccountManager.setRegistrationId(aciRegistrationId, for: .aci, tx: tx)
             self.tsAccountManager.setRegistrationId(pniRegistrationId, for: .pni, tx: tx)
 
-            do {
-                try svr.storeKeys(
-                    fromProvisioningMessage: provisionMessage,
-                    authedDevice: .explicit(authedDevice),
-                    tx: tx,
-                )
-            } catch {
-                switch error {
-                case SVR.KeysError.missingMasterKey:
-                    owsFailDebug("Failed to store master key from provisioning message")
-                    return .obsoleteLinkedDeviceError
-                case SVR.KeysError.missingOrInvalidMRBK:
-                    return .obsoleteLinkedDeviceError
-                default:
-                    owsFailDebug("Unexpected Error")
-                }
-            }
+            self.svr.storeKeys(
+                fromProvisioningMessage: provisionMessage,
+                authedDevice: .explicit(authedDevice),
+                tx: tx,
+            )
 
             self.receiptManager.setAreReadReceiptsEnabled(
                 provisionMessage.areReadReceiptsEnabled,
