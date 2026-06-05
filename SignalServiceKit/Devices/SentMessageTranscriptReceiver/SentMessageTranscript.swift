@@ -52,20 +52,10 @@ public enum SentMessageTranscriptType {
         public let notification: TSPaymentNotification
     }
 
-    public struct ArchivedPayment {
-        public let target: SentMessageTranscriptTarget
-        public let amount: String?
-        public let fee: String?
-        public let note: String?
-        public let expirationStartedAt: UInt64?
-        public let expirationDurationSeconds: UInt32?
-    }
-
     case message(Message)
     case recipientUpdate(TSGroupThread)
     case expirationTimerUpdate(SentMessageTranscriptTarget)
     case paymentNotification(PaymentNotification)
-    case archivedPayment(ArchivedPayment)
 }
 
 /// A transcript for a message that has already been sent, and which came in
@@ -91,8 +81,6 @@ extension SentMessageTranscript {
             return messageParams.target.thread
         case .paymentNotification(let notification):
             return notification.target.thread
-        case .archivedPayment(let payment):
-            return payment.target.thread
         case .recipientUpdate(let thread):
             return thread
         }

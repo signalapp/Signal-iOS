@@ -103,36 +103,6 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 transaction: tx,
             )
             return .success(nil)
-        case .archivedPayment(let archivedPayment):
-
-            guard validateProtocolVersion(for: transcript, thread: archivedPayment.target.thread, tx: tx) else {
-                return .failure(OWSAssertionError("Protocol version validation failed"))
-            }
-
-            let message = interactionStore.buildOutgoingArchivedPaymentMessage(
-                builder: .withDefaultValues(
-                    thread: archivedPayment.target.thread,
-                    timestamp: transcript.timestamp,
-                    expiresInSeconds: archivedPayment.expirationDurationSeconds,
-                    // Archived payments don't set the chat timer; version is irrelevant.
-                    expireTimerVersion: nil,
-                    expireStartedAt: archivedPayment.expirationStartedAt,
-                ),
-                amount: archivedPayment.amount,
-                fee: archivedPayment.fee,
-                note: archivedPayment.note,
-                tx: tx,
-            )
-
-            interactionStore.insertInteraction(message, tx: tx)
-            interactionStore.updateRecipientsFromNonLocalDevice(
-                message,
-                recipientStates: transcript.recipientStates,
-                isSentUpdate: false,
-                tx: tx,
-            )
-
-            return .success(message)
         case .expirationTimerUpdate(let target):
             Logger.info("Recording expiration timer update transcript in thread: \(target.thread.logString) timestamp: \(transcript.timestamp)")
             guard validateTimestampValue() else {

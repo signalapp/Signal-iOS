@@ -75,14 +75,6 @@ public protocol InteractionStore {
         tx: DBReadTransaction,
     ) -> TSOutgoingMessage
 
-    func buildOutgoingArchivedPaymentMessage(
-        builder: TSOutgoingMessageBuilder,
-        amount: String?,
-        fee: String?,
-        note: String?,
-        tx: DBReadTransaction,
-    ) -> OWSOutgoingArchivedPaymentMessage
-
     func insertOrReplacePlaceholder(
         for interaction: TSInteraction,
         from sender: SignalServiceAddress,
@@ -206,22 +198,6 @@ public class InteractionStoreImpl: InteractionStore {
             additionalRecipients: [],
             explicitRecipients: [],
             skippedRecipients: [],
-            transaction: tx,
-        )
-    }
-
-    public func buildOutgoingArchivedPaymentMessage(
-        builder: TSOutgoingMessageBuilder,
-        amount: String?,
-        fee: String?,
-        note: String?,
-        tx: DBReadTransaction,
-    ) -> OWSOutgoingArchivedPaymentMessage {
-        return OWSOutgoingArchivedPaymentMessage(
-            outgoingArchivedPaymentMessageWith: builder,
-            amount: amount,
-            fee: fee,
-            note: note,
             transaction: tx,
         )
     }
@@ -450,16 +426,6 @@ open class MockInteractionStore: InteractionStore {
             outgoingMessageWith: builder,
             recipientAddressStates: [:],
         )
-    }
-
-    public func buildOutgoingArchivedPaymentMessage(
-        builder: TSOutgoingMessageBuilder,
-        amount: String?,
-        fee: String?,
-        note: String?,
-        tx: DBReadTransaction,
-    ) -> OWSOutgoingArchivedPaymentMessage {
-        owsFail("Not implemented, because this message type really needs an DBReadTransaction to be initialized, and at the time of writing no caller cares.")
     }
 
     open func insertOrReplacePlaceholder(
