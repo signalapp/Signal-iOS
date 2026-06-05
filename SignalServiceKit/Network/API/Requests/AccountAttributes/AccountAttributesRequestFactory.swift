@@ -50,7 +50,7 @@ public struct AccountAttributesRequestFactory {
     ) -> TSRequest {
         owsPrecondition(
             !(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false),
-            "Trying to set seconday device attributes from primary device",
+            "Trying to set secondary device attributes from primary device",
         )
 
         var result = TSRequest(
