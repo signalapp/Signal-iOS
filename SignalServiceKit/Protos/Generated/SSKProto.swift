@@ -13027,18 +13027,6 @@ public class SSKProtoSyncMessageKeys: NSObject, Codable, NSSecureCoding {
     fileprivate let proto: SignalServiceProtos_SyncMessage.Keys
 
     @objc
-    public var master: Data? {
-        guard hasMaster else {
-            return nil
-        }
-        return proto.master
-    }
-    @objc
-    public var hasMaster: Bool {
-        return proto.hasMaster
-    }
-
-    @objc
     public var accountEntropyPool: String? {
         guard hasAccountEntropyPool else {
             return nil
@@ -13135,9 +13123,6 @@ extension SSKProtoSyncMessageKeys {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageKeysBuilder {
         let builder = SSKProtoSyncMessageKeysBuilder()
-        if let _value = master {
-            builder.setMaster(_value)
-        }
         if let _value = accountEntropyPool {
             builder.setAccountEntropyPool(_value)
         }
@@ -13158,17 +13143,6 @@ public class SSKProtoSyncMessageKeysBuilder: NSObject {
 
     @objc
     fileprivate override init() {}
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setMaster(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.master = valueParam
-    }
-
-    public func setMaster(_ valueParam: Data) {
-        proto.master = valueParam
-    }
 
     @objc
     @available(swift, obsoleted: 1.0)

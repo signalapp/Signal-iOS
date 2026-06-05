@@ -50,7 +50,7 @@ public class ProvisioningManager {
             var aciIdentityKeyPair: ECKeyPair
             var pniIdentityKeyPair: ECKeyPair
             var areReadReceiptsEnabled: Bool
-            var rootKey: LinkingProvisioningMessage.RootKey
+            var aep: SignalServiceKit.AccountEntropyPool
             var mediaRootBackupKey: MediaRootBackupKey
             var profileKey: Aes256Key
         }
@@ -64,13 +64,11 @@ public class ProvisioningManager {
                 owsFail("Can't provision without a pni identity.")
             }
             let areReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled(tx: tx)
-            let rootKey: LinkingProvisioningMessage.RootKey
             guard let accountEntropyPool = accountKeyStore.getAccountEntropyPool(tx: tx) else {
                 // This should be impossible; the only times you don't have
                 // an AEP are during registration.
                 owsFail("Can't provision without account entropy pool.")
             }
-            rootKey = .accountEntropyPool(accountEntropyPool)
             let mrbk = accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx)
             guard let profileKey = profileManager.localUserProfile(tx: tx)?.profileKey else {
                 owsFail("Can't provision without a profile key.")
@@ -80,7 +78,7 @@ public class ProvisioningManager {
                 aciIdentityKeyPair: aciIdentityKeyPair,
                 pniIdentityKeyPair: pniIdentityKeyPair,
                 areReadReceiptsEnabled: areReadReceiptsEnabled,
-                rootKey: rootKey,
+                aep: accountEntropyPool,
                 mediaRootBackupKey: mrbk,
                 profileKey: profileKey,
             )
@@ -105,7 +103,7 @@ public class ProvisioningManager {
         let provisioningCode = try await deviceProvisioningService.requestDeviceProvisioningCode()
 
         let provisioningMessage = LinkingProvisioningMessage(
-            rootKey: provisioningState.rootKey,
+            aep: provisioningState.aep,
             aci: myAci,
             phoneNumber: myPhoneNumber,
             pni: myPni,

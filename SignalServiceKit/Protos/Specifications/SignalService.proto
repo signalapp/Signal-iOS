@@ -611,7 +611,7 @@ message SyncMessage {
 
   message Keys {
     reserved /* storageService */ 1;
-    optional bytes master = 2;
+    reserved /* master */ 2;
     optional string accountEntropyPool = 3;
     optional bytes mediaRootBackupKey = 4;
   }

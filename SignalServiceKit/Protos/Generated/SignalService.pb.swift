@@ -3219,15 +3219,6 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var master: Data {
-      get {_master ?? Data()}
-      set {_master = newValue}
-    }
-    /// Returns true if `master` has been explicitly set.
-    var hasMaster: Bool {self._master != nil}
-    /// Clears the value of `master`. Subsequent reads from it will return its default value.
-    mutating func clearMaster() {self._master = nil}
-
     var accountEntropyPool: String {
       get {_accountEntropyPool ?? String()}
       set {_accountEntropyPool = newValue}
@@ -3250,7 +3241,6 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     init() {}
 
-    fileprivate var _master: Data? = nil
     fileprivate var _accountEntropyPool: String? = nil
     fileprivate var _mediaRootBackupKey: Data? = nil
   }
@@ -8333,7 +8323,7 @@ extension SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum: SwiftProtobuf._P
 
 extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Keys"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}master\0\u{1}accountEntropyPool\0\u{1}mediaRootBackupKey\0\u{c}\u{1}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{3}accountEntropyPool\0\u{1}mediaRootBackupKey\0\u{c}\u{1}\u{1}\u{c}\u{2}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8341,7 +8331,6 @@ extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProt
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 2: try { try decoder.decodeSingularBytesField(value: &self._master) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._accountEntropyPool) }()
       case 4: try { try decoder.decodeSingularBytesField(value: &self._mediaRootBackupKey) }()
       default: break
@@ -8354,9 +8343,6 @@ extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProt
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._master {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
-    } }()
     try { if let v = self._accountEntropyPool {
       try visitor.visitSingularStringField(value: v, fieldNumber: 3)
     } }()
@@ -8367,7 +8353,6 @@ extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProt
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Keys, rhs: SignalServiceProtos_SyncMessage.Keys) -> Bool {
-    if lhs._master != rhs._master {return false}
     if lhs._accountEntropyPool != rhs._accountEntropyPool {return false}
     if lhs._mediaRootBackupKey != rhs._mediaRootBackupKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

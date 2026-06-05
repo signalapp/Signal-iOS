@@ -101,13 +101,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     ) {
         Logger.info("")
         accountKeyStore.setMediaRootBackupKey(provisioningMessage.mrbk, tx: tx)
-
-        switch provisioningMessage.rootKey {
-        case .accountEntropyPool(let aep):
-            accountKeyStore.setAccountEntropyPool(aep, tx: tx)
-        case .masterKey(let masterKey):
-            accountKeyStore.setMasterKey(masterKey, tx: tx)
-        }
+        accountKeyStore.setAccountEntropyPool(provisioningMessage.aep, tx: tx)
     }
 
     public func storeKeys(
@@ -117,43 +111,20 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     ) throws(SVR.KeysError) {
         Logger.info("")
 
-        if
-            let mrbkBytes = syncMessage.mediaRootBackupKey,
-            let backupKey = try? BackupKey(contents: mrbkBytes)
-        {
-            accountKeyStore.setMediaRootBackupKey(MediaRootBackupKey(backupKey: backupKey), tx: tx)
-        } else {
-            throw SVR.KeysError.missingOrInvalidMRBK
+        let newMrbk = syncMessage.mediaRootBackupKey.flatMap({ try? BackupKey(contents: $0) })
+        guard let newMrbk else {
+            throw SVR.KeysError.missingMrbk
         }
+        accountKeyStore.setMediaRootBackupKey(MediaRootBackupKey(backupKey: newMrbk), tx: tx)
 
-        var keyChanged = false
-
+        let newAep = syncMessage.accountEntropyPool.flatMap({ try? AccountEntropyPool(key: $0) })
+        guard let newAep else {
+            throw SVR.KeysError.missingAep
+        }
         let oldAep = accountKeyStore.getAccountEntropyPool(tx: tx)
-        do {
-            if let aep = try syncMessage.accountEntropyPool.map({ try AccountEntropyPool(key: $0) }) {
-                accountKeyStore.setAccountEntropyPool(aep, tx: tx)
-            }
-        } catch {
-            owsFailDebug("Error setting AEP")
-        }
-        let newAep = accountKeyStore.getAccountEntropyPool(tx: tx)
-        keyChanged = (oldAep != newAep)
-
-        if newAep == nil {
-            let oldMasterKey = accountKeyStore.getMasterKey(tx: tx)?.rawData
-            do {
-                if let masterKey = try syncMessage.master.map({ try MasterKey(data: $0) }) {
-                    accountKeyStore.setMasterKey(masterKey, tx: tx)
-                }
-            } catch {
-                throw SVR.KeysError.missingMasterKey
-            }
-            let newMasterKey = accountKeyStore.getMasterKey(tx: tx)?.rawData
-            keyChanged = (oldMasterKey != newMasterKey)
-        }
-
-        // Trigger a re-fetch of the storage manifest if our keys have changed
-        if keyChanged {
+        if newAep != oldAep {
+            accountKeyStore.setAccountEntropyPool(newAep, tx: tx)
+            // Trigger a re-fetch of the storage manifest if our keys have changed
             storageServiceManager.restoreOrCreateManifestIfNecessary(
                 authedDevice: authedDevice,
                 masterKeySource: .implicit,

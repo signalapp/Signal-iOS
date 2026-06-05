@@ -9,18 +9,15 @@ import Foundation
 final class OutgoingKeysSyncMessage: OutgoingSyncMessage {
 
     let accountEntropyPool: String?
-    let masterKey: Data?
     let mediaRootBackupKey: Data?
 
     init(
         localThread: TSContactThread,
         accountEntropyPool: AccountEntropyPool?,
-        masterKey: MasterKey?,
         mediaRootBackupKey: MediaRootBackupKey?,
         tx: DBReadTransaction,
     ) {
         self.accountEntropyPool = accountEntropyPool?.rawString
-        self.masterKey = masterKey?.rawData
         self.mediaRootBackupKey = mediaRootBackupKey?.serialize()
         super.init(localThread: localThread, tx: tx)
     }
@@ -32,9 +29,6 @@ final class OutgoingKeysSyncMessage: OutgoingSyncMessage {
         if let accountEntropyPool {
             coder.encode(accountEntropyPool, forKey: "accountEntropyPool")
         }
-        if let masterKey {
-            coder.encode(masterKey, forKey: "masterKey")
-        }
         if let mediaRootBackupKey {
             coder.encode(mediaRootBackupKey, forKey: "mediaRootBackupKey")
         }
@@ -42,7 +36,6 @@ final class OutgoingKeysSyncMessage: OutgoingSyncMessage {
 
     required init?(coder: NSCoder) {
         self.accountEntropyPool = coder.decodeObject(of: NSString.self, forKey: "accountEntropyPool") as String?
-        self.masterKey = coder.decodeObject(of: NSData.self, forKey: "masterKey") as Data?
         self.mediaRootBackupKey = coder.decodeObject(of: NSData.self, forKey: "mediaRootBackupKey") as Data?
         super.init(coder: coder)
     }
@@ -51,7 +44,6 @@ final class OutgoingKeysSyncMessage: OutgoingSyncMessage {
         var hasher = Hasher()
         hasher.combine(super.hash)
         hasher.combine(self.accountEntropyPool)
-        hasher.combine(self.masterKey)
         hasher.combine(self.mediaRootBackupKey)
         return hasher.finalize()
     }
@@ -60,7 +52,6 @@ final class OutgoingKeysSyncMessage: OutgoingSyncMessage {
         guard let object = object as? Self else { return false }
         guard super.isEqual(object) else { return false }
         guard self.accountEntropyPool == object.accountEntropyPool else { return false }
-        guard self.masterKey == object.masterKey else { return false }
         guard self.mediaRootBackupKey == object.mediaRootBackupKey else { return false }
         return true
     }
@@ -69,9 +60,6 @@ final class OutgoingKeysSyncMessage: OutgoingSyncMessage {
         let keysBuilder = SSKProtoSyncMessageKeys.builder()
         if let accountEntropyPool {
             keysBuilder.setAccountEntropyPool(accountEntropyPool)
-        }
-        if let masterKey {
-            keysBuilder.setMaster(masterKey)
         }
         if let mediaRootBackupKey {
             keysBuilder.setMediaRootBackupKey(mediaRootBackupKey)

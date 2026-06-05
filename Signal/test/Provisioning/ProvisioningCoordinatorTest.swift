@@ -103,7 +103,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
     public func testProvisioning() async throws {
         let aep = AccountEntropyPool()
         let provisioningMessage = LinkingProvisioningMessage(
-            rootKey: .accountEntropyPool(aep),
+            aep: aep,
             aci: .randomForTesting(),
             phoneNumber: "+17875550100",
             pni: .randomForTesting(),
@@ -180,12 +180,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             identityManagerMock.identityKeyPairs[.pni]?.publicKey,
             provisioningMessage.pniIdentityKeyPair.asECKeyPair.publicKey,
         )
-        let masterKey = switch provisioningMessage.rootKey {
-        case .accountEntropyPool(let accountEntropyPool):
-            accountEntropyPool.getMasterKey()
-        case .masterKey(let masterKey):
-            masterKey
-        }
+        let masterKey = provisioningMessage.aep.getMasterKey()
         XCTAssertEqual(svrMock.syncedMasterKey?.rawData, masterKey.rawData)
     }
 

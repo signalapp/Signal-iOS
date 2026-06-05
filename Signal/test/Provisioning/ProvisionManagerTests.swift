@@ -117,13 +117,7 @@ public class ProvisioningManagerTests {
 
         // Validate that all the data in the decrypted envelope on the new device side matches the
         // values populated by the old device
-        switch provisionMessage.rootKey {
-        case .accountEntropyPool(let aep):
-            #expect(aep == accountEntropyPool)
-        case .masterKey:
-            Issue.record("Expected AEP, but found MasterKey")
-        }
-
+        #expect(provisionMessage.aep == accountEntropyPool)
         #expect(provisionMessage.aci == myAci)
         #expect(provisionMessage.phoneNumber == myPhoneNumber.stringValue)
         #expect(provisionMessage.pni == myPni)

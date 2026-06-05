@@ -184,15 +184,6 @@ struct ProvisioningProtos_ProvisionMessage: @unchecked Sendable {
   /// Clears the value of `provisioningVersion`. Subsequent reads from it will return its default value.
   mutating func clearProvisioningVersion() {_uniqueStorage()._provisioningVersion = nil}
 
-  var masterKey: Data {
-    get {_storage._masterKey ?? Data()}
-    set {_uniqueStorage()._masterKey = newValue}
-  }
-  /// Returns true if `masterKey` has been explicitly set.
-  var hasMasterKey: Bool {_storage._masterKey != nil}
-  /// Clears the value of `masterKey`. Subsequent reads from it will return its default value.
-  mutating func clearMasterKey() {_uniqueStorage()._masterKey = nil}
-
   /// 32 bytes
   var ephemeralBackupKey: Data {
     get {_storage._ephemeralBackupKey ?? Data()}
@@ -293,7 +284,7 @@ extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Message, SwiftProt
 
 extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ProvisionMessage"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aciIdentityKeyPublic\0\u{1}aciIdentityKeyPrivate\0\u{1}number\0\u{1}provisioningCode\0\u{1}userAgent\0\u{1}profileKey\0\u{1}readReceipts\0\u{1}aci\0\u{1}provisioningVersion\0\u{1}pni\0\u{1}pniIdentityKeyPublic\0\u{1}pniIdentityKeyPrivate\0\u{1}masterKey\0\u{1}ephemeralBackupKey\0\u{1}accountEntropyPool\0\u{1}mediaRootBackupKey\0\u{1}aciBinary\0\u{1}pniBinary\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aciIdentityKeyPublic\0\u{1}aciIdentityKeyPrivate\0\u{1}number\0\u{1}provisioningCode\0\u{1}userAgent\0\u{1}profileKey\0\u{1}readReceipts\0\u{1}aci\0\u{1}provisioningVersion\0\u{1}pni\0\u{1}pniIdentityKeyPublic\0\u{1}pniIdentityKeyPrivate\0\u{2}\u{2}ephemeralBackupKey\0\u{1}accountEntropyPool\0\u{1}mediaRootBackupKey\0\u{1}aciBinary\0\u{1}pniBinary\0\u{c}\u{d}\u{1}")
 
   fileprivate class _StorageClass {
     var _aciIdentityKeyPublic: Data? = nil
@@ -308,7 +299,6 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     var _profileKey: Data? = nil
     var _readReceipts: Bool? = nil
     var _provisioningVersion: UInt32? = nil
-    var _masterKey: Data? = nil
     var _ephemeralBackupKey: Data? = nil
     var _accountEntropyPool: String? = nil
     var _mediaRootBackupKey: Data? = nil
@@ -336,7 +326,6 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
       _profileKey = source._profileKey
       _readReceipts = source._readReceipts
       _provisioningVersion = source._provisioningVersion
-      _masterKey = source._masterKey
       _ephemeralBackupKey = source._ephemeralBackupKey
       _accountEntropyPool = source._accountEntropyPool
       _mediaRootBackupKey = source._mediaRootBackupKey
@@ -372,7 +361,6 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._pni) }()
         case 11: try { try decoder.decodeSingularBytesField(value: &_storage._pniIdentityKeyPublic) }()
         case 12: try { try decoder.decodeSingularBytesField(value: &_storage._pniIdentityKeyPrivate) }()
-        case 13: try { try decoder.decodeSingularBytesField(value: &_storage._masterKey) }()
         case 14: try { try decoder.decodeSingularBytesField(value: &_storage._ephemeralBackupKey) }()
         case 15: try { try decoder.decodeSingularStringField(value: &_storage._accountEntropyPool) }()
         case 16: try { try decoder.decodeSingularBytesField(value: &_storage._mediaRootBackupKey) }()
@@ -426,9 +414,6 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
       try { if let v = _storage._pniIdentityKeyPrivate {
         try visitor.visitSingularBytesField(value: v, fieldNumber: 12)
       } }()
-      try { if let v = _storage._masterKey {
-        try visitor.visitSingularBytesField(value: v, fieldNumber: 13)
-      } }()
       try { if let v = _storage._ephemeralBackupKey {
         try visitor.visitSingularBytesField(value: v, fieldNumber: 14)
       } }()
@@ -465,7 +450,6 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
         if _storage._profileKey != rhs_storage._profileKey {return false}
         if _storage._readReceipts != rhs_storage._readReceipts {return false}
         if _storage._provisioningVersion != rhs_storage._provisioningVersion {return false}
-        if _storage._masterKey != rhs_storage._masterKey {return false}
         if _storage._ephemeralBackupKey != rhs_storage._ephemeralBackupKey {return false}
         if _storage._accountEntropyPool != rhs_storage._accountEntropyPool {return false}
         if _storage._mediaRootBackupKey != rhs_storage._mediaRootBackupKey {return false}

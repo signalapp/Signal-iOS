@@ -208,15 +208,10 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("Missing thread")
         }
 
-        let accountEntropyPool = DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: tx)
-        if accountEntropyPool == nil {
-            Logger.warn("Expecting AEP present for sync message")
-        }
-
-        let masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx)
-
-        guard accountEntropyPool != nil || masterKey != nil else {
-            return owsFailDebug("Missing root key")
+        let accountKeyStore = DependenciesBridge.shared.accountKeyStore
+        guard let accountEntropyPool = accountKeyStore.getAccountEntropyPool(tx: tx) else {
+            owsFailDebug("must have AEP for sync message")
+            return
         }
 
         let mrbk = DependenciesBridge.shared.accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx)
@@ -224,7 +219,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         let syncKeysMessage = OutgoingKeysSyncMessage(
             localThread: thread,
             accountEntropyPool: accountEntropyPool,
-            masterKey: masterKey,
             mediaRootBackupKey: mrbk,
             tx: tx,
         )
@@ -247,10 +241,10 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             )
         } catch {
             switch error {
-            case .missingMasterKey:
-                Logger.warn("Key sync messages missing master key")
-            case .missingOrInvalidMRBK:
-                Logger.warn("Key sync messages missing or invalid media root backup key")
+            case .missingAep:
+                Logger.warn("Key sync messages missing aep")
+            case .missingMrbk:
+                Logger.warn("Key sync messages missing media root backup key")
             }
         }
 

@@ -284,18 +284,6 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCodin
     }
 
     @objc
-    public var masterKey: Data? {
-        guard hasMasterKey else {
-            return nil
-        }
-        return proto.masterKey
-    }
-    @objc
-    public var hasMasterKey: Bool {
-        return proto.hasMasterKey
-    }
-
-    @objc
     public var ephemeralBackupKey: Data? {
         guard hasEphemeralBackupKey else {
             return nil
@@ -494,9 +482,6 @@ extension ProvisioningProtoProvisionMessage {
         if hasProvisioningVersion {
             builder.setProvisioningVersion(provisioningVersion)
         }
-        if let _value = masterKey {
-            builder.setMasterKey(_value)
-        }
         if let _value = ephemeralBackupKey {
             builder.setEphemeralBackupKey(_value)
         }
@@ -657,17 +642,6 @@ public class ProvisioningProtoProvisionMessageBuilder: NSObject {
     @objc
     public func setProvisioningVersion(_ valueParam: UInt32) {
         proto.provisioningVersion = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setMasterKey(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.masterKey = valueParam
-    }
-
-    public func setMasterKey(_ valueParam: Data) {
-        proto.masterKey = valueParam
     }
 
     @objc

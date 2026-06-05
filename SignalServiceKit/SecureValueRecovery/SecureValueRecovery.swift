@@ -12,8 +12,8 @@ public enum SVR {
     static let maximumKeyAttempts: UInt32 = 10
 
     public enum KeysError: Error {
-        case missingMasterKey
-        case missingOrInvalidMRBK
+        case missingAep
+        case missingMrbk
     }
 
     public enum DerivedKey: Hashable {

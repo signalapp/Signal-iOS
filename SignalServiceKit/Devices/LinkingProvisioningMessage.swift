@@ -8,17 +8,12 @@ public import LibSignalClient
 
 public struct LinkingProvisioningMessage {
 
-    public enum RootKey {
-        case accountEntropyPool(AccountEntropyPool)
-        case masterKey(MasterKey)
-    }
-
     public enum Constants {
         public static let provisioningVersion: UInt32 = 1
         public static let userAgent: String = "OWI"
     }
 
-    public let rootKey: RootKey
+    public let aep: AccountEntropyPool
     public let aci: Aci
     public let phoneNumber: String
     public let pni: Pni
@@ -33,7 +28,7 @@ public struct LinkingProvisioningMessage {
     public let provisioningVersion: UInt32
 
     public init(
-        rootKey: RootKey,
+        aep: AccountEntropyPool,
         aci: Aci,
         phoneNumber: String,
         pni: Pni,
@@ -47,7 +42,7 @@ public struct LinkingProvisioningMessage {
         provisioningUserAgent: String? = Constants.userAgent,
         provisioningVersion: UInt32 = Constants.provisioningVersion,
     ) {
-        self.rootKey = rootKey
+        self.aep = aep
         self.aci = aci
         self.phoneNumber = phoneNumber
         self.pni = pni
@@ -119,11 +114,9 @@ public struct LinkingProvisioningMessage {
             let accountEntropyPool = proto.accountEntropyPool?.nilIfEmpty,
             let aep = try? AccountEntropyPool(key: accountEntropyPool)
         {
-            self.rootKey = .accountEntropyPool(aep)
-        } else if let masterKey = try proto.masterKey.map({ try MasterKey(data: $0) }) {
-            self.rootKey = .masterKey(masterKey)
+            self.aep = aep
         } else {
-            throw ProvisioningError.invalidProvisionMessage("missing master key from provisioning message")
+            throw ProvisioningError.invalidProvisionMessage("missing aep from provisioning message")
         }
 
         guard let mrbkBytes = proto.mediaRootBackupKey else {
@@ -155,14 +148,7 @@ public struct LinkingProvisioningMessage {
         messageBuilder.setNumber(phoneNumber)
         messageBuilder.setAciBinary(aci.rawUUID.data)
         messageBuilder.setPniBinary(pni.rawUUID.data)
-
-        switch rootKey {
-        case .accountEntropyPool(let accountEntropyPool):
-            messageBuilder.setAccountEntropyPool(accountEntropyPool.rawString)
-            messageBuilder.setMasterKey(accountEntropyPool.getMasterKey().rawData)
-        case .masterKey(let masterKey):
-            messageBuilder.setMasterKey(masterKey.rawData)
-        }
+        messageBuilder.setAccountEntropyPool(aep.rawString)
         messageBuilder.setMediaRootBackupKey(mrbk.serialize())
         ephemeralBackupKey.map { messageBuilder.setEphemeralBackupKey($0.serialize()) }
 
