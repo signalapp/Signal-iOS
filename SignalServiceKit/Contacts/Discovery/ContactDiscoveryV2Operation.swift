@@ -101,7 +101,7 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
 
     private let connectionImpl: ConnectionType
 
-    private let remoteAttestation: Shims.RemoteAttestation
+    private let remoteAttestationAuthFetcher: RemoteAttestationAuthFetcher
 
     convenience init(
         db: any DB,
@@ -109,7 +109,7 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
         mode: ContactDiscoveryMode,
         udManager: any OWSUDManager,
         connectionImpl: ConnectionType,
-        remoteAttestation: any Shims.RemoteAttestation,
+        remoteAttestationAuthFetcher: RemoteAttestationAuthFetcher,
     ) {
         self.init(
             db: db,
@@ -117,7 +117,7 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
             persistentState: mode == .oneOffUserRequest ? nil : ContactDiscoveryV2PersistentStateImpl(),
             udManager: udManager,
             connectionImpl: connectionImpl,
-            remoteAttestation: remoteAttestation,
+            remoteAttestationAuthFetcher: remoteAttestationAuthFetcher,
         )
     }
 
@@ -127,19 +127,22 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
         persistentState: (any ContactDiscoveryV2PersistentState)?,
         udManager: any OWSUDManager,
         connectionImpl: ConnectionType,
-        remoteAttestation: any Shims.RemoteAttestation,
+        remoteAttestationAuthFetcher: RemoteAttestationAuthFetcher,
     ) {
         self.db = db
         self.e164sToLookup = e164sToLookup
         self.persistentState = persistentState
         self.udManager = udManager
         self.connectionImpl = connectionImpl
-        self.remoteAttestation = remoteAttestation
+        self.remoteAttestationAuthFetcher = remoteAttestationAuthFetcher
     }
 
     func perform() async throws -> [ContactDiscoveryResult] {
         do {
-            let cdsiAuth = try await self.remoteAttestation.authForCDSI()
+            let cdsiAuth = try await self.remoteAttestationAuthFetcher.fetchAuth(
+                forService: .cdsi,
+                chatServiceAuth: .implicit(),
+            )
             let request = try self.buildRequest()
             let auth = LibSignalClient.Auth(username: cdsiAuth.username, password: cdsiAuth.password)
             let tokenResult = try await self.connectionImpl.performRequest(request, auth: auth)
@@ -320,29 +323,5 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             Self.tokenStore.removeValue(forKey: Self.tokenKey, transaction: transaction)
         }
-    }
-}
-
-// MARK: - Shims
-
-extension ContactDiscoveryV2Operation {
-    enum Shims {
-        typealias RemoteAttestation = _ContactDiscoveryV2Operation_RemoteAttestationShim
-    }
-
-    enum Wrappers {
-        typealias RemoteAttestation = _ContactDiscoveryV2Operation_RemoteAttestationWrapper
-    }
-}
-
-protocol _ContactDiscoveryV2Operation_RemoteAttestationShim {
-    func authForCDSI() async throws -> RemoteAttestation.Auth
-}
-
-class _ContactDiscoveryV2Operation_RemoteAttestationWrapper: _ContactDiscoveryV2Operation_RemoteAttestationShim {
-    init() {}
-
-    func authForCDSI() async throws -> RemoteAttestation.Auth {
-        return try await RemoteAttestation.authForCDSI()
     }
 }

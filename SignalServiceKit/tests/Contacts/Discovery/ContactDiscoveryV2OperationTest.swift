@@ -28,12 +28,6 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
         }
     }
 
-    private class MockRemoteAttestation: ContactDiscoveryV2Operation<MockContactDiscoveryConnection>.Shims.RemoteAttestation {
-        func authForCDSI() async throws -> RemoteAttestation.Auth {
-            return RemoteAttestation.Auth(username: "", password: "")
-        }
-    }
-
     private class MockContactDiscoveryV2PersistentState: ContactDiscoveryV2PersistentState {
         var token: Data?
         var prevE164s = Set<E164>()
@@ -61,11 +55,27 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     // MARK: - Tests
 
     private lazy var persistentState = MockContactDiscoveryV2PersistentState()
+    private let mockNetworkManager = MockNetworkManager()
+
+    var authFetchSuccessResponse: (TSRequest, NetworkManager.RetryPolicy) async throws -> HTTPResponse = { request, _ in
+        if request.url.absoluteString.hasSuffix("v2/directory/auth") {
+            return HTTPResponse(
+                requestUrl: request.url,
+                status: 200,
+                headers: HttpHeaders(),
+                bodyData: try! JSONEncoder().encode(["password": "p", "username": "u"]),
+            )
+        }
+        throw OWSAssertionError("")
+    }
 
     /// In .oneOffUserRequest mode, we should disregard tokens entirely.
     func testOneOffRequest() async throws {
         let aci = Aci.randomForTesting()
         let pni = Pni.randomForTesting()
+
+        mockNetworkManager.asyncRequestHandlers.append(authFetchSuccessResponse)
+        let remoteAttestationAuthFetcher = RemoteAttestationAuthFetcher(networkManager: mockNetworkManager)
 
         let connection = MockContactDiscoveryConnection()
         let operation = ContactDiscoveryV2Operation(
@@ -74,7 +84,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
             mode: .oneOffUserRequest,
             udManager: OWSMockUDManager(),
             connectionImpl: connection,
-            remoteAttestation: MockRemoteAttestation(),
+            remoteAttestationAuthFetcher: remoteAttestationAuthFetcher,
         )
 
         // Prepare the server's responses to the client's request.
@@ -104,13 +114,16 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
 
     func testNotDiscoverable() async throws {
         let connection = MockContactDiscoveryConnection()
+        mockNetworkManager.asyncRequestHandlers.append(authFetchSuccessResponse)
+        let remoteAttestationAuthFetcher = RemoteAttestationAuthFetcher(networkManager: mockNetworkManager)
+
         let operation = ContactDiscoveryV2Operation(
             db: InMemoryDB(),
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
             persistentState: nil,
             udManager: OWSMockUDManager(),
             connectionImpl: connection,
-            remoteAttestation: MockRemoteAttestation(),
+            remoteAttestationAuthFetcher: remoteAttestationAuthFetcher,
         )
 
         // Prepare the server's responses to the client's request.
@@ -131,13 +144,15 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     /// If the server reports a rate limit, we should parse "retry after".
     func testRateLimitError() async throws {
         let connection = MockContactDiscoveryConnection()
+        mockNetworkManager.asyncRequestHandlers.append(authFetchSuccessResponse)
+        let remoteAttestationAuthFetcher = RemoteAttestationAuthFetcher(networkManager: mockNetworkManager)
         let operation = ContactDiscoveryV2Operation(
             db: InMemoryDB(),
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
             persistentState: persistentState,
             udManager: OWSMockUDManager(),
             connectionImpl: connection,
-            remoteAttestation: MockRemoteAttestation(),
+            remoteAttestationAuthFetcher: remoteAttestationAuthFetcher,
         )
 
         // Establish the initial state.
@@ -174,13 +189,15 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     /// If the server reports an invalid token, we should clear the token.
     func testInvalidTokenError() async throws {
         let connection = MockContactDiscoveryConnection()
+        mockNetworkManager.asyncRequestHandlers.append(authFetchSuccessResponse)
+        let remoteAttestationAuthFetcher = RemoteAttestationAuthFetcher(networkManager: mockNetworkManager)
         let operation = ContactDiscoveryV2Operation(
             db: InMemoryDB(),
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
             persistentState: persistentState,
             udManager: OWSMockUDManager(),
             connectionImpl: connection,
-            remoteAttestation: MockRemoteAttestation(),
+            remoteAttestationAuthFetcher: remoteAttestationAuthFetcher,
         )
 
         // Establish the initial state.

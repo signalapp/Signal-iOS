@@ -3364,9 +3364,9 @@ public class RegistrationCoordinatorTest {
         // Put some auth credentials in storage.
         let svr2CredentialCandidates: [SVR2AuthCredential] = [
             Stubs.svr2AuthCredential,
-            SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
-            SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
-            SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123")),
+            SVR2AuthCredential(credential: RemoteAttestationAuth(username: "aaaa", password: "abc")),
+            SVR2AuthCredential(credential: RemoteAttestationAuth(username: "zzzz", password: "xyz")),
+            SVR2AuthCredential(credential: RemoteAttestationAuth(username: "0000", password: "123")),
         ]
         svrAuthCredentialStore.svr2Dict = Dictionary(grouping: svr2CredentialCandidates, by: \.credential.username).mapValues { $0.first! }
 
@@ -3398,7 +3398,7 @@ public class RegistrationCoordinatorTest {
         static let aci = Aci.randomForTesting()
         static let pinCode = "1234"
 
-        static let svr2AuthCredential = SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "xxx", password: "yyy"))
+        static let svr2AuthCredential = SVR2AuthCredential(credential: RemoteAttestationAuth(username: "xxx", password: "yyy"))
 
         static let captchaToken = "captchaToken"
         static let apnsToken = "apnsToken"

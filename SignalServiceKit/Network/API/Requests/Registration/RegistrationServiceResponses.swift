@@ -328,7 +328,7 @@ public enum RegistrationServiceResponses {
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             timeRemainingMs = try container.decode(Int.self, forKey: .timeRemainingMs)
-            let svr2Credential = try container.decode(RemoteAttestation.Auth.self, forKey: .svr2AuthCredential)
+            let svr2Credential = try container.decode(RemoteAttestationAuth.self, forKey: .svr2AuthCredential)
             self.svr2AuthCredential = .init(credential: svr2Credential)
         }
     }

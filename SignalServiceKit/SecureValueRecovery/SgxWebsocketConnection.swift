@@ -27,7 +27,7 @@ public class SgxWebsocketConnection<Configurator: SgxWebsocketConfigurator> {
 
     public var client: Configurator.Client { fatalError("Concrete subclass must implement") }
 
-    public var auth: RemoteAttestation.Auth { fatalError("Concrete subclass must implement") }
+    public var auth: RemoteAttestationAuth { fatalError("Concrete subclass must implement") }
 
     // Subclasses must implement.
     func sendRequestAndReadResponse(_ request: Configurator.Request) async throws -> Configurator.Response {
@@ -45,13 +45,13 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
     private let webSocket: WebSocketPromise
     private let configurator: Configurator
     private let _client: Configurator.Client
-    private let _auth: RemoteAttestation.Auth
+    private let _auth: RemoteAttestationAuth
 
     private init(
         webSocket: WebSocketPromise,
         configurator: Configurator,
         client: Configurator.Client,
-        auth: RemoteAttestation.Auth,
+        auth: RemoteAttestationAuth,
     ) {
         self.webSocket = webSocket
         self.configurator = configurator
@@ -62,7 +62,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
 
     static func connectAndPerformHandshake(
         configurator: Configurator,
-        auth: RemoteAttestation.Auth,
+        auth: RemoteAttestationAuth,
         websocketFactory: WebSocketFactory,
     ) async throws -> SgxWebsocketConnection<Configurator> {
         let webSocket = try buildSocket(
@@ -95,7 +95,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
 
     private static func buildSocket(
         configurator: Configurator,
-        auth: RemoteAttestation.Auth,
+        auth: RemoteAttestationAuth,
         websocketFactory: WebSocketFactory,
     ) throws -> WebSocketPromise {
         let authHeaderValue = HttpHeaders.authHeaderValue(username: auth.username, password: auth.password)
@@ -115,7 +115,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
 
     override public var client: Configurator.Client { return _client }
 
-    override public var auth: RemoteAttestation.Auth { return _auth }
+    override public var auth: RemoteAttestationAuth { return _auth }
 
     override public func sendRequestAndReadResponse(
         _ request: Configurator.Request,
@@ -156,9 +156,9 @@ public class MockSgxWebsocketConnection<Configurator: SgxWebsocketConfigurator>:
 
     override public var client: Configurator.Client { return mockClient }
 
-    public var mockAuth: RemoteAttestation.Auth!
+    public var mockAuth: RemoteAttestationAuth!
 
-    override public var auth: RemoteAttestation.Auth { return mockAuth }
+    override public var auth: RemoteAttestationAuth { return mockAuth }
 
     public var onSendRequestAndReadResponse: ((Configurator.Request) -> Promise<Configurator.Response>)?
 

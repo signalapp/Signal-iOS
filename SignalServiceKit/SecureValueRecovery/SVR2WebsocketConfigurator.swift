@@ -14,10 +14,16 @@ class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
 
     let mrenclave: MrEnclave
     var authMethod: SVR2.AuthMethod
+    let remoteAttestationAuthFetcher: RemoteAttestationAuthFetcher
 
-    init(mrenclave: MrEnclave, authMethod: SVR2.AuthMethod) {
+    init(
+        mrenclave: MrEnclave,
+        authMethod: SVR2.AuthMethod,
+        remoteAttestationAuthFetcher: RemoteAttestationAuthFetcher,
+    ) {
         self.mrenclave = mrenclave
         self.authMethod = authMethod
+        self.remoteAttestationAuthFetcher = remoteAttestationAuthFetcher
     }
 
     static var signalServiceType: SignalServiceType { .svr2 }
@@ -26,14 +32,20 @@ class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
         return "v1/\(mrenclaveString)"
     }
 
-    func fetchAuth() async throws -> RemoteAttestation.Auth {
+    func fetchAuth() async throws -> RemoteAttestationAuth {
         switch authMethod {
         case .svrAuth(let credential, _):
             return credential.credential
         case .chatServerAuth(let authedAccount):
-            return try await RemoteAttestation.authForSVR2(chatServiceAuth: authedAccount.chatServiceAuth)
+            return try await remoteAttestationAuthFetcher.fetchAuth(
+                forService: .svr2,
+                chatServiceAuth: authedAccount.chatServiceAuth,
+            )
         case .implicit:
-            return try await RemoteAttestation.authForSVR2(chatServiceAuth: .implicit())
+            return try await remoteAttestationAuthFetcher.fetchAuth(
+                forService: .svr2,
+                chatServiceAuth: .implicit(),
+            )
         }
     }
 

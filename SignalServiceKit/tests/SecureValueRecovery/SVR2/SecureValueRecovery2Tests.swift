@@ -33,7 +33,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         localStorage = SVRLocalStorage()
 
         let mockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
-        mockConnection.mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
+        mockConnection.mockAuth = RemoteAttestationAuth(username: "username", password: "password")
         self.mockConnection = mockConnection
         mockConnectionFactory = MockSgxWebsocketConnectionFactory()
 
@@ -45,6 +45,7 @@ class SecureValueRecovery2Tests: XCTestCase {
             db: db,
             accountKeyStore: accountKeyStore,
             pinHasher: MockPinHasher(),
+            remoteAttestationAuthFetcher: RemoteAttestationAuthFetcher(networkManager: MockNetworkManager()),
             storageServiceManager: FakeStorageServiceManager(),
             svrLocalStorage: localStorage,
             tsConstants: mockTSConstants,
@@ -55,7 +56,7 @@ class SecureValueRecovery2Tests: XCTestCase {
     @MainActor
     func testMigration() async throws {
         // Set up the connections to both the old and new enclaves.
-        let mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
+        let mockAuth = RemoteAttestationAuth(username: "username", password: "password")
 
         let oldEnclave = MrEnclave("0000000000000000000000000000000000000000000000000000000000000000")
         let oldEnclaveConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
@@ -185,7 +186,7 @@ class SecureValueRecovery2Tests: XCTestCase {
     @MainActor
     func testMigration_forgottenEnclave() async throws {
         // Set up the connections to both the old and new enclaves.
-        let mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
+        let mockAuth = RemoteAttestationAuth(username: "username", password: "password")
 
         let oldEnclave = MrEnclave("0000000000000000000000000000000000000000000000000000000000000000")
         let oldEnclaveConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()

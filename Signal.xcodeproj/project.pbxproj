@@ -3822,7 +3822,7 @@
 		F9C5CCA3289453B300548EEE /* StorageService.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B8289453B100548EEE /* StorageService.pb.swift */; };
 		F9C5CCA4289453B300548EEE /* SSKProto+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B9289453B100548EEE /* SSKProto+OWS.swift */; };
 		F9C5CCAC289453B300548EEE /* PreKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C2289453B100548EEE /* PreKeyManager.swift */; };
-		F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */; };
+		F9C5CCB0289453B300548EEE /* RemoteAttestationAuthFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C7289453B100548EEE /* RemoteAttestationAuthFetcher.swift */; };
 		F9C5CCC0289453B300548EEE /* ContactDiscoveryTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */; };
 		F9C5CCC3289453B300548EEE /* ContactDiscoveryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DC289453B100548EEE /* ContactDiscoveryError.swift */; };
 		F9C5CCC5289453B300548EEE /* SignalAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DE289453B100548EEE /* SignalAccount.swift */; };
@@ -8136,7 +8136,7 @@
 		F9C5C9B8289453B100548EEE /* StorageService.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageService.pb.swift; sourceTree = "<group>"; };
 		F9C5C9B9289453B100548EEE /* SSKProto+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SSKProto+OWS.swift"; sourceTree = "<group>"; };
 		F9C5C9C2289453B100548EEE /* PreKeyManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreKeyManager.swift; sourceTree = "<group>"; };
-		F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteAttestation.swift; sourceTree = "<group>"; };
+		F9C5C9C7289453B100548EEE /* RemoteAttestationAuthFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteAttestationAuthFetcher.swift; sourceTree = "<group>"; };
 		F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryTask.swift; sourceTree = "<group>"; };
 		F9C5C9DC289453B100548EEE /* ContactDiscoveryError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryError.swift; sourceTree = "<group>"; };
 		F9C5C9DE289453B100548EEE /* SignalAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAccount.swift; sourceTree = "<group>"; };
@@ -15367,7 +15367,7 @@
 				F9D5BFCC2979A017001737E5 /* OWSRequestFactory+Spam.swift */,
 				D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */,
 				F9C5CAE2289453B200548EEE /* OWSRequestFactory.swift */,
-				F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */,
+				F9C5C9C7289453B100548EEE /* RemoteAttestationAuthFetcher.swift */,
 				66C2B1302A05D28A008DDE72 /* TSRequest.swift */,
 			);
 			path = Requests;
@@ -19723,7 +19723,7 @@
 				6646573B2AC388C70099DE1C /* RegistrationStateChangeManager.swift in Sources */,
 				6646573D2AC3894D0099DE1C /* RegistrationStateChangeManagerImpl.swift in Sources */,
 				040506FC2F7FE3DB0078B769 /* RemoteAnnouncementModel.swift in Sources */,
-				F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */,
+				F9C5CCB0289453B300548EEE /* RemoteAttestationAuthFetcher.swift in Sources */,
 				F9C5CE17289453B400548EEE /* RemoteConfigManager.swift in Sources */,
 				D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */,
 				040507012F804C240078B769 /* RemoteReleaseNotesService.swift in Sources */,

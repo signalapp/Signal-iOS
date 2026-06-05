@@ -15,6 +15,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let db: any DB
     private let accountKeyStore: AccountKeyStore
     private let localStorage: SVRLocalStorage
+    private let remoteAttestationAuthFetcher: RemoteAttestationAuthFetcher
     private let storageServiceManager: StorageServiceManager
     private let tsConstants: TSConstantsProtocol
     private let twoFAManager: SVR2.Shims.OWS2FAManager
@@ -25,6 +26,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         db: any DB,
         accountKeyStore: AccountKeyStore,
         pinHasher: any SVR2PinHasher,
+        remoteAttestationAuthFetcher: RemoteAttestationAuthFetcher,
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorage,
         tsConstants: TSConstantsProtocol,
@@ -36,6 +38,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.accountKeyStore = accountKeyStore
         self.localStorage = svrLocalStorage
         self.pinHasher = pinHasher
+        self.remoteAttestationAuthFetcher = remoteAttestationAuthFetcher
         self.storageServiceManager = storageServiceManager
         self.tsConstants = tsConstants
         self.twoFAManager = twoFAManager
@@ -52,7 +55,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
         // Force refresh a credential, even if we have one cached, to ensure we
         // have a fresh credential to back up.
-        let credential = try await RemoteAttestation.authForSVR2(chatServiceAuth: .implicit())
+        let credential = try await remoteAttestationAuthFetcher.fetchAuth(
+            forService: .svr2,
+            chatServiceAuth: .implicit(),
+        )
         await db.awaitableWrite { tx in
             credentialStorage.storeAuthCredentialForCurrentUsername(
                 SVR2AuthCredential(credential: credential),
@@ -245,7 +251,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             return
         }
 
-        let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
+        let config = SVR2WebsocketConfigurator(
+            mrenclave: mrEnclave,
+            authMethod: authMethod,
+            remoteAttestationAuthFetcher: remoteAttestationAuthFetcher,
+        )
 
         let connection = try await makeHandshakeAndOpenConnection(config)
         defer { connection.disconnect(code: .normalClosure) }
@@ -286,7 +296,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         try await self.performExposeRequest(
             backup: completedBackup,
-            authedAccount: authMethod.authedAccount,
             connection: connection,
         )
         completedBackup.isExposed = true
@@ -335,7 +344,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     private func performExposeRequest(
         backup: CompletedBackup,
-        authedAccount: AuthedAccount,
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
     ) async throws {
         var exposeRequest = SVR2Proto_ExposeRequest()
@@ -408,7 +416,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         mrEnclave: MrEnclave,
         authMethod: SVR2.AuthMethod,
     ) async throws -> RestoreResult {
-        let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
+        let config = SVR2WebsocketConfigurator(
+            mrenclave: mrEnclave,
+            authMethod: authMethod,
+            remoteAttestationAuthFetcher: remoteAttestationAuthFetcher,
+        )
         do {
             let connection = try await makeHandshakeAndOpenConnection(config)
             defer { connection.disconnect(code: .normalClosure) }
@@ -417,7 +429,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 mrEnclave: mrEnclave,
                 pin: pin,
                 connection: connection,
-                authedAccount: authMethod.authedAccount,
             )
         }
     }
@@ -426,7 +437,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         mrEnclave: MrEnclave,
         pin: String,
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
-        authedAccount: AuthedAccount,
     ) async throws -> RestoreResult {
         let pinHash = try hashPin(pin, forConnection: connection)
 
@@ -462,7 +472,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         mrEnclave: MrEnclave,
         authMethod: SVR2.AuthMethod,
     ) async throws {
-        let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
+        let config = SVR2WebsocketConfigurator(
+            mrenclave: mrEnclave,
+            authMethod: authMethod,
+            remoteAttestationAuthFetcher: remoteAttestationAuthFetcher,
+        )
         let connection = try await makeHandshakeAndOpenConnection(config)
         defer { connection.disconnect(code: .normalClosure) }
         await db.awaitableWrite { tx in
@@ -474,14 +488,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         return try await self.performDeleteRequest(
             mrEnclave: mrEnclave,
             connection: connection,
-            authedAccount: authMethod.authedAccount,
         )
     }
 
     private func performDeleteRequest(
         mrEnclave: MrEnclave,
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
-        authedAccount: AuthedAccount,
     ) async throws {
         var request = SVR2Proto_Request()
         request.delete = SVR2Proto_DeleteRequest()

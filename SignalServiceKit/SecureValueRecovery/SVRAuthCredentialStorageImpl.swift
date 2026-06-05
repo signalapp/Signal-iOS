@@ -223,8 +223,8 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
             )
         }
 
-        private var credential: RemoteAttestation.Auth {
-            return RemoteAttestation.Auth(username: username, password: password)
+        private var credential: RemoteAttestationAuth {
+            return RemoteAttestationAuth(username: username, password: password)
         }
 
         func toSVR2Credential() -> SVR2AuthCredential {
