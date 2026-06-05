@@ -1269,7 +1269,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // but these values aren't persisted to their final destination until the very end of
             // registration, so persiting the these values once at the start is the easiest way to
             // avoid problems.
-            // Note: We should not reuse existing registration ids if we are reregistering
+            // Note: We should generate new registration ids if we are reregistering
             updatePersistedState(tx) {
                 if $0.aciRegistrationId == nil {
                     $0.aciRegistrationId = RegistrationIdGenerator.generate()
