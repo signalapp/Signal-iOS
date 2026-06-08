@@ -775,7 +775,9 @@ class StorageServiceOperation {
     }
 
     private func _run() async throws {
+        let accountKeyStore = DependenciesBridge.shared.accountKeyStore
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         let (currentStateIfRotatingManifest, masterKey) = databaseStorage.read { tx in
             let state: State?
@@ -786,12 +788,17 @@ class StorageServiceOperation {
                 state = nil
             }
 
-            let masterKey: MasterKey?
+            var masterKey: MasterKey?
             switch masterKeySource {
             case .explicit(let keyData):
                 masterKey = keyData
             case .implicit:
-                masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx)
+                masterKey = accountKeyStore.getMasterKey(tx: tx)
+            }
+
+            if !isPrimaryDevice, accountKeyStore.isWaitingForKeysSyncMessage(tx: tx) {
+                // We hit a failure and are waiting for a "new" AEP/MasterKey.
+                masterKey = nil
             }
 
             return (state, masterKey)
@@ -800,13 +807,9 @@ class StorageServiceOperation {
         guard let masterKey else {
             if
                 !isPrimaryDevice,
-                DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+                tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
             {
-                // This is a linked device, and keys are missing. There's nothing that can be done
-                // until we receive new keys, so send a key sync message and return early.
-                await databaseStorage.awaitableWrite { tx in
-                    SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: tx)
-                }
+                await sendKeysSyncRequestMessageIfNeeded()
             } else {
                 // We're either not registered, or a primary.  Either way,
                 // we don't have keys, or a means to get them, so do nothing.
@@ -844,6 +847,25 @@ class StorageServiceOperation {
             }
         case .cleanUpUnknownData:
             await cleanUpUnknownData()
+        }
+    }
+
+    private func sendKeysSyncRequestMessageIfNeeded() async {
+        owsPrecondition(!isPrimaryDevice)
+        let accountKeyStore = DependenciesBridge.shared.accountKeyStore
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let syncManager = SSKEnvironment.shared.syncManagerRef
+
+        await databaseStorage.awaitableWrite { tx in
+            if accountKeyStore.isWaitingForKeysSyncMessage(tx: tx) {
+                // We've already requested keys; if the request got lost, we can rely on
+                // the periodic keys sync message.
+                return
+            }
+            // This is a linked device, and keys are missing. There's nothing that can
+            // be done until we receive new keys, so send a key sync message.
+            syncManager.sendKeysSyncRequestMessage(transaction: tx)
+            accountKeyStore.setWaitingForKeysSyncMessage(true, tx: tx)
         }
     }
 
@@ -1212,14 +1234,8 @@ class StorageServiceOperation {
             case StorageService.StorageError.manifestDecryptionFailed(_) where !isPrimaryDevice:
                 // If this is a linked device, give up and request the latest storage
                 // service key from the primary device.
-                Logger.warn("Manifest decryption failed on linked device, clearing storage service keys.")
-
-                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-                    // Clear out the key, it's no longer valid. This will prevent us
-                    // from trying to backup again until the sync response is received.
-                    DependenciesBridge.shared.accountKeyStore.setMasterKey(nil, tx: transaction)
-                    SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
-                }
+                Logger.warn("Manifest decryption failed on linked device; waiting for keys sync")
+                await sendKeysSyncRequestMessageIfNeeded()
             default:
                 break
             }
@@ -1762,16 +1778,11 @@ class StorageServiceOperation {
                     return
                 }
 
-                Logger.warn("Item decryption failed, clearing storage service keys.")
+                Logger.warn("Item decryption failed; waiting for keys sync")
 
                 // If this is a linked device, give up and request the latest storage
                 // service key from the primary device.
-                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-                    // Clear out the key, it's no longer valid. This will prevent us
-                    // from trying to backup again until the sync response is received.
-                    DependenciesBridge.shared.accountKeyStore.setMasterKey(nil, tx: transaction)
-                    SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
-                }
+                await sendKeysSyncRequestMessageIfNeeded()
             } else if
                 case .itemProtoDeserializationFailed = storageError,
                 self.isPrimaryDevice

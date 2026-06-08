@@ -20,6 +20,7 @@ public class AccountKeyStore {
     private let aepKvStore: KeyValueStore
     private let mrbkKvStore: NewKeyValueStore
     private let masterKeyKvStore: NewKeyValueStore
+    private let syncStore: NewKeyValueStore
 
     private let backupSettingsStore: BackupSettingsStore
 
@@ -30,6 +31,7 @@ public class AccountKeyStore {
         self.masterKeyKvStore = NewKeyValueStore(collection: "kOWSKeyBackupService_Keys")
         self.mrbkKvStore = NewKeyValueStore(collection: "MediaRootBackupKey")
         self.aepKvStore = KeyValueStore(collection: "AccountEntropyPool")
+        self.syncStore = NewKeyValueStore(collection: "AccountKey.Sync")
         self.backupSettingsStore = backupSettingsStore
     }
 
@@ -136,5 +138,21 @@ public class AccountKeyStore {
         backupSettingsStore.setHaveSetBackupID(haveSetBackupID: false, tx: tx)
 
         aepKvStore.setString(accountEntropyPool.rawString, key: Keys.aepKeyName, transaction: tx)
+    }
+
+    // MARK: -
+
+    private static let isWaitingForKeysSyncKey = "isWaitingForKeysSync"
+
+    func isWaitingForKeysSyncMessage(tx: DBReadTransaction) -> Bool {
+        return syncStore.fetchValue(Bool.self, forKey: Self.isWaitingForKeysSyncKey, tx: tx) == true
+    }
+
+    func setWaitingForKeysSyncMessage(_ isWaitingForKeysSyncMessage: Bool, tx: DBWriteTransaction) {
+        if isWaitingForKeysSyncMessage {
+            syncStore.writeValue(true, forKey: Self.isWaitingForKeysSyncKey, tx: tx)
+        } else {
+            syncStore.removeValue(forKey: Self.isWaitingForKeysSyncKey, tx: tx)
+        }
     }
 }

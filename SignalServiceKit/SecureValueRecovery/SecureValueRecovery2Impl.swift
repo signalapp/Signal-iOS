@@ -102,6 +102,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         Logger.info("")
         accountKeyStore.setMediaRootBackupKey(provisioningMessage.mrbk, tx: tx)
         accountKeyStore.setAccountEntropyPool(provisioningMessage.aep, tx: tx)
+        accountKeyStore.setWaitingForKeysSyncMessage(false, tx: tx)
     }
 
     public func storeKeys(
@@ -121,14 +122,24 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         guard let newAep else {
             throw SVR.KeysError.missingAep
         }
-        let oldAep = accountKeyStore.getAccountEntropyPool(tx: tx)
-        if newAep != oldAep {
+        var shouldRestore = false
+        if newAep != accountKeyStore.getAccountEntropyPool(tx: tx) {
             accountKeyStore.setAccountEntropyPool(newAep, tx: tx)
-            // Trigger a re-fetch of the storage manifest if our keys have changed
-            storageServiceManager.restoreOrCreateManifestIfNecessary(
-                authedDevice: authedDevice,
-                masterKeySource: .implicit,
-            )
+            shouldRestore = true
+        }
+        if accountKeyStore.isWaitingForKeysSyncMessage(tx: tx) {
+            accountKeyStore.setWaitingForKeysSyncMessage(false, tx: tx)
+            shouldRestore = true
+        }
+        if shouldRestore {
+            // Trigger a re-fetch of the storage manifest if our keys have changed or
+            // if we've gotten a key that we requested.
+            tx.addSyncCompletion { [storageServiceManager] in
+                storageServiceManager.restoreOrCreateManifestIfNecessary(
+                    authedDevice: authedDevice,
+                    masterKeySource: .implicit,
+                )
+            }
         }
     }
 
