@@ -344,6 +344,7 @@ public enum DatabaseRecovery {
             "KeyTransparency",
             AdminDeleteRecord.databaseTableName,
             AttachmentBackfillInboundRequestRecord.databaseTableName,
+            SignalServiceKit.SessionRecord.databaseTableName,
         ]
 
         private static func prepareToCopyTablesWithBestEffort(
@@ -406,7 +407,6 @@ public enum DatabaseRecovery {
             StoryRecipient.databaseTableName,
             PreKeyRecord.databaseTableName,
             KyberPreKeyUseRecord.databaseTableName,
-            SignalServiceKit.SessionRecord.databaseTableName,
         ]
 
         /// Copy tables that must be copied flawlessly. Operation throws if any tables fail.
