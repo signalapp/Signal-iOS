@@ -147,7 +147,7 @@ public class WallpaperView {
                 }
                 return imageView
             case .releaseNotesView:
-                let image = UIImage(named: "official_wallpaper_reduced")
+                let image = UIImage(named: "official-wallpaper")
                 let imageView = UIImageView(image: image)
                 if Theme.isDarkThemeEnabled {
                     imageView.tintColor = UIColor(rgbHex: 0x272C3C)
@@ -156,6 +156,8 @@ public class WallpaperView {
                     imageView.tintColor = UIColor(rgbHex: 0xE3E4E9)
                     imageView.backgroundColor = UIColor(rgbHex: 0xE8EAF8).withAlphaComponent(0.4)
                 }
+                imageView.contentMode = .scaleAspectFill
+                imageView.clipsToBounds = true
                 return imageView
             }
         }()
