@@ -150,6 +150,7 @@ private class CVQuotedMessageViewAdapter: CVQuotedMessageViewDelegate {
             DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
                 message,
                 priority: .userInitiated,
+                useThumbnails: false,
                 tx: tx,
             )
         }

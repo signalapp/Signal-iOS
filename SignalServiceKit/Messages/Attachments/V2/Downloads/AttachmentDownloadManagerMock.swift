@@ -48,6 +48,7 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
     open func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         priority: AttachmentDownloadPriority,
+        useThumbnails: Bool,
         tx: DBWriteTransaction,
     ) {
         // Do nothing

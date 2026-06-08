@@ -227,6 +227,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     public func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         priority: AttachmentDownloadPriority,
+        useThumbnails: Bool,
         tx: DBWriteTransaction,
     ) {
         guard let messageRowId = message.sqliteRowId else {
@@ -254,7 +255,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
 
-        enqueueDownloadOfReferencedAttachments(referencedAttachments, priority: priority, tx: tx)
+        enqueueDownloadOfReferencedAttachments(
+            referencedAttachments,
+            priority: priority,
+            useThumbnails: useThumbnails,
+            tx: tx,
+        )
     }
 
     public func enqueueDownloadOfAttachmentsForStoryMessage(
@@ -270,7 +276,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             storyMessageRowId: storyMessageRowId,
             tx: tx,
         )
-        enqueueDownloadOfReferencedAttachments(referencedAttachments, priority: priority, tx: tx)
+        enqueueDownloadOfReferencedAttachments(
+            referencedAttachments,
+            priority: priority,
+            useThumbnails: false,
+            tx: tx,
+        )
     }
 
     public func downloadReferencedAttachment(
@@ -287,6 +298,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             try _enqueueDownloadOfReferencedAttachment(
                 referencedAttachment: referencedAttachment,
                 priority: priority,
+                isThumbnail: false,
                 tx: tx,
             )
         }
@@ -306,6 +318,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         _ = try _enqueueDownloadOfReferencedAttachment(
             referencedAttachment: referencedAttachment,
             priority: priority,
+            isThumbnail: false,
             tx: tx,
         )
     }
@@ -313,51 +326,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private func _enqueueDownloadOfReferencedAttachment(
         referencedAttachment: ReferencedAttachment,
         priority: AttachmentDownloadPriority,
+        isThumbnail: Bool,
         tx: DBWriteTransaction,
     ) throws(AttachmentDownloads.Error) -> QueuedAttachmentDownloadRecord.SourceType {
-        let backupPlan = backupSettingsStore.backupPlan(tx: tx)
-        let isEligibleToDownloadFromMediaTier: Bool
-        switch backupPlan {
-        case .disabled, .disabling:
-            isEligibleToDownloadFromMediaTier = false
-        case .free:
-            // We still might attempt media tier downloads
-            // while currently free tier.
-            isEligibleToDownloadFromMediaTier = true
-        case .paid, .paidExpiringSoon, .paidAsTester:
-            isEligibleToDownloadFromMediaTier = true
+        let sourceToUse: QueuedAttachmentDownloadRecord.SourceType = if isThumbnail {
+            .mediaTierThumbnail
+        } else {
+            fullsizeSourceToUse(referencedAttachment, tx: tx)
         }
-
-        let sourceToUse: QueuedAttachmentDownloadRecord.SourceType = {
-            // We only download from the latest transit tier info.
-            let transitTierInfo = referencedAttachment.attachment.latestTransitTierInfo
-            let mediaTierInfo = referencedAttachment.attachment.mediaTierInfo
-            guard
-                let transitTierInfo,
-                let mediaTierInfo
-            else {
-                // If we don't have both there's nothing to decide
-                return mediaTierInfo == nil ? .transitTier : .mediaTierFullsize
-            }
-            if
-                isEligibleToDownloadFromMediaTier,
-                mediaTierInfo.lastDownloadAttemptTimestamp == nil
-            {
-                // If we've never tried media tier, always try that first.
-                return .mediaTierFullsize
-            } else
-            if transitTierInfo.lastDownloadAttemptTimestamp == nil {
-                // If we tried media tier and failed, try transit tier
-                // next time.
-                return .transitTier
-            } else {
-                // If both have failed fall back to default.
-                return isEligibleToDownloadFromMediaTier
-                    ? .mediaTierFullsize
-                    : .transitTier
-            }
-        }()
-
         let downloadability = downloadabilityChecker.downloadability(
             of: referencedAttachment.reference,
             priority: priority,
@@ -396,17 +372,65 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
     }
 
+    private func fullsizeSourceToUse(
+        _ referencedAttachment: ReferencedAttachment,
+        tx: DBReadTransaction,
+    ) -> QueuedAttachmentDownloadRecord.SourceType {
+        let backupPlan = backupSettingsStore.backupPlan(tx: tx)
+        let isEligibleToDownloadFromMediaTier: Bool
+        switch backupPlan {
+        case .disabled, .disabling:
+            isEligibleToDownloadFromMediaTier = false
+        case .free:
+            // We still might attempt media tier downloads
+            // while currently free tier.
+            isEligibleToDownloadFromMediaTier = true
+        case .paid, .paidExpiringSoon, .paidAsTester:
+            isEligibleToDownloadFromMediaTier = true
+        }
+
+        // We only download from the latest transit tier info.
+        let transitTierInfo = referencedAttachment.attachment.latestTransitTierInfo
+        let mediaTierInfo = referencedAttachment.attachment.mediaTierInfo
+        guard
+            let transitTierInfo,
+            let mediaTierInfo
+        else {
+            // If we don't have both there's nothing to decide
+            return mediaTierInfo == nil ? .transitTier : .mediaTierFullsize
+        }
+        if
+            isEligibleToDownloadFromMediaTier,
+            mediaTierInfo.lastDownloadAttemptTimestamp == nil
+        {
+            // If we've never tried media tier, always try that first.
+            return .mediaTierFullsize
+        } else
+        if transitTierInfo.lastDownloadAttemptTimestamp == nil {
+            // If we tried media tier and failed, try transit tier
+            // next time.
+            return .transitTier
+        } else {
+            // If both have failed fall back to default.
+            return isEligibleToDownloadFromMediaTier
+                ? .mediaTierFullsize
+                : .transitTier
+        }
+    }
+
     private func enqueueDownloadOfReferencedAttachments(
         _ referencedAttachments: [ReferencedAttachment],
         priority: AttachmentDownloadPriority,
+        useThumbnails: Bool,
         tx: DBWriteTransaction,
     ) {
         var didEnqueueAnyDownloads = false
         referencedAttachments.forEach { referencedAttachment in
             do throws(AttachmentDownloads.Error) {
-                try enqueueDownloadOfReferencedAttachment(
+                _ = try _enqueueDownloadOfReferencedAttachment(
                     referencedAttachment: referencedAttachment,
                     priority: priority,
+                    isThumbnail: useThumbnails,
                     tx: tx,
                 )
                 didEnqueueAnyDownloads = true

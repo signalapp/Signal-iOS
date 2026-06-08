@@ -181,7 +181,7 @@ extension ConversationViewController: CVComponentDelegate {
 
         // If any of the failed or pending downloads were enqueued by a Backup
         // restore, immediately attempt to download those attachments.
-        Task {
+        Task.detached {
             let attachmentDownloadManager = DependenciesBridge.shared.attachmentDownloadManager
             let attachmentStore = DependenciesBridge.shared.attachmentStore
             let backupAttachmentDownloadStore = DependenciesBridge.shared.backupAttachmentDownloadStore
@@ -192,17 +192,22 @@ extension ConversationViewController: CVComponentDelegate {
                 return
             }
 
-            let messageHasAnyEnqueuedBackupDownloads = db.read { tx in
+            enum DownloadTypeToEnqueue {
+                case thumbnail
+                case fullsize
+            }
+
+            let messageTypeToDownload: DownloadTypeToEnqueue? = db.read { tx in
                 let referencedAttachments = attachmentStore.fetchReferencedAttachmentsOwnedByMessage(
                     messageRowId: messageRowId,
                     tx: tx,
                 )
 
-                return referencedAttachments.contains { referencedAttachment in
+                let downloadTypes: [DownloadTypeToEnqueue] = referencedAttachments.compactMap { referencedAttachment in
                     // We only auto-download on appear if we've got a cdn number to try.
                     // The user can still manual download if there isn't one (using fallback cdn).
                     guard referencedAttachment.attachment.mediaTierInfo?.cdnNumber != nil else {
-                        return false
+                        return nil
                     }
                     // Otherwise use presence in the backup download queue to indicate
                     // downloadability; this just functionally bumps the priority so the
@@ -213,22 +218,60 @@ extension ConversationViewController: CVComponentDelegate {
                         tx: tx,
                     )
                     switch enqueuedDownload?.state {
-                    case nil, .done, .ineligible:
-                        return false
+                    case .ineligible:
+                        if referencedAttachment.attachment.localRelativeFilePathThumbnail != nil {
+                            return nil
+                        }
+                        let enqueuedThumbnail = backupAttachmentDownloadStore.getEnqueuedDownload(
+                            attachmentRowId: referencedAttachment.attachment.id,
+                            thumbnail: true,
+                            tx: tx,
+                        )
+                        switch enqueuedThumbnail?.state {
+                        case .ready:
+                            return .thumbnail
+                        case .done, .ineligible, nil:
+                            // There is already a thumbnail, or never will be a thumbnail to display here.
+                            // Either way, no need to re-enqueue the thumbnail
+                            return nil
+                        }
+                    case nil, .done:
+                        return nil
                     case .ready:
-                        return true
+                        return .fullsize
                     }
+                }
+
+                if downloadTypes.contains(.fullsize) {
+                    return .fullsize
+                } else if downloadTypes.contains(.thumbnail) {
+                    return .thumbnail
+                } else {
+                    return nil
                 }
             }
 
-            if messageHasAnyEnqueuedBackupDownloads {
+            switch messageTypeToDownload {
+            case .fullsize:
                 await db.awaitableWrite { tx in
                     attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
                         message,
                         priority: .default,
+                        useThumbnails: false,
                         tx: tx,
                     )
                 }
+            case .thumbnail:
+                await db.awaitableWrite { tx in
+                    attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
+                        message,
+                        priority: .default,
+                        useThumbnails: true,
+                        tx: tx,
+                    )
+                }
+            case .none:
+                break
             }
         }
     }
@@ -242,6 +285,7 @@ extension ConversationViewController: CVComponentDelegate {
             attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
                 message,
                 priority: .userInitiated,
+                useThumbnails: false,
                 tx: tx,
             )
         }

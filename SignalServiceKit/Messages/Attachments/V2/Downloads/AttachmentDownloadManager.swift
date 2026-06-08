@@ -127,6 +127,7 @@ public protocol AttachmentDownloadManager {
     func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         priority: AttachmentDownloadPriority,
+        useThumbnails: Bool,
         tx: DBWriteTransaction,
     )
 
@@ -179,7 +180,12 @@ extension AttachmentDownloadManager {
         _ message: TSMessage,
         tx: DBWriteTransaction,
     ) {
-        enqueueDownloadOfAttachmentsForMessage(message, priority: .default, tx: tx)
+        enqueueDownloadOfAttachmentsForMessage(
+            message,
+            priority: .default,
+            useThumbnails: false,
+            tx: tx,
+        )
     }
 
     public func enqueueDownloadOfAttachmentsForStoryMessage(
