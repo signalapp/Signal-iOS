@@ -52,17 +52,30 @@ class AudioCell: MediaTileListModeCell {
             return cellHeight
         }
 
-        guard
-            let stream = audioItem.referencedAttachment.asReferencedStream,
-            let audioAttachment = AudioAttachment(
+        let audioAttachment: AudioAttachment?
+        if let stream = audioItem.referencedAttachment.asReferencedStream {
+            audioAttachment = AudioAttachment(
                 attachmentStream: stream,
                 owningMessage: audioItem.message,
                 metadata: audioItem.metadata,
                 receivedAtDate: audioItem.receivedAtDate,
             )
-        else {
+        } else if let pointer = audioItem.referencedAttachment.asReferencedAnyPointer {
+            audioAttachment = AudioAttachment(
+                attachmentPointer: pointer,
+                owningMessage: audioItem.message,
+                metadata: audioItem.metadata,
+                receivedAtDate: audioItem.receivedAtDate,
+                downloadState: .none, // For cell height, this state shouldn't matter.
+            )
+        } else {
+            audioAttachment = nil
+        }
+
+        guard let audioAttachment else {
             return defaultCellHeight
         }
+
         let presenter = AudioAllMediaPresenter(
             sender: "",
             audioAttachment: audioAttachment,
