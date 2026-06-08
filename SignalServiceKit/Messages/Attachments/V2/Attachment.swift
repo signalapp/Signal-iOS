@@ -422,13 +422,13 @@ public class Attachment {
         case reuseExistingUpload(Upload.ReusedUploadMetadata)
         case reuseStreamEncryption(Upload.LocalUploadMetadata)
         case freshUpload(AttachmentStream)
-        case cannotUpload
+        case missingLocalFile
     }
 
     public func transitUploadStrategy(dateProvider: DateProvider) -> TransitUploadStrategy {
         // We never allow uploads of data we don't have locally.
         guard let stream = self.asStream() else {
-            return .cannotUpload
+            return .missingLocalFile
         }
 
         let metadata = Upload.LocalUploadMetadata(

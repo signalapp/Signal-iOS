@@ -347,23 +347,23 @@ public class AttachmentBackfillManager {
     private func attemptBackfill(
         interactionId: Int64,
     ) async -> [Result<SSKProtoAttachmentPointer, Error>] {
-        let backfillableAttachmentReferences: [AttachmentReference] = db.read { tx in
-            let stickerReferences = attachmentStore.fetchReferences(
-                owner: .messageSticker(messageRowId: interactionId),
+        let backfillableReferencedAttachments: [ReferencedAttachment] = db.read { tx in
+            let stickerReferencedAttachments = attachmentStore.fetchReferencedAttachments(
+                for: .messageSticker(messageRowId: interactionId),
                 tx: tx,
             )
 
-            if !stickerReferences.isEmpty {
-                return stickerReferences
+            if !stickerReferencedAttachments.isEmpty {
+                return stickerReferencedAttachments
             }
 
-            return attachmentStore.fetchReferences(
-                owner: .messageBodyAttachment(messageRowId: interactionId),
+            return attachmentStore.fetchReferencedAttachments(
+                for: .messageBodyAttachment(messageRowId: interactionId),
                 tx: tx,
             )
         }
 
-        if backfillableAttachmentReferences.isEmpty {
+        if backfillableReferencedAttachments.isEmpty {
             logger.warn("No attachments for backfill target.")
             return []
         }
@@ -372,9 +372,9 @@ public class AttachmentBackfillManager {
             of: (Int, Result<SSKProtoAttachmentPointer, Error>).self,
             returning: [Result<SSKProtoAttachmentPointer, Error>].self,
         ) { taskGroup in
-            for (index, attachmentReference) in backfillableAttachmentReferences.enumerated() {
+            for (index, referencedAttachment) in backfillableReferencedAttachments.enumerated() {
                 taskGroup.addTask { [self] in
-                    let result = await uploadAttachmentForBackfill(attachmentReference: attachmentReference)
+                    let result = await uploadAttachmentForBackfill(referencedAttachment: referencedAttachment)
                     return (index, result)
                 }
             }
@@ -390,10 +390,26 @@ public class AttachmentBackfillManager {
         }
     }
 
+    private struct BackedUpAttachmentMissingLocalFileError: Error {}
+
     private func uploadAttachmentForBackfill(
-        attachmentReference: AttachmentReference,
+        referencedAttachment: ReferencedAttachment,
     ) async -> Result<SSKProtoAttachmentPointer, Error> {
-        let logger = logger.suffixed(with: "[\(attachmentReference.attachmentRowId)]")
+        let logger = logger.suffixed(with: "[\(referencedAttachment.attachment.id)]")
+
+        if
+            referencedAttachment.attachment.asStream() == nil,
+            referencedAttachment.attachment.mediaTierInfo != nil
+        {
+            // We don't have the file locally, but we do have media-tier CDN
+            // info (implying we may be able to retrieve the file from our
+            // Backup). AttachmentBackfill doesn't support sending media-tier
+            // CDN pointers so we can't actually do a backfill, but we don't
+            // want to return a terminal error since that'll prevent our linked
+            // device from ever trying again in the future.
+            logger.warn("Missing local file, but media-tier info present.")
+            return .failure(BackedUpAttachmentMissingLocalFileError())
+        }
 
         do {
             try await Retry.performWithBackoff(maxAttempts: 4) { [attachmentUploadManager] in
@@ -401,21 +417,22 @@ public class AttachmentBackfillManager {
                 // actual upload if the attachment has recent, reusable transit-
                 // tier info.
                 try await attachmentUploadManager.uploadTransitTierAttachment(
-                    attachmentId: attachmentReference.attachmentRowId,
+                    attachmentId: referencedAttachment.attachment.id,
                     progress: nil,
                 )
             }
 
             guard
-                let attachment = db.read(block: { tx in
+                // Refetch the attachment to get updated transit tier info.
+                let refetchedAttachment = db.read(block: { tx in
                     return attachmentStore.fetch(
-                        id: attachmentReference.attachmentRowId,
+                        id: referencedAttachment.attachment.id,
                         tx: tx,
                     )
                 }),
                 let attachmentProto = ReferencedAttachment(
-                    reference: attachmentReference,
-                    attachment: attachment,
+                    reference: referencedAttachment.reference,
+                    attachment: refetchedAttachment,
                 ).asProtoForSending()
             else {
                 return .failure(OWSAssertionError(
@@ -468,6 +485,8 @@ public class AttachmentBackfillManager {
                     switch attemptResult {
                     case .success(let attachmentProto):
                         attachmentDataBuilder.setAttachment(attachmentProto)
+                    case .failure(is BackedUpAttachmentMissingLocalFileError):
+                        attachmentDataBuilder.setStatus(.pending)
                     case .failure(let error) where error.isRetryable:
                         attachmentDataBuilder.setStatus(.pending)
                     case .failure:

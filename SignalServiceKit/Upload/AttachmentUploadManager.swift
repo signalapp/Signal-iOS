@@ -983,9 +983,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
         case .transitTier:
             switch attachment.transitUploadStrategy(dateProvider: dateProvider) {
-            case .cannotUpload:
-                // Can't upload non-stream attachments; terminal failure.
-                throw OWSGenericError("Attachment is not uploadable.")
+            case .missingLocalFile:
+                throw OWSGenericError("Cannot upload attachment \(attachment.id): missing local file.")
             case .reuseExistingUpload(let metadata):
                 logger.debug("Attachment previously uploaded.")
                 return .alreadyUploaded(metadata)
