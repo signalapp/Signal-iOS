@@ -10,14 +10,14 @@ extension OWSOutgoingPaymentMessage {
         messageBody: ValidatedInlineMessageBody?,
         paymentNotification: TSPaymentNotification,
         expiresInSeconds: UInt32,
-        expireTimerVersion: UInt32?,
+        expireTimerVersion: UInt32,
         tx: DBReadTransaction,
     ) {
         let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread)
         messageBuilder.setMessageBody(messageBody)
         messageBuilder.isViewOnceMessage = false
         messageBuilder.expiresInSeconds = expiresInSeconds
-        messageBuilder.expireTimerVersion = expireTimerVersion.map(NSNumber.init(value:))
+        messageBuilder.expireTimerVersion = NSNumber(value: expireTimerVersion)
 
         self.init(
             builder: messageBuilder,

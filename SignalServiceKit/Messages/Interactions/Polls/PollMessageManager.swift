@@ -285,8 +285,8 @@ public class PollMessageManager {
         targetPollTimestamp: UInt64,
         pollQuestion: String,
         terminateAuthor: Aci,
-        expireTimer: UInt32?,
-        expireTimerVersion: UInt32?,
+        expireTimer: UInt32,
+        expireTimerVersion: UInt32,
         tx: DBWriteTransaction,
     ) {
         var userInfoForNewMessage: [InfoMessageUserInfoKey: Any] = [:]
@@ -296,18 +296,13 @@ public class PollMessageManager {
             timestamp: Int64(targetPollTimestamp),
         )
 
-        var timerVersion: NSNumber?
-        if let expireTimerVersion {
-            timerVersion = NSNumber(value: expireTimerVersion)
-        }
-
         let infoMessage = TSInfoMessage(
             thread: thread,
             timestamp: timestamp,
             serverGuid: nil,
             messageType: .typeEndPoll,
-            expireTimerVersion: timerVersion,
-            expiresInSeconds: expireTimer ?? 0,
+            expireTimerVersion: NSNumber(value: expireTimerVersion),
+            expiresInSeconds: expireTimer,
             infoMessageUserInfo: userInfoForNewMessage,
         )
 

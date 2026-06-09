@@ -21,16 +21,15 @@ public struct VersionedDisappearingMessageToken: Equatable {
     public let durationSeconds: UInt32
     public let version: UInt32
 
-    public init(durationSeconds: UInt32, version: UInt32?) {
+    public init(durationSeconds: UInt32, version: UInt32) {
         self.durationSeconds = durationSeconds
-        // 0 and nil version are equivalent.
-        self.version = version ?? 0
+        self.version = version
     }
 
     public init(
         isEnabled: Bool,
         durationSeconds: UInt32,
-        version: UInt32?,
+        version: UInt32,
     ) {
         // Consider disabled if duration is zero.
         // Use zero duration if not enabled.
@@ -45,7 +44,7 @@ public struct VersionedDisappearingMessageToken: Equatable {
         durationSeconds: UInt32,
     ) -> Self {
         // Version is unused for group threads
-        return .init(isEnabled: isEnabled, durationSeconds: durationSeconds, version: nil)
+        return .init(isEnabled: isEnabled, durationSeconds: durationSeconds, version: 0)
     }
 
     public static func forUniversalTimer(
@@ -53,12 +52,12 @@ public struct VersionedDisappearingMessageToken: Equatable {
         durationSeconds: UInt32,
     ) -> Self {
         // Version is unused for the universal timer
-        return .init(isEnabled: isEnabled, durationSeconds: durationSeconds, version: nil)
+        return .init(isEnabled: isEnabled, durationSeconds: durationSeconds, version: 0)
     }
 
     public static func token(
         forProtoExpireTimerSeconds expireTimerSeconds: UInt32?,
-        version: UInt32?,
+        version: UInt32,
     ) -> Self {
         return .init(durationSeconds: expireTimerSeconds ?? 0, version: version)
     }

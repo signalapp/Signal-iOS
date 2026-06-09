@@ -348,17 +348,15 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             tx: tx,
         )
 
-        if let expirationStartedAt = messageParams.expirationStartedAt {
-            /// The insert and update methods above may start expiration for
-            /// this message, but transcript.expirationStartedAt may be earlier,
-            /// so we need to pass that to DisappearingMessagesExpirationJob in
-            /// case it needs to back-date the expiration.
-            disappearingMessagesExpirationJob.startExpiration(
-                forMessage: outgoingMessage,
-                expirationStartedAt: expirationStartedAt,
-                tx: tx,
-            )
-        }
+        /// The insert and update methods above may start expiration for
+        /// this message, but transcript.expirationStartedAt may be earlier,
+        /// so we need to pass that to DisappearingMessagesExpirationJob in
+        /// case it needs to back-date the expiration.
+        disappearingMessagesExpirationJob.startExpiration(
+            forMessage: outgoingMessage,
+            expirationStartedAt: messageParams.expirationStartedAt,
+            tx: tx,
+        )
 
         self.earlyMessageManager.applyPendingMessages(for: outgoingMessage, registeredState: registeredState, tx: tx)
 

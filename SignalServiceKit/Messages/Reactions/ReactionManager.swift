@@ -128,7 +128,7 @@ public class ReactionManager: NSObject {
         timestamp: UInt64,
         serverTimestamp: UInt64,
         expiresInSeconds: UInt32,
-        expireTimerVersion: UInt32?,
+        expireTimerVersion: UInt32,
         sentTranscript: OWSIncomingSentMessageTranscript?,
         transaction: DBWriteTransaction,
     ) -> ReactionProcessingResult {
@@ -238,7 +238,7 @@ public class ReactionManager: NSObject {
                     builder.expiresInSeconds = 0
                 } else {
                     builder.expiresInSeconds = expiresInSeconds
-                    builder.expireTimerVersion = expireTimerVersion.map(NSNumber.init(value:))
+                    builder.expireTimerVersion = NSNumber(value: expireTimerVersion)
                 }
             }
 

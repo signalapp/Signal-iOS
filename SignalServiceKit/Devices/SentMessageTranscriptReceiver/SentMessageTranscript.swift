@@ -38,9 +38,9 @@ public enum SentMessageTranscriptType {
 
         public let isViewOnceMessage: Bool
 
-        public let expirationStartedAt: UInt64?
-        public let expirationDurationSeconds: UInt32?
-        public let expireTimerVersion: UInt32?
+        public let expirationStartedAt: UInt64
+        public let expirationDurationSeconds: UInt32
+        public let expireTimerVersion: UInt32
 
         public let storyTimestamp: UInt64?
         public let storyAuthorAci: Aci?

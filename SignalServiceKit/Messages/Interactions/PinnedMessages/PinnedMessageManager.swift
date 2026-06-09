@@ -81,8 +81,8 @@ public class PinnedMessageManager {
         pinAuthor: Aci,
         thread: TSThread,
         pinSentAtTimestamp: UInt64,
-        expireTimer: UInt32?,
-        expireTimerVersion: UInt32?,
+        expireTimer: UInt32,
+        expireTimerVersion: UInt32,
         transaction: DBWriteTransaction,
     ) throws {
         try validateInputsForPinMessage(pinMessageProto: pinMessageProto)
@@ -459,8 +459,8 @@ public class PinnedMessageManager {
         targetMessageTimestamp: UInt64,
         targetMessageAuthor: Aci,
         pinAuthor: Aci,
-        expireTimer: UInt32?,
-        expireTimerVersion: UInt32?,
+        expireTimer: UInt32,
+        expireTimerVersion: UInt32,
         tx: DBWriteTransaction,
     ) {
         var userInfoForNewMessage: [InfoMessageUserInfoKey: Any] = [:]
@@ -470,18 +470,13 @@ public class PinnedMessageManager {
             timestamp: Int64(targetMessageTimestamp),
         )
 
-        var timerVersion: NSNumber?
-        if let expireTimerVersion {
-            timerVersion = NSNumber(value: expireTimerVersion)
-        }
-
         let infoMessage = TSInfoMessage(
             thread: thread,
             timestamp: timestamp,
             serverGuid: nil,
             messageType: .typePinnedMessage,
-            expireTimerVersion: timerVersion,
-            expiresInSeconds: expireTimer ?? 0,
+            expireTimerVersion: NSNumber(value: expireTimerVersion),
+            expiresInSeconds: expireTimer,
             infoMessageUserInfo: userInfoForNewMessage,
         )
 
