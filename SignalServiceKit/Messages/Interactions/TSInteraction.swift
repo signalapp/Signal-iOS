@@ -54,8 +54,11 @@ extension TSInteraction {
         owsAssertDebug(self.sortId > 0)
     }
 
-    /// Returns `true` if the receiver was inserted into the database by updating the placeholder
-    /// Returns `false` if the receiver needs to be inserted into the database.
+    // MARK: -
+
+    /// - Returns
+    /// `true` if this interaction replaced an existing placeholder inline; `false`
+    /// if this interaction should be freshly inserted into the database.
     private func updatePlaceholder(
         from sender: SignalServiceAddress,
         transaction: DBWriteTransaction,
@@ -85,8 +88,22 @@ extension TSInteraction {
 
         Logger.info("Fetched placeholder with timestamp: \(timestamp) from sender: \(sender). Performing replacement...")
 
-        if placeholder.supportsReplacement {
-            placeholder.replaceWithInteraction(self, writeTx: transaction)
+        if
+            placeholder.expirationDate.isAfterNow,
+            !placeholder.wasRead
+        {
+            // We can replace if the placeholder isn't expired, and the user
+            // hasn't "read" it. We don't actually render placeholders, so
+            // "read" here is a proxy for "has viewed the spot in the chat where
+            // the placeholder lives"; we don't want to replace content inline
+            // that the user has already scrolled past.
+            Logger.info("Replacing placeholder with recovered interaction: \(timestamp)")
+
+            let placeholderRowId = placeholder.sqliteRowId!
+            replaceRowId(placeholderRowId, uniqueId: placeholder.uniqueId)
+            replaceSortId(UInt64(placeholderRowId))
+
+            anyOverwritingUpdate(transaction: transaction)
             return true
         } else {
             Logger.info("Placeholder not eligible for replacement, deleting.")
@@ -111,11 +128,8 @@ extension TSInteraction {
             owsAssertDebug(sortId > 0)
         }
     }
-}
 
-// MARK: - shouldAppearInInbox
-
-extension TSInteraction {
+    // MARK: - shouldAppearInInbox
 
     /// Returns whether the given interaction should pull a conversation to the top of the list
     ///

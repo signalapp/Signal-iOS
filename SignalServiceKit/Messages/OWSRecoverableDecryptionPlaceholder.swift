@@ -5,19 +5,8 @@
 
 extension OWSRecoverableDecryptionPlaceholder {
 
-    /// This method performs an upsert replacement of the placeholder with the provided interaction
-    /// Callers should not continue using the placeholder after performing a replacement.
-    func replaceWithInteraction(_ interaction: TSInteraction, writeTx: DBWriteTransaction) {
-        Logger.info("Replacing placeholder with recovered interaction: \(interaction.timestamp)")
-        guard let inheritedId = sqliteRowId else { return owsFailDebug("Missing rowId") }
-
-        interaction.replaceRowId(inheritedId, uniqueId: uniqueId)
-        interaction.replaceSortId(UInt64(inheritedId))
-
-        interaction.anyOverwritingUpdate(transaction: writeTx)
-    }
-
-    /// After this date, the placeholder is no longer eligible for replacement with the original content.
+    /// The date after which this placeholder is no longer eligible to be
+    /// replaced with recovered original content.
     var expirationDate: Date {
         var expirationInterval = RemoteConfig.current.replaceableInteractionExpiration
         owsAssertDebug(expirationInterval >= 0)
@@ -27,9 +16,5 @@ extension OWSRecoverableDecryptionPlaceholder {
         }
 
         return self.receivedAtDate.addingTimeInterval(max(0, expirationInterval))
-    }
-
-    var supportsReplacement: Bool {
-        expirationDate.isAfterNow && !wasRead
     }
 }
