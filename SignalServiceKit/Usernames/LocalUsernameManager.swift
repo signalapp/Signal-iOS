@@ -327,9 +327,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         usernameStore.setUsernameLink(usernameLink: usernameLink, tx: tx)
 
         tx.addSyncCompletion {
-            Task {
-                await self.postLocalUsernameStateChangedNotification()
-            }
+            self.postLocalUsernameStateChangedNotification()
         }
     }
 
@@ -343,9 +341,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         corruptionStore.setUsernameLinkCorrupted(true, tx: tx)
 
         tx.addSyncCompletion {
-            Task {
-                await self.postLocalUsernameStateChangedNotification()
-            }
+            self.postLocalUsernameStateChangedNotification()
         }
     }
 
@@ -361,9 +357,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         usernameStore.setUsernameLink(usernameLink: nil, tx: tx)
 
         tx.addSyncCompletion {
-            Task {
-                await self.postLocalUsernameStateChangedNotification()
-            }
+            self.postLocalUsernameStateChangedNotification()
         }
     }
 
@@ -385,9 +379,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         corruptionStore.setUsernameLinkCorrupted(value, tx: tx)
 
         tx.addSyncCompletion {
-            Task {
-                await self.postLocalUsernameStateChangedNotification()
-            }
+            self.postLocalUsernameStateChangedNotification()
         }
     }
 
@@ -395,15 +387,12 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         corruptionStore.setUsernameLinkCorrupted(value, tx: tx)
 
         tx.addSyncCompletion {
-            Task {
-                await self.postLocalUsernameStateChangedNotification()
-            }
+            self.postLocalUsernameStateChangedNotification()
         }
     }
 
-    @MainActor
     private func postLocalUsernameStateChangedNotification() {
-        NotificationCenter.default.post(
+        NotificationCenter.default.postOnMainThread(
             name: Usernames.localUsernameStateChangedNotification,
             object: nil,
         )
