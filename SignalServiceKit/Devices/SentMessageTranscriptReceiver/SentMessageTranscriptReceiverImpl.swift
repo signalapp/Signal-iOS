@@ -352,11 +352,13 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         /// this message, but transcript.expirationStartedAt may be earlier,
         /// so we need to pass that to DisappearingMessagesExpirationJob in
         /// case it needs to back-date the expiration.
-        disappearingMessagesExpirationJob.startExpiration(
-            forMessage: outgoingMessage,
-            expirationStartedAt: messageParams.expirationStartedAt,
-            tx: tx,
-        )
+        if messageParams.expirationStartedAt != 0 {
+            disappearingMessagesExpirationJob.startExpiration(
+                forMessage: outgoingMessage,
+                expirationStartedAt: messageParams.expirationStartedAt,
+                tx: tx,
+            )
+        }
 
         self.earlyMessageManager.applyPendingMessages(for: outgoingMessage, registeredState: registeredState, tx: tx)
 
