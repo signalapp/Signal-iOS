@@ -1642,4 +1642,74 @@ struct GRDBSchemaMigratorTest {
             false, // regular mp4
         ])
     }
+
+    @Test
+    func testBackfillRecoverablePlaceholderErrorType() throws {
+        let placeholderRecordType = SDSRecordType.recoverableDecryptionPlaceholder.rawValue
+        let errorMessageRecordType = SDSRecordType.errorMessage.rawValue
+        let decryptionFailure = TSErrorMessageType.decryptionFailure.rawValue
+        let nonBlockingIdentityChange = TSErrorMessageType.nonBlockingIdentityChange.rawValue
+
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "model_TSInteraction" (
+                id INTEGER PRIMARY KEY,
+                recordType INTEGER NOT NULL,
+                uniqueId TEXT NOT NULL UNIQUE,
+                receivedAtTimestamp INTEGER NOT NULL,
+                errorType INTEGER
+            );
+            """)
+            try db.execute(sql: """
+            CREATE INDEX "index_interactions_on_recoverable_placeholder_expiration"
+            ON "model_TSInteraction"(receivedAtTimestamp)
+            WHERE recordType = \(placeholderRecordType);
+            """)
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSInteraction" (id, recordType, uniqueId, receivedAtTimestamp, errorType)
+                VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)
+                """,
+                arguments: [
+                    1,
+                    placeholderRecordType,
+                    "A",
+                    1000,
+                    nil,
+                    2,
+                    placeholderRecordType,
+                    "B",
+                    2000,
+                    nonBlockingIdentityChange,
+                    3,
+                    errorMessageRecordType,
+                    "C",
+                    3000,
+                    nil,
+                    4,
+                    errorMessageRecordType,
+                    "D",
+                    4000,
+                    nonBlockingIdentityChange,
+                ],
+            )
+
+            let tx = DBWriteTransaction(database: db)
+            defer { tx.finalizeTransaction() }
+            try GRDBSchemaMigrator.backfillRecoverablePlaceholderErrorType(tx: tx)
+        }
+
+        let errorTypes = try databaseQueue.read { db in
+            try Int32?.fetchAll(db, sql: """
+            SELECT errorType FROM model_TSInteraction ORDER BY id
+            """)
+        }
+        #expect(errorTypes == [
+            decryptionFailure, // placeholder, was NULL -> backfilled
+            decryptionFailure, // placeholder, errorType corrected
+            nil, // non-placeholder, untouched
+            nonBlockingIdentityChange, // non-placeholder, untouched
+        ])
+    }
 }

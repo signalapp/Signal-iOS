@@ -383,17 +383,27 @@ public class InteractionFinder: NSObject {
         ORDER BY \(interactionColumn: .receivedAtTimestamp)
         """
 
-        let cursor = TSInteraction.grdbFetchCursor(
-            sql: sql,
-            transaction: tx,
-        )
+        var cursor = FailIfThrowsRecordCursor {
+            try InteractionRecord.fetchCursor(
+                tx.database,
+                sql: sql,
+            )
+        }
 
-        while
-            // Silently skip malformed TSInteraction rows, lest we become stuck
-            // on a malformed row forever.
-            let interaction = try? cursor.next(),
-            let placeholder = interaction as? OWSRecoverableDecryptionPlaceholder
-        {
+        while let interactionRecord = cursor.next() {
+            let interaction: TSInteraction
+            do {
+                interaction = try TSInteraction.fromRecord(interactionRecord)
+            } catch {
+                owsFailDebug("Failed to deserialize TSInteraction! \(error)")
+                continue
+            }
+
+            guard let placeholder = interaction as? OWSRecoverableDecryptionPlaceholder else {
+                owsFailDebug("TSInteraction was not an OWSRecoverableDecryptionPlaceholder?")
+                continue
+            }
+
             return placeholder
         }
 

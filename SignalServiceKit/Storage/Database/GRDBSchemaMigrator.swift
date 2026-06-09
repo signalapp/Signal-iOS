@@ -333,6 +333,7 @@ public class GRDBSchemaMigrator {
         case addMimeTypeToMessageAttachmentReference
         case purgeMyStoryDeletedAtTimestamp
         case addRecoverablePlaceholderExpirationIndex
+        case backfillRecoverablePlaceholderErrorType
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5214,6 +5215,11 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.backfillRecoverablePlaceholderErrorType) { tx in
+            try Self.backfillRecoverablePlaceholderErrorType(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -5572,6 +5578,15 @@ public class GRDBSchemaMigrator {
     }
 
     // MARK: - Migrations
+
+    static func backfillRecoverablePlaceholderErrorType(tx: DBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+        UPDATE model_TSInteraction
+        INDEXED BY index_interactions_on_recoverable_placeholder_expiration
+        SET errorType = \(TSErrorMessageType.decryptionFailure.rawValue)
+        WHERE recordType = \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)
+        """)
+    }
 
     static func addMimeTypeToMessageAttachmentReference(tx: DBWriteTransaction) throws {
         try tx.database.alter(table: "MessageAttachmentReference") { table in
