@@ -624,17 +624,6 @@ extension RegistrationNavigationController: RegistrationPinPresenter {
     func submitWithCreateNewPinInstead() {
         pushNextController(coordinator.skipAndCreateNewPINCode())
     }
-
-    func enterRecoveryKey() {
-        pushNextController(
-            .value(.enterRecoveryKey(
-                RegistrationEnterAccountEntropyPoolState(
-                    canShowBackButton: true,
-                    canShowNoKeyHelpButton: false,
-                ),
-            )),
-        )
-    }
 }
 
 extension RegistrationNavigationController: RegistrationPinAttemptsExhaustedAndMustCreateNewPinPresenter {

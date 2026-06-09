@@ -89,8 +89,6 @@ protocol RegistrationPinPresenter: AnyObject {
     func submitWithCreateNewPinInstead()
 
     func exitRegistration()
-
-    func enterRecoveryKey()
 }
 
 // MARK: - RegistrationPinViewController
@@ -454,18 +452,6 @@ class RegistrationPinViewController: OWSViewController {
             ))
         }
 
-        actions.append(
-            UIAction(
-                title: OWSLocalizedString(
-                    "PIN_ENTER_EXISTING_USE_RECOVERY_KEY",
-                    comment: "If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN.",
-                ),
-                handler: { [weak self] _ in
-                    self?.presenter?.enterRecoveryKey()
-                },
-            ),
-        )
-
         if let exitAction = exitAction() {
             actions.append(exitAction)
         }
@@ -681,15 +667,6 @@ class RegistrationPinViewController: OWSViewController {
                 })
             }
         }
-
-        actionSheet.addAction(.init(
-            title: OWSLocalizedString(
-                "ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY",
-                comment: "Label for action to use Recovery Key instead of PIN for registration.",
-            ),
-        ) { [weak self] _ in
-            self?.presenter?.enterRecoveryKey()
-        })
 
         actionSheet.addAction(.init(title: CommonStrings.contactSupport) { [weak self] _ in
             guard let self else { return }
