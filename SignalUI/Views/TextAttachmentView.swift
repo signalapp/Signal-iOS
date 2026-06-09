@@ -772,6 +772,8 @@ private class LinkPreviewTooltipView: TooltipView {
             tailReferenceView: tailReferenceView,
             wasTappedBlock: nil,
         )
+        // Pass taps through to story viewer which handles tooltip gestures
+        isUserInteractionEnabled = false
     }
 
     required init?(coder aDecoder: NSCoder) {
