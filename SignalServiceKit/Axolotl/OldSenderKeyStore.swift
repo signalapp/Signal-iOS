@@ -58,7 +58,7 @@ public class OldSenderKeyStore {
             } catch {
                 // It's likely there's no session for the current recipient. Maybe it was cleared?
                 // In this case, we just assume we need to send a new SKDM
-                if case SignalError.invalidState = error {
+                if case SignalError.sessionNotFound = error {
                     Logger.warn("Invalid session state. Cannot build recipient state for \(intendedRecipient). \(error)")
                 } else {
                     owsFailDebug("Failed to fetch current recipient state for \(intendedRecipient): \(error)")
