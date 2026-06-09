@@ -9,6 +9,7 @@ public import UIKit
 
 public protocol ConversationInputTextViewDelegate: AnyObject {
     func didAttemptAttachmentPaste()
+    func didAttemptAccountEntropyPoolPaste(completePaste: @escaping () -> Void)
     func inputTextViewSendMessagePressed()
     func textViewDidChange(_ textView: UITextView)
 }
@@ -199,7 +200,48 @@ class ConversationInputTextView: BodyRangesTextView {
             return
         }
 
+        if handleAttemptedAccountEntropyPoolPaste() {
+            return
+        }
+
         super.paste(sender)
+    }
+
+    private func handleAttemptedAccountEntropyPoolPaste() -> Bool {
+        let accountKeyStore = DependenciesBridge.shared.accountKeyStore
+        let db = DependenciesBridge.shared.db
+
+        guard let pasteboardString = UIPasteboard.general.strings?.first else {
+            return false
+        }
+
+        let filteredPasteboardString = pasteboardString.filter { !$0.isWhitespace }
+
+        guard
+            let pastedAEP = try? DisplayableAccountEntropyPool(displayString: filteredPasteboardString),
+            let localAEP = db.read(block: { accountKeyStore.getAccountEntropyPool(tx: $0) }),
+            pastedAEP.rawValue == localAEP
+        else {
+            return false
+        }
+
+        inputTextViewDelegate?.didAttemptAccountEntropyPoolPaste(
+            completePaste: { [weak self] in
+                guard let self else { return }
+
+                let pasteRange: UITextRange
+                if let selectedTextRange {
+                    pasteRange = selectedTextRange
+                } else if let endRange = textRange(from: endOfDocument, to: endOfDocument) {
+                    pasteRange = endRange
+                } else {
+                    return
+                }
+
+                replace(pasteRange, withText: filteredPasteboardString)
+            },
+        )
+        return true
     }
 
     // MARK: - UITextViewDelegate

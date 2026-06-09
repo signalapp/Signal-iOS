@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import BonMot
 import Foundation
 import Lottie
 import SignalServiceKit
@@ -198,20 +199,19 @@ open class HeroSheetViewController: StackSheetViewController {
             titleLabel.textAlignment = .center
         }
 
-        let bodyLabel = UILabel()
-        self.stackView.addArrangedSubview(bodyLabel)
-        self.stackView.setCustomSpacing(32, after: bodyLabel)
+        // Use a text view so embedded links in attributed bodies are tappable.
+        let bodyTextView = LinkingTextView()
+        self.stackView.addArrangedSubview(bodyTextView)
+        self.stackView.setCustomSpacing(32, after: bodyTextView)
         switch body.textContent {
         case .plain(let text):
-            bodyLabel.text = text
-            bodyLabel.font = .dynamicTypeSubheadline
+            bodyTextView.text = text
         case .attributed(let attributedText):
-            // attributed strings should set their own font.
-            bodyLabel.attributedText = attributedText
+            bodyTextView.attributedText = attributedText
         }
-        bodyLabel.textColor = body.textColor
-        bodyLabel.textAlignment = body.textAlignment
-        bodyLabel.numberOfLines = 0
+        bodyTextView.font = .dynamicTypeSubheadline
+        bodyTextView.textColor = body.textColor
+        bodyTextView.textAlignment = body.textAlignment
 
         for bodyBullet in body.bulletPoints {
             let bulletView = viewForBulletPoint(
@@ -477,6 +477,29 @@ open class HeroSheetViewController: StackSheetViewController {
         ),
         primary: .button(.dismissing(title: "Order Up")),
         secondary: nil,
+    ))
+}
+
+@available(iOS 17, *)
+#Preview("Body w/ link") {
+    let bodyText: NSAttributedString = NSAttributedString.composed(of: [
+        "Signal will never message you for your recovery key. Never respond to a chat pretending to be Signal. Never share your recovery key with anyone.",
+        " ",
+        CommonStrings.learnMore.styled(
+            with: .link(.Support.phishingPrevention),
+        ),
+    ])
+
+    SheetPreviewViewController(sheet: HeroSheetViewController(
+        hero: .image(UIImage(named: "avatar_football")!),
+        title: "Do Not Share Recovery Key",
+        body: HeroSheetViewController.Body(textContent: .attributed(bodyText)),
+        primary: .button(.dismissing(title: "Do Not Share Key")),
+        secondary: .button(HeroSheetViewController.Button(
+            title: LocalizationNotNeeded("Share Key"),
+            style: .secondaryDestructive,
+            action: .dismiss,
+        )),
     ))
 }
 
