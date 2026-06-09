@@ -50,6 +50,16 @@ public struct WeakArray<Element> {
         }
     }
 
+    public func contains(where predictate: (Element) -> Bool) -> Bool {
+        return array.contains { weakElement in
+            if let element = weakElement.value, predictate(element) {
+                return true
+            }
+
+            return false
+        }
+    }
+
     public mutating func cullExpired() {
         array.removeAll { weakBox in
             weakBox.value == nil

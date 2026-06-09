@@ -51,6 +51,9 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let screenLockUI = AppEnvironment.shared.screenLockUI
+        screenLockUI.sensitiveContentDidLoad(inViewController: self)
+
         view.backgroundColor = colorConfig.background
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: CommonStrings.nextButton,

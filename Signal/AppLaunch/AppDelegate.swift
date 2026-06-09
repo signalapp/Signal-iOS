@@ -369,13 +369,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    private lazy var screenLockUI = ScreenLockUI(appReadiness: appReadiness)
-
     private func configureGlobalUI(in window: UIWindow) {
+        let screenLockUI = AppEnvironment.shared.screenLockUI
+        let windowManager = AppEnvironment.shared.windowManagerRef
+
         Theme.setupSignalAppearance()
 
         screenLockUI.setupWithRootWindow(window)
-        AppEnvironment.shared.windowManagerRef.setupWithRootWindow(window, screenBlockingWindow: screenLockUI.screenBlockingWindow)
+        windowManager.setupWithRootWindow(window, screenBlockingWindow: screenLockUI.screenBlockingWindow)
         screenLockUI.startObserving()
     }
 
@@ -1770,15 +1771,23 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         let isVideo = isVideoCall(intent)
 
-        Task { @MainActor [appReadiness, screenLockUI] in
+        Task { @MainActor [appReadiness] in
             do {
                 try await appReadiness.waitForAppReady()
+            } catch {
+                return
+            }
+
+            let callService = AppEnvironment.shared.callService!
+            let screenLockUI = AppEnvironment.shared.screenLockUI
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+            do {
                 try await screenLockUI.waitForScreenUnlockThrowingPrevious()
             } catch {
                 return
             }
 
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 Logger.warn("Ignoring user activity; not registered.")
                 return
@@ -1796,7 +1805,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             // * It can be received if the user taps the "video" button for a contact
             // in the contacts app. If so, the correct response is to try to initiate a
             // new call to that user - unless there is another call in progress.
-            let callService = AppEnvironment.shared.callService!
             if let currentCall = callService.callServiceState.currentCall {
                 if isVideo, case .individual = currentCall.mode, currentCall.mode.matches(callTarget) {
                     Logger.info("Upgrading existing call to video")
@@ -1933,12 +1941,18 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         withCompletionHandler completionHandler: @escaping () -> Void,
     ) {
         let startDate = MonotonicDate()
-        Task { @MainActor [appReadiness, screenLockUI] () -> Void in
+        Task { @MainActor [appReadiness] () -> Void in
             defer { completionHandler() }
 
-            try await self.appReadiness.waitForAppReady()
+            do {
+                try await self.appReadiness.waitForAppReady()
+            } catch {
+                return
+            }
 
+            let screenLockUI = AppEnvironment.shared.screenLockUI
             let backgroundMessageFetcherFactory = DependenciesBridge.shared.backgroundMessageFetcherFactory
+
             let backgroundMessageFetcher = backgroundMessageFetcherFactory.buildFetcher()
             // So that we open up a connection for replies.
             await backgroundMessageFetcher.start()

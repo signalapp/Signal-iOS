@@ -22,12 +22,12 @@ public class AppEnvironment: NSObject {
     @MainActor
     var ownedObjects = [AnyObject]()
 
+    let cvAudioPlayerRef: CVAudioPlayer
     let deviceTransferServiceRef: DeviceTransferService
     let pushRegistrationManagerRef: PushRegistrationManager
-
-    let cvAudioPlayerRef = CVAudioPlayer()
-    let speechManagerRef = SpeechManager()
-    let windowManagerRef = WindowManager()
+    let screenLockUI: ScreenLockUI
+    let speechManagerRef: SpeechManager
+    let windowManagerRef: WindowManager
 
     private(set) var appIconBadgeUpdater: AppIconBadgeUpdater!
     private(set) var avatarHistoryManager: AvatarHistoryManager!
@@ -44,8 +44,12 @@ public class AppEnvironment: NSObject {
     private var registrationIdMismatchManager: RegistrationIdMismatchManager!
 
     init(appReadiness: AppReadiness, deviceTransferService: DeviceTransferService) {
+        self.cvAudioPlayerRef = CVAudioPlayer()
         self.deviceTransferServiceRef = deviceTransferService
+        self.screenLockUI = ScreenLockUI(appReadiness: appReadiness)
         self.pushRegistrationManagerRef = PushRegistrationManager(appReadiness: appReadiness)
+        self.speechManagerRef = SpeechManager()
+        self.windowManagerRef = WindowManager()
 
         super.init()
 

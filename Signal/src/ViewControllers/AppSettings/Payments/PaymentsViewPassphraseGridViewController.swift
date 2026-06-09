@@ -25,6 +25,9 @@ class PaymentsViewPassphraseGridViewController: OWSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let screenLockUI = AppEnvironment.shared.screenLockUI
+        screenLockUI.sensitiveContentDidLoad(inViewController: self)
+
         title = OWSLocalizedString(
             "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE",
             comment: "Title for the 'view payments passphrase' view of the app settings.",

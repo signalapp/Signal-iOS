@@ -77,6 +77,9 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let screenLockUI = AppEnvironment.shared.screenLockUI
+        screenLockUI.sensitiveContentDidLoad(inViewController: self)
+
         view.backgroundColor = .Signal.groupedBackground
 
         if let onBackPressedBlock {

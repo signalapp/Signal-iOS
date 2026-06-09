@@ -124,7 +124,7 @@ class ScreenLockUI {
         self.appReadiness = appReadiness
     }
 
-    // MARK: - Public
+    // MARK: -
 
     func setupWithRootWindow(_ rootWindow: UIWindow) {
         AssertIsOnMainThread()
@@ -178,6 +178,21 @@ class ScreenLockUI {
             self.isScreenLockLocked = ScreenLock.shared.isScreenLockEnabled()
             self.ensureUI()
         }
+    }
+
+    // MARK: - Sensitive Content
+
+    /// Tracks view controllers displaying "sensitive content" that should be
+    /// hidden from the App Switcher.
+    private var sensitiveContentViewControllers: WeakArray<UIViewController> = []
+
+    @MainActor
+    func sensitiveContentDidLoad(inViewController viewController: UIViewController) {
+        if sensitiveContentViewControllers.contains(where: { $0 === viewController }) {
+            return
+        }
+
+        sensitiveContentViewControllers.append(viewController)
     }
 
     // MARK: - UI
@@ -251,7 +266,16 @@ class ScreenLockUI {
             return .none
         }
 
-        guard SSKEnvironment.shared.preferencesRef.isScreenSecurityEnabled else {
+        // Cull any "sensitive content" view controllers that aren't actually
+        // presenting content. (Their presence here may suggest a retain cycle.)
+        sensitiveContentViewControllers.removeAll(where: { viewController in
+            !viewController.isViewLoaded || viewController.view.window == nil
+        })
+
+        guard
+            SSKEnvironment.shared.preferencesRef.isScreenSecurityEnabled
+            || sensitiveContentViewControllers.elements.count > 0
+        else {
             return .none
         }
 
