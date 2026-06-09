@@ -80,6 +80,10 @@ public class CVLoader: NSObject {
                     localAci: localAci,
                     transaction: transaction,
                 )
+                let preprocessingContext = MessageLoaderPreprocessingContext(
+                    thread: loadContext.thread,
+                    oldestUnreadSortId: viewStateSnapshot.oldestUnreadMessageSortId,
+                )
 
                 // Don't cache in the reset() case.
                 let canReuseInteractions = loadRequest.canReuseInteractionModels && !loadRequest.didReset
@@ -132,30 +136,35 @@ public class CVLoader: NSObject {
                             focusMessageId: focusMessageIdOnOpen,
                             reusableInteractions: [:],
                             deletedInteractionIds: [],
+                            preprocessingContext: preprocessingContext,
                             tx: transaction,
                         )
                     case .loadSameLocation:
                         try messageLoader.loadSameLocation(
                             reusableInteractions: reusableInteractions,
                             deletedInteractionIds: deletedInteractionIds,
+                            preprocessingContext: preprocessingContext,
                             tx: transaction,
                         )
                     case .loadOlder:
                         try messageLoader.loadOlderMessagePage(
                             reusableInteractions: reusableInteractions,
                             deletedInteractionIds: deletedInteractionIds,
+                            preprocessingContext: preprocessingContext,
                             tx: transaction,
                         )
                     case .loadNewer:
                         try messageLoader.loadNewerMessagePage(
                             reusableInteractions: reusableInteractions,
                             deletedInteractionIds: deletedInteractionIds,
+                            preprocessingContext: preprocessingContext,
                             tx: transaction,
                         )
                     case .loadNewest:
                         try messageLoader.loadNewestMessagePage(
                             reusableInteractions: reusableInteractions,
                             deletedInteractionIds: deletedInteractionIds,
+                            preprocessingContext: preprocessingContext,
                             tx: transaction,
                         )
                     case .loadPageAroundInteraction(let interactionId, _):
@@ -163,6 +172,7 @@ public class CVLoader: NSObject {
                             aroundInteractionId: interactionId,
                             reusableInteractions: reusableInteractions,
                             deletedInteractionIds: deletedInteractionIds,
+                            preprocessingContext: preprocessingContext,
                             tx: transaction,
                         )
                     }
@@ -171,36 +181,18 @@ public class CVLoader: NSObject {
                     throw error
                 }
 
-                let initialLoadCount = messageLoader.loadedInteractions.count
-
-                var processedInteractions = Self.preprocessInteractions(
-                    messageLoader.loadedInteractions,
-                    loadContext: loadContext,
-                )
-
-                if case .loadInitialMapping = loadRequest.loadType {
-                    let maxExtraLoads = 5
-                    var extraLoads = 0
-                    while
-                        processedInteractions.count < initialLoadCount,
-                        messageLoader.canLoadOlder,
-                        extraLoads < maxExtraLoads
+                let expandedInteractions = messageLoader.loadedDisplayableInteractions.flatMap { interaction in
+                    if
+                        let collapseSet = interaction as? CollapseSetInteraction,
+                        viewStateSnapshot.expandedCollapseSetIds.contains(collapseSet.uniqueId)
                     {
-                        try messageLoader.loadOlderMessagePage(
-                            reusableInteractions: reusableInteractions,
-                            deletedInteractionIds: deletedInteractionIds,
-                            tx: transaction,
-                        )
-                        processedInteractions = Self.preprocessInteractions(
-                            messageLoader.loadedInteractions,
-                            loadContext: loadContext,
-                        )
-                        extraLoads += 1
+                        return [collapseSet] + collapseSet.collapsedInteractions
                     }
+                    return [interaction]
                 }
 
                 let itemModels = self.buildItemModels(
-                    interactions: processedInteractions,
+                    interactions: expandedInteractions,
                     loadContext: loadContext,
                     updatedInteractionIds: updatedInteractionIds,
                     localAci: localAci,
@@ -271,214 +263,6 @@ public class CVLoader: NSObject {
 
         return itemModelBuilder.buildItems(localAci: localAci, interactions: interactions)
     }
-
-    // MARK: - Interaction Preprocessing
-
-    private static let maxCollapseSetSize = 50
-
-    /// Takes a list of interactions and applies preprocessing before the expensive task of creating `CVItemModel`s via `CVItemModelBuilder.buildItems`.
-    ///
-    ///  1. Inserts date headers
-    ///  2. Inserts unread indicator
-    ///  3. Collapses chat events
-    private static func preprocessInteractions(
-        _ interactions: [TSInteraction],
-        loadContext: CVLoadContext,
-    ) -> [TSInteraction] {
-        let thread = loadContext.thread
-        let isGroupThread = thread.isGroupThread
-        let expandedCollapseSets = loadContext.viewStateSnapshot.expandedCollapseSets
-        let oldestUnreadSortId = loadContext.viewStateSnapshot.oldestUnreadMessageSortId
-
-        let todayDate = Date()
-        var result = [TSInteraction]()
-        var currentRun = [TSInteraction]()
-        var currentRunType: CollapseSetInteraction.MessagesType?
-        var pastUnreadIndicator = false
-        var shouldShowDateOnNextViewItem = true
-        var previousDaysBeforeToday: Int?
-
-        func finalizeSet() {
-            defer {
-                currentRun.removeAll()
-                currentRunType = nil
-            }
-            guard currentRun.count >= 2, let runType = currentRunType else {
-                result.append(contentsOf: currentRun)
-                return
-            }
-            let collapseId = "CollapseSet_\(currentRun[0].timestamp)"
-            let isExpanded = expandedCollapseSets.contains(collapseId)
-            let collapseSetInteraction = CollapseSetInteraction(
-                thread: thread,
-                collapsedInteractions: currentRun,
-                collapseSetType: runType,
-                isExpanded: isExpanded,
-            )
-            result.append(collapseSetInteraction)
-            if isExpanded {
-                result.append(contentsOf: currentRun)
-            }
-        }
-
-        for interaction in interactions {
-            let timestamp = interaction.timestamp
-            let daysBeforeToday = DateUtil.daysFrom(
-                firstDate: Date(millisecondsSince1970: timestamp),
-                toSecondDate: todayDate,
-            )
-
-            if let previousDaysBeforeToday {
-                if daysBeforeToday != previousDaysBeforeToday {
-                    shouldShowDateOnNextViewItem = true
-                }
-            } else {
-                // Only show for the first item if the date is not today
-                shouldShowDateOnNextViewItem = daysBeforeToday != 0
-            }
-
-            if
-                shouldShowDateOnNextViewItem,
-                canShowDateHeader(before: interaction)
-            {
-                // Collapse sets shouldn't cross date boundaries
-                finalizeSet()
-                result.append(DateHeaderInteraction(thread: thread, timestamp: timestamp))
-                shouldShowDateOnNextViewItem = false
-            }
-            previousDaysBeforeToday = daysBeforeToday
-
-            // Only insert one unread indicator and don't collapse unread events
-            if pastUnreadIndicator {
-                result.append(interaction)
-                continue
-            }
-
-            if let oldestUnreadSortId, oldestUnreadSortId <= interaction.sortId {
-                finalizeSet()
-                let unreadIndicatorInteraction = UnreadIndicatorInteraction(
-                    thread: thread,
-                    timestamp: timestamp,
-                    receivedAtTimestamp: interaction.receivedAtTimestamp,
-                )
-                result.append(unreadIndicatorInteraction)
-                pastUnreadIndicator = true
-                result.append(interaction)
-                continue
-            }
-
-            guard BuildFlags.collapsingChatEvents else {
-                result.append(interaction)
-                continue
-            }
-
-            let collapseType = collapseSetType(for: interaction, isGroupThread: isGroupThread)
-            if let collapseType {
-                let isDifferentSetThanCurrentRun = currentRunType != nil && currentRunType != collapseType
-                let exceededCurrentRunLimit = currentRun.count >= maxCollapseSetSize
-                if isDifferentSetThanCurrentRun || exceededCurrentRunLimit {
-                    finalizeSet()
-                }
-                currentRun.append(interaction)
-                currentRunType = collapseType
-            } else {
-                finalizeSet()
-                result.append(interaction)
-            }
-        }
-        finalizeSet()
-        return result
-    }
-
-    private static func canShowDateHeader(before interaction: TSInteraction) -> Bool {
-        switch interaction.interactionType {
-        case .unknown, .typingIndicator, .threadDetails, .dateHeader, .unknownThreadWarning, .defaultDisappearingMessageTimer, .collapseSet:
-            return false
-        case .info:
-            guard let infoMessage = interaction as? TSInfoMessage else {
-                owsFailDebug("Invalid interaction.")
-                return false
-            }
-            // Only show the date for non-synced thread messages;
-            return infoMessage.messageType != .syncedThread
-        case .unreadIndicator, .incomingMessage, .outgoingMessage, .error, .call:
-            return true
-        }
-    }
-
-    private static func collapseSetType(
-        for interaction: TSInteraction,
-        isGroupThread: Bool,
-    ) -> CollapseSetInteraction.MessagesType? {
-        switch interaction.interactionType {
-        case .info:
-            guard let infoMessage = interaction as? TSInfoMessage else {
-                owsFailDebug("info interaction is not TSInfoMessage")
-                return nil
-            }
-            switch infoMessage.messageType {
-            case .typeDisappearingMessagesUpdate:
-                return .timerChanges
-            case .typeGroupUpdate:
-                if
-                    let wrapper = infoMessage.infoMessageUserInfo?[.groupUpdateItems]
-                    as? TSInfoMessage.PersistableGroupUpdateItemsWrapper
-                {
-                    for event in wrapper.updateItems {
-                        switch event {
-                        case
-                            .groupTerminatedByLocalUser,
-                            .groupTerminatedByOtherUser,
-                            .groupTerminatedByUnknownUser:
-                            return nil
-                        case
-                            .disappearingMessagesEnabledByLocalUser,
-                            .disappearingMessagesEnabledByOtherUser,
-                            .disappearingMessagesEnabledByUnknownUser,
-                            .disappearingMessagesDisabledByLocalUser,
-                            .disappearingMessagesDisabledByOtherUser,
-                            .disappearingMessagesDisabledByUnknownUser:
-                            return .timerChanges
-                        default:
-                            break
-                        }
-                    }
-                }
-
-                return isGroupThread ? .groupUpdates : .chatUpdates
-            case .verificationStateChange,
-                 .profileUpdate,
-                 .phoneNumberChange,
-                 .typeEndPoll,
-                 .typePinnedMessage:
-                return isGroupThread ? .groupUpdates : .chatUpdates
-            default:
-                return nil
-            }
-        case .error:
-            guard let errorMessage = interaction as? TSErrorMessage else {
-                owsFailDebug("error interaction is not TSErrorMessage")
-                return nil
-            }
-            if errorMessage.errorType == .nonBlockingIdentityChange {
-                return isGroupThread ? .groupUpdates : .chatUpdates
-            }
-            return nil
-        case .call:
-            // Don't collapse an active group call.
-            if
-                let groupCallMessage = interaction as? OWSGroupCallMessage,
-                !groupCallMessage.hasEnded
-            {
-                return nil
-            }
-            return .callEvents
-        default:
-            return nil
-        }
-    }
-
-    // MARK: -
 
 #if USE_DEBUG_UI
 

@@ -427,6 +427,23 @@ public class CVLoadCoordinator: NSObject {
         loadIfNecessary()
     }
 
+    public func enqueueReload(
+        updatedInteractionIds: Set<String>,
+        deletedInteractionIds: Set<String>,
+        preferredScrollContinuityAnchorInteractionId: String,
+    ) {
+        AssertIsOnMainThread()
+
+        loadRequestBuilder.reload(
+            updatedInteractionIds: updatedInteractionIds,
+            deletedInteractionIds: deletedInteractionIds,
+        )
+        loadRequestBuilder.reload(
+            preferredScrollContinuityAnchorInteractionId: preferredScrollContinuityAnchorInteractionId,
+        )
+        loadIfNecessary()
+    }
+
     public func enqueueReloadWithoutCaches() {
         AssertIsOnMainThread()
 

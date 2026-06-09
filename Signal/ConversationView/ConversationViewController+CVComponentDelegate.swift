@@ -33,6 +33,8 @@ extension ConversationViewController: CVComponentDelegate {
             viewState.expandedCollapseSets.insert(collapseSetId)
         }
         loadCoordinator.enqueueReload(
+            updatedInteractionIds: [collapseSetId],
+            deletedInteractionIds: [],
             preferredScrollContinuityAnchorInteractionId: collapseSetId,
         )
     }

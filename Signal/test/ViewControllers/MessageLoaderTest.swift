@@ -59,9 +59,85 @@ class MessageLoaderTest: XCTestCase {
         }
     }
 
+    private func createInfoMessage(
+        rowId: Int64,
+        thread: TSThread,
+        messageType: TSInfoMessageType,
+    ) -> TSInteraction {
+        return TSInfoMessage(
+            grdbId: rowId,
+            uniqueId: UUID().uuidString,
+            receivedAtTimestamp: UInt64(rowId),
+            sortId: UInt64(rowId),
+            timestamp: UInt64(rowId),
+            uniqueThreadId: thread.uniqueId,
+            body: nil,
+            bodyRanges: nil,
+            contactShare: nil,
+            deprecated_attachmentIds: nil,
+            editState: .none,
+            expireStartedAt: 0,
+            expireTimerVersion: nil,
+            expiresAt: 0,
+            expiresInSeconds: 0,
+            giftBadge: nil,
+            isGroupStoryReply: false,
+            isPoll: false,
+            isSmsMessageRestoredFromBackup: false,
+            isViewOnceComplete: false,
+            isViewOnceMessage: false,
+            linkPreview: nil,
+            messageSticker: nil,
+            quotedMessage: nil,
+            storedShouldStartExpireTimer: false,
+            storyAuthorUuidString: nil,
+            storyReactionEmoji: nil,
+            storyTimestamp: nil,
+            wasRemotelyDeleted: false,
+            customMessage: nil,
+            infoMessageUserInfo: nil,
+            messageType: messageType,
+            read: true,
+            serverGuid: nil,
+            unregisteredAddress: nil,
+        )
+    }
+
+    private func createInteraction(rowId: Int64, thread: TSThread) -> TSInteraction {
+        return createInfoMessage(rowId: rowId, thread: thread, messageType: .userJoinedSignal)
+    }
+
+    private func createCollapsibleInteraction(rowId: Int64, thread: TSThread) -> TSInteraction {
+        return createInfoMessage(rowId: rowId, thread: thread, messageType: .typeDisappearingMessagesUpdate)
+    }
+
+    private func createCollapsibleInteractions(_ count: Int64, thread: TSThread) -> [TSInteraction] {
+        return ((1 as Int64)...count).map { rowId in
+            createCollapsibleInteraction(rowId: rowId, thread: thread)
+        }
+    }
+
+    private func createMixedInteractions(_ chunkCount: Int64, thread: TSThread) -> [TSInteraction] {
+        return ((0 as Int64)..<chunkCount).flatMap { chunkIndex -> [TSInteraction] in
+            let rowId = chunkIndex * 3 + 1
+            return [
+                createCollapsibleInteraction(rowId: rowId, thread: thread),
+                createCollapsibleInteraction(rowId: rowId + 1, thread: thread),
+                createInteraction(rowId: rowId + 2, thread: thread),
+            ]
+        }
+    }
+
     private func setInteractions(_ interactions: [TSInteraction]) {
         batchFetcher.interactions = interactions
         interactionFetcher.interactions = interactions
+    }
+
+    private func preprocessingContext(thread: TSThread) -> MessageLoaderPreprocessingContext {
+        return MessageLoaderPreprocessingContext(
+            thread: thread,
+            oldestUnreadSortId: nil,
+        )
     }
 
     func test_loadInitialMessagePage_empty() throws {
@@ -89,6 +165,107 @@ class MessageLoaderTest: XCTestCase {
         }
         XCTAssertEqual(messageLoader.loadedInteractions.count, 5)
         XCTAssertEqual(initialMessages.map { $0.uniqueId }, messageLoader.loadedInteractions.map { $0.uniqueId })
+    }
+
+    func test_loadInitialMessagePage_countsCollapsedInteractionsAsTopLevel() throws {
+        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
+        let initialMessages = createCollapsibleInteractions(2_000, thread: thread)
+        setInteractions(initialMessages)
+
+        try mockDB.read { tx in
+            try self.messageLoader.loadInitialMessagePage(
+                focusMessageId: nil,
+                reusableInteractions: [:],
+                deletedInteractionIds: [],
+                preprocessingContext: MessageLoaderPreprocessingContext(
+                    thread: thread,
+                    oldestUnreadSortId: nil,
+                ),
+                tx: tx,
+            )
+        }
+
+        let newestInteraction = try XCTUnwrap(initialMessages.last)
+        XCTAssertEqual(messageLoader.loadedInteractions.last?.uniqueId, newestInteraction.uniqueId)
+        let newestCollapseSet = try XCTUnwrap(messageLoader.loadedDisplayableInteractions.last as? CollapseSetInteraction)
+        XCTAssertEqual(newestCollapseSet.collapsedInteractions.last?.uniqueId, newestInteraction.uniqueId)
+        XCTAssertGreaterThan(messageLoader.loadedInteractions.count, 500)
+        XCTAssertLessThanOrEqual(messageLoader.loadedDisplayableInteractions.count, 500)
+        XCTAssertTrue(messageLoader.loadedDisplayableInteractions.contains { $0 is CollapseSetInteraction })
+    }
+
+    func test_loadOlderMessagePage_withMixedCollapseSets_trimsNewerSide() throws {
+        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
+        let initialMessages = createMixedInteractions(900, thread: thread)
+        setInteractions(initialMessages)
+
+        try mockDB.read { tx in
+            try self.messageLoader.loadInitialMessagePage(
+                focusMessageId: nil,
+                reusableInteractions: [:],
+                deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(thread: thread),
+                tx: tx,
+            )
+        }
+
+        let newestInteraction = try XCTUnwrap(initialMessages.last)
+        XCTAssertEqual(messageLoader.loadedInteractions.last?.uniqueId, newestInteraction.uniqueId)
+
+        try mockDB.read { tx in
+            var loadCount = 0
+            while self.messageLoader.canLoadOlder, loadCount < 100 {
+                try self.messageLoader.loadOlderMessagePage(
+                    reusableInteractions: [:],
+                    deletedInteractionIds: [],
+                    preprocessingContext: preprocessingContext(thread: thread),
+                    tx: tx,
+                )
+                loadCount += 1
+            }
+        }
+
+        XCTAssertLessThanOrEqual(messageLoader.loadedDisplayableInteractions.count, 500)
+        XCTAssertTrue(messageLoader.loadedDisplayableInteractions.contains { $0 is CollapseSetInteraction })
+        XCTAssertFalse(messageLoader.loadedInteractions.contains { $0.uniqueId == newestInteraction.uniqueId })
+    }
+
+    func test_loadNewerMessagePage_withMixedCollapseSets_trimsOlderSide() throws {
+        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
+        let initialMessages = createMixedInteractions(900, thread: thread)
+        setInteractions(initialMessages)
+
+        let focusInteraction = initialMessages[100]
+        try mockDB.read { tx in
+            try self.messageLoader.loadInitialMessagePage(
+                focusMessageId: focusInteraction.uniqueId,
+                reusableInteractions: [:],
+                deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(thread: thread),
+                tx: tx,
+            )
+        }
+
+        XCTAssertTrue(messageLoader.loadedInteractions.contains { $0.uniqueId == focusInteraction.uniqueId })
+
+        try mockDB.read { tx in
+            var loadCount = 0
+            while self.messageLoader.canLoadNewer, loadCount < 100 {
+                try self.messageLoader.loadNewerMessagePage(
+                    reusableInteractions: [:],
+                    deletedInteractionIds: [],
+                    preprocessingContext: preprocessingContext(thread: thread),
+                    tx: tx,
+                )
+                loadCount += 1
+            }
+        }
+
+        let newestInteraction = try XCTUnwrap(initialMessages.last)
+        XCTAssertLessThanOrEqual(messageLoader.loadedDisplayableInteractions.count, 500)
+        XCTAssertTrue(messageLoader.loadedDisplayableInteractions.contains { $0 is CollapseSetInteraction })
+        XCTAssertEqual(messageLoader.loadedInteractions.last?.uniqueId, newestInteraction.uniqueId)
+        XCTAssertFalse(messageLoader.loadedInteractions.contains { $0.uniqueId == focusInteraction.uniqueId })
     }
 
     func test_reloadInteractions_deletes() throws {

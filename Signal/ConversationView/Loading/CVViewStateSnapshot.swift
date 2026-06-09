@@ -42,7 +42,7 @@ struct CVViewStateSnapshot {
     let hasActiveCall: Bool
     let currentGroupThreadCallGroupId: GroupIdentifier?
 
-    let expandedCollapseSets: Set<String>
+    let expandedCollapseSetIds: Set<String>
 
     private static var currentCallProvider: any CurrentCallProvider { DependenciesBridge.shared.currentCallProvider }
 
@@ -64,7 +64,7 @@ struct CVViewStateSnapshot {
             oldestUnreadMessageSortId: oldestUnreadMessageSortId,
             hasActiveCall: currentCallProvider.hasCurrentCall,
             currentGroupThreadCallGroupId: currentCallProvider.currentGroupThreadCallGroupId,
-            expandedCollapseSets: viewState.expandedCollapseSets,
+            expandedCollapseSetIds: viewState.expandedCollapseSets,
         )
     }
 
@@ -84,7 +84,7 @@ struct CVViewStateSnapshot {
             oldestUnreadMessageSortId: nil,
             hasActiveCall: false,
             currentGroupThreadCallGroupId: nil,
-            expandedCollapseSets: [],
+            expandedCollapseSetIds: [],
         )
     }
 }

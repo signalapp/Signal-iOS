@@ -45,6 +45,62 @@ class DebugUIMisc: DebugUIPage {
                 }
             }),
         ]
+
+        if let groupThread = thread as? TSGroupThread {
+            items += [
+                OWSTableItem(title: "Insert 50 group update messages", actionBlock: {
+                    let updateItems: [TSInfoMessage.PersistableGroupUpdateItem] = [
+                        .genericUpdateByLocalUser,
+                        .genericUpdateByUnknownUser,
+                        .nameRemovedByLocalUser,
+                        .nameRemovedByUnknownUser,
+                        .avatarChangedByLocalUser,
+                        .avatarChangedByUnknownUser,
+                        .avatarRemovedByLocalUser,
+                        .avatarRemovedByUnknownUser,
+                        .localUserLeft,
+                        .localUserRemovedByUnknownUser,
+                        .localUserWasInvitedByLocalUser,
+                        .localUserWasInvitedByUnknownUser,
+                        .localUserAcceptedInviteFromUnknownUser,
+                        .localUserJoined,
+                        .localUserAddedByLocalUser,
+                        .localUserAddedByUnknownUser,
+                        .localUserDeclinedInviteFromUnknownUser,
+                        .localUserInviteRevokedByUnknownUser,
+                        .localUserRequestedToJoin,
+                        .localUserRequestApprovedByUnknownUser,
+                        .localUserRequestCanceledByLocalUser,
+                        .localUserRequestRejectedByUnknownUser,
+                        .inviteLinkResetByLocalUser,
+                        .inviteLinkResetByUnknownUser,
+                        .inviteLinkEnabledWithoutApprovalByLocalUser,
+                        .inviteLinkEnabledWithApprovalByLocalUser,
+                        .inviteLinkDisabledByLocalUser,
+                        .inviteLinkApprovalDisabledByLocalUser,
+                        .inviteLinkApprovalEnabledByLocalUser,
+                        .localUserJoinedViaInviteLink,
+                        .wasMigrated,
+                        .localUserInvitedAfterMigration,
+                        .createdByLocalUser,
+                        .createdByUnknownUser,
+                        .inviteFriendsToNewlyCreatedGroup,
+                    ].shuffled()
+                    SSKEnvironment.shared.databaseStorageRef.write { tx in
+                        for i in 0..<50 {
+                            let item = updateItems[i % updateItems.count]
+                            let infoMessage = TSInfoMessage(
+                                thread: groupThread,
+                                messageType: .typeGroupUpdate,
+                                infoMessageUserInfo: [.groupUpdateItems: TSInfoMessage.PersistableGroupUpdateItemsWrapper([item])],
+                            )
+                            infoMessage.anyInsert(transaction: tx)
+                        }
+                    }
+                }),
+            ]
+        }
+
         return OWSTableSection(title: name, items: items)
     }
 

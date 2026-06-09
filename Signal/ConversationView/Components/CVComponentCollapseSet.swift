@@ -148,15 +148,7 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
         componentView.outerStack.isAccessibilityElement = true
         componentView.outerStack.accessibilityLabel = titleString
         componentView.outerStack.accessibilityTraits = .button
-        componentView.outerStack.accessibilityHint = collapseSet.isExpanded
-            ? OWSLocalizedString(
-                "COLLAPSE_SET_ACCESSIBILITY_HINT_COLLAPSE",
-                comment: "VoiceOver hint for an expanded collapse set button.",
-            )
-            : OWSLocalizedString(
-                "COLLAPSE_SET_ACCESSIBILITY_HINT_EXPAND",
-                comment: "VoiceOver hint for a collapsed collapse set button.",
-            )
+        componentView.outerStack.accessibilityHint = accessibilityHint(isExpanded: collapseSet.isExpanded)
     }
 
     // MARK: - Events
@@ -187,6 +179,7 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
             componentView.chevronLabel.transform = willBeExpanded
                 ? CGAffineTransform(rotationAngle: expandedRotation)
                 : .identity
+            componentView.outerStack.accessibilityHint = accessibilityHint(isExpanded: willBeExpanded)
 
             let animation = CABasicAnimation(keyPath: "transform.rotation.z")
             animation.fromValue = fromAngle
@@ -345,6 +338,18 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
             type: collapseSet.collapseSetType,
             finalTimerDescription: collapseSet.finalTimerDescription,
         )
+    }
+
+    private func accessibilityHint(isExpanded: Bool) -> String {
+        isExpanded
+            ? OWSLocalizedString(
+                "COLLAPSE_SET_ACCESSIBILITY_HINT_COLLAPSE",
+                comment: "VoiceOver hint for an expanded collapse set button.",
+            )
+            : OWSLocalizedString(
+                "COLLAPSE_SET_ACCESSIBILITY_HINT_EXPAND",
+                comment: "VoiceOver hint for a collapsed collapse set button.",
+            )
     }
 
     private func summaryLabel(

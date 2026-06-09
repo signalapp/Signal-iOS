@@ -528,7 +528,6 @@ public struct CVComponentState: Equatable {
         static func ==(lhs: CollapseSet, rhs: CollapseSet) -> Bool {
             return lhs.collapsedInteractions.map(\.uniqueId) == rhs.collapsedInteractions.map(\.uniqueId)
                 && lhs.collapseSetType == rhs.collapseSetType
-                && lhs.isExpanded == rhs.isExpanded
                 && lhs.finalTimerDescription == rhs.finalTimerDescription
         }
     }
@@ -1197,7 +1196,7 @@ private extension CVComponentState.Builder {
             self.collapseSet = CVComponentState.CollapseSet(
                 collapsedInteractions: collapseSetInteraction.collapsedInteractions,
                 collapseSetType: collapseSetInteraction.collapseSetType,
-                isExpanded: collapseSetInteraction.isExpanded,
+                isExpanded: viewStateSnapshot.expandedCollapseSetIds.contains(collapseSetInteraction.uniqueId),
                 finalTimerDescription: collapseSetInteraction.finalTimerDescription,
             )
             return build()

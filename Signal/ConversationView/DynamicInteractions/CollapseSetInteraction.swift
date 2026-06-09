@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-class CollapseSetInteraction: TSInteraction {
+final class CollapseSetInteraction: TSInteraction {
 
     enum MessagesType: Equatable {
         case groupUpdates
@@ -17,8 +17,6 @@ class CollapseSetInteraction: TSInteraction {
     let collapsedInteractions: [TSInteraction]
 
     let collapseSetType: MessagesType
-
-    let isExpanded: Bool
 
     let finalTimerDescription: String?
 
@@ -32,12 +30,10 @@ class CollapseSetInteraction: TSInteraction {
         thread: TSThread,
         collapsedInteractions: [TSInteraction],
         collapseSetType: MessagesType,
-        isExpanded: Bool = false,
     ) {
         owsPrecondition(!collapsedInteractions.isEmpty)
         self.collapsedInteractions = collapsedInteractions
         self.collapseSetType = collapseSetType
-        self.isExpanded = isExpanded
         self.finalTimerDescription = Self.disappearingTimerDescription(
             for: collapsedInteractions,
             type: collapseSetType,
@@ -45,11 +41,15 @@ class CollapseSetInteraction: TSInteraction {
 
         let firstInteraction = collapsedInteractions[0]
         super.init(
-            customUniqueId: "CollapseSet_\(firstInteraction.timestamp)",
+            customUniqueId: Self.id(firstInteraction: firstInteraction),
             timestamp: firstInteraction.timestamp,
             receivedAtTimestamp: firstInteraction.receivedAtTimestamp,
             thread: thread,
         )
+    }
+
+    static func id(firstInteraction: TSInteraction) -> String {
+        "CollapseSet_\(firstInteraction.timestamp)"
     }
 
     private static func disappearingTimerDescription(
