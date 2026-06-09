@@ -42,7 +42,6 @@ class MediaControlPanelView: UIView {
         directionalLayoutMargins = .zero
         preservesSuperviewLayoutMargins = true
         isVerticallyCompactLayout = traitCollection.verticalSizeClass == .compact
-        isWideScreenLayout = traitCollection.horizontalSizeClass == .regular
 
         // iOS 26: Glass Container
         // Pre-iOS 26: Blur Background
@@ -65,7 +64,6 @@ class MediaControlPanelView: UIView {
         if #available(iOS 17, *) {
             registerForTraitChanges([UITraitVerticalSizeClass.self]) { (self: Self, previousTraitCollection) in
                 self.isVerticallyCompactLayout = self.traitCollection.verticalSizeClass == .compact
-                self.isWideScreenLayout = self.traitCollection.horizontalSizeClass == .regular
             }
         }
     }
@@ -88,8 +86,8 @@ class MediaControlPanelView: UIView {
     private let contentLayoutGuide = UILayoutGuide()
     // Adjustable and therefore non-nil on iOS 26.
     private var contentLayoutGuideEdgeConstraints: ContentLayoutGuideEdgeConstraints?
-    // On iOS 26 bottom content margin is fixed on all iPhones in all orientations.
-    private static let contentLayoutGuideBottomMargin: CGFloat = UIDevice.current.isIPad ? 0 : 28
+    // On iOS 26 bottom content margin is fixed on all devices in all orientations.
+    private static let contentLayoutGuideBottomMargin: CGFloat = 28
 
     // Glass background for when caption view and video progress bar are joined in one glass panel.
     // Both controls also have their own glass backgrounds that can be disabled.
@@ -105,8 +103,8 @@ class MediaControlPanelView: UIView {
     private let videoPlayerControlsArea = UILayoutGuide()
     private(set) var videoPlaybackControlView: VideoPlaybackControlView?
     private var videoPlaybackProgressView: PlayerProgressView?
-    private var videoPlayerControlsConstraintsHorizontalCompact = [NSLayoutConstraint]()
-    private var videoPlayerControlsConstraintsHorizontalRegular = [NSLayoutConstraint]()
+    private var videoPlayerControlsConstraintsPortrait = [NSLayoutConstraint]()
+    private var videoPlayerControlsConstraintsLandscape = [NSLayoutConstraint]()
 
     // Third from the top area.
     private let thumbnailStripArea = UILayoutGuide()
@@ -174,17 +172,6 @@ class MediaControlPanelView: UIView {
     private(set) var isVerticallyCompactLayout: Bool = false {
         didSet {
             guard oldValue != isVerticallyCompactLayout else { return }
-
-            updateCaptionAndVideoControls()
-            updateThumbnailStripLayout()
-
-            setNeedsUpdateConstraints()
-        }
-    }
-
-    private(set) var isWideScreenLayout: Bool = false {
-        didSet {
-            guard oldValue != isWideScreenLayout else { return }
 
             updateCaptionAndVideoControls()
             updateThumbnailStripLayout()
@@ -427,12 +414,12 @@ class MediaControlPanelView: UIView {
         // Video playback controls.
         let showVideoPlaybackControls = (videoPlayer != nil)
         if showVideoPlaybackControls {
-            if isWideScreenLayout {
-                NSLayoutConstraint.deactivate(videoPlayerControlsConstraintsHorizontalCompact)
-                NSLayoutConstraint.activate(videoPlayerControlsConstraintsHorizontalRegular)
+            if isVerticallyCompactLayout {
+                NSLayoutConstraint.deactivate(videoPlayerControlsConstraintsPortrait)
+                NSLayoutConstraint.activate(videoPlayerControlsConstraintsLandscape)
             } else {
-                NSLayoutConstraint.deactivate(videoPlayerControlsConstraintsHorizontalRegular)
-                NSLayoutConstraint.activate(videoPlayerControlsConstraintsHorizontalCompact)
+                NSLayoutConstraint.deactivate(videoPlayerControlsConstraintsLandscape)
+                NSLayoutConstraint.activate(videoPlayerControlsConstraintsPortrait)
             }
         }
 
@@ -445,9 +432,8 @@ class MediaControlPanelView: UIView {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         // Trait collection change tracking on iOS 17+ is set up in `init()` using newer APIs.
-        if #unavailable(iOS 17) {
+        if #unavailable(iOS 17), previousTraitCollection?.verticalSizeClass != traitCollection.verticalSizeClass {
             isVerticallyCompactLayout = traitCollection.verticalSizeClass == .compact
-            isWideScreenLayout = traitCollection.horizontalSizeClass == .regular
         }
     }
 
@@ -473,17 +459,17 @@ class MediaControlPanelView: UIView {
     private func updateContentLayoutGuideEdgeConstraints() {
         guard let contentLayoutGuideEdgeConstraints else { return }
 
-        let isWideScreenLayout = traitCollection.horizontalSizeClass == .regular
+        let isLandscapeLayout = traitCollection.verticalSizeClass == .compact
         let horizontalInset: CGFloat = 38
 
         // For leading and trailing edges we have custom margins in landscape on modern iPhones (non-home button).
         // Those margins are designed to align content with navigation bar buttons.
-        if isWideScreenLayout, safeAreaInsets.leading > 0 {
+        if isLandscapeLayout, safeAreaInsets.leading > 0 {
             contentLayoutGuideEdgeConstraints.leading.constant = horizontalInset
         } else {
             contentLayoutGuideEdgeConstraints.leading.constant = directionalLayoutMargins.leading
         }
-        if isWideScreenLayout, safeAreaInsets.trailing > 0 {
+        if isLandscapeLayout, safeAreaInsets.trailing > 0 {
             contentLayoutGuideEdgeConstraints.trailing.constant = -horizontalInset
         } else {
             contentLayoutGuideEdgeConstraints.trailing.constant = -directionalLayoutMargins.trailing
@@ -499,8 +485,8 @@ class MediaControlPanelView: UIView {
         // In portrait, shrink the button area, making its leading and trailing insets
         // equal to the bottom content layout guide inset.
         // The purpose is the place Share and Forward buttons squarely in their respective corners of the screen.
-        let isWideScreenLayout = traitCollection.horizontalSizeClass == .regular
-        if isWideScreenLayout == false {
+        let isLandscapeLayout = traitCollection.verticalSizeClass == .compact
+        if !isLandscapeLayout {
             // To calculate inset relative to `contentLayoutGuide`'s leading and trailing anchors
             // we rely on the fact that they are constrained without offset to view's leading and trailing anchors.
             // More correct approach would have been to use `contentLayoutGuide.layoutFrame` but that one
@@ -581,26 +567,26 @@ class MediaControlPanelView: UIView {
         videoPlaybackControlView.isHidden = true
         contentView.addSubview(videoPlaybackControlView)
 
-        // Horizontally compact (iPhone portrait) constraints.
-        let horizontalCompactConstraints = [
+        // Portrait constraints.
+        let portraitConstraints = [
             videoPlaybackControlView.topAnchor.constraint(equalTo: buttonArea.topAnchor),
             videoPlaybackControlView.bottomAnchor.constraint(equalTo: buttonArea.bottomAnchor),
             videoPlaybackControlView.centerXAnchor.constraint(equalTo: buttonArea.centerXAnchor),
         ]
-        videoPlayerControlsConstraintsHorizontalCompact += horizontalCompactConstraints
+        videoPlayerControlsConstraintsPortrait += portraitConstraints
 
-        // Horizontally regular (iPhone landscape, iPad) constraints.
-        let horizontalRegularConstraints = [
+        // Landscape constraints.
+        let landscapeConstraints = [
             videoPlaybackControlView.leadingAnchor.constraint(equalTo: videoPlayerControlsArea.leadingAnchor),
             videoPlaybackControlView.topAnchor.constraint(equalTo: videoPlayerControlsArea.topAnchor),
             videoPlaybackControlView.bottomAnchor.constraint(equalTo: videoPlayerControlsArea.bottomAnchor),
         ]
-        videoPlayerControlsConstraintsHorizontalRegular += horizontalRegularConstraints
+        videoPlayerControlsConstraintsLandscape += landscapeConstraints
 
-        if isWideScreenLayout {
-            NSLayoutConstraint.activate(horizontalRegularConstraints)
+        if isVerticallyCompactLayout {
+            NSLayoutConstraint.activate(landscapeConstraints)
         } else {
-            NSLayoutConstraint.activate(horizontalCompactConstraints)
+            NSLayoutConstraint.activate(portraitConstraints)
         }
 
         self.videoPlaybackControlView = videoPlaybackControlView
@@ -622,8 +608,8 @@ class MediaControlPanelView: UIView {
             contentView.addSubview(videoPlaybackProgressView)
         }
 
-        // Horizontally compact (iPhone portrait) constraints.
-        let horizontalCompactConstraints = [
+        // Portrait constraints.
+        let portraitConstraints = [
             videoPlaybackProgressView.topAnchor.constraint(equalTo: videoPlayerControlsArea.topAnchor),
             videoPlaybackProgressView.leadingAnchor.constraint(equalTo: videoPlayerControlsArea.leadingAnchor),
             videoPlaybackProgressView.trailingAnchor.constraint(equalTo: videoPlayerControlsArea.trailingAnchor),
@@ -635,22 +621,22 @@ class MediaControlPanelView: UIView {
                 return constraint
             }(),
         ]
-        videoPlayerControlsConstraintsHorizontalCompact += horizontalCompactConstraints
+        videoPlayerControlsConstraintsPortrait += portraitConstraints
 
-        // Horizontally regular (iPhone landscape, iPad) constraints.
+        // Landscape constraints.
         let videoPlaybackControlView = getOrCreateVideoPlaybackControlView()
-        let horizontalRegularConstraints = [
+        let landscapeConstraints = [
             videoPlaybackProgressView.topAnchor.constraint(equalTo: videoPlayerControlsArea.topAnchor),
             videoPlaybackProgressView.leadingAnchor.constraint(equalTo: videoPlaybackControlView.trailingAnchor, constant: 16),
             videoPlaybackProgressView.trailingAnchor.constraint(equalTo: videoPlayerControlsArea.trailingAnchor),
             videoPlaybackProgressView.bottomAnchor.constraint(equalTo: videoPlayerControlsArea.bottomAnchor),
         ]
-        videoPlayerControlsConstraintsHorizontalRegular += horizontalRegularConstraints
+        videoPlayerControlsConstraintsLandscape += landscapeConstraints
 
-        if isWideScreenLayout {
-            NSLayoutConstraint.activate(horizontalRegularConstraints)
+        if isVerticallyCompactLayout {
+            NSLayoutConstraint.activate(landscapeConstraints)
         } else {
-            NSLayoutConstraint.activate(horizontalCompactConstraints)
+            NSLayoutConstraint.activate(portraitConstraints)
         }
 
         self.videoPlaybackProgressView = videoPlaybackProgressView
@@ -737,7 +723,7 @@ class MediaControlPanelView: UIView {
         let showVideoPlayerControls = videoPlayer != nil
         let showThumbnailStrip = showThumbnailStrip
         let useSharedGlassBackground: Bool = {
-            if isWideScreenLayout {
+            if isVerticallyCompactLayout {
                 false
             } else if #available(iOS 26, *) {
                 showCaptionView || showVideoPlayerControls
@@ -967,12 +953,13 @@ class MediaControlPanelView: UIView {
         using animator: UIViewPropertyAnimator? = nil,
         transitionDirection: UIPageViewController.NavigationDirection? = nil,
     ) {
+
         let isThumbnailStripHidden = thumbnailStripAreaZeroHeightConstraint.isActive
         let showThumbnailStrip = showThumbnailStrip
 
-        // No bottom padding in regular width layout because there are no controls below.
+        // No bottom padding in landscape because there are no controls below.
         let bottomPadding: CGFloat = {
-            if isWideScreenLayout {
+            if isVerticallyCompactLayout {
                 0
             } else if #available(iOS 26, *) {
                 24
@@ -1047,9 +1034,9 @@ class MediaControlPanelView: UIView {
     }
 
     private func updateBottomButtonsLayout() {
-        buttonForwardMedia.isHidden = isWideScreenLayout
-        buttonShareMedia.isHidden = isWideScreenLayout
-        buttonAreaZeroHeightConstraint.isActive = isWideScreenLayout
+        buttonForwardMedia.isHidden = isVerticallyCompactLayout
+        buttonShareMedia.isHidden = isVerticallyCompactLayout
+        buttonAreaZeroHeightConstraint.isActive = isVerticallyCompactLayout
     }
 
     // MARK: Bottom buttons
