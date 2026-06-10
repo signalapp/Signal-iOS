@@ -1,2 +1,2 @@
-• आम्ही Signal वापरकर्त्यांचे फिशिंग आणि सोशल इंजिनिअरिंग हल्ल्यांपासून रक्षण करण्यास मदत व्हावी म्हणून ॲपमध्ये अतिरिक्त पुष्टी आणि शैक्षणिक संदेशांची जोड दिली आहे. आम्ही आठवण करून देतो, की कधीही Signal असल्याची बतावणी करणाऱ्या चॅट्सना उत्तर देऊ नका, आणि कधीही तुमचा पडताळणी कोड, पिन किंवा रीकव्हरी की कोणालाही पाठवू नका.
-• ॲनिमेटेड GIF शोध आता खूपच वेगवान झाले आहेत, तरीही, तुम्हाला जे म्हणायचे आहे त्याचा अर्थ शब्दांत मांडायचा, की मीमच्या माध्यमातून व्यक्त करायचा हे मात्र पूर्णपणे तुमच्याच हातात आहे.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

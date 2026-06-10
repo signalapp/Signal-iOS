@@ -1,2 +1,2 @@
-• Мы внедрили в приложение дополнительные подтверждения и обучающие сообщения, чтобы защитить пользователей Signal от фишинга и атак с использованием социальной инженерии. Напоминаем: никогда не отвечайте на чаты, притворяющиеся Signal, и никому не отправляйте свой код подтверждения, PIN-код или ключ восстановления.
-• Искать анимированные GIF-файлы теперь стало намного быстрее — а вот говорить прямо или выражаться мемами, решать всё ещё вам.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

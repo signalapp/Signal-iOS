@@ -1,2 +1,2 @@
-• Signal kullanıcılarının kimlik avı ve sosyal mühendislik saldırılarından korunmasına yardımcı olmak üzere uygulamaya ek onaylar ve eğitimsel mesajlar ekledik. Bir hatırlatma olarak, Signal olduğunu ileri süren sohbetleri hiçbir zaman yanıtlama ve asla doğrulama kodu, PIN veya kurtarma anahtarını kimseye gönderme.
-• Animasyonlu GIF araması performans iyileştirmeleri
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

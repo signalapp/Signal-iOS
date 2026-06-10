@@ -1,2 +1,2 @@
-• Vi har tilføjet ekstra bekræftelses- og informationsbeskeder i appen for at beskytte Signal-brugere mod phishing og social manipulation. Som en påmindelse: Svar aldrig på beskeder, der udgiver sig for at være Signal, og del aldrig din bekræftelseskode, pinkode eller din gendannelsesnøgle med nogen.
-• Søgning efter animerede GIF’er er nu meget hurtigere, men det er stadig op til dig, om du siger, hvad du mener, eller memer.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

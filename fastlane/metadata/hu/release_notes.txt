@@ -1,2 +1,2 @@
-• További visszaigazolásokat és oktató jellegű üzeneteket vezettünk be az alkalmazásba, hogy megvédjük a Signal felhasználóit az adathalászattól és a pszichológiai manipulációtól. Emlékeztetőül: soha ne válaszolj olyan csevegésekre, amelyek a Signalnak álcázzák magukat, és soha ne küldd el senkinek az ellenőrző kódodat, a PIN-kódodat vagy a helyreállítási kulcsodat.
-• Az animált GIF-ek keresési teljesítményének fejlesztései.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

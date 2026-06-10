@@ -1,2 +1,2 @@
-• Olemme lisänneet sovellukseen uusia vahvistusvaiheita ja opasteviestejä, joiden tarkoituksena on suojata Signal-käyttäjiä tietojenkalastelulta ja sosiaalisen manipuloinnin hyökkäyksiltä. Muistathan: älä koskaan vastaa keskusteluihin, joiden lähettäjä esittää olevansa Signal, äläkä koskaan lähetä vahvistuskoodia, PIN-koodia tai palautusavainta kenellekään.
-• Parannuksia animoitujen GIF-tiedostojen haun suorituskykyyn.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

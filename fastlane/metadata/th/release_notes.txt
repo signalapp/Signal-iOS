@@ -1,2 +1,2 @@
-• เสริมปราการปกป้องผู้ใช้ Signal จากภัยมิจฉาชีพ ไม่ว่าจะเป็นการพยายามโจมตีแบบฟิชชิงหรือการหลอกลวงในรูปแบบต่างๆ ด้วยการเพิ่มขั้นตอนยืนยันในแอป รวมถึงแสดงคำแนะนำเพื่อความปลอดภัย เราขอเน้นย้ำอีกครั้ง: โปรดอย่าตอบกลับแชทที่แอบอ้างว่าเป็น Signal และอย่าเปิดเผยรหัสยืนยัน, PIN หรือกุญแจกู้คืนของคุณกับใคร
-• พัฒนาประสิทธิภาพในการค้นหาไฟล์ GIF แบบเคลื่อนไหว
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

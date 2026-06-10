@@ -1,2 +1,2 @@
-• Chúng tôi đã bổ sung các bước xác nhận và thông báo hướng dẫn trong ứng dụng để giúp bảo vệ người dùng Signal khỏi các hành vi tấn công giả mạo và phi kỹ thuật. Cần nhắc lại, tuyệt đối không trả lời tin nhắn giả mạo Signal và không bao giờ gửi mã xác minh, mã PIN hoặc mã khóa khôi phục của bạn cho bất kỳ ai.
-• Cải thiện hiệu suất tìm ảnh GIF động.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

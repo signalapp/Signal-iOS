@@ -1,2 +1,2 @@
-Am introdus în aplicație confirmări suplimentare și mesaje informative pentru a ajuta la protejarea utilizatorilor Signal împotriva atacurilor de tip phishing și de inginerie socială. Îți reamintim să nu răspunzi niciodată la mesaje care pretind că provin de la Signal și să nu trimiți niciodată nimănui codul de verificare, codul PIN sau codul de recuperare.
-• Căutările de GIF-uri animate sunt acum mult mai rapide, dar rămâne la latitudinea ta dacă vrei să spui ce gândești sau să transformi ceea ce spui într-un meme.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

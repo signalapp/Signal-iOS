@@ -1,2 +1,2 @@
-• Kami menambahkan konfirmasi tambahan dan pesan edukatif di aplikasi untuk membantu melindungi pengguna Signal dari serangan phishing dan rekayasa sosial. Sebagai pengingat, jangan balas chat yang mengaku dari Signal, dan jangan bagikan kode verifikasi, PIN, atau kunci pemulihan kepada siapa pun.
-• Pencarian GIF animasi kini jauh lebih cepat, tetapi tetap terserah Anda apakah mau mengungkapkan maksud secara langsung lewat teks atau pakai meme.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

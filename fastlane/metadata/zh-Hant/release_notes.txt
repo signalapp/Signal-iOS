@@ -1,2 +1,2 @@
-• 我們已在應用程式中新增確認機制與教育性訊息，以協助保護 Signal 用戶免受網絡釣魚及社交工程攻擊。再次提醒，切勿回覆假冒 Signal 的聊天訊息，也切勿將你的驗證碼、PIN 碼或恢復金鑰發送給任何人。
-• 動畫 GIF 的搜尋速度現在快多了，但要直接用言語表達心聲，還是用迷因圖傳遞心情，全由你決定。
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

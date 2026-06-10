@@ -1,2 +1,2 @@
-• ہم نے ایپ میں اضافی تصدیقات اور تعلیمی میسجنگ متعارف کروائے ہیں تاکہ Signal یوزرز کو جعل سازی اور سوشل انجینئرنگ حملوں سے محفوظ رکھنے میں مدد کی جا سکے۔ یاد دہانی کے طور پر، Signal کا روپ دھارنے والی چیٹس کو کبھی جواب نہ دیں، اور نہ ہی کبھی کسی کو اپنا تصدیقی کوڈ، پن، یا بحالی کی کیی بھیجیں۔
-• اینیمیٹڈ GIF کی تلاش اب پہلے سے بہتر ہے، لیکن پھر بھی اس کی کارکردگی کا انحصار آپ کی بات یا آپ کے مطلب پر ہے۔
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

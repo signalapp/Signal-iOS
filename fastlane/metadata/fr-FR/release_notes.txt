@@ -1,2 +1,2 @@
-• Pour protéger les utilisateurs de Signal contre les attaques de phishing et d'ingénierie sociale, l'appli intègre des étapes de vérification supplémentaires et de nouveaux messages de prévention. Pour rappel, ne répondez jamais à des messages semblant provenir de Signal et n'envoyez jamais ni votre code PIN, ni votre code de vérification, ni votre clé de récupération à qui que ce soit.
-• Les recherches de GIF animés sont désormais bien plus rapides, mais il faut être à même d'assumer ses mèmes.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

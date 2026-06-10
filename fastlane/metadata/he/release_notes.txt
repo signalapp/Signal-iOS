@@ -1,2 +1,2 @@
-• הוספנו אישורים והודעות הסברה באפליקציה כדי לעזור להגן על משתמשי ומשתמשות Signal מפני מתקפות פישינג והנדסה חברתית. אנחנו מזכירים לעולם לא להשיב לצ׳אטים שמעמידים פנים שהם Signal, ולעולם לא לשלוח את קוד האימות, ה–PIN, או מפתח השחזור שלך לאף אחד.
-• שיפורי חיפוש של קבצי GIF מונפשים.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

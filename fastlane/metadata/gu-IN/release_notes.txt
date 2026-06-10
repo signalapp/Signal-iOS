@@ -1,2 +1,2 @@
-• Signal ઉપયોગકર્તાઓને ફિશિંગ અને સોશિયલ એન્જિનિયરિંગ હુમલાઓથી બચાવવા માટે અમે ઍપમાં વધારાના પુષ્ટિકરણ અને શૈક્ષણિક મેસેજ રજૂ કર્યા છે. યાદ રાખો કે, ક્યારેય Signal હોવાનો ડોળ કરતી ચેટનો જવાબ આપશો નહીં અને ક્યારેય કોઈને તમારો વેરિફિકેશન કોડ, પિન અથવા રિકવરી કી મોકલશો નહીં.
-• એનિમેટેડ GIF શોધ પર્ફોર્મન્સ સુધારાઓ.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

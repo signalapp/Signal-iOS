@@ -1,2 +1,2 @@
-• Dodali smo nove potvrde i edukativne poruke u aplikaciju kako bismo zaštitili korisnike Signala od phishinga i napada socijalnog inženjeringa. Podsjećamo vas da nikada ne odgovarate na poruke koje se pretvaraju da su od Signala i da nikada nikome ne šaljete svoj potvrdni kôd, PIN ili ključ za oporavak.
-• Unaprijedili smo pretragu animiranih GIF-ova.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

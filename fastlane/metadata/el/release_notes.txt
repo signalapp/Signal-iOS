@@ -1,2 +1,2 @@
-• Έχουμε προσθέσει επιπλέον επιβεβαιώσεις και ενημερωτικά μηνύματα στην εφαρμογή, προκειμένου να προστατεύσουμε τους χρήστες του Signal από επιθέσεις phishing και social engineering. Σου υπενθυμίζουμε να μην απαντάς ποτέ σε μηνύματα που προσποιούνται ότι προέρχονται από το Signal και να μην στέλνεις ποτέ τον κωδικό επαλήθευσης, το PIN ή το κλειδί ανάκτησης σε κανέναν.
-• Βελτιώσεις στην απόδοση της αναζήτησης κινούμενων GIF.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

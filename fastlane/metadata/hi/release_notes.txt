@@ -1,2 +1,2 @@
-• Signal के यूज़र को फ़िशिंग और ऑनलाइन ठगी से बचाने के लिए, हमने ऐप में पुष्टि के अतिरिक्त विकल्प और जागरूकता वाले मैसेज शामिल किए हैं। याद रखें, Signal के नाम पर भेजे गए किसी भी मैसेज का कतई जवाब न दें, और अपना वेरिफ़िकेशन कोड, पिन या 'रिकवरी की' कभी किसी को न दें।
-• ऐनिमेटेड GIF सर्च अब काफ़ी तेज़ हो गए हैं। हालांकि, यह पूरी तरह आपके ऊपर है कि आपको अपनी बात सीधे-साफ़ शब्दों में कहनी है या फिर मीम बनाकर।
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

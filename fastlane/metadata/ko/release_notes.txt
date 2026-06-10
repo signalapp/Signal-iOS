@@ -1,2 +1,2 @@
-• 피싱과 소셜 엔지니어링 공격으로부터 Signal 사용자를 보호하기 위해 Signal 앱 내에 확인 및 안내 메시지를 추가했습니다. 다시 한번 당부드리지만, Signal을 사칭하는 채팅에는 절대 답장하지 마시고, 다른 사람에게 인증 코드나 PIN, 복구 키를 절대 전송하지 마세요.
-• 애니메이션 GIF 검색 성능을 개선했습니다.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

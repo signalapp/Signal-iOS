@@ -1,2 +1,2 @@
-• Abbiamo aggiunto nuove conferme e avvisi per proteggere la comunità di Signal da attacchi di phishing e ingegneria sociale. Ti ricordiamo di non rispondere mai a messaggi che fingono di provenire da Signal e di non condividere con nessuno il tuo codice di verifica, il PIN o la chiave di ripristino.
-• La ricerca delle GIF è molto più veloce: ora esprimere i tuoi pensieri (o trasformarli in un meme) è questione di un istante.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

@@ -1,2 +1,2 @@
-• 我们在应用内新增了额外的确认步骤和安全提示，帮助保护 Signal 用户免遭网络钓鱼和社会工程学攻击。在此提醒：切勿回复任何冒充 Signal 的聊天信息，也绝不要将您的验证码、密码或恢复密钥发送给任何人。
-• 改进了动画 GIF 搜索性能。
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.

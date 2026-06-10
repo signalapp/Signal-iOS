@@ -1,2 +1,2 @@
-• We hebben extra bevestigingsverzoeken en informatieve meldingen in de app toegevoegd om Signal-gebruikers beter te beschermen tegen phishing en social engineering-aanvallen. Ter herinnering: reageer nooit op chats die afkomstig lijken te zijn van Signal en deel nooit je verificatiecode, pincode of herstelsleutel met anderen.
-• Verbeteringen in de zoekprestaties voor geanimeerde GIF’s.
+• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
+• We also fixed a bug that prevented link previews from working correctly in Stories.
