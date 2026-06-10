@@ -653,13 +653,13 @@
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "คัดลอกไปคลิปบอร์ด";
 
 /* Body for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, warning them not to share it with anyone. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal will <bold>never</bold> message you for your recovery key. Do not respond to a chat pretending to be Signal. Store your recovery key somewhere safe and do not share it with anyone.";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal จะ<bold>ไม่</bold>ส่งข้อความหาคุณเพื่อขอกุญแจกู้คืน โปรดอย่าตอบกลับแชทที่แอบอ้างว่าเป็น Signal และโปรดเก็บกุญแจกู้คืนของคุณไว้ในที่ปลอดภัย รวมถึงไม่บอกรหัสนี้กับใคร";
 
 /* Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Got It";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "เข้าใจแล้ว";
 
 /* Title for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "Do Not Share Your Recovery Key";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "อย่าเปิดเผยกุญแจกู้คืนของคุณ";
 
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "สร้างกุญแจใหม่";
@@ -833,7 +833,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "การสำรองข้อมูลถูกปิดใช้งานและข้อมูลของคุณถูกลบออกจากบริการจัดเก็บที่ปลอดภัยของ Signal แล้ว";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, and any media that is not on this device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "ปิดใช้งานการสำรองข้อมูลแล้ว และกำลังดาวน์โหลดไฟล์สื่อที่ยังไม่ได้บันทึกไว้ในอุปกรณ์เครื่องนี้ โดยข้อมูลของคุณจะถูกลบออกจากบริการจัดเก็บที่ปลอดภัยของ Signal เมื่อการดาวน์โหลดเสร็จสิ้น";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "เกิดข้อผิดพลาดบางประการ โปรดติดต่อฝ่ายสนับสนุน";
@@ -998,13 +998,13 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "ดาวน์โหลดไฟล์สื่อที่ออฟโหลดไว้ใช่หรือไม่";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "ไฟล์สื่อที่เก่าแล้วจะถูกออฟโหลดเมื่อคุณสำรองข้อมูลในครั้งต่อไป แต่คุณสามารถดาวน์โหลดไฟล์กลับมาจากข้อมูลสำรองได้ทุกเมื่อ";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "เริ่มใช้งานฟีเจอร์การเพิ่มประสิทธิภาพพื้นที่จัดเก็บ โดยอัปเกรดแพ็กเกจสำรองข้อมูลของคุณด้วยการชำระค่าสำรองข้อมูลของ Signal";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "เพิ่มประสิทธิภาพพื้นที่จัดเก็บของ Signal";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "พื้นที่จัดเก็บข้อมูลสำรองของคุณเต็มแล้ว โปรดเพิ่มพื้นที่จัดเก็บใน Signal เพื่อสำรองข้อมูลแชทและไฟล์สื่อต่อไป";
@@ -1016,25 +1016,25 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "เปิดใช้งานการสำรองข้อมูลอีกครั้ง";
 
 /* Message for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted once backups are disabled.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "คุณมีไฟล์สื่อในข้อมูลสำรองที่ยังไม่ได้กู้คืนมายังอุปกรณ์เครื่องนี้ เมื่อคุณปิดใช้งานการสำรองข้อมูล ไฟล์สื่อที่คุณยังไม่ได้ดาวน์โหลดจะถูกลบอย่างถาวร";
 
 /* Title for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "ข้ามการดาวน์โหลดใช่หรือไม่";
 
 /* Message for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "คุณมีไฟล์สื่อในข้อมูลสำรองที่ยังไม่ได้กู้คืนมายังอุปกรณ์เครื่องนี้ หากไม่มีการสมัครและชำระค่าแพ็กเกจ ไฟล์สื่อที่คุณยังไม่ได้ดาวน์โหลดจะถูกลบอย่างถาวร";
 
 /* Title for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "ข้ามการดาวน์โหลดใช่หรือไม่";
 
 /* Title for an action in a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "ข้ามการดาวน์โหลด";
 
 /* Message for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Are you sure you want to skip downloading your media?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "คุณแน่ใจหรือไม่ว่าต้องการข้ามการดาวน์โหลดไฟล์สื่อ";
 
 /* Title for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "ข้ามการดาวน์โหลดใช่หรือไม่";
 
 /* Title for an action in a sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "ข้ามการดาวน์โหลด";
@@ -1076,34 +1076,34 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "กำลังส่งข้อมูล…";
 
 /* Title for a button in a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "สำรองข้อมูลเดี๋ยวนี้";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "This could take a while. You can use Signal normally while backing up.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "ขั้นตอนนี้อาจใช้เวลาสักครู่ โดยคุณสามารถใช้ Signal ได้ตามปกติในระหว่างที่กำลังสำรองข้อมูล";
 
 /* Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "ไฟล์สื่อที่เก่าแล้วจะถูกออฟโหลดเมื่อคุณสำรองข้อมูลในครั้งต่อไป แต่คุณสามารถดาวน์โหลดไฟล์กลับมาจากข้อมูลสำรองได้ทุกเมื่อ";
 
 /* Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "เพิ่มประสิทธิภาพพื้นที่จัดเก็บของ Signal";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "You're all set. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "ตั้งค่าเรียบร้อย เริ่มสำรองข้อมูลของคุณได้เลย";
 
 /* Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "You have media in your backup that's not on this device. Undownloaded media will be permanently deleted without a paid subscription.\n\nYou can begin paying for backups again at any time to continue backing up your media.";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "คุณมีไฟล์สื่อในข้อมูลสำรองที่ยังไม่ได้กู้คืนมายังอุปกรณ์เครื่องนี้ หากไม่มีการสมัครและชำระค่าแพ็กเกจ ไฟล์สื่อที่คุณยังไม่ได้ดาวน์โหลดจะถูกลบอย่างถาวร\n\nหากต้องการสำรองข้อมูลสื่อต่อ คุณสามารถเริ่มชำระเงินเพื่อสำรองข้อมูลอีกครั้งได้ทุกเมื่อ";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Download Your Backup Media";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "ดาวน์โหลดไฟล์สื่อในข้อมูลสำรองของคุณ";
 
 /* Primary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Download Backup Now";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "ดาวน์โหลดข้อมูลสำรองเดี๋ยวนี้";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Download Your Backup Media Today";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "ดาวน์โหลดไฟล์สื่อในข้อมูลสำรองของคุณวันนี้";
 
 /* Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Don't Download Backup";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "ไม่ต้องดาวน์โหลดข้อมูลสำรอง";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "โปรดตรวจสอบให้แน่ใจว่าคุณอัปเดตวิธีการชำระเงินแล้ว โดยแตะที่จัดการการเป็นสมาชิก > Signal > อัปเดตวิธีการชำระเงิน";
@@ -6878,7 +6878,7 @@
 "PIN_CREATION_EXPLANATION" = "รหัส PIN รักษาข้อมูลที่เก็บไว้ใน Signal ได้เข้ารหัสไว้ ดังนั้นจึงมีแต่คุณที่เข้าถึงข้อมูลนี้ได้ โปรไฟล์ของคุณ การตั้งค่า และรายชื่อผู้ติดต่อจะถูกกู้คืนเมื่อคุณติดตั้งแอปอีกครั้ง คุณไม่จำเป็นต้องมีรหัส PIN ของคุณเพื่อเปิดแอป";
 
 /* Message when a generic error occurs while creating a PIN. */
-"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Something went wrong creating your PIN. Please contact support.";
+"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "เกิดข้อผิดพลาดในระหว่างการสร้าง PIN ของคุณ โปรดติดต่อฝ่ายสนับสนุน";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "ข้อมูลเพิ่มเติมเกี่ยวกับ PIN";
@@ -6893,7 +6893,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "รหัส PIN ไม่ตรงกัน ลองอีกครั้ง";
 
 /* Message when a network error occurs while creating a PIN. */
-"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Something went wrong creating your PIN. Check your connection and try again.";
+"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "เกิดข้อผิดพลาดในระหว่างการสร้าง PIN ของคุณ โปรดตรวจสอบการเชื่อมต่อของคุณแล้วลองอีกครั้ง";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "รหัส PIN ต้องมีอย่างน้อย 4 หลัก";
@@ -7901,7 +7901,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "เพิ่มพื้นที่ %1$@ บนอุปกรณ์เครื่องนี้";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "คุณมีไฟล์สื่อในข้อมูลสำรองที่ยังไม่ได้กู้คืนมายังอุปกรณ์เครื่องนี้ หากไม่มีการสมัครและชำระค่าแพ็กเกจ ไฟล์สื่อที่คุณยังไม่ได้ดาวน์โหลดจะถูกลบอย่างถาวร";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "หากข้ามการดาวน์โหลด คุณจะสามารถดาวน์โหลดไฟล์สื่อและไฟล์แนบที่หลงเหลืออยู่ในข้อมูลสำรองได้ในภายหลังเมื่ออุปกรณ์มีพื้นที่จัดเก็บเพียงพอ";
@@ -8018,7 +8018,7 @@
 "SAFETY_TIPS_HEADER_TITLE" = "คำแนะนำเพื่อความปลอดภัย";
 
 /* Message body describing the keeping codes safe safety tip. */
-"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "หากคุณได้รับรหัสยืนยันทั้งที่ไม่ได้ส่งคำขอ นั่นแสดงว่าอาจมีบุคคลอื่นพยายามเข้าถึงบัญชีคุณ อย่าเปิดเผยรหัสของคุณกับใคร";
 
 /* Message title describing the keeping codes safe safety tip. */
 "SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "รักษารหัสยืนยันของคุณให้ปลอดภัย";

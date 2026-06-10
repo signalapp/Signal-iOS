@@ -653,13 +653,13 @@
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Скапіраваць у буфер абмену";
 
 /* Body for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, warning them not to share it with anyone. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal will <bold>never</bold> message you for your recovery key. Do not respond to a chat pretending to be Signal. Store your recovery key somewhere safe and do not share it with anyone.";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal <bold>ніколі </bold> не запытвае ў вас код для аднаўлення. Ніколі не адказвайце на чат, што выдае сябе за Signal. Захоўвайце свой код для аднаўлення ў бяспечным месцы і нікому не паказвайце яго.";
 
 /* Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Got It";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Зразумела";
 
 /* Title for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "Do Not Share Your Recovery Key";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "Нікому не паказвайце свой код для аднаўлення";
 
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Стварыць новы код";
@@ -833,7 +833,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Рэзервовыя копіі былі адключаны, і вашы даныя былі выдалены сэрвісам бяспечнага захоўвання Signal.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, and any media that is not on this device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Рэзервовыя копіі былі адключаны, і зараз пампуюцца ўсе медыяфайлы, якіх няма на гэтай прыладзе. Калi вашы даныя будуць запампаваны на прыладу, яны будуць выдалены з сэрвісу бяспечнага захоўвання Signal.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Адбылася памылка. Калі ласка, звярніцеся да службы падтрымкі.";
@@ -998,13 +998,13 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Спампаваць выгружаныя медыяфайлы?";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Старэйшыя медыяфайлы будуць выгружаны, калі вы будзеце рабіць чарговае рэзервовае капіраванне, але іх можна ў любы час спампаваць з рэзервовай копіі.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Аптымізацыю сховішча можна зрабіць толькі на платнай аснове рэзервовага капіравання Signal. Каб выкарыстоўваць гэту функцыю, абнавіце свой план рэзервовага капіравання.";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Зрабіць аптымізацыю сховішча Signal";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "Для вас дасягнуты ліміт захоўвання рэзервовых копій. Вызваліце месца ў Signal, каб па-ранейшаму рабіць рэзервовае капіраванне чатаў і медыяфайлаў.";
@@ -1016,28 +1016,28 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Уключыць нанова рэзервовыя копіі";
 
 /* Message for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted once backups are disabled.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "Вы можаце спампаваць медыяфайлы з вашай рэзервовай копіі, якіх няма на гэтай прыладзе. Неспампаваныя медыяфайлы будуць назаўсёды выдалены, як толькі адключылася рэзервовае капіраванне.";
 
 /* Title for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Прапусціць спампаванне?";
 
 /* Message for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "Вы можаце спампаваць медыяфайлы з вашай рэзервовай копіі, якіх няма на гэтай прыладзе. Неспампаваныя медыяфайлы будуць назаўсёды выдалены, калi няма платнай падпіскі.";
 
 /* Title for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Прапусціць спампаванне?";
 
 /* Title for an action in a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Прапусціць спампаванне";
 
 /* Message for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Are you sure you want to skip downloading your media?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Вы ўпэўнены, што жадаеце прапусціць пампаванне сваіх медыяфайлаў?";
 
 /* Title for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Прапусціць спампаванне?";
 
 /* Title for an action in a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "Прапусціць пампаванне";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "Прапусціць спампаванне";
 
 /* Title for detail button in notice that the user's Backups subscription couldn't be redeemed. */
 "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON" = "Звесткі";
@@ -1076,34 +1076,34 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "Запампоўка…";
 
 /* Title for a button in a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Пачаць рэзервовае капіраванне";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "This could take a while. You can use Signal normally while backing up.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Гэта можа заняць пэўны час. Падчас рэзервовага капіравання вы можаце карыстацца Signal як звычайна.";
 
 /* Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Старэйшыя медыяфайлы будуць выгружаны, калі вы будзеце рабіць чарговае рэзервовае капіраванне, але іх можна ў любы час спампаваць з рэзервовай копіі.";
 
 /* Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Зрабіць аптымізацыю сховішча Signal";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "You're all set. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Усё гатова. Пачынайце рэзервовае капіраванне.";
 
 /* Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "You have media in your backup that's not on this device. Undownloaded media will be permanently deleted without a paid subscription.\n\nYou can begin paying for backups again at any time to continue backing up your media.";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "Вы можаце спампаваць медыяфайлы з вашай рэзервовай копіі, якіх няма на гэтай прыладзе. Неспампаваныя медыяфайлы будуць назаўсёды выдалены, калi няма платнай падпіскі.\n\nВы зноў можаце ў любы час рабіць плацяжы за рэзервовыя копіі, каб працягнуць рэзервовае капіраванне ўсіх вашых медыяфайлаў.";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Download Your Backup Media";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Спампуйце свае рэзервовыя медыяфайлы";
 
 /* Primary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Download Backup Now";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Спампаваць рэзервовую копію зараз";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Download Your Backup Media Today";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Спампуйце свае рэзервовыя медыяфайлы сёння";
 
 /* Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Don't Download Backup";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Не пампаваць рэзервовую копію";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Праверце, ці правільны ваш спосаб аплаты. Націсніце «Кіраваць падпіскай» > «Signal» > «Абнавіць спосаб аплаты».";
@@ -6878,7 +6878,7 @@
 "PIN_CREATION_EXPLANATION" = "PIN-коды трымаюць інфармацыю, што захоўваецца ў Signal, зашыфраванай, таму толькі вы можаце атрымаць да яе доступ. Ваш профіль, налады і кантакты будуць адноўлены, калі вы зробіце паўторнае ўсталяванне. Вам не спатрэбіцца PIN-код, каб адкрыць праграму.";
 
 /* Message when a generic error occurs while creating a PIN. */
-"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Something went wrong creating your PIN. Please contact support.";
+"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Штосьці не так падчас стварэння PIN-кода. Калі ласка, звярніцеся да службы падтрымкі.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Дадаткова пра PIN-коды";
@@ -6893,7 +6893,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-коды не супадаюць. Паўтарыце спробу.";
 
 /* Message when a network error occurs while creating a PIN. */
-"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Something went wrong creating your PIN. Check your connection and try again.";
+"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Штосьці не так падчас стварэння PIN-кода. Праверце падключэнне і паўтарыце спробу.";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN-код мусіць быць не менш за 4 лічбы";
@@ -7892,7 +7892,7 @@
 "RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE" = "Чакаем Wi-Fi";
 
 /* Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Прапусціць пампаванне";
+"RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON" = "Прапусціць спампаванне";
 
 /* Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }} */
 "RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT" = "Каб завяршыць пампаванне медыяфайлаў, вашай прыладзе патрабуецца %1$@ памяці.\n\nКаб вызваліць месца са сховішча, перайдзіце ў Налады > Агульныя > Сховішча iPhone. Вы можаце выгрузіць або выдаліць праграмы і змесціва, што вы не выкарыстоўваеце.";
@@ -7901,13 +7901,13 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Вызваліце %1$@ на гэтай прыладзе";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "Вы можаце спампаваць медыяфайлы з вашай рэзервовай копіі, якіх няма на гэтай прыладзе. Неспампаваныя медыяфайлы будуць назаўсёды выдалены, калi няма платнай падпіскі.";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "Калі вы прапусціце пампаванне, медыяфайлы і далучэнні з вашай рэзервовай копіі можна будзе спампаваць пазней, калі будзе больш месца для захоўвання.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "Калі вы прапусціце спампаванне, медыяфайлы і далучэнні з вашай рэзервовай копіі можна будзе спампаваць пазней, калі будзе больш месца для захоўвання.";
 
 /* Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Прапусціць пампаванне";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "Прапусціць спампаванне";
 
 /* Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "Прапусціць спампаванне?";
@@ -8018,7 +8018,7 @@
 "SAFETY_TIPS_HEADER_TITLE" = "Парады па бяспецы";
 
 /* Message body describing the keeping codes safe safety tip. */
-"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "Калі вы атрымалі праверачны код, які не запытвалі, магчыма, гэта спроба незнаёмых атрымаць доступ да вашага ўліковага запісу. Нікому не паведамляйце свой код.";
 
 /* Message title describing the keeping codes safe safety tip. */
 "SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "Захоўвайце свой праверачны код у бяспецы";

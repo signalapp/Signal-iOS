@@ -653,13 +653,13 @@
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "클립보드에 복사";
 
 /* Body for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, warning them not to share it with anyone. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal will <bold>never</bold> message you for your recovery key. Do not respond to a chat pretending to be Signal. Store your recovery key somewhere safe and do not share it with anyone.";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal은 <bold>절대</bold> 메시지를 통해 복구 키를 요구하지 않습니다. Signal을 사칭하는 채팅에 답장하지 마세요. 복구 키는 안전한 곳에 보관해 두고 다른 사람과 공유하지 마세요.";
 
 /* Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Got It";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "확인";
 
 /* Title for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "Do Not Share Your Recovery Key";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "복구 키를 공유하지 마세요";
 
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "새로운 키 생성";
@@ -719,7 +719,7 @@
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_GO_TO_SETTINGS_BUTTON" = "설정으로 이동";
 
 /* Message for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
-"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_MESSAGE" = "Signal이 자동으로 메시지를 백업하도록 하려면 아래의 '설정으로 이동'을 탭하여 '백그라운드 앱 새로 고침'을 활성화하세요.";
+"BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_MESSAGE" = "Signal이 자동으로 메시지를 백업하도록 하려면 아래의 '설정으로 이동'을 탭하여 '백그라운드 앱 새로고침'을 활성화하세요.";
 
 /* Title for a sheet warning the user about the Background App Refresh permission. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_SHEET_TITLE" = "자동 백업 비활성화됨";
@@ -833,7 +833,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "백업을 사용하지 않도록 설정했으며, Signal의 안전한 저장소 서비스에서 데이터를 삭제했습니다.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, and any media that is not on this device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "백업을 비활성화했으며, 이 기기에 저장되지 않은 모든 미디어를 다운로드하는 중입니다. 다운로드가 완료되면 Signal의 보안 저장 공간에서 해당 데이터가 삭제됩니다.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "오류가 발생했습니다. 고객 지원팀에 문의하세요.";
@@ -998,13 +998,13 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "오프로드된 미디어를 다운로드할까요?";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "다음 백업 시 오래된 미디어는 오프로드되지만, 언제든지 백업에서 다시 다운로드할 수 있습니다.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "저장 공간 최적화는 유료 Signal 백업으로만 사용할 수 있습니다. 이 기능을 사용하기 시작하려면 백업 플랜을 업그레이드하세요.";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Signal 저장 공간 최적화";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "백업 저장 용량이 한도에 도달했습니다. 채팅과 미디어를 계속 백업하려면 Signal에 사용 가능한 공간을 확보하세요.";
@@ -1016,25 +1016,25 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "백업 재활성화";
 
 /* Message for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted once backups are disabled.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "현재 기기에 없는 미디어가 백업에 존재합니다. 백업을 비활성화하면 다운로드하지 않은 미디어는 영구 삭제됩니다.";
 
 /* Title for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "다운로드를 건너뛸까요?";
 
 /* Message for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "현재 기기에 없는 미디어가 백업에 존재합니다. 유료 구독이 없을 경우, 다운로드하지 않은 미디어는 영구 삭제됩니다.";
 
 /* Title for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "다운로드를 건너뛸까요?";
 
 /* Title for an action in a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "다운로드 건너뛰기";
 
 /* Message for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Are you sure you want to skip downloading your media?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "미디어 다운로드를 건너뛰시겠어요?";
 
 /* Title for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "다운로드를 건너뛸까요?";
 
 /* Title for an action in a sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "다운로드 건너뛰기";
@@ -1076,34 +1076,34 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "업로드 중…";
 
 /* Title for a button in a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "지금 백업";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "This could take a while. You can use Signal normally while backing up.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "완료하는 데 다소 시간이 걸릴 수 있어요. 백업하는 동안에도 Signal은 정상적으로 사용할 수 있습니다.";
 
 /* Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "다음 백업 시 오래된 미디어는 오프로드되지만, 언제든지 백업에서 다시 다운로드할 수 있습니다.";
 
 /* Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Signal 저장 공간 최적화";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "You're all set. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "준비됐습니다. 지금 백업을 시작하세요.";
 
 /* Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "You have media in your backup that's not on this device. Undownloaded media will be permanently deleted without a paid subscription.\n\nYou can begin paying for backups again at any time to continue backing up your media.";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "현재 기기에 없는 미디어가 백업에 존재합니다. 유료 구독이 없을 경우, 다운로드하지 않은 미디어는 영구 삭제됩니다.\n\n원하실 때 언제든 다시 결제하시면 미디어 백업을 계속 이용할 수 있습니다.";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Download Your Backup Media";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "백업 미디어 다운로드";
 
 /* Primary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Download Backup Now";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "지금 백업 다운로드";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Download Your Backup Media Today";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "지금 백업 미디어를 다운로드하세요";
 
 /* Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Don't Download Backup";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "백업을 다운로드하지 않음";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "결제 수단이 최신 상태인지 확인하세요. 구독 관리 > Signal > 결제 수단 업데이트를 탭하세요.";
@@ -1364,7 +1364,7 @@
 "CALL_CONTROLS_INCOMING_ANSWER" = "응답";
 
 /* Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation. */
-"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "카메라 끄고\n응답";
+"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "음성 통화로\n받기";
 
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "거절";
@@ -2225,7 +2225,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "잘못된 연락처입니다.";
 
 /* Alert body when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal에 연락처 접근 권한이 필요합니다. iOS 설정으로 가서 연락처를 켜세요. 연락처는 암호화되며 Signal 서비스에 표시되지 않습니다.";
+"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal에 연락처 접근 권한이 필요합니다. iOS 설정에서 연락처 접근을 허용해 주세요. 연락처 정보는 암호화되며 Signal도 확인할 수 없습니다.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "연락처 접근 허용";
@@ -6158,7 +6158,7 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "iPhone을 연결하는 것은 권장되지 않으며, 핵심 기능이 제한될 수 있어요.";
 
 /* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "아는 사람을 찾으세요. 연락처는 암호화되며 Signal 서비스에 표시되지 않습니다.";
+"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "내가 아는 사람들을 찾아보세요. 연락처 정보는 암호화되며 Signal도 확인할 수 없습니다.";
 
 /* Title introducing the 'Contacts' permission in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "연락처";
@@ -6878,7 +6878,7 @@
 "PIN_CREATION_EXPLANATION" = "PIN 번호는 Signal에 저장된 정보를 암호화하여 오직 나만 접근할 수 있게 만듭니다. 내 프로필, 설정, 그리고 연락처는 Signal을 다시 설치할 때 복원됩니다.";
 
 /* Message when a generic error occurs while creating a PIN. */
-"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Something went wrong creating your PIN. Please contact support.";
+"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "PIN 생성 중 문제가 발생했습니다. 고객 지원팀으로 문의해 주세요.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "PIN에 관한 자세한 정보";
@@ -6893,7 +6893,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN이 일치하지 않습니다. 다시 시도해 주세요.";
 
 /* Message when a network error occurs while creating a PIN. */
-"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Something went wrong creating your PIN. Check your connection and try again.";
+"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "PIN 생성 중 문제가 발생했습니다. 연결을 확인하고 다시 시도해 주세요.";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN은 최소 4자리입니다";
@@ -7901,7 +7901,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "기기에서 %1$@ 공간을 확보하세요";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "현재 기기에 없는 미디어가 백업에 존재합니다. 유료 구독이 없을 경우, 다운로드하지 않은 미디어는 영구 삭제됩니다.";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "다운로드를 건너뛰면 나중에 저장 공간이 확보될 때 백업의 남은 미디어와 첨부 파일을 다운로드할 수 있습니다.";
@@ -8018,7 +8018,7 @@
 "SAFETY_TIPS_HEADER_TITLE" = "안전 팁";
 
 /* Message body describing the keeping codes safe safety tip. */
-"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "직접 요청한 인증 코드가 아니라면 다른 사람이 계정에 접근하려고 시도하는 것일 수 있습니다. 인증 코드를 절대 타인과 공유하지 마세요.";
 
 /* Message title describing the keeping codes safe safety tip. */
 "SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "인증 코드를 안전하게 보관하세요";
