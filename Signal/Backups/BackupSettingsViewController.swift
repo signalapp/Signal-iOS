@@ -692,7 +692,7 @@ class BackupSettingsViewController:
         case .paid,
              .paidAsTester,
              .paidExpiringSoon:
-            var isOptimizeStorageEnabled = true
+            var isOptimizeStorageEnabled = false
 
             welcomeToBackupsSheet = WelcomeToBackupsSheet(
                 optimizeLocalStorage: (
