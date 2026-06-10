@@ -196,8 +196,10 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             }
         }
 
-        // Fetch our profile (unclear why), but ignore the result and any errors
-        // because this is a best-effort fetch.
+        // Best-effort fetch our own profile, in case we now have new
+        // account-level capabilities (which we discover from our profile) as a
+        // result of our account attributes update (which includes device-level
+        // capabilities).
         _ = try? await profileManager.fetchLocalUsersProfile(authedAccount: authedAccount)
 
         // Primary devices should sync their configuration whenever they
