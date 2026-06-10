@@ -87,7 +87,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
-            self.refreshConnection(isAppActive: false, shouldRunCron: false)
+            self.refreshConnection(isAppActive: false)
         }
 
         clearAppropriateNotificationsAndRestoreBadgeCount()
@@ -809,7 +809,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // launching from the background, without this, we end up waiting some extra
         // seconds before receiving an actionable push notification.
         if !appContext.isMainAppAndActive {
-            self.refreshConnection(isAppActive: false, shouldRunCron: false)
+            self.refreshConnection(isAppActive: false)
         }
 
         if registeredState != nil {
@@ -1392,7 +1392,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        refreshConnection(isAppActive: true, shouldRunCron: true)
+        refreshConnection(isAppActive: true)
 
         // Every time we become active...
         if registeredState != nil {
@@ -1460,7 +1460,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     /// is in the background.
     private var backgroundFetchHandle: BackgroundTaskHandle?
 
-    private func refreshConnection(isAppActive: Bool, shouldRunCron: Bool) {
+    private func refreshConnection(isAppActive: Bool) {
         let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager
 
         let oldActiveConnectionTokens = self.activeConnectionTokens
@@ -1468,9 +1468,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             // If we're active, open a connection.
             self.activeConnectionTokens = chatConnectionManager.requestConnections()
             oldActiveConnectionTokens.forEach { $0.releaseConnection() }
-            if shouldRunCron {
-                self.startCronTask()
-            }
+
+            // Start a new Cron task on activate.
+            self.startCronTask()
+
             // We're back in the foreground. We've passed off connection management to
             // the foreground logic, so just tear it down without waiting for anything.
             self.backgroundFetchHandle?.interrupt()
@@ -1487,17 +1488,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     do {
                         await backgroundFetcher.start()
                         oldActiveConnectionTokens.forEach { $0.releaseConnection() }
+
                         // If there's a Cron task running that was started in the foreground, wait
                         // for it to finish.
                         await withTaskCancellationHandler(
                             operation: { await cronTask?.value },
                             onCancel: { cronTask?.cancel() },
                         )
-                        // If there's a fresh request to run Cron when entering the background,
-                        // start a new Cron instance.
-                        if shouldRunCron {
-                            await self.runCron()
-                        }
+
                         // This will usually be limited to 30 seconds rather than 3 minutes.
                         let waitDeadline = startDate.adding(180)
                         if isPastRegistration {
