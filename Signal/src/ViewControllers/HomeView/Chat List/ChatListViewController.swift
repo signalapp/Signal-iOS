@@ -912,6 +912,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
 
         // In Production this will pop up at most 3 times per 365 days.
+        Logger.info("requesting review")
         SKStoreReviewController.requestReview(in: windowScene)
         Self.didRequestReview = true
     }
