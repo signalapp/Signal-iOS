@@ -144,30 +144,16 @@ class AttachmentStoreTests: XCTestCase {
 
     // MARK: -
 
-    func testInsertSameMediaName() {
-        let mediaName = Data(repeating: 27, count: 10).hexadecimalString
-
-        switch testAttachmentInsertError(
-            attachmentParams1: Attachment.Record.mockStream(streamInfo: .mock(mediaName: mediaName)),
-            attachmentParams2: Attachment.Record.mockStream(streamInfo: .mock(mediaName: mediaName)),
-        ) {
-        case .duplicateMediaName:
-            break
-        case nil, .duplicatePlaintextHash:
-            XCTFail()
-        }
-    }
-
     func testInsertSamePlaintextHash() throws {
-        let plaintextHash = UUID().data
+        let plaintextHash = Randomness.generateRandomBytes(32)
 
         switch testAttachmentInsertError(
-            attachmentParams1: Attachment.Record.mockStream(streamInfo: .mock(plaintextHash: plaintextHash)),
-            attachmentParams2: Attachment.Record.mockStream(streamInfo: .mock(plaintextHash: plaintextHash)),
+            attachmentParams1: Attachment.Record.mockStream(plaintextHash: plaintextHash),
+            attachmentParams2: Attachment.Record.mockStream(plaintextHash: plaintextHash),
         ) {
         case .duplicatePlaintextHash:
             break
-        case nil, .duplicateMediaName:
+        case nil:
             XCTFail()
         }
     }

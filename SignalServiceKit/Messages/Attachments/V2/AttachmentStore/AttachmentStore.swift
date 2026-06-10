@@ -10,10 +10,6 @@ public enum AttachmentInsertError: Error {
     /// attachment a duplicate. Callers should instead create a new owner reference to
     /// the same existing attachment.
     case duplicatePlaintextHash(existingAttachmentId: Attachment.IDType)
-    /// An existing attachment was found with the same media name, making the new
-    /// attachment a duplicate. Callers should instead create a new owner reference to
-    /// the same existing attachment and possibly update it with any stream info.
-    case duplicateMediaName(existingAttachmentId: Attachment.IDType)
 }
 
 // MARK: -
@@ -186,20 +182,6 @@ public struct AttachmentStore {
     ) -> Attachment.Record? {
         let query = Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.plaintextHash) == plaintextHash)
-
-        return failIfThrows {
-            try query.fetchOne(tx.database)
-        }
-    }
-
-    /// Fetch an existing Attachment record with the given mediaName. There will
-    /// be at most one.
-    public func fetchAttachmentRecord(
-        mediaName: String,
-        tx: DBReadTransaction,
-    ) -> Attachment.Record? {
-        let query = Attachment.Record
-            .filter(Column(Attachment.Record.CodingKeys.mediaName) == mediaName)
 
         return failIfThrows {
             try query.fetchOne(tx.database)
@@ -629,20 +611,6 @@ public struct AttachmentStore {
             throw AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId: existingAttachmentId)
         }
 
-        // Find if there is already an attachment with the same media name.
-        if
-            let existingAttachmentId = fetchAttachmentRecord(
-                mediaName: Attachment.mediaName(
-                    plaintextHash: streamInfo.plaintextHash,
-                    encryptionKey: attachment.encryptionKey,
-                ),
-                tx: tx,
-            )?.sqliteId,
-            existingAttachmentId != attachment.id
-        {
-            throw AttachmentInsertError.duplicateMediaName(existingAttachmentId: existingAttachmentId)
-        }
-
         // We count it as a "view" if the download was initiated by the user
         let lastFullscreenViewTimestamp: UInt64?
         switch priority {
@@ -682,13 +650,11 @@ public struct AttachmentStore {
             attachment.streamInfo = streamInfo
             attachment.plaintextHash = streamInfo.plaintextHash
             attachment.latestTransitTierInfo = latestTransitTierInfo
-            attachment.mediaName = streamInfo.mediaName
             attachment.lastFullscreenViewTimestamp = lastFullscreenViewTimestamp ?? attachment.lastFullscreenViewTimestamp
         case .mediaTierFullsize:
             attachment.streamInfo = streamInfo
             attachment.plaintextHash = streamInfo.plaintextHash
             attachment.latestTransitTierInfo = latestTransitTierInfo
-            attachment.mediaName = streamInfo.mediaName
             if var mediaTierInfo = attachment.mediaTierInfo {
                 // Wipe the last download attempt time; its now succeeded.
                 mediaTierInfo.lastDownloadAttemptTimestamp = nil
@@ -735,7 +701,6 @@ public struct AttachmentStore {
         attachment.latestTransitTierInfo = latestTransitTierInfo
         attachment.originalTransitTierInfo = originalTransitTierInfo
         attachment.plaintextHash = streamInfo.plaintextHash
-        attachment.mediaName = streamInfo.mediaName
         attachment.mediaTierInfo = mediaTierInfo
         attachment.thumbnailMediaTierInfo = thumbnailMediaTierInfo
         attachment.localRelativeFilePathThumbnail = nil
@@ -824,11 +789,9 @@ public struct AttachmentStore {
     public func saveMediaTierInfo(
         attachment: Attachment,
         mediaTierInfo: Attachment.MediaTierInfo,
-        mediaName: String,
         tx: DBWriteTransaction,
     ) {
         attachment.mediaTierInfo = mediaTierInfo
-        attachment.mediaName = mediaName
 
         let record = Attachment.Record(attachment: attachment)
         failIfThrows {
@@ -839,10 +802,8 @@ public struct AttachmentStore {
     func saveMediaTierThumbnailInfo(
         attachment: Attachment,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
-        mediaName: String,
         tx: DBWriteTransaction,
     ) {
-        attachment.mediaName = mediaName
         attachment.thumbnailMediaTierInfo = thumbnailMediaTierInfo
 
         let record = Attachment.Record(attachment: attachment)
@@ -1079,17 +1040,6 @@ public struct AttachmentStore {
             )?.sqliteId
         {
             throw AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId: existingAttachmentId)
-        }
-
-        // Find if there is already an attachment with the same media name.
-        if
-            let mediaName = attachmentRecord.mediaName,
-            let existingAttachmentId = fetchAttachmentRecord(
-                mediaName: mediaName,
-                tx: tx,
-            )?.sqliteId
-        {
-            throw AttachmentInsertError.duplicateMediaName(existingAttachmentId: existingAttachmentId)
         }
 
         let attachment = failIfThrows {

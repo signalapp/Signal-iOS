@@ -32,7 +32,7 @@ extension Attachment {
         let latestTransitCiphertextDigest: Data?
         @DBUInt64Optional
         var latestTransitLastDownloadAttemptTimestamp: UInt64?
-        let mediaName: String?
+        private let _mediaName: String? // deprecated, always NULL
         let mediaTierCdnNumber: UInt32?
         let mediaTierUnencryptedByteCount: UInt32?
         let mediaTierUploadEra: String?
@@ -66,6 +66,12 @@ extension Attachment {
         let originalTransitTierIncrementalMac: Data?
         let originalTransitTierIncrementalMacChunkSize: UInt32?
 
+        var mediaName: String? {
+            return self.plaintextHash.map {
+                return Attachment.mediaName(plaintextHash: $0, encryptionKey: self.encryptionKey)
+            }
+        }
+
         public var allFilesRelativePaths: [String] {
             return [
                 localRelativeFilePath,
@@ -94,7 +100,7 @@ extension Attachment {
             case latestTransitUnencryptedByteCount = "transitUnencryptedByteCount"
             case latestTransitCiphertextDigest = "transitDigestSHA256Ciphertext"
             case latestTransitLastDownloadAttemptTimestamp = "lastTransitDownloadAttemptTimestamp"
-            case mediaName
+            case _mediaName = "mediaName"
             case mediaTierCdnNumber
             case mediaTierUnencryptedByteCount
             case mediaTierUploadEra
@@ -143,7 +149,6 @@ extension Attachment {
                 contentType: attachment.contentType,
                 encryptionKey: attachment.encryptionKey,
                 plaintextHash: attachment.plaintextHash,
-                mediaName: attachment.mediaName,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
                 streamInfo: attachment.streamInfo,
                 latestTransitTierInfo: attachment.latestTransitTierInfo,
@@ -162,7 +167,6 @@ extension Attachment {
             contentType: Attachment.ContentType,
             encryptionKey: Data,
             plaintextHash: Data?,
-            mediaName: String?,
             localRelativeFilePathThumbnail: String?,
             streamInfo: Attachment.StreamInfo?,
             latestTransitTierInfo: Attachment.TransitTierInfo?,
@@ -209,7 +213,7 @@ extension Attachment {
             self.originalTransitTierIncrementalMac = originalTransitTierInfo?.incrementalMacInfo?.mac
             self.originalTransitTierIncrementalMacChunkSize = originalTransitTierInfo?.incrementalMacInfo?.chunkSize
 
-            self.mediaName = mediaName
+            self._mediaName = nil
             self.mediaTierCdnNumber = mediaTierInfo?.cdnNumber
             self.mediaTierUnencryptedByteCount = mediaTierInfo?.unencryptedByteCount
             self.mediaTierIncrementalMac = mediaTierInfo?.incrementalMacInfo?.mac
@@ -248,7 +252,6 @@ extension Attachment {
                 contentType: contentType,
                 encryptionKey: encryptionKey,
                 plaintextHash: nil,
-                mediaName: nil,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
                 latestTransitTierInfo: latestTransitTierInfo,
@@ -268,7 +271,6 @@ extension Attachment {
             encryptionKey: Data,
             streamInfo: Attachment.StreamInfo,
             plaintextHash: Data,
-            mediaName: String,
         ) -> Record {
             return Record(
                 sqliteId: nil,
@@ -277,7 +279,6 @@ extension Attachment {
                 contentType: contentType,
                 encryptionKey: encryptionKey,
                 plaintextHash: plaintextHash,
-                mediaName: mediaName,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: streamInfo,
                 latestTransitTierInfo: nil,
@@ -306,9 +307,6 @@ extension Attachment {
                 contentType: contentType,
                 encryptionKey: encryptionKey,
                 plaintextHash: plaintextHash,
-                mediaName: plaintextHash.map {
-                    return Attachment.mediaName(plaintextHash: $0, encryptionKey: encryptionKey)
-                },
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
                 latestTransitTierInfo: latestTransitTierInfo,
@@ -335,7 +333,6 @@ extension Attachment {
                 // encryption key we use is irrelevant. Just generate a new one.
                 encryptionKey: AttachmentKey.generate().combinedKey,
                 plaintextHash: nil,
-                mediaName: nil,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
                 latestTransitTierInfo: nil,
@@ -362,7 +359,6 @@ extension Attachment {
                 contentType: thumbnailContentType,
                 encryptionKey: thumbnailEncryptionKey,
                 plaintextHash: nil,
-                mediaName: nil,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
                 latestTransitTierInfo: thumbnailTransitTierInfo,

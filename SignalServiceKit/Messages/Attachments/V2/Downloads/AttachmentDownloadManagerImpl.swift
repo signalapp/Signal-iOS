@@ -2415,7 +2415,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         encryptionKey: pendingAttachment.encryptionKey,
                         streamInfo: streamInfo,
                         plaintextHash: pendingAttachment.plaintextHash,
-                        mediaName: pendingAttachment.mediaName,
                     )
 
                     let attachment = try self.attachmentStore.insert(
@@ -2589,7 +2588,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         encryptionKey: pendingThumbnailAttachment.encryptionKey,
                         streamInfo: streamInfo,
                         plaintextHash: pendingThumbnailAttachment.plaintextHash,
-                        mediaName: pendingThumbnailAttachment.mediaName,
                     )
 
                     let newAttachment = try self.attachmentStore.insert(

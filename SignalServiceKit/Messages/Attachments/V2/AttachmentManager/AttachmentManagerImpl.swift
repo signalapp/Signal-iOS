@@ -463,8 +463,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 // duplicate to the first attachment), but this does drop cdn info if,
                 // for example, this copy had valid cdn info and the older one did not.
                 // It is on the exporter to dedupe and merge as needed so this doesn't happen.
-                fallthrough
-            case .duplicateMediaName(let existingAttachmentId):
+
                 // We already have an attachment with the same mediaName (likely from this same
                 // backup). Just point the reference at the existing attachment.
                 attachmentStore.addReference(
@@ -606,7 +605,6 @@ public class AttachmentManagerImpl: AttachmentManager {
                 encryptionKey: pendingAttachment.encryptionKey,
                 streamInfo: streamInfo,
                 plaintextHash: pendingAttachment.plaintextHash,
-                mediaName: pendingAttachment.mediaName,
             )
 
             let hasOrphanRecord = orphanedAttachmentStore.orphanAttachmentExists(
@@ -729,11 +727,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             switch error {
             case .duplicatePlaintextHash(let id):
                 existingAttachmentId = id
-            case .duplicateMediaName(let id):
-                owsFailDebug("How did we match mediaName when using a random encryption key?")
-                existingAttachmentId = id
             }
-
             // Already have an attachment with the same plaintext hash or media name!
             // Move all existing references to that copy, instead.
             // Doing so should delete the original attachment pointer.
@@ -799,9 +793,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     ) throws -> Attachment.IDType {
         let existingAttachmentId: Attachment.IDType
         switch error {
-        case
-            .duplicatePlaintextHash(let id),
-            .duplicateMediaName(let id):
+        case .duplicatePlaintextHash(let id):
             existingAttachmentId = id
         }
 

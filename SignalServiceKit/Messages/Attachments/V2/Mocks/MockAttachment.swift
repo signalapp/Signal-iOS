@@ -10,9 +10,9 @@ import Foundation
 // MARK: - Infos
 
 extension Attachment.StreamInfo {
-    public static func mock(
+    static func mock(
         plaintextHash: Data = Randomness.generateRandomBytes(32),
-        mediaName: String = UUID().uuidString,
+        encryptionKey: AttachmentKey = .generate(),
         encryptedByteCount: UInt32 = .random(in: 0..<95_000_000),
         unencryptedByteCount: UInt32 = .random(in: 0..<95_000_000),
         ciphertextDigest: Data = Randomness.generateRandomBytes(32),
@@ -20,7 +20,7 @@ extension Attachment.StreamInfo {
     ) -> Attachment.StreamInfo {
         return Attachment.StreamInfo(
             plaintextHash: plaintextHash,
-            mediaName: mediaName,
+            encryptionKey: encryptionKey.combinedKey,
             encryptedByteCount: encryptedByteCount,
             unencryptedByteCount: unencryptedByteCount,
             cachedMediaSizePixels: nil,
@@ -109,22 +109,23 @@ extension Attachment.Record {
         )
     }
 
-    public static func mockStream(
+    static func mockStream(
         blurHash: String? = UUID().uuidString,
         mimeType: String = MimeType.imageJpeg.rawValue,
-        encryptionKey: Data = Randomness.generateRandomBytes(64),
-        plaintextHash: Data? = nil,
-        mediaName: String? = nil,
-        streamInfo: Attachment.StreamInfo = .mock(),
+        encryptionKey: AttachmentKey = .generate(),
+        plaintextHash: Data = Randomness.generateRandomBytes(32),
+        streamInfo: Attachment.StreamInfo? = nil,
     ) -> Attachment.Record {
         return .forInsertingStream(
             blurHash: blurHash,
             mimeType: mimeType,
             contentType: Attachment.ContentType(mimeType: mimeType),
-            encryptionKey: encryptionKey,
-            streamInfo: streamInfo,
-            plaintextHash: plaintextHash ?? streamInfo.plaintextHash,
-            mediaName: mediaName ?? streamInfo.mediaName,
+            encryptionKey: encryptionKey.combinedKey,
+            streamInfo: streamInfo ?? .mock(
+                plaintextHash: plaintextHash,
+                encryptionKey: encryptionKey,
+            ),
+            plaintextHash: plaintextHash,
         )
     }
 }
@@ -136,7 +137,6 @@ extension Attachment {
         mimeType: String = MimeType.applicationOctetStream.rawValue,
         encryptionKey: Data = Randomness.generateRandomBytes(64),
         plaintextHash: Data? = nil,
-        mediaName: String? = nil,
         streamInfo: Attachment.StreamInfo? = nil,
         transitTierInfo: Attachment.TransitTierInfo? = nil,
         mediaTierInfo: Attachment.MediaTierInfo? = nil,
@@ -152,7 +152,6 @@ extension Attachment {
             contentType: Attachment.ContentType(mimeType: mimeType),
             encryptionKey: encryptionKey,
             plaintextHash: plaintextHash ?? streamInfo?.plaintextHash,
-            mediaName: mediaName ?? streamInfo?.mediaName,
             localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,
             streamInfo: streamInfo,
             latestTransitTierInfo: transitTierInfo,
@@ -169,10 +168,9 @@ extension Attachment {
 
 extension AttachmentStream {
 
-    public static func mock(
+    static func mock(
         blurHash: String? = nil,
         mimeType: String = MimeType.applicationOctetStream.rawValue,
-        mediaName: String? = nil,
         streamInfo: Attachment.StreamInfo = .mock(),
         transitTierInfo: Attachment.TransitTierInfo? = nil,
         mediaTierInfo: Attachment.MediaTierInfo? = nil,
@@ -182,7 +180,6 @@ extension AttachmentStream {
         let attachment = Attachment.mock(
             blurHash: blurHash,
             mimeType: mimeType,
-            mediaName: mediaName,
             streamInfo: streamInfo,
             transitTierInfo: transitTierInfo,
             mediaTierInfo: mediaTierInfo,

@@ -91,12 +91,14 @@ public class BackupListMediaManagerTests {
         // Case 1: Attachment exists locally but not on CDN
         let localOnlyIds = await db.awaitableWrite { tx in
             return (0..<numAttachmentsPerCase).map { _ in
+                let plaintextHash = Randomness.generateRandomBytes(32)
                 return insertAttachment(
-                    mediaName: UUID().uuidString,
+                    plaintextHash: plaintextHash,
+                    encryptionKey: .generate(),
                     mediaTierInfo: .init(
                         cdnNumber: 1,
                         unencryptedByteCount: 100,
-                        plaintextHash: UUID().data,
+                        plaintextHash: plaintextHash,
                         incrementalMacInfo: nil,
                         uploadEra: localUploadEra,
                         lastDownloadAttemptTimestamp: nil,
@@ -111,7 +113,7 @@ public class BackupListMediaManagerTests {
         let remoteOnlyCdnNumberMedia = (0..<numAttachmentsPerCase).map { _ in
             return BackupArchive.Response.StoredMedia(
                 cdn: orphanCdnNumber,
-                mediaId: UUID().uuidString,
+                mediaId: Randomness.generateRandomBytes(15).hexadecimalString,
                 objectLength: 100,
             )
         }
@@ -124,7 +126,12 @@ public class BackupListMediaManagerTests {
         var discoveredCdnNumberMedia = [BackupArchive.Response.StoredMedia]()
         let discoveredCdnNumberIds = await db.awaitableWrite { tx in
             return (0..<numAttachmentsPerCase).map { _ in
-                let mediaName = UUID().uuidString
+                let plaintextHash = Randomness.generateRandomBytes(32)
+                let encryptionKey = AttachmentKey.generate()
+                let mediaName = Attachment.mediaName(
+                    plaintextHash: plaintextHash,
+                    encryptionKey: encryptionKey.combinedKey,
+                )
                 let fullsizeMediaId = try! mediaRootBackupKey.deriveMediaId(mediaName)
                 let thumbnailMediaId = try! mediaRootBackupKey.deriveMediaId(AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName))
                 for mediaId in [fullsizeMediaId, thumbnailMediaId] {
@@ -135,7 +142,8 @@ public class BackupListMediaManagerTests {
                     ))
                 }
                 return insertAttachment(
-                    mediaName: mediaName,
+                    plaintextHash: plaintextHash,
+                    encryptionKey: encryptionKey,
                     mediaTierInfo: nil,
                     tx: tx,
                 )
@@ -147,7 +155,12 @@ public class BackupListMediaManagerTests {
         var matchingCdnNumberMedia = [BackupArchive.Response.StoredMedia]()
         let matchingCdnNumberIds = await db.awaitableWrite { tx in
             return (0..<numAttachmentsPerCase).map { _ in
-                let mediaName = UUID().uuidString
+                let plaintextHash = Randomness.generateRandomBytes(32)
+                let encryptionKey = AttachmentKey.generate()
+                let mediaName = Attachment.mediaName(
+                    plaintextHash: plaintextHash,
+                    encryptionKey: encryptionKey.combinedKey,
+                )
                 let fullsizeMediaId = try! mediaRootBackupKey.deriveMediaId(mediaName)
                 let thumbnailMediaId = try! mediaRootBackupKey.deriveMediaId(AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName))
                 for mediaId in [fullsizeMediaId, thumbnailMediaId] {
@@ -163,11 +176,12 @@ public class BackupListMediaManagerTests {
                     ))
                 }
                 return insertAttachment(
-                    mediaName: mediaName,
+                    plaintextHash: plaintextHash,
+                    encryptionKey: encryptionKey,
                     mediaTierInfo: .init(
                         cdnNumber: matchingCdnNumber,
                         unencryptedByteCount: 100,
-                        plaintextHash: UUID().data,
+                        plaintextHash: plaintextHash,
                         incrementalMacInfo: nil,
                         uploadEra: localUploadEra,
                         lastDownloadAttemptTimestamp: nil,
@@ -181,7 +195,12 @@ public class BackupListMediaManagerTests {
         var nonMatchingCdnNumberMedia = [BackupArchive.Response.StoredMedia]()
         let nonMatchingCdnNumberIds = await db.awaitableWrite { tx in
             return (0..<numAttachmentsPerCase).map { _ in
-                let mediaName = UUID().uuidString
+                let plaintextHash = Randomness.generateRandomBytes(32)
+                let encryptionKey = AttachmentKey.generate()
+                let mediaName = Attachment.mediaName(
+                    plaintextHash: plaintextHash,
+                    encryptionKey: encryptionKey.combinedKey,
+                )
                 let fullsizeMediaId = try! mediaRootBackupKey.deriveMediaId(mediaName)
                 let thumbnailMediaId = try! mediaRootBackupKey.deriveMediaId(AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName))
                 for mediaId in [fullsizeMediaId, thumbnailMediaId] {
@@ -199,11 +218,12 @@ public class BackupListMediaManagerTests {
                     ))
                 }
                 return insertAttachment(
-                    mediaName: mediaName,
+                    plaintextHash: plaintextHash,
+                    encryptionKey: encryptionKey,
                     mediaTierInfo: .init(
                         cdnNumber: matchingCdnNumber,
                         unencryptedByteCount: 100,
-                        plaintextHash: UUID().data,
+                        plaintextHash: plaintextHash,
                         incrementalMacInfo: nil,
                         uploadEra: localUploadEra,
                         lastDownloadAttemptTimestamp: nil,
@@ -329,14 +349,20 @@ public class BackupListMediaManagerTests {
     typealias Attachment = SignalServiceKit.Attachment
 
     private func insertAttachment(
-        mediaName: String,
+        plaintextHash: Data,
+        encryptionKey: AttachmentKey,
         mediaTierInfo: Attachment.MediaTierInfo?,
         tx: DBWriteTransaction,
     ) -> Attachment.IDType {
+        owsPrecondition(mediaTierInfo == nil || mediaTierInfo!.plaintextHash == plaintextHash)
+
         let thread = TSThread(uniqueId: UUID().uuidString)
         try! thread.insert(tx.database)
 
-        var attachmentRecord = Attachment.Record.mockStream(mediaName: mediaName)
+        var attachmentRecord = Attachment.Record.mockStream(
+            encryptionKey: encryptionKey,
+            plaintextHash: plaintextHash,
+        )
         try! attachmentRecord.insert(tx.database)
 
         if let mediaTierInfo {

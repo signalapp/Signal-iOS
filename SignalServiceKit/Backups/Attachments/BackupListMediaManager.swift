@@ -394,7 +394,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
 
                     var query = Attachment.Record
                         .order(Column(Attachment.Record.CodingKeys.sqliteId).asc)
-                        .filter(Column(Attachment.Record.CodingKeys.mediaName) != nil)
+                        .filter(Column(Attachment.Record.CodingKeys.plaintextHash) != nil)
 
                     if let id = txContext.lastEnumeratedAttachmentId {
                         query = query
@@ -761,7 +761,6 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
             attachment,
             listedMedia: matchedListedMedia,
             isThumbnail: isThumbnail,
-            fullsizeMediaName: fullsizeMediaName,
             uploadEraAtStartOfListMedia: uploadEraAtStartOfListMedia,
             currentBackupPlan: currentBackupPlan,
             remoteConfig: remoteConfig,
@@ -950,7 +949,6 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         _ attachment: Attachment,
         listedMedia: ListedBackupMediaObject,
         isThumbnail: Bool,
-        fullsizeMediaName: String,
         uploadEraAtStartOfListMedia: String,
         currentBackupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
@@ -962,7 +960,6 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
             from: listedMedia,
             isThumbnail: isThumbnail,
             uploadEraAtStartOfListMedia: uploadEraAtStartOfListMedia,
-            fullsizeMediaName: fullsizeMediaName,
             tx: tx,
         )
 
@@ -1015,7 +1012,6 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         from listedMedia: ListedBackupMediaObject,
         isThumbnail: Bool,
         uploadEraAtStartOfListMedia: String,
-        fullsizeMediaName: String,
         tx: DBWriteTransaction,
     ) -> Bool {
         if isThumbnail {
@@ -1027,7 +1023,6 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                     uploadEra: uploadEraAtStartOfListMedia,
                     lastDownloadAttemptTimestamp: nil,
                 ),
-                mediaName: fullsizeMediaName,
                 tx: tx,
             )
             return true
@@ -1068,7 +1063,6 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                 uploadEra: uploadEraAtStartOfListMedia,
                 lastDownloadAttemptTimestamp: nil,
             ),
-            mediaName: fullsizeMediaName,
             tx: tx,
         )
         return true

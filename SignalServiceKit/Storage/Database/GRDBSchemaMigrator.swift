@@ -334,6 +334,7 @@ public class GRDBSchemaMigrator {
         case purgeMyStoryDeletedAtTimestamp
         case addRecoverablePlaceholderExpirationIndex
         case backfillRecoverablePlaceholderErrorType
+        case clearAttachmentMediaName
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -457,7 +458,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 144
+    public static let grdbSchemaVersionLatest: UInt = 145
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5217,6 +5218,29 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.backfillRecoverablePlaceholderErrorType) { tx in
             try Self.backfillRecoverablePlaceholderErrorType(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.clearAttachmentMediaName) { tx in
+            try tx.database.execute(sql: "DROP TRIGGER IF EXISTS __Attachment_ad_backup_fullsize")
+            try tx.database.execute(sql: "DROP TRIGGER IF EXISTS __Attachment_ad_backup_thumbnail")
+            try tx.database.execute(sql: "UPDATE Attachment SET mediaName = NULL")
+            try tx.database.execute(sql: """
+            CREATE TRIGGER "__Attachment_ad_backup_fullsize" AFTER DELETE ON "Attachment"
+                WHEN (OLD.mediaTierCdnNumber IS NOT NULL AND OLD.sha256ContentHash IS NOT NULL)
+            BEGIN
+                INSERT INTO OrphanedBackupAttachment (cdnNumber, mediaName, mediaId, type)
+                VALUES (OLD.mediaTierCdnNumber, LOWER(HEX(OLD.sha256ContentHash || OLD.encryptionKey)), NULL, 0);
+            END
+            """)
+            try tx.database.execute(sql: """
+            CREATE TRIGGER "__Attachment_ad_backup_thumbnail" AFTER DELETE ON "Attachment"
+                WHEN (OLD.thumbnailCdnNumber IS NOT NULL AND OLD.sha256ContentHash IS NOT NULL)
+            BEGIN
+                INSERT INTO OrphanedBackupAttachment (cdnNumber, mediaName, mediaId, type)
+                VALUES (OLD.thumbnailCdnNumber, LOWER(HEX(OLD.sha256ContentHash || OLD.encryptionKey)), NULL, 1);
+            END;
+            """)
             return .success(())
         }
 

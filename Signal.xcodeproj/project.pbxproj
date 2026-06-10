@@ -856,6 +856,7 @@
 		50D839512F916A3700EE009A /* MessageRequestDecliner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D839502F916A3700EE009A /* MessageRequestDecliner.swift */; };
 		50D8796A2A16D2C20031345D /* MessageLoaderBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D879692A16D2C20031345D /* MessageLoaderBatchTest.swift */; };
 		50D9CD8D2C52D78000273D6C /* StoryRecipientManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D9CD8C2C52D78000273D6C /* StoryRecipientManager.swift */; };
+		50DAF7E02FD87BEC00BE7430 /* OrphanedBackupAttachmentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50DAF7DF2FD87BEC00BE7430 /* OrphanedBackupAttachmentTest.swift */; };
 		50DCCBFA2F1817280024D124 /* DisappearingMessagesConfigurationMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50DCCBF92F1817280024D124 /* DisappearingMessagesConfigurationMessage.swift */; };
 		50DCCBFC2F181A790024D124 /* ProfileKeyMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50DCCBFB2F181A790024D124 /* ProfileKeyMessage.swift */; };
 		50DCCBFE2F1820600024D124 /* OutgoingSenderKeyDistributionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50DCCBFD2F1820600024D124 /* OutgoingSenderKeyDistributionMessage.swift */; };
@@ -5121,6 +5122,7 @@
 		50D839502F916A3700EE009A /* MessageRequestDecliner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestDecliner.swift; sourceTree = "<group>"; };
 		50D879692A16D2C20031345D /* MessageLoaderBatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageLoaderBatchTest.swift; sourceTree = "<group>"; };
 		50D9CD8C2C52D78000273D6C /* StoryRecipientManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryRecipientManager.swift; sourceTree = "<group>"; };
+		50DAF7DF2FD87BEC00BE7430 /* OrphanedBackupAttachmentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedBackupAttachmentTest.swift; sourceTree = "<group>"; };
 		50DCCBF92F1817280024D124 /* DisappearingMessagesConfigurationMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisappearingMessagesConfigurationMessage.swift; sourceTree = "<group>"; };
 		50DCCBFB2F181A790024D124 /* ProfileKeyMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileKeyMessage.swift; sourceTree = "<group>"; };
 		50DCCBFD2F1820600024D124 /* OutgoingSenderKeyDistributionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingSenderKeyDistributionMessage.swift; sourceTree = "<group>"; };
@@ -9898,6 +9900,22 @@
 			path = Debugging;
 			sourceTree = "<group>";
 		};
+		50DAF7E12FD87BFD00BE7430 /* Backups */ = {
+			isa = PBXGroup;
+			children = (
+				50DAF7E22FD87C7000BE7430 /* Attachments */,
+			);
+			path = Backups;
+			sourceTree = "<group>";
+		};
+		50DAF7E22FD87C7000BE7430 /* Attachments */ = {
+			isa = PBXGroup;
+			children = (
+				50DAF7DF2FD87BEC00BE7430 /* OrphanedBackupAttachmentTest.swift */,
+			);
+			path = Attachments;
+			sourceTree = "<group>";
+		};
 		50E0198E2CC2491A0063EA48 /* Concurrency */ = {
 			isa = PBXGroup;
 			children = (
@@ -14633,6 +14651,7 @@
 				F94261FF289B1B5400460798 /* Account */,
 				D92EFDED2F69B9D00031D257 /* AttachmentBackfill */,
 				50ED28002F0EDAFB00E57C54 /* Attachments */,
+				50DAF7E12FD87BFD00BE7430 /* Backups */,
 				F945FE4B298481D800C835C7 /* Calls */,
 				D985D86229B91C2B0087C90C /* ChangePhoneNumber */,
 				50E0198E2CC2491A0063EA48 /* Concurrency */,
@@ -20171,6 +20190,7 @@
 				D979CC3A2AD3964E006AAC49 /* Numbers+Random.swift in Sources */,
 				D95E149D2E3D22FD00B5B70B /* ObjectRetainerTest.swift in Sources */,
 				663D02DF2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift in Sources */,
+				50DAF7E02FD87BEC00BE7430 /* OrphanedBackupAttachmentTest.swift in Sources */,
 				D9AA37A02A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift in Sources */,
 				D925C7BB2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift in Sources */,
 				D9D3216A2A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift in Sources */,

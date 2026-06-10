@@ -58,7 +58,11 @@ public class Attachment {
 
     /// MediaName used for backups (but assigned even if backups disabled).
     /// Nonnull if downloaded OR if restored from a backup.
-    public var mediaName: String?
+    public var mediaName: String? {
+        return self.plaintextHash.map {
+            return Attachment.mediaName(plaintextHash: $0, encryptionKey: self.encryptionKey)
+        }
+    }
 
     /// If null, the resource has not been uploaded to the media tier.
     public var mediaTierInfo: MediaTierInfo?
@@ -146,7 +150,7 @@ public class Attachment {
         init(pendingAttachment: PendingAttachment) {
             self.init(
                 plaintextHash: pendingAttachment.plaintextHash,
-                mediaName: pendingAttachment.mediaName,
+                encryptionKey: pendingAttachment.encryptionKey,
                 encryptedByteCount: pendingAttachment.encryptedByteCount,
                 unencryptedByteCount: pendingAttachment.unencryptedByteCount,
                 cachedMediaSizePixels: pendingAttachment.mediaPixelSize,
@@ -161,7 +165,7 @@ public class Attachment {
 
         init(
             plaintextHash: Data,
-            mediaName: String,
+            encryptionKey: Data,
             encryptedByteCount: UInt32,
             unencryptedByteCount: UInt32,
             cachedMediaSizePixels: CGSize?,
@@ -173,7 +177,7 @@ public class Attachment {
             localRelativeFilePath: String,
         ) {
             self.plaintextHash = plaintextHash
-            self.mediaName = mediaName
+            self.mediaName = Attachment.mediaName(plaintextHash: plaintextHash, encryptionKey: encryptionKey)
             self.encryptedByteCount = encryptedByteCount
             self.unencryptedByteCount = unencryptedByteCount
             self.cachedMediaSizePixels = cachedMediaSizePixels
@@ -279,13 +283,11 @@ public class Attachment {
         self.encryptionKey = record.encryptionKey
         self.originalAttachmentIdForQuotedReply = record.originalAttachmentIdForQuotedReply
         self.plaintextHash = record.plaintextHash
-        self.mediaName = record.mediaName
         self.localRelativeFilePathThumbnail = record.localRelativeFilePathThumbnail
         self.lastFullscreenViewTimestamp = record.lastFullscreenViewTimestamp
 
         if
             let plaintextHash = record.plaintextHash,
-            let mediaName = record.mediaName,
             let encryptedByteCount = record.encryptedByteCount,
             let unencryptedByteCount = record.unencryptedByteCount,
             let ciphertextDigest = record.ciphertextDigest,
@@ -293,7 +295,7 @@ public class Attachment {
         {
             self.streamInfo = StreamInfo(
                 plaintextHash: plaintextHash,
-                mediaName: mediaName,
+                encryptionKey: self.encryptionKey,
                 encryptedByteCount: encryptedByteCount,
                 unencryptedByteCount: unencryptedByteCount,
                 cachedMediaSizePixels: {

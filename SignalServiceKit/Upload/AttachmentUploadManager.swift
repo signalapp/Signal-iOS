@@ -439,7 +439,6 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             attachmentStore.saveMediaTierInfo(
                 attachment: attachmentStream.attachment,
                 mediaTierInfo: mediaTierInfo,
-                mediaName: attachmentStream.mediaName,
                 tx: tx,
             )
 
@@ -553,7 +552,6 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             attachmentStore.saveMediaTierThumbnailInfo(
                 attachment: attachmentStream.attachment,
                 thumbnailMediaTierInfo: thumbnailInfo,
-                mediaName: attachmentStream.mediaName,
                 tx: tx,
             )
 

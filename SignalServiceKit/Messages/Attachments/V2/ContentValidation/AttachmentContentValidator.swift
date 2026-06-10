@@ -47,10 +47,7 @@ public struct PendingAttachment {
     }
 
     var mediaName: String {
-        Attachment.mediaName(
-            plaintextHash: plaintextHash,
-            encryptionKey: encryptionKey,
-        )
+        return Attachment.mediaName(plaintextHash: self.plaintextHash, encryptionKey: self.encryptionKey)
     }
 
     mutating func removeBorderlessRenderingFlagIfPresent() {
