@@ -153,6 +153,7 @@ public enum AppNotificationCategory: String, CaseIterable {
     case incomingMessageFromNoLongerVerifiedIdentity = "Signal.AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity"
     case incomingReactionWithActions_CanReply = "Signal.AppNotificationCategory.incomingReactionWithActions"
     case incomingReactionWithActions_CannotReply = "Signal.AppNotificationCategory.incomingReactionWithActionsNoReply"
+    case incomingReactionWithoutActions = "Signal.AppNotificationCategory.incomingReaction"
     case infoOrErrorMessage = "Signal.AppNotificationCategory.infoOrErrorMessage"
     case missedCallWithActions = "Signal.AppNotificationCategory.missedCallWithActions"
     case missedCallWithoutActions = "Signal.AppNotificationCategory.missedCall"
@@ -179,6 +180,7 @@ public enum AppNotificationCategory: String, CaseIterable {
             .incomingMessageFromNoLongerVerifiedIdentity,
             .incomingReactionWithActions_CanReply,
             .incomingReactionWithActions_CannotReply,
+            .incomingReactionWithoutActions,
             .infoOrErrorMessage,
             .missedCallWithActions,
             .missedCallWithoutActions,
@@ -212,7 +214,8 @@ public enum AppNotificationCategory: String, CaseIterable {
         case .incomingReactionWithActions_CannotReply:
             return [.markAsRead]
         case .incomingMessageWithoutActions,
-             .incomingMessageFromNoLongerVerifiedIdentity:
+             .incomingMessageFromNoLongerVerifiedIdentity,
+             .incomingReactionWithoutActions:
             return []
         case .infoOrErrorMessage:
             return []
@@ -272,8 +275,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
         return preferences.notificationPreviewType(tx: tx)
     }
 
-    static func shouldShowActions(for previewType: NotificationType) -> Bool {
-        return previewType == .namePreview
+    private static func shouldShowActions(for previewType: NotificationType, tx: DBReadTransaction) -> Bool {
+        return previewType == .namePreview && !ScreenLock.shared.isScreenLockEnabled(tx: tx)
     }
 
     // MARK: - Notifications Permissions
@@ -335,7 +338,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             return CallPreview(
                 notificationTitle: $0,
                 threadIdentifier: thread.rawValue.uniqueId,
-                shouldShowActions: Self.shouldShowActions(for: previewType),
+                shouldShowActions: Self.shouldShowActions(for: previewType, tx: tx),
             )
         }
     }
@@ -636,7 +639,6 @@ public class NotificationPresenterImpl: NotificationPresenter {
         guard previewType == .namePreview else {
             return
         }
-        owsPrecondition(Self.shouldShowActions(for: previewType))
 
         let notificationTitle = self.notificationTitle(
             for: notifiableThread,
@@ -700,7 +702,6 @@ public class NotificationPresenterImpl: NotificationPresenter {
         guard previewType == .namePreview else {
             return
         }
-        owsPrecondition(Self.shouldShowActions(for: previewType))
 
         let notificationTitle = self.notificationTitle(
             for: notifiableThread,
@@ -897,7 +898,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         let category: AppNotificationCategory
         if didIdentityChange {
             category = .incomingMessageFromNoLongerVerifiedIdentity
-        } else if !Self.shouldShowActions(for: previewType) {
+        } else if !Self.shouldShowActions(for: previewType, tx: transaction) {
             category = .incomingMessageWithoutActions
         } else if incomingMessage.isGroupStoryReply {
             category = .incomingGroupStoryReply
@@ -956,7 +957,6 @@ public class NotificationPresenterImpl: NotificationPresenter {
         guard previewType == .namePreview else {
             return
         }
-        owsPrecondition(Self.shouldShowActions(for: previewType))
 
         let notificationTitle = self.notificationTitle(
             for: notifiableThread,
@@ -1033,6 +1033,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
         let category: AppNotificationCategory
         if didIdentityChange {
             category = .incomingMessageFromNoLongerVerifiedIdentity
+        } else if !Self.shouldShowActions(for: previewType, tx: transaction) {
+            category = .incomingReactionWithoutActions
         } else {
             category = (
                 thread.canSendChatMessagesToThread()

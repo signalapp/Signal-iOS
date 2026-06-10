@@ -143,7 +143,8 @@ public class UserNotificationPresenter {
                 || category == .incomingMessageWithActions_CannotReply
                 || category == .incomingMessageWithoutActions
                 || category == .incomingReactionWithActions_CanReply
-                || category == .incomingReactionWithActions_CannotReply,
+                || category == .incomingReactionWithActions_CannotReply
+                || category == .incomingReactionWithoutActions,
         )
         if checkForCancel, !isMainAppAndActive, hasReceivedSyncMessageRecentlyWithSneakyTransaction {
             assert(userInfo.threadId != nil)
@@ -239,6 +240,7 @@ public class UserNotificationPresenter {
              .incomingMessageWithoutActions,
              .incomingReactionWithActions_CanReply,
              .incomingReactionWithActions_CannotReply,
+             .incomingReactionWithoutActions,
              .infoOrErrorMessage,
              .pollEndNotification,
              .pollVoteNotification:
