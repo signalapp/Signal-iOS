@@ -110,8 +110,8 @@ public struct ExperienceUpgradeStore {
              .pinReminder,
              .contactPermissionReminder,
              .backupKeyReminder,
-             .enableBackupsReminder,
-             .haveEnabledBackupsNotification,
+             .backupsUpsellReminder,
+             .backupsEnabledRecentlyNotification,
              .unrecognized:
             return
         case .remoteMegaphone(let megaphone):

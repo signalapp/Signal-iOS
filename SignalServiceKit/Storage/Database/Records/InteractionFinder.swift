@@ -1097,14 +1097,18 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    public class func outgoingAndIncomingMessageCount(transaction: DBReadTransaction, limit: Int) -> UInt {
+    public class func outgoingAndIncomingMessageCount(
+        limit: Int,
+        tx: DBReadTransaction,
+    ) -> UInt {
         let sql = """
         SELECT COUNT(*)
         FROM (
-         SELECT * FROM \(InteractionRecord.databaseTableName)
-        \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
-        WHERE \(interactionColumn: .recordType) IN (?, ?)
-        LIMIT ?)
+            SELECT id FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
+            WHERE \(interactionColumn: .recordType) IN (?, ?)
+            LIMIT ?
+        )
         """
         let arguments: StatementArguments = [
             SDSRecordType.outgoingMessage.rawValue,
@@ -1114,7 +1118,7 @@ public class InteractionFinder: NSObject {
 
         return failIfThrows {
             return try UInt.fetchOne(
-                transaction.database,
+                tx.database,
                 sql: sql,
                 arguments: arguments,
             ) ?? 0

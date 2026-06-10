@@ -153,6 +153,8 @@ class BackupPlanManagerImpl: BackupPlanManager {
         if oldBackupPlan != newBackupPlan {
             tx.addSyncCompletion {
                 NotificationCenter.default.post(name: .backupPlanChanged, object: nil)
+                NotificationCenter.default.postOnMainThread(name: .megaphoneStateDidChange, object: nil)
+
                 Task {
                     // This is run after the write transaction that updates the backup plan
                     // completes.  This allows the download progress observer to recalculate

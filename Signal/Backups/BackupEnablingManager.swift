@@ -9,6 +9,11 @@ import StoreKit
 import UIKit
 
 final class BackupEnablingManager {
+    enum PlanSelection {
+        case free
+        case paid
+    }
+
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupDisablingManager: BackupDisablingManager
     private let backupIdService: BackupIdService
@@ -55,7 +60,7 @@ final class BackupEnablingManager {
     @MainActor
     func enableBackups(
         fromViewController: UIViewController,
-        planSelection: ChooseBackupPlanViewController.PlanSelection,
+        planSelection: PlanSelection,
     ) async throws(SheetDisplayableError) {
         let (
             registrationState,
@@ -99,7 +104,7 @@ final class BackupEnablingManager {
     }
 
     private func _enableBackups(
-        planSelection: ChooseBackupPlanViewController.PlanSelection,
+        planSelection: PlanSelection,
         localIdentifiers: LocalIdentifiers,
     ) async throws(SheetDisplayableError) {
         logger.info("")

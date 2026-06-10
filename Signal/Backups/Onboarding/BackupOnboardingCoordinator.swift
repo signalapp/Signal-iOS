@@ -189,7 +189,7 @@ class BackupOnboardingCoordinator {
     }
 
     private func enableBackups(
-        planSelection: ChooseBackupPlanViewController.PlanSelection,
+        planSelection: BackupEnablingManager.PlanSelection,
         fromViewController: UIViewController,
     ) async {
         do throws(SheetDisplayableError) {

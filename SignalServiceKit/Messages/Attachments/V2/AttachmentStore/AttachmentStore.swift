@@ -388,6 +388,31 @@ public struct AttachmentStore {
 
     // MARK: -
 
+    public func sumEncryptedByteCount(stopAfter: UInt64, tx: DBReadTransaction) -> UInt64 {
+        struct AttachmentByteCount: FetchableRecord, Decodable {
+            @DBUInt64
+            var encryptedByteCount: UInt64
+        }
+
+        var cursor = FailIfThrowsRecordCursor {
+            return try AttachmentByteCount.fetchCursor(
+                tx.database,
+                sql: "SELECT encryptedByteCount FROM Attachment WHERE encryptedByteCount IS NOT NULL",
+            )
+        }
+
+        var sum: UInt64 = 0
+        while
+            sum < stopAfter,
+            let next = cursor.next()
+        {
+            sum += next.encryptedByteCount
+        }
+        return sum
+    }
+
+    // MARK: -
+
     /// Enumerate all references to a given attachment id, calling the block for each one.
     /// Blocks until all references have been enumerated.
     public func enumerateAllReferences(

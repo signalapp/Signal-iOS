@@ -53,10 +53,10 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
     case backupKeyReminder
 
     /// Prompts the user to enable backups.
-    case enableBackupsReminder
+    case backupsUpsellReminder
 
     /// Notifies the user backups were enabled.
-    case haveEnabledBackupsNotification
+    case backupsEnabledRecentlyNotification
 
     /// An unrecognized upgrade, which should generally be ignored/discarded.
     ///
@@ -125,10 +125,10 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
                 return .contactPermissionReminder
             case Self.backupKeyReminder.uniqueId:
                 return .backupKeyReminder
-            case Self.enableBackupsReminder.uniqueId:
-                return .enableBackupsReminder
-            case Self.haveEnabledBackupsNotification.uniqueId:
-                return .haveEnabledBackupsNotification
+            case Self.backupsUpsellReminder.uniqueId:
+                return .backupsUpsellReminder
+            case Self.backupsEnabledRecentlyNotification.uniqueId:
+                return .backupsEnabledRecentlyNotification
             default:
                 break
             }
@@ -157,8 +157,8 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
         .pinReminder,
         .contactPermissionReminder,
         .backupKeyReminder,
-        .enableBackupsReminder,
-        .haveEnabledBackupsNotification,
+        .backupsUpsellReminder,
+        .backupsEnabledRecentlyNotification,
     ]
 
     // MARK: - Unique IDs
@@ -188,9 +188,9 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
             return "contactPermissionReminder"
         case .backupKeyReminder:
             return "backupKeyReminder"
-        case .enableBackupsReminder:
+        case .backupsUpsellReminder:
             return "enableBackupsReminder"
-        case .haveEnabledBackupsNotification:
+        case .backupsEnabledRecentlyNotification:
             return "haveEnabledBackupsNotification"
         case .unrecognized(let uniqueId):
             return uniqueId
@@ -239,9 +239,9 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
             return (6, 0)
         case .backupKeyReminder:
             return (7, 0)
-        case .enableBackupsReminder:
+        case .backupsUpsellReminder:
             return (8, 0)
-        case .haveEnabledBackupsNotification:
+        case .backupsEnabledRecentlyNotification:
             return (9, 0)
         case .pinReminder:
             return (10, 0)
@@ -279,7 +279,7 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
             .newLinkedDeviceNotification,
             .introducingPins,
             .pinReminder,
-            .haveEnabledBackupsNotification,
+            .backupsEnabledRecentlyNotification,
             .unrecognized:
             return false
         case
@@ -288,7 +288,7 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
             .inactiveLinkedDeviceReminder,
             .inactivePrimaryDeviceReminder,
             .remoteMegaphone,
-            .enableBackupsReminder,
+            .backupsUpsellReminder,
             .backupKeyReminder,
             .contactPermissionReminder:
             return true
@@ -311,8 +311,8 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
             .pinReminder,
             .contactPermissionReminder,
             .backupKeyReminder,
-            .enableBackupsReminder,
-            .haveEnabledBackupsNotification,
+            .backupsUpsellReminder,
+            .backupsEnabledRecentlyNotification,
             .unrecognized:
             return false
         case .remoteMegaphone:
@@ -342,7 +342,7 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
         case
             .newLinkedDeviceNotification,
             .contactPermissionReminder,
-            .haveEnabledBackupsNotification,
+            .backupsEnabledRecentlyNotification,
             .createUsernameReminder:
             // On snooze, never show again.
             return .infinity
@@ -381,8 +381,8 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
             }()
 
             return Double(daysToSnooze) * .day
-        case .enableBackupsReminder:
-            return snoozeCount == 1 ? 30 * .day : 90 * .day
+        case .backupsUpsellReminder:
+            return snoozeCount == 1 ? 60 * .day : 120 * .day
         case .unrecognized:
             return .infinity
         }
@@ -402,8 +402,8 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
             .pinReminder,
             .contactPermissionReminder,
             .backupKeyReminder,
-            .enableBackupsReminder,
-            .haveEnabledBackupsNotification:
+            .backupsUpsellReminder,
+            .backupsEnabledRecentlyNotification:
             return Int.max
         case .remoteMegaphone(let megaphone):
             return megaphone.manifest.showForNumberOfDays
@@ -418,7 +418,7 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
         switch self {
         case
             .newLinkedDeviceNotification,
-            .haveEnabledBackupsNotification:
+            .backupsEnabledRecentlyNotification:
             return 0
         case
             .notificationPermissionReminder,
@@ -446,7 +446,7 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
             return 8 * .hour
         case .backupKeyReminder:
             return 8 * .hour
-        case .enableBackupsReminder:
+        case .backupsUpsellReminder:
             return 7 * .day
         case .unrecognized:
             return .infinity
@@ -466,8 +466,8 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
             .pinReminder,
             .contactPermissionReminder,
             .backupKeyReminder,
-            .enableBackupsReminder,
-            .haveEnabledBackupsNotification:
+            .backupsUpsellReminder,
+            .backupsEnabledRecentlyNotification:
             return Date.distantFuture
         case .remoteMegaphone(let megaphone):
             return Date(timeIntervalSince1970: TimeInterval(megaphone.manifest.dontShowAfter))
@@ -486,8 +486,8 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
             .inactiveLinkedDeviceReminder,
             .contactPermissionReminder,
             .backupKeyReminder,
-            .enableBackupsReminder,
-            .haveEnabledBackupsNotification,
+            .backupsUpsellReminder,
+            .backupsEnabledRecentlyNotification,
             .unrecognized:
             return false
         case

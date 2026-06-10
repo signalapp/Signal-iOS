@@ -108,11 +108,13 @@ public extension UINavigationController {
     }
 
     private func addCompletion(animated: Bool, completion: @escaping () -> Void) {
-        guard animated else { return completion() }
-        guard let transitionCoordinator else {
-            owsFailBeta("Missing transitionCoordinator even though transition is animated")
+        guard
+            animated,
+            let transitionCoordinator
+        else {
             return completion()
         }
+
         transitionCoordinator.animate(alongsideTransition: nil) { _ in
             completion()
         }

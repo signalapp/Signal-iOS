@@ -17,6 +17,7 @@ class ExperienceUpgradeManager {
     private static var lastPresentedMegaphoneView: MegaphoneView?
 
     private static var accountKeyStore: AccountKeyStore { DependenciesBridge.shared.accountKeyStore }
+    private static let attachmentStore = AttachmentStore()
     private static let backupSettingsStore = BackupSettingsStore()
     private static let dateProvider: DateProvider = { Date() }
     private static var db: DB { DependenciesBridge.shared.db }
@@ -33,6 +34,7 @@ class ExperienceUpgradeManager {
     private static var reachabilityManager: SSKReachabilityManager { SSKEnvironment.shared.reachabilityManagerRef }
     private static var remoteConfigManager: RemoteConfigManager { SSKEnvironment.shared.remoteConfigManagerRef }
     private static var storageServiceManager: StorageServiceManager { SSKEnvironment.shared.storageServiceManagerRef }
+    private static var subscriptionConfigManager: SubscriptionConfigManager { DependenciesBridge.shared.subscriptionConfigManager }
     private static var usernameEducationManager: UsernameEducationManager { DependenciesBridge.shared.usernameEducationManager }
     private static var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
     private static var usernameSelectionCoordinator: UsernameSelectionCoordinator {
@@ -176,20 +178,43 @@ class ExperienceUpgradeManager {
                             fromViewController: fromViewController,
                         )
                     }
-                case .enableBackupsReminder:
-                    if checkPreconditionsForBackupEnablementReminder(tx: tx) {
-                        nextMegaphone = BackupEnablementMegaphone(
+                case .backupsUpsellReminder:
+                    switch checkPreconditionsForBackupsUpsellReminder(
+                        experienceUpgrade: upgrade,
+                        tx: tx,
+                    ) {
+                    case nil:
+                        break
+                    case .genericEnable:
+                        nextMegaphone = BackupsGenericEnableMegaphone(
+                            experienceUpgrade: upgrade,
+                            fromViewController: fromViewController,
+                        )
+                    case .neverLoseAMessage:
+                        nextMegaphone = BackupsNeverLoseAMessageMegaphone(
+                            experienceUpgrade: upgrade,
+                            fromViewController: fromViewController,
+                        )
+                    case .backUpYourMedia(let backupSubscriptionConfiguration):
+                        nextMegaphone = BackupsBackUpYourMediaMegaphone(
+                            backupSubscriptionConfiguration: backupSubscriptionConfiguration,
+                            experienceUpgrade: upgrade,
+                            fromViewController: fromViewController,
+                        )
+                    case .saveSpace(let areBackupsEnabled):
+                        nextMegaphone = BackupsSaveSpaceMegaphone(
+                            areBackupsEnabled: areBackupsEnabled,
                             experienceUpgrade: upgrade,
                             fromViewController: fromViewController,
                         )
                     }
-                case .haveEnabledBackupsNotification:
-                    switch checkPreconditionsForEnabledBackupsNotification(
+                case .backupsEnabledRecentlyNotification:
+                    switch checkPreconditionsForBackupsEnabledRecentlyNotification(
                         now: now,
                         tx: tx,
                     ) {
                     case .display(let lastBackupEnabledDetails):
-                        nextMegaphone = BackupsEnabledNotificationMegaphone(
+                        nextMegaphone = BackupsEnabledRecentlyNotificationMegaphone(
                             experienceUpgrade: upgrade,
                             fromViewController: fromViewController,
                             backupsEnabledTime: lastBackupEnabledDetails.enabledTime,
@@ -231,7 +256,7 @@ class ExperienceUpgradeManager {
 
         if
             let lastPresentedMegaphone,
-            lastPresentedMegaphone.experienceUpgrade.manifest == nextMegaphone.experienceUpgrade.manifest
+            type(of: lastPresentedMegaphone) == type(of: nextMegaphone)
         {
             return
         }
@@ -377,16 +402,16 @@ class ExperienceUpgradeManager {
         }
     }
 
-    private enum BackupsEnabledNotificationResult {
+    private enum BackupsEnabledRecentlyNotificationResult {
         case display(BackupSettingsStore.LastBackupEnabledDetails)
         case skip
         case clearStoredDetails
     }
 
-    private static func checkPreconditionsForEnabledBackupsNotification(
+    private static func checkPreconditionsForBackupsEnabledRecentlyNotification(
         now: Date,
         tx: DBReadTransaction,
-    ) -> BackupsEnabledNotificationResult {
+    ) -> BackupsEnabledRecentlyNotificationResult {
         guard let lastBackupEnabledDetails = backupSettingsStore.lastBackupEnabledDetails(tx: tx) else {
             return .skip
         }
@@ -497,21 +522,60 @@ class ExperienceUpgradeManager {
         return lastReminderDate < Date().addingTimeInterval(-6 * .month)
     }
 
-    private static func checkPreconditionsForBackupEnablementReminder(
+    private enum BackupsUpsellResult {
+        case genericEnable
+        case neverLoseAMessage
+        case backUpYourMedia(backupSubscriptionConfiguration: BackupSubscriptionConfiguration)
+        case saveSpace(areBackupsEnabled: Bool)
+    }
+
+    private static func checkPreconditionsForBackupsUpsellReminder(
+        experienceUpgrade: ExperienceUpgrade,
         tx: DBReadTransaction,
-    ) -> Bool {
+    ) -> BackupsUpsellResult? {
         guard
             remoteConfigManager.currentConfig().backupsMegaphone,
             tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
         else {
-            return false
+            return nil
         }
 
-        guard !backupSettingsStore.haveBackupsEverBeenEnabled(tx: tx) else {
-            return false
+        if
+            experienceUpgrade.firstViewedTimestamp == 0,
+            !backupSettingsStore.haveBackupsEverBeenEnabled(tx: tx)
+        {
+            return .genericEnable
         }
 
-        return InteractionFinder.outgoingAndIncomingMessageCount(transaction: tx, limit: 1) >= 1
+        let areBackupsEnabled: Bool
+        switch backupSettingsStore.backupPlan(tx: tx) {
+        case .disabled, .disabling:
+            areBackupsEnabled = false
+        case .free:
+            areBackupsEnabled = true
+        case .paid, .paidAsTester, .paidExpiringSoon:
+            // We never need to show an upsell to paid-tier users.
+            return nil
+        }
+        // At this point, if Backups are enabled they're free-tier.
+
+        // Don't show if they don't have much to back up.
+        let clampedMessageCount = InteractionFinder.outgoingAndIncomingMessageCount(limit: 1000, tx: tx)
+        guard clampedMessageCount >= 1000 else {
+            return nil
+        }
+
+        let attachmentsSize = attachmentStore.sumEncryptedByteCount(stopAfter: .gigabyte, tx: tx)
+        if attachmentsSize < .gigabyte {
+            if areBackupsEnabled {
+                let backupSubscriptionConfiguration = subscriptionConfigManager.backupConfigurationOrDefault(tx: tx)
+                return .backUpYourMedia(backupSubscriptionConfiguration: backupSubscriptionConfiguration)
+            } else {
+                return .neverLoseAMessage
+            }
+        } else {
+            return .saveSpace(areBackupsEnabled: areBackupsEnabled)
+        }
     }
 
     // MARK: Remote megaphone

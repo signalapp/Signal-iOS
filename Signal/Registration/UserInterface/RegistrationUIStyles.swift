@@ -113,3 +113,21 @@ extension Registration {
         }
     }
 }
+
+// MARK: -
+
+#if DEBUG
+
+#Preview("Button Styles") {
+    VStack(spacing: 16) {
+        Button("Large Primary") {}
+            .buttonStyle(Registration.UI.LargePrimaryButtonStyle())
+        Button("Large Secondary") {}
+            .buttonStyle(Registration.UI.LargeSecondaryButtonStyle())
+        Button("Medium Secondary") {}
+            .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
+    }
+    .padding()
+}
+
+#endif

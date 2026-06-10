@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
-class BackupsEnabledNotificationMegaphone: Megaphone {
+class BackupsEnabledRecentlyNotificationMegaphone: Megaphone {
     private let db: DB
     private let backupSettingsStore: BackupSettingsStore
     init(

@@ -10,7 +10,6 @@ import XCTest
 class AttachmentStoreTests: XCTestCase {
 
     private var db: InMemoryDB!
-
     private var attachmentStore: AttachmentStore!
 
     override func setUp() async throws {
@@ -965,6 +964,42 @@ class AttachmentStoreTests: XCTestCase {
         checkThreadRowId(of: reference1, matches: threadId3)
         checkThreadRowId(of: reference2, matches: threadId3)
         checkThreadRowId(of: reference3, matches: threadId2)
+    }
+
+    // MARK: - Sum bytes
+
+    func testSumEncryptedByteCount() {
+        let attachmentStore = AttachmentStore()
+        let db = InMemoryDB()
+        var expectedByteCount: UInt64 = 0
+
+        db.write { tx in
+            for _ in 0..<10 {
+                var record = Attachment.Record.mockStream()
+                try! record.insert(tx.database)
+                expectedByteCount += UInt64(safeCast: record.encryptedByteCount!)
+            }
+        }
+
+        db.read { tx in
+            XCTAssertEqual(expectedByteCount, attachmentStore.sumEncryptedByteCount(stopAfter: .max, tx: tx))
+        }
+    }
+
+    func testSumEncryptedByteCount_StopsEarly() {
+        let attachmentStore = AttachmentStore()
+        let db = InMemoryDB()
+
+        db.write { tx in
+            for _ in 0..<10 {
+                var record = Attachment.Record.mockStream(streamInfo: .mock(encryptedByteCount: 10))
+                try! record.insert(tx.database)
+            }
+        }
+
+        db.read { tx in
+            XCTAssertEqual(90, attachmentStore.sumEncryptedByteCount(stopAfter: 89, tx: tx))
+        }
     }
 
     // MARK: - UInt64 max values

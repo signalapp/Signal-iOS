@@ -13,16 +13,8 @@ class ChooseBackupPlanViewController:
     ChooseBackupPlanViewModel.ActionsDelegate
 {
     typealias OnConfirmPlanSelectionBlock = (ChooseBackupPlanViewController, PlanSelection) -> Void
-
-    enum StoreKitAvailability {
-        case available(paidPlanDisplayPrice: String)
-        case unavailableForTesters
-    }
-
-    enum PlanSelection {
-        case free
-        case paid
-    }
+    typealias PlanSelection = BackupEnablingManager.PlanSelection
+    typealias StoreKitAvailability = BackupPlanUpsellConfiguration.StoreKitAvailability
 
     // MARK: -
 
@@ -72,52 +64,32 @@ class ChooseBackupPlanViewController:
         initialPlanSelection: PlanSelection?,
         onConfirmPlanSelectionBlock: @escaping OnConfirmPlanSelectionBlock,
     ) async throws(SheetDisplayableError) -> ChooseBackupPlanViewController {
+        let backupKeyService = DependenciesBridge.shared.backupKeyService
+        let backupSettingsStore = BackupSettingsStore()
         let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
+        let db = DependenciesBridge.shared.db
         let subscriptionConfigManager = DependenciesBridge.shared.subscriptionConfigManager
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        let (
-            storeKitAvailability,
-            backupSubscriptionConfiguration,
-        ) = try await ModalActivityIndicatorViewController.presentAndPropagateResult(
+        let upsellConfig = try await ModalActivityIndicatorViewController.presentAndPropagateResult(
             from: fromViewController,
         ) { () throws(SheetDisplayableError) in
-            let storeKitAvailability: StoreKitAvailability
-            if BuildFlags.Backups.avoidStoreKitForTesters {
-                storeKitAvailability = .unavailableForTesters
-            } else {
-                do {
-                    storeKitAvailability = .available(
-                        paidPlanDisplayPrice: try await backupSubscriptionManager.subscriptionDisplayPrice(),
-                    )
-                } catch StoreKitError.networkError {
-                    throw .networkError
-                } catch {
-                    owsFailDebug("Failed to get paidPlanDisplayPrice!")
-                    throw .genericError
-                }
-            }
-
-            let backupSubscriptionConfig: BackupSubscriptionConfiguration
-            do {
-                backupSubscriptionConfig = try await subscriptionConfigManager.backupConfiguration()
-            } catch where error.isNetworkFailureOrTimeout || error.is5xxServiceResponse {
-                throw .networkError
-            } catch {
-                throw .genericError
-            }
-
-            return (storeKitAvailability, backupSubscriptionConfig)
+            try await BackupPlanUpsellConfiguration.load(
+                backupSubscriptionManager: backupSubscriptionManager,
+                db: db,
+                subscriptionConfigManager: subscriptionConfigManager,
+            )
         }
 
         return ChooseBackupPlanViewController(
-            freeMediaTierDays: backupSubscriptionConfiguration.freeTierMediaDays,
+            freeMediaTierDays: upsellConfig.backupSubscriptionConfiguration.freeTierMediaDays,
             initialPlanSelection: initialPlanSelection,
-            storeKitAvailability: storeKitAvailability,
-            storageAllowanceBytes: backupSubscriptionConfiguration.storageAllowanceBytes,
-            backupKeyService: DependenciesBridge.shared.backupKeyService,
-            backupSettingsStore: BackupSettingsStore(),
-            db: DependenciesBridge.shared.db,
-            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+            storeKitAvailability: upsellConfig.storeKitAvailability,
+            storageAllowanceBytes: upsellConfig.backupSubscriptionConfiguration.storageAllowanceBytes,
+            backupKeyService: backupKeyService,
+            backupSettingsStore: backupSettingsStore,
+            db: db,
+            tsAccountManager: tsAccountManager,
             onConfirmPlanSelectionBlock: onConfirmPlanSelectionBlock,
         )
     }
@@ -159,8 +131,8 @@ class ChooseBackupPlanViewController:
 // MARK: -
 
 private class ChooseBackupPlanViewModel: ObservableObject {
-    typealias StoreKitAvailability = ChooseBackupPlanViewController.StoreKitAvailability
-    typealias PlanSelection = ChooseBackupPlanViewController.PlanSelection
+    typealias StoreKitAvailability = BackupPlanUpsellConfiguration.StoreKitAvailability
+    typealias PlanSelection = BackupEnablingManager.PlanSelection
 
     protocol ActionsDelegate: AnyObject {
         func confirmSelection(_ planSelection: PlanSelection)
@@ -234,93 +206,38 @@ struct ChooseBackupPlanView: View {
 
                 Spacer().frame(height: 20)
 
-                BackupPlanOptionView(
-                    title: OWSLocalizedString(
-                        "CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE",
-                        comment: "Title for the free plan option, when choosing a Backup plan.",
-                    ),
-                    subtitle: String.localizedStringWithFormat(
-                        OWSLocalizedString(
-                            "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d",
-                            tableName: "PluralAware",
-                            comment: "Subtitle for the free plan option, when choosing a Backup plan. Embeds {{ the number of days that files are available, e.g. '45' }}.",
-                        ),
-                        viewModel.freeMediaTierDays,
-                    ),
-                    bullets: [
-                        BackupPlanOptionView.BulletPoint(icon: .thread, text: OWSLocalizedString(
-                            "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP",
-                            comment: "Text for a bullet point in a list of Backup features, describing that all text messages are included.",
-                        )),
-                        BackupPlanOptionView.BulletPoint(icon: .albumTilt, text: String.localizedStringWithFormat(
-                            OWSLocalizedString(
-                                "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d",
-                                tableName: "PluralAware",
-                                comment: "Text for a bullet point in a list of Backup features, describing that recent media is included. Embeds {{ the number of days that files are available, e.g. '45' }}.",
-                            ),
-                            viewModel.freeMediaTierDays,
-                        )),
-                    ],
-                    isCurrentPlan: viewModel.initialPlanSelection == .free,
-                    isSelected: viewModel.planSelection == .free,
-                    onTap: {
-                        viewModel.planSelection = .free
-                    },
-                )
+                Button {
+                    viewModel.planSelection = .free
+                } label: {
+                    BackupPlanFreeOptionView(
+                        freeMediaTierDays: viewModel.freeMediaTierDays,
+                        bulletIconTintColor: viewModel.planSelection == .free ? .Signal.ultramarine : .Signal.label,
+                        isCurrentPlan: viewModel.initialPlanSelection == .free,
+                        isSelected: viewModel.planSelection == .free,
+                        showSelectionCircle: true,
+                    )
+                }
+                .buttonStyle(.plain)
 
                 Spacer().frame(height: 16)
 
-                BackupPlanOptionView(
-                    title: {
-                        switch viewModel.storeKitAvailability {
-                        case .available(let paidPlanDisplayPrice):
-                            String.nonPluralLocalizedStringWithFormat(
-                                OWSLocalizedString(
-                                    "CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE",
-                                    comment: "Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}.",
-                                ),
-                                paidPlanDisplayPrice,
-                            )
-                        case .unavailableForTesters:
-                            OWSLocalizedString(
-                                "CHOOSE_BACKUP_PLAN_PAID_PLAN_NO_PURCHASES_TITLE",
-                                comment: "Title for the paid plan option, when choosing a Backup plan as a tester.",
-                            )
-                        }
-                    }(),
-                    subtitle: OWSLocalizedString(
-                        "CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE",
-                        comment: "Subtitle for the paid plan option, when choosing a Backup plan.",
-                    ),
-                    bullets: [
-                        BackupPlanOptionView.BulletPoint(icon: .thread, text: OWSLocalizedString(
-                            "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP",
-                            comment: "Text for a bullet point in a list of Backup features, describing that all text messages are included.",
-                        )),
-                        BackupPlanOptionView.BulletPoint(icon: .albumTilt, text: OWSLocalizedString(
-                            "CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP",
-                            comment: "Text for a bullet point in a list of Backup features, describing that all media is included.",
-                        )),
-                        BackupPlanOptionView.BulletPoint(icon: .data, text: String.nonPluralLocalizedStringWithFormat(
-                            OWSLocalizedString(
-                                "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT",
-                                comment: "Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}.",
-                            ),
-                            viewModel.storageAllowanceBytes.formatted(.owsByteCount(
-                                fudgeBase2ToBase10: true,
-                                zeroPadFractionDigits: false,
-                            )),
-                        )),
-                    ],
-                    isCurrentPlan: viewModel.initialPlanSelection == .paid,
-                    isSelected: viewModel.planSelection == .paid,
-                    onTap: {
-                        viewModel.planSelection = .paid
-                    },
-                )
+                Button {
+                    viewModel.planSelection = .paid
+                } label: {
+                    BackupPlanPaidOptionView(
+                        storeKitAvailability: viewModel.storeKitAvailability,
+                        storageAllowanceBytes: viewModel.storageAllowanceBytes,
+                        bulletIconTintColor: viewModel.planSelection == .paid ? .Signal.ultramarine : .Signal.label,
+                        isCurrentPlan: viewModel.initialPlanSelection == .paid,
+                        isSelected: viewModel.planSelection == .paid,
+                        showSelectionCircle: true,
+                    )
+                }
+                .buttonStyle(.plain)
             }
             .padding(.horizontal, 16)
-            termsAndConditionsLink()
+
+            BackupPlanTermsAndConditionsView()
                 .padding(.vertical, 16)
         } pinnedFooter: {
             Button {
@@ -361,24 +278,6 @@ struct ChooseBackupPlanView: View {
         .padding(.horizontal)
         .multilineTextAlignment(.center)
         .background(Color.Signal.groupedBackground)
-    }
-
-    private func termsAndConditionsLink() -> some View {
-        let label = OWSLocalizedString(
-            "CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT",
-            comment: "Title for a label allowing users to view Signal's Terms & Conditions.",
-        )
-        return Text(" [\(label)](https://support.signal.org/)")
-            .font(.subheadline.weight(.bold))
-            .environment(\.openURL, OpenURLAction { _ in
-                CurrentAppContext().open(
-                    TSConstants.legalTermsUrl,
-                    completion: nil,
-                )
-                return .handled
-            })
-            .foregroundStyle(Color.Signal.secondaryLabel)
-            .tint(Color.Signal.secondaryLabel)
     }
 }
 

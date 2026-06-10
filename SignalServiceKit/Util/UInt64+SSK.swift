@@ -3,13 +3,23 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-/// UInt64 extension for time unit conversions migrated from Objective-C defines.
 extension UInt64 {
     public static let secondInMs: UInt64 = 1000
     public static let minuteInMs: UInt64 = secondInMs * 60
     public static let hourInMs: UInt64 = minuteInMs * 60
     public static let dayInMs: UInt64 = hourInMs * 24
     public static let weekInMs: UInt64 = dayInMs * 7
+}
+
+extension UInt64 {
+    public static let kilobyte: UInt64 = 1000
+    public static let kibibyte: UInt64 = 1024
+    public static let megabyte: UInt64 = kilobyte * 1000
+    public static let mebibyte: UInt64 = kibibyte * 1024
+    public static let gigabyte: UInt64 = megabyte * 1000
+    public static let gibibyte: UInt64 = mebibyte * 1024
+    public static let terabyte: UInt64 = gigabyte * 1000
+    public static let tebibyte: UInt64 = gibibyte * 1024
 }
 
 extension UInt64 {

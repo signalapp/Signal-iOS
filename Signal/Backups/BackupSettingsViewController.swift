@@ -17,6 +17,10 @@ class BackupSettingsViewController:
         case presentWelcomeToBackupsSheet
         case automaticallyStartBackup(completion: ((UIViewController) -> Void)?)
         case disableOptimizeLocalStorage
+        case presentBackupPlanUpsell(
+            titleTextBuilder: (DBReadTransaction) -> String,
+            bodyTextBuilder: (DBReadTransaction) -> String,
+        )
     }
 
     private let accountEntropyPoolManager: AccountEntropyPoolManager
@@ -121,7 +125,10 @@ class BackupSettingsViewController:
 
         self.onAppearAction = onAppearAction
         switch onAppearAction {
-        case nil, .presentWelcomeToBackupsSheet, .disableOptimizeLocalStorage:
+        case nil,
+             .presentWelcomeToBackupsSheet,
+             .disableOptimizeLocalStorage,
+             .presentBackupPlanUpsell:
             break
         case .automaticallyStartBackup(let completion):
             self.onBackupComplete = completion
@@ -182,6 +189,11 @@ class BackupSettingsViewController:
             performManualBackup()
         case .disableOptimizeLocalStorage:
             setOptimizeLocalStorage(false)
+        case .presentBackupPlanUpsell(let titleTextBuilder, let bodyTextBuilder):
+            presentBackupPlanUpsell(
+                titleTextBuilder: titleTextBuilder,
+                bodyTextBuilder: bodyTextBuilder,
+            )
         }
     }
 
@@ -473,6 +485,51 @@ class BackupSettingsViewController:
         }
     }
 
+    // MARK: -
+
+    private func presentBackupPlanUpsell(
+        titleTextBuilder: @escaping (DBReadTransaction) -> String,
+        bodyTextBuilder: @escaping (DBReadTransaction) -> String,
+    ) {
+        Task {
+            await _presentBackupPlanUpsell(
+                titleTextBuilder: titleTextBuilder,
+                bodyTextBuilder: bodyTextBuilder,
+            )
+        }
+    }
+
+    private func _presentBackupPlanUpsell(
+        titleTextBuilder: @escaping (DBReadTransaction) -> String,
+        bodyTextBuilder: @escaping (DBReadTransaction) -> String,
+    ) async {
+        do throws(SheetDisplayableError) {
+            let upsellVC = try await BackupPlanUpsellViewController.load(
+                titleTextBuilder: titleTextBuilder,
+                bodyTextBuilder: bodyTextBuilder,
+                fromViewController: self,
+                onTappedSubscribe: { [weak self] upsellVC in
+                    guard let self else { return }
+
+                    upsellVC.dismiss(animated: true) {
+                        Task {
+                            await self._enableBackups(
+                                fromViewController: self,
+                                planSelection: .paid,
+                                shouldShowWelcomeToBackupsSheet: true,
+                            )
+                        }
+                    }
+                },
+            )
+
+            upsellVC.isModalInPresentation = true
+            present(upsellVC, animated: true)
+        } catch {
+            error.showSheet(from: self)
+        }
+    }
+
     // MARK: - BackupSettingsViewModel.ActionsDelegate
 
     fileprivate func enableBackups(
@@ -566,7 +623,7 @@ class BackupSettingsViewController:
 
     @MainActor
     private func _showChooseBackupPlan(
-        initialPlanSelection: ChooseBackupPlanViewController.PlanSelection?,
+        initialPlanSelection: BackupEnablingManager.PlanSelection?,
         shouldShowWelcomeToBackupsSheet: Bool,
     ) async {
         do throws(SheetDisplayableError) {
@@ -598,7 +655,7 @@ class BackupSettingsViewController:
     @MainActor
     private func _enableBackups(
         fromViewController: UIViewController,
-        planSelection: ChooseBackupPlanViewController.PlanSelection,
+        planSelection: BackupEnablingManager.PlanSelection,
         shouldShowWelcomeToBackupsSheet: Bool,
     ) async {
         do throws(SheetDisplayableError) {
@@ -1543,8 +1600,8 @@ class BackupSettingsViewController:
 
 private class BackupSettingsViewModel: ObservableObject {
     enum EnableBackupsPlanSelectionOption {
-        case required(ChooseBackupPlanViewController.PlanSelection)
-        case userChoice(initialSelection: ChooseBackupPlanViewController.PlanSelection?)
+        case required(BackupEnablingManager.PlanSelection)
+        case userChoice(initialSelection: BackupEnablingManager.PlanSelection?)
     }
 
     protocol ActionsDelegate: AnyObject {
