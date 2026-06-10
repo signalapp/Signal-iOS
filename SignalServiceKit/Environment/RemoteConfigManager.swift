@@ -165,13 +165,6 @@ public class RemoteConfig {
         !isEnabled(.paypalMonthlyDonationKillSwitch)
     }
 
-    public var isOptimizeStorageEnabled: Bool {
-        isEnabled(
-            .optimizeStorageEnabled,
-            defaultValue: BuildFlags.Backups.showOptimizeMedia,
-        )
-    }
-
     public func standardMediaQualityLevel(callingCode: Int?) -> ImageQualityLevel? {
         guard
             let csvString = self.value(.standardMediaQualityLevel),
@@ -652,7 +645,6 @@ private enum IsEnabledFlag: String, FlagType {
     case enableGifSearch = "global.gifSearch"
     case groupTerminateReceiveKillSwitch = "ios.groupTerminateReceiveKillSwitch"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
-    case optimizeStorageEnabled = "ios.optimizeStorageEnabled"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
     case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
     case paypalMonthlyDonationKillSwitch = "ios.paypalMonthlyDonationKillSwitch"
@@ -682,7 +674,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableGifSearch: false
         case .groupTerminateReceiveKillSwitch: true
         case .messageResendKillSwitch: false
-        case .optimizeStorageEnabled: true
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
         case .paypalMonthlyDonationKillSwitch: false

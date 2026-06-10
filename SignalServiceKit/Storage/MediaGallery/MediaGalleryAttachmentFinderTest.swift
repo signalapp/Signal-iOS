@@ -8,10 +8,7 @@ import GRDB
 import XCTest
 @testable import SignalServiceKit
 
-class MediaGalleryAttachmentFinderTest: SSKBaseTest {
-    // TODO: Convert this back to an XCTestCase once the
-    // `mediaGalleryOnlyAllowDownloaded` TestableFlag is removed.
-
+class MediaGalleryAttachmentFinderTest: XCTestCase {
     private let attachmentStore = AttachmentStore()
     private var db: InMemoryDB!
 
@@ -192,8 +189,6 @@ class MediaGalleryAttachmentFinderTest: SSKBaseTest {
     // MARK: - Index Usage
 
     func testAllQueriesUseIndex() throws {
-        DebugFlags.mediaGalleryOnlyAllowDownloaded.set(false)
-
         let (thread, _) = insertThreadAndInteraction()
 
         // Set up some parametrized values for tests.

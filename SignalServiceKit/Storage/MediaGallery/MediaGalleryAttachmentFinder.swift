@@ -290,12 +290,6 @@ public struct MediaGalleryAttachmentFinder {
             // Never show past edit revisions in the gallery
             .filter(isPastEditRevisionColumn == false)
 
-        if DebugFlags.mediaGalleryOnlyAllowDownloaded.get() {
-            let attachmentAssociation = RecordType.belongsTo(Attachment.Record.self)
-            let localFileColumn = Column(Attachment.Record.CodingKeys.localRelativeFilePath)
-            query = query.joining(required: attachmentAssociation.filter(localFileColumn != nil))
-        }
-
         switch filter {
         case .allPhotoVideoCategory:
             query = query.filter(literal: "isVisualMediaContentType = \(true)")

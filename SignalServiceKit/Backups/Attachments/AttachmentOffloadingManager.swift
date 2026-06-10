@@ -87,10 +87,6 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
     }
 
     public func offloadAttachmentsIfNeeded() async throws {
-        guard remoteConfig.currentConfig().isOptimizeStorageEnabled else {
-            return
-        }
-
         guard db.read(block: { offloadingIsAllowed(tx: $0) }) else {
             return
         }

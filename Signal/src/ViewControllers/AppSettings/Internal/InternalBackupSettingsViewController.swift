@@ -64,27 +64,25 @@ class InternalBackupSettingsViewController: OWSTableViewController2 {
             let vc = InternalListMediaViewController()
             self?.navigationController?.pushViewController(vc, animated: true)
         })
-        if RemoteConfig.current.isOptimizeStorageEnabled {
-            section.add(.switch(
-                withText: "Regenerate backup thumbnails",
-                subtitle: "Regenerate backup thumbnails on next offloading run",
-                isOn: { db.read(block: backupSettingsStore.shouldGenerateThumbnailsOnNextOffloading(tx:)) },
-                actionBlock: { _ in
-                    db.write { tx in
-                        let currentValue = backupSettingsStore.shouldGenerateThumbnailsOnNextOffloading(tx: tx)
-                        backupSettingsStore.setShouldGenerateThumbnailsOnNextOffloading(!currentValue, tx: tx)
-                    }
-                },
-            ))
-            section.add(.switch(
-                withText: "Aggressive optimize media",
-                subtitle: "Don't keep recent attachments when optimize media is enabled",
-                isOn: { Attachment.offloadingThresholdOverride },
-                actionBlock: { _ in
-                    Attachment.offloadingThresholdOverride = !Attachment.offloadingThresholdOverride
-                },
-            ))
-        }
+        section.add(.switch(
+            withText: "Regenerate backup thumbnails",
+            subtitle: "Regenerate backup thumbnails on next offloading run",
+            isOn: { db.read(block: backupSettingsStore.shouldGenerateThumbnailsOnNextOffloading(tx:)) },
+            actionBlock: { _ in
+                db.write { tx in
+                    let currentValue = backupSettingsStore.shouldGenerateThumbnailsOnNextOffloading(tx: tx)
+                    backupSettingsStore.setShouldGenerateThumbnailsOnNextOffloading(!currentValue, tx: tx)
+                }
+            },
+        ))
+        section.add(.switch(
+            withText: "Aggressive optimize media",
+            subtitle: "Don't keep recent attachments when optimize media is enabled",
+            isOn: { Attachment.offloadingThresholdOverride },
+            actionBlock: { _ in
+                Attachment.offloadingThresholdOverride = !Attachment.offloadingThresholdOverride
+            },
+        ))
 
         contents.add(section)
 

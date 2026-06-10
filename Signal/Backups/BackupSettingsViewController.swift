@@ -69,7 +69,6 @@ class BackupSettingsViewController:
             backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
             db: DependenciesBridge.shared.db,
             deviceSleepManager: deviceSleepManager,
-            remoteConfig: SSKEnvironment.shared.remoteConfigManagerRef,
             subscriptionConfigManager: DependenciesBridge.shared.subscriptionConfigManager,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
@@ -93,7 +92,6 @@ class BackupSettingsViewController:
         backupSubscriptionManager: BackupSubscriptionManager,
         db: DB,
         deviceSleepManager: DeviceSleepManager,
-        remoteConfig: RemoteConfigProvider,
         subscriptionConfigManager: SubscriptionConfigManager,
         tsAccountManager: TSAccountManager,
     ) {
@@ -148,7 +146,6 @@ class BackupSettingsViewController:
                 ),
                 hasBackupFailed: backupFailureStateManager.hasFailedBackup(tx: tx),
                 isBackgroundAppRefreshDisabled: Self.isBackgroundAppRefreshDisabled(),
-                isOptimizeStorageRemoteConfigEnabled: remoteConfig.currentConfig().isOptimizeStorageEnabled,
             )
 
             return viewModel
@@ -677,8 +674,7 @@ class BackupSettingsViewController:
 
         let welcomeToBackupsSheet: WelcomeToBackupsSheet
         switch backupPlan {
-        case _ where !viewModel.isOptimizeStorageRemoteConfigEnabled,
-             .disabled,
+        case .disabled,
              .disabling,
              .free:
             welcomeToBackupsSheet = WelcomeToBackupsSheet(
@@ -1621,10 +1617,6 @@ private class BackupSettingsViewModel: ObservableObject {
     /// from running.)
     @Published var isBackgroundAppRefreshDisabled: Bool
 
-    /// Whether the "Optimze Storage" feature is available to this user, per
-    /// remote config. Not to be confused with `isOptimizeLocalStorageAvailable`.
-    @Published var isOptimizeStorageRemoteConfigEnabled: Bool
-
     weak var actionsDelegate: ActionsDelegate?
 
     init(
@@ -1641,7 +1633,6 @@ private class BackupSettingsViewModel: ObservableObject {
         mediaTierCapacityOverflow: UInt64?,
         hasBackupFailed: Bool,
         isBackgroundAppRefreshDisabled: Bool,
-        isOptimizeStorageRemoteConfigEnabled: Bool,
     ) {
         self.backupSubscriptionConfiguration = backupSubscriptionConfiguration
 
@@ -1661,8 +1652,6 @@ private class BackupSettingsViewModel: ObservableObject {
         self.mediaTierCapacityOverflow = mediaTierCapacityOverflow
         self.hasBackupFailed = hasBackupFailed
         self.isBackgroundAppRefreshDisabled = isBackgroundAppRefreshDisabled
-
-        self.isOptimizeStorageRemoteConfigEnabled = isOptimizeStorageRemoteConfigEnabled
     }
 
     // MARK: -
@@ -1722,7 +1711,7 @@ private class BackupSettingsViewModel: ObservableObject {
     // MARK: -
 
     /// Whether the "Optimze Storage" feature is available, per the current
-    /// `BackupPlan`. Not to be confused with `isOptimizeStorageRemoteConfigEnabled`.
+    /// `BackupPlan`.
     var isOptimizeLocalStorageAvailable: Bool {
         switch backupPlan {
         case .disabled, .disabling, .free:
@@ -2008,36 +1997,32 @@ struct BackupSettingsView: View {
                         viewModel: viewModel,
                     )
 
-                    if viewModel.isOptimizeStorageRemoteConfigEnabled {
-                        Toggle(
-                            OWSLocalizedString(
-                                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE",
-                                comment: "Title for a toggle allowing users to change the Optimize Local Storage setting.",
-                            ),
-                            isOn: Binding(
-                                get: { viewModel.isOptimizeLocalStorageEnabled },
-                                set: { viewModel.setOptimizeLocalStorage($0) },
-                            ),
-                        ).disabled(!viewModel.isOptimizeLocalStorageAvailable)
-                    }
+                    Toggle(
+                        OWSLocalizedString(
+                            "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE",
+                            comment: "Title for a toggle allowing users to change the Optimize Local Storage setting.",
+                        ),
+                        isOn: Binding(
+                            get: { viewModel.isOptimizeLocalStorageEnabled },
+                            set: { viewModel.setOptimizeLocalStorage($0) },
+                        ),
+                    ).disabled(!viewModel.isOptimizeLocalStorageAvailable)
                 } footer: {
-                    if viewModel.isOptimizeStorageRemoteConfigEnabled {
-                        let footerText: String = if viewModel.isOptimizeLocalStorageAvailable {
-                            OWSLocalizedString(
-                                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE",
-                                comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available.",
-                            )
-                        } else {
-                            OWSLocalizedString(
-                                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE",
-                                comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable.",
-                            )
-                        }
-
-                        Text(footerText)
-                            .foregroundStyle(Color.Signal.secondaryLabel)
-                            .font(.caption)
+                    let footerText: String = if viewModel.isOptimizeLocalStorageAvailable {
+                        OWSLocalizedString(
+                            "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE",
+                            comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available.",
+                        )
+                    } else {
+                        OWSLocalizedString(
+                            "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE",
+                            comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable.",
+                        )
                     }
+
+                    Text(footerText)
+                        .foregroundStyle(Color.Signal.secondaryLabel)
+                        .font(.caption)
                 }
 
                 SignalSection {
@@ -3256,7 +3241,6 @@ private extension BackupSettingsViewModel {
             mediaTierCapacityOverflow: mediaTierCapacityOverflow,
             hasBackupFailed: hasBackupFailed,
             isBackgroundAppRefreshDisabled: isBackgroundAppRefreshDisabled,
-            isOptimizeStorageRemoteConfigEnabled: true,
         )
         let actionsDelegate = PreviewActionsDelegate()
         viewModel.actionsDelegate = actionsDelegate
