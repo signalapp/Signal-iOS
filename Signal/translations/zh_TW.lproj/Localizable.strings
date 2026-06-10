@@ -580,6 +580,12 @@
 /* Toast indicating that the Recovery Key was correct. */
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "恢復金鑰正確。請妥善保管你的金鑰。";
 
+/* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "<bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal. Store your recovery key somewhere safe and never share it with anyone.";
+
+/* Title for a warning sheet shown to discourage the user from sharing their 'Recovery Key'. */
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "Do Not Share Recovery Key";
+
 /* Button label for action sheet to cancel backup onboarding */
 "BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "退出備份設定";
 
@@ -652,14 +658,8 @@
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "複製到剪貼簿";
 
-/* Body for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, warning them not to share it with anyone. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal will <bold>never</bold> message you for your recovery key. Do not respond to a chat pretending to be Signal. Store your recovery key somewhere safe and do not share it with anyone.";
-
 /* Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Got It";
-
-/* Title for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "Do Not Share Your Recovery Key";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "我知道了";
 
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "建立新金鑰";
@@ -833,7 +833,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "備份已關閉，而且你的資料已從 Signal 的安全儲存服務中刪除。";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, and any media that is not on this device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "備份已關閉，而且任何未在此裝置上的媒體現正在下載中。下載完成後，你的資料將會從 Signal 的安全儲存服務中刪除。";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "發生錯誤。請聯絡支援部門。";
@@ -998,13 +998,13 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "要下載已卸載的媒體嗎？";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "較舊的媒體將在下次進行備份時被卸載，但可以隨時從備份中下載。";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "儲存最佳化只可供 Signal 備份付費級別使用。升級你的備份計畫以開始使用此功能。";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "最佳化 Signal 儲存空間";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "已達備份儲存上限。在 Signal 中釋放空間以繼續備份聊天和媒體。";
@@ -1016,25 +1016,25 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "重新啟用備份";
 
 /* Message for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted once backups are disabled.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "你有不在此裝置上的備份媒體。一旦停用備份功能，未下載的媒體將會被永久刪除。";
 
 /* Title for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "要跳過下載嗎？";
 
 /* Message for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "你有不在此裝置上的備份媒體。在沒有給予定期贊助的情況下，未下載的媒體將會被永久刪除。";
 
 /* Title for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "要跳過下載嗎？";
 
 /* Title for an action in a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "跳過下載";
 
 /* Message for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Are you sure you want to skip downloading your media?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "你確定要跳過下載媒體嗎？";
 
 /* Title for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "要跳過下載嗎？";
 
 /* Title for an action in a sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "跳過下載";
@@ -1076,34 +1076,34 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "上傳中…";
 
 /* Title for a button in a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "立即備份";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "This could take a while. You can use Signal normally while backing up.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "這可能需要一點時間。備份期間，你可以如常使用 Signal。";
 
 /* Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "較舊的媒體將在下次進行備份時被卸載，但可以隨時從備份中下載。";
 
 /* Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "最佳化 Signal 儲存空間";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "You're all set. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "一切準備就緒。立即開始你的備份。";
 
 /* Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "You have media in your backup that's not on this device. Undownloaded media will be permanently deleted without a paid subscription.\n\nYou can begin paying for backups again at any time to continue backing up your media.";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "你有不在此裝置上的備份媒體。在沒有給予定期贊助的情況下，未下載的媒體將會被永久刪除。\n\n你可以隨時重新開始支付備份費用，以繼續備份媒體。";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Download Your Backup Media";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "下載你的備份媒體";
 
 /* Primary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Download Backup Now";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "立即下載備份";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Download Your Backup Media Today";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "立即下載你的備份媒體";
 
 /* Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Don't Download Backup";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "不要下載備份";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "請檢查以確定你的付款方式仍然有效。輕按「管理定期贊助」 > 「Signal」 > 「更新付款方式」。";
@@ -2349,6 +2349,24 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "刪除聊天？";
+
+/* Title for the button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that dismisses the sheet without pasting the key. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Don’t Share";
+
+/* Message body for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, warning them not to share it. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_MESSAGE" = "Do not share your recovery key with anyone. This will let them take over your account. Signal will never message you for your recovery key. Never respond to a chat pretending to be Signal.";
+
+/* Title for the destructive button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that proceeds with the paste. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_PASTE_BUTTON_TITLE" = "Paste Key";
+
+/* Title for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_TITLE" = "Do Not Share Recovery Key";
+
+/* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that dismisses the sheet without pasting the key. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Do Not Share Key";
+
+/* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that acknowledges the warning and proceeds with the paste. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_SHARE_BUTTON_TITLE" = "Share Key";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "將此聊天靜音…";
@@ -6055,9 +6073,6 @@
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "略過即建立新的 PIN 碼";
 
-/* Label for action to use Recovery Key instead of PIN for registration. */
-"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "使用恢復金鑰";
-
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "若您忘記 PIN 碼，可以建立一個新的。您可以註冊並使用您的帳號，但將會遺失一些先前的設定，例如個人資訊設定。";
 
@@ -6878,7 +6893,7 @@
 "PIN_CREATION_EXPLANATION" = "PIN 碼可以加密 Signal 伺服器上面關於您帳號的資訊，因此只有您可以存取。重新安裝時，您的個人資訊、設定和聯絡人將從 Signal 伺服器上回復。啟動 Signal 應用程式時不需要 PIN。";
 
 /* Message when a generic error occurs while creating a PIN. */
-"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Something went wrong creating your PIN. Please contact support.";
+"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "建立你的 PIN 碼時發生錯誤。請聯絡支援團隊。";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "更多 PIN 碼資訊";
@@ -6893,7 +6908,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN 碼不符，請再試一次。";
 
 /* Message when a network error occurs while creating a PIN. */
-"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Something went wrong creating your PIN. Check your connection and try again.";
+"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "建立你的 PIN 碼時發生錯誤。請檢查你的網路連線，然後再試一次。";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN碼必須至少 4 個字元";
@@ -6921,9 +6936,6 @@
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
 "PIN_ENTER_EXISTING_SKIP" = "跳過 PIN 碼";
-
-/* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
-"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "使用恢復金鑰";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "要幫助你記住你的 PIN碼，我們將定期要求你輸入 PIN 碼。我們只會偶爾詢問你。";
@@ -7901,7 +7913,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "在此裝置上釋放 %1$@";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "你有不在此裝置上的備份媒體。在沒有給予定期贊助的情況下，未下載的媒體將會被永久刪除。";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "如果你跳過下載，備份內尚餘的媒體和附件可稍後在儲存空間足夠時下載。";
@@ -8018,7 +8030,7 @@
 "SAFETY_TIPS_HEADER_TITLE" = "安全提示";
 
 /* Message body describing the keeping codes safe safety tip. */
-"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "如果你收到了未曾要求的驗證碼，可能有人正試圖存取你的帳戶。請勿分享你的驗證碼。";
 
 /* Message title describing the keeping codes safe safety tip. */
 "SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "妥善保管你的驗證碼";

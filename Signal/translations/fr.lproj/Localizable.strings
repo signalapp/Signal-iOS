@@ -580,6 +580,12 @@
 /* Toast indicating that the Recovery Key was correct. */
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Confirmation réussie. Conservez votre clé en lieu sûr.";
 
+/* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "<bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal. Store your recovery key somewhere safe and never share it with anyone.";
+
+/* Title for a warning sheet shown to discourage the user from sharing their 'Recovery Key'. */
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "Do Not Share Recovery Key";
+
 /* Button label for action sheet to cancel backup onboarding */
 "BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "Quitter la configuration";
 
@@ -652,14 +658,8 @@
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Copier dans le presse-papiers";
 
-/* Body for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, warning them not to share it with anyone. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal will <bold>never</bold> message you for your recovery key. Do not respond to a chat pretending to be Signal. Store your recovery key somewhere safe and do not share it with anyone.";
-
 /* Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Got It";
-
-/* Title for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "Do Not Share Your Recovery Key";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "J'ai compris";
 
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Créer une nouvelle clé";
@@ -833,7 +833,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Les sauvegardes sont désactivées. Vos données ont été supprimées du service de stockage sécurisé de Signal.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, and any media that is not on this device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Les sauvegardes étant désactivées, nous téléchargeons les médias non enregistrés sur cet appareil. Une fois téléchargées, vos données seront supprimées du service de stockage sécurisé de Signal.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Une erreur s'est produite. Merci de contacter l'assistance.";
@@ -998,13 +998,13 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Télécharger les médias déplacés vers la sauvergarde ?";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Lorsque vous lancerez une nouvelle sauvegarde, les médias les plus anciens seront déplacés vers la sauvegarde et supprimés de votre appareil. Vous pouvez cependant les télécharger depuis votre sauvegarde à tout moment.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "L'optimisation de l'espace de stockage n'est disponible qu'avec la version payante du forfait de sauvegarde Signal. Donnez un coup de pouce à Signal et passez à la version payante pour utiliser cette fonctionnalité.";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimiser le stockage Signal";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "Vous avez atteint la limite de stockage. Libérez de l'espace sur Signal pour continuer de sauvegarder vos médias et conversations.";
@@ -1016,25 +1016,25 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Réactiver les sauvegardes";
 
 /* Message for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted once backups are disabled.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "Votre sauvegarde contient des médias non enregistrés sur cet appareil. Une fois les sauvegardes désactivées, les médias non téléchargés seront définitivement supprimés.";
 
 /* Title for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Ignorer le téléchargement ?";
 
 /* Message for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "Votre sauvegarde contient des médias non enregistrés sur cet appareil. Sans abonnement payant, les médias non téléchargés seront définitivement supprimés.";
 
 /* Title for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Ignorer le téléchargement ?";
 
 /* Title for an action in a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Ignorer le téléchargement";
 
 /* Message for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Are you sure you want to skip downloading your media?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Vos médias ne seront pas téléchargés. Voulez-vous vraiment continuer ?";
 
 /* Title for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Ignorer le téléchargement ?";
 
 /* Title for an action in a sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "Ignorer le téléchargement";
@@ -1076,34 +1076,34 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "Importation…";
 
 /* Title for a button in a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Sauvegarder maintenant";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "This could take a while. You can use Signal normally while backing up.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Cela peut prendre un certain temps. Vous pouvez continuer d'utiliser Signal pendant que nous sauvegardons vos données.";
 
 /* Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Lorsque vous lancerez une nouvelle sauvegarde, les médias les plus anciens seront déplacés vers la sauvegarde et supprimés de votre appareil. Vous pouvez cependant les télécharger depuis votre sauvegarde à tout moment.";
 
 /* Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimiser le stockage Signal";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "You're all set. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "À vos marques... Prêts ? Sauvegardez.";
 
 /* Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "You have media in your backup that's not on this device. Undownloaded media will be permanently deleted without a paid subscription.\n\nYou can begin paying for backups again at any time to continue backing up your media.";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "Votre sauvegarde contient des médias non enregistrés sur cet appareil. Sans abonnement payant, les médias non téléchargés seront définitivement supprimés.\n\nPour continuer de sauvegarder vos médias, vous pouvez reprendre un forfait payant à tout moment.";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Download Your Backup Media";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Télécharger les médias sauvegardés";
 
 /* Primary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Download Backup Now";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Télécharger la sauvegarde";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Download Your Backup Media Today";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Télécharger les médias sauvegardés";
 
 /* Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Don't Download Backup";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Ne pas télécharger";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Vérifiez que votre mode de paiement est à jour. Appuyez sur Gérer l'abonnement > Signal > Mettre à jour le mode de paiement.";
@@ -2349,6 +2349,24 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Supprimer la conversation ?";
+
+/* Title for the button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that dismisses the sheet without pasting the key. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Don’t Share";
+
+/* Message body for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, warning them not to share it. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_MESSAGE" = "Do not share your recovery key with anyone. This will let them take over your account. Signal will never message you for your recovery key. Never respond to a chat pretending to be Signal.";
+
+/* Title for the destructive button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that proceeds with the paste. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_PASTE_BUTTON_TITLE" = "Paste Key";
+
+/* Title for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_TITLE" = "Do Not Share Recovery Key";
+
+/* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that dismisses the sheet without pasting the key. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Do Not Share Key";
+
+/* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that acknowledges the warning and proceeds with the paste. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_SHARE_BUTTON_TITLE" = "Share Key";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mettre la conversation en sourdine pour…";
@@ -6055,9 +6073,6 @@
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Ignorer et créer un nouveau PIN";
 
-/* Label for action to use Recovery Key instead of PIN for registration. */
-"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "Utiliser la clé de récupération";
-
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Si vous ne vous souvenez pas de votre code PIN, vous pouvez en créer un nouveau. Vous pourrez vous réinscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés, tels que les informations de profil.";
 
@@ -6878,7 +6893,7 @@
 "PIN_CREATION_EXPLANATION" = "Avec un code PIN, les informations stockées dans Signal restent chiffrées, et vous seul y avez accès. Votre profil, vos contacts et vos paramètres sont restaurés si vous réinstallez Signal. Vous n'avez pas besoin du code PIN pour ouvrir l'app.";
 
 /* Message when a generic error occurs while creating a PIN. */
-"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Something went wrong creating your PIN. Please contact support.";
+"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Une erreur s'est produite lors de la création de votre code PIN. Merci de contacter l'assistance.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "En savoir plus sur les PIN";
@@ -6893,7 +6908,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "Les codes PIN ne correspondent pas. Veuillez réessayer.";
 
 /* Message when a network error occurs while creating a PIN. */
-"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Something went wrong creating your PIN. Check your connection and try again.";
+"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Une erreur s'est produite lors de la création de votre code PIN. Veuillez vérifier votre connexion et réessayer.";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "Le code PIN doit comporter au moins quatre chiffres";
@@ -6921,9 +6936,6 @@
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
 "PIN_ENTER_EXISTING_SKIP" = "Ignorer la saisie du PIN";
-
-/* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
-"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "Utiliser la clé de récupération";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Pour vous aider à mémoriser votre code PIN, nous vous demanderons de le saisir régulièrement. Nous vous le demanderons moins souvent au fil du temps.";
@@ -7901,7 +7913,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Libérez %1$@ sur cet appareil";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "Votre sauvegarde contient des médias non enregistrés sur cet appareil. Sans abonnement payant, les médias non téléchargés seront définitivement supprimés.";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "Si vous choisissez d'ignorer le téléchargement, vous pourrez télécharger les pièces jointes et médias de votre sauvegarde lorsque vous aurez libéré de l'espace de stockage.";
@@ -8006,7 +8018,7 @@
 "SAFETY_TIPS_ENABLE_REGLOCK_BODY" = "Pour mieux protéger votre compte, en plus du code de vérification, exigez la saisie du code PIN Signal lors de l'inscription à Signal.";
 
 /* Message title describing the enable reglock safety tip. */
-"SAFETY_TIPS_ENABLE_REGLOCK_TITLE" = "Activer le blocage d’inscription dans les paramètres du compte";
+"SAFETY_TIPS_ENABLE_REGLOCK_TITLE" = "Activer le blocage d'inscription dans les paramètres du compte";
 
 /* Message contents for the safety tip concerning fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Soyez prudent lorsque des entreprises ou des organismes publics vous contactent. Les messages qui affirment provenir de transporteurs ou de services fiscaux, par exemple, peuvent être des spams.";
@@ -8018,7 +8030,7 @@
 "SAFETY_TIPS_HEADER_TITLE" = "Conseils de sécurité";
 
 /* Message body describing the keeping codes safe safety tip. */
-"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "Si vous avez reçu un code de vérification sans l'avoir demandé, il est possible que quelqu'un tente d'accéder à votre compte. Ne communiquez pas votre code.";
 
 /* Message title describing the keeping codes safe safety tip. */
 "SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "Protégez votre code de vérification";

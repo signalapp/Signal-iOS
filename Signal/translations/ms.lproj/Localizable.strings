@@ -580,6 +580,12 @@
 /* Toast indicating that the Recovery Key was correct. */
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Kunci pemulihan betul. Pastikan kunci anda selamat.";
 
+/* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "<bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal. Store your recovery key somewhere safe and never share it with anyone.";
+
+/* Title for a warning sheet shown to discourage the user from sharing their 'Recovery Key'. */
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "Do Not Share Recovery Key";
+
 /* Button label for action sheet to cancel backup onboarding */
 "BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "Keluar daripada Tetapan Sandaran";
 
@@ -652,14 +658,8 @@
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Salin ke Papan Keratan";
 
-/* Body for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, warning them not to share it with anyone. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal will <bold>never</bold> message you for your recovery key. Do not respond to a chat pretending to be Signal. Store your recovery key somewhere safe and do not share it with anyone.";
-
 /* Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Got It";
-
-/* Title for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "Do Not Share Your Recovery Key";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Faham";
 
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Cipta kunci baharu";
@@ -833,7 +833,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Sandaran telah dimatikan dan data anda telah dipadam daripada perkhidmatan storan selamat Signal.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, and any media that is not on this device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Sandaran telah dimatikan dan sebarang media yang belum ada pada peranti sedang dimuat turun sekarang. Sebaik sahaja dimuat turun, data anda akan dipadam daripada perkhidmatan storan selamat Signal.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Ralat telah berlaku. Sila hubungi sokongan.";
@@ -998,13 +998,13 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Muat Turun Media yang Telah Dialih Keluar?";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Media terdahulu akan dipindahkan apabila anda membuat sandaran anda yang seterusnya, tetapi boleh dimuat turun daripada sandaran anda pada bila-bila masa.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Pengoptimuman storan hanya boleh digunakan dengan Sandaran Signal berbayar. Naik taraf pelan sandaran anda untuk mula menggunakan ciri ini.";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimumkan storan Signal";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "Anda telah mencapai had storan sandaran anda. Kosongkan ruang dalam Signal untuk terus membuat sandaran sembang dan media.";
@@ -1016,25 +1016,25 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Dayakan semula sandaran";
 
 /* Message for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted once backups are disabled.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "Anda mempunyai media dalam sandaran anda yang tiada pada peranti ini. Media yang belum dimuat turun akan dipadamkan secara kekal setelah sandaran dinyahdayakan.";
 
 /* Title for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Langkau muat turun?";
 
 /* Message for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "Anda mempunyai media dalam sandaran anda yang tiada pada peranti ini. Media yang belum dimuat turun akan dipadamkan secara kekal tanpa langganan berbayar.";
 
 /* Title for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Langkau muat turun?";
 
 /* Title for an action in a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Langkau muat turun";
 
 /* Message for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Are you sure you want to skip downloading your media?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Adakah anda pasti mahu melangkau daripada memuat turun media anda?";
 
 /* Title for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Langkau muat turun?";
 
 /* Title for an action in a sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "Langkau muat turun";
@@ -1076,34 +1076,34 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "Memuat naik…";
 
 /* Title for a button in a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Sandaran Sekarang";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "This could take a while. You can use Signal normally while backing up.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Ini boleh mengambil sedikit masa. Anda boleh menggunakan Signal seperti biasa semasa membuat sandaran.";
 
 /* Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Media terdahulu akan dipindahkan apabila anda membuat sandaran anda yang seterusnya, tetapi boleh dimuat turun daripada sandaran anda pada bila-bila masa.";
 
 /* Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimumkan storan Signal";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "You're all set. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Anda sudah bersedia. Mulakan sandaran anda sekarang.";
 
 /* Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "You have media in your backup that's not on this device. Undownloaded media will be permanently deleted without a paid subscription.\n\nYou can begin paying for backups again at any time to continue backing up your media.";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "Anda mempunyai media dalam sandaran anda yang tiada pada peranti ini. Media yang belum dimuat turun akan dipadamkan secara kekal tanpa langganan berbayar.\n\nAnda boleh mula membayar untuk sandaran semula pada bila-bila masa untuk terus membuat sandaran semua media anda.";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Download Your Backup Media";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Muat Turun Media Sandaran Anda";
 
 /* Primary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Download Backup Now";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Muat turun sandaran sekarang";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Download Your Backup Media Today";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Muat Turun Media Sandaran Anda Hari Ini";
 
 /* Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Don't Download Backup";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Jangan muat turun sandaran";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Pastikan kaedah pembayaran anda dikemas kini. Ketik Urus Langganan > Signal > Kemas Kini Kaedah Pembayaran.";
@@ -2349,6 +2349,24 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Padam Sembang?";
+
+/* Title for the button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that dismisses the sheet without pasting the key. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Don’t Share";
+
+/* Message body for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, warning them not to share it. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_MESSAGE" = "Do not share your recovery key with anyone. This will let them take over your account. Signal will never message you for your recovery key. Never respond to a chat pretending to be Signal.";
+
+/* Title for the destructive button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that proceeds with the paste. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_PASTE_BUTTON_TITLE" = "Paste Key";
+
+/* Title for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_TITLE" = "Do Not Share Recovery Key";
+
+/* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that dismisses the sheet without pasting the key. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Do Not Share Key";
+
+/* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that acknowledges the warning and proceeds with the paste. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_SHARE_BUTTON_TITLE" = "Share Key";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Redamkan sembang ini untuk...";
@@ -6055,9 +6073,6 @@
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Langkau dan Cipta Pin Baru";
 
-/* Label for action to use Recovery Key instead of PIN for registration. */
-"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "Gunakan Kunci Pemulihan";
-
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Jika anda tidak ingat PIN anda, anda boleh mencipta yang baru. Anda boleh mendaftar dan mengguna akaun anda tetapi anda akan kehilangan sesetengah tetapan yang disimpan seperti maklumat profil anda.";
 
@@ -6878,7 +6893,7 @@
 "PIN_CREATION_EXPLANATION" = "PIN memastikan maklumat yang disimpan dengan Signal disulitkan supaya hanya anda boleh mengaksesnya. Profil, tetapan dan kenalan anda akan dipulihkan semasa anda memasang semula. Anda tidak memerlukan PIN anda untuk membuka aplikasi.";
 
 /* Message when a generic error occurs while creating a PIN. */
-"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Something went wrong creating your PIN. Please contact support.";
+"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Ada yang tidak kena semasa mencipta PIN anda. Sila hubungi sokongan.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Lagi Tentang PIN";
@@ -6893,7 +6908,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN tidak sepadan. Cuba lagi.";
 
 /* Message when a network error occurs while creating a PIN. */
-"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Something went wrong creating your PIN. Check your connection and try again.";
+"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Ada yang tidak kena semasa mencipta PIN anda. Periksa sambungan anda dan cuba lagi.";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN perlu sekurang-kurangnya 4 digit";
@@ -6921,9 +6936,6 @@
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
 "PIN_ENTER_EXISTING_SKIP" = "Langkau PIN";
-
-/* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
-"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "Gunakan Kunci Pemulihan";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Untuk membantu anda menghafal PIN anda, kami akan meminta anda memasukinya secara berkala. Kami akan tanya dari masa ke masa.";
@@ -7901,7 +7913,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Kosongkan %1$@ pada peranti ini";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "Anda mempunyai media dalam sandaran anda yang tiada pada peranti ini. Media yang belum dimuat turun akan dipadamkan secara kekal tanpa langganan berbayar.";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "Jika anda langkau muat turun media dan lampiran yang tinggal, ia boleh dimuat turun kemudian apabila ruang storan mencukupi.";
@@ -8018,7 +8030,7 @@
 "SAFETY_TIPS_HEADER_TITLE" = "Tip Keselamatan";
 
 /* Message body describing the keeping codes safe safety tip. */
-"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "Jika anda menerima kod pengesahan yang tidak anda minta, seseorang mungkin sedang cuba mengakses akaun anda. Jangan kongsi kod anda.";
 
 /* Message title describing the keeping codes safe safety tip. */
 "SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "Pastikan kod pengesahan andaselamat";

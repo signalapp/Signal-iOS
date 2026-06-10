@@ -580,6 +580,12 @@
 /* Toast indicating that the Recovery Key was correct. */
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Juiste herstelsleutel. Bewaar je sleutel op een veilige manier.";
 
+/* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "<bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal. Store your recovery key somewhere safe and never share it with anyone.";
+
+/* Title for a warning sheet shown to discourage the user from sharing their 'Recovery Key'. */
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "Do Not Share Recovery Key";
+
 /* Button label for action sheet to cancel backup onboarding */
 "BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "Instellen back-up verlaten";
 
@@ -652,14 +658,8 @@
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Kopiëren naar klembord";
 
-/* Body for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, warning them not to share it with anyone. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal will <bold>never</bold> message you for your recovery key. Do not respond to a chat pretending to be Signal. Store your recovery key somewhere safe and do not share it with anyone.";
-
 /* Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Got It";
-
-/* Title for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "Do Not Share Your Recovery Key";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Begrepen";
 
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Nieuwe sleutel aanmaken";
@@ -833,7 +833,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Back-ups zijn uitgeschakeld en je gegevens zijn verwijderd uit de beveiligde opslagservice van Signal.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, and any media that is not on this device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Back-ups zijn uitgeschakeld, alle media die niet op het apparaat staan, worden nu gedownload. Nadat ze zijn gedownload, worden je gegevens verwijderd uit de beveiligde opslagservice van Signal.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Er is een fout opgetreden. Neem contact op met ondersteuning.";
@@ -998,13 +998,13 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Verplaatste media downloaden?";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Oudere media worden verwijderd van je apparaat bij de volgende back-up, maar kunnen op elk moment opnieuw worden gedownload vanuit je back-up.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Opslagoptimalisatie kan alleen worden gebruikt met een betaald abonnement op Signal Secure Backups. Upgrade je back-upabonnement om deze functie te gebruiken.";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Signal-opslag optimaliseren";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "Je hebt de limiet voor je back-upopslag bereikt. Maak ruimte vrij in Signal om back-ups van chats en media te kunnen maken.";
@@ -1016,25 +1016,25 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Back-ups opnieuw inschakelen";
 
 /* Message for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted once backups are disabled.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "Je hebt media in je back-up die niet op dit apparaat staan. Media die niet zijn gedownload, worden permanent verwijderd wanneer back-ups zijn uitgeschakeld.";
 
 /* Title for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Downloaden overslaan?";
 
 /* Message for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "Je hebt media in je back-up die niet op dit apparaat staan. Media die niet zijn gedownload, worden permanent verwijderd als je geen betaald abonnement hebt.";
 
 /* Title for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Downloaden overslaan?";
 
 /* Title for an action in a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Downloaden overslaan";
 
 /* Message for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Are you sure you want to skip downloading your media?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Weet je zeker dat je het downloaden van je media wilt overslaan?";
 
 /* Title for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Downloaden overslaan?";
 
 /* Title for an action in a sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "Downloaden overslaan";
@@ -1076,34 +1076,34 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "Aan het uploaden…";
 
 /* Title for a button in a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Nu back-up maken";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "This could take a while. You can use Signal normally while backing up.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Dit kan even duren. Je kunt Signal gewoon blijven gebruiken tijdens het maken van de back-up.";
 
 /* Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Oudere media worden verwijderd van je apparaat bij de volgende back-up, maar kunnen op elk moment opnieuw worden gedownload vanuit je back-up.";
 
 /* Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Signal-opslag optimaliseren";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "You're all set. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Je bent er klaar voor. Maak nu je back-up.";
 
 /* Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "You have media in your backup that's not on this device. Undownloaded media will be permanently deleted without a paid subscription.\n\nYou can begin paying for backups again at any time to continue backing up your media.";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "Je hebt media in je back-up die niet op dit apparaat staan. Media die niet zijn gedownload, worden permanent verwijderd als je geen betaald abonnement hebt.\n\nJe kunt op elk gewenst moment opnieuw betalen zodat back-ups van je media worden gemaakt.";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Download Your Backup Media";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Download je back-upmedia";
 
 /* Primary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Download Backup Now";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Nu back-up downloaden";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Download Your Backup Media Today";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Download vandaag je back-upmedia";
 
 /* Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Don't Download Backup";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Back-up niet downloaden";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "Controleer of je betaalmethode nog steeds juist is. Tik op Abonnement beheren > Signal > Betaalmethode bijwerken.";
@@ -2349,6 +2349,24 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Chat verwijderen?";
+
+/* Title for the button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that dismisses the sheet without pasting the key. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Don’t Share";
+
+/* Message body for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, warning them not to share it. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_MESSAGE" = "Do not share your recovery key with anyone. This will let them take over your account. Signal will never message you for your recovery key. Never respond to a chat pretending to be Signal.";
+
+/* Title for the destructive button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that proceeds with the paste. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_PASTE_BUTTON_TITLE" = "Paste Key";
+
+/* Title for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_TITLE" = "Do Not Share Recovery Key";
+
+/* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that dismisses the sheet without pasting the key. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Do Not Share Key";
+
+/* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that acknowledges the warning and proceeds with the paste. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_SHARE_BUTTON_TITLE" = "Share Key";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Deze chat dempen voor…";
@@ -6055,9 +6073,6 @@
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Overslaan en nieuwe pincode aanmaken";
 
-/* Label for action to use Recovery Key instead of PIN for registration. */
-"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "Herstelsleutel gebruiken";
-
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Als je je pincode niet kunt herinneren, dan kun je een nieuwe pincode aanmaken. Je kunt je opnieuw registreren en je account gebruiken maar je verliest wel een aantal opgeslagen instellingen, zoals je profielinformatie.";
 
@@ -6878,7 +6893,7 @@
 "PIN_CREATION_EXPLANATION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signals servers zodat alleen jij er toegang toe hebt. Je kunt hierdoor je profiel, instellingen en contacten herstellen wanneer je Signal opnieuw installeert. Je hebt de pincode niet nodig om de app te openen.";
 
 /* Message when a generic error occurs while creating a PIN. */
-"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Something went wrong creating your PIN. Please contact support.";
+"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Er ging iets mis bij het aanmaken van je pincode. Neem contact op met ondersteuning.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Meer over pincodes";
@@ -6893,7 +6908,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "De pincodes komen niet overeen. Probeer het opnieuw.";
 
 /* Message when a network error occurs while creating a PIN. */
-"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Something went wrong creating your PIN. Check your connection and try again.";
+"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Er ging iets mis bij het aanmaken van je pincode. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "Je pincode moet uit ten minste 4 cijfers bestaan";
@@ -6921,9 +6936,6 @@
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
 "PIN_ENTER_EXISTING_SKIP" = "Pincode overslaan";
-
-/* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
-"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "Herstelsleutel gebruiken";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden, vragen we je regelmatig om je pincode in te voeren. We zullen dit na verloop van tijd minder vaak vragen.";
@@ -7901,7 +7913,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Maak %1$@ vrij op dit apparaat";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "Je hebt media in je back-up die niet op dit apparaat staan. Media die niet zijn gedownload, worden permanent verwijderd als je geen betaald abonnement hebt.";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "Als je downloaden overslaat, kunnen de resterende media en bijlagen in je back-up op een later moment worden gedownload wanneer er opslagruimte vrijkomt.";
@@ -8018,7 +8030,7 @@
 "SAFETY_TIPS_HEADER_TITLE" = "Veiligheidstips";
 
 /* Message body describing the keeping codes safe safety tip. */
-"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "Als je een verificatiecode hebt ontvangen die je niet hebt aangevraagd, kan het zijn dat iemand probeert toegang te krijgen tot je account. Deel je code niet.";
 
 /* Message title describing the keeping codes safe safety tip. */
 "SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "Bewaar je verificatiecode op een veilige manier";
@@ -8330,7 +8342,7 @@
 "SETTINGS_ADVANCED_PIN_SETTINGS" = "Geavanceerde pincode-instellingen";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Geavanceerde pincode-instellingen";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Geav. pincode-instellingen";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Pincode uitschakelen";

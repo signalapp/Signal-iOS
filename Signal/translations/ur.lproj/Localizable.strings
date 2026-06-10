@@ -580,6 +580,12 @@
 /* Toast indicating that the Recovery Key was correct. */
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "ریکوری کیی درست ہے۔ اپنی کیی کو محفوظ رکھیں۔";
 
+/* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "<bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal. Store your recovery key somewhere safe and never share it with anyone.";
+
+/* Title for a warning sheet shown to discourage the user from sharing their 'Recovery Key'. */
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "Do Not Share Recovery Key";
+
 /* Button label for action sheet to cancel backup onboarding */
 "BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "بیک اپ کا سیٹ اپ بند کریں";
 
@@ -652,14 +658,8 @@
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "کلپ بورڈ پر کاپی کریں";
 
-/* Body for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, warning them not to share it with anyone. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_BODY" = "Signal will <bold>never</bold> message you for your recovery key. Do not respond to a chat pretending to be Signal. Store your recovery key somewhere safe and do not share it with anyone.";
-
 /* Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "Got It";
-
-/* Title for a warning sheet shown before copying the user's 'Recovery Key' to the clipboard. */
-"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_TITLE" = "Do Not Share Your Recovery Key";
+"BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE" = "سمجھ گیا";
 
 /* Title for a button allowing users to create a new 'Recovery Key'. */
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "نئی کیی تخلیق کریں";
@@ -833,7 +833,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "بیک اپس کو آف کر دیا گیا ہے اور آپ کے ڈیٹا کو Signal کی محفوظ اسٹوریج کی سروس سے حذف کر دیا گیا ہے۔";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Backups have been turned off, and any media that is not on this device is downloading now. Once downloaded your data will be deleted from Signal’s secure storage service.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "بیک اپس غیر فعال کر دیے گئے ہیں، اور ایسا کوئی بھی میڈیا جو اس ڈیوائس میں موجود نہیں ہے اب ڈاؤن لوڈ ہو رہا ہے۔ ڈاؤن لوڈ ہونے کے بعد آپ کے ڈیٹا کو Signal کی محفوظ شدہ اسٹوریج کی سروس سے حذف کر دیا جائے گا۔";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "ایک نقص پیش آیا۔ براہ کرم سپورٹ سے رابطہ کریں۔";
@@ -998,13 +998,13 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "آف لوڈ شدہ میڈیا ڈاؤن لوڈ کریں؟";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "جب آپ اپنا اگلا بیک اپ کریں گے تو پرانا میڈیا آف لوڈ ہو جائے گا، لیکن اپنے بیک اپ سے اسے کسی بھی وقت ڈاؤن لوڈ کر سکتے ہیں۔";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "اسٹوریج کی کارکردگی کو صرف Signal بیک اپس کے ادا شدہ درجے کے ساتھ ہی استعمال کیا جا سکتا ہے۔ اس فیچر کے استعمال کو شروع کرنے کے لیے اپنے بیک اپ پلان کو اپ گریڈ کریں۔";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Signal کی اسٹوریج کو بہتر کریں";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "آپ اپنی بیک اپ اسٹوریج کی حد تک پہنچ گئے ہیں۔ چیٹس اور میڈیا کا بیک اپ جاری رکھنے کے لیے Signal میں جگہ خالی کریں۔";
@@ -1016,25 +1016,25 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "بیک اپس کو دوبارہ فعال کریں";
 
 /* Message for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted once backups are disabled.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "آپ کے بیک اپ میں وہ میڈیا موجود ہے جو اس ڈیوائس میں موجود نہیں ہے۔ بیک اپس غیر فعال کر دیے جانے کے بعد غیر ڈاؤن لوڈ شدہ میڈیا مستقل طور پر حذف کر دیا جائے گا۔";
 
 /* Title for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "ڈاؤن لوڈ کو چھوڑ دیں؟";
 
 /* Message for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "آپ کے بیک اپ میں وہ میڈیا موجود ہے جو اس ڈیوائس میں موجود نہیں ہے۔ ادا شدہ سبسکرپشن کے بغیر غیر ڈاؤن لوڈ شدہ میڈیا مستقل طور پر حذف کر دیا جائے گا۔";
 
 /* Title for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "ڈاؤن لوڈ کو چھوڑ دیں؟";
 
 /* Title for an action in a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Skip Download";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "ڈاؤن لوڈ چھوڑ دیں";
 
 /* Message for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Are you sure you want to skip downloading your media?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "کیا آپ واقعی اپنا میڈیا ڈاؤن لوڈ کرنے کو چھوڑنا چاہتے ہیں؟";
 
 /* Title for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Skip Download?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "ڈاؤن لوڈ کو چھوڑ دیں؟";
 
 /* Title for an action in a sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_ACTION_SKIP" = "ڈاؤن لوڈ چھوڑ دیں";
@@ -1076,34 +1076,34 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "اپ لوڈ ہو رہا ہے";
 
 /* Title for a button in a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "Back Up Now";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_BUTTON_TITLE" = "اب بیک اپ کریں";
 
 /* Message for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "This could take a while. You can use Signal normally while backing up.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "اس میں کچھ وقت لگ سکتا ہے۔ آپ بیک اپ کے دوران Signal کو معمول کے مطابق استعمال کر سکتے ہیں۔";
 
 /* Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Older media will be offloaded when you make your next backup, but can be downloaded from your backup anytime.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "جب آپ اپنا اگلا بیک اپ کریں گے تو پرانا میڈیا آف لوڈ ہو جائے گا، لیکن اپنے بیک اپ سے اسے کسی بھی وقت ڈاؤن لوڈ کر سکتے ہیں۔";
 
 /* Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optimize Signal Storage";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Signal کی اسٹوریج کو بہتر کریں";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "You're all set. Start your backup now.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "آپ بالکل تیار ہیں۔ ابھی اپنا بیک اپ شروع کریں۔";
 
 /* Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "You have media in your backup that's not on this device. Undownloaded media will be permanently deleted without a paid subscription.\n\nYou can begin paying for backups again at any time to continue backing up your media.";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "آپ کے بیک اپ میں وہ میڈیا موجود ہے جو اس ڈیوائس میں موجود نہیں ہے۔ ادا شدہ سبسکرپشن کے بغیر غیر ڈاؤن لوڈ شدہ میڈیا مستقل طور پر حذف کر دیا جائے گا۔\n\nآپ اپنے میڈیا کا بیک اپ جاری رکھنے کے لیے کسی بھی وقت بیک اپس کے لیے دوبارہ ادائیگی کرنے کا آغاز کر سکتے ہیں۔";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Download Your Backup Media";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "اپنا بیک اپ میڈیا ڈاؤن لوڈ کریں";
 
 /* Primary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Download Backup Now";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "ابھی بیک اپ ڈاؤن لوڈ کریں";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Download Your Backup Media Today";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "اپنا بیک اپ میڈیا آج ہی ڈاؤن لوڈ کریں";
 
 /* Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Don't Download Backup";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "بیک اپ کو ڈاؤن لوڈ نہ کریں";
 
 /* Message for a sheet shown when your Backup subscription fails to renew. */
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_MESSAGE" = "یہ یقینی بنانے کے لیے چیک کریں کہ آپ کا پیمنٹ کا طریقہ اپ ٹو ڈیٹ ہے۔ سبسکرپشن کا نظم کریں > Signal > پیمنٹ کا طریقہ اپ ڈیٹ کریں پر ٹیپ کریں۔";
@@ -2349,6 +2349,24 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "چیٹ کو حذف کریں؟";
+
+/* Title for the button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that dismisses the sheet without pasting the key. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Don’t Share";
+
+/* Message body for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, warning them not to share it. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_MESSAGE" = "Do not share your recovery key with anyone. This will let them take over your account. Signal will never message you for your recovery key. Never respond to a chat pretending to be Signal.";
+
+/* Title for the destructive button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that proceeds with the paste. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_PASTE_BUTTON_TITLE" = "Paste Key";
+
+/* Title for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_TITLE" = "Do Not Share Recovery Key";
+
+/* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that dismisses the sheet without pasting the key. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Do Not Share Key";
+
+/* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that acknowledges the warning and proceeds with the paste. */
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_SHARE_BUTTON_TITLE" = "Share Key";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "اس چیٹ کو خاموش کریں تا وقتیکہ۔۔۔";
@@ -6055,9 +6073,6 @@
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "چھوڑیں اور نیا پن بنائیں";
 
-/* Label for action to use Recovery Key instead of PIN for registration. */
-"ONBOARDING_2FA_SKIP_AND_USE_RECOVERY_KEY" = "بحالی کی کیی استعمال کریں";
-
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "اگر آپ اپنا پن یاد نہیں کرسکتے ہیں تو ، آپ ایک نیا بنا سکتے ہیں۔ آپ اپنا اکاؤنٹ رجسٹر اور استعمال کرسکتے ہیں لیکن آپ اپنی پروفائل کی معلومات جیسے کچھ محفوظ کردہ ترتیبات کو گنوا بیٹھیں گے۔";
 
@@ -6878,7 +6893,7 @@
 "PIN_CREATION_EXPLANATION" = "PINs Signal کے ساتھ ذخیرہ شدہ معلومات کو خفیہ شدہ رکھتا ہے لہذا صرف آپ ہی اس تک رسائی حاصل کرسکتے ہیں۔ جب آپ دوبارہ انسٹال کریں گے تو آپ کا پروفائل ، ترتیبات اور رابطے بحال ہوں گے۔ ایپ کو کھولنے کے لیئے آپ کو اپنے PIN کی ضرورت نہیں ہوگی۔";
 
 /* Message when a generic error occurs while creating a PIN. */
-"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "Something went wrong creating your PIN. Please contact support.";
+"PIN_CREATION_GENERIC_ERROR_MESSAGE" = "آپ کی پن تخلیق کرتے ہوئے کچھ غلط ہو گیا ہے۔ براہ کرم سپورٹ سے رابطہ کریں۔";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "پِنز سے متعلق مزید";
@@ -6893,7 +6908,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "پن میچ نہیں ہوا۔ دوبارہ کوشش کریں۔";
 
 /* Message when a network error occurs while creating a PIN. */
-"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "Something went wrong creating your PIN. Check your connection and try again.";
+"PIN_CREATION_NETWORK_ERROR_MESSAGE" = "آپ کی پن تخلیق کرتے ہوئے کچھ غلط ہو گیا ہے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "پن کم از کم 4 ہندسوں کا ہونا ضروری ہے";
@@ -6921,9 +6936,6 @@
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
 "PIN_ENTER_EXISTING_SKIP" = "پِن چھوڑ دیں";
-
-/* If the user is re-registering, they need to enter their PIN to restore all their data. If they don't remember their PIN, they may remember their Recovery Key which can be used instead of a PIN. */
-"PIN_ENTER_EXISTING_USE_RECOVERY_KEY" = "بحالی کی کیی استعمال کریں";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "اپنا پن یاد رکھنے میں مدد کیلئے،ہم وقتآ فوقتآ داخل کرنے کا کہیں گے۔ہم وقت کیساتھ کم کہیں گے۔";
@@ -7901,7 +7913,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "اس ڈیوائس پر %1$@ خالی کریں";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "You have media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "آپ کے بیک اپ میں وہ میڈیا موجود ہے جو اس ڈیوائس میں موجود نہیں ہے۔ ادا شدہ سبسکرپشن کے بغیر غیر ڈاؤن لوڈ شدہ میڈیا مستقل طور پر حذف کر دیا جائے گا۔";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "اگر آپ ڈاؤن لوڈنگ کے عمل کو چھوڑ دیتے ہیں، تو اپنے بیک اپ میں موجود باقی میڈیا اور منسلکات کو بعد میں اس وقت ڈاؤن لوڈ کیا جا سکتا ہے جب اسٹوریج کی جگہ دستیاب ہو۔";
@@ -8018,7 +8030,7 @@
 "SAFETY_TIPS_HEADER_TITLE" = "حفاظتی تجاویز";
 
 /* Message body describing the keeping codes safe safety tip. */
-"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "If you received a verification code you didn’t request, someone may be attempting to access your account. Do not share your code.";
+"SAFETY_TIPS_KEEP_CODE_SAFE_BODY" = "اگر آپ کو کوئی ایسا تصدیقی کوڈ موصول ہوتا ہے جس کی آپ نے درخواست نہیں کی، تو ہو سکتا ہے کوئی آپ کے اکاؤنٹ تک رسائی حاصل کرنے کی کوشش کر رہا ہو۔ اپنا کوڈ شیئر نہ کریں۔";
 
 /* Message title describing the keeping codes safe safety tip. */
 "SAFETY_TIPS_KEEP_CODE_SAFE_TITLE" = "اپنا تصدیقی کوڈ محفوظ رکھیں";
