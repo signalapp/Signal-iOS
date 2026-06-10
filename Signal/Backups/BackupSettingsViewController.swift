@@ -523,7 +523,6 @@ class BackupSettingsViewController:
                 },
             )
 
-            upsellVC.isModalInPresentation = true
             present(upsellVC, animated: true)
         } catch {
             error.showSheet(from: self)
@@ -1136,8 +1135,14 @@ class BackupSettingsViewController:
 
     // MARK: -
 
-    fileprivate func setOptimizeLocalStorage(_ newOptimizeLocalStorage: Bool) {
-        let hasMadeAtLeastOneBackup: Bool? = db.write { tx in
+    fileprivate func setOptimizeLocalStorage(_ newValue: Bool) {
+        enum Action {
+            case showDownloadOffloadedMediaSheet
+            case showUpsell
+            case warnAboutExpiringMedia(newBackupPlan: BackupPlan)
+        }
+
+        let action: Action? = db.write { tx -> Action? in
             let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
             let lastBackupDetails = backupSettingsStore.lastBackupDetails(tx: tx)
 
@@ -1145,30 +1150,68 @@ class BackupSettingsViewController:
             switch currentBackupPlan {
             case .disabled,
                  .disabling,
-                 .free,
-                 .paid(optimizeLocalStorage: newOptimizeLocalStorage),
-                 .paidExpiringSoon(optimizeLocalStorage: newOptimizeLocalStorage),
-                 .paidAsTester(optimizeLocalStorage: newOptimizeLocalStorage):
+                 .paid(optimizeLocalStorage: newValue),
+                 .paidExpiringSoon(optimizeLocalStorage: newValue),
+                 .paidAsTester(optimizeLocalStorage: newValue):
                 return nil
+            case .free:
+                return .showUpsell
             case .paid:
-                newBackupPlan = .paid(optimizeLocalStorage: newOptimizeLocalStorage)
+                newBackupPlan = .paid(optimizeLocalStorage: newValue)
             case .paidExpiringSoon:
-                newBackupPlan = .paidExpiringSoon(optimizeLocalStorage: newOptimizeLocalStorage)
+                if newValue {
+                    // When enabling Optimize Storage with a soon-expiring
+                    // subscription, show a sheet about it. Offloaded media if
+                    // the subscription might end is risky.
+                    return .warnAboutExpiringMedia(
+                        newBackupPlan: .paidExpiringSoon(optimizeLocalStorage: newValue),
+                    )
+                } else {
+                    // Ideally, if you have a soon-expiring subscription you're
+                    // disabling Optimize Storage to download your offloaded media.
+                    newBackupPlan = .paidExpiringSoon(optimizeLocalStorage: newValue)
+                }
             case .paidAsTester:
-                newBackupPlan = .paidAsTester(optimizeLocalStorage: newOptimizeLocalStorage)
+                newBackupPlan = .paidAsTester(optimizeLocalStorage: newValue)
             }
 
             backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
-            return lastBackupDetails != nil
+
+            // If disabling Optimize Storage, offer to start downloads now.
+            if
+                lastBackupDetails != nil,
+                !newValue
+            {
+                return .showDownloadOffloadedMediaSheet
+            } else {
+                return nil
+            }
         }
 
-        if
-            hasMadeAtLeastOneBackup == true,
-            !newOptimizeLocalStorage
-        {
-            // If disabling Optimize Local Storage with media potentially
-            // offloaded, offer to start downloads now.
+        switch action {
+        case nil:
+            break
+        case .showDownloadOffloadedMediaSheet:
             showDownloadOffloadedMediaSheet()
+        case .showUpsell:
+            presentBackupPlanUpsell(
+                titleTextBuilder: { tx in
+                    OWSLocalizedString(
+                        "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_TITLE",
+                        comment: "Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to use storage optimization.",
+                    )
+                },
+                bodyTextBuilder: { tx in
+                    OWSLocalizedString(
+                        "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_BODY",
+                        comment: "Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to use storage optimization.",
+                    )
+                },
+            )
+        case .warnAboutExpiringMedia(let newBackupPlan):
+            warnAboutExpiringMedia(
+                whileSettingBackupPlanToDisableOptimizeStorage: newBackupPlan,
+            )
         }
     }
 
@@ -1205,6 +1248,51 @@ class BackupSettingsViewController:
         ))
 
         presentActionSheet(actionSheet)
+    }
+
+    private func warnAboutExpiringMedia(
+        whileSettingBackupPlanToDisableOptimizeStorage newBackupPlan: BackupPlan,
+    ) {
+        let warningSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_TITLE",
+                comment: "Title for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription.",
+            ),
+            message: OWSLocalizedString(
+                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE",
+                comment: "Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription.",
+            ),
+        )
+        warningSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_OFFLOAD_ACTION",
+                comment: "Action in a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription, that confirms enabling Optimize Storage.",
+            ),
+            style: .destructive,
+            handler: { [weak self] _ in
+                guard let self else { return }
+
+                db.write { tx in
+                    self.backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
+                }
+
+                let bonusSheet = ActionSheetController(
+                    message: OWSLocalizedString(
+                        "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE",
+                        comment: "Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires.",
+                    ),
+                )
+                bonusSheet.addAction(ActionSheetAction(
+                    title: OWSLocalizedString(
+                        "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION",
+                        comment: "Action in a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, that dismisses the sheet.",
+                    ),
+                ))
+                present(bonusSheet, animated: true)
+            },
+        ))
+        warningSheet.addAction(.cancel)
+        present(warningSheet, animated: true)
     }
 
     // MARK: -
@@ -1767,20 +1855,6 @@ private class BackupSettingsViewModel: ObservableObject {
 
     // MARK: -
 
-    /// Whether the "Optimze Storage" feature is available, per the current
-    /// `BackupPlan`.
-    var isOptimizeLocalStorageAvailable: Bool {
-        switch backupPlan {
-        case .disabled, .disabling, .free:
-            false
-        case .paid, .paidAsTester:
-            true
-        case .paidExpiringSoon(let optimizeLocalStorage):
-            // Only allow disabling Optimize Storage if expiring soon, not enabling.
-            optimizeLocalStorage
-        }
-    }
-
     var isOptimizeLocalStorageEnabled: Bool {
         switch backupPlan {
         case .disabled, .disabling, .free:
@@ -2063,17 +2137,18 @@ struct BackupSettingsView: View {
                             get: { viewModel.isOptimizeLocalStorageEnabled },
                             set: { viewModel.setOptimizeLocalStorage($0) },
                         ),
-                    ).disabled(!viewModel.isOptimizeLocalStorageAvailable)
+                    )
                 } footer: {
-                    let footerText: String = if viewModel.isOptimizeLocalStorageAvailable {
-                        OWSLocalizedString(
-                            "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE",
-                            comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available.",
-                        )
-                    } else {
+                    let footerText = switch viewModel.backupPlan {
+                    case .disabled, .disabling, .free:
                         OWSLocalizedString(
                             "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE",
                             comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable.",
+                        )
+                    case .paid, .paidExpiringSoon, .paidAsTester:
+                        OWSLocalizedString(
+                            "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE",
+                            comment: "Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available.",
                         )
                     }
 
