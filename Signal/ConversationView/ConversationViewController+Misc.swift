@@ -493,12 +493,14 @@ extension ConversationViewController {
         if !self.isMarkingAsRead, isShowingUnreadMessage {
             self.isMarkingAsRead = true
 
-            SSKEnvironment.shared.receiptManagerRef.markAsReadLocally(
-                beforeSortId: lastVisibleSortId,
-                thread: self.thread,
-                hasPendingMessageRequest: self.threadViewModel.hasPendingMessageRequest,
-            ) {
-                AssertIsOnMainThread()
+            let receiptManager = SSKEnvironment.shared.receiptManagerRef
+            Task { @MainActor in
+                await receiptManager.markAsReadLocally(
+                    beforeSortId: lastVisibleSortId,
+                    thread: self.thread,
+                    hasPendingMessageRequest: self.threadViewModel.hasPendingMessageRequest,
+                )
+
                 self.setLastSortIdMarkedRead(lastSortIdMarkedRead: lastVisibleSortId)
                 self.isMarkingAsRead = false
 

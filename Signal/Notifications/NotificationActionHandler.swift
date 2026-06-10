@@ -455,13 +455,12 @@ public class NotificationActionHandler {
         guard let interaction = notificationMessage.interaction else {
             throw OWSAssertionError("missing interaction")
         }
-        return await withCheckedContinuation { continuation in
-            SSKEnvironment.shared.receiptManagerRef.markAsReadLocally(
-                beforeSortId: interaction.sortId,
-                thread: notificationMessage.thread,
-                hasPendingMessageRequest: notificationMessage.hasPendingMessageRequest,
-                completion: { continuation.resume() },
-            )
-        }
+
+        let receiptManager = SSKEnvironment.shared.receiptManagerRef
+        await receiptManager.markAsReadLocally(
+            beforeSortId: interaction.sortId,
+            thread: notificationMessage.thread,
+            hasPendingMessageRequest: notificationMessage.hasPendingMessageRequest,
+        )
     }
 }

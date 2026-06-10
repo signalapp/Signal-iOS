@@ -255,11 +255,8 @@ public class OWSReceiptManager: NSObject {
     public func setAreReadReceiptsEnabled(_ value: Bool, transaction: DBWriteTransaction) {
         Self.keyValueStore.setBool(value, key: Self.kOwsReceiptManagerAreReadReceiptsEnabled, transaction: transaction)
     }
-}
 
-// MARK: -
-
-extension OWSReceiptManager {
+    // MARK: -
 
     private func processReceiptsForLinkedDevices(transaction: DBWriteTransaction) -> Bool {
         let readReceiptsForLinkedDevices: [ReceiptForLinkedDevice]
@@ -602,156 +599,208 @@ extension OWSReceiptManager {
 
     // MARK: - Mark as read
 
+    /// Serializes calls to `markAsReadLocally` per-thread.
+    private let markAsReadTaskQueues = KeyedConcurrentTaskQueue<TSThread.RowId>(
+        concurrentLimitPerKey: 1,
+    )
+
     public func markAsReadLocally(
         beforeSortId sortId: UInt64,
         thread: TSThread,
         hasPendingMessageRequest: Bool,
-        completion: @escaping () -> Void,
-    ) {
-        DispatchQueue.global().async {
-            let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
-
-            let hasMessagesToMarkRead = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                return interactionFinder.hasMessagesToMarkRead(
-                    beforeSortId: sortId,
-                    transaction: transaction,
-                )
-            }
-            guard hasMessagesToMarkRead else {
-                // Avoid unnecessary writes.
-                DispatchQueue.main.async(execute: completion)
-                return
-            }
-
-            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci
-            let readTimestamp = Date.ows_millisecondTimestamp()
-            let maxBatchSize = 500
-
-            let circumstance: OWSReceiptCircumstance
-            let logSuffix: String
-            if hasPendingMessageRequest {
-                circumstance = .onThisDeviceWhilePendingMessageRequest
-                logSuffix = " while pending message request"
-            } else {
-                circumstance = .onThisDevice
-                logSuffix = ""
-            }
-            Logger.info("Marking received messages and sent messages with reactions as read locally\(logSuffix) (in batches of \(maxBatchSize))")
-
-            var batchQuotaRemaining: Int
-            repeat {
-                batchQuotaRemaining = maxBatchSize
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    var cursor = interactionFinder.fetchUnreadMessages(
-                        beforeSortId: sortId,
-                        transaction: transaction,
-                    )
-                    do {
-                        while batchQuotaRemaining > 0, let readItem = try cursor.next() {
-                            readItem.markAsRead(
-                                atTimestamp: readTimestamp,
-                                thread: thread,
-                                circumstance: circumstance,
-                                shouldClearNotifications: true,
-                                transaction: transaction,
-                            )
-                            batchQuotaRemaining -= 1
-                        }
-                    } catch {
-                        owsFailDebug("unexpected failure fetching unread messages: \(error)")
-                        // Bail out of the outer loop by leaving the quota > 0;
-                        // we're likely to hit the error multiple times.
-                    }
-                }
-                // Continue until we process a batch and have some quota left.
-            } while
-                batchQuotaRemaining == 0
-
-            // Mark outgoing messages with unread reactions as well.
-            repeat {
-                batchQuotaRemaining = maxBatchSize
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    var receiptsForMessage: [LinkedDeviceReadReceipt] = []
-                    var cursor = interactionFinder.fetchMessagesWithUnreadReactions(
-                        beforeSortId: sortId,
-                        transaction: transaction,
-                    )
-
-                    do {
-                        while batchQuotaRemaining > 0, let message = try cursor.next() {
-                            message.markUnreadReactionsAsRead(transaction: transaction)
-
-                            if let localAci {
-                                let receipt = LinkedDeviceReadReceipt(
-                                    senderAci: localAci,
-                                    messageUniqueId: message.uniqueId,
-                                    messageIdTimestamp: message.timestamp,
-                                    readTimestamp: readTimestamp,
-                                )
-                                receiptsForMessage.append(receipt)
-                            }
-
-                            batchQuotaRemaining -= 1
-                        }
-                    } catch {
-                        owsFailDebug("unexpected failure fetching messages with unread reactions: \(error)")
-                        // Bail out of the outer loop by leaving the quota > 0;
-                        // we're likely to hit the error multiple times.
-                    }
-
-                    if !receiptsForMessage.isEmpty {
-                        guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
-                            owsFailDebug("Couldn't create localThread.")
-                            return
-                        }
-                        let message = OutgoingReadReceiptsSyncMessage(
-                            localThread: localThread,
-                            readReceipts: receiptsForMessage,
-                            tx: transaction,
-                        )
-                        let preparedMessage = PreparedOutgoingMessage.preprepared(
-                            transientMessageWithoutAttachments: message,
-                        )
-                        self.messageSenderJobQueue.add(message: preparedMessage, transaction: transaction)
-                    }
-                }
-                // Continue until we process a batch and have some quota left.
-            } while batchQuotaRemaining == 0
-
-            DispatchQueue.main.async(execute: completion)
+    ) async {
+        await markAsReadTaskQueues.runWithoutTaskCancellationHandler(forKey: thread.sqliteRowId!) {
+            await _markAsReadLocally(
+                beforeSortId: sortId,
+                thread: thread,
+                hasPendingMessageRequest: hasPendingMessageRequest,
+            )
         }
     }
 
-    func markAsRead(
+    private func _markAsReadLocally(
+        beforeSortId: UInt64,
+        thread: TSThread,
+        hasPendingMessageRequest: Bool,
+    ) async {
+        let db = DependenciesBridge.shared.db
+        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        let circumstance: OWSReceiptCircumstance
+        if hasPendingMessageRequest {
+            circumstance = .onThisDeviceWhilePendingMessageRequest
+        } else {
+            circumstance = .onThisDevice
+        }
+
+        let logger = PrefixedLogger(prefix: "\(circumstance)")
+        let readTimestamp = Date().ows_millisecondsSince1970
+
+        logger.info("readTimestamp: \(readTimestamp)")
+
+        // First, do all unread messages.
+        struct TxContextUnreadMessages {
+            var cursor: FailIfThrowsRecordCursor<InteractionRecord>
+        }
+        await TimeGatedBatch.processAll(
+            db: db,
+            buildTxContext: { tx -> TxContextUnreadMessages in
+                return TxContextUnreadMessages(
+                    cursor: interactionFinder.fetchUnreadMessages(
+                        beforeSortId: beforeSortId,
+                        tx: tx,
+                    ),
+                )
+            },
+            processBatch: { tx, txContext -> TimeGatedBatch.ProcessBatchResult<Void> in
+                guard let nextInteractionRecord = txContext.cursor.next() else {
+                    return .done(())
+                }
+
+                let nextInteraction: TSInteraction
+                do {
+                    nextInteraction = try TSInteraction.fromRecord(nextInteractionRecord)
+                } catch {
+                    owsFailDebug("Failed to instantiate unread TSInteraction! \(error)", logger: logger)
+                    return .more
+                }
+
+                guard let readTracking = nextInteraction as? OWSReadTracking else {
+                    owsFailDebug("Unread TSInteraction was not OWSReadTracking?", logger: logger)
+                    return .more
+                }
+
+                readTracking.markAsRead(
+                    atTimestamp: readTimestamp,
+                    thread: thread,
+                    circumstance: circumstance,
+                    shouldClearNotifications: true,
+                    transaction: tx,
+                )
+
+                return .more
+            },
+            concludeTx: { tx, _ in
+                // Nothing to conclude
+            },
+        )
+
+        // Next, outgoing messages with unread reactions.
+        struct TxContextUnreadReactions {
+            let localIdentifiers: LocalIdentifiers?
+            let localThread: TSContactThread?
+            var cursor: FailIfThrowsRecordCursor<InteractionRecord>
+            var receiptsForMessage: [LinkedDeviceReadReceipt]
+        }
+        await TimeGatedBatch.processAll(
+            db: db,
+            buildTxContext: { tx -> TxContextUnreadReactions in
+                return TxContextUnreadReactions(
+                    localIdentifiers: tsAccountManager.localIdentifiers(tx: tx),
+                    localThread: TSContactThread.getOrCreateLocalThread(transaction: tx),
+                    cursor: interactionFinder.fetchMessagesWithUnreadReactions(
+                        beforeSortId: beforeSortId,
+                        tx: tx,
+                    ),
+                    receiptsForMessage: [],
+                )
+            },
+            processBatch: { tx, txContext -> TimeGatedBatch.ProcessBatchResult<Void> in
+                guard let nextInteractionRecord = txContext.cursor.next() else {
+                    return .done(())
+                }
+
+                let nextInteraction: TSInteraction
+                do {
+                    nextInteraction = try TSInteraction.fromRecord(nextInteractionRecord)
+                } catch {
+                    owsFailDebug("Failed to instantiate TSInteraction with unread reactions! \(error)", logger: logger)
+                    return .more
+                }
+
+                guard let outgoingMessage = nextInteraction as? TSOutgoingMessage else {
+                    owsFailDebug("TSInteraction with unread reactions was not TSOutgoingMessage?", logger: logger)
+                    return .more
+                }
+
+                outgoingMessage.markUnreadReactionsAsRead(transaction: tx)
+
+                if let localAci = txContext.localIdentifiers?.aci {
+                    txContext.receiptsForMessage.append(LinkedDeviceReadReceipt(
+                        senderAci: localAci,
+                        messageUniqueId: outgoingMessage.uniqueId,
+                        messageIdTimestamp: outgoingMessage.timestamp,
+                        readTimestamp: readTimestamp,
+                    ))
+                }
+
+                return .more
+            },
+            concludeTx: { tx, txContext in
+                guard
+                    let localThread = txContext.localThread,
+                    !txContext.receiptsForMessage.isEmpty
+                else {
+                    return
+                }
+
+                let receiptChunks = txContext.receiptsForMessage.chunked(by: 500)
+
+                for receiptChunk in receiptChunks {
+                    let syncMessage = OutgoingReadReceiptsSyncMessage(
+                        localThread: localThread,
+                        readReceipts: Array(receiptChunk),
+                        tx: tx,
+                    )
+                    messageSenderJobQueue.add(
+                        message: PreparedOutgoingMessage.preprepared(
+                            transientMessageWithoutAttachments: syncMessage,
+                        ),
+                        transaction: tx,
+                    )
+                }
+            },
+        )
+    }
+
+    private func markAsRead(
         beforeSortId sortId: UInt64,
         thread: TSThread,
         readTimestamp: UInt64,
         circumstance: OWSReceiptCircumstance,
         shouldClearNotifications: Bool,
-        transaction: DBWriteTransaction,
+        tx: DBWriteTransaction,
     ) -> [String] {
         owsAssertDebug(sortId > 0)
-
-        var readUniqueIds = [String]()
         let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
+
         var cursor = interactionFinder.fetchUnreadMessages(
             beforeSortId: sortId,
-            transaction: transaction,
+            tx: tx,
         )
-        do {
-            while let readItem = try cursor.next() {
+        var readUniqueIds = [String]()
+        while let interactionRecord = cursor.next() {
+            do {
+                let interaction = try TSInteraction.fromRecord(interactionRecord)
+
+                guard let readItem = interaction as? OWSReadTracking else {
+                    owsFailDebug("TSInteraction was not OWSReadTracking?")
+                    continue
+                }
+
                 readItem.markAsRead(
                     atTimestamp: readTimestamp,
                     thread: thread,
                     circumstance: circumstance,
                     shouldClearNotifications: shouldClearNotifications,
-                    transaction: transaction,
+                    transaction: tx,
                 )
                 readUniqueIds.append(readItem.uniqueId)
+            } catch {
+                owsFailDebug("Failed to instantiate TSInteraction! \(error)")
             }
-        } catch {
-            owsFailDebug("unexpected failure fetching unread messages: \(error)")
-            return []
         }
 
         return readUniqueIds
@@ -788,7 +837,7 @@ extension OWSReceiptManager {
                 circumstance: circumstance,
                 // Do not automatically clear notifications; we will do so below.
                 shouldClearNotifications: false,
-                transaction: tx,
+                tx: tx,
             )
 
             // Clear notifications for all the now-marked-read messages in one batch.
@@ -868,11 +917,9 @@ extension OWSReceiptManager {
             )
         }
     }
-}
 
-// MARK: -
+    // MARK: -
 
-extension OWSReceiptManager {
     /// Fetches outgoing messages that need to have incoming receipts applied to them.
     private func outgoingMessages(sentAt timestamp: UInt64, tx: DBReadTransaction) -> [TSOutgoingMessage] {
         let interactions: [TSInteraction]

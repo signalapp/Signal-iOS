@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import GRDB
+public import GRDB
 public import LibSignalClient
 
 public enum EditMessageQueryMode {
@@ -746,8 +746,8 @@ public class InteractionFinder: NSObject {
     /// See also: ``hasMessagesToMarkRead``.
     public func fetchUnreadMessages(
         beforeSortId: UInt64,
-        transaction: DBReadTransaction,
-    ) -> SDSMappedCursor<TSInteractionCursor, OWSReadTracking> {
+        tx: DBReadTransaction,
+    ) -> FailIfThrowsRecordCursor<InteractionRecord> {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
@@ -758,21 +758,12 @@ public class InteractionFinder: NSObject {
         ORDER BY \(interactionColumn: .id)
         """
 
-        let cursor = TSInteraction.grdbFetchCursor(
-            sql: sql,
-            arguments: [threadUniqueId, beforeSortId],
-            transaction: transaction,
-        )
-        return cursor.compactMap { interaction -> OWSReadTracking? in
-            guard let readTracking = interaction as? OWSReadTracking else {
-                owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
-                return nil
-            }
-            guard !readTracking.wasRead else {
-                owsFailDebug("Unexpectedly found read interaction: \(interaction.timestamp)")
-                return nil
-            }
-            return readTracking
+        return FailIfThrowsRecordCursor {
+            try InteractionRecord.fetchCursor(
+                tx.database,
+                sql: sql,
+                arguments: [threadUniqueId, beforeSortId],
+            )
         }
     }
 
@@ -782,8 +773,8 @@ public class InteractionFinder: NSObject {
     /// See also: ``hasMessagesToMarkRead``.
     public func fetchMessagesWithUnreadReactions(
         beforeSortId: UInt64,
-        transaction: DBReadTransaction,
-    ) -> SDSMappedCursor<TSInteractionCursor, TSOutgoingMessage> {
+        tx: DBReadTransaction,
+    ) -> FailIfThrowsRecordCursor<InteractionRecord> {
         let sql = """
         SELECT interaction.*
         FROM \(InteractionRecord.databaseTableName) AS interaction
@@ -798,12 +789,13 @@ public class InteractionFinder: NSObject {
         ORDER BY interaction.\(interactionColumn: .id)
         """
 
-        let cursor = TSOutgoingMessage.grdbFetchCursor(
-            sql: sql,
-            arguments: [threadUniqueId, beforeSortId],
-            transaction: transaction,
-        )
-        return cursor.compactMap { $0 as? TSOutgoingMessage }
+        return FailIfThrowsRecordCursor {
+            try InteractionRecord.fetchCursor(
+                tx.database,
+                sql: sql,
+                arguments: [threadUniqueId, beforeSortId],
+            )
+        }
     }
 
     public func oldestUnreadInteraction(transaction: DBReadTransaction) throws -> TSInteraction? {
