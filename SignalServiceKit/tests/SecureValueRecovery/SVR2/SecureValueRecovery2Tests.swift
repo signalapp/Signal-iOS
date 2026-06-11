@@ -80,12 +80,12 @@ class SecureValueRecovery2Tests: XCTestCase {
             }
         }
 
-        let masterKey = MasterKey()
+        let aep = AccountEntropyPool()
         let pin = "0000"
 
         // Set up the local data needed.
         db.write { tx in
-            accountKeyStore.setMasterKey(masterKey, tx: tx)
+            accountKeyStore.setAccountEntropyPool(aep, tx: tx)
         }
         mock2FAManager.pinCode = pin
 
@@ -210,12 +210,12 @@ class SecureValueRecovery2Tests: XCTestCase {
             }
         }
 
-        let masterKey = MasterKey()
+        let aep = AccountEntropyPool()
         let pin = "0000"
 
         // Set up the local data needed.
         db.write { tx in
-            accountKeyStore.setMasterKey(masterKey, tx: tx)
+            accountKeyStore.setAccountEntropyPool(aep, tx: tx)
         }
         mock2FAManager.pinCode = pin
 

@@ -49,19 +49,14 @@ public struct AccountAttributesGenerator {
 
         let allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
 
-        let reglockToken: String?
-        if
-            let _reglockToken = accountKeyStore.getMasterKey(tx: tx)?.data(for: .registrationLock),
-            ows2FAManager.isRegistrationLockV2Enabled(transaction: tx)
-        {
-            reglockToken = _reglockToken.canonicalStringRepresentation
-        } else {
-            reglockToken = nil
+        let aep = accountKeyStore.getAccountEntropyPool(tx: tx)
+
+        var reglockToken: SVR.DerivedKeyData?
+        if ows2FAManager.isRegistrationLockV2Enabled(transaction: tx) {
+            reglockToken = aep?.getMasterKey().data(for: .registrationLock)
         }
 
-        let registrationRecoveryPassword = accountKeyStore.getMasterKey(tx: tx)?.data(
-            for: .registrationRecoveryPassword,
-        ).canonicalStringRepresentation
+        let registrationRecoveryPassword = aep?.getMasterKey().data(for: .registrationRecoveryPassword)
 
         let phoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: tx)
 
@@ -71,8 +66,8 @@ public struct AccountAttributesGenerator {
             pniRegistrationId: pniRegistrationId,
             unidentifiedAccessKey: udAccessKey,
             unrestrictedUnidentifiedAccess: allowUnrestrictedUD,
-            reglockToken: reglockToken,
-            registrationRecoveryPassword: registrationRecoveryPassword,
+            reglockToken: reglockToken?.canonicalStringRepresentation,
+            registrationRecoveryPassword: registrationRecoveryPassword?.canonicalStringRepresentation,
             encryptedDeviceName: nil,
             discoverableByPhoneNumber: phoneNumberDiscoverability,
             capabilities: capabilities,

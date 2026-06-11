@@ -685,9 +685,9 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         // the server.
         let reglockToken: String? = nil
 
-        let registrationRecoveryPassword = accountKeyStore.getMasterKey(tx: tx)?.data(
-            for: .registrationRecoveryPassword,
-        ).canonicalStringRepresentation
+        let aep = accountKeyStore.getAccountEntropyPool(tx: tx)
+
+        let registrationRecoveryPassword = aep?.getMasterKey().data(for: .registrationRecoveryPassword)
 
         let encryptedDeviceName = encryptedDeviceNameRaw.base64EncodedString()
 
@@ -702,7 +702,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             unidentifiedAccessKey: udAccessKey,
             unrestrictedUnidentifiedAccess: allowUnrestrictedUD,
             reglockToken: reglockToken,
-            registrationRecoveryPassword: registrationRecoveryPassword,
+            registrationRecoveryPassword: registrationRecoveryPassword?.canonicalStringRepresentation,
             encryptedDeviceName: encryptedDeviceName,
             discoverableByPhoneNumber: phoneNumberDiscoverability,
             capabilities: AccountAttributes.Capabilities(hasSVRBackups: hasSVRBackups),

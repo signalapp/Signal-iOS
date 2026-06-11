@@ -793,7 +793,7 @@ class StorageServiceOperation {
             case .explicit(let keyData):
                 masterKey = keyData
             case .implicit:
-                masterKey = accountKeyStore.getMasterKey(tx: tx)
+                masterKey = accountKeyStore.getAccountEntropyPool(tx: tx)?.getMasterKey()
             }
 
             if !isPrimaryDevice, accountKeyStore.isWaitingForKeysSyncMessage(tx: tx) {

@@ -8,7 +8,6 @@ public import LibSignalClient
 
 public class AccountKeyStore {
     private enum Keys {
-        static let masterKey = "masterKey"
         static let aepKeyName = "aep"
         static let mrbkKeyName = "mrbk"
     }
@@ -19,7 +18,6 @@ public class AccountKeyStore {
 
     private let aepKvStore: KeyValueStore
     private let mrbkKvStore: NewKeyValueStore
-    private let masterKeyKvStore: NewKeyValueStore
     private let syncStore: NewKeyValueStore
 
     private let backupSettingsStore: BackupSettingsStore
@@ -27,31 +25,10 @@ public class AccountKeyStore {
     public init(
         backupSettingsStore: BackupSettingsStore,
     ) {
-        // Collection name must not be changed; matches that historically kept in KeyBackupServiceImpl.
-        self.masterKeyKvStore = NewKeyValueStore(collection: "kOWSKeyBackupService_Keys")
         self.mrbkKvStore = NewKeyValueStore(collection: "MediaRootBackupKey")
         self.aepKvStore = KeyValueStore(collection: "AccountEntropyPool")
         self.syncStore = NewKeyValueStore(collection: "AccountKey.Sync")
         self.backupSettingsStore = backupSettingsStore
-    }
-
-    // MARK: -
-
-    public func getMasterKey(tx: DBReadTransaction) -> MasterKey? {
-        if let aepDerivedKey = getAccountEntropyPool(tx: tx)?.getMasterKey() {
-            return aepDerivedKey
-        }
-        // No AEP? Try fetching from the legacy location
-        do {
-            return try masterKeyKvStore.fetchValue(Data.self, forKey: Keys.masterKey, tx: tx).map { try MasterKey(data: $0) }
-        } catch {
-            owsFailDebug("Failed to instantiate MasterKey")
-        }
-        return nil
-    }
-
-    public func setMasterKey(_ masterKey: MasterKey?, tx: DBWriteTransaction) {
-        masterKeyKvStore.writeValue(masterKey?.rawData, forKey: Keys.masterKey, tx: tx)
     }
 
     // MARK: -
@@ -131,9 +108,6 @@ public class AccountKeyStore {
     ///
     /// Callers who are unsure should refer to ``AccountEntropyPoolManager``.
     public func setAccountEntropyPool(_ accountEntropyPool: AccountEntropyPool, tx: DBWriteTransaction) {
-        // Clear the old master key when setting the accountEntropyPool
-        masterKeyKvStore.removeValue(forKey: Keys.masterKey, tx: tx)
-
         // Setting the AEP means we need to set our Backup-ID again.
         backupSettingsStore.setHaveSetBackupID(haveSetBackupID: false, tx: tx)
 

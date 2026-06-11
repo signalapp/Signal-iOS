@@ -230,17 +230,14 @@ public class OWS2FAManager {
 
         // Enabling V2 2FA doesn't inherently enable registration lock,
         // it's managed by a separate setting.
-        guard
-            let masterKey = db.read(block: {
-                accountKeyStore.getMasterKey(tx: $0)
-            })
-        else {
-            throw OWSAssertionError("Missing master key")
+        let aep = db.read { tx in accountKeyStore.getAccountEntropyPool(tx: tx) }
+        guard let aep else {
+            throw OWSAssertionError("missing aep")
         }
 
         try await svr.backupMasterKey(
             pin: pin,
-            masterKey: masterKey,
+            masterKey: aep.getMasterKey(),
             force: false,
             authMethod: .implicit,
         )
@@ -253,16 +250,12 @@ public class OWS2FAManager {
     // MARK: -
 
     public func enableRegistrationLockV2(logger: PrefixedLogger) async throws {
-        let token = db.read { tx in
-            let masterKey = accountKeyStore.getMasterKey(tx: tx)
-            return masterKey?.data(
-                for: .registrationLock,
-            ).canonicalStringRepresentation
-        }
-        guard let token else {
-            throw OWSAssertionError("Cannot enable registration lock without an existing PIN")
+        let aep = db.read { tx in accountKeyStore.getAccountEntropyPool(tx: tx) }
+        guard let aep else {
+            throw OWSAssertionError("can't enable registration lock without an aep")
         }
 
+        let token = aep.getMasterKey().data(for: .registrationLock).canonicalStringRepresentation
         let request = OWSRequestFactory.enableRegistrationLockV2Request(token: token, logger: logger)
         _ = try await networkManager.asyncRequest(request)
 

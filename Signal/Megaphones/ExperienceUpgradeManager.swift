@@ -346,7 +346,7 @@ class ExperienceUpgradeManager {
         if
             reachabilityManager.isReachable,
             tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
-            accountKeyStore.getMasterKey(tx: tx) == nil
+            accountKeyStore.getAccountEntropyPool(tx: tx) == nil
         {
             return true
         }

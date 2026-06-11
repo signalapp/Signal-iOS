@@ -5254,7 +5254,7 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.dataMigration_enableV2RegistrationLockIfNecessary) { transaction in
             let accountKeyStore = DependenciesBridge.shared.accountKeyStore
-            if accountKeyStore.getMasterKey(tx: transaction) != nil {
+            if accountKeyStore.getAccountEntropyPool(tx: transaction) != nil {
                 KeyValueStore(collection: "kOWS2FAManager_Collection")
                     .setBool(true, key: "isRegistrationLockV2Enabled", transaction: transaction)
             }

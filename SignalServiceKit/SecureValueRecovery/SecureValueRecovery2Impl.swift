@@ -542,10 +542,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             let pin = db.read(block: twoFAManager.pinCode(transaction:))
 
             if let pin {
-                let masterKey = db.read(block: accountKeyStore.getMasterKey(tx:))
-                if let masterKey {
+                let aep = db.read { tx in accountKeyStore.getAccountEntropyPool(tx: tx) }
+                if let aep {
                     // If a backup isn't needed, this returns a success immediately.
-                    try await doBackupAndExpose(pin: pin, masterKey: masterKey, force: false, authMethod: .implicit)
+                    try await doBackupAndExpose(pin: pin, masterKey: aep.getMasterKey(), force: false, authMethod: .implicit)
                 } else {
                     Logger.warn("can't back up master key without master key")
                 }
