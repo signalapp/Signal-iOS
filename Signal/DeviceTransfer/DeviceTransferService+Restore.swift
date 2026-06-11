@@ -70,7 +70,7 @@ extension DeviceTransferService {
             }
             let filePath: String
             do {
-                filePath = try DeviceTransferService.sanitizedPath(
+                filePath = try DeviceTransferService.validatedPath(
                     for: file.identifier,
                     within: DeviceTransferService.pendingTransferFilesDirectory,
                 )
@@ -167,7 +167,7 @@ extension DeviceTransferService {
         for file in manifest.files + [database.database, database.wal] {
             let pendingFilePath: String
             do {
-                pendingFilePath = try DeviceTransferService.sanitizedPath(
+                pendingFilePath = try DeviceTransferService.validatedPath(
                     for: file.identifier,
                     within: DeviceTransferService.pendingTransferFilesDirectory,
                 )
@@ -187,7 +187,7 @@ extension DeviceTransferService {
                 newFilePath = GRDBDatabaseStorageAdapter.databaseWalUrl(directoryMode: .primary).path
             } else {
                 do {
-                    newFilePath = try DeviceTransferService.sanitizedPath(
+                    newFilePath = try DeviceTransferService.validatedPath(
                         for: file.relativePath,
                         within: DeviceTransferService.appSharedDataDirectory,
                     )
@@ -458,17 +458,6 @@ extension DeviceTransferService {
         }
     }
 
-    /// Validates that a relative path, when resolved against a base directory,
-    /// stays within that directory. Prevents path traversal attacks via "../".
-    private static func sanitizedPath(for relativePath: String, within baseDirectory: URL) throws -> String {
-        let resolvedUrl = URL(fileURLWithPath: relativePath, relativeTo: baseDirectory).standardized
-        let resolvedBase = baseDirectory.standardized.path
-        guard resolvedUrl.path.hasPrefix(resolvedBase + "/") else {
-            throw OWSAssertionError("Received transfer file path that escapes its base directory")
-        }
-        return resolvedUrl.path
-    }
-
     private func moveManifestFiles(manifest: DeviceTransferProtoManifest?) throws {
         guard let manifest else {
             throw OWSAssertionError("No manifest available")
@@ -477,8 +466,8 @@ extension DeviceTransferService {
         let destDir = DeviceTransferService.appSharedDataDirectory
 
         try manifest.files.forEach { file in
-            let sourcePath = try DeviceTransferService.sanitizedPath(for: file.identifier, within: sourceDir)
-            let destPath = try DeviceTransferService.sanitizedPath(for: file.relativePath, within: destDir)
+            let sourcePath = try DeviceTransferService.validatedPath(for: file.identifier, within: sourceDir)
+            let destPath = try DeviceTransferService.validatedPath(for: file.relativePath, within: destDir)
 
             do {
                 try move(pendingFilePath: sourcePath, to: destPath)
