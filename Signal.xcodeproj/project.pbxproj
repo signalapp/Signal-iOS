@@ -1201,6 +1201,7 @@
 		66A64D342D00E52400203F4B /* MediaGalleryChangeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A64D332D00E51200203F4B /* MediaGalleryChangeInfo.swift */; };
 		66A830442CEBFCC700A7656D /* OWSProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A830432CEBFC6800A7656D /* OWSProgress.swift */; };
 		66A93A8029940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A93A7F29940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift */; };
+		66AA00010000000000000001 /* InternalMiscActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AA00010000000000000002 /* InternalMiscActionsViewController.swift */; };
 		66AA0BA42A819FFA00F7DC80 /* ProvisioningBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AA0BA32A819FFA00F7DC80 /* ProvisioningBaseViewController.swift */; };
 		66AAC2C429CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AAC2C329CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift */; };
 		66AAC2C629CB942F00566AD6 /* RegistrationChangePhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AAC2C529CB942F00566AD6 /* RegistrationChangePhoneNumberViewController.swift */; };
@@ -1285,7 +1286,6 @@
 		66D31DAF2BC48E3A00EAF735 /* OWSContactName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D31DAE2BC48E3A00EAF735 /* OWSContactName.swift */; };
 		66D31F972E5E685300A1C82D /* InternalListMediaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D31F962E5E684E00A1C82D /* InternalListMediaViewController.swift */; };
 		66D31FA02E5E685300A1C82D /* InternalBackupSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D31FA12E5E684E00A1C82D /* InternalBackupSettingsViewController.swift */; };
-		66AA00010000000000000001 /* InternalMiscActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AA00010000000000000002 /* InternalMiscActionsViewController.swift */; };
 		66D709E928E3999400B5013A /* StoryContextAssociatedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */; };
 		66D7B8FF2B9287F00005C98B /* AttachmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B8FE2B9287F00005C98B /* AttachmentManager.swift */; };
 		66D7B9012B92889E0005C98B /* AttachmentManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9002B92889E0005C98B /* AttachmentManagerImpl.swift */; };
@@ -5484,6 +5484,7 @@
 		66A64D332D00E51200203F4B /* MediaGalleryChangeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryChangeInfo.swift; sourceTree = "<group>"; };
 		66A830432CEBFC6800A7656D /* OWSProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSProgress.swift; sourceTree = "<group>"; };
 		66A93A7F29940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RegistrationCoordinatorImpl+Service.swift"; sourceTree = "<group>"; };
+		66AA00010000000000000002 /* InternalMiscActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalMiscActionsViewController.swift; sourceTree = "<group>"; };
 		66AA0BA32A819FFA00F7DC80 /* ProvisioningBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningBaseViewController.swift; sourceTree = "<group>"; };
 		66AAC2C329CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationChangeNumberSplashViewController.swift; sourceTree = "<group>"; };
 		66AAC2C529CB942F00566AD6 /* RegistrationChangePhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationChangePhoneNumberViewController.swift; sourceTree = "<group>"; };
@@ -5568,7 +5569,6 @@
 		66D31DAE2BC48E3A00EAF735 /* OWSContactName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactName.swift; sourceTree = "<group>"; };
 		66D31F962E5E684E00A1C82D /* InternalListMediaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalListMediaViewController.swift; sourceTree = "<group>"; };
 		66D31FA12E5E684E00A1C82D /* InternalBackupSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalBackupSettingsViewController.swift; sourceTree = "<group>"; };
-		66AA00010000000000000002 /* InternalMiscActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalMiscActionsViewController.swift; sourceTree = "<group>"; };
 		66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextAssociatedData.swift; sourceTree = "<group>"; };
 		66D7B8FE2B9287F00005C98B /* AttachmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentManager.swift; sourceTree = "<group>"; };
 		66D7B9002B92889E0005C98B /* AttachmentManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentManagerImpl.swift; sourceTree = "<group>"; };
