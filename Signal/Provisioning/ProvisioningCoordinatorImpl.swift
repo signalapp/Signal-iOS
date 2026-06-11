@@ -687,7 +687,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
         let aep = accountKeyStore.getAccountEntropyPool(tx: tx)
 
-        let registrationRecoveryPassword = aep?.getMasterKey().data(for: .registrationRecoveryPassword)
+        let registrationRecoveryPassword = aep?.getMasterKey().deriveRegistrationRecoveryPassword()
 
         let encryptedDeviceName = encryptedDeviceNameRaw.base64EncodedString()
 

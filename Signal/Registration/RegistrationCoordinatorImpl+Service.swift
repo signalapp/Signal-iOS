@@ -173,7 +173,7 @@ extension RegistrationCoordinatorImpl {
         static func makeChangeNumberRequest(
             _ method: RegistrationRequestFactory.VerificationMethod,
             e164: E164,
-            reglockToken: String?,
+            reglockToken: RegistrationLock?,
             authPassword: String,
             pniChangeNumberParameters: PniDistribution.Parameters,
             networkManager: any NetworkManagerProtocol,
@@ -264,7 +264,7 @@ extension RegistrationCoordinatorImpl {
         }
 
         static func makeEnableReglockRequest(
-            reglockToken: String,
+            registrationLock: RegistrationLock,
             auth: ChatServiceAuth,
             networkManager: any NetworkManagerProtocol,
             logger: PrefixedLogger,
@@ -273,7 +273,7 @@ extension RegistrationCoordinatorImpl {
                 maxAttempts: RegistrationCoordinatorImpl.Constants.networkErrorRetries + 1,
                 isRetryable: { $0.isNetworkFailureOrTimeout },
             ) {
-                var request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken, logger: logger)
+                var request = OWSRequestFactory.enableRegistrationLockV2Request(token: registrationLock, logger: logger)
                 request.auth = .identified(auth)
                 _ = try await networkManager.asyncRequest(request)
             }

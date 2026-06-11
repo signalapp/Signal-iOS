@@ -51,12 +51,12 @@ public struct AccountAttributesGenerator {
 
         let aep = accountKeyStore.getAccountEntropyPool(tx: tx)
 
-        var reglockToken: SVR.DerivedKeyData?
+        var registrationLock: RegistrationLock?
         if ows2FAManager.isRegistrationLockV2Enabled(transaction: tx) {
-            reglockToken = aep?.getMasterKey().data(for: .registrationLock)
+            registrationLock = aep?.getMasterKey().deriveRegistrationLock()
         }
 
-        let registrationRecoveryPassword = aep?.getMasterKey().data(for: .registrationRecoveryPassword)
+        let registrationRecoveryPassword = aep?.getMasterKey().deriveRegistrationRecoveryPassword()
 
         let phoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: tx)
 
@@ -66,7 +66,7 @@ public struct AccountAttributesGenerator {
             pniRegistrationId: pniRegistrationId,
             unidentifiedAccessKey: udAccessKey,
             unrestrictedUnidentifiedAccess: allowUnrestrictedUD,
-            reglockToken: reglockToken?.canonicalStringRepresentation,
+            reglockToken: registrationLock?.canonicalStringRepresentation,
             registrationRecoveryPassword: registrationRecoveryPassword?.canonicalStringRepresentation,
             encryptedDeviceName: nil,
             discoverableByPhoneNumber: phoneNumberDiscoverability,

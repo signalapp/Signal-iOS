@@ -255,7 +255,7 @@ public class OWS2FAManager {
             throw OWSAssertionError("can't enable registration lock without an aep")
         }
 
-        let token = aep.getMasterKey().data(for: .registrationLock).canonicalStringRepresentation
+        let token = aep.getMasterKey().deriveRegistrationLock()
         let request = OWSRequestFactory.enableRegistrationLockV2Request(token: token, logger: logger)
         _ = try await networkManager.asyncRequest(request)
 

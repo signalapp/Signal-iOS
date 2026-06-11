@@ -836,10 +836,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var changeNumberProspectiveE164: E164?
 
         var shouldRestoreSVRMasterKeyAfterRegistration = false
-        // base64 encoded data
-        var regRecoveryPw: String?
-        // hexadecimal encoded data
-        var reglockToken: String?
+        var regRecoveryPw: RegistrationRecoveryPassword?
+        var reglockToken: RegistrationLock?
 
         // candidate credentials, which may not
         // be valid, or may not correspond with the current e164.
@@ -1624,7 +1622,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case manualRestore
         /// Attempting to register using the reg recovery password
         /// derived from the SVR master key.
-        case registrationRecoveryPassword(password: String)
+        case registrationRecoveryPassword(password: RegistrationRecoveryPassword)
         /// Attempting to recover from SVR auth credentials
         /// which let us talk to SVR server, recover the master key,
         /// and swap to the registrationRecoveryPassword path.
@@ -1890,7 +1888,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     /// "Registration Recovery Password" from it, which we can use as an alternative to a verified SMS code session
     /// to register. This path returns the steps to complete that flow.
     @MainActor
-    private func nextStepForRegRecoveryPasswordPath(regRecoveryPw: String) async -> RegistrationStep {
+    private func nextStepForRegRecoveryPasswordPath(regRecoveryPw: RegistrationRecoveryPassword) async -> RegistrationStep {
         // We need a phone number to proceed; ask the user if unavailable.
         guard let e164 = persistedState.e164 else {
             return .phoneNumberEntry(phoneNumberEntryState())
@@ -1955,7 +1953,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func registerForRegRecoveryPwPath(
-        regRecoveryPw: String,
+        regRecoveryPw: RegistrationRecoveryPassword,
         e164: E164,
         failureCount: Int = 0,
     ) async -> RegistrationStep {
@@ -1979,9 +1977,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     @MainActor
     private func handleCreateAccountResponseFromRegRecoveryPassword(
         _ response: AccountResponse,
-        regRecoveryPw: String,
+        regRecoveryPw: RegistrationRecoveryPassword,
         e164: E164,
-        reglockToken: String?,
+        reglockToken: RegistrationLock?,
         failureCount: Int,
     ) async -> RegistrationStep {
         let maxAutomaticRetries = Constants.networkErrorRetries
@@ -2299,21 +2297,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func updateMasterKeyAndLocalState(masterKey: MasterKey?, tx: DBWriteTransaction) {
         let localMasterKey = masterKey
         let logSuffix = if let masterKey {
-            "[\(String(masterKey.data(for: .loggingKey).canonicalStringRepresentation.suffix(4)))]"
+            "[\(String(masterKey.deriveLoggingKey().rawData.hexadecimalString.suffix(4)))]"
         } else {
             "[NoKey]"
         }
         self.logger = baseLogger.suffixed(with: logSuffix)
-        let regRecoveryPw = localMasterKey?.data(
-            for: .registrationRecoveryPassword,
-        ).canonicalStringRepresentation
+        let regRecoveryPw = localMasterKey?.deriveRegistrationRecoveryPassword()
         inMemoryState.regRecoveryPw = regRecoveryPw
         if regRecoveryPw != nil {
             updatePersistedState(tx) { $0.shouldSkipRegistrationSplash = true }
         }
-        inMemoryState.reglockToken = localMasterKey?.data(
-            for: .registrationLock,
-        ).canonicalStringRepresentation
+        inMemoryState.reglockToken = localMasterKey?.deriveRegistrationLock()
         // If we have a local master key, theres no need to restore after registration.
         // (we will still back up though)
         inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = localMasterKey == nil
@@ -2706,7 +2700,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func handleCreateAccountResponseFromSession(
         _ response: AccountResponse,
         sessionFromBeforeRequest: RegistrationSession,
-        reglockTokenUsedInRequest: String?,
+        reglockTokenUsedInRequest: RegistrationLock?,
         failureCount: Int,
     ) async -> RegistrationStep {
         let maxAutomaticRetries = Constants.networkErrorRetries
@@ -2761,7 +2755,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // the user to re-enter the AEP.
                 if
                     let masterKey = inMemoryState.accountEntropyPool?.getMasterKey(),
-                    reglockTokenUsedInRequest == masterKey.data(for: .registrationLock).canonicalStringRepresentation
+                    reglockTokenUsedInRequest == masterKey.deriveRegistrationLock()
                 {
                     return .enterRecoveryKey(RegistrationEnterAccountEntropyPoolState(
                         canShowBackButton: false,
@@ -4203,13 +4197,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     @MainActor
     private func enableReglock(
         accountIdentity: AccountIdentity,
-        reglockToken: String,
+        reglockToken: RegistrationLock,
     ) async -> RegistrationStep {
         logger.info("Attempting to enable reglock")
 
         do {
             try await Service.makeEnableReglockRequest(
-                reglockToken: reglockToken,
+                registrationLock: reglockToken,
                 auth: accountIdentity.chatServiceAuth,
                 networkManager: deps.networkManager,
                 logger: logger,
@@ -4377,7 +4371,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func makeRegisterOrChangeNumberRequest(
         _ method: RegistrationRequestFactory.VerificationMethod,
         e164: E164,
-        reglockToken: String?,
+        reglockToken: RegistrationLock?,
         responseHandler: @escaping @MainActor (AccountResponse) async -> RegistrationStep,
     ) async -> RegistrationStep {
         logger.info("")
@@ -4603,7 +4597,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func generatePniStateAndMakeChangeNumberRequest(
         e164: E164,
         verificationMethod: RegistrationRequestFactory.VerificationMethod,
-        reglockToken: String?,
+        reglockToken: RegistrationLock?,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
     ) async -> ChangeNumberResult {
         logger.info("")
@@ -4633,7 +4627,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func makeChangeNumberRequest(
         e164: E164,
         verificationMethod: RegistrationRequestFactory.VerificationMethod,
-        reglockToken: String?,
+        reglockToken: RegistrationLock?,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
         pniPendingState: ChangePhoneNumberPni.PendingState,
         pniParams: PniDistribution.Parameters,
@@ -4773,7 +4767,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Account objects
 
-    private func reglockToken(for e164: E164) -> String? {
+    private func reglockToken(for e164: E164) -> RegistrationLock? {
         if
             inMemoryState.wasReglockEnabledBeforeStarting || persistedState.e164WithKnownReglockEnabled == e164,
             let reglockToken = inMemoryState.reglockToken
@@ -4786,7 +4780,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func makeAccountAttributes(
         isManualMessageFetchEnabled: Bool,
-        reglockToken: String?,
+        reglockToken: RegistrationLock?,
     ) -> AccountAttributes {
         let hasSVRBackups: Bool
         switch getPathway() {
@@ -4816,8 +4810,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             pniRegistrationId: persistedState.pniRegistrationId,
             unidentifiedAccessKey: inMemoryState.udAccessKey.keyData.base64EncodedString(),
             unrestrictedUnidentifiedAccess: inMemoryState.allowUnrestrictedUD,
-            reglockToken: reglockToken,
-            registrationRecoveryPassword: inMemoryState.regRecoveryPw,
+            reglockToken: reglockToken?.canonicalStringRepresentation,
+            registrationRecoveryPassword: inMemoryState.regRecoveryPw?.canonicalStringRepresentation,
             encryptedDeviceName: nil, // This class only deals in primary devices, which have no name
             discoverableByPhoneNumber: inMemoryState.phoneNumberDiscoverability,
             capabilities: AccountAttributes.Capabilities(hasSVRBackups: hasSVRBackups),

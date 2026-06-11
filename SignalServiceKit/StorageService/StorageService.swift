@@ -220,8 +220,8 @@ public struct StorageService {
             )
             let manifestData: Data
             do {
-                let encryptionKey = masterKey.data(for: .storageServiceManifest(version: encryptedManifestContainer.version)).rawData
-                manifestData = try Self.decryptValue(encryptedData: encryptedManifestContainer.value, encryptionKey: encryptionKey)
+                let encryptionKey = masterKey.deriveStorageServiceKey().deriveManifestKey(manifestVersion: encryptedManifestContainer.version)
+                manifestData = try Self.decryptValue(encryptedData: encryptedManifestContainer.value, encryptionKey: encryptionKey.rawData)
             } catch {
                 throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
             }
@@ -257,7 +257,7 @@ public struct StorageService {
         var writeOperationBuilder = StorageServiceProtoWriteOperation.builder()
 
         // Encrypt the manifest
-        let manifestKey = masterKey.data(for: .storageServiceManifest(version: manifest.version))
+        let manifestKey = masterKey.deriveStorageServiceKey().deriveManifestKey(manifestVersion: manifest.version)
         let manifestData = try manifest.serializedData()
         let encryptedManifestData = try Self.encryptValue(plaintextData: manifestData, encryptionKey: manifestKey.rawData)
 
@@ -281,7 +281,7 @@ public struct StorageService {
             } else {
                 /// If we don't have a `recordIkm` yet, fall back to the
                 /// SVR-derived key.
-                encryptionKey = masterKey.data(for: .legacy_storageServiceRecord(identifier: item.identifier)).rawData
+                encryptionKey = masterKey.deriveStorageServiceKey().deriveLegacyRecordKey(itemIdentifier: item.identifier).rawData
             }
 
             let encryptedItemData = try Self.encryptValue(plaintextData: plaintextRecordData, encryptionKey: encryptionKey)
@@ -315,8 +315,8 @@ public struct StorageService {
             )
             let manifestData: Data
             do {
-                let encryptionKey = masterKey.data(for: .storageServiceManifest(version: encryptedManifestContainer.version)).rawData
-                manifestData = try Self.decryptValue(encryptedData: encryptedManifestContainer.value, encryptionKey: encryptionKey)
+                let encryptionKey = masterKey.deriveStorageServiceKey().deriveManifestKey(manifestVersion: encryptedManifestContainer.version)
+                manifestData = try Self.decryptValue(encryptedData: encryptedManifestContainer.value, encryptionKey: encryptionKey.rawData)
             } catch {
                 throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
             }
@@ -389,7 +389,7 @@ public struct StorageService {
                 } else {
                     /// If we don't yet have a `recordIkm` set we should
                     /// continue using the SVR-derived record key.
-                    encryptionKey = masterKey.data(for: .legacy_storageServiceRecord(identifier: itemIdentifier)).rawData
+                    encryptionKey = masterKey.deriveStorageServiceKey().deriveLegacyRecordKey(itemIdentifier: itemIdentifier).rawData
                 }
                 decryptedItemData = try Self.decryptValue(encryptedData: item.value, encryptionKey: encryptionKey)
             } catch {

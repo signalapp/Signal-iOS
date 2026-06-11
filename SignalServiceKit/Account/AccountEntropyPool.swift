@@ -51,6 +51,6 @@ public struct AccountEntropyPool: Codable, Equatable {
     }
 
     public func getLoggingKey() -> String {
-        return String(getMasterKey().data(for: .loggingKey).canonicalStringRepresentation.suffix(4))
+        return String(getMasterKey().deriveLoggingKey().rawData.hexadecimalString.suffix(4))
     }
 }

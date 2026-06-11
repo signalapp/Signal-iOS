@@ -334,7 +334,7 @@ public class RegistrationCoordinatorTest {
 
         let identityResponse = Stubs.accountIdentityResponse()
         var authPassword: String!
-        let expectedRequest = createAccountWithRecoveryPw(initialMasterKey)
+        let expectedRequest = createAccountWithRecoveryPw(initialMasterKey.deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             matcher: { request in
                 // The password is generated internally by RegistrationCoordinator.
@@ -374,7 +374,7 @@ public class RegistrationCoordinatorTest {
         if wasReglockEnabled {
             // If we had reglock before registration, it should be re-enabled.
             let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(
-                token: finalMasterKey.reglockToken,
+                token: finalMasterKey.deriveRegistrationLock(),
                 logger: .empty(),
             )
             networkManagerMock.asyncRequestHandlers.append({ request, _ in
@@ -426,7 +426,7 @@ public class RegistrationCoordinatorTest {
         // Once we do the username reclamation,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(finalMasterKey),
+            Stubs.accountAttributes(registrationRecoveryPassword: finalMasterKey.deriveRegistrationRecoveryPassword()),
             auth: .implicit(), // doesn't matter for url matching
             logger: .empty(),
         )
@@ -494,7 +494,7 @@ public class RegistrationCoordinatorTest {
 
         let identityResponse = Stubs.accountIdentityResponse()
         var authPassword: String!
-        let expectedRequest = createAccountWithRecoveryPw(initialMasterKey)
+        let expectedRequest = createAccountWithRecoveryPw(initialMasterKey.deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             matcher: { request in
                 authPassword = request.authPassword
@@ -557,7 +557,7 @@ public class RegistrationCoordinatorTest {
         // Once we do the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(finalMasterKey),
+            Stubs.accountAttributes(registrationRecoveryPassword: finalMasterKey.deriveRegistrationRecoveryPassword()),
             auth: .implicit(), // // doesn't matter for url matching
             logger: .empty(),
         )
@@ -638,7 +638,7 @@ public class RegistrationCoordinatorTest {
         }
 
         // Fail the request; the reg recovery pw is invalid.
-        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(aep.getMasterKey())
+        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(aep.getMasterKey().deriveRegistrationRecoveryPassword())
         let failResponse = TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedRecoveryPwRequest.url.absoluteString,
             statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.unauthorized.rawValue,
@@ -739,7 +739,7 @@ public class RegistrationCoordinatorTest {
         }
 
         // Fail the first request; the reglock is invalid.
-        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(aep.getMasterKey())
+        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(aep.getMasterKey().deriveRegistrationRecoveryPassword())
         let failResponse = TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedRecoveryPwRequest.url.absoluteString,
             statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
@@ -833,7 +833,7 @@ public class RegistrationCoordinatorTest {
         }
 
         // Fail the request with a network error.
-        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(initialMasterKey)
+        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(initialMasterKey.deriveRegistrationRecoveryPassword())
         let failResponse = TSRequestOWSURLSessionMock.Response.networkError(
             matcher: { _ in
                 self.testRun.addObservedStep(.failedRequest)
@@ -847,7 +847,7 @@ public class RegistrationCoordinatorTest {
         var authPassword: String!
 
         // Once the first request fails, it should retry. Resolve with success
-        let expectedRequest = createAccountWithRecoveryPw(initialMasterKey)
+        let expectedRequest = createAccountWithRecoveryPw(initialMasterKey.deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
                 matcher: { request in
@@ -933,7 +933,7 @@ public class RegistrationCoordinatorTest {
         // Once we do the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(finalMasterKey),
+            Stubs.accountAttributes(registrationRecoveryPassword: finalMasterKey.deriveRegistrationRecoveryPassword()),
             auth: .implicit(), // // doesn't matter for url matching
             logger: .empty(),
         )
@@ -1034,7 +1034,7 @@ public class RegistrationCoordinatorTest {
         preKeyManagerMock.addFinalizePreKeyMock({ _ in })
 
         // Fail the first request;
-        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(aep.getMasterKey())
+        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(aep.getMasterKey().deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedRecoveryPwRequest.url.absoluteString,
             statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.regRecoveryPasswordRejected.rawValue,
@@ -1068,7 +1068,7 @@ public class RegistrationCoordinatorTest {
 
         // Once the request fails, we should try again with the reglock
         // token, this time.
-        let expectedRecoveryPwRequest2 = createAccountWithSession(aep.getMasterKey())
+        let expectedRecoveryPwRequest2 = createAccountWithSession(recoveryPassword: aep.getMasterKey().deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedRecoveryPwRequest2.url.absoluteString,
             statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
@@ -1184,7 +1184,7 @@ public class RegistrationCoordinatorTest {
         }
 
         // Fail the first request; the reglock is invalid.
-        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(masterKey)
+        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(masterKey.deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedRecoveryPwRequest.url.absoluteString,
             statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.regRecoveryPasswordRejected.rawValue,
@@ -1198,7 +1198,7 @@ public class RegistrationCoordinatorTest {
         // token, this time.
         let accountIdentityResponse = Stubs.accountIdentityResponse()
         var authPassword: String!
-        let expectedRecoveryPwRequest2 = createAccountWithRecoveryPw(remoteMasterKey)
+        let expectedRecoveryPwRequest2 = createAccountWithRecoveryPw(remoteMasterKey.deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             matcher: { request in
                 authPassword = request.authPassword
@@ -1228,7 +1228,7 @@ public class RegistrationCoordinatorTest {
 
         // If we had reglock before registration, it should be re-enabled.
         let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(
-            token: finalMasterKey.reglockToken,
+            token: finalMasterKey.deriveRegistrationLock(),
             logger: .empty(),
         )
         networkManagerMock.asyncRequestHandlers.append({ request, _ in
@@ -1282,7 +1282,7 @@ public class RegistrationCoordinatorTest {
         // Once we do the username reclamation,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(finalMasterKey),
+            Stubs.accountAttributes(registrationRecoveryPassword: finalMasterKey.deriveRegistrationRecoveryPassword()),
             auth: .implicit(), // doesn't matter for url matching
             logger: .empty(),
         )
@@ -1395,7 +1395,7 @@ public class RegistrationCoordinatorTest {
         preKeyManagerMock.addFinalizePreKeyMock({ _ in })
 
         // Fail the first request; the local key is invalid.
-        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(masterKey)
+        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(masterKey.deriveRegistrationRecoveryPassword())
         let failResponse = TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedRecoveryPwRequest.url.absoluteString,
             statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.regRecoveryPasswordRejected.rawValue,
@@ -1421,7 +1421,7 @@ public class RegistrationCoordinatorTest {
         // Once the request fails, we should try again with the reglock
         // token, this time.
         // The third attempt should fall back to session using the remote key(?)
-        let expectedRecoveryPwRequest3 = createAccountWithSession(remoteMasterKey)
+        let expectedRecoveryPwRequest3 = createAccountWithSession(recoveryPassword: remoteMasterKey.deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedRecoveryPwRequest3.url.absoluteString,
             statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
@@ -1528,7 +1528,7 @@ public class RegistrationCoordinatorTest {
         // Now still at it should make a reg recovery pw request
         let accountIdentityResponse = Stubs.accountIdentityResponse()
         var authPassword: String!
-        let expectedRegRecoveryPwRequest = createAccountWithRecoveryPw(initialMasterKey)
+        let expectedRegRecoveryPwRequest = createAccountWithRecoveryPw(initialMasterKey.deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
                 matcher: { request in
@@ -1608,7 +1608,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we do the storage service restore, we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(finalMasterKey),
+            Stubs.accountAttributes(registrationRecoveryPassword: finalMasterKey.deriveRegistrationRecoveryPassword()),
             auth: .implicit(), // doesn't matter for url matching
             logger: .empty(),
         )
@@ -1826,7 +1826,7 @@ public class RegistrationCoordinatorTest {
         // It should also fetch the prekeys for account creation
         preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
 
-        let expectedRequest = createAccountWithSession(newMasterKey)
+        let expectedRequest = createAccountWithSession(recoveryPassword: newMasterKey.deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
                 matcher: { request in
@@ -1897,7 +1897,7 @@ public class RegistrationCoordinatorTest {
         // And once we do the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(newMasterKey),
+            Stubs.accountAttributes(registrationRecoveryPassword: newMasterKey.deriveRegistrationRecoveryPassword()),
             auth: .implicit(), // doesn't matter for url matching
             logger: .empty(),
         )
@@ -2855,7 +2855,7 @@ public class RegistrationCoordinatorTest {
         // It should also fetch the prekeys for account creation
         preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
 
-        let expectedRequest = createAccountWithSession(newMasterKey)
+        let expectedRequest = createAccountWithSession(recoveryPassword: newMasterKey.deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
                 matcher: { request in
@@ -2905,7 +2905,7 @@ public class RegistrationCoordinatorTest {
         // Once we skip the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(newMasterKey),
+            Stubs.accountAttributes(registrationRecoveryPassword: newMasterKey.deriveRegistrationRecoveryPassword()),
             auth: .implicit(), // doesn't matter for url matching
             logger: .empty(),
         )
@@ -2988,7 +2988,7 @@ public class RegistrationCoordinatorTest {
         // It should also fetch the prekeys for account creation
         preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
 
-        let expectedRequest = createAccountWithSession(newMasterKey)
+        let expectedRequest = createAccountWithSession(recoveryPassword: newMasterKey.deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
                 matcher: { request in
@@ -3043,7 +3043,7 @@ public class RegistrationCoordinatorTest {
         // Once we skip the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(newMasterKey),
+            Stubs.accountAttributes(registrationRecoveryPassword: newMasterKey.deriveRegistrationRecoveryPassword()),
             auth: .implicit(), // doesn't matter for url matching
             logger: .empty(),
         )
@@ -3138,13 +3138,13 @@ public class RegistrationCoordinatorTest {
     // MARK: Happy Path Setups
 
     private func createAccountWithSession(
-        _ masterKey: MasterKey,
+        recoveryPassword: RegistrationRecoveryPassword,
     ) -> TSRequest {
         return RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .sessionId(Stubs.sessionId),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(masterKey),
+            accountAttributes: Stubs.accountAttributes(registrationRecoveryPassword: recoveryPassword),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles(),
@@ -3153,13 +3153,13 @@ public class RegistrationCoordinatorTest {
     }
 
     private func createAccountWithRecoveryPw(
-        _ masterKey: MasterKey,
+        _ recoveryPassword: RegistrationRecoveryPassword,
     ) -> TSRequest {
         return RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(masterKey.regRecoveryPw),
+            verificationMethod: .recoveryPassword(recoveryPassword),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(masterKey),
+            accountAttributes: Stubs.accountAttributes(registrationRecoveryPassword: recoveryPassword),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles(),
@@ -3348,7 +3348,7 @@ public class RegistrationCoordinatorTest {
 
         var date: Date = Date()
 
-        static func accountAttributes(_ masterKey: MasterKey? = nil) -> AccountAttributes {
+        static func accountAttributes(registrationRecoveryPassword: RegistrationRecoveryPassword? = nil) -> AccountAttributes {
             return AccountAttributes(
                 isManualMessageFetchEnabled: false,
                 registrationId: 0,
@@ -3356,7 +3356,7 @@ public class RegistrationCoordinatorTest {
                 unidentifiedAccessKey: "",
                 unrestrictedUnidentifiedAccess: false,
                 reglockToken: nil,
-                registrationRecoveryPassword: masterKey?.regRecoveryPw,
+                registrationRecoveryPassword: registrationRecoveryPassword?.rawData.base64EncodedString(),
                 encryptedDeviceName: nil,
                 discoverableByPhoneNumber: .nobody,
                 capabilities: AccountAttributes.Capabilities(hasSVRBackups: true),
@@ -3644,8 +3644,8 @@ extension RegistrationMode {
 }
 
 private extension MasterKey {
-    var regRecoveryPw: String { data(for: .registrationRecoveryPassword).rawData.base64EncodedString() }
-    var reglockToken: String { data(for: .registrationLock).rawData.hexadecimalString }
+    var regRecoveryPw: String { deriveRegistrationRecoveryPassword().rawData.base64EncodedString() }
+    var reglockToken: String { deriveRegistrationLock().rawData.hexadecimalString }
 }
 
 struct EncodableRegistrationLockFailureResponse: Codable {

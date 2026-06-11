@@ -208,7 +208,7 @@ public enum RegistrationRequestFactory {
         /// The ID of an existing, validated RegistrationSession.
         case sessionId(String)
         /// Base64 encoded registration recovery password (derived from KBS master secret).
-        case recoveryPassword(String)
+        case recoveryPassword(RegistrationRecoveryPassword)
     }
 
     public struct ApnRegistrationId: Codable {
@@ -276,7 +276,7 @@ public enum RegistrationRequestFactory {
         case .sessionId(let sessionId):
             parameters["sessionId"] = sessionId
         case .recoveryPassword(let recoveryPassword):
-            parameters["recoveryPassword"] = recoveryPassword
+            parameters["recoveryPassword"] = recoveryPassword.canonicalStringRepresentation
         }
 
         if let apnRegistrationId {
@@ -303,7 +303,7 @@ public enum RegistrationRequestFactory {
     public static func changeNumberRequest(
         verificationMethod: VerificationMethod,
         e164: E164,
-        reglockToken: String?,
+        reglockToken: RegistrationLock?,
         pniChangeNumberParameters: PniDistribution.Parameters,
         logger: PrefixedLogger,
     ) -> TSRequest {
@@ -321,10 +321,10 @@ public enum RegistrationRequestFactory {
         case .sessionId(let sessionId):
             parameters["sessionId"] = sessionId
         case .recoveryPassword(let recoveryPassword):
-            parameters["recoveryPassword"] = recoveryPassword
+            parameters["recoveryPassword"] = recoveryPassword.canonicalStringRepresentation
         }
         if let reglockToken {
-            parameters["reglock"] = reglockToken
+            parameters["reglock"] = reglockToken.canonicalStringRepresentation
         }
 
         parameters.merge(

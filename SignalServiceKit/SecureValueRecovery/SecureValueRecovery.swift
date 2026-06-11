@@ -16,43 +16,6 @@ public enum SVR {
         case missingMrbk
     }
 
-    public enum DerivedKey: Hashable {
-        /// The key required to bypass reglock and register or change number
-        /// into an owned account.
-        case registrationLock
-        /// The key required to bypass sms verification when registering for an account.
-        /// Independent from reglock; if reglock is present it is _also_ required, if not
-        /// this token is still required.
-        case registrationRecoveryPassword
-        case storageService
-
-        /// The key required to decrypt the Storage Service manifest with the
-        /// given version.
-        ///
-        /// - Note
-        /// The manifest contains identifiers and additional key data that are
-        /// used to locate and decrypt Storage Service records.
-        case storageServiceManifest(version: UInt64)
-
-        /// A key used to hash values used for logging.
-        case loggingKey
-
-        /// Today, Storage Service records are encrypted using a key stored in
-        /// the manifest. However, in the past they were encrypted using an
-        /// SVR-derived key. This case represents the key formerly used to
-        /// encrypt Storage Service records, which is preserved for the time
-        /// being so that records that have not yet been re-encrypted with the
-        /// new scheme can still be decrypted.
-        ///
-        /// Once all Storage Service records should be encrypted using the new
-        /// scheme, we can remove this case.
-        ///
-        /// - Important
-        /// This case should only be used for decryption, and never for
-        /// encryption!
-        case legacy_storageServiceRecord(identifier: StorageService.StorageIdentifier)
-    }
-
     /// An auth credential is needed to talk to the SVR server.
     /// This defines how we should get that auth credential
     public indirect enum AuthMethod: Equatable {
@@ -77,21 +40,6 @@ public enum SVR {
         case networkError(Error)
         // Some other issue.
         case genericError(Error)
-    }
-
-    public struct DerivedKeyData {
-        /// Can never be empty data; instances would fail to initialize.
-        public let rawData: Data
-        public let type: DerivedKey
-
-        public var canonicalStringRepresentation: String {
-            switch type {
-            case .storageService, .storageServiceManifest, .legacy_storageServiceRecord, .registrationRecoveryPassword:
-                return rawData.base64EncodedString()
-            case .registrationLock, .loggingKey:
-                return rawData.hexadecimalString
-            }
-        }
     }
 }
 

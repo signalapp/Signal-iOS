@@ -44,85 +44,148 @@ public struct MasterKey: Codable {
         try container.encode(self.rawData)
     }
 
-    public func data(for key: SVR.DerivedKey) -> SVR.DerivedKeyData {
-        func withStorageServiceKey(_ handler: (SVR.DerivedKeyData) -> SVR.DerivedKeyData) -> SVR.DerivedKeyData {
-            // Linked devices have the master key, synced from the primary.
-            // This was not the case historically (2023 and earlier), but since then
-            // we sync keys in provisioning and via sync message on app launch.
-            let storageServiceKey = SVR.DerivedKeyData(keyType: .storageService, dataToDeriveFrom: rawData)
-            return handler(storageServiceKey)
-        }
-
-        switch key {
-        case .loggingKey:
-            return SVR.DerivedKeyData(keyType: .loggingKey, dataToDeriveFrom: rawData)
-        case .registrationLock:
-            return SVR.DerivedKeyData(keyType: .registrationLock, dataToDeriveFrom: rawData)
-        case .registrationRecoveryPassword:
-            return SVR.DerivedKeyData(keyType: .registrationRecoveryPassword, dataToDeriveFrom: rawData)
-        case .storageService:
-            return withStorageServiceKey { $0 }
-        case .storageServiceManifest(let version):
-            return withStorageServiceKey {
-                return SVR.DerivedKeyData(
-                    keyType: .storageServiceManifest(version: version),
-                    dataToDeriveFrom: $0.rawData,
-                )
-            }
-        case .legacy_storageServiceRecord(let identifier):
-            return withStorageServiceKey {
-                return SVR.DerivedKeyData(
-                    keyType: .legacy_storageServiceRecord(identifier: identifier),
-                    dataToDeriveFrom: $0.rawData,
-                )
-            }
-        }
+    public func deriveLoggingKey() -> LoggingKey {
+        return LoggingKey.deriveFrom(masterKey: self)
     }
-}
 
-private extension SVR.DerivedKeyData {
-    init(keyType: SVR.DerivedKey, dataToDeriveFrom: Data) {
-        self.init(
-            rawData: keyType.derivedData(from: dataToDeriveFrom),
-            type: keyType,
-        )
+    public func deriveRegistrationLock() -> RegistrationLock {
+        return RegistrationLock.deriveFrom(masterKey: self)
+    }
+
+    public func deriveRegistrationRecoveryPassword() -> RegistrationRecoveryPassword {
+        return RegistrationRecoveryPassword.deriveFrom(masterKey: self)
+    }
+
+    public func deriveStorageServiceKey() -> StorageServiceKey {
+        return StorageServiceKey.deriveFrom(masterKey: self)
     }
 }
 
 // MARK: -
 
-private extension SVR.DerivedKey {
-    private var infoString: String {
-        switch self {
-        case .loggingKey:
-            return "Logging Key"
-        case .registrationLock:
-            return "Registration Lock"
-        case .registrationRecoveryPassword:
-            return "Registration Recovery"
-        case .storageService:
-            return "Storage Service Encryption"
-        case .storageServiceManifest(let version):
-            return "Manifest_\(version)"
-        case .legacy_storageServiceRecord(let identifier):
-            return "Item_\(identifier.data.base64EncodedString())"
-        }
+private func deriveKey(info: String, baseKey: Data) -> Data {
+    let infoData = Data(info.utf8)
+    return Data(HMAC<SHA256>.authenticationCode(
+        for: infoData,
+        using: SymmetricKey(data: baseKey),
+    ))
+}
+
+// MARK: -
+
+/// A key used to hash values used for logging.
+public struct LoggingKey {
+    public let rawData: Data
+
+    private init(rawData: Data) {
+        self.rawData = rawData
     }
 
-    func derivedData(from dataToDeriveFrom: Data) -> Data {
-        let infoData = Data(infoString.utf8)
-        switch self {
-        case
-            .loggingKey,
-            .registrationLock,
-            .registrationRecoveryPassword,
-            .storageService,
-            .storageServiceManifest,
-            .legacy_storageServiceRecord:
-            return Data(HMAC<SHA256>.authenticationCode(
-                for: infoData,
-                using: SymmetricKey(data: dataToDeriveFrom),
-            ))
-        }
+    static func deriveFrom(masterKey: MasterKey) -> Self {
+        return Self(rawData: deriveKey(info: "Logging Key", baseKey: masterKey.rawData))
+    }
+}
+
+/// The key required to bypass reglock and register or change number
+/// into an owned account.
+public struct RegistrationLock: Equatable {
+    public let rawData: Data
+
+    private init(rawData: Data) {
+        self.rawData = rawData
+    }
+
+    static func deriveFrom(masterKey: MasterKey) -> Self {
+        return Self(rawData: deriveKey(info: "Registration Lock", baseKey: masterKey.rawData))
+    }
+
+    public var canonicalStringRepresentation: String {
+        return self.rawData.hexadecimalString
+    }
+
+    public static func ==(lhs: Self, rhs: Self) -> Bool {
+        return lhs.rawData.ows_constantTimeIsEqual(to: rhs.rawData)
+    }
+}
+
+/// The key required to bypass sms verification when registering for an account.
+/// Independent from reglock; if reglock is present it is _also_ required, if not
+/// this token is still required.
+public struct RegistrationRecoveryPassword {
+    public let rawData: Data
+
+    private init(rawData: Data) {
+        self.rawData = rawData
+    }
+
+    static func deriveFrom(masterKey: MasterKey) -> Self {
+        return Self(rawData: deriveKey(info: "Registration Recovery", baseKey: masterKey.rawData))
+    }
+
+    public var canonicalStringRepresentation: String {
+        return self.rawData.base64EncodedString()
+    }
+}
+
+public struct StorageServiceKey {
+    public let rawData: Data
+
+    private init(rawData: Data) {
+        self.rawData = rawData
+    }
+
+    static func deriveFrom(masterKey: MasterKey) -> Self {
+        return Self(rawData: deriveKey(info: "Storage Service Encryption", baseKey: masterKey.rawData))
+    }
+
+    func deriveManifestKey(manifestVersion: UInt64) -> StorageServiceManifestKey {
+        return StorageServiceManifestKey.deriveFrom(storageServiceKey: self, manifestVersion: manifestVersion)
+    }
+
+    func deriveLegacyRecordKey(itemIdentifier: StorageService.StorageIdentifier) -> LegacyStorageServiceRecordKey {
+        return LegacyStorageServiceRecordKey.deriveFrom(storageServiceKey: self, itemIdentifier: itemIdentifier)
+    }
+}
+
+/// The key required to decrypt the Storage Service manifest with the
+/// given version.
+///
+/// - Note
+/// The manifest contains identifiers and additional key data that are
+/// used to locate and decrypt Storage Service records.
+struct StorageServiceManifestKey {
+    let rawData: Data
+
+    private init(rawData: Data) {
+        self.rawData = rawData
+    }
+
+    static func deriveFrom(storageServiceKey: StorageServiceKey, manifestVersion: UInt64) -> Self {
+        return Self(rawData: deriveKey(info: "Manifest_\(manifestVersion)", baseKey: storageServiceKey.rawData))
+    }
+}
+
+/// Today, Storage Service records are encrypted using a key stored in
+/// the manifest. However, in the past they were encrypted using an
+/// SVR-derived key. This case represents the key formerly used to
+/// encrypt Storage Service records, which is preserved for the time
+/// being so that records that have not yet been re-encrypted with the
+/// new scheme can still be decrypted.
+///
+/// Once all Storage Service records should be encrypted using the new
+/// scheme, we can remove this case.
+///
+/// - Important
+/// This case should only be used for decryption, and never for
+/// encryption!
+struct LegacyStorageServiceRecordKey {
+    let rawData: Data
+
+    private init(rawData: Data) {
+        self.rawData = rawData
+    }
+
+    static func deriveFrom(storageServiceKey: StorageServiceKey, itemIdentifier: StorageService.StorageIdentifier) -> Self {
+        return Self(rawData: deriveKey(info: "Item_\(itemIdentifier.data.base64EncodedString())", baseKey: storageServiceKey.rawData))
     }
 }
