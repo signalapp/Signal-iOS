@@ -1017,7 +1017,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// to register and recover storage service, but should never be persisted.  If this value is missing
         /// and `accountEntropyPool` is present, it can be used to derive an SVR master key for
         /// use in registration
-        var recoveredSVRMasterKey: MasterKey?
+        var recoveredSVRMasterKey: MasterKey? {
+            set { deprecatedRecoveredSVRMasterKey = newValue.map(DeprecatedMasterKey.init(masterKey:)) }
+            get { deprecatedRecoveredSVRMasterKey?.masterKey }
+        }
+
+        var deprecatedRecoveredSVRMasterKey: DeprecatedMasterKey?
 
         /// The AEP used to restore the backup, and the key that should be used for any remaining post-restore
         /// operations.  This key persisted in case the app quits in between a successful backup restore and the
@@ -1189,7 +1194,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case hasDeclinedTransfer
             case restoreMethod
             case restoreMode
-            case recoveredSVRMasterKey
+            case deprecatedRecoveredSVRMasterKey = "recoveredSVRMasterKey"
             case backupKeyAccountEntropyPool
         }
     }

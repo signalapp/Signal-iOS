@@ -6,26 +6,42 @@
 import CryptoKit
 import LibSignalClient
 
+/// Old values were encoded in a redundant {"masterKey": ...} structure.
+public struct DeprecatedMasterKey: Codable {
+    public let masterKey: MasterKey
+
+    public init(masterKey: MasterKey) {
+        self.masterKey = masterKey
+    }
+}
+
 public struct MasterKey: Codable {
 
     public enum Constants {
         public static let byteLength: UInt = 32 /* bytes */
     }
 
-    private let masterKey: Data
-
-    // Convenience method for better readibility (e.g. masterKey.rawData vs masterKey.masterKey)
-    public var rawData: Data { masterKey }
+    public let rawData: Data
 
     init() {
-        self.masterKey = Randomness.generateRandomBytes(Constants.byteLength)
+        self.rawData = Randomness.generateRandomBytes(Constants.byteLength)
     }
 
     init(data: Data) throws {
         guard data.count == Constants.byteLength else {
-            throw OWSAssertionError("Invalid MasterKey data length.")
+            throw OWSGenericError("MasterKey must be \(Constants.byteLength), not \(data.count)")
         }
-        self.masterKey = data
+        self.rawData = data
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        try self.init(data: container.decode(Data.self))
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.rawData)
     }
 
     public func data(for key: SVR.DerivedKey) -> SVR.DerivedKeyData {
@@ -33,17 +49,17 @@ public struct MasterKey: Codable {
             // Linked devices have the master key, synced from the primary.
             // This was not the case historically (2023 and earlier), but since then
             // we sync keys in provisioning and via sync message on app launch.
-            let storageServiceKey = SVR.DerivedKeyData(keyType: .storageService, dataToDeriveFrom: masterKey)
+            let storageServiceKey = SVR.DerivedKeyData(keyType: .storageService, dataToDeriveFrom: rawData)
             return handler(storageServiceKey)
         }
 
         switch key {
         case .loggingKey:
-            return SVR.DerivedKeyData(keyType: .loggingKey, dataToDeriveFrom: masterKey)
+            return SVR.DerivedKeyData(keyType: .loggingKey, dataToDeriveFrom: rawData)
         case .registrationLock:
-            return SVR.DerivedKeyData(keyType: .registrationLock, dataToDeriveFrom: masterKey)
+            return SVR.DerivedKeyData(keyType: .registrationLock, dataToDeriveFrom: rawData)
         case .registrationRecoveryPassword:
-            return SVR.DerivedKeyData(keyType: .registrationRecoveryPassword, dataToDeriveFrom: masterKey)
+            return SVR.DerivedKeyData(keyType: .registrationRecoveryPassword, dataToDeriveFrom: rawData)
         case .storageService:
             return withStorageServiceKey { $0 }
         case .storageServiceManifest(let version):

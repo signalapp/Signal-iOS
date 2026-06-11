@@ -12,21 +12,41 @@ struct MasterKeyTest {
     func testCodable() throws {
         let masterKey = try MasterKey(data: Data(repeating: 17, count: 32))
         let encodedValue = try JSONEncoder().encode(masterKey)
-        #expect(String(data: encodedValue, encoding: .utf8) == #"{"masterKey":"ERERERERERERERERERERERERERERERERERERERERERE="}"#)
+        #expect(String(data: encodedValue, encoding: .utf8) == #""ERERERERERERERERERERERERERERERERERERERERERE=""#)
         let decodedValue = try JSONDecoder().decode(MasterKey.self, from: encodedValue)
         #expect(decodedValue.rawData == masterKey.rawData)
     }
 
+    @Test
+    func testDeprecatedCodable() throws {
+        let masterKey = try MasterKey(data: Data(repeating: 17, count: 32))
+        let deprecatedMasterKey = DeprecatedMasterKey(masterKey: masterKey)
+        let encodedValue = try JSONEncoder().encode(deprecatedMasterKey)
+        #expect(String(data: encodedValue, encoding: .utf8) == #"{"masterKey":"ERERERERERERERERERERERERERERERERERERERERERE="}"#)
+        let decodedValue = try JSONDecoder().decode(DeprecatedMasterKey.self, from: encodedValue)
+        #expect(decodedValue.masterKey.rawData == masterKey.rawData)
+    }
+
     @Test(arguments: [
-        #"{}"#,
-        // These cases currently produce a valid MasterKey but shouldn't:
-        // #"{"masterKey":""}"#,
-        // #"{"masterKey":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="}"#,
-        // #"{"masterKey":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}"#,
+        #""""#,
+        #""AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==""#,
+        #""AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA""#,
     ])
     func testCodableMalformed(encodedValue: String) {
-        #expect(throws: DecodingError.self) {
+        #expect(throws: Error.self) {
             try JSONDecoder().decode(MasterKey.self, from: Data(encodedValue.utf8))
+        }
+    }
+
+    @Test(arguments: [
+        #"{}"#,
+        #"{"masterKey":""}"#,
+        #"{"masterKey":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="}"#,
+        #"{"masterKey":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}"#,
+    ])
+    func testDeprecatedCodableMalformed(encodedValue: String) {
+        #expect(throws: Error.self) {
+            try JSONDecoder().decode(DeprecatedMasterKey.self, from: Data(encodedValue.utf8))
         }
     }
 
