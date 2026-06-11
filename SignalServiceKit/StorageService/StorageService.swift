@@ -220,10 +220,8 @@ public struct StorageService {
             )
             let manifestData: Data
             do {
-                manifestData = try masterKey.decrypt(
-                    keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
-                    encryptedData: encryptedManifestContainer.value,
-                )
+                let encryptionKey = masterKey.data(for: .storageServiceManifest(version: encryptedManifestContainer.version)).rawData
+                manifestData = try Self.decryptValue(encryptedData: encryptedManifestContainer.value, encryptionKey: encryptionKey)
             } catch {
                 throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
             }
@@ -259,11 +257,9 @@ public struct StorageService {
         var writeOperationBuilder = StorageServiceProtoWriteOperation.builder()
 
         // Encrypt the manifest
+        let manifestKey = masterKey.data(for: .storageServiceManifest(version: manifest.version))
         let manifestData = try manifest.serializedData()
-        let encryptedManifestData = try masterKey.encrypt(
-            keyType: .storageServiceManifest(version: manifest.version),
-            data: manifestData,
-        )
+        let encryptedManifestData = try Self.encryptValue(plaintextData: manifestData, encryptionKey: manifestKey.rawData)
 
         let manifestWrapperBuilder = StorageServiceProtoStorageManifest.builder(
             version: manifest.version,
@@ -278,21 +274,17 @@ public struct StorageService {
         for item in newItems {
             let plaintextRecordData = try item.record.serializedData()
 
-            let encryptedItemData: Data
+            let encryptionKey: Data
             if let manifestRecordIkm {
                 /// If we have a `recordIkm`, we should always use it.
-                encryptedItemData = try manifestRecordIkm.encryptStorageItem(
-                    plaintextRecordData: plaintextRecordData,
-                    itemIdentifier: item.identifier,
-                )
+                encryptionKey = try manifestRecordIkm.recordKey(forIdentifier: item.identifier)
             } else {
                 /// If we don't have a `recordIkm` yet, fall back to the
                 /// SVR-derived key.
-                encryptedItemData = try masterKey.encrypt(
-                    keyType: .legacy_storageServiceRecord(identifier: item.identifier),
-                    data: plaintextRecordData,
-                )
+                encryptionKey = masterKey.data(for: .legacy_storageServiceRecord(identifier: item.identifier)).rawData
             }
+
+            let encryptedItemData = try Self.encryptValue(plaintextData: plaintextRecordData, encryptionKey: encryptionKey)
 
             let itemWrapperBuilder = StorageServiceProtoStorageItem.builder(key: item.identifier.data, value: encryptedItemData)
             newStorageItems.append(itemWrapperBuilder.buildInfallibly())
@@ -323,10 +315,8 @@ public struct StorageService {
             )
             let manifestData: Data
             do {
-                manifestData = try masterKey.decrypt(
-                    keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
-                    encryptedData: encryptedManifestContainer.value,
-                )
+                let encryptionKey = masterKey.data(for: .storageServiceManifest(version: encryptedManifestContainer.version)).rawData
+                manifestData = try Self.decryptValue(encryptedData: encryptedManifestContainer.value, encryptionKey: encryptionKey)
             } catch {
                 throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
             }
@@ -393,19 +383,15 @@ public struct StorageService {
 
             let decryptedItemData: Data
             do {
+                let encryptionKey: Data
                 if let manifestRecordIkm {
-                    decryptedItemData = try manifestRecordIkm.decryptStorageItem(
-                        encryptedRecordData: item.value,
-                        itemIdentifier: itemIdentifier,
-                    )
+                    encryptionKey = try manifestRecordIkm.recordKey(forIdentifier: itemIdentifier)
                 } else {
                     /// If we don't yet have a `recordIkm` set we should
                     /// continue using the SVR-derived record key.
-                    decryptedItemData = try masterKey.decrypt(
-                        keyType: .legacy_storageServiceRecord(identifier: itemIdentifier),
-                        encryptedData: item.value,
-                    )
+                    encryptionKey = masterKey.data(for: .legacy_storageServiceRecord(identifier: itemIdentifier)).rawData
                 }
+                decryptedItemData = try Self.decryptValue(encryptedData: item.value, encryptionKey: encryptionKey)
             } catch {
                 throw StorageError.itemDecryptionFailed(identifier: itemIdentifier)
             }
@@ -419,6 +405,14 @@ public struct StorageService {
         }
 
         return fetchedItems
+    }
+
+    private static func encryptValue(plaintextData: Data, encryptionKey: Data) throws -> Data {
+        return try Aes256GcmEncryptedData.encrypt(plaintextData, key: encryptionKey).concatenate()
+    }
+
+    private static func decryptValue(encryptedData: Data, encryptionKey: Data) throws -> Data {
+        return try Aes256GcmEncryptedData(concatenated: encryptedData).decrypt(key: encryptionKey)
     }
 
     // MARK: -
@@ -453,30 +447,7 @@ public struct StorageService {
 
         // MARK: -
 
-        func encryptStorageItem(
-            plaintextRecordData: Data,
-            itemIdentifier: StorageIdentifier,
-        ) throws -> Data {
-            let recordKey = try recordKey(forIdentifier: itemIdentifier)
-
-            return try Aes256GcmEncryptedData.encrypt(
-                plaintextRecordData,
-                key: recordKey,
-            ).concatenate()
-        }
-
-        func decryptStorageItem(
-            encryptedRecordData: Data,
-            itemIdentifier: StorageIdentifier,
-        ) throws -> Data {
-            let recordKey = try recordKey(forIdentifier: itemIdentifier)
-
-            return try Aes256GcmEncryptedData(
-                concatenated: encryptedRecordData,
-            ).decrypt(key: recordKey)
-        }
-
-        private func recordKey(forIdentifier identifier: StorageIdentifier) throws -> Data {
+        func recordKey(forIdentifier identifier: StorageIdentifier) throws -> Data {
             /// The info used to derive the key incorporates the identifier for
             /// this Storage Service record.
             let infoData = Data("20240801_SIGNAL_STORAGE_SERVICE_ITEM_".utf8) + identifier.data
