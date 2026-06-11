@@ -30,23 +30,21 @@ public struct OrphanedBackupAttachment: Codable, FetchableRecord, MutablePersist
     public let mediaId: Data?
     /// May be unknown if orphaned by discovering it on the server cdn;
     /// the server cannot distinguish thumbnails from fullsize.
-    public let type: `Type`?
+    public let type: SizeType?
 
     /// WARNING: these values are hardcoded into triggers in the sql schema; if they
     /// change those triggers need to be recreated in a migration.
-    public enum `Type`: Int, Codable, CaseIterable {
+    public enum SizeType: Int, Codable, CaseIterable {
         case fullsize = 0
         case thumbnail = 1
     }
-
-    typealias SizeType = `Type`
 
     private init(
         id: Int64? = nil,
         cdnNumber: UInt32,
         mediaName: String?,
         mediaId: Data?,
-        type: `Type`?,
+        type: SizeType?,
     ) {
         self.id = id
         self.cdnNumber = cdnNumber
@@ -58,7 +56,7 @@ public struct OrphanedBackupAttachment: Codable, FetchableRecord, MutablePersist
     public static func locallyOrphaned(
         cdnNumber: UInt32,
         mediaName: String,
-        type: `Type`,
+        type: SizeType,
     ) -> OrphanedBackupAttachment {
         return OrphanedBackupAttachment(
             id: nil,
