@@ -759,15 +759,35 @@ class RegistrationPinViewController: OWSViewController {
             ),
         )
 
-        actionSheet.addAction(.init(
-            title: OWSLocalizedString(
-                "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN",
-                comment: "Label for the 'skip and create new pin' button when reglock is disabled during onboarding.",
-            ),
-            style: .destructive,
-        ) { [weak self] _ in
-            self?.presenter?.submitWithCreateNewPinInstead()
-        })
+        switch state.operation {
+        case .creatingNewPin, .confirmingNewPin:
+            owsFail("Invalid state. This method should not be called")
+        case let .enteringExistingPin(skippability, _):
+            switch skippability {
+            case .unskippable:
+                owsFail("Invalid state. Shouldn't get to this UI with unskippable PIN")
+            case .canSkip:
+                actionSheet.addAction(.init(
+                    title: OWSLocalizedString(
+                        "ONBOARDING_2FA_SKIP_PIN",
+                        comment: "Label for the 'skip pin' button when reglock is disabled during onboarding.",
+                    ),
+                    style: .destructive,
+                ) { [weak self] _ in
+                    self?.presenter?.submitWithSkippedPin()
+                })
+            case .canSkipAndCreateNew:
+                actionSheet.addAction(.init(
+                    title: OWSLocalizedString(
+                        "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN",
+                        comment: "Label for the 'skip and create new pin' button when reglock is disabled during onboarding.",
+                    ),
+                    style: .destructive,
+                ) { [weak self] _ in
+                    self?.presenter?.submitWithCreateNewPinInstead()
+                })
+            }
+        }
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
