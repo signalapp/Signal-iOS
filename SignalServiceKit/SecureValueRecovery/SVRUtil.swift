@@ -19,10 +19,6 @@ public enum SVRUtil {
         return normalizedPin.decomposedStringWithCompatibilityMapping
     }
 
-    enum Constants {
-        static let pinSaltLengthBytes: UInt = 16
-    }
-
     static func deriveEncodedPINVerificationString(pin: String) throws -> String {
         let pinData = Data(normalizePin(pin).utf8)
         return try LibSignalClient.hashLocalPin(pinData)
