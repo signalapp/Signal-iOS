@@ -855,6 +855,7 @@
 		50D6BDEF2ED6724600CC012E /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D6BDEE2ED6724600CC012E /* DeviceType.swift */; };
 		50D839512F916A3700EE009A /* MessageRequestDecliner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D839502F916A3700EE009A /* MessageRequestDecliner.swift */; };
 		50D8796A2A16D2C20031345D /* MessageLoaderBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D879692A16D2C20031345D /* MessageLoaderBatchTest.swift */; };
+		50D88CA22FDA2B9400C06350 /* MasterKeyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D88CA12FDA2B9400C06350 /* MasterKeyTest.swift */; };
 		50D9CD8D2C52D78000273D6C /* StoryRecipientManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D9CD8C2C52D78000273D6C /* StoryRecipientManager.swift */; };
 		50DAF7E02FD87BEC00BE7430 /* OrphanedBackupAttachmentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50DAF7DF2FD87BEC00BE7430 /* OrphanedBackupAttachmentTest.swift */; };
 		50DCCBFA2F1817280024D124 /* DisappearingMessagesConfigurationMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50DCCBF92F1817280024D124 /* DisappearingMessagesConfigurationMessage.swift */; };
@@ -5127,6 +5128,7 @@
 		50D6BDEE2ED6724600CC012E /* DeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceType.swift; sourceTree = "<group>"; };
 		50D839502F916A3700EE009A /* MessageRequestDecliner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestDecliner.swift; sourceTree = "<group>"; };
 		50D879692A16D2C20031345D /* MessageLoaderBatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageLoaderBatchTest.swift; sourceTree = "<group>"; };
+		50D88CA12FDA2B9400C06350 /* MasterKeyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKeyTest.swift; sourceTree = "<group>"; };
 		50D9CD8C2C52D78000273D6C /* StoryRecipientManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryRecipientManager.swift; sourceTree = "<group>"; };
 		50DAF7DF2FD87BEC00BE7430 /* OrphanedBackupAttachmentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedBackupAttachmentTest.swift; sourceTree = "<group>"; };
 		50DCCBF92F1817280024D124 /* DisappearingMessagesConfigurationMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisappearingMessagesConfigurationMessage.swift; sourceTree = "<group>"; };
@@ -14376,6 +14378,7 @@
 				661170C22ABA464000A1B16D /* TSAccountManager */,
 				D9F399AE2A96764A001599EC /* IdentityKeyCheckerTest.swift */,
 				D9F399B32A96E54C001599EC /* IdentityKeyMismatchManagerTest.swift */,
+				50D88CA12FDA2B9400C06350 /* MasterKeyTest.swift */,
 				D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */,
 				503158F12B57B0010023A5DB /* ServiceIdTest.swift */,
 				F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */,
@@ -20193,6 +20196,7 @@
 				50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */,
 				D938307C2A704338006CDCDE /* LocalUsernameManagerTests.swift in Sources */,
 				F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */,
+				50D88CA22FDA2B9400C06350 /* MasterKeyTest.swift in Sources */,
 				F9426269289B1B5500460798 /* MathOWSTests.swift in Sources */,
 				66AE8A872C169A900044D388 /* MediaGalleryAttachmentFinderTest.swift in Sources */,
 				66FC637229DF7A1500F00DAC /* MessageBodyRangesTests.swift in Sources */,
