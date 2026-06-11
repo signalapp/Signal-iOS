@@ -315,23 +315,15 @@ public final class KeyTransparencyManager {
         )
     }
 
-#if USE_DEBUG_UI
-
-    public func debugUI_prepareAndPerformSelfCheck() async throws {
+    /// Perform a one-off self-check on demand, e.g. when triggered manually
+    /// from Internal Settings rather than by the scheduled `Cron` job.
+    public func performSelfCheckOnDemand() async throws {
         guard let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             throw OWSAssertionError("Missing local identifiers!")
         }
 
         try await prepareAndPerformSelfCheck(localIdentifiers: localIdentifiers)
     }
-
-    public func debugUI_setSelfCheckFailed() {
-        db.write { tx in
-            keyTransparencyStore.setSelfCheckState(.failedRepeatedly, tx: tx)
-        }
-    }
-
-#endif
 
     private func prepareSelfCheck(
         localIdentifiers: LocalIdentifiers,

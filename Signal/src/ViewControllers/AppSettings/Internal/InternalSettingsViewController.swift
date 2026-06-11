@@ -86,6 +86,13 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             },
         ))
+        debugSection.add(.disclosureItem(
+            withText: "Misc. Actions",
+            actionBlock: { [weak self] in
+                let vc = InternalMiscActionsViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            },
+        ))
 
         if mode == .registration {
             debugSection.add(.actionItem(withText: "Submit debug logs") { [weak self] in
