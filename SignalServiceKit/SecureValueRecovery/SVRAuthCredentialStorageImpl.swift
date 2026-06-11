@@ -25,9 +25,12 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
     }
 
     public func getAuthCredentialForCurrentUser(_ transaction: DBReadTransaction) -> SVR2AuthCredential? {
-        return consolidateLocalAndiCloud(for: .svr2, transaction).first(where: {
-            return $0.username == currentUsername(for: .svr2, transaction)
-        })?.toSVR2Credential()
+        let credentialCandidates = consolidateLocalAndiCloud(for: .svr2, transaction)
+        if credentialCandidates.isEmpty {
+            return nil
+        }
+        let currentUsername = currentUsername(for: .svr2, transaction)
+        return credentialCandidates.first(where: { return $0.username == currentUsername })?.toSVR2Credential()
     }
 
     public func deleteInvalidCredentials(_ invalidCredentials: [SVR2AuthCredential], _ transaction: DBWriteTransaction) {
