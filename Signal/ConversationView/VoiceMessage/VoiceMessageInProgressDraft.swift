@@ -131,6 +131,13 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
 
     private(set) var duration: TimeInterval?
 
+    func updateMeters() {
+        audioRecorder?.updateMeters()
+    }
+
+    func averagePower() -> Float {
+        return audioRecorder?.averagePower(forChannel: 0) ?? -120.0
+    }
     func convertToDraft(transaction: DBWriteTransaction) -> VoiceMessageInterruptedDraft {
         let directoryUrl = VoiceMessageInterruptedDraftStore.saveDraft(
             audioFileUrl: audioFileUrl,

@@ -41,6 +41,8 @@ protocol ConversationInputToolbarDelegate: AnyObject {
 
     func voiceMemoGestureWasInterrupted()
 
+    func voiceMemoAveragePower() -> Float?
+
     func sendVoiceMemoDraft(_ draft: VoiceMessageInterruptedDraft)
 
     // MARK: Attachments
@@ -2429,6 +2431,17 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     var voiceMemoDraft: VoiceMessageInterruptedDraft?
     private var voiceMemoStartTime: Date?
     private var voiceMemoUpdateTimer: Timer?
+    private lazy var voiceMemoLiveWaveformView: LiveAudioWaveformView = {
+        let view = LiveAudioWaveformView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Force the view to expand to fill available space
+        let expandConstraint = view.widthAnchor.constraint(equalToConstant: 9999)
+        expandConstraint.priority = .defaultLow
+        expandConstraint.isActive = true
+        
+        return view
+    }()
     private var voiceMemoTooltipView: UIView?
     private lazy var voiceMemoDurationLabel: UILabel = {
         let label = UILabel()
@@ -2468,6 +2481,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         label.textAlignment = .right
         label.attributedText = cancelString
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.setContentHuggingHigh()
         label.sizeToFit()
         return label
     }()
@@ -2549,6 +2563,10 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         // Duration Label
         updateVoiceMemoDurationLabel()
         voiceMemoContentView.addSubview(voiceMemoDurationLabel)
+        
+        // Live Waveform
+        voiceMemoLiveWaveformView.reset()
+        voiceMemoContentView.addSubview(voiceMemoLiveWaveformView)
 
         // < Swipe to Cancel
         voiceMemoCancelLabel.alpha = 1
@@ -2562,6 +2580,12 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
             voiceMemoDurationLabel.leadingAnchor.constraint(equalTo: redMicIconImageView.trailingAnchor, constant: 12),
             voiceMemoDurationLabel.centerYAnchor.constraint(equalTo: voiceMemoContentView.centerYAnchor),
+            
+            voiceMemoLiveWaveformView.leadingAnchor.constraint(equalTo: voiceMemoDurationLabel.trailingAnchor, constant: 12),
+            voiceMemoLiveWaveformView.trailingAnchor.constraint(equalTo: voiceMemoCancelLabel.leadingAnchor, constant: -12),
+            voiceMemoLiveWaveformView.widthAnchor.constraint(greaterThanOrEqualToConstant: 20),
+            voiceMemoLiveWaveformView.centerYAnchor.constraint(equalTo: voiceMemoContentView.centerYAnchor),
+            voiceMemoLiveWaveformView.heightAnchor.constraint(equalToConstant: 24),
 
             // X-position is configured relative to big red circle - later in this method.
             voiceMemoCancelLabel.centerYAnchor.constraint(equalTo: voiceMemoContentView.centerYAnchor, constant: -2),
@@ -2618,12 +2642,15 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         // Start recording timer.
         voiceMemoUpdateTimer?.invalidate()
-        voiceMemoUpdateTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
+        voiceMemoUpdateTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] timer in
             guard let self else {
                 timer.invalidate()
                 return
             }
             self.updateVoiceMemoDurationLabel()
+            if let power = self.inputToolbarDelegate?.voiceMemoAveragePower() {
+                self.voiceMemoLiveWaveformView.appendSample(powerLevel: power)
+            }
         }
     }
 
@@ -2732,6 +2759,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         voiceMemoContentView.addConstraints([
             cancelButton.centerYAnchor.constraint(equalTo: voiceMemoContentView.centerYAnchor),
             cancelButton.trailingAnchor.constraint(equalTo: voiceMemoContentView.trailingAnchor, constant: -16),
+            voiceMemoLiveWaveformView.trailingAnchor.constraint(equalTo: cancelButton.leadingAnchor, constant: -12),
         ])
 
         voiceMemoCancelLabel.removeFromSuperview()
