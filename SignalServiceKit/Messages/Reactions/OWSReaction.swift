@@ -10,7 +10,6 @@ public import LibSignalClient
 @objc(OWSReaction) // Named explicitly to preserve NSKeyedUnarchiving compatability
 public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCoding {
     public static let databaseTableName = "model_OWSReaction"
-    private static let recordType: UInt = 62
 
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
@@ -104,7 +103,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try id.map { try container.encode($0, forKey: .id) }
-        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(0, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
 
         try container.encode(uniqueMessageId, forKey: .uniqueMessageId)

@@ -8,7 +8,7 @@ import GRDB
 
 struct GroupMessageProcessorJob: Codable, PersistableRecord, FetchableRecord {
     static let databaseTableName: String = "model_IncomingGroupsV2MessageJob"
-    private static let recordType: UInt = 63
+    private static let recordType: UInt = 0
 
     let id: Int64
     let groupId: Data?

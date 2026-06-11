@@ -10,7 +10,6 @@ public class ExperienceUpgrade: Codable, FetchableRecord, PersistableRecord {
     public typealias IDType = Int64
 
     public static let databaseTableName = "model_ExperienceUpgrade"
-    private static let recordType: UInt = 55
 
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
@@ -102,7 +101,7 @@ public class ExperienceUpgrade: Codable, FetchableRecord, PersistableRecord {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try id.map { try container.encode($0, forKey: .id) }
-        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(0, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
 
         try container.encode(firstViewedTimestamp, forKey: .firstViewedTimestamp)

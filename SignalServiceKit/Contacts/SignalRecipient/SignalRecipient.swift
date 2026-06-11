@@ -19,7 +19,7 @@ public import LibSignalClient
 /// doesn't have any devices, then that user isn't registered.
 public struct SignalRecipient: FetchableRecord, PersistableRecord, Codable {
     public static let databaseTableName = "model_SignalRecipient"
-    private static let recordType: UInt = 31
+    private static let recordType: UInt = 0
 
     public enum Constants {
         public static let distantPastUnregisteredTimestamp: UInt64 = 1

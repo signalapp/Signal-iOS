@@ -15,7 +15,6 @@ public import LibSignalClient
 //   all payments.
 public final class TSPaymentModel: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName: String = "model_TSPaymentModel"
-    private static let recordType: UInt = 67
 
     public var id: Int64?
     public let uniqueId: String
@@ -119,7 +118,7 @@ public final class TSPaymentModel: NSObject, SDSCodableModel, Decodable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.id, forKey: .id)
         try container.encode(self.uniqueId, forKey: .uniqueId)
-        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(0, forKey: .recordType)
         try container.encode(self.paymentType, forKey: .paymentType)
         try container.encode(self.paymentState, forKey: .paymentState)
         try container.encode(self.paymentFailure, forKey: .paymentFailure)

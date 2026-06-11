@@ -10,7 +10,6 @@ public import LibSignalClient
 @objc
 public final class TSMention: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_TSMention"
-    private static let recordType: UInt = 64
 
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
@@ -59,7 +58,7 @@ public final class TSMention: NSObject, SDSCodableModel, Decodable {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try id.map { try container.encode($0, forKey: .id) }
-        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(0, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
 
         try container.encode(uniqueMessageId, forKey: .uniqueMessageId)

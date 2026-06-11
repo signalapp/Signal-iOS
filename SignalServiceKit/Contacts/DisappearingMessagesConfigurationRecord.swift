@@ -105,7 +105,7 @@ public struct DisappearingMessagesConfigurationRecord: FetchableRecord, MutableP
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(self.id, forKey: .id)
-        try container.encode(39, forKey: .recordType)
+        try container.encode(0, forKey: .recordType)
         try container.encode(self.threadUniqueId, forKey: .threadUniqueId)
         try container.encode(self.durationSeconds, forKey: .durationSeconds)
         try container.encode(self.isEnabled, forKey: .isEnabled)

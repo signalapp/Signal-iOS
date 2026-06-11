@@ -9,7 +9,6 @@ public import LibSignalClient
 @objc(SignalAccount)
 public final class SignalAccount: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_SignalAccount"
-    private static let recordType: UInt = 30
 
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
@@ -137,7 +136,7 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
-        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(0, forKey: .recordType)
 
         try id.map { try container.encode($0, forKey: .id) }
         try container.encode(uniqueId, forKey: .uniqueId)

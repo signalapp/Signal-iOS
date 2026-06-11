@@ -139,7 +139,6 @@ public final class UserProfileNotifications: NSObject {
 @objc
 public final class OWSUserProfile: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_OWSUserProfile"
-    private static let recordType: UInt = 41
 
     /// An address used to identify an ``OWSUserProfile``.
     public enum Address: Hashable {
@@ -393,7 +392,7 @@ public final class OWSUserProfile: NSObject, SDSCodableModel, Decodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(id, forKey: .id)
-        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(0, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encodeIfPresent(serviceIdString, forKey: .serviceIdString)
         try container.encodeIfPresent(phoneNumber, forKey: .phoneNumber)

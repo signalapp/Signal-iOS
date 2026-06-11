@@ -29,7 +29,6 @@ public import LibSignalClient
 /// ACI). Take care if this model is ever extended to include invited members.
 public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_TSGroupMember"
-    private static let recordType: UInt = 69
 
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
@@ -76,7 +75,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(id, forKey: .id)
-        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(0, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encode(groupThreadId, forKey: .groupThreadId)
         try container.encodeIfPresent(serviceId?.serviceIdUppercaseString, forKey: .serviceId)
