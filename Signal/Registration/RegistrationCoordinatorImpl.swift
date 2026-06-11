@@ -2128,13 +2128,27 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     failureCount: failureCount + 1,
                 )
             }
-            // If we get a long/infinite timeout, just give up and fall back to the
-            // session path. Reg recovery password based recovery is best effort
-            // anyway. Besides since this is always our first attempt at registering,
-            // this lockout should never happen.
-            logger.error("Rate limited when registering via recovery password; falling back to session.")
-            wipeInMemoryStateToPreventSVRPathAttempts()
-            return await startSession(e164: e164, failureCount: 0)
+
+            if
+                case .manualRestore = persistedState.restoreMode,
+                inMemoryState.accountEntropyPool != nil
+            {
+                inMemoryState.accountEntropyPool = nil
+                return .phoneNumberEntry(phoneNumberEntryState(
+                    validationError: .rateLimited(.init(
+                        expiration: deps.dateProvider().addingTimeInterval(max(timeInterval ?? 15, 15)),
+                        e164: e164,
+                    )),
+                ))
+            } else {
+                // If we get a long/infinite timeout, just give up and fall back to the
+                // session path. Reg recovery password based recovery is best effort
+                // anyway. Besides since this is always our first attempt at registering,
+                // this lockout should never happen.
+                logger.error("Rate limited when registering via recovery password; falling back to session.")
+                wipeInMemoryStateToPreventSVRPathAttempts()
+                return await startSession(e164: e164, failureCount: 0)
+            }
 
         case .deviceTransferPossible:
             // Device transfer can happen, let the user pick.
