@@ -171,33 +171,14 @@ public class RegistrationCoordinatorTest {
         registrationCoordinatorLoader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
     }
 
-    enum KeyType: CustomDebugStringConvertible {
-        case none
-        case masterKey
-        case accountEntropyPool
-
-        var debugDescription: String {
-            switch self {
-            case .none: return "none"
-            case .masterKey: return "masterKey"
-            case .accountEntropyPool: return "AEP"
-            }
-        }
-
-        static var testCases: [(old: Self, new: Self)] {
-            return [
-                (.masterKey, .accountEntropyPool),
-                (.accountEntropyPool, .accountEntropyPool),
-            ]
-        }
-    }
-
     static let testModes: [RegistrationMode] = [
         RegistrationMode.registering,
         RegistrationMode.reRegistering(.init(e164: Stubs.e164, aci: Stubs.aci)),
     ]
 
-    typealias TestCase = (mode: RegistrationMode, oldKey: KeyType, newKey: KeyType)
+    struct TestCase {
+        var mode: RegistrationMode
+    }
 
     static func onlyReRegisteringTestCases() -> [TestCase] {
         return buildTestCases(for: [RegistrationMode.reRegistering(.init(e164: Stubs.e164, aci: Stubs.aci))])
@@ -208,11 +189,9 @@ public class RegistrationCoordinatorTest {
     }
 
     static func buildTestCases(for modes: [RegistrationMode]) -> [TestCase] {
-        var results = [(mode: RegistrationMode, oldKey: KeyType, newKey: KeyType)]()
+        var results = [TestCase]()
         for mode in modes {
-            for keys in KeyType.testCases {
-                results.append((mode, keys.old, keys.new))
-            }
+            results.append(TestCase(mode: mode))
         }
         return results
     }
@@ -338,7 +317,9 @@ public class RegistrationCoordinatorTest {
         // Set a PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
-        let (initialMasterKey, finalMasterKey) = buildKeyDataMocks(testCase)
+        let aep = buildKeyDataMocks(testCase)
+        let initialMasterKey = aep.getMasterKey()
+        let finalMasterKey = aep.getMasterKey()
 
         // Give it the pin code, which should make it try and register.
 
@@ -492,7 +473,10 @@ public class RegistrationCoordinatorTest {
         // Set a different PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
-        let (initialMasterKey, finalMasterKey) = buildKeyDataMocks(testCase)
+        let aep = buildKeyDataMocks(testCase)
+        let initialMasterKey = aep.getMasterKey()
+        let finalMasterKey = aep.getMasterKey()
+
         // NOTE: We expect to skip opening path steps because
         // if we have a SVR master key locally, this _must_ be
         // a previously registered device, and we can skip intros.
@@ -615,7 +599,7 @@ public class RegistrationCoordinatorTest {
         #expect(profileManagerMock.didScheduleReuploadLocalProfile)
     }
 
-    @MainActor @Test(arguments: Self.testCases())
+    @MainActor @Test(arguments: Self.onlyReRegisteringTestCases())
     func testRegRecoveryPwPath_wrongPassword(testCase: TestCase) async {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
@@ -629,12 +613,10 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.clearLocalPinCodeMock = { didClearPinCode = true }
 
         // Make SVR give us back a reg recovery password.
-        let masterKey = AccountEntropyPool().getMasterKey()
-        await db.awaitableWrite { accountKeyStore.setMasterKey(masterKey, tx: $0) }
+        let aep = buildKeyDataMocks(testCase)
 
-        // NOTE: We expect to skip opening path steps because
-        // if we have a SVR master key locally, this _must_ be
-        // a previously registered device, and we can skip intros.
+        // NOTE: We expect to skip opening path steps. If we have an AEP locally,
+        // this must be a previously registered device.
 
         // Before registering, it should ask for push tokens to give the registration.
         // It will also ask again later when account creation fails and it needs
@@ -656,7 +638,7 @@ public class RegistrationCoordinatorTest {
         }
 
         // Fail the request; the reg recovery pw is invalid.
-        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(masterKey)
+        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(aep.getMasterKey())
         let failResponse = TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedRecoveryPwRequest.url.absoluteString,
             statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.unauthorized.rawValue,
@@ -709,7 +691,7 @@ public class RegistrationCoordinatorTest {
         #expect(!didClearPinCode)
     }
 
-    @MainActor @Test(arguments: Self.testCases())
+    @MainActor @Test(arguments: Self.onlyReRegisteringTestCases())
     func testRegRecoveryPwPath_failedReglock(testCase: TestCase) async {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
@@ -723,12 +705,10 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.clearLocalPinCodeMock = { didClearPinCode = true }
 
         // Make SVR give us back a reg recovery password.
-        let masterKey = AccountEntropyPool().getMasterKey()
-        db.write { accountKeyStore.setMasterKey(masterKey, tx: $0) }
+        let aep = buildKeyDataMocks(testCase)
 
-        // NOTE: We expect to skip opening path steps because
-        // if we have a SVR master key locally, this _must_ be
-        // a previously registered device, and we can skip intros.
+        // NOTE: We expect to skip opening path steps. If we have an AEP locally,
+        // this must be a previously registered device.
 
         // First we try and create an account with reg recovery
         // password; we will fail with reglock error.
@@ -759,7 +739,7 @@ public class RegistrationCoordinatorTest {
         }
 
         // Fail the first request; the reglock is invalid.
-        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(masterKey)
+        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(aep.getMasterKey())
         let failResponse = TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedRecoveryPwRequest.url.absoluteString,
             statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
@@ -831,11 +811,9 @@ public class RegistrationCoordinatorTest {
         // Set a PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
-        let (initialMasterKey, finalMasterKey) = buildKeyDataMocks(testCase)
-
-        // NOTE: We expect to skip opening path steps because
-        // if we have a SVR master key locally, this _must_ be
-        // a previously registered device, and we can skip intros.
+        let aep = buildKeyDataMocks(testCase)
+        let initialMasterKey = aep.getMasterKey()
+        let finalMasterKey = aep.getMasterKey()
 
         // Before registering, it should ask for push tokens to give the registration.
         // When it retries, it will ask again.
@@ -983,7 +961,7 @@ public class RegistrationCoordinatorTest {
         // Give it the pin code, which should make it try and register.
         #expect(await coordinator.submitPINCode(Stubs.pinCode).awaitable() == .done)
 
-        var expectedSteps: [TestStep] = [
+        let expectedSteps: [TestStep] = [
             .requestPushToken,
             .createPreKeys,
             .failedRequest,
@@ -993,19 +971,13 @@ public class RegistrationCoordinatorTest {
             .createAccount,
             .finalizePreKeys,
             .rotateOneTimePreKeys,
-            // .restoreStorageService, // If going from MasterKey -> AEP
             .backupMasterKey,
-            // .restoreStorageService,
+            .restoreStorageService,
             .confirmReservedUsername,
             .rotateManifest,
             .updateAccountAttribute,
         ]
 
-        if testCase.newKey == .accountEntropyPool, testCase.oldKey != .accountEntropyPool {
-            expectedSteps.insert(.restoreStorageService, at: 9)
-        } else {
-            expectedSteps.insert(.restoreStorageService, at: 10)
-        }
         #expect(testRun.recordedSteps == expectedSteps)
 
         // Since we set profile info, we should have scheduled a reupload.
@@ -1018,7 +990,7 @@ public class RegistrationCoordinatorTest {
     // createAccount attempt, since this is the path that happens in the app.
     // Keeping 'testRegRecoveryPwPath_failedReglock' around since it's still
     // technically a possible path and should still be validated.
-    @MainActor @Test(arguments: Self.testCases())
+    @MainActor @Test(arguments: Self.onlyReRegisteringTestCases())
     func testRegRecoveryPwPath_failedReglock2(testCase: TestCase) async {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
@@ -1033,12 +1005,10 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.isReglockEnabledMock = { true }
 
         // Make SVR give us back a reg recovery password.
-        let masterKey = AccountEntropyPool().getMasterKey()
-        db.write { accountKeyStore.setMasterKey(masterKey, tx: $0) }
+        let aep = buildKeyDataMocks(testCase)
 
-        // NOTE: We expect to skip opening path steps because
-        // if we have a SVR master key locally, this _must_ be
-        // a previously registered device, and we can skip intros.
+        // NOTE: We expect to skip opening path steps. If we have an AEP locally,
+        // this must be a previously registered device.
 
         // First we try and create an account with reg recovery
         // password; we will fail with reglock error.
@@ -1064,7 +1034,7 @@ public class RegistrationCoordinatorTest {
         preKeyManagerMock.addFinalizePreKeyMock({ _ in })
 
         // Fail the first request;
-        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(masterKey)
+        let expectedRecoveryPwRequest = createAccountWithRecoveryPw(aep.getMasterKey())
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedRecoveryPwRequest.url.absoluteString,
             statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.regRecoveryPasswordRejected.rawValue,
@@ -1098,7 +1068,7 @@ public class RegistrationCoordinatorTest {
 
         // Once the request fails, we should try again with the reglock
         // token, this time.
-        let expectedRecoveryPwRequest2 = createAccountWithSession(masterKey)
+        let expectedRecoveryPwRequest2 = createAccountWithSession(aep.getMasterKey())
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             urlSuffix: expectedRecoveryPwRequest2.url.absoluteString,
             statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
@@ -1109,11 +1079,6 @@ public class RegistrationCoordinatorTest {
         ))
 
         #expect(!didClearPinCode)
-
-        let acknowledgeAction: RegistrationReglockTimeoutAcknowledgeAction = switch testCase.mode {
-        case .registering: .resetPhoneNumber
-        case .changingNumber, .reRegistering: .none
-        }
 
         // We haven't set a phone number so it should ask for that.
         #expect(
@@ -1133,12 +1098,7 @@ public class RegistrationCoordinatorTest {
 
         #expect(
             await coordinator.submitVerificationCode(Stubs.pinCode).awaitable() ==
-                .reglockTimeout(
-                    RegistrationReglockTimeoutState(
-                        reglockExpirationDate: dateProvider().addingTimeInterval(TimeInterval(10)),
-                        acknowledgeAction: acknowledgeAction,
-                    ),
-                ),
+                .enterRecoveryKey(RegistrationEnterAccountEntropyPoolState(canShowBackButton: false, canShowNoKeyHelpButton: false)),
         )
 
         // We want to have wiped our master key; we failed reglock, which means the key itself is wrong.
@@ -1163,11 +1123,13 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.isReglockEnabledMock = { true }
 
         // Make SVR give us back a reg recovery password.
-        let (masterKey, newMasterKey) = buildKeyDataMocks(testCase)
+        let aep = buildKeyDataMocks(testCase)
+        let masterKey = aep.getMasterKey()
+        let newMasterKey = aep.getMasterKey()
         let remoteMasterKey = MasterKey()
         // For non-AEP, we will replace the local key with the remote key.
         // For AEP, we'll rotate to a new AEP (or use the existing local AEP if it's present)
-        let finalMasterKey = testCase.newKey == .masterKey ? remoteMasterKey : newMasterKey
+        let finalMasterKey = newMasterKey
 
         // Put some auth credentials in storage.
         let svr2CredentialCandidates: [SVR2AuthCredential] = [
@@ -1377,7 +1339,8 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.isReglockEnabledMock = { true }
 
         // Make SVR give us back a reg recovery password.
-        let (masterKey, _) = buildKeyDataMocks(testCase)
+        let aep = buildKeyDataMocks(testCase)
+        let masterKey = aep.getMasterKey()
         let remoteMasterKey = MasterKey()
         // For non-AEP, we will replace the local key with the remote key.
         // For AEP, we'll rotate to a new AEP (or use the existing local AEP if it's present)
@@ -1539,7 +1502,9 @@ public class RegistrationCoordinatorTest {
             expectedNextStep: .phoneNumberEntry(stubs.phoneNumberEntryState(mode: mode)),
         )
 
-        let (initialMasterKey, finalMasterKey) = buildKeyDataMocks(testCase)
+        let aep = buildKeyDataMocks(testCase)
+        let initialMasterKey = aep.getMasterKey()
+        let finalMasterKey = aep.getMasterKey()
 
         // Resolve the key restoration from SVR and have it start returning the key.
         svr.restoreKeysMock = { pin, authMethod in
@@ -1675,26 +1640,19 @@ public class RegistrationCoordinatorTest {
         // Once we do that, it should follow the Reg Recovery Password Path.
         #expect(await coordinator.submitPINCode(Stubs.pinCode).awaitable() == .done)
 
-        var expectedSteps: [TestStep] = [
+        let expectedSteps: [TestStep] = [
             .restoreKeys,
             .requestPushToken,
             .createPreKeys,
             .createAccount,
             .finalizePreKeys,
             .rotateOneTimePreKeys,
-            //            "restoreStorageService",
+            .restoreStorageService,
             .backupMasterKey,
-            //            "restoreStorageService",
             .confirmReservedUsername,
             .rotateManifest,
             .updateAccountAttribute,
         ]
-
-        if testCase.newKey == .accountEntropyPool {
-            expectedSteps.insert(.restoreStorageService, at: 6)
-        } else {
-            expectedSteps.insert(.restoreStorageService, at: 7)
-        }
 
         #expect(testRun.recordedSteps == expectedSteps)
 
@@ -3331,33 +3289,11 @@ public class RegistrationCoordinatorTest {
 
     // MARK: - Helpers
 
-    func buildKeyDataMocks(_ testCase: TestCase) -> (MasterKey, MasterKey) {
-        let oldAccountEntropyPool = AccountEntropyPool()
-        let oldMasterKey = oldAccountEntropyPool.getMasterKey()
-        let newMasterKey = Stubs.accountEntropyPoolToGenerate.getMasterKey()
-
-        switch (testCase.oldKey, testCase.newKey) {
-        case (.accountEntropyPool, .accountEntropyPool):
-            // on re-registration, make the AEP be present
-            db.write { accountKeyStore.setAccountEntropyPool(oldAccountEntropyPool, tx: $0) }
-            return (oldMasterKey, oldMasterKey)
-        case (.masterKey, .masterKey):
-            db.write { accountKeyStore.setMasterKey(oldMasterKey, tx: $0) }
-            return (oldMasterKey, oldMasterKey)
-        case (.masterKey, .accountEntropyPool):
-            // If this is a reregistration from an non-AEP client,
-            // AEP is only available after calling getOrGenerateAEP()
-            db.write { accountKeyStore.setMasterKey(oldMasterKey, tx: $0) }
-            return (oldMasterKey, newMasterKey)
-        case (.none, .masterKey):
-            return (newMasterKey, newMasterKey)
-        case (.none, .accountEntropyPool):
-            return (newMasterKey, newMasterKey)
-        case (.accountEntropyPool, .masterKey):
-            fatalError("Migrating to masterkey from AEP not supported")
-        case (_, .none):
-            fatalError("Registration requires a destination key")
-        }
+    func buildKeyDataMocks(_ testCase: TestCase) -> AccountEntropyPool {
+        let oldAep = AccountEntropyPool()
+        // on re-registration, make the AEP be present
+        db.write { accountKeyStore.setAccountEntropyPool(oldAep, tx: $0) }
+        return oldAep
     }
 
     func mockSVRCredentials(isMatch: Bool) {

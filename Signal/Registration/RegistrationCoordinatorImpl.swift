@@ -1255,11 +1255,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             if let aep = deps.accountKeyStore.getAccountEntropyPool(tx: tx) {
                 inMemoryState.accountEntropyPool = aep
                 initialMasterKey = aep.getMasterKey()
-            } else if let masterKey = deps.accountKeyStore.getMasterKey(tx: tx) {
-                updatePersistedState(tx) {
-                    $0.recoveredSVRMasterKey = masterKey
-                }
-                initialMasterKey = masterKey
             }
 
             // Generate new registration ids every time we register; until we set these on the server
