@@ -43,7 +43,7 @@ public class RegistrationCoordinatorTest {
     private var sessionManager: RegistrationSessionManagerMock!
     private var storageServiceManagerMock: RegistrationCoordinatorImpl.TestMocks.StorageServiceManager!
     private var svr: SecureValueRecoveryMock!
-    private var svrAuthCredentialStorage: SVRAuthCredentialStorage!
+    private var svrAuthCredentialManager: SVRAuthCredentialManager!
     private var timeoutProviderMock: RegistrationCoordinatorImpl.TestMocks.TimeoutProvider!
     private var tsAccountManagerMock: MockTSAccountManager!
     private var usernameApiClientMock: RegistrationCoordinatorImpl.TestMocks.UsernameApiClient!
@@ -78,7 +78,7 @@ public class RegistrationCoordinatorTest {
             return mock
         }()
         svr = SecureValueRecoveryMock()
-        svrAuthCredentialStorage = SVRAuthCredentialStorage.mock()
+        svrAuthCredentialManager = SVRAuthCredentialManager.mock()
         mockMessagePipelineSupervisor = RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor()
         mockMessageProcessor = RegistrationCoordinatorImpl.TestMocks.MessageProcessor()
         networkManagerMock = MockNetworkManager()
@@ -161,7 +161,7 @@ public class RegistrationCoordinatorTest {
             storageServiceManager: storageServiceManagerMock,
             svr: svr,
             svrLocalStorage: SVRLocalStorage(),
-            svrAuthCredentialStore: svrAuthCredentialStorage,
+            svrAuthCredentialManager: svrAuthCredentialManager,
             timeoutProvider: timeoutProviderMock,
             tsAccountManager: tsAccountManagerMock,
             udManager: RegistrationCoordinatorImpl.TestMocks.UDManager(),
@@ -3290,15 +3290,15 @@ public class RegistrationCoordinatorTest {
         let invalidCredential = SVR2AuthCredential(credential: RemoteAttestationAuth(username: UUID().uuidString, password: "abc123"))
         db.write { tx in
             for credential in svrCredentials + [invalidCredential] {
-                svrAuthCredentialStorage.storeAuthCredentialForCurrentUsername(credential, tx)
+                svrAuthCredentialManager.storeAuthCredentialForCurrentUsername(credential, tx)
             }
-            svrAuthCredentialStorage.deleteInvalidCredentials([invalidCredential], tx)
+            svrAuthCredentialManager.deleteInvalidCredentials([invalidCredential], tx)
         }
     }
 
     func getSvrCredentialUsernames() -> Set<String> {
         return Set(db.read { tx in
-            return svrAuthCredentialStorage.getAuthCredentials(tx).map(\.credential.username)
+            return svrAuthCredentialManager.getAuthCredentials(tx).map(\.credential.username)
         })
     }
 

@@ -2023,7 +2023,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         // We want to wipe credentials on disk too; we don't want to retry it on next app launch.
                         // Its possible we tried svr2 and kbs has the right info, or vice versa, but this is all
                         // best effort anyway; just fall back to session-based registration.
-                        deps.svrAuthCredentialStore.removeSVR2CredentialsForCurrentUser(tx)
+                        deps.svrAuthCredentialManager.removeSVR2CredentialsForCurrentUser(tx)
                         deps.ows2FAManager.clearLocalPinCode(tx)
                         self.updatePersistedState(tx) {
                             $0.e164WithKnownReglockEnabled = e164
@@ -2107,7 +2107,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // We do want to clear out any credentials permanently; we know we
                     // have to use the session path so credentials aren't helpful.
                     if let svr2Credential = inMemoryState.svrAuthCredential {
-                        deps.svrAuthCredentialStore.deleteInvalidCredentials([svr2Credential], tx)
+                        deps.svrAuthCredentialManager.deleteInvalidCredentials([svr2Credential], tx)
                     }
                 }
                 wipeInMemoryStateToPreventSVRPathAttempts()
@@ -2176,7 +2176,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func loadSVRAuthCredentialCandidates(_ tx: DBReadTransaction) {
-        let svr2AuthCredentialCandidates: [SVR2AuthCredential] = deps.svrAuthCredentialStore.getAuthCredentials(tx)
+        let svr2AuthCredentialCandidates: [SVR2AuthCredential] = deps.svrAuthCredentialManager.getAuthCredentials(tx)
         if !svr2AuthCredentialCandidates.isEmpty {
             inMemoryState.svr2AuthCredentialCandidates = svr2AuthCredentialCandidates
         }
@@ -2402,7 +2402,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         self.inMemoryState.svrAuthCredential = matchedCredential
         self.db.write { tx in
-            self.deps.svrAuthCredentialStore.deleteInvalidCredentials(credentialsToDelete, tx)
+            self.deps.svrAuthCredentialManager.deleteInvalidCredentials(credentialsToDelete, tx)
         }
         return await nextStep()
     }
@@ -2734,7 +2734,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // If we haven't set an AEP, and have already exhausted our SVR backup attempts, we are stuck.
                 db.write { tx in
                     // May as well store credentials, anyway.
-                    deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(
+                    deps.svrAuthCredentialManager.storeAuthCredentialForCurrentUsername(
                         reglockFailure.svr2AuthCredential,
                         tx,
                     )
@@ -2767,7 +2767,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // that means the whole thing is stuck. wait out the reglock.
                 db.write { tx in
                     // May as well store credentials, anyway.
-                    deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(
+                    deps.svrAuthCredentialManager.storeAuthCredentialForCurrentUsername(
                         reglockFailure.svr2AuthCredential,
                         tx,
                     )
@@ -2784,7 +2784,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     svr2: reglockFailure.svr2AuthCredential,
                 )
                 db.write { tx in
-                    deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.svr2AuthCredential, tx)
+                    deps.svrAuthCredentialManager.storeAuthCredentialForCurrentUsername(reglockFailure.svr2AuthCredential, tx)
                     self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                         $0.reglockState = .reglocked(
                             credential: persistedCredential,

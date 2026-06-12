@@ -169,7 +169,7 @@ public class DependenciesBridge {
     public let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
     public let signalProtocolStoreManager: SignalProtocolStoreManager
     public let svr: SecureValueRecovery
-    public let svrCredentialStorage: SVRAuthCredentialStorage
+    public let svrAuthCredentialManager: SVRAuthCredentialManager
     public let storageServiceRecordIkmMigrator: StorageServiceRecordIkmMigrator
     public let storyMessageExpirationJob: StoryMessageExpirationJob
     public let storyRecipientManager: StoryRecipientManager
@@ -318,7 +318,7 @@ public class DependenciesBridge {
         storyRecipientStore: StoryRecipientStore,
         subscriptionConfigManager: SubscriptionConfigManager,
         svr: SecureValueRecovery,
-        svrCredentialStorage: SVRAuthCredentialStorage,
+        svrAuthCredentialManager: SVRAuthCredentialManager,
         svrLocalStorage: SVRLocalStorage,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
         threadRemover: ThreadRemover,
@@ -461,7 +461,7 @@ public class DependenciesBridge {
         self.storyRecipientStore = storyRecipientStore
         self.subscriptionConfigManager = subscriptionConfigManager
         self.svr = svr
-        self.svrCredentialStorage = svrCredentialStorage
+        self.svrAuthCredentialManager = svrAuthCredentialManager
         self.svrLocalStorage = svrLocalStorage
         self.threadAssociatedDataStore = threadAssociatedDataStore
         self.threadRemover = threadRemover

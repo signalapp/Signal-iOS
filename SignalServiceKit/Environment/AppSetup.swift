@@ -405,7 +405,7 @@ extension AppSetup.GlobalsContinuation {
         let svrAuthCredentialKvStore = KeyValueStore(collection: "SVR2AuthCredential")
         let svrAuthCredentialLocalStore = SVRAuthCredentialLocalStore(kvStore: svrAuthCredentialKvStore)
         let svrAuthCredentialCloudStore = SVRAuthCredentialCloudStore(credentialsKey: "signal_svr2_credentials")
-        let svrCredentialStorage = SVRAuthCredentialStorage(
+        let svrAuthCredentialManager = SVRAuthCredentialManager(
             credentialStores: [svrAuthCredentialLocalStore, svrAuthCredentialCloudStore],
             usernameStore: svrAuthCredentialKvStore,
         )
@@ -446,7 +446,7 @@ extension AppSetup.GlobalsContinuation {
         let remoteAttestationAuthFetcher = RemoteAttestationAuthFetcher(networkManager: networkManager)
         let svr = SecureValueRecovery2Impl(
             connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: webSocketFactory),
-            credentialStorage: svrCredentialStorage,
+            credentialManager: svrAuthCredentialManager,
             db: db,
             accountKeyStore: accountKeyStore,
             pinHasher: LibSignalPinHasher(),
@@ -1817,7 +1817,7 @@ extension AppSetup.GlobalsContinuation {
             storyRecipientStore: storyRecipientStore,
             subscriptionConfigManager: subscriptionConfigManager,
             svr: svr,
-            svrCredentialStorage: svrCredentialStorage,
+            svrAuthCredentialManager: svrAuthCredentialManager,
             svrLocalStorage: svrLocalStorage,
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadRemover: threadRemover,

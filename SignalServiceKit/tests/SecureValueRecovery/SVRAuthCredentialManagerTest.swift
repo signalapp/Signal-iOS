@@ -7,22 +7,22 @@ import Foundation
 import Testing
 @testable import SignalServiceKit
 
-struct SVRAuthCredentialStorageTest {
-    let credentialStorage: SVRAuthCredentialStorage
+struct SVRAuthCredentialManagerTest {
+    let credentialManager: SVRAuthCredentialManager
     let db = InMemoryDB()
 
     init() {
-        self.credentialStorage = SVRAuthCredentialStorage.mock(storeCount: 2)
+        self.credentialManager = SVRAuthCredentialManager.mock(storeCount: 2)
     }
 
     @Test
     func testGetCredentialForCurrentUsername() {
         let credential = SVR2AuthCredential(credential: RemoteAttestationAuth(username: "abc", password: "123"))
         db.write { tx in
-            credentialStorage.storeAuthCredentialForCurrentUsername(credential, tx)
+            credentialManager.storeAuthCredentialForCurrentUsername(credential, tx)
         }
         let authCredential = db.read { tx in
-            return credentialStorage.getAuthCredentialForCurrentUser(tx)
+            return credentialManager.getAuthCredentialForCurrentUser(tx)
         }
         #expect(authCredential?.credential.username == credential.credential.username)
         #expect(authCredential?.credential.password == credential.credential.password)
@@ -34,26 +34,26 @@ struct SVRAuthCredentialStorageTest {
         let credential2 = SVR2AuthCredential(credential: RemoteAttestationAuth(username: "c2", password: "p1"))
         let credential3 = SVR2AuthCredential(credential: RemoteAttestationAuth(username: "c3", password: "p2"))
         db.write { tx in
-            credentialStorage.storeAuthCredentialForCurrentUsername(credential1, tx)
-            credentialStorage.storeAuthCredentialForCurrentUsername(credential2, tx)
-            credentialStorage.storeAuthCredentialForCurrentUsername(credential3, tx)
+            credentialManager.storeAuthCredentialForCurrentUsername(credential1, tx)
+            credentialManager.storeAuthCredentialForCurrentUsername(credential2, tx)
+            credentialManager.storeAuthCredentialForCurrentUsername(credential3, tx)
         }
         do {
             let credential0 = SVR2AuthCredential(credential: RemoteAttestationAuth(username: "c1", password: "p2"))
             db.write { tx in
-                credentialStorage.deleteInvalidCredentials([credential0], tx)
+                credentialManager.deleteInvalidCredentials([credential0], tx)
             }
             let authCredentialCount = db.read { tx in
-                return credentialStorage.getAuthCredentials(tx).count
+                return credentialManager.getAuthCredentials(tx).count
             }
             try #require(authCredentialCount == 3)
         }
         do {
             db.write { tx in
-                credentialStorage.deleteInvalidCredentials([credential1], tx)
+                credentialManager.deleteInvalidCredentials([credential1], tx)
             }
             let authCredentialCount = db.read { tx in
-                return credentialStorage.getAuthCredentials(tx).count
+                return credentialManager.getAuthCredentials(tx).count
             }
             try #require(authCredentialCount == 2)
         }
@@ -63,13 +63,13 @@ struct SVRAuthCredentialStorageTest {
     func testRemoveCredentialsForCurrentUser() {
         let credential = SVR2AuthCredential(credential: RemoteAttestationAuth(username: "abc", password: "123"))
         db.write { tx in
-            credentialStorage.storeAuthCredentialForCurrentUsername(credential, tx)
+            credentialManager.storeAuthCredentialForCurrentUsername(credential, tx)
         }
         db.write { tx in
-            credentialStorage.removeSVR2CredentialsForCurrentUser(tx)
+            credentialManager.removeSVR2CredentialsForCurrentUser(tx)
         }
         let authCredential = db.read { tx in
-            return credentialStorage.getAuthCredentialForCurrentUser(tx)
+            return credentialManager.getAuthCredentialForCurrentUser(tx)
         }
         #expect(authCredential == nil)
     }

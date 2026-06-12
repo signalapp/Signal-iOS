@@ -28,7 +28,7 @@ extension SVR {
 /// verification and to access their account data. The credential doesn't
 /// provide any account information; it only provides the ability to make
 /// PIN guesses without first completing SMS verification.
-public struct SVRAuthCredentialStorage {
+public struct SVRAuthCredentialManager {
 
     private let credentialStores: [any SVRAuthCredentialStore]
     private let usernameStore: KeyValueStore

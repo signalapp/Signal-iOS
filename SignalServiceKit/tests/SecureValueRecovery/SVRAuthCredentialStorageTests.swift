@@ -10,14 +10,14 @@ import XCTest
 
 class SVRAuthCredentialStorageTests: XCTestCase {
 
-    typealias AuthCredential = SVRAuthCredentialStorage.AuthCredential
+    typealias AuthCredential = SVRAuthCredentialManager.AuthCredential
 
     // NOTE: "passwords" here are written as if they were user-inputted
     // passwords in the conventional sense. In a real auth credential,
     // they are not that. It just makes the tests easier and more fun.
 
     func testConsolidation_noOverlap() {
-        let consolidated = SVRAuthCredentialStorage.consolidateCredentials(allUnsortedCredentials: [
+        let consolidated = SVRAuthCredentialManager.consolidateCredentials(allUnsortedCredentials: [
             .init(username: "luke", password: "vaderismyfather", insertionTime: Date()),
             .init(username: "vader", password: "lukeismyson", insertionTime: Date().addingTimeInterval(-1)),
         ])
@@ -25,7 +25,7 @@ class SVRAuthCredentialStorageTests: XCTestCase {
     }
 
     func testConsolidation_latestPerUsername() {
-        let consolidated = SVRAuthCredentialStorage.consolidateCredentials(allUnsortedCredentials: [
+        let consolidated = SVRAuthCredentialManager.consolidateCredentials(allUnsortedCredentials: [
             .init(username: "luke", password: "leiaismysister?!?", insertionTime: Date()),
             .init(username: "luke", password: "vaderismyfather", insertionTime: Date().addingTimeInterval(-2)),
             .init(username: "vader", password: "lukeismyson", insertionTime: Date().addingTimeInterval(-1)),
@@ -35,7 +35,7 @@ class SVRAuthCredentialStorageTests: XCTestCase {
     }
 
     func testConsolidation_sameCredentialDoesntUpdateDate() {
-        let consolidated = SVRAuthCredentialStorage.consolidateCredentials(allUnsortedCredentials: [
+        let consolidated = SVRAuthCredentialManager.consolidateCredentials(allUnsortedCredentials: [
             .init(username: "luke", password: "vaderismyfather", insertionTime: Date()),
             .init(username: "luke", password: "vaderismyfather", insertionTime: Date().addingTimeInterval(-2)),
             .init(username: "vader", password: "lukeismyson", insertionTime: Date().addingTimeInterval(-1)),
@@ -70,7 +70,7 @@ class SVRAuthCredentialStorageTests: XCTestCase {
         }
         // We inserted them in order. To test sorting, scramble them.
         credentials = credentials.shuffled()
-        let consolidated = SVRAuthCredentialStorage.consolidateCredentials(allUnsortedCredentials: credentials)
+        let consolidated = SVRAuthCredentialManager.consolidateCredentials(allUnsortedCredentials: credentials)
         XCTAssertEqual(consolidated, expectedConsolidatedCredentials)
     }
 }

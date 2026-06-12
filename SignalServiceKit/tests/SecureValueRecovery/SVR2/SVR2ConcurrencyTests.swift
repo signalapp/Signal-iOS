@@ -14,13 +14,13 @@ struct SVR2ConcurrencyTests {
     private let db: InMemoryDB
     private let svr: SecureValueRecovery2Impl
 
-    private let credentialStorage: SVRAuthCredentialStorage
+    private let credentialManager: SVRAuthCredentialManager
     private let mockConnectionFactory: MockSgxWebsocketConnectionFactory
     private let mockConnection: MockSgxWebsocketConnection<SVR2WebsocketConfigurator>
 
     init() {
         self.db = InMemoryDB()
-        self.credentialStorage = SVRAuthCredentialStorage.mock()
+        self.credentialManager = SVRAuthCredentialManager.mock()
 
         mockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
         mockConnection.mockEnclave = TSConstants.shared.svr2Enclaves.first!
@@ -34,7 +34,7 @@ struct SVR2ConcurrencyTests {
 
         self.svr = SecureValueRecovery2Impl(
             connectionFactory: mockConnectionFactory,
-            credentialStorage: credentialStorage,
+            credentialManager: credentialManager,
             db: db,
             accountKeyStore: accountKeyStore,
             pinHasher: MockPinHasher(),

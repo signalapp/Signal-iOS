@@ -42,7 +42,7 @@ public struct RegistrationCoordinatorDependencies {
     public let storageServiceManager: RegistrationCoordinatorImpl.Shims.StorageServiceManager
     public let svr: SecureValueRecovery
     public let svrLocalStorage: SVRLocalStorage
-    public let svrAuthCredentialStore: SVRAuthCredentialStorage
+    public let svrAuthCredentialManager: SVRAuthCredentialManager
     public let timeoutProvider: RegistrationCoordinatorImpl.Shims.TimeoutProvider
     public let tsAccountManager: TSAccountManager
     public let udManager: RegistrationCoordinatorImpl.Shims.UDManager
@@ -90,7 +90,7 @@ public struct RegistrationCoordinatorDependencies {
             storageServiceManager: RegistrationCoordinatorImpl.Wrappers.StorageServiceManager(SSKEnvironment.shared.storageServiceManagerRef),
             svr: DependenciesBridge.shared.svr,
             svrLocalStorage: DependenciesBridge.shared.svrLocalStorage,
-            svrAuthCredentialStore: DependenciesBridge.shared.svrCredentialStorage,
+            svrAuthCredentialManager: DependenciesBridge.shared.svrAuthCredentialManager,
             timeoutProvider: RegistrationCoordinatorImpl.Wrappers.TimeoutProvider(),
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(SSKEnvironment.shared.udManagerRef),

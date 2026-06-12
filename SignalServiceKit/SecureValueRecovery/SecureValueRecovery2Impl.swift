@@ -11,7 +11,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     private let pinHasher: any SVR2PinHasher
     private let connectionFactory: SgxWebsocketConnectionFactory
-    private let credentialStorage: SVRAuthCredentialStorage
+    private let credentialManager: SVRAuthCredentialManager
     private let db: any DB
     private let accountKeyStore: AccountKeyStore
     private let localStorage: SVRLocalStorage
@@ -22,7 +22,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     init(
         connectionFactory: SgxWebsocketConnectionFactory,
-        credentialStorage: SVRAuthCredentialStorage,
+        credentialManager: SVRAuthCredentialManager,
         db: any DB,
         accountKeyStore: AccountKeyStore,
         pinHasher: any SVR2PinHasher,
@@ -33,7 +33,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         twoFAManager: SVR2.Shims.OWS2FAManager,
     ) {
         self.connectionFactory = connectionFactory
-        self.credentialStorage = credentialStorage
+        self.credentialManager = credentialManager
         self.db = db
         self.accountKeyStore = accountKeyStore
         self.localStorage = svrLocalStorage
@@ -60,7 +60,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             chatServiceAuth: .implicit(),
         )
         await db.awaitableWrite { tx in
-            credentialStorage.storeAuthCredentialForCurrentUsername(
+            credentialManager.storeAuthCredentialForCurrentUsername(
                 SVR2AuthCredential(credential: credential),
                 tx,
             )
@@ -584,7 +584,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             break
         case .implicit:
             // If implicit, use any cached values.
-            if let cachedCredential: SVR2AuthCredential = db.read(block: credentialStorage.getAuthCredentialForCurrentUser) {
+            if let cachedCredential: SVR2AuthCredential = db.read(block: credentialManager.getAuthCredentialForCurrentUser) {
                 config.authMethod = .svrAuth(cachedCredential, backup: .implicit)
             }
         }
@@ -598,7 +598,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     // If we were able to open a connection, that means the auth used is valid
                     // and we should cache it.
                     await self.db.awaitableWrite { tx in
-                        self.credentialStorage.storeAuthCredentialForCurrentUsername(
+                        self.credentialManager.storeAuthCredentialForCurrentUsername(
                             SVR2AuthCredential(credential: knownGoodAuthCredential),
                             tx,
                         )
@@ -612,7 +612,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     switch config.authMethod {
                     case .svrAuth(let attemptedCredential, let backup):
                         await self.db.awaitableWrite { tx in
-                            self.credentialStorage.deleteInvalidCredentials([attemptedCredential].compacted(), tx)
+                            self.credentialManager.deleteInvalidCredentials([attemptedCredential].compacted(), tx)
                         }
                         if let backup {
                             config.authMethod = backup
