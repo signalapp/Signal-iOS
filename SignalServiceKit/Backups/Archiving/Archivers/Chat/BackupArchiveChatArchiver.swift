@@ -124,7 +124,7 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
             // Skip gv1 threads; count as success.
             return .success
         } else if thread.isReleaseNotesThread {
-            // TODO: [KC] implement release notes in backups
+            // This is done in the recipient archiver!
             return .success
         } else {
             return .completeFailure(.fatalArchiveError(.developerError(

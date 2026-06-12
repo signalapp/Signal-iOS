@@ -659,7 +659,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         cron.schedulePeriodically(
             uniqueKey: .fetchMegaphones,
             approximateInterval: 3 * .day,
-            mustBeRegistered: false,
+            mustBeRegistered: true,
             mustBeConnected: true,
             operation: { try await remoteReleaseNotesFetchingManager.syncRemoteReleaseNotes() },
         )

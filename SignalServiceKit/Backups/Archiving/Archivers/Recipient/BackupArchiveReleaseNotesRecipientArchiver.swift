@@ -57,8 +57,7 @@ public class BackupArchiveReleaseNotesRecipientArchiver: BackupArchiveProtoStrea
         context: BackupArchive.RecipientRestoringContext,
     ) -> RestoreFrameResult {
         context[recipient.recipientId] = .releaseNotesChannel
-
-        // TODO: [Backups] Implement restoring the Release Notes channel recipient.
+        let _ = TSReleaseNotesThread.createReleaseNotes(transaction: context.tx)
         return .success
     }
 }
