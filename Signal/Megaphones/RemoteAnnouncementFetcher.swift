@@ -109,7 +109,6 @@ public class RemoteAnnouncementFetcher: RemoteReleaseNotesFetcher<RemoteAnnounce
 
             try await db.awaitableWrite { tx in
                 let releaseNotesThread = getOrCreateThread(tx: tx)
-                // TODO: implement blocking for the release notes thread
                 guard !blockingManager.isThreadBlocked(releaseNotesThread, transaction: tx) else {
                     Logger.info("Skipping release notes update: thread is blocked")
                     storeReleaseNoteAndUpdateLastFetchTime(uniqueId: manifest.id, tx: tx)

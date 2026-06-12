@@ -19,6 +19,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
     private let mockRemoteReleaseNotesService: MockRemoteReleaseNotesService = MockRemoteReleaseNotesService()
     private let mockAppVersion: MockAppVersion
     private var mockTSAccountManager = MockTSAccountManager()
+    private let blockedReleaseNotesStore: BlockedReleaseNotesStore = BlockedReleaseNotesStore()
 
     init() {
         // To avoid hitting the ThreadAssociatedData dependency that testing can't support, pre-seed the thread in the thread store.
@@ -31,7 +32,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
             db: db,
             attachmentContentValidator: AttachmentContentValidatorMock(),
             attachmentManager: AttachmentManagerMock(),
-            blockingManager: BlockingManager(blockedGroupStore: BlockedGroupStore(), blockedRecipientStore: BlockedRecipientStore()),
+            blockingManager: BlockingManager(blockedGroupStore: BlockedGroupStore(), blockedRecipientStore: BlockedRecipientStore(), blockedReleaseNotesStore: blockedReleaseNotesStore),
             tsAccountManager: mockTSAccountManager,
             notificationPresenter: NoopNotificationPresenterImpl(),
             threadStore: mockThreadStore,
@@ -49,7 +50,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
             db: db,
             attachmentContentValidator: AttachmentContentValidatorMock(),
             attachmentManager: AttachmentManagerMock(),
-            blockingManager: BlockingManager(blockedGroupStore: BlockedGroupStore(), blockedRecipientStore: BlockedRecipientStore()),
+            blockingManager: BlockingManager(blockedGroupStore: BlockedGroupStore(), blockedRecipientStore: BlockedRecipientStore(), blockedReleaseNotesStore: blockedReleaseNotesStore),
             tsAccountManager: mockTSAccountManager,
             notificationPresenter: NoopNotificationPresenterImpl(),
             threadStore: mockThreadStore,
@@ -355,6 +356,57 @@ struct RemoteReleaseNotesFetchingManagerTests {
         #expect(messages.count == 0)
     }
 
+    @Test
+    mutating func testRemoteAnnouncementFetch_blocked() async throws {
+        remoteReleaseNotesFetchingManager = manager(dateProvider: { Date() - 8 * .day })
+
+        db.write { tx in
+            blockedReleaseNotesStore.setBlocked(true, tx: tx)
+        }
+
+        let uuid = UUID().uuidString
+        mockRemoteReleaseNotesService.manifests = ([], [RemoteAnnouncementModel.Manifest(
+            id: uuid,
+            minAppVersion: try! AppVersionNumber4(AppVersionNumber("4.0.0.1")),
+            countries: nil,
+            link: nil,
+            action: nil,
+        )])
+
+        mockRemoteReleaseNotesService.announcementTranslations = [uuid: RemoteAnnouncementModel.Translation(
+            id: uuid,
+            title: "Put a pin in it",
+            body: "Your most frequently asked questions, dinner reservations, and vacation itineraries are already top of mind. Now they can be top of chat as well.\n\nNow you can pin up to three messages to the top of any 1-1 or group chat to share important information. Simple permissions make it easy to limit pinned messages to group admins, and messages can be pinned forever or for a limited time. Simply tap-and-hold any message and select \"Pin\" to get started.",
+            mediaRemoteUrlPath: nil,
+            mediaSize: nil,
+            mediaMimeType: nil,
+            linkText: nil,
+            callToActionText: nil,
+        )]
+
+        try await remoteReleaseNotesFetchingManager.syncRemoteReleaseNotes()
+
+        #expect(mockInteractionStore.insertedInteractions.count == 0, "Blocked thread means we don't store release notes")
+        var messages = mockInteractionStore.insertedInteractions
+        #expect(messages.count == 0)
+
+        db.write { tx in
+            blockedReleaseNotesStore.setBlocked(false, tx: tx)
+        }
+        try await remoteReleaseNotesFetchingManager.syncRemoteReleaseNotes()
+
+        messages = mockInteractionStore.insertedInteractions
+        #expect(messages.count == 0, "We marked this UUID as seen already, so no new messages should have been inserted")
+
+        let releaseNote = try db.read { tx in
+            try StoredReleaseNote.fetchOne(
+                tx.database,
+                sql: "SELECT * FROM \(StoredReleaseNote.databaseTableName) WHERE \(StoredReleaseNote.CodingKeys.uniqueId.rawValue) = ?",
+                arguments: [uuid],
+            )
+        }
+        #expect(releaseNote != nil, "The release note received while blocking should be marked as seen")
+    }
 }
 
 class MockRemoteReleaseNotesService: RemoteReleaseNotesServiceProtocol {

@@ -1288,6 +1288,9 @@
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave the \"%@\" Group?";
 
+/* Label for 'block release notes' action sheet title. */
+"BLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Block Signal?";
+
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Block %@?";
 
@@ -1344,6 +1347,9 @@
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
+
+/* An explanation of the consequences of blocking release notes. */
+"BLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Block getting Signal updates and news.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
@@ -2509,6 +2515,9 @@
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Block Group";
 
+/* Label for 'block release notes' action in conversation settings view. */
+"CONVERSATION_SETTINGS_BLOCK_RELEASE_NOTES" = "Block";
+
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Block User";
 
@@ -2679,6 +2688,9 @@
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
+
+/* Label for 'unblock release notes' action in conversation settings view. */
+"CONVERSATION_SETTINGS_UNBLOCK_RELEASE_NOTES" = "Unblock";
 
 /* Label for 'unblock user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Unblock User";
@@ -10038,6 +10050,12 @@
 
 /* Toast shown when tapping older media that can no longer be downloaded */
 "UNAVAILABLE_MEDIA_TAP_TOAST" = "This media is no longer available";
+
+/* Action sheet title when confirming you want to unblock release notes. */
+"UNBLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Unblock Signal?";
+
+/* Action sheet body when confirming you want to unblock release notes */
+"UNBLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Resume getting Signal updates and news.";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "User not in your contacts. Would you like to block this user?";

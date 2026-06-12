@@ -289,6 +289,7 @@ extension AppSetup.GlobalsContinuation {
         let blockingManager = BlockingManager(
             blockedGroupStore: BlockedGroupStore(),
             blockedRecipientStore: blockedRecipientStore,
+            blockedReleaseNotesStore: BlockedReleaseNotesStore(),
         )
         let earlyMessageManager = EarlyMessageManager(appReadiness: appReadiness)
         let messageProcessor = MessageProcessor(appReadiness: appReadiness)

@@ -26,6 +26,7 @@ public enum BlockMode {
 public class BlockingManager {
     private let blockedGroupStore: BlockedGroupStore
     private let blockedRecipientStore: BlockedRecipientStore
+    private let blockedReleaseNotesStore: BlockedReleaseNotesStore
 
     private let syncQueue = SerialTaskQueue()
 
@@ -38,9 +39,11 @@ public class BlockingManager {
     init(
         blockedGroupStore: BlockedGroupStore,
         blockedRecipientStore: BlockedRecipientStore,
+        blockedReleaseNotesStore: BlockedReleaseNotesStore,
     ) {
         self.blockedGroupStore = blockedGroupStore
         self.blockedRecipientStore = blockedRecipientStore
+        self.blockedReleaseNotesStore = blockedReleaseNotesStore
     }
 
     private func didUpdate(wasLocallyInitiated: Bool, tx: DBWriteTransaction) {
@@ -96,6 +99,10 @@ public class BlockingManager {
 
     private func _isGroupIdBlocked(_ groupId: Data, tx: DBReadTransaction) -> Bool {
         return blockedGroupStore.isBlocked(groupId: groupId, tx: tx)
+    }
+
+    public func isReleaseNotesThreadBlocked(tx: DBReadTransaction) -> Bool {
+        return blockedReleaseNotesStore.isBlocked(tx: tx)
     }
 
     public func blockedRecipientIds(tx: DBReadTransaction) -> Set<SignalRecipient.RowId> {
@@ -306,6 +313,54 @@ public class BlockingManager {
         didUpdate(wasLocallyInitiated: wasLocallyInitiated, tx: transaction)
     }
 
+    public func addBlockedReleaseNotesThread(
+        thread: TSReleaseNotesThread,
+        blockMode: BlockMode,
+        transaction: DBWriteTransaction,
+    ) {
+        let isBlocked = blockedReleaseNotesStore.isBlocked(tx: transaction)
+        guard !isBlocked else {
+            return
+        }
+        blockedReleaseNotesStore.setBlocked(true, tx: transaction)
+
+        Logger.info("Added blocked release notes thread")
+
+        DependenciesBridge.shared.interactionStore.insertInteraction(
+            TSInfoMessage(thread: thread, messageType: .blockedGroup),
+            tx: transaction,
+        )
+
+        let wasLocallyInitiated = blockMode.isLocallyInitiated
+        didUpdate(wasLocallyInitiated: wasLocallyInitiated, tx: transaction)
+
+        // TODO: update storage service.
+    }
+
+    public func removeBlockedReleaseNotesThread(
+        thread: TSReleaseNotesThread,
+        wasLocallyInitiated: Bool,
+        transaction: DBWriteTransaction,
+    ) {
+        let isBlocked = blockedReleaseNotesStore.isBlocked(tx: transaction)
+        guard isBlocked else {
+            return
+        }
+        blockedReleaseNotesStore.setBlocked(false, tx: transaction)
+
+        Logger.info("Removed blocked release notes thread")
+
+        // Insert an info message that we unblocked.
+        DependenciesBridge.shared.interactionStore.insertInteraction(
+            TSInfoMessage(thread: thread, messageType: .unblockedGroup),
+            tx: transaction,
+        )
+
+        didUpdate(wasLocallyInitiated: wasLocallyInitiated, tx: transaction)
+
+        // TODO: update storage service.
+    }
+
     // MARK: Other convenience access
 
     public func isThreadBlocked(_ thread: TSThread, transaction: DBReadTransaction) -> Bool {
@@ -316,8 +371,7 @@ public class BlockingManager {
         } else if thread is TSPrivateStoryThread {
             return false
         } else if thread.isReleaseNotesThread {
-            // TODO: [KC] implement blocking for release notes thread
-            return false
+            return blockedReleaseNotesStore.isBlocked(tx: transaction)
         } else {
             owsFailDebug("Invalid thread: \(type(of: thread))")
             return false
@@ -329,6 +383,8 @@ public class BlockingManager {
             addBlockedAddress(contactThread.contactAddress, blockMode: blockMode, transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
             addBlockedGroupId(groupThread.groupId, blockMode: blockMode, transaction: transaction)
+        } else if let releaseNotesThread = thread as? TSReleaseNotesThread {
+            addBlockedReleaseNotesThread(thread: releaseNotesThread, blockMode: blockMode, transaction: transaction)
         } else {
             owsFailDebug("Invalid thread: \(type(of: thread))")
         }
@@ -339,6 +395,12 @@ public class BlockingManager {
             removeBlockedAddress(contactThread.contactAddress, wasLocallyInitiated: wasLocallyInitiated, transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
             removeBlockedGroup(groupId: groupThread.groupId, wasLocallyInitiated: wasLocallyInitiated, transaction: transaction)
+        } else if let releaseNotesThread = thread as? TSReleaseNotesThread {
+            removeBlockedReleaseNotesThread(
+                thread: releaseNotesThread,
+                wasLocallyInitiated: wasLocallyInitiated,
+                transaction: transaction,
+            )
         } else {
             owsFailDebug("Invalid thread: \(type(of: thread))")
         }

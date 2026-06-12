@@ -69,6 +69,7 @@
 		044D84452E9FDDF00090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044D84442E9FDDE30090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift */; };
 		044D84472E9FEE010090BA64 /* BackupArchivePollArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044D84462E9FEDE20090BA64 /* BackupArchivePollArchiver.swift */; };
 		044EA2232FC0EFAE005B5A3E /* SafetyTipsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044EA2222FC0EFA6005B5A3E /* SafetyTipsSheet.swift */; };
+		044EA2272FC87611005B5A3E /* BlockedReleaseNotesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044EA2262FC8760A005B5A3E /* BlockedReleaseNotesStore.swift */; };
 		045B40892EC67510002D3F9A /* PinnedMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B40882EC6750A002D3F9A /* PinnedMessageManager.swift */; };
 		045B408C2EC67C03002D3F9A /* PinnedMessageRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B408B2EC67BFF002D3F9A /* PinnedMessageRecord.swift */; };
 		045B408E2EC6897B002D3F9A /* PinnedMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045B408D2EC68974002D3F9A /* PinnedMessageManagerTest.swift */; };
@@ -4228,6 +4229,7 @@
 		044D84442E9FDDE30090BA64 /* BackupArchivePollTerminateChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchivePollTerminateChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		044D84462E9FEDE20090BA64 /* BackupArchivePollArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchivePollArchiver.swift; sourceTree = "<group>"; };
 		044EA2222FC0EFA6005B5A3E /* SafetyTipsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyTipsSheet.swift; sourceTree = "<group>"; };
+		044EA2262FC8760A005B5A3E /* BlockedReleaseNotesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedReleaseNotesStore.swift; sourceTree = "<group>"; };
 		045B40882EC6750A002D3F9A /* PinnedMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageManager.swift; sourceTree = "<group>"; };
 		045B408B2EC67BFF002D3F9A /* PinnedMessageRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageRecord.swift; sourceTree = "<group>"; };
 		045B408D2EC68974002D3F9A /* PinnedMessageManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageManagerTest.swift; sourceTree = "<group>"; };
@@ -14738,6 +14740,7 @@
 				500B25822DD6A08300E9ECAA /* BackgroundMessageFetcher.swift */,
 				50AABEE72CDD9A440077E306 /* BlockedGroupStore.swift */,
 				50F039C32C6D239500162B99 /* BlockedRecipientStore.swift */,
+				044EA2262FC8760A005B5A3E /* BlockedReleaseNotesStore.swift */,
 				F9C5C940289453B100548EEE /* BlockingManager.swift */,
 				50A5AA982A7449A100CF2ECC /* DecryptedIncomingEnvelope.swift */,
 				F9C5C943289453B100548EEE /* DeliveryReceiptContext.swift */,
@@ -19117,6 +19120,7 @@
 				F9C5CE12289453B400548EEE /* Bench.swift in Sources */,
 				50AABEE82CDD9A440077E306 /* BlockedGroupStore.swift in Sources */,
 				50F039C42C6D239500162B99 /* BlockedRecipientStore.swift in Sources */,
+				044EA2272FC87611005B5A3E /* BlockedReleaseNotesStore.swift in Sources */,
 				F9C5CC31289453B300548EEE /* BlockingManager.swift in Sources */,
 				F9C5CC74289453B300548EEE /* BlurHash.swift in Sources */,
 				505F76332BC45C0700B1B51C /* BuildFlags+Generated.swift in Sources */,

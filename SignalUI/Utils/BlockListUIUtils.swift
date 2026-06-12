@@ -7,7 +7,9 @@ public import SignalServiceKit
 
 public class BlockListUIUtils {
 
-    public typealias Completion = (Bool) -> Void
+    /// Called after the action sheet is dismissed.
+    /// - Parameter isBlocked: whether the thread is blocked after the user's action.
+    public typealias Completion = (_ isBlocked: Bool) -> Void
 
     private init() {}
 
@@ -24,6 +26,14 @@ public class BlockListUIUtils {
         }
         if let groupThread = thread as? TSGroupThread {
             showBlockGroupActionSheet(groupThread, from: viewController, completion: completion)
+            return
+        }
+        if let releaseNotesThread = thread as? TSReleaseNotesThread {
+            showBlockReleaseNotesActionSheet(
+                releaseNotesThread,
+                from: viewController,
+                completion: completion,
+            )
             return
         }
         owsFailDebug("Unexpected thread type: \(thread.self)")
@@ -136,6 +146,40 @@ public class BlockListUIUtils {
         viewController.presentActionSheet(actionSheet)
     }
 
+    private static func showBlockReleaseNotesActionSheet(
+        _ releaseNotesThread: TSReleaseNotesThread,
+        from viewController: UIViewController,
+        completion: Completion?,
+    ) {
+        let actionSheetTitle = OWSLocalizedString(
+            "BLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE",
+            comment: "Label for 'block release notes' action sheet title.",
+        )
+        let actionSheet = ActionSheetController(
+            title: actionSheetTitle,
+            message: OWSLocalizedString(
+                "BLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION",
+                comment: "An explanation of the consequences of blocking release notes.",
+            ),
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "Button label for the 'block' button"),
+            style: .destructive,
+            handler: { _ in
+                blockReleaseNotesThread(thread: releaseNotesThread)
+                completion?(true)
+            },
+        ))
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.cancelButton,
+            style: .cancel,
+            handler: { _ in
+                completion?(false)
+            },
+        ))
+        viewController.presentActionSheet(actionSheet)
+    }
+
     private static func blockAddress(
         _ address: SignalServiceAddress,
         displayName: String,
@@ -207,6 +251,21 @@ public class BlockListUIUtils {
         showOkActionSheet(title: actionSheetTitle, message: actionSheetMessage, from: viewController, completion: completion)
     }
 
+    private static func blockReleaseNotesThread(
+        thread: TSReleaseNotesThread,
+    ) {
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let db = DependenciesBridge.shared.db
+
+        db.write { tx in
+            blockingManager.addBlockedReleaseNotesThread(
+                thread: thread,
+                blockMode: .local,
+                transaction: tx,
+            )
+        }
+    }
+
     // MARK: Unblock
 
     public static func showUnblockThreadActionSheet(
@@ -225,6 +284,10 @@ public class BlockListUIUtils {
                 from: viewController,
                 completion: completion,
             )
+            return
+        }
+        if let releaseNotesThread = thread as? TSReleaseNotesThread {
+            showUnblockReleaseNotesSheet(thread: releaseNotesThread, from: viewController, completion: completion)
             return
         }
         owsFailDebug("unexpected thread type: \(thread.self)")
@@ -299,6 +362,38 @@ public class BlockListUIUtils {
         viewController.presentActionSheet(actionSheet)
     }
 
+    private static func showUnblockReleaseNotesSheet(
+        thread: TSReleaseNotesThread,
+        from viewController: UIViewController,
+        completion: Completion?,
+    ) {
+        let actionSheetTitle = OWSLocalizedString(
+            "UNBLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE",
+            comment: "Action sheet title when confirming you want to unblock release notes.",
+        )
+        let actionSheetMessage = OWSLocalizedString(
+            "UNBLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION",
+            comment: "Action sheet body when confirming you want to unblock release notes",
+        )
+        let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "Button label for the 'unblock' button"),
+            style: .destructive,
+            handler: { _ in
+                unblockReleaseNotes(thread: thread)
+                completion?(false)
+            },
+        ))
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.cancelButton,
+            style: .cancel,
+            handler: { _ in
+                completion?(true)
+            },
+        ))
+        viewController.presentActionSheet(actionSheet)
+    }
+
     private static func unblockAddress(
         _ address: SignalServiceAddress,
         displayName: String,
@@ -340,6 +435,21 @@ public class BlockListUIUtils {
             comment: "Alert body after unblocking a group.",
         )
         showOkActionSheet(title: actionSheetTitle, message: actionSheetMessage, from: viewController, completion: completion)
+    }
+
+    private static func unblockReleaseNotes(
+        thread: TSReleaseNotesThread,
+    ) {
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let db = DependenciesBridge.shared.db
+
+        db.write { tx in
+            blockingManager.removeBlockedReleaseNotesThread(
+                thread: thread,
+                wasLocallyInitiated: true,
+                transaction: tx,
+            )
+        }
     }
 
     // MARK: UI Utils

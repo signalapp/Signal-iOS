@@ -97,6 +97,8 @@ extension ConversationSettingsViewController {
 
             let donateSection = buildDonateSettingsSection()
             contents.add(donateSection)
+
+            contents.add(buildBlockAndLeaveSection())
         }
 
         if DebugFlags.internalSettings {
@@ -679,26 +681,45 @@ extension ConversationSettingsViewController {
         if !isTerminatedGroup {
             let isGroup = thread.isGroupThread
             let isBlocked = threadViewModel.isBlocked
+            let isReleaseNotes = thread.isReleaseNotesThread
             section.add(OWSTableItem(
                 customCellBlock: {
                     let cellTitle: String
                     var customColor: UIColor?
                     if isBlocked {
-                        cellTitle = isGroup ? OWSLocalizedString(
-                            "CONVERSATION_SETTINGS_UNBLOCK_GROUP",
-                            comment: "Label for 'unblock group' action in conversation settings view.",
-                        ) : OWSLocalizedString(
-                            "CONVERSATION_SETTINGS_UNBLOCK_USER",
-                            comment: "Label for 'unblock user' action in conversation settings view.",
-                        )
+                        if isGroup {
+                            cellTitle = OWSLocalizedString(
+                                "CONVERSATION_SETTINGS_UNBLOCK_GROUP",
+                                comment: "Label for 'unblock group' action in conversation settings view.",
+                            )
+                        } else if isReleaseNotes {
+                            cellTitle = OWSLocalizedString(
+                                "CONVERSATION_SETTINGS_UNBLOCK_RELEASE_NOTES",
+                                comment: "Label for 'unblock release notes' action in conversation settings view.",
+                            )
+                        } else {
+                            cellTitle = OWSLocalizedString(
+                                "CONVERSATION_SETTINGS_UNBLOCK_USER",
+                                comment: "Label for 'unblock user' action in conversation settings view.",
+                            )
+                        }
                     } else {
-                        cellTitle = isGroup ? OWSLocalizedString(
-                            "CONVERSATION_SETTINGS_BLOCK_GROUP",
-                            comment: "Label for 'block group' action in conversation settings view.",
-                        ) : OWSLocalizedString(
-                            "CONVERSATION_SETTINGS_BLOCK_USER",
-                            comment: "Label for 'block user' action in conversation settings view.",
-                        )
+                        if isGroup {
+                            cellTitle = OWSLocalizedString(
+                                "CONVERSATION_SETTINGS_BLOCK_GROUP",
+                                comment: "Label for 'block group' action in conversation settings view.",
+                            )
+                        } else if isReleaseNotes {
+                            cellTitle = OWSLocalizedString(
+                                "CONVERSATION_SETTINGS_BLOCK_RELEASE_NOTES",
+                                comment: "Label for 'block release notes' action in conversation settings view.",
+                            )
+                        } else {
+                            cellTitle = OWSLocalizedString(
+                                "CONVERSATION_SETTINGS_BLOCK_USER",
+                                comment: "Label for 'block user' action in conversation settings view.",
+                            )
+                        }
                         customColor = UIColor.ows_accentRed
                     }
                     let cell = OWSTableItem.buildCell(
@@ -722,7 +743,7 @@ extension ConversationSettingsViewController {
             return InteractionFinder(threadUniqueId: thread.uniqueId).hasUserReportedSpam(transaction: tx)
         }
 
-        if !hasReportedSpam {
+        if !hasReportedSpam, !thread.isReleaseNotesThread {
             section.add(OWSTableItem(
                 customCellBlock: { [weak self] in
                     guard let self else {

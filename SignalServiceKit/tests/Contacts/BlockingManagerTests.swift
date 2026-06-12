@@ -19,6 +19,7 @@ class BlockingManagerTests: SSKBaseTest {
         otherBlockingManager = BlockingManager(
             blockedGroupStore: BlockedGroupStore(),
             blockedRecipientStore: BlockedRecipientStore(),
+            blockedReleaseNotesStore: BlockedReleaseNotesStore(),
         )
     }
 
