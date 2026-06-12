@@ -34,7 +34,7 @@ struct SVRAuthCredentialStorageTest {
         #expect(authCredential?.credential.password == credential.credential.password)
     }
 
-    @Test(.disabled())
+    @Test
     func testDeleteInvalidCredentials() throws {
         let credential1 = SVR2AuthCredential(credential: RemoteAttestationAuth(username: "c1", password: "p1"))
         let credential2 = SVR2AuthCredential(credential: RemoteAttestationAuth(username: "c2", password: "p1"))
@@ -65,7 +65,7 @@ struct SVRAuthCredentialStorageTest {
         }
     }
 
-    @Test(.disabled())
+    @Test
     func testRemoveCredentialsForCurrentUser() {
         let credential = SVR2AuthCredential(credential: RemoteAttestationAuth(username: "abc", password: "123"))
         db.write { tx in

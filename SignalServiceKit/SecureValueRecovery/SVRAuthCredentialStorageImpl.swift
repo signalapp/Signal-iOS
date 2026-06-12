@@ -140,9 +140,8 @@ class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
     ) {
         var credentials = consolidateLocalAndiCloud(transaction)
         block(&credentials)
-        setLocalCredentials(credentials, transaction)
         // Consolidate again so that we sort and truncate.
-        credentials = consolidateLocalAndiCloud(transaction)
+        credentials = Self.consolidateCredentials(allUnsortedCredentials: credentials)
         setLocalCredentials(credentials, transaction)
         setiCloudCredentials(credentials, transaction)
     }
