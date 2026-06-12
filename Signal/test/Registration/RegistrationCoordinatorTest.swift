@@ -43,7 +43,7 @@ public class RegistrationCoordinatorTest {
     private var sessionManager: RegistrationSessionManagerMock!
     private var storageServiceManagerMock: RegistrationCoordinatorImpl.TestMocks.StorageServiceManager!
     private var svr: SecureValueRecoveryMock!
-    private var svrAuthCredentialStore: SVRAuthCredentialStorageMock!
+    private var svrAuthCredentialStorage: SVRAuthCredentialStorage!
     private var timeoutProviderMock: RegistrationCoordinatorImpl.TestMocks.TimeoutProvider!
     private var tsAccountManagerMock: MockTSAccountManager!
     private var usernameApiClientMock: RegistrationCoordinatorImpl.TestMocks.UsernameApiClient!
@@ -78,7 +78,7 @@ public class RegistrationCoordinatorTest {
             return mock
         }()
         svr = SecureValueRecoveryMock()
-        svrAuthCredentialStore = SVRAuthCredentialStorageMock()
+        svrAuthCredentialStorage = SVRAuthCredentialStorage.mock()
         mockMessagePipelineSupervisor = RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor()
         mockMessageProcessor = RegistrationCoordinatorImpl.TestMocks.MessageProcessor()
         networkManagerMock = MockNetworkManager()
@@ -161,7 +161,7 @@ public class RegistrationCoordinatorTest {
             storageServiceManager: storageServiceManagerMock,
             svr: svr,
             svrLocalStorage: SVRLocalStorage(),
-            svrAuthCredentialStore: svrAuthCredentialStore,
+            svrAuthCredentialStore: svrAuthCredentialStorage,
             timeoutProvider: timeoutProviderMock,
             tsAccountManager: tsAccountManagerMock,
             udManager: RegistrationCoordinatorImpl.TestMocks.UDManager(),
@@ -1135,7 +1135,7 @@ public class RegistrationCoordinatorTest {
         let svr2CredentialCandidates: [SVR2AuthCredential] = [
             Stubs.svr2AuthCredential,
         ]
-        svrAuthCredentialStore.svr2Dict = Dictionary(grouping: svr2CredentialCandidates, by: \.credential.username).mapValues { $0.first! }
+        storeSvrCredentials(svr2CredentialCandidates)
 
         // Give it a phone number, which should cause it to check the auth credentials.
         // Match the main auth credential.
@@ -1306,7 +1306,7 @@ public class RegistrationCoordinatorTest {
                 .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)),
         )
 
-        #expect(svrAuthCredentialStore.svr2Dict[Stubs.svr2AuthCredential.credential.username] != nil)
+        #expect(getSvrCredentialUsernames() == [Stubs.svr2AuthCredential.credential.username])
 
         #expect(!didClearPinCode)
 
@@ -1349,7 +1349,7 @@ public class RegistrationCoordinatorTest {
         let svr2CredentialCandidates: [SVR2AuthCredential] = [
             Stubs.svr2AuthCredential,
         ]
-        svrAuthCredentialStore.svr2Dict = Dictionary(grouping: svr2CredentialCandidates, by: \.credential.username).mapValues { $0.first! }
+        storeSvrCredentials(svr2CredentialCandidates)
 
         // Give it a phone number, which should cause it to check the auth credentials.
         // Match the main auth credential.
@@ -1628,13 +1628,7 @@ public class RegistrationCoordinatorTest {
         )
 
         // We should have wiped the invalid and unknown credentials.
-        let remainingCredentials = svrAuthCredentialStore.svr2Dict
-        #expect(remainingCredentials[Stubs.svr2AuthCredential.credential.username] != nil)
-        #expect(remainingCredentials["aaaa"] != nil)
-        #expect(remainingCredentials["zzzz"] == nil)
-        #expect(remainingCredentials["0000"] == nil)
-        // SVR should be untouched.
-        #expect(svrAuthCredentialStore.svr2Dict[Stubs.svr2AuthCredential.credential.username] != nil)
+        #expect(getSvrCredentialUsernames() == [Stubs.svr2AuthCredential.credential.username, "aaaa"])
 
         // Enter the PIN, which should try and recover from SVR.
         // Once we do that, it should follow the Reg Recovery Password Path.
@@ -1702,12 +1696,8 @@ public class RegistrationCoordinatorTest {
                 .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode)),
         )
 
-        // We should have wipted the invalid and unknown credentials.
-        let remainingCredentials = svrAuthCredentialStore.svr2Dict
-        #expect(remainingCredentials[Stubs.svr2AuthCredential.credential.username] != nil)
-        #expect(remainingCredentials["aaaa"] != nil)
-        #expect(remainingCredentials["zzzz"] == nil)
-        #expect(remainingCredentials["0000"] == nil)
+        // We should have wiped the invalid and unknown credentials.
+        #expect(getSvrCredentialUsernames() == [Stubs.svr2AuthCredential.credential.username, "aaaa"])
     }
 
     @MainActor @Test(arguments: Self.testCases())
@@ -1723,7 +1713,7 @@ public class RegistrationCoordinatorTest {
 
         // Put some auth credentials in storage.
         let credentialCandidates: [SVR2AuthCredential] = [Stubs.svr2AuthCredential]
-        svrAuthCredentialStore.svr2Dict = Dictionary(grouping: credentialCandidates, by: \.credential.username).mapValues { $0.first! }
+        storeSvrCredentials(credentialCandidates)
 
         // Get past the opening.
         await goThroughOpeningHappyPath(
@@ -1788,7 +1778,7 @@ public class RegistrationCoordinatorTest {
         )
 
         // We should have wiped the invalid and unknown credentials.
-        #expect(svrAuthCredentialStore.svr2Dict[Stubs.svr2AuthCredential.credential.username] != nil)
+        #expect(getSvrCredentialUsernames() == [Stubs.svr2AuthCredential.credential.username])
 
         // Now change the phone number; this should take us back to phone number entry.
         #expect(
@@ -3296,6 +3286,22 @@ public class RegistrationCoordinatorTest {
         return oldAep
     }
 
+    func storeSvrCredentials(_ svrCredentials: [SVR2AuthCredential]) {
+        let invalidCredential = SVR2AuthCredential(credential: RemoteAttestationAuth(username: UUID().uuidString, password: "abc123"))
+        db.write { tx in
+            for credential in svrCredentials + [invalidCredential] {
+                svrAuthCredentialStorage.storeAuthCredentialForCurrentUsername(credential, tx)
+            }
+            svrAuthCredentialStorage.deleteInvalidCredentials([invalidCredential], tx)
+        }
+    }
+
+    func getSvrCredentialUsernames() -> Set<String> {
+        return Set(db.read { tx in
+            return svrAuthCredentialStorage.getAuthCredentials(tx).map(\.credential.username)
+        })
+    }
+
     func mockSVRCredentials(isMatch: Bool) {
         // Put some auth credentials in storage.
         let svr2CredentialCandidates: [SVR2AuthCredential] = [
@@ -3304,7 +3310,7 @@ public class RegistrationCoordinatorTest {
             SVR2AuthCredential(credential: RemoteAttestationAuth(username: "zzzz", password: "xyz")),
             SVR2AuthCredential(credential: RemoteAttestationAuth(username: "0000", password: "123")),
         ]
-        svrAuthCredentialStore.svr2Dict = Dictionary(grouping: svr2CredentialCandidates, by: \.credential.username).mapValues { $0.first! }
+        storeSvrCredentials(svr2CredentialCandidates)
 
         // Give it a phone number, which should cause it to check the auth credentials.
         // Match the main auth credential.

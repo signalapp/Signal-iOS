@@ -5,7 +5,30 @@
 
 import Foundation
 
-class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
+extension SVR {
+    static let maxSVRAuthCredentialsBackedUp: Int = 10
+}
+
+/// Stores credentials to authenticate with SVR.
+///
+/// May simultaneously store credentials for multiple Signal accounts. This
+/// can happen if multiple Signal accounts share an iCloud account.
+///
+/// Credentials are mirrored across all `credentialStores`. Typically there
+/// are two stores: a local KeyValueStore and an encrypted iCloud container.
+///
+/// They are written to local storage so we can reuse them locally if iCloud
+/// is disabled or fails for any reason.
+///
+/// They are written to iCloud's (encrypted) key value store to be synced
+/// between a user's devices. These credentials can be used in tandem with
+/// the user's PIN to bypass SMS verification during registration. (For
+/// example, if you buy a new phone, sign into iCloud, and then register
+/// with the same number.) Note: The user MUST know their PIN to bypass SMS
+/// verification and to access their account data. The credential doesn't
+/// provide any account information; it only provides the ability to make
+/// PIN guesses without first completing SMS verification.
+public struct SVRAuthCredentialStorage {
 
     private let credentialStores: [any SVRAuthCredentialStore]
     private let usernameStore: KeyValueStore
@@ -18,9 +41,38 @@ class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
         self.usernameStore = usernameStore
     }
 
+#if TESTABLE_BUILD
+
+    static func mock(storeCount: Int = 1) -> Self {
+        owsPrecondition(storeCount >= 1)
+        let kvStores = (1...storeCount).map {
+            return KeyValueStore(collection: "SVRAuthCredential.Mock.\($0)")
+        }
+        return Self(
+            credentialStores: kvStores.map(SVRAuthCredentialLocalStore.init(kvStore:)),
+            usernameStore: kvStores.first!,
+        )
+    }
+
+#endif
+
     // MARK: SVR2
 
-    func storeAuthCredentialForCurrentUsername(_ credential: SVR2AuthCredential, _ transaction: DBWriteTransaction) {
+    /// Stores an `SVR2AuthCredential` to all `credentialStores` (e.g., a local
+    /// key value store and iCloud).
+    ///
+    /// Overwrites any existing credentials for the same username (e.g., ACI).
+    ///
+    /// Updates the current username so that `getAuthCredentialForCurrentUser`
+    /// will return the just-stored credential (barring race conditions and
+    /// clock manipulations).
+    ///
+    /// Stores up to `SVR.maxSVRAuthCredentialsBackedUp` credentials; if more
+    /// are inserted, they are dropped in FIFO order.
+    ///
+    /// Note: Multiple accounts can share an iCloud account, so more than one
+    /// username may be present in storage.
+    public func storeAuthCredentialForCurrentUsername(_ credential: SVR2AuthCredential, _ transaction: DBWriteTransaction) {
         let credential = AuthCredential.from(credential)
         updateCredentials(transaction) {
             // Sorting is handled by updateCredentials
@@ -29,11 +81,26 @@ class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
         setCurrentUsername(credential.username, transaction)
     }
 
-    func getAuthCredentials(_ transaction: DBReadTransaction) -> [SVR2AuthCredential] {
+    /// Gets `SVR2AuthCredential`s from all `credentialStores`.
+    ///
+    /// Credentials may be expired (i.e., won't be valid for any account and can
+    /// be thrown away) or invalid for a particular account (i.e., they aren't
+    /// expired but they can't be used for the account we're registering);
+    /// callers should poke the registration server to validate them.
+    ///
+    /// Returns up to `SVR.maxSVRAuthCredentialsBackedUp` credentials.
+    public func getAuthCredentials(_ transaction: DBReadTransaction) -> [SVR2AuthCredential] {
         let consolidatedCredentials = Self.consolidateCredentials(allUnsortedCredentials: self.getCredentials(tx: transaction))
         return consolidatedCredentials.map { $0.toSVR2Credential() }
     }
 
+    /// Gets the most recent `SVR2AuthCredential` for the current username.
+    ///
+    /// Returns nil if there are no backed up credentials, or if all credentials
+    /// came from iCloud storage and therefore there is no "current" username.
+    ///
+    /// This method should not be used during registration. (Use
+    /// `getAuthCredentials` during registration.)
     func getAuthCredentialForCurrentUser(_ transaction: DBReadTransaction) -> SVR2AuthCredential? {
         let credentialCandidates = getAuthCredentials(transaction)
         if credentialCandidates.isEmpty {
@@ -43,7 +110,10 @@ class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
         return credentialCandidates.first(where: { return $0.credential.username == currentUsername })
     }
 
-    func deleteInvalidCredentials(_ invalidCredentials: [SVR2AuthCredential], _ transaction: DBWriteTransaction) {
+    /// Removes the provided credentials from storage.
+    ///
+    /// Should be called when the server tells the client the credential(s) are invalid.
+    public func deleteInvalidCredentials(_ invalidCredentials: [SVR2AuthCredential], _ transaction: DBWriteTransaction) {
         updateCredentials(transaction) {
             $0.removeAll(where: { existingCredential in
                 invalidCredentials.contains(where: { invalidCredential in
@@ -53,7 +123,8 @@ class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
         }
     }
 
-    func removeSVR2CredentialsForCurrentUser(_ transaction: DBWriteTransaction) {
+    /// Removes all credentials for the current user from storage.
+    public func removeSVR2CredentialsForCurrentUser(_ transaction: DBWriteTransaction) {
         let currentUsername = currentUsername(transaction)
         updateCredentials(transaction) {
             $0.removeAll(where: { existingCredential in
@@ -61,9 +132,6 @@ class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
             })
         }
     }
-
-    // Also write any KBS auth credentials we know about to local, encrypted database storage,
-    // so we can reuse them locally even if iCloud is disabled or fails for any reason.
 
     private static let usernameKey = "username"
 
@@ -96,19 +164,6 @@ class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
             credentialStore.setCredentialData(encodedValue, tx: tx)
         }
     }
-
-    // MARK: - iCloud Re-registration Support
-
-    // We write KBS auth credentials we know about to iCloud's key value store to be synced
-    // between a user's devices. (encrypted, as per apple's documentation)
-    // Having this credential lets us skip phone number verification during registation,
-    // for example if the user loses their phone and gets a new one and re-registers with the same number.
-
-    // The user still **MUST** know their PIN to access their account data (and to get in at all, if
-    // reglock is enabled). The credential on its own does not grant any account information;
-    // only the ability to make PIN guesses.
-    // Normally, phone number verification (SMS code) is required to fetch one of these
-    // credentials first, before proceeding to attempt to enter the PIN code.
 
     // MARK: - Helpers
 

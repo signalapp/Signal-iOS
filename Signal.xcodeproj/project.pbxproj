@@ -1085,7 +1085,6 @@
 		66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */; };
 		6671DC872CD44CA8002620EF /* LastVisibleInteractionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6671DC862CD44C9B002620EF /* LastVisibleInteractionStore.swift */; };
 		66734F012CA1ED3F00558494 /* BackupAttachmentUploadScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66734F002CA1ED3A00558494 /* BackupAttachmentUploadScheduler.swift */; };
-		6673FF702978C40300F96CFD /* SVRAuthCredentialStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */; };
 		6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */; };
 		6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */; };
 		6673FF87297B694C00F96CFD /* DB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF86297B694C00F96CFD /* DB.swift */; };
@@ -1877,7 +1876,6 @@
 		C18D6FE02D4D8FB40085E3B9 /* AccountEntropyPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18D6FDF2D4D8FB40085E3B9 /* AccountEntropyPool.swift */; };
 		C18DB09F2DA6B9D40084CFD6 /* RegistrationUIStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18DB09E2DA6B9D40084CFD6 /* RegistrationUIStyles.swift */; };
 		C18E3C722A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */; };
-		C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */; };
 		C19001C02ECE319800D0CBD5 /* ThemeDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19001BF2ECE319400D0CBD5 /* ThemeDataStore.swift */; };
 		C19001C22ECF62BA00D0CBD5 /* CallServiceSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19001C12ECF62AD00D0CBD5 /* CallServiceSettingsStore.swift */; };
 		C190F8F02C1B431900D1EAC9 /* OWSIncomingArchivedPaymentMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = C190F8EF2C1B431900D1EAC9 /* OWSIncomingArchivedPaymentMessage.m */; };
@@ -5366,7 +5364,6 @@
 		66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadStoreTests.swift; sourceTree = "<group>"; };
 		6671DC862CD44C9B002620EF /* LastVisibleInteractionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastVisibleInteractionStore.swift; sourceTree = "<group>"; };
 		66734F002CA1ED3A00558494 /* BackupAttachmentUploadScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadScheduler.swift; sourceTree = "<group>"; };
-		6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorage.swift; sourceTree = "<group>"; };
 		6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageImpl.swift; sourceTree = "<group>"; };
 		6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageTests.swift; sourceTree = "<group>"; };
 		6673FF86297B694C00F96CFD /* DB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DB.swift; sourceTree = "<group>"; };
@@ -6165,7 +6162,6 @@
 		C18D6FDF2D4D8FB40085E3B9 /* AccountEntropyPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountEntropyPool.swift; sourceTree = "<group>"; };
 		C18DB09E2DA6B9D40084CFD6 /* RegistrationUIStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationUIStyles.swift; sourceTree = "<group>"; };
 		C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PniDistributionSyncMessage.swift; sourceTree = "<group>"; };
-		C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageMock.swift; sourceTree = "<group>"; };
 		C19001BF2ECE319400D0CBD5 /* ThemeDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeDataStore.swift; sourceTree = "<group>"; };
 		C19001C12ECF62AD00D0CBD5 /* CallServiceSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallServiceSettingsStore.swift; sourceTree = "<group>"; };
 		C190F8EE2C1B431900D1EAC9 /* OWSIncomingArchivedPaymentMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSIncomingArchivedPaymentMessage.h; sourceTree = "<group>"; };
@@ -10381,7 +10377,6 @@
 				669947B92A20129000E4DC0C /* SVR2Shims.swift */,
 				66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */,
 				66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */,
-				6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */,
 				6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */,
 				50ED46C72FDB474F00F62B18 /* SVRAuthCredentialStore.swift */,
 				6640DD622ACDD5DE00CE9A8C /* SVRLocalStorage.swift */,
@@ -10525,7 +10520,6 @@
 			isa = PBXGroup;
 			children = (
 				6691E7F62996EAD70032A68A /* SecureValueRecoveryMock.swift */,
-				C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */,
 			);
 			path = KeyBackupService;
 			sourceTree = "<group>";
@@ -19924,9 +19918,7 @@
 				669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */,
 				66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */,
 				66C2B1382A0DB6A9008DDE72 /* SVRAuthCredential.swift in Sources */,
-				6673FF702978C40300F96CFD /* SVRAuthCredentialStorage.swift in Sources */,
 				6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */,
-				C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */,
 				50ED46C82FDB474F00F62B18 /* SVRAuthCredentialStore.swift in Sources */,
 				6640DD632ACDD5DE00CE9A8C /* SVRLocalStorage.swift in Sources */,
 				66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */,

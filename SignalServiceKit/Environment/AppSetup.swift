@@ -405,7 +405,7 @@ extension AppSetup.GlobalsContinuation {
         let svrAuthCredentialKvStore = KeyValueStore(collection: "SVR2AuthCredential")
         let svrAuthCredentialLocalStore = SVRAuthCredentialLocalStore(kvStore: svrAuthCredentialKvStore)
         let svrAuthCredentialCloudStore = SVRAuthCredentialCloudStore(credentialsKey: "signal_svr2_credentials")
-        let svrCredentialStorage = SVRAuthCredentialStorageImpl(
+        let svrCredentialStorage = SVRAuthCredentialStorage(
             credentialStores: [svrAuthCredentialLocalStore, svrAuthCredentialCloudStore],
             usernameStore: svrAuthCredentialKvStore,
         )

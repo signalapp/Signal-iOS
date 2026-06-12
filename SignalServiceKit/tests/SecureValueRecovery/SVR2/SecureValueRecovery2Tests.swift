@@ -14,7 +14,7 @@ class SecureValueRecovery2Tests: XCTestCase {
     private var db: InMemoryDB!
     private var svr: SecureValueRecovery2Impl!
 
-    private var credentialStorage: SVRAuthCredentialStorageMock!
+    private var credentialStorage: SVRAuthCredentialStorage!
 
     private var mock2FAManager: SVR2.TestMocks.OWS2FAManager!
     private var accountKeyStore: AccountKeyStore!
@@ -25,7 +25,7 @@ class SecureValueRecovery2Tests: XCTestCase {
 
     override func setUp() {
         self.db = InMemoryDB()
-        self.credentialStorage = SVRAuthCredentialStorageMock()
+        self.credentialStorage = SVRAuthCredentialStorage.mock()
 
         mock2FAManager = SVR2.TestMocks.OWS2FAManager()
         accountKeyStore = AccountKeyStore(

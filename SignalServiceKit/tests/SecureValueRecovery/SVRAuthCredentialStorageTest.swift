@@ -8,19 +8,11 @@ import Testing
 @testable import SignalServiceKit
 
 struct SVRAuthCredentialStorageTest {
-    let credentialStorage: SVRAuthCredentialStorageImpl
+    let credentialStorage: SVRAuthCredentialStorage
     let db = InMemoryDB()
 
     init() {
-        let kvStore1 = KeyValueStore(collection: "Local")
-        let kvStore2 = KeyValueStore(collection: "Cloud")
-        self.credentialStorage = SVRAuthCredentialStorageImpl(
-            credentialStores: [
-                SVRAuthCredentialLocalStore(kvStore: kvStore1),
-                SVRAuthCredentialLocalStore(kvStore: kvStore2),
-            ],
-            usernameStore: kvStore1,
-        )
+        self.credentialStorage = SVRAuthCredentialStorage.mock(storeCount: 2)
     }
 
     @Test
