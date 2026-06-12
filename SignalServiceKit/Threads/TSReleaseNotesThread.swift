@@ -18,6 +18,14 @@ public final class TSReleaseNotesThread: TSThread {
         let releaseNotes = TSReleaseNotesThread(uniqueId: releaseNotesUniqueId)
         releaseNotes.shouldThreadBeVisible = true
         releaseNotes.anyInsert(transaction: transaction)
+
+        // Mute release notes thread by default.
+        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: releaseNotes, transaction: transaction)
+        threadAssociatedData.updateWith(
+            mutedUntilTimestamp: ThreadAssociatedData.alwaysMutedTimestamp,
+            updateStorageService: false,
+            transaction: transaction,
+        )
         return releaseNotes
     }
 
