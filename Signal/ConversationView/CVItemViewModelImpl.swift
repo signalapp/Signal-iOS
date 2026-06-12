@@ -277,6 +277,8 @@ extension CVItemViewModelImpl {
             return false
         case .poll:
             return false
+        case .releaseNotesMessage:
+            return true
         }
     }
 }

@@ -335,6 +335,7 @@ public class GRDBSchemaMigrator {
         case addRecoverablePlaceholderExpirationIndex
         case backfillRecoverablePlaceholderErrorType
         case clearAttachmentMediaName
+        case addStoredReleaseNotesTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -458,7 +459,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 145
+    public static let grdbSchemaVersionLatest: UInt = 146
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5241,6 +5242,13 @@ public class GRDBSchemaMigrator {
                 VALUES (OLD.thumbnailCdnNumber, LOWER(HEX(OLD.sha256ContentHash || OLD.encryptionKey)), NULL, 1);
             END;
             """)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addStoredReleaseNotesTable) { transaction in
+            try transaction.database.create(table: StoredReleaseNote.databaseTableName) { table in
+                table.column("uniqueId", .text).primaryKey().notNull()
+            }
             return .success(())
         }
 

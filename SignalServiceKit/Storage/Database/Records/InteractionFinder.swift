@@ -1422,6 +1422,7 @@ extension InteractionFinder {
             .invalidIdentityKeyErrorMessage,
             .invalidIdentityKeyReceivingErrorMessage,
             .invalidIdentityKeySendingErrorMessage,
+            .releaseNotesMessage,
         ]
 
         let recordTypesSql = recordTypes.map { "\($0.rawValue)" }.joined(separator: ",")
@@ -1457,6 +1458,8 @@ extension InteractionFinder {
                 \(columnPrefix)\(interactionColumn: .recordType) IS \(SDSRecordType.infoMessage.rawValue)
                 AND \(columnPrefix)\(interactionColumn: .messageType) IS \(TSInfoMessageType.userJoinedSignal.rawValue)
             )
+            OR
+            \(columnPrefix)\(interactionColumn: .recordType) IS \(SDSRecordType.releaseNotesMessage.rawValue)
         )
         """
     }

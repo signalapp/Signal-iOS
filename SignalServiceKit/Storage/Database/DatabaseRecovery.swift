@@ -345,6 +345,7 @@ public enum DatabaseRecovery {
             AdminDeleteRecord.databaseTableName,
             AttachmentBackfillInboundRequestRecord.databaseTableName,
             SignalServiceKit.SessionRecord.databaseTableName,
+            StoredReleaseNote.databaseTableName,
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

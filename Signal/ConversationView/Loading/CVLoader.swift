@@ -510,7 +510,7 @@ public class CVLoader: NSObject {
         case .textOnlyMessage, .audio, .genericAttachment, .paymentAttachment, .archivedPaymentAttachment,
              .undownloadableAttachment,
              .contactShare, .bodyMedia, .viewOnce, .stickerMessage, .quoteOnlyMessage,
-             .giftBadge, .poll:
+             .giftBadge, .poll, .releaseNotesMessage:
             rootComponent = CVComponentMessage(itemModel: itemModel)
         case .typingIndicator:
             guard let typingIndicator = itemModel.componentState.typingIndicator else {

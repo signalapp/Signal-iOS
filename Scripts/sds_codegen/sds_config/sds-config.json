@@ -70,7 +70,8 @@
 		"TSIncomingMessage.read": "wasRead",
 		"TSCall.read": "wasRead",
 		"OWSGroupCallMessage.read": "wasRead",
-		"TSIncomingMessage.viewed": "wasViewed"
+		"TSIncomingMessage.viewed": "wasViewed",
+		"TSReleaseNotesMessage.read": "wasRead"
 	},
 	"custom_column_names": {
 		"TSInteraction.uniqueThreadId": "threadUniqueId"

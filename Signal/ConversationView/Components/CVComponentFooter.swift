@@ -139,7 +139,15 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         var innerViews = [UIView]()
 
         if isBorderless, conversationStyle.hasWallpaper {
-            let bubbleColor = itemModel.conversationStyle.bubbleChatColor(isIncoming: isIncoming)
+            var messageDirection: ConversationStyle.MessageDirection
+            if isOutgoing {
+                messageDirection = .outgoing
+            } else {
+                messageDirection = .incoming
+            }
+            owsAssertDebug(!isReleaseNotesMessage, "Release notes messages should never be borderless")
+
+            let bubbleColor = itemModel.conversationStyle.bubbleChatColor(messageDirection: messageDirection)
             let bubbleConfiguration = BubbleConfiguration(
                 corners: .capsule(),
                 stroke: itemModel.conversationStyle.bubbleStroke(isIncoming: isIncoming),

@@ -364,6 +364,9 @@ extension ConversationViewController: CVComponentDelegate {
                 return false
             }
         }
+        if itemViewModel.interaction is TSReleaseNotesMessage {
+            return false
+        }
 
         return true
     }

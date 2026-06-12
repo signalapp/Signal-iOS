@@ -45,6 +45,7 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSPaymentModels.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
+#import <SignalServiceKit/TSReleaseNotesMessage.h>
 #import <SignalServiceKit/TSUnreadIndicatorInteraction.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
 #import <SignalServiceKit/Threading.h>

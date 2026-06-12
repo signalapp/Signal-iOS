@@ -316,6 +316,7 @@ public class BlockingManager {
         } else if thread is TSPrivateStoryThread {
             return false
         } else if thread.isReleaseNotesThread {
+            // TODO: [KC] implement blocking for release notes thread
             return false
         } else {
             owsFailDebug("Invalid thread: \(type(of: thread))")

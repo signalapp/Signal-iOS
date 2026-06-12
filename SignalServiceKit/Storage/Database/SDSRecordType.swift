@@ -34,4 +34,5 @@ public enum SDSRecordType: UInt, CaseIterable {
     case incomingPaymentMessage = 75
     case incomingArchivedPaymentMessage = 78
     case outgoingArchivedPaymentMessage = 79
+    case releaseNotesMessage = 81
 }

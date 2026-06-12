@@ -648,6 +648,11 @@ class MediaPageViewController: UIPageViewController {
             }
         case is TSOutgoingMessage:
             return CommonStrings.you
+        case is TSReleaseNotesMessage:
+            return OWSLocalizedString(
+                "RELEASE_NOTES_CHANNEL_NAME",
+                comment: "Display name for the release notes channel",
+            )
         default:
             owsFailDebug("Unknown message type: \(type(of: message))")
             return ""

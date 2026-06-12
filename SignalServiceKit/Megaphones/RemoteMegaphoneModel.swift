@@ -445,7 +445,7 @@ extension RemoteMegaphoneModel {
         /// megaphone is presented.
         public fileprivate(set) var secondaryActionText: String?
 
-        private init(
+        init(
             id: String,
             title: String,
             body: String,

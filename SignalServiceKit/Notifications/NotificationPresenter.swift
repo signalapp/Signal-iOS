@@ -12,6 +12,8 @@ public protocol NotificationPresenter {
 
     func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction)
 
+    func notifyUser(forReleaseNotesMessage: TSReleaseNotesMessage, thread: TSThread, transaction: DBWriteTransaction)
+
     func notifyUser(forReaction: OWSReaction, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: DBWriteTransaction)
 
     func notifyUser(forErrorMessage: TSErrorMessage, thread: TSThread, transaction: DBWriteTransaction)

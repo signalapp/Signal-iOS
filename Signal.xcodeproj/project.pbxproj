@@ -78,12 +78,18 @@
 		046926092E8EBAAE00B1FC74 /* TSInfoMessage+Polls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */; };
 		0477BE322FA4FC41002F9B47 /* TSReleaseNotesThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */; };
 		0480F0002E57C51A006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift */; };
+		0477BE362FB21EED002F9B47 /* TSReleaseNotesMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477BE352FB21EE7002F9B47 /* TSReleaseNotesMessage.swift */; };
 		0484CECE2F44B7BE009AB2CB /* AdminDeleteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */; };
 		0484CED02F44BD00009AB2CB /* AdminDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CECF2F44BCFB009AB2CB /* AdminDeleteManager.swift */; };
 		0484CED22F44DD01009AB2CB /* OutgoingAdminDeleteMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CED12F44DCFF009AB2CB /* OutgoingAdminDeleteMessage.swift */; };
 		048D58362ED4FABB00F26237 /* PinDisappearingMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048D58352ED4FA8500F26237 /* PinDisappearingMessageViewController.swift */; };
 		048D58382EDDD57E00F26237 /* OutgoingPinMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048D58372EDDD56D00F26237 /* OutgoingPinMessage.swift */; };
 		04A19B432EEC815200CCB105 /* PinnedMessageExpirationJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A19B422EEC814900CCB105 /* PinnedMessageExpirationJob.swift */; };
+		04A23EB22FD85A1F00C42B42 /* TSReleaseNotesMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 04A23EB02FD85A1F00C42B42 /* TSReleaseNotesMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		04A23EB32FD85A1F00C42B42 /* TSReleaseNotesMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 04A23EB12FD85A1F00C42B42 /* TSReleaseNotesMessage.m */; };
+		04A23EB52FD8615100C42B42 /* TSReleaseNotesMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A23EB42FD8615100C42B42 /* TSReleaseNotesMessage+SDS.swift */; };
+		04A23EB92FD8740400C42B42 /* TSReleaseNotesMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A23EB82FD873FD00C42B42 /* TSReleaseNotesMessage.swift */; };
+		04A23EBF2FDB43D300C42B42 /* StoredReleaseNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A23EBE2FDB43B200C42B42 /* StoredReleaseNote.swift */; };
 		04A357CB2E5E283800499B27 /* PollMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A357CA2E5E283500499B27 /* PollMessageManager.swift */; };
 		04A357CD2E5E283E00499B27 /* PollStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A357CC2E5E283C00499B27 /* PollStore.swift */; };
 		04A531342E85D6E20006AC40 /* OutgoingPollTerminate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A531332E85D6D70006AC40 /* OutgoingPollTerminate.swift */; };
@@ -4231,12 +4237,18 @@
 		046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Polls.swift"; sourceTree = "<group>"; };
 		0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSReleaseNotesThread.swift; sourceTree = "<group>"; };
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledRecentlyNotificationMegaphone.swift; sourceTree = "<group>"; };
+		0477BE352FB21EE7002F9B47 /* TSReleaseNotesMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSReleaseNotesMessage.swift; sourceTree = "<group>"; };
 		0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDeleteRecord.swift; sourceTree = "<group>"; };
 		0484CECF2F44BCFB009AB2CB /* AdminDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDeleteManager.swift; sourceTree = "<group>"; };
 		0484CED12F44DCFF009AB2CB /* OutgoingAdminDeleteMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingAdminDeleteMessage.swift; sourceTree = "<group>"; };
 		048D58352ED4FA8500F26237 /* PinDisappearingMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinDisappearingMessageViewController.swift; sourceTree = "<group>"; };
 		048D58372EDDD56D00F26237 /* OutgoingPinMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingPinMessage.swift; sourceTree = "<group>"; };
 		04A19B422EEC814900CCB105 /* PinnedMessageExpirationJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessageExpirationJob.swift; sourceTree = "<group>"; };
+		04A23EB02FD85A1F00C42B42 /* TSReleaseNotesMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TSReleaseNotesMessage.h; sourceTree = "<group>"; };
+		04A23EB12FD85A1F00C42B42 /* TSReleaseNotesMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TSReleaseNotesMessage.m; sourceTree = "<group>"; };
+		04A23EB42FD8615100C42B42 /* TSReleaseNotesMessage+SDS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSReleaseNotesMessage+SDS.swift"; sourceTree = "<group>"; };
+		04A23EB82FD873FD00C42B42 /* TSReleaseNotesMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSReleaseNotesMessage.swift; sourceTree = "<group>"; };
+		04A23EBE2FDB43B200C42B42 /* StoredReleaseNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoredReleaseNote.swift; sourceTree = "<group>"; };
 		04A357CA2E5E283500499B27 /* PollMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollMessageManager.swift; sourceTree = "<group>"; };
 		04A357CC2E5E283C00499B27 /* PollStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollStore.swift; sourceTree = "<group>"; };
 		04A531332E85D6D70006AC40 /* OutgoingPollTerminate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingPollTerminate.swift; sourceTree = "<group>"; };
@@ -13362,6 +13374,7 @@
 				040506FB2F7FE3D50078B769 /* RemoteAnnouncementModel.swift */,
 				D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */,
 				040506FF2F8049910078B769 /* RemoteReleaseNotesService.swift */,
+				04A23EBE2FDB43B200C42B42 /* StoredReleaseNote.swift */,
 			);
 			path = Megaphones;
 			sourceTree = "<group>";
@@ -14878,6 +14891,10 @@
 				F9C5C8F7289453B100548EEE /* TSOutgoingMessage.m */,
 				F9C5C8F8289453B100548EEE /* TSOutgoingMessage.swift */,
 				D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */,
+				04A23EB42FD8615100C42B42 /* TSReleaseNotesMessage+SDS.swift */,
+				04A23EB02FD85A1F00C42B42 /* TSReleaseNotesMessage.h */,
+				04A23EB12FD85A1F00C42B42 /* TSReleaseNotesMessage.m */,
+				04A23EB82FD873FD00C42B42 /* TSReleaseNotesMessage.swift */,
 				F9C5C8EF289453B100548EEE /* TSUnreadIndicatorInteraction+SDS.swift */,
 				F9C5C8FD289453B100548EEE /* TSUnreadIndicatorInteraction.h */,
 				F9C5C8E5289453B100548EEE /* TSUnreadIndicatorInteraction.m */,
@@ -15668,6 +15685,7 @@
 				F9C5CBD2289453B300548EEE /* TSOutgoingMessage.h in Headers */,
 				F9C5CD82289453B300548EEE /* TSPaymentModels.h in Headers */,
 				F9C5CC03289453B300548EEE /* TSQuotedMessage.h in Headers */,
+				04A23EB22FD85A1F00C42B42 /* TSReleaseNotesMessage.h in Headers */,
 				F9C5CBF1289453B300548EEE /* TSUnreadIndicatorInteraction.h in Headers */,
 				F9C5CD61289453B300548EEE /* TSYapDatabaseObject.h in Headers */,
 			);
@@ -19882,6 +19900,7 @@
 				F9C5CC92289453B300548EEE /* StorageServiceProto.swift in Sources */,
 				D927372D2CD2DD1800E15D95 /* StorageServiceRecordIkmMigrator.swift in Sources */,
 				725465592BA0283B00EABFD2 /* StorageServiceUnknownFieldMigrator.swift in Sources */,
+				04A23EBF2FDB43D300C42B42 /* StoredReleaseNote.swift in Sources */,
 				667EDE6628FA0372001FB487 /* StoryBadgeCountManager.swift in Sources */,
 				66D709E928E3999400B5013A /* StoryContextAssociatedData.swift in Sources */,
 				F9C5CC59289453B300548EEE /* StoryFinder.swift in Sources */,
@@ -20024,6 +20043,9 @@
 				F9C5CCCB289453B300548EEE /* TSPrivateStoryThread.swift in Sources */,
 				F9C5CBE4289453B300548EEE /* TSQuotedMessage.m in Sources */,
 				6615553F2ABA5A7500AA302B /* TSRegistrationState.swift in Sources */,
+				04A23EB52FD8615100C42B42 /* TSReleaseNotesMessage+SDS.swift in Sources */,
+				04A23EB32FD85A1F00C42B42 /* TSReleaseNotesMessage.m in Sources */,
+				04A23EB92FD8740400C42B42 /* TSReleaseNotesMessage.swift in Sources */,
 				0477BE322FA4FC41002F9B47 /* TSReleaseNotesThread.swift in Sources */,
 				66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */,
 				6691E7EF2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift in Sources */,

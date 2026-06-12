@@ -448,6 +448,7 @@ private enum CrashyMocks {
         func registerNotificationSettings() async { failTest(Self.self) }
         func notifyUser(forIncomingMessage: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
         func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func notifyUser(forReleaseNotesMessage: TSReleaseNotesMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
         func notifyUser(forReaction: OWSReaction, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
         func notifyUser(forErrorMessage: TSErrorMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
         func notifyUser(forTSMessage: TSMessage, thread: TSThread, wantsSound: Bool, transaction: DBWriteTransaction) { failTest(Self.self) }

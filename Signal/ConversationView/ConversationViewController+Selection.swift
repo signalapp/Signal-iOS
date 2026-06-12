@@ -229,7 +229,7 @@ extension CVSelectionState {
                 return false
             case .info, .error, .call:
                 break
-            case .incomingMessage, .outgoingMessage:
+            case .incomingMessage, .outgoingMessage, .releaseNotesMessage:
                 break
             case .unknown:
                 owsFailDebug("Unknown interaction type.")
@@ -257,7 +257,7 @@ extension CVSelectionState {
                 return false
             case .info, .error, .call:
                 return false
-            case .incomingMessage, .outgoingMessage:
+            case .incomingMessage, .outgoingMessage, .releaseNotesMessage:
                 break
             case .unknown:
                 owsFailDebug("Unknown interaction type.")

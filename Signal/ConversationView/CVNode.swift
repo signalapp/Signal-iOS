@@ -23,6 +23,7 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
     case quoteOnlyMessage
     case giftBadge
     case poll
+    case releaseNotesMessage
 
     // Most of these other message cell types use a special root view.
     case dateHeader
@@ -60,6 +61,7 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
         case .defaultDisappearingMessageTimer: return "defaultDisappearingMessageTimer"
         case .poll: return "poll"
         case .collapseSet: return "collapseSet"
+        case .releaseNotesMessage: return "releaseNotesMessage"
         }
     }
 }
@@ -89,6 +91,10 @@ extension CVNode {
 
     var isOutgoing: Bool {
         interaction is TSOutgoingMessage
+    }
+
+    var isReleaseNotesMessage: Bool {
+        interaction is TSReleaseNotesMessage
     }
 
     var wasRemotelyDeleted: Bool {

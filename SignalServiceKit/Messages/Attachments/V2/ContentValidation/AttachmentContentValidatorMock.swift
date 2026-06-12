@@ -86,7 +86,8 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         from texts: [Key: MessageBody],
         attachmentKeys: [Key: AttachmentKey],
     ) async throws -> [Key: ValidatedMessageBody] {
-        throw OWSAssertionError("Unimplemented")
+        // Incomplete functionality.
+        return [texts.keys.first!: MockValidatedMessageBody(inlinedBody: texts.values.first!)]
     }
 
     open func prepareQuotedReplyThumbnail(

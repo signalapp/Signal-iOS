@@ -358,7 +358,7 @@ private extension UserDefaults {
 
 #if TESTABLE_BUILD
 
-public class MockAppVerion: AppVersion {
+public class MockAppVersion: AppVersion {
 
     public init() {}
 

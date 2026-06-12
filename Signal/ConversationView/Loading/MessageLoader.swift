@@ -728,7 +728,7 @@ class MessageLoader {
             }
             // Only show the date for non-synced thread messages;
             return infoMessage.messageType != .syncedThread
-        case .unreadIndicator, .incomingMessage, .outgoingMessage, .error, .call:
+        case .unreadIndicator, .incomingMessage, .outgoingMessage, .error, .call, .releaseNotesMessage:
             return true
         }
     }

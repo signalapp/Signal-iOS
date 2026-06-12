@@ -30,6 +30,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     private let editManager: EditManager
     private var wasDeleted: Bool = false
     private var isIncoming: Bool { message is TSIncomingMessage }
+    private var isReleaseNotesMessage: Bool { message is TSReleaseNotesMessage }
     private var expires: Bool { message.expiresInSeconds > 0 }
 
     private struct MessageRecipientModel {
@@ -289,7 +290,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         sentTimeLabel.isUserInteractionEnabled = true
         sentTimeLabel.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(didLongPressSent)))
 
-        if isIncoming {
+        if isIncoming || isReleaseNotesMessage {
             // Received time
             messageStack.addArrangedSubview(Self.buildValueLabel(
                 name: OWSLocalizedString(
@@ -963,6 +964,8 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
 
         if isIncoming {
             updateTableContents()
+        } else if isReleaseNotesMessage {
+            contents.add(buildMessageSection())
         } else {
             refreshMessageRecipientsAsync()
         }

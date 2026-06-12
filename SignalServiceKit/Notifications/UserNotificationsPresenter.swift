@@ -243,7 +243,8 @@ public class UserNotificationPresenter {
              .incomingReactionWithoutActions,
              .infoOrErrorMessage,
              .pollEndNotification,
-             .pollVoteNotification:
+             .pollVoteNotification,
+             .releaseNotesMessage:
             // Don't show these notifications when the thread is visible.
             if
                 let notificationThreadUniqueId = userInfo.threadId,

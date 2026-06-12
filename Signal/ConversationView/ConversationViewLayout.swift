@@ -1017,7 +1017,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         switch interaction.interactionType {
         case .unknown, .unreadIndicator, .dateHeader, .typingIndicator, .threadDetails, .defaultDisappearingMessageTimer:
             return false
-        case .incomingMessage, .outgoingMessage, .error, .call, .info, .unknownThreadWarning, .collapseSet:
+        case .incomingMessage, .outgoingMessage, .error, .call, .info, .unknownThreadWarning, .collapseSet, .releaseNotesMessage:
             return true
         }
     }

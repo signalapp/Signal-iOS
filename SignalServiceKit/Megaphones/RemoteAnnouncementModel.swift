@@ -48,9 +48,9 @@ extension RemoteAnnouncementModel {
         /// A unique ID for this manifest.
         public let id: String
 
-        /// Version string representing the minimum app version for which this
+        /// Version representing the minimum app version for which this
         /// upgrade should be shown.
-        let minAppVersion: String
+        public let minAppVersion: AppVersionNumber4
 
         /// A CSV string of `<country-code>:<parts-per-million>` pairs
         /// representing the fraction of users to which this megaphone should
@@ -58,7 +58,7 @@ extension RemoteAnnouncementModel {
         ///
         /// This is the same format used in remote-config country-code
         /// restrictions.
-        fileprivate(set) var countries: String?
+        public fileprivate(set) var countries: String?
 
         /// Represents an external web link that will be embedded in message
         fileprivate(set) var link: URL?
@@ -68,7 +68,7 @@ extension RemoteAnnouncementModel {
 
         public init(
             id: String,
-            minAppVersion: String,
+            minAppVersion: AppVersionNumber4,
             countries: String?,
             link: URL?,
             action: Action?,
@@ -94,7 +94,10 @@ extension RemoteAnnouncementModel {
             let container = try decoder.container(keyedBy: CodingKeys.self)
 
             id = try container.decode(String.self, forKey: .id)
-            minAppVersion = try container.decode(String.self, forKey: .minAppVersion)
+
+            let minAppVersionString = try container.decode(String.self, forKey: .minAppVersion)
+            minAppVersion = try AppVersionNumber4(AppVersionNumber(minAppVersionString))
+
             countries = try container.decode(String.self, forKey: .countries)
             link = try container.decode(URL.self, forKey: .link)
             action = try container.decodeIfPresent(Action.self, forKey: .action)
@@ -104,7 +107,7 @@ extension RemoteAnnouncementModel {
             var container = encoder.container(keyedBy: CodingKeys.self)
 
             try container.encode(id, forKey: .id)
-            try container.encode(minAppVersion, forKey: .minAppVersion)
+            try container.encode(minAppVersion.wrappedValue.rawValue, forKey: .minAppVersion)
 
             if let countries {
                 try container.encode(countries, forKey: .countries)
@@ -190,6 +193,8 @@ extension RemoteAnnouncementModel {
         /// Path to a remote media asset for this announcement.
         public let mediaRemoteUrlPath: String?
 
+        public var hasImage: Bool
+
         /// Height and width of media to be presented
         public let mediaSize: CGSize?
 
@@ -221,6 +226,7 @@ extension RemoteAnnouncementModel {
             self.mediaMimeType = mediaMimeType
             self.linkText = linkText
             self.callToActionText = callToActionText
+            self.hasImage = false // Will be set later when we download image.
         }
 
         // MARK: Codable
@@ -234,6 +240,7 @@ extension RemoteAnnouncementModel {
             case mediaMimeType
             case linkText
             case callToActionText
+            case hasImage
         }
 
         public init(from decoder: Decoder) throws {
@@ -248,6 +255,7 @@ extension RemoteAnnouncementModel {
             mediaMimeType = try container.decodeIfPresent(String.self, forKey: .mediaMimeType)
             linkText = try container.decodeIfPresent(String.self, forKey: .linkText)
             callToActionText = try container.decodeIfPresent(String.self, forKey: .callToActionText)
+            hasImage = try container.decode(Bool.self, forKey: .hasImage)
         }
 
         public func encode(to encoder: Encoder) throws {
@@ -276,6 +284,8 @@ extension RemoteAnnouncementModel {
             if let callToActionText {
                 try container.encode(callToActionText, forKey: .callToActionText)
             }
+
+            try container.encode(hasImage, forKey: .hasImage)
         }
     }
 }
@@ -297,13 +307,16 @@ public extension RemoteAnnouncementModel.Manifest {
         return try individualAnnouncements.compactMap { announcementObject throws -> Self? in
             let announcementParser = ParamParser(announcementObject)
 
-            guard let iosMinVersion: String = try announcementParser.optional(key: Self.iosMinVersionKey) else {
+            guard
+                let iosMinVersionString: String = try announcementParser.optional(key: Self.iosMinVersionKey),
+                let iosMinVersion = try? AppVersionNumber4(AppVersionNumber(iosMinVersionString))
+            else {
+                Logger.warn("Invalid or missing iosMinVersion in remote announcement manifest")
                 return nil
             }
 
             let uuid: String = try announcementParser.required(key: Self.uuidKey)
 
-            // TODO: [KC] If countries is provided, perform "country code check"
             let countries: String? = try announcementParser.optional(key: Self.countriesKey)
             let link: String? = try announcementParser.optional(key: Self.link)
 

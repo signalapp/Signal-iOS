@@ -12,8 +12,11 @@ public protocol RemoteReleaseNotesServiceProtocol {
     /// Fetches release-notes manifest from manifestUrlPath
     func fetchManifests() async throws -> ([RemoteMegaphoneModel.Manifest], [RemoteAnnouncementModel.Manifest])
 
-    /// Fetches release-notes for a specific translation and manifest Id
-    func fetchTranslationParser(translationUrlPath: String) async throws -> ParamParser
+    /// Fetches megaphone for a specific translation and manifest Id
+    func fetchMegaphoneTranslation(translationUrlPath: String) async throws -> RemoteMegaphoneModel.Translation
+
+    /// Fetches announcements for a specific translation and manifest Id
+    func fetchAnnouncementTranslation(translationUrlPath: String) async throws -> RemoteAnnouncementModel.Translation
 
     /// Downloads media included in a release notes manifest
     func downloadMedia(
@@ -47,9 +50,19 @@ class RemoteReleaseNotesService: RemoteReleaseNotesServiceProtocol {
         return try (RemoteMegaphoneModel.Manifest.parseFrom(parser: parser), RemoteAnnouncementModel.Manifest.parseFrom(parser: parser))
     }
 
-    func fetchTranslationParser(translationUrlPath: String) async throws -> ParamParser {
+    func fetchMegaphoneTranslation(translationUrlPath: String) async throws -> RemoteMegaphoneModel.Translation {
+        let paramParser = try await fetchTranslationParser(translationUrlPath: translationUrlPath)
+        return try RemoteMegaphoneModel.Translation.parseFrom(parser: paramParser)
+    }
 
-        Logger.info("Fetching remote megaphone translation")
+    func fetchAnnouncementTranslation(translationUrlPath: String) async throws -> RemoteAnnouncementModel.Translation {
+        let paramParser = try await fetchTranslationParser(translationUrlPath: translationUrlPath)
+        return try RemoteAnnouncementModel.Translation.parseFrom(parser: paramParser)
+    }
+
+    private func fetchTranslationParser(translationUrlPath: String) async throws -> ParamParser {
+
+        Logger.info("Fetching remote release notes translation")
         let response = try await getUrlSession().performRequest(translationUrlPath, method: .get)
         guard let parser = response.responseBodyParamParser else {
             throw OWSAssertionError("Missing or invalid body JSON for translation!")

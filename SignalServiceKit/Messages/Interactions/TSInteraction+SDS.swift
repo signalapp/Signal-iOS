@@ -2070,6 +2070,78 @@ extension TSInteraction {
                                      storedMessageState: storedMessageState,
                                      wasNotCreatedLocally: wasNotCreatedLocally)
 
+        case .releaseNotesMessage:
+
+            let uniqueId: String = record.uniqueId
+            let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = UInt64(recordId)
+            let timestamp: UInt64 = record.timestamp
+            let uniqueThreadId: String = record.threadUniqueId
+            let body: String? = record.body
+            let bodyRangesSerialized: Data? = record.bodyRanges
+            let bodyRanges: MessageBodyRanges? = try bodyRangesSerialized.map({ try SDSDeserialization.unarchivedObject(ofClass: MessageBodyRanges.self, from: $0) })
+            let contactShareSerialized: Data? = record.contactShare
+            let contactShare: OWSContact? = try contactShareSerialized.map({ try SDSDeserialization.unarchivedObject(ofClass: OWSContact.self, from: $0) })
+            let deprecated_attachmentIdsSerialized: Data? = record.deprecated_attachmentIds
+            let deprecated_attachmentIds: [String]? = try deprecated_attachmentIdsSerialized.map({ try SDSDeserialization.unarchivedArrayOfObjects(ofClass: NSString.self, from: $0) as [String] })
+            guard let editState: TSEditState = record.editState else {
+               throw SDSError.missingRequiredField()
+            }
+            let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expireTimerVersion: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.expireTimerVersion, name: "expireTimerVersion", conversion: { NSNumber(value: $0) })
+            let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try giftBadgeSerialized.map({ try SDSDeserialization.unarchivedObject(ofClass: OWSGiftBadge.self, from: $0) })
+            let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
+            let isPoll: Bool = try SDSDeserialization.required(record.isPoll, name: "isPoll")
+            let isSmsMessageRestoredFromBackup: Bool = try SDSDeserialization.required(record.isSmsMessageRestoredFromBackup, name: "isSmsMessageRestoredFromBackup")
+            let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
+            let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
+            let linkPreviewSerialized: Data? = record.linkPreview
+            let linkPreview: OWSLinkPreview? = try linkPreviewSerialized.map({ try SDSDeserialization.unarchivedObject(ofClass: OWSLinkPreview.self, from: $0) })
+            let messageStickerSerialized: Data? = record.messageSticker
+            let messageSticker: MessageSticker? = try messageStickerSerialized.map({ try SDSDeserialization.unarchivedObject(ofClass: MessageSticker.self, from: $0) })
+            let quotedMessageSerialized: Data? = record.quotedMessage
+            let quotedMessage: TSQuotedMessage? = try quotedMessageSerialized.map({ try SDSDeserialization.unarchivedObject(ofClass: TSQuotedMessage.self, from: $0) })
+            let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
+            let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
+            let read: Bool = try SDSDeserialization.required(record.read, name: "read")
+
+            return TSReleaseNotesMessage(grdbId: recordId,
+                                         uniqueId: uniqueId,
+                                         receivedAtTimestamp: receivedAtTimestamp,
+                                         sortId: sortId,
+                                         timestamp: timestamp,
+                                         uniqueThreadId: uniqueThreadId,
+                                         body: body,
+                                         bodyRanges: bodyRanges,
+                                         contactShare: contactShare,
+                                         deprecated_attachmentIds: deprecated_attachmentIds,
+                                         editState: editState,
+                                         expireStartedAt: expireStartedAt,
+                                         expireTimerVersion: expireTimerVersion,
+                                         expiresAt: expiresAt,
+                                         expiresInSeconds: expiresInSeconds,
+                                         giftBadge: giftBadge,
+                                         isGroupStoryReply: isGroupStoryReply,
+                                         isPoll: isPoll,
+                                         isSmsMessageRestoredFromBackup: isSmsMessageRestoredFromBackup,
+                                         isViewOnceComplete: isViewOnceComplete,
+                                         isViewOnceMessage: isViewOnceMessage,
+                                         linkPreview: linkPreview,
+                                         messageSticker: messageSticker,
+                                         quotedMessage: quotedMessage,
+                                         storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                         storyAuthorUuidString: storyAuthorUuidString,
+                                         storyReactionEmoji: storyReactionEmoji,
+                                         storyTimestamp: storyTimestamp,
+                                         wasRemotelyDeleted: wasRemotelyDeleted,
+                                         read: read)
+
         case .unreadIndicatorInteraction:
 
             let uniqueId: String = record.uniqueId
@@ -2103,6 +2175,9 @@ extension TSInteraction: SDSModel {
         case let model as TSUnreadIndicatorInteraction:
             assert(type(of: model) == TSUnreadIndicatorInteraction.self)
             return TSUnreadIndicatorInteractionSerializer(model: model)
+        case let model as TSReleaseNotesMessage:
+            assert(type(of: model) == TSReleaseNotesMessage.self)
+            return TSReleaseNotesMessageSerializer(model: model)
         case let model as OWSOutgoingPaymentMessage:
             assert(type(of: model) == OWSOutgoingPaymentMessage.self)
             return OWSOutgoingPaymentMessageSerializer(model: model)
@@ -2210,6 +2285,105 @@ extension TSInteraction: DeepCopyable {
                                                 sortId: sortId,
                                                 timestamp: timestamp,
                                                 uniqueThreadId: uniqueThreadId)
+        }
+
+        if let modelToCopy = self as? TSReleaseNotesMessage {
+            assert(type(of: modelToCopy) == TSReleaseNotesMessage.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let receivedAtTimestamp: UInt64 = modelToCopy.receivedAtTimestamp
+            let sortId: UInt64 = modelToCopy.sortId
+            let timestamp: UInt64 = modelToCopy.timestamp
+            let uniqueThreadId: String = modelToCopy.uniqueThreadId
+            let body: String? = modelToCopy.body
+            let bodyRanges: MessageBodyRanges?
+            if let bodyRangesForCopy = modelToCopy.bodyRanges {
+               bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
+            } else {
+               bodyRanges = nil
+            }
+            let contactShare: OWSContact?
+            if let contactShareForCopy = modelToCopy.contactShare {
+               contactShare = try DeepCopies.deepCopy(contactShareForCopy)
+            } else {
+               contactShare = nil
+            }
+            let deprecated_attachmentIds: [String]?
+            if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
+               deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
+            } else {
+               deprecated_attachmentIds = nil
+            }
+            let editState: TSEditState = modelToCopy.editState
+            let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
+            let expiresAt: UInt64 = modelToCopy.expiresAt
+            let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
+            let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
+            let isPoll: Bool = modelToCopy.isPoll
+            let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
+            let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
+            let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
+            let linkPreview: OWSLinkPreview?
+            if let linkPreviewForCopy = modelToCopy.linkPreview {
+               linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
+            } else {
+               linkPreview = nil
+            }
+            let messageSticker: MessageSticker?
+            if let messageStickerForCopy = modelToCopy.messageSticker {
+               messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
+            } else {
+               messageSticker = nil
+            }
+            let quotedMessage: TSQuotedMessage?
+            if let quotedMessageForCopy = modelToCopy.quotedMessage {
+               quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
+            } else {
+               quotedMessage = nil
+            }
+            let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
+            let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
+            let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
+            let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
+            let read: Bool = modelToCopy.wasRead
+
+            return TSReleaseNotesMessage(grdbId: id,
+                                         uniqueId: uniqueId,
+                                         receivedAtTimestamp: receivedAtTimestamp,
+                                         sortId: sortId,
+                                         timestamp: timestamp,
+                                         uniqueThreadId: uniqueThreadId,
+                                         body: body,
+                                         bodyRanges: bodyRanges,
+                                         contactShare: contactShare,
+                                         deprecated_attachmentIds: deprecated_attachmentIds,
+                                         editState: editState,
+                                         expireStartedAt: expireStartedAt,
+                                         expireTimerVersion: expireTimerVersion,
+                                         expiresAt: expiresAt,
+                                         expiresInSeconds: expiresInSeconds,
+                                         giftBadge: giftBadge,
+                                         isGroupStoryReply: isGroupStoryReply,
+                                         isPoll: isPoll,
+                                         isSmsMessageRestoredFromBackup: isSmsMessageRestoredFromBackup,
+                                         isViewOnceComplete: isViewOnceComplete,
+                                         isViewOnceMessage: isViewOnceMessage,
+                                         linkPreview: linkPreview,
+                                         messageSticker: messageSticker,
+                                         quotedMessage: quotedMessage,
+                                         storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                         storyAuthorUuidString: storyAuthorUuidString,
+                                         storyReactionEmoji: storyReactionEmoji,
+                                         storyTimestamp: storyTimestamp,
+                                         wasRemotelyDeleted: wasRemotelyDeleted,
+                                         read: read)
         }
 
         if let modelToCopy = self as? OWSOutgoingPaymentMessage {

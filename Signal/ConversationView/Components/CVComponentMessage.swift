@@ -686,12 +686,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             hOuterStackSubviews.append(selectionWrapper)
         }
 
-        if isOutgoing {
-            hOuterStackSubviews.append(componentView.cellSpacer)
+        if isOutgoing || isReleaseNotesMessage {
+            hOuterStackSubviews.append(componentView.cellSpacerLeading)
         }
         hOuterStackSubviews.append(hInnerStack)
-        if isIncoming {
-            hOuterStackSubviews.append(componentView.cellSpacer)
+        if isIncoming || isReleaseNotesMessage {
+            hOuterStackSubviews.append(componentView.cellSpacerTrailing)
         }
         if let badgeConfig = componentState.sendFailureBadge {
             // Send failures are rare, so it's cheaper to only build these views when we need them.
@@ -1526,7 +1526,17 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if isBubbleTransparent {
             return .transparent
         }
-        return itemModel.conversationStyle.bubbleChatColor(isIncoming: isIncoming)
+
+        var messageDirection: ConversationStyle.MessageDirection
+        if isReleaseNotesMessage {
+            messageDirection = .releaseNotes
+        } else if isOutgoing {
+            messageDirection = .outgoing
+        } else {
+            messageDirection = .incoming
+        }
+
+        return itemModel.conversationStyle.bubbleChatColor(messageDirection: messageDirection)
     }
 
     /// - Returns: Bubble stroke configuration for the current message.
@@ -1562,8 +1572,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         let hOuterStackConfig = self.hOuterStackConfig
         var contentMaxWidth = maxWidth - hOuterStackConfig.layoutMargins.totalWidth
         contentMaxWidth -= ConversationStyle.messageDirectionSpacing
-        if isShowingSelectionUI {
+        if isShowingSelectionUI || wasShowingSelectionUI {
             contentMaxWidth -= selectionViewWidth + hOuterStackConfig.spacing
+            if isReleaseNotesMessage {
+                // Release notes messages have an extra spacer view that centers them.
+                // This means they have an extra spacing gap between views that we have to
+                // account for to prevent our measured size being too big.
+                contentMaxWidth -= hOuterStackConfig.spacing
+            }
         }
         if !isIncoming, hasSendFailureBadge {
             contentMaxWidth -= sendFailureBadgeSize + hOuterStackConfig.spacing
@@ -1619,12 +1635,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let selectionViewSize = CGSize(width: selectionViewWidth, height: 0)
             hOuterStackSubviewInfos.append(selectionViewSize.asManualSubviewInfo(hasFixedWidth: true))
         }
-        if isOutgoing {
+        if isOutgoing || isReleaseNotesMessage {
             // cellSpacer
             hOuterStackSubviewInfos.append(CGSize.zero.asManualSubviewInfo)
         }
         hOuterStackSubviewInfos.append(hInnerStackSize.asManualSubviewInfo(hasFixedWidth: true))
-        if isIncoming {
+        if isIncoming || isReleaseNotesMessage {
             // cellSpacer
             hOuterStackSubviewInfos.append(CGSize.zero.asManualSubviewInfo)
         }
@@ -2236,7 +2252,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         fileprivate let swipeToReplyIconView = SwipeToReplyIndicatorView()
 
-        fileprivate let cellSpacer = UIView()
+        fileprivate let cellSpacerLeading = UIView()
+        fileprivate let cellSpacerTrailing = UIView()
 
         fileprivate let avatarViewSwipeToReplyWrapper = SwipeToReplyWrapper(
             name: "avatarViewSwipeToReplyWrapper",

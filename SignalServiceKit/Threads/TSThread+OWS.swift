@@ -63,6 +63,9 @@ public extension TSThread {
                 return false
             }
         }
+        if isReleaseNotesThread {
+            return false
+        }
         return true
     }
 

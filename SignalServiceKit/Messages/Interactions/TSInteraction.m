@@ -37,6 +37,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
             return @"OWSInteractionType_DefaultDisappearingMessageTimer";
         case OWSInteractionType_CollapseSet:
             return @"OWSInteractionType_CollapseSet";
+        case OWSInteractionType_ReleaseNotesMessage:
+            return @"OWSInteractionType_ReleaseNotesMessage";
     }
 }
 

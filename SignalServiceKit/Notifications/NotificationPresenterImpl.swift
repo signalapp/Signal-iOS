@@ -170,6 +170,7 @@ public enum AppNotificationCategory: String, CaseIterable {
     case pollEndNotification = "Signal.AppNotificationCategory.pollEndNotification"
     case pollVoteNotification = "Signal.AppNotificationCategory.pollVoteNotification"
     case attachmentBackfill = "Signal.AppNotificationCategory.attachmentBackfill"
+    case releaseNotesMessage = "Signal.AppNotificationCategory.releaseNotesMessage"
 
     var shouldClearOnAppActivate: Bool {
         switch self {
@@ -190,7 +191,8 @@ public enum AppNotificationCategory: String, CaseIterable {
             .transferRelaunch,
             .pollEndNotification,
             .pollVoteNotification,
-            .attachmentBackfill:
+            .attachmentBackfill,
+            .releaseNotesMessage:
             return true
         case
             .deregistration,
@@ -249,6 +251,8 @@ public enum AppNotificationCategory: String, CaseIterable {
             return []
         case .attachmentBackfill:
             return []
+        case .releaseNotesMessage:
+            return [.markAsRead]
         }
     }
 }
@@ -596,6 +600,18 @@ public class NotificationPresenterImpl: NotificationPresenter {
     }
 
     public func notifyUser(
+        forReleaseNotesMessage releaseNotesMessage: TSReleaseNotesMessage,
+        thread: TSThread,
+        transaction: DBWriteTransaction,
+    ) {
+        _notifyUser(
+            forReleaseNotesMessage: releaseNotesMessage,
+            thread: thread,
+            transaction: transaction,
+        )
+    }
+
+    public func notifyUser(
         forIncomingMessage incomingMessage: TSIncomingMessage,
         thread: TSThread,
         transaction: DBWriteTransaction,
@@ -756,6 +772,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     private enum NotifiableThread {
         case individualThread(TSContactThread)
         case groupThread(TSGroupThread)
+        case releaseNotesThread(TSReleaseNotesThread)
 
         init?(_ thread: TSThread) {
             switch thread {
@@ -763,6 +780,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 self = .individualThread(thread)
             case let thread as TSGroupThread:
                 self = .groupThread(thread)
+            case let thread as TSReleaseNotesThread:
+                self = .releaseNotesThread(thread)
             default:
                 return nil
             }
@@ -773,6 +792,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
             case .individualThread(let thread):
                 return thread
             case .groupThread(let thread):
+                return thread
+            case .releaseNotesThread(let thread):
                 return thread
             }
         }
@@ -813,6 +834,13 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 } else {
                     return ResolvableValue(resolvedValue: groupName)
                 }
+            case .releaseNotesThread:
+                return ResolvableValue(
+                    resolvedValue: OWSLocalizedString(
+                        "RELEASE_NOTES_CHANNEL_NAME",
+                        comment: "Display name for the release notes channel",
+                    ),
+                )
             }
         }
     }
@@ -934,6 +962,67 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 userInfo: userInfo,
                 intent: intent.map { ($0, .incoming) },
                 soundQuery: (editTargetUniqueId != nil) ? .none : .thread(threadUniqueId),
+            )
+        }
+    }
+
+    private func _notifyUser(
+        forReleaseNotesMessage releaseNotesMessage: TSReleaseNotesMessage,
+        thread: TSThread,
+        transaction: DBWriteTransaction,
+    ) {
+        guard let notifiableThread = NotifiableThread(thread) else {
+            owsFailDebug("Can't notify for \(type(of: thread))")
+            return
+        }
+
+        guard !isThreadMuted(thread, transaction: transaction) else { return }
+
+        let rawMessageText = releaseNotesMessage.notificationPreviewText(transaction)
+        let messageText = rawMessageText.filterStringForDisplay()
+
+        let previewType = self.previewType(tx: transaction)
+
+        let threadIdentifier: String?
+        switch previewType {
+        case .noNameNoPreview:
+            threadIdentifier = nil
+        case .nameNoPreview, .namePreview:
+            threadIdentifier = thread.uniqueId
+        }
+
+        let notificationTitle = self.notificationTitle(
+            for: notifiableThread,
+            senderAddress: nil,
+            isGroupStoryReply: false,
+            previewType: previewType,
+            tx: transaction,
+        )
+
+        let notificationBody: String = {
+            switch previewType {
+            case .noNameNoPreview, .nameNoPreview:
+                return NotificationStrings.genericIncomingMessageNotification
+            case .namePreview:
+                return messageText
+            }
+        }()
+
+        let category = AppNotificationCategory.releaseNotesMessage
+        var userInfo = AppNotificationUserInfo()
+        userInfo.threadId = thread.uniqueId
+        userInfo.messageId = releaseNotesMessage.uniqueId
+
+        let threadUniqueId = thread.uniqueId
+        enqueueNotificationAction(afterCommitting: transaction) {
+            await self.notifyViaPresenter(
+                category: category,
+                title: notificationTitle,
+                body: notificationBody,
+                threadIdentifier: threadIdentifier,
+                userInfo: userInfo,
+                intent: nil,
+                soundQuery: .thread(threadUniqueId),
             )
         }
     }

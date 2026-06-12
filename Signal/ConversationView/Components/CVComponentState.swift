@@ -1206,7 +1206,7 @@ private extension CVComponentState.Builder {
         case .dateHeader:
             dateHeader = CVComponentState.DateHeader()
             return build()
-        case .incomingMessage, .outgoingMessage:
+        case .incomingMessage, .outgoingMessage, .releaseNotesMessage:
             guard let message = interaction as? TSMessage else {
                 owsFailDebug("Invalid message.")
                 return build()

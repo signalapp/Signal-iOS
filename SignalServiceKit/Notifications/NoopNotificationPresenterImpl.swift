@@ -32,6 +32,14 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
     }
 
     public func notifyUser(
+        forReleaseNotesMessage releaseNotesMessage: TSReleaseNotesMessage,
+        thread: TSThread,
+        transaction: DBWriteTransaction,
+    ) {
+        Logger.warn("")
+    }
+
+    public func notifyUser(
         forReaction reaction: OWSReaction,
         onOutgoingMessage message: TSOutgoingMessage,
         thread: TSThread,

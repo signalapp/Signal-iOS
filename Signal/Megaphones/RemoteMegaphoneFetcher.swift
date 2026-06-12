@@ -28,46 +28,47 @@ public class RemoteMegaphoneFetcher: RemoteReleaseNotesFetcher<RemoteMegaphoneMo
     /// megaphones that no longer exist on the service.
     override func updatePersistedData(
         withFetchedData fetchedTranslations: [(RemoteMegaphoneModel.Manifest, RemoteMegaphoneModel.Translation)],
-        transaction tx: DBWriteTransaction,
-    ) {
-        // Get any persisted ExperienceUpgrades for the remote megaphones.
-        var experienceUpgradesByMegaphoneId: [String: ExperienceUpgrade] = [:]
-        experienceUpgradeStore.enumerateExperienceUpgrades(tx: tx) { experienceUpgrade in
-            guard case .remoteMegaphone(let model) = experienceUpgrade.manifest else {
-                return
+    ) async throws {
+        await db.awaitableWrite { tx in
+            // Get any persisted ExperienceUpgrades for the remote megaphones.
+            var experienceUpgradesByMegaphoneId: [String: ExperienceUpgrade] = [:]
+            experienceUpgradeStore.enumerateExperienceUpgrades(tx: tx) { experienceUpgrade in
+                guard case .remoteMegaphone(let model) = experienceUpgrade.manifest else {
+                    return
+                }
+
+                experienceUpgradesByMegaphoneId[model.manifest.id] = experienceUpgrade
             }
 
-            experienceUpgradesByMegaphoneId[model.manifest.id] = experienceUpgrade
-        }
+            // Insert all megaphones we got from the service. If we already have a
+            // persisted copy of this megaphone, update it - this will ensure that
+            // if anything has changed about the megaphone we have the latest state.
+            // For example, if the user's locale has changed we may have updated
+            // translations.
+            for (manifest, translation) in fetchedTranslations {
+                let remoteMegaphoneModel = RemoteMegaphoneModel(manifest: manifest, translation: translation)
+                let experienceUpgrade: ExperienceUpgrade
+                if let persisted = experienceUpgradesByMegaphoneId.removeValue(forKey: manifest.id) {
+                    experienceUpgrade = persisted
+                } else {
+                    experienceUpgrade = .makeNew(withManifest: .remoteMegaphone(megaphone: remoteMegaphoneModel))
+                }
 
-        // Insert all megaphones we got from the service. If we already have a
-        // persisted copy of this megaphone, update it - this will ensure that
-        // if anything has changed about the megaphone we have the latest state.
-        // For example, if the user's locale has changed we may have updated
-        // translations.
-        for (manifest, translation) in fetchedTranslations {
-            let remoteMegaphoneModel = RemoteMegaphoneModel(manifest: manifest, translation: translation)
-            let experienceUpgrade: ExperienceUpgrade
-            if let persisted = experienceUpgradesByMegaphoneId.removeValue(forKey: manifest.id) {
-                experienceUpgrade = persisted
-            } else {
-                experienceUpgrade = .makeNew(withManifest: .remoteMegaphone(megaphone: remoteMegaphoneModel))
+                experienceUpgradeStore.upsertRemoteMegaphone(
+                    experienceUpgrade: experienceUpgrade,
+                    newRemoteMegaphoneModel: remoteMegaphoneModel,
+                    tx: tx,
+                )
             }
 
-            experienceUpgradeStore.upsertRemoteMegaphone(
-                experienceUpgrade: experienceUpgrade,
-                newRemoteMegaphoneModel: remoteMegaphoneModel,
-                tx: tx,
-            )
-        }
-
-        // Remove records for any remaining local megaphones, which are no
-        // longer on the service.
-        for (_, experienceUpgradeToRemove) in experienceUpgradesByMegaphoneId {
-            experienceUpgradeStore.remove(
-                experienceUpgrade: experienceUpgradeToRemove,
-                tx: tx,
-            )
+            // Remove records for any remaining local megaphones, which are no
+            // longer on the service.
+            for (_, experienceUpgradeToRemove) in experienceUpgradesByMegaphoneId {
+                experienceUpgradeStore.remove(
+                    experienceUpgrade: experienceUpgradeToRemove,
+                    tx: tx,
+                )
+            }
         }
     }
 
@@ -90,8 +91,7 @@ public class RemoteMegaphoneFetcher: RemoteReleaseNotesFetcher<RemoteMegaphoneMo
                 else {
                     throw OWSAssertionError("Failed to create translation URL path for manifest \(manifest.id)")
                 }
-                let translationParser = try await remoteReleaseNotesService.fetchTranslationParser(translationUrlPath: translationUrlPath)
-                var translation = try RemoteMegaphoneModel.Translation.parseFrom(parser: translationParser)
+                var translation = try await remoteReleaseNotesService.fetchMegaphoneTranslation(translationUrlPath: translationUrlPath)
                 translation.setHasImage(try await self.downloadMediaIfNecessary(
                     mediaRemoteUrlPath: translation.imageRemoteUrlPath,
                     mediaFileDirectory: RemoteMegaphoneModel.imagesDirectory,

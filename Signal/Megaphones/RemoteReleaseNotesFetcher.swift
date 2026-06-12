@@ -74,10 +74,7 @@ public class RemoteReleaseNotesFetcher<ManifestType, TranslationType> {
             }
             return try await taskGroup.reduce(into: [], { $0.append($1) })
         }
-
-        await db.awaitableWrite { tx in
-            updatePersistedData(withFetchedData: fetchedTranslations, transaction: tx)
-        }
+        try await updatePersistedData(withFetchedData: fetchedTranslations)
     }
 
     /// Fetch user-displayable localized strings for the given manifest. Will
@@ -143,7 +140,7 @@ public class RemoteReleaseNotesFetcher<ManifestType, TranslationType> {
         owsFail("Must override fetch")
     }
 
-    func updatePersistedData(withFetchedData fetchedTranslations: [(ManifestType, TranslationType)], transaction: DBWriteTransaction) {
-        owsFail("Must override fetch")
+    func updatePersistedData(withFetchedData fetchedTranslations: [(ManifestType, TranslationType)]) async throws {
+        owsFail("Must override updatePersistedData")
     }
 }

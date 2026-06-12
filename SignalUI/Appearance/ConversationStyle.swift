@@ -8,6 +8,11 @@ public import SignalServiceKit
 // An immutable snapshot of the core styling
 // state used by CVC for a given load/render cycle.
 public struct ConversationStyle {
+    public enum MessageDirection {
+        case incoming
+        case outgoing
+        case releaseNotes
+    }
 
     public enum `Type`: UInt {
         // The style used from initialization until presentation begins.
@@ -181,11 +186,14 @@ public struct ConversationStyle {
     // MARK: Colors
 
     /// - Returns: Bubble background color to be used for regular text messages and such.
-    public func bubbleChatColor(isIncoming: Bool) -> ColorOrGradientValue {
-        if isIncoming {
-            bubbleChatColorIncoming
-        } else {
-            bubbleChatColorOutgoing
+    public func bubbleChatColor(messageDirection: MessageDirection) -> ColorOrGradientValue {
+        switch messageDirection {
+        case .incoming:
+            return bubbleChatColorIncoming
+        case .outgoing:
+            return bubbleChatColorOutgoing
+        case .releaseNotes:
+            return bubbleChatColorReleaseNotes
         }
     }
 
@@ -256,6 +264,14 @@ public struct ConversationStyle {
         chatColorValue
     }
 
+    public var bubbleChatColorReleaseNotes: ColorOrGradientValue {
+        if Theme.isDarkThemeEnabled {
+            return .solidColor(color: UIColor(rgbHex: 0x444664, alpha: 1))
+        } else {
+            return .solidColor(color: UIColor(rgbHex: 0x8889B4, alpha: 1))
+        }
+    }
+
     // MARK: - Primary text color
 
     public static var bubbleTextColorIncomingThemed: ThemedColor {
@@ -286,6 +302,10 @@ public struct ConversationStyle {
         Self.bubbleTextColorOutgoingThemed.color(isDarkThemeEnabled: isDarkThemeEnabled)
     }
 
+    public var bubbleTextColorReleaseNotes: UIColor {
+        return .white
+    }
+
     public func bubbleTextColor(isIncoming: Bool) -> UIColor {
         isIncoming ? bubbleTextColorIncoming : bubbleTextColorOutgoing
     }
@@ -297,6 +317,8 @@ public struct ConversationStyle {
             return bubbleTextColorIncoming
         } else if message is TSOutgoingMessage {
             return bubbleTextColorOutgoing
+        } else if message is TSReleaseNotesMessage {
+            return bubbleTextColorReleaseNotes
         } else {
             owsFailDebug("Unexpected message type: \(message)")
             return bubbleTextColorOutgoing

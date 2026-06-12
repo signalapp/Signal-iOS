@@ -645,6 +645,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let remoteReleaseNotesFetchingManager = RemoteReleaseNotesFetchingManager(
             db: DependenciesBridge.shared.db,
+            attachmentContentValidator: DependenciesBridge.shared.attachmentContentValidator,
+            attachmentManager: DependenciesBridge.shared.attachmentManager,
+            blockingManager: SSKEnvironment.shared.blockingManagerRef,
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+            notificationPresenter: SSKEnvironment.shared.notificationPresenterRef,
+            threadStore: DependenciesBridge.shared.threadStore,
+            interactionStore: DependenciesBridge.shared.interactionStore,
+            appVersion: AppVersionImpl.shared,
+            dateProvider: { Date() },
             remoteReleaseNotesService: DependenciesBridge.shared.remoteReleaseNotesService,
         )
         cron.schedulePeriodically(
