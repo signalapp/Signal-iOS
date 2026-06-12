@@ -2603,12 +2603,109 @@ extension StorageServiceProtoAccountRecordPinnedConversationContactBuilder {
 
 #endif
 
+// MARK: - StorageServiceProtoAccountRecordPinnedConversationReleaseNotes
+
+public struct StorageServiceProtoAccountRecordPinnedConversationReleaseNotes: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate init(_ proto: StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes) {
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension StorageServiceProtoAccountRecordPinnedConversationReleaseNotes {
+    public static func builder() -> StorageServiceProtoAccountRecordPinnedConversationReleaseNotesBuilder {
+        return StorageServiceProtoAccountRecordPinnedConversationReleaseNotesBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoAccountRecordPinnedConversationReleaseNotesBuilder {
+        var builder = StorageServiceProtoAccountRecordPinnedConversationReleaseNotesBuilder()
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct StorageServiceProtoAccountRecordPinnedConversationReleaseNotesBuilder {
+
+    private var proto = StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes()
+
+    fileprivate init() {}
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func buildInfallibly() -> StorageServiceProtoAccountRecordPinnedConversationReleaseNotes {
+        return StorageServiceProtoAccountRecordPinnedConversationReleaseNotes(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try StorageServiceProtoAccountRecordPinnedConversationReleaseNotes(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension StorageServiceProtoAccountRecordPinnedConversationReleaseNotes {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoAccountRecordPinnedConversationReleaseNotesBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoAccountRecordPinnedConversationReleaseNotes? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier
 
 public enum StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier {
     case contact(StorageServiceProtoAccountRecordPinnedConversationContact)
     case legacyGroupID(Data)
     case groupMasterKey(Data)
+    case releaseNotes(StorageServiceProtoAccountRecordPinnedConversationReleaseNotes)
 }
 
 private func StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifierWrap(_ value: StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier) -> StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier {
@@ -2616,6 +2713,7 @@ private func StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifierWr
     case .contact(let value): return .contact(StorageServiceProtoAccountRecordPinnedConversationContact(value))
     case .legacyGroupID(let value): return .legacyGroupID(value)
     case .groupMasterKey(let value): return .groupMasterKey(value)
+    case .releaseNotes(let value): return .releaseNotes(StorageServiceProtoAccountRecordPinnedConversationReleaseNotes(value))
     }
 }
 
@@ -2624,6 +2722,7 @@ private func StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifierUn
     case .contact(let value): return .contact(value.proto)
     case .legacyGroupID(let value): return .legacyGroupID(value)
     case .groupMasterKey(let value): return .groupMasterKey(value)
+    case .releaseNotes(let value): return .releaseNotes(value.proto)
     }
 }
 
@@ -3500,6 +3599,18 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     public var seenAdminDeleteEducationDialog: Bool {
         return proto.seenAdminDeleteEducationDialog
     }
+    public var releaseNotesChatArchived: Bool {
+        return proto.releaseNotesChatArchived
+    }
+    public var releaseNotesChatMutedUntilTimestamp: UInt64 {
+        return proto.releaseNotesChatMutedUntilTimestamp
+    }
+    public var releaseNotesChatBlocked: Bool {
+        return proto.releaseNotesChatBlocked
+    }
+    public var releaseNotesChatMarkedUnread: Bool {
+        return proto.releaseNotesChatMarkedUnread
+    }
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -3641,6 +3752,10 @@ extension StorageServiceProtoAccountRecord {
         }
         builder.setAutomaticKeyVerificationDisabled(automaticKeyVerificationDisabled)
         builder.setSeenAdminDeleteEducationDialog(seenAdminDeleteEducationDialog)
+        builder.setReleaseNotesChatArchived(releaseNotesChatArchived)
+        builder.setReleaseNotesChatMutedUntilTimestamp(releaseNotesChatMutedUntilTimestamp)
+        builder.setReleaseNotesChatBlocked(releaseNotesChatBlocked)
+        builder.setReleaseNotesChatMarkedUnread(releaseNotesChatMarkedUnread)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -3874,6 +3989,22 @@ public struct StorageServiceProtoAccountRecordBuilder {
 
     public mutating func setSeenAdminDeleteEducationDialog(_ valueParam: Bool) {
         proto.seenAdminDeleteEducationDialog = valueParam
+    }
+
+    public mutating func setReleaseNotesChatArchived(_ valueParam: Bool) {
+        proto.releaseNotesChatArchived = valueParam
+    }
+
+    public mutating func setReleaseNotesChatMutedUntilTimestamp(_ valueParam: UInt64) {
+        proto.releaseNotesChatMutedUntilTimestamp = valueParam
+    }
+
+    public mutating func setReleaseNotesChatBlocked(_ valueParam: Bool) {
+        proto.releaseNotesChatBlocked = valueParam
+    }
+
+    public mutating func setReleaseNotesChatMarkedUnread(_ valueParam: Bool) {
+        proto.releaseNotesChatMarkedUnread = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

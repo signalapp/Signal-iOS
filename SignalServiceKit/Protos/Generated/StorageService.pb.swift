@@ -901,6 +901,26 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
     set {_uniqueStorage()._seenAdminDeleteEducationDialog = newValue}
   }
 
+  var releaseNotesChatArchived: Bool {
+    get {_storage._releaseNotesChatArchived}
+    set {_uniqueStorage()._releaseNotesChatArchived = newValue}
+  }
+
+  var releaseNotesChatMutedUntilTimestamp: UInt64 {
+    get {_storage._releaseNotesChatMutedUntilTimestamp}
+    set {_uniqueStorage()._releaseNotesChatMutedUntilTimestamp = newValue}
+  }
+
+  var releaseNotesChatBlocked: Bool {
+    get {_storage._releaseNotesChatBlocked}
+    set {_uniqueStorage()._releaseNotesChatBlocked = newValue}
+  }
+
+  var releaseNotesChatMarkedUnread: Bool {
+    get {_storage._releaseNotesChatMarkedUnread}
+    set {_uniqueStorage()._releaseNotesChatMarkedUnread = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum PhoneNumberSharingMode: SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -972,12 +992,21 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
       set {identifier = .groupMasterKey(newValue)}
     }
 
+    var releaseNotes: StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes {
+      get {
+        if case .releaseNotes(let v)? = identifier {return v}
+        return StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes()
+      }
+      set {identifier = .releaseNotes(newValue)}
+    }
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     enum OneOf_Identifier: Equatable, Sendable {
       case contact(StorageServiceProtos_AccountRecord.PinnedConversation.Contact)
       case legacyGroupID(Data)
       case groupMasterKey(Data)
+      case releaseNotes(StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes)
 
     }
 
@@ -992,6 +1021,16 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
 
       /// service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
       var serviceIDBinary: Data = Data()
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+    }
+
+    struct ReleaseNotes: Sendable {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1992,7 +2031,7 @@ extension StorageServiceProtos_GroupV2Record.StorySendMode: SwiftProtobuf._Proto
 
 extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AccountRecord"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}profileKey\0\u{1}givenName\0\u{1}familyName\0\u{1}avatarUrl\0\u{1}noteToSelfArchived\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}proxiedLinkPreviews\0\u{1}noteToSelfMarkedUnread\0\u{1}linkPreviews\0\u{1}phoneNumberSharingMode\0\u{1}notDiscoverableByPhoneNumber\0\u{1}pinnedConversations\0\u{1}preferContactAvatars\0\u{1}payments\0\u{1}universalExpireTimer\0\u{2}\u{2}e164\0\u{1}preferredReactionEmoji\0\u{1}donorSubscriberID\0\u{1}donorSubscriberCurrencyCode\0\u{1}displayBadgesOnProfile\0\u{1}donorSubscriptionManuallyCancelled\0\u{1}keepMutedChatsArchived\0\u{1}myStoryPrivacyHasBeenSet\0\u{1}viewedOnboardingStory\0\u{2}\u{2}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}readOnboardingStory\0\u{2}\u{2}username\0\u{1}completedUsernameOnboarding\0\u{1}usernameLink\0\u{2}\u{5}backupTier\0\u{1}backupSubscriberData\0\u{1}avatarColor\0\u{2}\u{4}automaticKeyVerificationDisabled\0\u{1}seenAdminDeleteEducationDialog\0\u{c}\u{12}\u{1}\u{c}\u{1c}\u{1}\u{c} \u{1}\u{c}$\u{1}\u{c}%\u{1}\u{c}&\u{1}\u{c}'\u{1}\u{c}+\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}profileKey\0\u{1}givenName\0\u{1}familyName\0\u{1}avatarUrl\0\u{1}noteToSelfArchived\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}proxiedLinkPreviews\0\u{1}noteToSelfMarkedUnread\0\u{1}linkPreviews\0\u{1}phoneNumberSharingMode\0\u{1}notDiscoverableByPhoneNumber\0\u{1}pinnedConversations\0\u{1}preferContactAvatars\0\u{1}payments\0\u{1}universalExpireTimer\0\u{2}\u{2}e164\0\u{1}preferredReactionEmoji\0\u{1}donorSubscriberID\0\u{1}donorSubscriberCurrencyCode\0\u{1}displayBadgesOnProfile\0\u{1}donorSubscriptionManuallyCancelled\0\u{1}keepMutedChatsArchived\0\u{1}myStoryPrivacyHasBeenSet\0\u{1}viewedOnboardingStory\0\u{2}\u{2}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}readOnboardingStory\0\u{2}\u{2}username\0\u{1}completedUsernameOnboarding\0\u{1}usernameLink\0\u{2}\u{5}backupTier\0\u{1}backupSubscriberData\0\u{1}avatarColor\0\u{2}\u{4}automaticKeyVerificationDisabled\0\u{1}seenAdminDeleteEducationDialog\0\u{1}releaseNotesChatArchived\0\u{1}releaseNotesChatMutedUntilTimestamp\0\u{1}releaseNotesChatBlocked\0\u{1}releaseNotesChatMarkedUnread\0\u{c}\u{12}\u{1}\u{c}\u{1c}\u{1}\u{c} \u{1}\u{c}$\u{1}\u{c}%\u{1}\u{c}&\u{1}\u{c}'\u{1}\u{c}+\u{1}")
 
   fileprivate class _StorageClass {
     var _profileKey: Data = Data()
@@ -2032,6 +2071,10 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _avatarColor: StorageServiceProtos_AvatarColor? = nil
     var _automaticKeyVerificationDisabled: Bool = false
     var _seenAdminDeleteEducationDialog: Bool = false
+    var _releaseNotesChatArchived: Bool = false
+    var _releaseNotesChatMutedUntilTimestamp: UInt64 = 0
+    var _releaseNotesChatBlocked: Bool = false
+    var _releaseNotesChatMarkedUnread: Bool = false
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -2079,6 +2122,10 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _avatarColor = source._avatarColor
       _automaticKeyVerificationDisabled = source._automaticKeyVerificationDisabled
       _seenAdminDeleteEducationDialog = source._seenAdminDeleteEducationDialog
+      _releaseNotesChatArchived = source._releaseNotesChatArchived
+      _releaseNotesChatMutedUntilTimestamp = source._releaseNotesChatMutedUntilTimestamp
+      _releaseNotesChatBlocked = source._releaseNotesChatBlocked
+      _releaseNotesChatMarkedUnread = source._releaseNotesChatMarkedUnread
     }
   }
 
@@ -2134,6 +2181,10 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 42: try { try decoder.decodeSingularEnumField(value: &_storage._avatarColor) }()
         case 46: try { try decoder.decodeSingularBoolField(value: &_storage._automaticKeyVerificationDisabled) }()
         case 47: try { try decoder.decodeSingularBoolField(value: &_storage._seenAdminDeleteEducationDialog) }()
+        case 48: try { try decoder.decodeSingularBoolField(value: &_storage._releaseNotesChatArchived) }()
+        case 49: try { try decoder.decodeSingularUInt64Field(value: &_storage._releaseNotesChatMutedUntilTimestamp) }()
+        case 50: try { try decoder.decodeSingularBoolField(value: &_storage._releaseNotesChatBlocked) }()
+        case 51: try { try decoder.decodeSingularBoolField(value: &_storage._releaseNotesChatMarkedUnread) }()
         default: break
         }
       }
@@ -2257,6 +2308,18 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._seenAdminDeleteEducationDialog != false {
         try visitor.visitSingularBoolField(value: _storage._seenAdminDeleteEducationDialog, fieldNumber: 47)
       }
+      if _storage._releaseNotesChatArchived != false {
+        try visitor.visitSingularBoolField(value: _storage._releaseNotesChatArchived, fieldNumber: 48)
+      }
+      if _storage._releaseNotesChatMutedUntilTimestamp != 0 {
+        try visitor.visitSingularUInt64Field(value: _storage._releaseNotesChatMutedUntilTimestamp, fieldNumber: 49)
+      }
+      if _storage._releaseNotesChatBlocked != false {
+        try visitor.visitSingularBoolField(value: _storage._releaseNotesChatBlocked, fieldNumber: 50)
+      }
+      if _storage._releaseNotesChatMarkedUnread != false {
+        try visitor.visitSingularBoolField(value: _storage._releaseNotesChatMarkedUnread, fieldNumber: 51)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2303,6 +2366,10 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._avatarColor != rhs_storage._avatarColor {return false}
         if _storage._automaticKeyVerificationDisabled != rhs_storage._automaticKeyVerificationDisabled {return false}
         if _storage._seenAdminDeleteEducationDialog != rhs_storage._seenAdminDeleteEducationDialog {return false}
+        if _storage._releaseNotesChatArchived != rhs_storage._releaseNotesChatArchived {return false}
+        if _storage._releaseNotesChatMutedUntilTimestamp != rhs_storage._releaseNotesChatMutedUntilTimestamp {return false}
+        if _storage._releaseNotesChatBlocked != rhs_storage._releaseNotesChatBlocked {return false}
+        if _storage._releaseNotesChatMarkedUnread != rhs_storage._releaseNotesChatMarkedUnread {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -2318,7 +2385,7 @@ extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: SwiftProtob
 
 extension StorageServiceProtos_AccountRecord.PinnedConversation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = StorageServiceProtos_AccountRecord.protoMessageName + ".PinnedConversation"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contact\0\u{2}\u{2}legacyGroupId\0\u{1}groupMasterKey\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contact\0\u{2}\u{2}legacyGroupId\0\u{1}groupMasterKey\0\u{1}releaseNotes\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2355,6 +2422,19 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation: SwiftProtobuf.M
           self.identifier = .groupMasterKey(v)
         }
       }()
+      case 5: try {
+        var v: StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes?
+        var hadOneofValue = false
+        if let current = self.identifier {
+          hadOneofValue = true
+          if case .releaseNotes(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.identifier = .releaseNotes(v)
+        }
+      }()
       default: break
       }
     }
@@ -2377,6 +2457,10 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation: SwiftProtobuf.M
     case .groupMasterKey?: try {
       guard case .groupMasterKey(let v)? = self.identifier else { preconditionFailure() }
       try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+    }()
+    case .releaseNotes?: try {
+      guard case .releaseNotes(let v)? = self.identifier else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     }()
     case nil: break
     }
@@ -2425,6 +2509,25 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: SwiftPr
     if lhs.serviceID != rhs.serviceID {return false}
     if lhs.e164 != rhs.e164 {return false}
     if lhs.serviceIDBinary != rhs.serviceIDBinary {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = StorageServiceProtos_AccountRecord.PinnedConversation.protoMessageName + ".ReleaseNotes"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes, rhs: StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

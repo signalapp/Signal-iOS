@@ -16,7 +16,7 @@ public final class TSReleaseNotesThread: TSThread {
 
     public class func createReleaseNotes(transaction: DBWriteTransaction) -> TSReleaseNotesThread {
         let releaseNotes = TSReleaseNotesThread(uniqueId: releaseNotesUniqueId)
-        releaseNotes.shouldThreadBeVisible = true
+        releaseNotes.shouldThreadBeVisible = false
         releaseNotes.anyInsert(transaction: transaction)
 
         // Mute release notes thread by default.

@@ -1214,6 +1214,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let udManager: OWSUDManager
     private let usernameEducationManager: UsernameEducationManager
     private let adminDeleteManager: AdminDeleteManager
+    private let blockingManager: BlockingManager
+    private let threadStore: ThreadStore
 
     init(
         localIdentifiers: LocalIdentifiers,
@@ -1242,6 +1244,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         udManager: OWSUDManager,
         usernameEducationManager: UsernameEducationManager,
         adminDeleteManager: AdminDeleteManager,
+        blockingManager: BlockingManager,
+        threadStore: ThreadStore,
     ) {
         self.localIdentifiers = localIdentifiers
         self.isPrimaryDevice = isPrimaryDevice
@@ -1270,6 +1274,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.udManager = udManager
         self.usernameEducationManager = usernameEducationManager
         self.adminDeleteManager = adminDeleteManager
+        self.blockingManager = blockingManager
+        self.threadStore = threadStore
     }
 
     func unknownFields(for record: StorageServiceProtoAccountRecord) -> UnknownStorage? { record.unknownFields }
@@ -1448,6 +1454,13 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
         builder.setSeenAdminDeleteEducationDialog(adminDeleteManager.adminDeleteEducationReadStatus(tx: transaction))
 
+        if let releaseNotesThread = threadStore.fetchThread(uniqueId: TSReleaseNotesThread.releaseNotesUniqueId, tx: transaction) {
+            let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: releaseNotesThread, transaction: transaction)
+            builder.setReleaseNotesChatBlocked(blockingManager.isReleaseNotesThreadBlocked(tx: transaction))
+            builder.setReleaseNotesChatArchived(threadAssociatedData.isArchived)
+            builder.setReleaseNotesChatMarkedUnread(threadAssociatedData.isMarkedUnread)
+            builder.setReleaseNotesChatMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
+        }
         return builder.buildInfallibly()
     }
 
@@ -1794,6 +1807,38 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let localAdminDeleteEducationRead = adminDeleteManager.adminDeleteEducationReadStatus(tx: transaction)
         if !localAdminDeleteEducationRead, record.seenAdminDeleteEducationDialog {
             adminDeleteManager.setAdminDeleteEducationRead(tx: transaction, updateStorageService: false)
+        }
+
+        let releaseNotesThread: TSReleaseNotesThread
+        if let _releaseNotesThread = threadStore.fetchThread(uniqueId: TSReleaseNotesThread.releaseNotesUniqueId, tx: transaction) as? TSReleaseNotesThread {
+            releaseNotesThread = _releaseNotesThread
+        } else {
+            releaseNotesThread = TSReleaseNotesThread.createReleaseNotes(transaction: transaction)
+        }
+
+        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: releaseNotesThread, transaction: transaction)
+
+        let localReleaseNotesBlocked = blockingManager.isReleaseNotesThreadBlocked(tx: transaction)
+        if localReleaseNotesBlocked != record.releaseNotesChatBlocked {
+            if record.releaseNotesChatBlocked {
+                blockingManager.addBlockedReleaseNotesThread(thread: releaseNotesThread, blockMode: .remote, transaction: transaction)
+            } else {
+                blockingManager.removeBlockedReleaseNotesThread(thread: releaseNotesThread, wasLocallyInitiated: false, transaction: transaction)
+            }
+        }
+
+        if
+            threadAssociatedData.mutedUntilTimestamp != record.releaseNotesChatMutedUntilTimestamp
+            || threadAssociatedData.isArchived != record.releaseNotesChatArchived
+            || threadAssociatedData.isMarkedUnread != record.releaseNotesChatMarkedUnread
+        {
+            threadAssociatedData.updateWith(
+                isArchived: record.releaseNotesChatArchived,
+                isMarkedUnread: record.releaseNotesChatMarkedUnread,
+                mutedUntilTimestamp: record.releaseNotesChatMutedUntilTimestamp,
+                updateStorageService: false,
+                transaction: transaction,
+            )
         }
 
         return .merged(needsUpdate: needsUpdate, ())

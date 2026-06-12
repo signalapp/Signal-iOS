@@ -332,9 +332,9 @@ public class BlockingManager {
         )
 
         let wasLocallyInitiated = blockMode.isLocallyInitiated
-        didUpdate(wasLocallyInitiated: wasLocallyInitiated, tx: transaction)
-
-        // TODO: update storage service.
+        if wasLocallyInitiated {
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
+        }
     }
 
     public func removeBlockedReleaseNotesThread(
@@ -356,9 +356,9 @@ public class BlockingManager {
             tx: transaction,
         )
 
-        didUpdate(wasLocallyInitiated: wasLocallyInitiated, tx: transaction)
-
-        // TODO: update storage service.
+        if wasLocallyInitiated {
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
+        }
     }
 
     // MARK: Other convenience access
