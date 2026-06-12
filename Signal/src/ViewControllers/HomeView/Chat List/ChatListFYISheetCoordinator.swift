@@ -299,6 +299,9 @@ class ChatListFYISheetCoordinator {
         badgeThanks: FYISheet.BadgeThanks,
         from chatListViewController: ChatListViewController,
     ) async {
+        let logger = PrefixedLogger(prefix: "[Donations]")
+        logger.warn("Showing BadgeThanks FYI sheet.")
+
         let badgeThanksSheetPresenter: BadgeThanksSheetPresenter = .fromGlobals(
             redemptionSuccess: badgeThanks.redemptionSuccess,
             successMode: badgeThanks.successMode,
@@ -312,6 +315,7 @@ class ChatListFYISheetCoordinator {
         from chatListViewController: ChatListViewController,
     ) async {
         let logger = PrefixedLogger(prefix: "[Donations]")
+        logger.warn("Showing BadgeIssue FYI sheet.")
 
         let redemptionError = badgeIssue.redemptionError
         let chargeFailureCodeIfPaymentFailed = redemptionError.chargeFailureCodeIfPaymentFailed
@@ -461,7 +465,7 @@ class ChatListFYISheetCoordinator {
         from chatListViewController: ChatListViewController,
     ) async {
         let logger = PrefixedLogger(prefix: "[Backups]")
-        logger.info("Showing BackupSubscriptionExpiringSoonWithPendingDownloads FYI sheet.")
+        logger.warn("Showing BackupSubscriptionExpiringSoonWithPendingDownloads FYI sheet.")
 
         let warning = backupSubscriptionExpiringSoonWithPendingDownloads.warning
 
@@ -486,7 +490,7 @@ class ChatListFYISheetCoordinator {
         from chatListViewController: ChatListViewController,
     ) async {
         let logger = PrefixedLogger(prefix: "[Backups]")
-        logger.info("Showing BackupSubscriptionExpired FYI sheet.")
+        logger.warn("Showing BackupSubscriptionExpired FYI sheet.")
 
         let sheet = BackupSubscriptionExpiredHeroSheet(
             subscriptionType: backupSubscriptionExpired.subscriptionType,
@@ -515,7 +519,7 @@ class ChatListFYISheetCoordinator {
         from chatListViewController: ChatListViewController,
     ) async {
         let logger = PrefixedLogger(prefix: "[Backups]")
-        logger.info("Showing BackupSubscriptionFailedToRenew FYI sheet.")
+        logger.warn("Showing BackupSubscriptionFailedToRenew FYI sheet.")
 
         let sheet = BackupSubscriptionFailedToRenewHeroSheet(
             onManageSubscription: {
@@ -534,7 +538,7 @@ class ChatListFYISheetCoordinator {
         from chatListViewController: ChatListViewController,
     ) async {
         let logger = PrefixedLogger(prefix: "[Backups]")
-        logger.info("Showing BackupArchiveError FYI sheet.")
+        logger.warn("Showing BackupArchiveError FYI sheet.")
 
         let sheet = BackupArchiveErrorHeroSheet(fromViewController: chatListViewController)
 
@@ -550,7 +554,7 @@ class ChatListFYISheetCoordinator {
         from chatListViewController: ChatListViewController,
     ) async {
         let logger = PrefixedLogger(prefix: "[KT]")
-        logger.info("Showing KeyTransparencySelfCheckFailed FYI sheet.")
+        logger.warn("Showing KeyTransparencySelfCheckFailed FYI sheet.")
 
         let sheet = KeyTransparencySelfCheckFailedHeroSheet(
             presentingFrom: chatListViewController,
@@ -567,6 +571,9 @@ class ChatListFYISheetCoordinator {
         smsVerificationCodeSent: FYISheet.SMSVerificationCodeSent,
         from chatListViewController: ChatListViewController,
     ) async {
+        let logger = PrefixedLogger(prefix: "[SafetyTips]")
+        logger.warn("Showing SMSVerificationCodeSent FYI sheet.")
+
         let actionSheetController = SafetyTipsSheet.makeSmsCodeRequestedSheet(
             timestampMs: smsVerificationCodeSent.timestampMs,
             fromViewController: chatListViewController,
