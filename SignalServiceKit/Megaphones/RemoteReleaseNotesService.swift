@@ -38,8 +38,15 @@ class RemoteReleaseNotesService: RemoteReleaseNotesServiceProtocol {
     }
 
     func fetchManifests() async throws -> ([RemoteMegaphoneModel.Manifest], [RemoteAnnouncementModel.Manifest]) {
+        let manifestUrlPath: String
+        if FeatureBuild.current <= .internal {
+            manifestUrlPath = "dynamic/release-notes/release-notes-internal.json"
+        } else {
+            manifestUrlPath = .manifestUrlPath
+        }
+
         let response = try await getUrlSession().performRequest(
-            .manifestUrlPath,
+            manifestUrlPath,
             method: .get,
         )
 

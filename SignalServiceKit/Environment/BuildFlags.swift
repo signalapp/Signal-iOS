@@ -78,7 +78,7 @@ public enum BuildFlags {
     public static let collapsingChatEvents = build <= .beta
 
     public enum ReleaseNotesChannel {
-        public static let announcementFetch = build <= .dev
+        public static let announcementFetch = build <= .internal
     }
 }
 

@@ -39,6 +39,32 @@ class InternalMiscActionsViewController: OWSTableViewController2 {
         ))
         contents.add(keyTransparencySection)
 
+        let releaseNotesSection = OWSTableSection(title: "Release Notes")
+        releaseNotesSection.add(
+            .actionItem(
+                withText: "Sync Remote Release Notes",
+                actionBlock: {
+                    let remoteReleaseNotesFetchingManager = RemoteReleaseNotesFetchingManager(
+                        db: DependenciesBridge.shared.db,
+                        attachmentContentValidator: DependenciesBridge.shared.attachmentContentValidator,
+                        attachmentManager: DependenciesBridge.shared.attachmentManager,
+                        blockingManager: SSKEnvironment.shared.blockingManagerRef,
+                        tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+                        notificationPresenter: SSKEnvironment.shared.notificationPresenterRef,
+                        threadStore: DependenciesBridge.shared.threadStore,
+                        interactionStore: DependenciesBridge.shared.interactionStore,
+                        appVersion: AppVersionImpl.shared,
+                        dateProvider: { Date() },
+                        remoteReleaseNotesService: DependenciesBridge.shared.remoteReleaseNotesService,
+                    )
+                    Task {
+                        try await remoteReleaseNotesFetchingManager.syncRemoteReleaseNotes()
+                    }
+                },
+            ),
+        )
+        contents.add(releaseNotesSection)
+
         self.contents = contents
     }
 }
