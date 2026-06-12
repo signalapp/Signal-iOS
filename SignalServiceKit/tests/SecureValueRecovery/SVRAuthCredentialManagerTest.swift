@@ -74,3 +74,78 @@ struct SVRAuthCredentialManagerTest {
         #expect(authCredential == nil)
     }
 }
+
+struct SVRAuthCredentialConsolidationTest {
+
+    typealias AuthCredential = SVRAuthCredentialManager.AuthCredential
+
+    // NOTE: "passwords" here are written as if they were user-inputted
+    // passwords in the conventional sense. In a real auth credential,
+    // they are not that. It just makes the tests easier and more fun.
+
+    @Test
+    func testConsolidation_noOverlap() {
+        let now = Date()
+        let consolidated = SVRAuthCredentialManager.consolidateCredentials(allUnsortedCredentials: [
+            .init(username: "luke", password: "vaderismyfather", insertionTime: now),
+            .init(username: "vader", password: "lukeismyson", insertionTime: now.addingTimeInterval(-1)),
+        ])
+        #expect(consolidated.map(\.username) == ["luke", "vader"])
+    }
+
+    @Test
+    func testConsolidation_latestPerUsername() {
+        let now = Date()
+        let consolidated = SVRAuthCredentialManager.consolidateCredentials(allUnsortedCredentials: [
+            .init(username: "luke", password: "leiaismysister?!?", insertionTime: now),
+            .init(username: "luke", password: "vaderismyfather", insertionTime: now.addingTimeInterval(-2)),
+            .init(username: "vader", password: "lukeismyson", insertionTime: now.addingTimeInterval(-1)),
+        ])
+        #expect(consolidated.map(\.username) == ["luke", "vader"])
+        #expect(consolidated.map(\.password) == ["leiaismysister?!?", "lukeismyson"])
+    }
+
+    @Test
+    func testConsolidation_sameCredentialDoesntUpdateDate() {
+        let now = Date()
+        let consolidated = SVRAuthCredentialManager.consolidateCredentials(allUnsortedCredentials: [
+            .init(username: "luke", password: "vaderismyfather", insertionTime: now),
+            .init(username: "luke", password: "vaderismyfather", insertionTime: now.addingTimeInterval(-2)),
+            .init(username: "vader", password: "lukeismyson", insertionTime: now.addingTimeInterval(-1)),
+        ])
+        #expect(consolidated.map(\.username) == ["vader", "luke"])
+        #expect(consolidated.map(\.password) == ["lukeismyson", "vaderismyfather"])
+        #expect(consolidated.map(\.insertionTime) == [now.addingTimeInterval(-1), now.addingTimeInterval(-2)])
+    }
+
+    @Test
+    func testConsolidation_greaterThanMaxCount() {
+        let now = Date()
+        var credentials = [AuthCredential]()
+        var expectedConsolidatedCredentials = [AuthCredential]()
+        for i in 0..<(SVR.maxSVRAuthCredentialsBackedUp * 2) {
+            var credential = AuthCredential(
+                username: "\(i)",
+                password: "\(i)",
+                insertionTime: now.addingTimeInterval(Double(-i)),
+            )
+            credentials.append(credential)
+            if i < SVR.maxSVRAuthCredentialsBackedUp {
+                expectedConsolidatedCredentials.append(credential)
+            }
+            for j in 1...5 {
+                // Add extra entries per each username, should only keep the latest one.
+                credential = AuthCredential(
+                    username: "\(i)",
+                    password: "\(i)_\(j)",
+                    insertionTime: now.addingTimeInterval(Double(-i - j)),
+                )
+                credentials.append(credential)
+            }
+        }
+        // We inserted them in order. To test sorting, scramble them.
+        credentials = credentials.shuffled()
+        let consolidated = SVRAuthCredentialManager.consolidateCredentials(allUnsortedCredentials: credentials)
+        #expect(consolidated == expectedConsolidatedCredentials)
+    }
+}

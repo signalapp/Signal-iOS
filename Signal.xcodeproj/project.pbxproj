@@ -1086,7 +1086,6 @@
 		6671DC872CD44CA8002620EF /* LastVisibleInteractionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6671DC862CD44C9B002620EF /* LastVisibleInteractionStore.swift */; };
 		66734F012CA1ED3F00558494 /* BackupAttachmentUploadScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66734F002CA1ED3A00558494 /* BackupAttachmentUploadScheduler.swift */; };
 		6673FF722979B33800F96CFD /* SVRAuthCredentialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF712979B33800F96CFD /* SVRAuthCredentialManager.swift */; };
-		6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */; };
 		6673FF87297B694C00F96CFD /* DB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF86297B694C00F96CFD /* DB.swift */; };
 		6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF88297B6AF800F96CFD /* DBTransaction.swift */; };
 		6674807C2E32EA52004DA6E9 /* Optional+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6674807B2E32EA4D004DA6E9 /* Optional+SSK.swift */; };
@@ -5365,7 +5364,6 @@
 		6671DC862CD44C9B002620EF /* LastVisibleInteractionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastVisibleInteractionStore.swift; sourceTree = "<group>"; };
 		66734F002CA1ED3A00558494 /* BackupAttachmentUploadScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadScheduler.swift; sourceTree = "<group>"; };
 		6673FF712979B33800F96CFD /* SVRAuthCredentialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialManager.swift; sourceTree = "<group>"; };
-		6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageTests.swift; sourceTree = "<group>"; };
 		6673FF86297B694C00F96CFD /* DB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DB.swift; sourceTree = "<group>"; };
 		6673FF88297B6AF800F96CFD /* DBTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBTransaction.swift; sourceTree = "<group>"; };
 		6674807B2E32EA4D004DA6E9 /* Optional+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+SSK.swift"; sourceTree = "<group>"; };
@@ -10726,7 +10724,6 @@
 			children = (
 				662C44142A1D20EB001F83E2 /* SVR2 */,
 				50ED46C92FDB4D3000F62B18 /* SVRAuthCredentialManagerTest.swift */,
-				6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */,
 			);
 			path = SecureValueRecovery;
 			sourceTree = "<group>";
@@ -20306,7 +20303,6 @@
 				6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */,
 				6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */,
 				50ED46CA2FDB4D3000F62B18 /* SVRAuthCredentialManagerTest.swift in Sources */,
-				6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */,
 				884BF73D28D37D5F00D94636 /* SystemStoryManagerTest.swift in Sources */,
 				663B9CB12C9DF55D0055DC7D /* TaskQueueLoaderTest.swift in Sources */,
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,
