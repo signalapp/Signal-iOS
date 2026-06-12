@@ -5,36 +5,48 @@
 
 import Foundation
 
-public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
+class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
 
-    public init() {}
+    private let localStore: any SVRAuthCredentialStore
+    private let cloudStore: any SVRAuthCredentialStore
+    private let usernameStore: KeyValueStore
+
+    init(
+        localStore: any SVRAuthCredentialStore,
+        cloudStore: any SVRAuthCredentialStore,
+        usernameStore: KeyValueStore,
+    ) {
+        self.localStore = localStore
+        self.cloudStore = cloudStore
+        self.usernameStore = usernameStore
+    }
 
     // MARK: SVR2
 
-    public func storeAuthCredentialForCurrentUsername(_ credential: SVR2AuthCredential, _ transaction: DBWriteTransaction) {
+    func storeAuthCredentialForCurrentUsername(_ credential: SVR2AuthCredential, _ transaction: DBWriteTransaction) {
         let credential = AuthCredential.from(credential)
-        updateCredentials(for: .svr2, transaction) {
+        updateCredentials(transaction) {
             // Sorting is handled by updateCredentials
             $0.append(credential)
         }
-        setCurrentUsername(credential.username, for: .svr2, transaction)
+        setCurrentUsername(credential.username, transaction)
     }
 
-    public func getAuthCredentials(_ transaction: DBReadTransaction) -> [SVR2AuthCredential] {
-        return consolidateLocalAndiCloud(for: .svr2, transaction).map { $0.toSVR2Credential() }
+    func getAuthCredentials(_ transaction: DBReadTransaction) -> [SVR2AuthCredential] {
+        return consolidateLocalAndiCloud(transaction).map { $0.toSVR2Credential() }
     }
 
-    public func getAuthCredentialForCurrentUser(_ transaction: DBReadTransaction) -> SVR2AuthCredential? {
-        let credentialCandidates = consolidateLocalAndiCloud(for: .svr2, transaction)
+    func getAuthCredentialForCurrentUser(_ transaction: DBReadTransaction) -> SVR2AuthCredential? {
+        let credentialCandidates = consolidateLocalAndiCloud(transaction)
         if credentialCandidates.isEmpty {
             return nil
         }
-        let currentUsername = currentUsername(for: .svr2, transaction)
+        let currentUsername = currentUsername(transaction)
         return credentialCandidates.first(where: { return $0.username == currentUsername })?.toSVR2Credential()
     }
 
-    public func deleteInvalidCredentials(_ invalidCredentials: [SVR2AuthCredential], _ transaction: DBWriteTransaction) {
-        updateCredentials(for: .svr2, transaction) {
+    func deleteInvalidCredentials(_ invalidCredentials: [SVR2AuthCredential], _ transaction: DBWriteTransaction) {
+        updateCredentials(transaction) {
             $0.removeAll(where: { existingCredential in
                 invalidCredentials.contains(where: { invalidCredential in
                     existingCredential.isEqual(to: invalidCredential)
@@ -43,48 +55,30 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
         }
     }
 
-    public func removeSVR2CredentialsForCurrentUser(_ transaction: DBWriteTransaction) {
-        let currentUsername = currentUsername(for: .svr2, transaction)
-        updateCredentials(for: .svr2, transaction) {
+    func removeSVR2CredentialsForCurrentUser(_ transaction: DBWriteTransaction) {
+        let currentUsername = currentUsername(transaction)
+        updateCredentials(transaction) {
             $0.removeAll(where: { existingCredential in
                 existingCredential.username == currentUsername
             })
         }
     }
 
-    // MARK: - Local Storage
-
     // Also write any KBS auth credentials we know about to local, encrypted database storage,
     // so we can reuse them locally even if iCloud is disabled or fails for any reason.
 
-    private var kvStores = [CredentialType: KeyValueStore]()
-
-    private func kvStore(for type: CredentialType) -> KeyValueStore {
-        if let existing = kvStores[type] {
-            return existing
-        }
-        let new = KeyValueStore(collection: type.kvStoreCollectionName)
-        kvStores[type] = new
-        return new
-    }
-
     private static let usernameKey = "username"
 
-    private func currentUsername(
-        for type: CredentialType,
-        _ transaction: DBReadTransaction,
-    ) -> String? {
-        return kvStore(for: type).getString(Self.usernameKey, transaction: transaction)
+    private func currentUsername(_ transaction: DBReadTransaction) -> String? {
+        return usernameStore.getString(Self.usernameKey, transaction: transaction)
     }
 
-    private func setCurrentUsername(_ newValue: String?, for type: CredentialType, _ transaction: DBWriteTransaction) {
-        kvStore(for: type).setString(newValue, key: Self.usernameKey, transaction: transaction)
+    private func setCurrentUsername(_ newValue: String?, _ transaction: DBWriteTransaction) {
+        usernameStore.setString(newValue, key: Self.usernameKey, transaction: transaction)
     }
 
-    private static let localCredentialsKey = "credentials"
-
-    private func localCredentials(for type: CredentialType, _ transaction: DBReadTransaction) -> [AuthCredential] {
-        guard let rawData = kvStore(for: type).getData(Self.localCredentialsKey, transaction: transaction) else {
+    private func localCredentials(_ transaction: DBReadTransaction) -> [AuthCredential] {
+        guard let rawData = localStore.getCredentialData(tx: transaction) else {
             return []
         }
         let decoder = JSONDecoder()
@@ -95,13 +89,13 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
         return credentials
     }
 
-    private func setLocalCredentials(_ newValue: [AuthCredential], for type: CredentialType, _ transaction: DBWriteTransaction) {
+    private func setLocalCredentials(_ newValue: [AuthCredential], _ transaction: DBWriteTransaction) {
         let encoder = JSONEncoder()
         guard let encoded = try? encoder.encode(newValue) else {
             owsFailBeta("Unable to encode kbs auth credential(s)")
             return
         }
-        kvStore(for: type).setData(encoded, key: Self.localCredentialsKey, transaction: transaction)
+        localStore.setCredentialData(encoded, tx: transaction)
     }
 
     // MARK: - iCloud Re-registration Support
@@ -117,8 +111,8 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
     // Normally, phone number verification (SMS code) is required to fetch one of these
     // credentials first, before proceeding to attempt to enter the PIN code.
 
-    private func getiCloudCredentials(for type: CredentialType) -> [AuthCredential] {
-        guard let rawData = NSUbiquitousKeyValueStore.default.data(forKey: type.iCloudCredentialsKey) else {
+    private func getiCloudCredentials(_ transaction: DBReadTransaction) -> [AuthCredential] {
+        guard let rawData = cloudStore.getCredentialData(tx: transaction) else {
             return []
         }
         let decoder = JSONDecoder()
@@ -129,34 +123,33 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
         return credentials
     }
 
-    private func setiCloudCredentials(_ newValue: [AuthCredential], for type: CredentialType) {
+    private func setiCloudCredentials(_ newValue: [AuthCredential], _ transaction: DBWriteTransaction) {
         let encoder = JSONEncoder()
         guard let encoded = try? encoder.encode(newValue) else {
             owsFailBeta("Unable to encode kbs auth credential(s) to iCloud")
             return
         }
-        NSUbiquitousKeyValueStore.default.set(encoded, forKey: type.iCloudCredentialsKey)
+        cloudStore.setCredentialData(encoded, tx: transaction)
     }
 
     // MARK: - Helpers
 
     private func updateCredentials(
-        for type: CredentialType,
         _ transaction: DBWriteTransaction,
         _ block: (inout [AuthCredential]) -> Void,
     ) {
-        var credentials = consolidateLocalAndiCloud(for: type, transaction)
+        var credentials = consolidateLocalAndiCloud(transaction)
         block(&credentials)
-        setLocalCredentials(credentials, for: type, transaction)
+        setLocalCredentials(credentials, transaction)
         // Consolidate again so that we sort and truncate.
-        credentials = consolidateLocalAndiCloud(for: type, transaction)
-        setLocalCredentials(credentials, for: type, transaction)
-        setiCloudCredentials(credentials, for: type)
+        credentials = consolidateLocalAndiCloud(transaction)
+        setLocalCredentials(credentials, transaction)
+        setiCloudCredentials(credentials, transaction)
     }
 
-    private func consolidateLocalAndiCloud(for type: CredentialType, _ transaction: DBReadTransaction) -> [AuthCredential] {
+    private func consolidateLocalAndiCloud(_ transaction: DBReadTransaction) -> [AuthCredential] {
         return Self.consolidateCredentials(
-            allUnsortedCredentials: localCredentials(for: type, transaction) + getiCloudCredentials(for: type),
+            allUnsortedCredentials: localCredentials(transaction) + getiCloudCredentials(transaction),
         )
     }
 
@@ -193,24 +186,6 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
             // Take the first N up to the limit
             .prefix(SVR.maxSVRAuthCredentialsBackedUp)
         return Array(consolidated)
-    }
-
-    enum CredentialType: Hashable {
-        case svr2
-
-        var iCloudCredentialsKey: String {
-            switch self {
-            case .svr2:
-                return "signal_svr2_credentials"
-            }
-        }
-
-        var kvStoreCollectionName: String {
-            switch self {
-            case .svr2:
-                return "SVR2AuthCredential"
-            }
-        }
     }
 
     struct AuthCredential: Codable, Equatable {

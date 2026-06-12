@@ -872,6 +872,8 @@
 		50EA40912E3A899F009CB839 /* RegistrationWebSocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EA40902E3A899F009CB839 /* RegistrationWebSocketManager.swift */; };
 		50EA76E52EEA1C6000DA8CD0 /* PasteboardAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EA76E42EEA1C6000DA8CD0 /* PasteboardAttachment.swift */; };
 		50ED28022F0EDB0B00E57C54 /* ImageQualityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ED28012F0EDB0B00E57C54 /* ImageQualityTest.swift */; };
+		50ED46C82FDB474F00F62B18 /* SVRAuthCredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ED46C72FDB474F00F62B18 /* SVRAuthCredentialStore.swift */; };
+		50ED46CA2FDB4D3000F62B18 /* SVRAuthCredentialStorageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ED46C92FDB4D3000F62B18 /* SVRAuthCredentialStorageTest.swift */; };
 		50EED2DC2F61E69100D76131 /* OWSLocalizedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EED2DB2F61E69100D76131 /* OWSLocalizedStringTest.swift */; };
 		50EF82492F8EDB84000EE0DD /* SpamReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5090B1A22F8DA0B6003F029D /* SpamReport.swift */; };
 		50EF824A2F8EDB84000EE0DD /* SpamReportingUIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */; };
@@ -5146,6 +5148,8 @@
 		50EA40902E3A899F009CB839 /* RegistrationWebSocketManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationWebSocketManager.swift; sourceTree = "<group>"; };
 		50EA76E42EEA1C6000DA8CD0 /* PasteboardAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardAttachment.swift; sourceTree = "<group>"; };
 		50ED28012F0EDB0B00E57C54 /* ImageQualityTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageQualityTest.swift; sourceTree = "<group>"; };
+		50ED46C72FDB474F00F62B18 /* SVRAuthCredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStore.swift; sourceTree = "<group>"; };
+		50ED46C92FDB4D3000F62B18 /* SVRAuthCredentialStorageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageTest.swift; sourceTree = "<group>"; };
 		50EED2DB2F61E69100D76131 /* OWSLocalizedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLocalizedStringTest.swift; sourceTree = "<group>"; };
 		50EF8DC42A1860EF00A00935 /* BadgeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeManager.swift; sourceTree = "<group>"; };
 		50EF8DC92A1885C000A00935 /* AppIconBadgeUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconBadgeUpdater.swift; sourceTree = "<group>"; };
@@ -10379,6 +10383,7 @@
 				66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */,
 				6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */,
 				6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */,
+				50ED46C72FDB474F00F62B18 /* SVRAuthCredentialStore.swift */,
 				6640DD622ACDD5DE00CE9A8C /* SVRLocalStorage.swift */,
 				66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */,
 			);
@@ -10726,6 +10731,7 @@
 			isa = PBXGroup;
 			children = (
 				662C44142A1D20EB001F83E2 /* SVR2 */,
+				50ED46C92FDB4D3000F62B18 /* SVRAuthCredentialStorageTest.swift */,
 				6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */,
 			);
 			path = SecureValueRecovery;
@@ -19921,6 +19927,7 @@
 				6673FF702978C40300F96CFD /* SVRAuthCredentialStorage.swift in Sources */,
 				6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */,
 				C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */,
+				50ED46C82FDB474F00F62B18 /* SVRAuthCredentialStore.swift in Sources */,
 				6640DD632ACDD5DE00CE9A8C /* SVRLocalStorage.swift in Sources */,
 				66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */,
 				F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */,
@@ -20306,6 +20313,7 @@
 				7254654B2BA0268B00EABFD2 /* StripeTest.swift in Sources */,
 				6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */,
 				6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */,
+				50ED46CA2FDB4D3000F62B18 /* SVRAuthCredentialStorageTest.swift in Sources */,
 				6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */,
 				884BF73D28D37D5F00D94636 /* SystemStoryManagerTest.swift in Sources */,
 				663B9CB12C9DF55D0055DC7D /* TaskQueueLoaderTest.swift in Sources */,
