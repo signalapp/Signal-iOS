@@ -15,8 +15,10 @@ struct SVRAuthCredentialStorageTest {
         let kvStore1 = KeyValueStore(collection: "Local")
         let kvStore2 = KeyValueStore(collection: "Cloud")
         self.credentialStorage = SVRAuthCredentialStorageImpl(
-            localStore: SVRAuthCredentialLocalStore(kvStore: kvStore1),
-            cloudStore: SVRAuthCredentialLocalStore(kvStore: kvStore2),
+            credentialStores: [
+                SVRAuthCredentialLocalStore(kvStore: kvStore1),
+                SVRAuthCredentialLocalStore(kvStore: kvStore2),
+            ],
             usernameStore: kvStore1,
         )
     }
