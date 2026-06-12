@@ -558,6 +558,17 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             // Require backups (i.e., migrations) to succeed before deleting from old
             // enclaves to ensure we're always backed up to at least one enclave.
             try await wipeObsoleteEnclaves(allEnclaves: allEnclaves, enclavesToKeep: enclavesToKeep)
+
+            if pin == nil {
+                let anyCredential = db.read { tx in
+                    return credentialManager.getAuthCredentialForCurrentUser(tx)
+                }
+                if anyCredential != nil {
+                    await db.awaitableWrite { tx in
+                        credentialManager.removeSVR2CredentialsForCurrentUser(tx)
+                    }
+                }
+            }
         }
     }
 
