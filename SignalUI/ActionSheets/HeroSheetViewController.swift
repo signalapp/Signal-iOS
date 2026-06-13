@@ -25,6 +25,8 @@ open class HeroSheetViewController: StackSheetViewController {
     public struct Body {
         public enum TextContent {
             case plain(String)
+            /// - Note
+            /// Attributed-text bodies must embed their own font.
             case attributed(NSAttributedString)
         }
 
@@ -206,10 +208,10 @@ open class HeroSheetViewController: StackSheetViewController {
         switch body.textContent {
         case .plain(let text):
             bodyTextView.text = text
+            bodyTextView.font = .dynamicTypeSubheadline
         case .attributed(let attributedText):
             bodyTextView.attributedText = attributedText
         }
-        bodyTextView.font = .dynamicTypeSubheadline
         bodyTextView.textColor = body.textColor
         bodyTextView.textAlignment = body.textAlignment
 
@@ -481,14 +483,18 @@ open class HeroSheetViewController: StackSheetViewController {
 }
 
 @available(iOS 17, *)
-#Preview("Body w/ link") {
+#Preview("Body w/ attributed") {
     let bodyText: NSAttributedString = NSAttributedString.composed(of: [
-        "Signal will never message you for your recovery key. Never respond to a chat pretending to be Signal. Never share your recovery key with anyone.",
+        "<bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal. Never share your recovery key with anyone.",
         " ",
-        CommonStrings.learnMore.styled(
-            with: .link(.Support.phishingPrevention),
-        ),
-    ])
+        "<link>\(CommonStrings.learnMore)</link>",
+    ]).styled(
+        with: .font(.dynamicTypeSubheadline),
+        .xmlRules([
+            .style("bold", StringStyle(.font(.dynamicTypeSubheadline.bold()))),
+            .style("link", StringStyle(.link(.Support.phishingPrevention))),
+        ]),
+    )
 
     SheetPreviewViewController(sheet: HeroSheetViewController(
         hero: .image(UIImage(named: "avatar_football")!),

@@ -309,36 +309,9 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
                     comment: "Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that acknowledges the warning and proceeds with the paste.",
                 ),
                 style: .secondaryDestructive,
-                action: .custom({ [weak self] sheet in
+                action: .custom({ sheet in
                     sheet.dismiss(animated: true) {
-                        let doubleWarningSheet = ActionSheetController(
-                            title: OWSLocalizedString(
-                                "CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_TITLE",
-                                comment: "Title for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway.",
-                            ),
-                            message: OWSLocalizedString(
-                                "CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_MESSAGE",
-                                comment: "Message body for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, warning them not to share it.",
-                            ),
-                        )
-                        doubleWarningSheet.addAction(ActionSheetAction(
-                            title: OWSLocalizedString(
-                                "CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_PASTE_BUTTON_TITLE",
-                                comment: "Title for the destructive button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that proceeds with the paste.",
-                            ),
-                            style: .destructive,
-                            handler: { _ in
-                                completePaste()
-                            },
-                        ))
-                        doubleWarningSheet.addAction(ActionSheetAction(
-                            title: OWSLocalizedString(
-                                "CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_DO_NOT_SHARE_BUTTON_TITLE",
-                                comment: "Title for the button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that dismisses the sheet without pasting the key.",
-                            ),
-                        ))
-
-                        self?.present(doubleWarningSheet, animated: true)
+                        completePaste()
                     }
                 }),
             ),

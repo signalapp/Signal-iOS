@@ -15,14 +15,16 @@ final class BackupNeverShareRecoveryKeySheet: HeroSheetViewController {
             OWSLocalizedString(
                 "BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY",
                 comment: "Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone.",
-            ).styled(
-                with: .xmlRules([.style("bold", StringStyle(.font(.dynamicTypeSubheadline.bold())))]),
             ),
             " ",
-            CommonStrings.learnMore.styled(
-                with: .link(.Support.phishingPrevention),
-            ),
-        ])
+            "<link>\(CommonStrings.learnMore)</link>",
+        ]).styled(
+            with: .font(.dynamicTypeSubheadline),
+            .xmlRules([
+                .style("bold", StringStyle(.font(.dynamicTypeSubheadline.bold()))),
+                .style("link", StringStyle(.link(.Support.phishingPrevention))),
+            ]),
+        )
 
         super.init(
             hero: .circleIcon(
