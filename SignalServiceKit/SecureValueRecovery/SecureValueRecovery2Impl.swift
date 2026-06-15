@@ -606,13 +606,16 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 do {
                     let sgxConnection = try await self.connectionFactory.connectAndPerformHandshake(configurator: config)
                     let knownGoodAuthCredential = sgxConnection.auth
-                    // If we were able to open a connection, that means the auth used is valid
-                    // and we should cache it.
-                    await self.db.awaitableWrite { tx in
-                        self.credentialManager.storeAuthCredentialForCurrentUsername(
-                            SVR2AuthCredential(credential: knownGoodAuthCredential),
-                            tx,
-                        )
+                    if case .implicit = config.authMethod {
+                        // If we opened a connection with a credential we fetched, we believe it's
+                        // valid. If the credential was fetched implicitly, then we also believe it
+                        // belongs to the current account, so we should cache it.
+                        await self.db.awaitableWrite { tx in
+                            self.credentialManager.storeAuthCredentialForCurrentUsername(
+                                SVR2AuthCredential(credential: knownGoodAuthCredential),
+                                tx,
+                            )
+                        }
                     }
                     return sgxConnection
                 } catch {

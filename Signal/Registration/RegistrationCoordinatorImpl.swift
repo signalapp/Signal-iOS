@@ -2733,11 +2733,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             else {
                 // If we haven't set an AEP, and have already exhausted our SVR backup attempts, we are stuck.
                 db.write { tx in
-                    // May as well store credentials, anyway.
-                    deps.svrAuthCredentialManager.storeAuthCredentialForCurrentUsername(
-                        reglockFailure.svr2AuthCredential,
-                        tx,
-                    )
                     self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                         $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
                     }
@@ -2766,11 +2761,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // We were already trying reglock, and the token was wrong.
                 // that means the whole thing is stuck. wait out the reglock.
                 db.write { tx in
-                    // May as well store credentials, anyway.
-                    deps.svrAuthCredentialManager.storeAuthCredentialForCurrentUsername(
-                        reglockFailure.svr2AuthCredential,
-                        tx,
-                    )
                     self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                         $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
                     }
@@ -2784,7 +2774,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     svr2: reglockFailure.svr2AuthCredential,
                 )
                 db.write { tx in
-                    deps.svrAuthCredentialManager.storeAuthCredentialForCurrentUsername(reglockFailure.svr2AuthCredential, tx)
                     self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                         $0.reglockState = .reglocked(
                             credential: persistedCredential,
