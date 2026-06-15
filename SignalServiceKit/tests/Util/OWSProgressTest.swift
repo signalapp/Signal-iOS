@@ -1188,13 +1188,10 @@ class OWSProgressTest: XCTestCase {
         let (sink, stream) = OWSProgress.createSink()
         Task {
             let source = await sink.addSource(withLabel: "1", unitCount: 100)
-            let inputTask = Task {
-                try await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
-            }
             try await source.updatePeriodically(
                 timeInterval: 0.001,
-                estimatedTimeToCompletion: 50,
-                work: { try await inputTask.value },
+                estimatedTimeToCompletion: 0.005,
+                work: { try await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC) },
             )
         }
 
@@ -1211,13 +1208,10 @@ class OWSProgressTest: XCTestCase {
         let (sink, stream) = OWSProgress.createSink()
         Task {
             let source = await sink.addSource(withLabel: "1", unitCount: 100)
-            let inputTask = Task {
-                try await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
-            }
             try await source.updatePeriodically(
                 timeInterval: 0.001,
                 estimatedTimeToCompletion: 200,
-                work: { try await inputTask.value },
+                work: { try await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC) },
             )
         }
 
@@ -1235,14 +1229,13 @@ class OWSProgressTest: XCTestCase {
         Task {
             let source = await sink.addSource(withLabel: "1", unitCount: 100)
             // If the task doesn't throw the updatePeriodically call shouldn't throw either.
-            let inputTask = Task {
-                try? await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
-                return "Hello, World!"
-            }
             let stringResult = await source.updatePeriodically(
                 timeInterval: 0.001,
                 estimatedTimeToCompletion: 200,
-                work: { await inputTask.value },
+                work: {
+                    try? await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
+                    return "Hello, World!"
+                },
             )
             XCTAssertEqual(stringResult, "Hello, World!")
         }
@@ -1260,14 +1253,13 @@ class OWSProgressTest: XCTestCase {
         let (sink, stream) = OWSProgress.createSink()
         Task {
             let source = await sink.addSource(withLabel: "1", unitCount: 100)
-            let inputTask: Task<String?, Never> = Task {
-                try? await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
-                return nil
-            }
             let stringResult = await source.updatePeriodically(
                 timeInterval: 0.001,
                 estimatedTimeToCompletion: 200,
-                work: { await inputTask.value },
+                work: { () async -> String? in
+                    try? await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
+                    return nil
+                },
             )
             XCTAssertNil(stringResult)
         }
@@ -1278,6 +1270,26 @@ class OWSProgressTest: XCTestCase {
         }
 
         XCTAssertLessThanOrEqual(outputs.count, 102)
+        XCTAssertEqual(outputs.last, 100)
+    }
+
+    func testUpdatePeriodically_NonZeroStart() async {
+        let (sink, stream) = OWSProgress.createSink()
+        Task {
+            let source = await sink.addSource(withLabel: "1", unitCount: 100)
+            source.incrementCompletedUnitCount(by: 50)
+            try await source.updatePeriodically(
+                timeInterval: 0.001,
+                estimatedTimeToCompletion: 0.1,
+                work: { try await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC) },
+            )
+        }
+
+        var outputs = [UInt64]()
+        for await progress in stream {
+            XCTAssert(0 <= progress.completedUnitCount || progress.completedUnitCount >= 50)
+            outputs.append(progress.completedUnitCount)
+        }
         XCTAssertEqual(outputs.last, 100)
     }
 

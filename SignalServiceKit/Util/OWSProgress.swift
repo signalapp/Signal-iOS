@@ -354,59 +354,39 @@ extension OWSProgressSource where Self: Sendable {
     public func updatePeriodically<T, E>(
         timeInterval: TimeInterval = 0.1,
         estimatedTimeToCompletion: TimeInterval,
-        work: @escaping () async throws(E) -> T,
+        work: () async throws(E) -> T,
     ) async throws(E) -> T {
-        let sleepDurationMillis = UInt64(timeInterval * 1000)
-        let source = self
-        let didComplete = AtomicBool(false, lock: .init())
-        let startDate = Date()
-        var lastCompletedUnitCount = source.completedUnitCount
-        // Minus one so the timer can never complete it.
-        let maxTimerCompletedUnitCount = source.totalUnitCount - 1
-        let timeToUnitsMultiplier = Double(source.totalUnitCount) / estimatedTimeToCompletion
-        let result = await withTaskGroup(of: Optional<Result<T, E>>.self) { taskGroup in
-            taskGroup.addTask {
-                while !didComplete.get() {
-                    try? await Task.sleep(nanoseconds: sleepDurationMillis * NSEC_PER_MSEC)
-                    let date = Date()
-                    var units = UInt64(date.timeIntervalSince(startDate) * timeToUnitsMultiplier)
-                    units = min(maxTimerCompletedUnitCount, units)
-                    defer { lastCompletedUnitCount = units }
-                    let incrementalUnits = units - lastCompletedUnitCount
-                    if incrementalUnits > 0 {
-                        source.incrementCompletedUnitCount(by: units)
-                    }
-                }
-                return nil
-            }
-            taskGroup.addTask {
-                let result: Result<T, E>
-                do {
-                    result = .success(try await work())
-                } catch let error as E {
-                    didComplete.set(true)
-                    return .failure(error)
-                } catch {
-                    // Impossible; work only throws E
-                    fatalError()
-                }
-                didComplete.set(true)
-                source.incrementCompletedUnitCount(by: source.totalUnitCount)
-                return result
-            }
-            while let result = await taskGroup.next() {
-                switch result {
-                case .none:
-                    break
-                case .some(let value):
-                    return value
+        let startTime = CACurrentMediaTime()
+
+        let updateTask = Task { [completedUnitCount, totalUnitCount] in
+            var oldValue: UInt64 = 0
+            // Minus one so the timer can never complete it.
+            let maxValue = totalUnitCount - completedUnitCount - 1
+            let unitsPerSecond = Double(totalUnitCount - completedUnitCount) / estimatedTimeToCompletion
+            while oldValue < maxValue {
+                try await Task.sleep(nanoseconds: timeInterval.clampedNanoseconds)
+                var newValue = UInt64(clamping: (CACurrentMediaTime() - startTime) * unitsPerSecond)
+                newValue = min(maxValue, newValue)
+                let delta = newValue - oldValue
+                oldValue = newValue
+                if delta > 0 {
+                    incrementCompletedUnitCount(by: delta)
                 }
             }
-            // Impossible to get here; the second task in the group
-            // always returns some result.
-            fatalError()
         }
-        return try result.get()
+
+        do throws(E) {
+            let result = try await work()
+            updateTask.cancel()
+            // Don't call incrementCompletedUnitCount concurrently with updateTask.
+            try? await updateTask.value
+            incrementCompletedUnitCount(by: totalUnitCount)
+            return result
+        } catch {
+            updateTask.cancel()
+            try? await updateTask.value
+            throw error
+        }
     }
 }
 

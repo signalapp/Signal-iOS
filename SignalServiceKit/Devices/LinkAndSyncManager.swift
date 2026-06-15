@@ -369,7 +369,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         return try await progressSource.updatePeriodically(
             estimatedTimeToCompletion: 5,
             work: { () async throws(PrimaryLinkNSyncError) -> Requests.WaitForDeviceToLinkResponse in
-                try await self._waitForDeviceToLink(tokenId: tokenId)
+                try await _waitForDeviceToLink(tokenId: tokenId)
             },
         )
     }
@@ -585,7 +585,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         return try await progressSource.updatePeriodically(
             estimatedTimeToCompletion: 40,
             work: { () async throws -> Requests.ExportAndUploadBackupResult in
-                try await self._waitForPrimaryToUploadBackup(auth: auth)
+                try await _waitForPrimaryToUploadBackup(auth: auth)
             },
         )
     }
