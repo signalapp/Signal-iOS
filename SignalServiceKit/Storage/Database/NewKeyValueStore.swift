@@ -324,4 +324,8 @@ struct KeyValueStoreMigrator {
     func migrateBool(_ key: String, tx: DBWriteTransaction) throws {
         return try migrateKey(key, withValueOfType: NSNumber.self, toNewValue: \.boolValue, tx: tx)
     }
+
+    func migrateDouble(_ key: String, tx: DBWriteTransaction) throws {
+        return try migrateKey(key, withValueOfType: NSNumber.self, toNewValue: \.doubleValue, tx: tx)
+    }
 }

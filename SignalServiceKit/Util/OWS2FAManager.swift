@@ -7,20 +7,24 @@ import Foundation
 
 public let kMin2FAv2PinLength: UInt = 4
 
-private let kOWS2FAManager_IsRegistrationLockV2Enabled = "isRegistrationLockV2Enabled"
-private let kOWS2FAManager_AreRemindersEnabled = "kOWS2FAManager_AreRemindersEnabled"
-private let kOWS2FAManager_LastSuccessfulReminderDateKey = "kOWS2FAManager_LastSuccessfulReminderDateKey"
-private let kOWS2FAManager_PinCode = "kOWS2FAManager_PinCode"
-private let kOWS2FAManager_RepetitionInterval = "kOWS2FAManager_RepetitionInterval"
-
 public class OWS2FAManager {
     private var accountAttributesUpdater: AccountAttributesUpdater { DependenciesBridge.shared.accountAttributesUpdater }
     private var accountKeyStore: AccountKeyStore { DependenciesBridge.shared.accountKeyStore }
     private var db: DB { DependenciesBridge.shared.db }
-    private var keyValueStore: KeyValueStore { KeyValueStore(collection: "kOWS2FAManager_Collection") }
     private var networkManager: NetworkManagerProtocol { SSKEnvironment.shared.networkManagerRef }
     private var svr: SecureValueRecovery { DependenciesBridge.shared.svr }
     private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
+
+    private let keyValueStore = NewKeyValueStore(collection: "2FA")
+
+    private enum StoreKeys {
+        static let isRegistrationLockEnabled = "IsRegistrationLockEnabled"
+        static let areRemindersEnabled = "AreRemindersEnabled"
+        static let lastSuccessfulReminderDate = "LastSuccessfulReminderDate"
+        static let pinCode = "PinCode"
+        static let repetitionInterval = "RepetitionInterval"
+        static let hasEverHadPin = "HasEverHadPin"
+    }
 
     init() {
         // Does not take dependencies on init, because circular dependencies
@@ -36,14 +40,18 @@ public class OWS2FAManager {
     }
 
     public func isRegistrationLockV2Enabled(transaction: DBReadTransaction) -> Bool {
-        return keyValueStore.getBool(
-            kOWS2FAManager_IsRegistrationLockV2Enabled,
-            defaultValue: false,
-            transaction: transaction,
-        )
+        return keyValueStore.fetchValue(
+            Bool.self,
+            forKey: StoreKeys.isRegistrationLockEnabled,
+            tx: transaction,
+        ) ?? false
     }
 
     // MARK: -
+
+    public func hasEverHadPin(tx: DBReadTransaction) -> Bool {
+        return keyValueStore.fetchValue(Bool.self, forKey: StoreKeys.hasEverHadPin, tx: tx) ?? false
+    }
 
     public var isPinEnabledWithSneakyTransaction: Bool {
         return db.read { isPinEnabled(tx: $0) }
@@ -54,7 +62,7 @@ public class OWS2FAManager {
     }
 
     public func pinCode(transaction: DBReadTransaction) -> String? {
-        return keyValueStore.getString(kOWS2FAManager_PinCode, transaction: transaction)
+        return keyValueStore.fetchValue(String.self, forKey: StoreKeys.pinCode, tx: transaction)
     }
 
     public enum PinType {
@@ -75,11 +83,11 @@ public class OWS2FAManager {
     }
 
     public func setDefaultRepetitionInterval(transaction: DBWriteTransaction) {
-        keyValueStore.removeValue(forKey: kOWS2FAManager_RepetitionInterval, transaction: transaction)
+        keyValueStore.removeValue(forKey: StoreKeys.repetitionInterval, tx: transaction)
     }
 
     public func setDefaultRepetitionIntervalForBackupRestore(transaction: DBWriteTransaction) {
-        keyValueStore.setDouble(7 * .day, key: kOWS2FAManager_RepetitionInterval, transaction: transaction)
+        keyValueStore.writeValue(7 * .day, forKey: StoreKeys.repetitionInterval, tx: transaction)
         // Reset the interval as part of the restore
         setLastCompletedReminderDate(Date(), transaction: transaction)
     }
@@ -89,7 +97,7 @@ public class OWS2FAManager {
     }
 
     func repetitionInterval(transaction: DBReadTransaction) -> TimeInterval {
-        return keyValueStore.getDouble(kOWS2FAManager_RepetitionInterval, defaultValue: defaultRepetitionInterval, transaction: transaction)
+        return keyValueStore.fetchValue(Double.self, forKey: StoreKeys.repetitionInterval, tx: transaction) ?? defaultRepetitionInterval
     }
 
     // MARK: -
@@ -99,21 +107,21 @@ public class OWS2FAManager {
     }
 
     public func areRemindersEnabled(transaction: DBReadTransaction) -> Bool {
-        return keyValueStore.getBool(kOWS2FAManager_AreRemindersEnabled, defaultValue: true, transaction: transaction)
+        return keyValueStore.fetchValue(Bool.self, forKey: StoreKeys.areRemindersEnabled, tx: transaction) ?? true
     }
 
     public func setAreRemindersEnabled(_ areRemindersEnabled: Bool, transaction: DBWriteTransaction) {
-        keyValueStore.setBool(areRemindersEnabled, key: kOWS2FAManager_AreRemindersEnabled, transaction: transaction)
+        keyValueStore.writeValue(areRemindersEnabled, forKey: StoreKeys.areRemindersEnabled, tx: transaction)
     }
 
     // MARK: -
 
     public func lastCompletedReminderDate(transaction: DBReadTransaction) -> Date? {
-        return keyValueStore.getDate(kOWS2FAManager_LastSuccessfulReminderDateKey, transaction: transaction)
+        return keyValueStore.fetchValue(Date.self, forKey: StoreKeys.lastSuccessfulReminderDate, tx: transaction)
     }
 
     public func setLastCompletedReminderDate(_ date: Date, transaction: DBWriteTransaction) {
-        keyValueStore.setDate(date, key: kOWS2FAManager_LastSuccessfulReminderDateKey, transaction: transaction)
+        keyValueStore.writeValue(date, forKey: StoreKeys.lastSuccessfulReminderDate, tx: transaction)
     }
 
     public func nextReminderDate(transaction: DBReadTransaction) -> Date {
@@ -143,7 +151,7 @@ public class OWS2FAManager {
             let newInterval = adjustRepetitionInterval(oldInterval: oldInterval, incorrectAttempts: incorrectAttempts)
 
             Logger.info("Updating repetition interval: \(oldInterval) -> \(newInterval). Had incorrect attempts: \(incorrectAttempts)")
-            keyValueStore.setDouble(newInterval, key: kOWS2FAManager_RepetitionInterval, transaction: transaction)
+            keyValueStore.writeValue(newInterval, forKey: StoreKeys.repetitionInterval, tx: transaction)
         }
     }
 
@@ -173,15 +181,15 @@ public class OWS2FAManager {
     // MARK: -
 
     public func markDisabled(transaction tx: DBWriteTransaction) {
-        keyValueStore.removeValue(forKey: kOWS2FAManager_PinCode, transaction: tx)
-        keyValueStore.removeValue(forKey: kOWS2FAManager_IsRegistrationLockV2Enabled, transaction: tx)
+        keyValueStore.removeValue(forKey: StoreKeys.pinCode, tx: tx)
+        keyValueStore.removeValue(forKey: StoreKeys.isRegistrationLockEnabled, tx: tx)
         tx.addSyncCompletion {
             self.triggerAccountAttributesUpdate()
         }
     }
 
     public func clearLocalPinCode(transaction: DBWriteTransaction) {
-        keyValueStore.removeValue(forKey: kOWS2FAManager_PinCode, transaction: transaction)
+        keyValueStore.removeValue(forKey: StoreKeys.pinCode, tx: transaction)
     }
 
     /// Marks the given PIN as enabled locally.
@@ -215,7 +223,8 @@ public class OWS2FAManager {
     private func setNormalizedPin(_ pin: String, tx: DBWriteTransaction) {
         owsPrecondition(!pin.isEmpty)
 
-        keyValueStore.setString(pin, key: kOWS2FAManager_PinCode, transaction: tx)
+        keyValueStore.writeValue(pin, forKey: StoreKeys.pinCode, tx: tx)
+        keyValueStore.writeValue(true, forKey: StoreKeys.hasEverHadPin, tx: tx)
     }
 
     // MARK: -
@@ -260,10 +269,10 @@ public class OWS2FAManager {
         _ = try await networkManager.asyncRequest(request)
 
         await db.awaitableWrite { transaction in
-            keyValueStore.setBool(
+            keyValueStore.writeValue(
                 true,
-                key: kOWS2FAManager_IsRegistrationLockV2Enabled,
-                transaction: transaction,
+                forKey: StoreKeys.isRegistrationLockEnabled,
+                tx: transaction,
             )
         }
 
@@ -275,10 +284,10 @@ public class OWS2FAManager {
             return owsFailDebug("Unexpectedly attempted to mark reglock as enabled after registration")
         }
 
-        keyValueStore.setBool(
+        keyValueStore.writeValue(
             true,
-            key: kOWS2FAManager_IsRegistrationLockV2Enabled,
-            transaction: transaction,
+            forKey: StoreKeys.isRegistrationLockEnabled,
+            tx: transaction,
         )
     }
 
@@ -288,8 +297,8 @@ public class OWS2FAManager {
 
         await db.awaitableWrite { transaction in
             keyValueStore.removeValue(
-                forKey: kOWS2FAManager_IsRegistrationLockV2Enabled,
-                transaction: transaction,
+                forKey: StoreKeys.isRegistrationLockEnabled,
+                tx: transaction,
             )
         }
 

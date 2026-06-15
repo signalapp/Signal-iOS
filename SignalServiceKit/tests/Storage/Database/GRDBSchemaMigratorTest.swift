@@ -1712,4 +1712,50 @@ struct GRDBSchemaMigratorTest {
             nonBlockingIdentityChange, // non-placeholder, untouched
         ])
     }
+
+    struct SetHasEverHadPin {
+        struct TestCase {
+            var existingRow: (key: String, value: DatabaseValueConvertible)?
+            var expectedValue: Bool
+        }
+
+        @Test(arguments: [
+            TestCase(existingRow: nil, expectedValue: false),
+            TestCase(existingRow: ("PinCode", "1234"), expectedValue: true),
+            TestCase(existingRow: ("LastSuccessfulReminderDate", 123456789.0), expectedValue: true),
+        ])
+        func testSetHasEverHadPin(testCase: TestCase) throws {
+            let collection = "2FA"
+
+            let databaseQueue = DatabaseQueue()
+            try databaseQueue.write { db in
+                // A snapshot of the key value store as it existed when this migration was
+                // added. If the key value store's schema is updated in the future, don't
+                // update this call site. It must remain as a snapshot.
+                try db.execute(
+                    sql: "CREATE TABLE keyvalue (key TEXT NOT NULL, collection TEXT NOT NULL, value BLOB NOT NULL, PRIMARY KEY (key, collection))",
+                )
+                if let existingRow = testCase.existingRow {
+                    try db.execute(
+                        sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                        arguments: [collection, existingRow.key, existingRow.value],
+                    )
+                }
+            }
+
+            // Run the test.
+            try databaseQueue.write { db in
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.setHasEverHadPin(tx: tx)
+            }
+
+            // Validate the ending state.
+            let hasEverHadPin = try databaseQueue.read {
+                try Bool.fetchOne($0, sql: "SELECT value FROM keyvalue WHERE collection = '2FA' AND key = 'HasEverHadPin'")
+            }
+
+            #expect((hasEverHadPin == true) == testCase.expectedValue)
+        }
+    }
 }

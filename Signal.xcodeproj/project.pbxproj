@@ -772,6 +772,8 @@
 		507988E12F20ABCD007285B5 /* OutgoingReadReceiptsSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507988E02F20ABCD007285B5 /* OutgoingReadReceiptsSyncMessage.swift */; };
 		5079F3B62DA4713C008430EC /* NotificationPrecondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5079F3B52DA4713C008430EC /* NotificationPrecondition.swift */; };
 		5079F3C22DA47554008430EC /* NotificationPreconditionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5079F3C02DA47554008430EC /* NotificationPreconditionTest.swift */; };
+		507AA5FA2FDDC3F10067C25E /* KeyValueStoreRenamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507AA5F92FDDC3F10067C25E /* KeyValueStoreRenamer.swift */; };
+		507AA5FD2FDDC4BA0067C25E /* KeyValueStoreRenamerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507AA5FC2FDDC4BA0067C25E /* KeyValueStoreRenamerTest.swift */; };
 		507B69112C503FA800F1C6D7 /* CallLinkTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C302BAC079A00815474 /* CallLinkTest.swift */; };
 		507B69122C5044F800F1C6D7 /* LinkPreviewGroupLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95517271B510400B05242 /* LinkPreviewGroupLink.swift */; };
 		507C07402F116E9200ECFEFA /* NormalizedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507C073F2F116E9200ECFEFA /* NormalizedImage.swift */; };
@@ -5056,6 +5058,8 @@
 		507988E02F20ABCD007285B5 /* OutgoingReadReceiptsSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingReadReceiptsSyncMessage.swift; sourceTree = "<group>"; };
 		5079F3B52DA4713C008430EC /* NotificationPrecondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPrecondition.swift; sourceTree = "<group>"; };
 		5079F3C02DA47554008430EC /* NotificationPreconditionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreconditionTest.swift; sourceTree = "<group>"; };
+		507AA5F92FDDC3F10067C25E /* KeyValueStoreRenamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStoreRenamer.swift; sourceTree = "<group>"; };
+		507AA5FC2FDDC4BA0067C25E /* KeyValueStoreRenamerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStoreRenamerTest.swift; sourceTree = "<group>"; };
 		507C073F2F116E9200ECFEFA /* NormalizedImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NormalizedImage.swift; sourceTree = "<group>"; };
 		507C6AF42ED10BD900A7C74C /* RegisteredState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisteredState.swift; sourceTree = "<group>"; };
 		507CD5E429660D5100E47DAC /* ServiceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceId.swift; sourceTree = "<group>"; };
@@ -9838,6 +9842,14 @@
 				5079F3C02DA47554008430EC /* NotificationPreconditionTest.swift */,
 			);
 			path = Preconditions;
+			sourceTree = "<group>";
+		};
+		507AA5FB2FDDC4AA0067C25E /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				507AA5FC2FDDC4BA0067C25E /* KeyValueStoreRenamerTest.swift */,
+			);
+			path = Database;
 			sourceTree = "<group>";
 		};
 		50A76F512AF565A300FCF02D /* Preconditions */ = {
@@ -14690,6 +14702,7 @@
 				50E0198E2CC2491A0063EA48 /* Concurrency */,
 				F9426205289B1B5500460798 /* Contacts */,
 				501AD1C22AF17A0B001B796A /* Cryptography */,
+				507AA5FB2FDDC4AA0067C25E /* Database */,
 				5056B3BD2DEED70F00F55320 /* DateProvider */,
 				F94261C7289B1B5300460798 /* Devices */,
 				D98BC5342EE390B50052A81F /* Expiration */,
@@ -15236,6 +15249,7 @@
 				F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */,
 				D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */,
 				F9C5CA4B289453B100548EEE /* KeyValueStore.swift */,
+				507AA5F92FDDC3F10067C25E /* KeyValueStoreRenamer.swift */,
 				501376152E69F92A009FF5D3 /* NewKeyValueStore.swift */,
 				72A132A62CA25EE9000ACED6 /* SDSCrossProcess.swift */,
 				F9C5CA3B289453B100548EEE /* SDSDeserialization.swift */,
@@ -19400,6 +19414,7 @@
 				505C2BC22E85D72B0009237F /* KeyedConcurrentTaskQueue.swift in Sources */,
 				D9D5018A2F2B16820068EEA5 /* KeyTransparencyManager.swift in Sources */,
 				F9C5CD2A289453B300548EEE /* KeyValueStore.swift in Sources */,
+				507AA5FA2FDDC3F10067C25E /* KeyValueStoreRenamer.swift in Sources */,
 				C198FDD62A37C905000BCAC9 /* KyberPreKeyStoreImpl.swift in Sources */,
 				504F98B12EAFFAC600DF465B /* KyberPreKeyUseRecord.swift in Sources */,
 				6671DC872CD44CA8002620EF /* LastVisibleInteractionStore.swift in Sources */,
@@ -20213,6 +20228,7 @@
 				F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */,
 				5000CA312B1F97EE00BB8EFF /* JobQueueRunnerTest.swift in Sources */,
 				D9B95A9629E6830B00D7CB95 /* JobRecordTest.swift in Sources */,
+				507AA5FD2FDDC4BA0067C25E /* KeyValueStoreRenamerTest.swift in Sources */,
 				C167F1E52A7162D700D4A9AF /* KyberPreKeyStoreImplTest.swift in Sources */,
 				50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */,
 				D938307C2A704338006CDCDE /* LocalUsernameManagerTests.swift in Sources */,

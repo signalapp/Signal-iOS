@@ -336,6 +336,7 @@ public class GRDBSchemaMigrator {
         case backfillRecoverablePlaceholderErrorType
         case clearAttachmentMediaName
         case addStoredReleaseNotesTable
+        case migrate2FAStore
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -459,7 +460,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 146
+    public static let grdbSchemaVersionLatest: UInt = 147
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5252,6 +5253,25 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.migrate2FAStore) { tx in
+            let migrator = KeyValueStoreMigrator(collection: "kOWS2FAManager_Collection")
+            try migrator.migrateBool("isRegistrationLockV2Enabled", tx: tx)
+            try migrator.migrateBool("kOWS2FAManager_AreRemindersEnabled", tx: tx)
+            try migrator.migrateDate("kOWS2FAManager_LastSuccessfulReminderDateKey", tx: tx)
+            try migrator.migrateString("kOWS2FAManager_PinCode", tx: tx)
+            try migrator.migrateDouble("kOWS2FAManager_RepetitionInterval", tx: tx)
+            let renamer = KeyValueStoreRenamer(oldCollection: "kOWS2FAManager_Collection", newCollection: "2FA")
+            try renamer.renameKey("isRegistrationLockV2Enabled", toKey: "IsRegistrationLockEnabled", tx: tx)
+            try renamer.renameKey("kOWS2FAManager_AreRemindersEnabled", toKey: "AreRemindersEnabled", tx: tx)
+            try renamer.renameKey("kOWS2FAManager_LastSuccessfulReminderDateKey", toKey: "LastSuccessfulReminderDate", tx: tx)
+            try renamer.renameKey("kOWS2FAManager_PinCode", toKey: "PinCode", tx: tx)
+            try renamer.renameKey("kOWS2FAManager_RepetitionInterval", toKey: "RepetitionInterval", tx: tx)
+            // Delete anything that might be orphaned.
+            try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection = 'kOWS2FAManager_Collection'")
+            try setHasEverHadPin(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -7809,6 +7829,15 @@ public class GRDBSchemaMigrator {
 
         try tx.database.execute(sql: """
         DELETE FROM keyvalue WHERE collection IN ('SecureValueRecovery2Impl', 'kOWSKeyBackupService_Keys')
+        """)
+    }
+
+    static func setHasEverHadPin(tx: DBWriteTransaction) throws {
+        // If we currently have a PIN or have evidence of a PIN, set HasEverHadPin.
+        try tx.database.execute(sql: """
+        INSERT INTO "keyvalue" ("collection", "key", "value")
+            SELECT DISTINCT '2FA', 'HasEverHadPin', 1 FROM "keyvalue"
+                WHERE "collection" = '2FA' AND "key" IN ('PinCode', 'LastSuccessfulReminderDate')
         """)
     }
 

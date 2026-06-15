@@ -346,7 +346,7 @@ class ExperienceUpgradeManager {
         if
             reachabilityManager.isReachable,
             tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
-            accountKeyStore.getAccountEntropyPool(tx: tx) == nil
+            !ows2FAManager.hasEverHadPin(tx: tx)
         {
             return true
         }
