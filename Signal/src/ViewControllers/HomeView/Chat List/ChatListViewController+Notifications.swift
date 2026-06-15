@@ -210,6 +210,7 @@ extension ChatListViewController {
         AssertIsOnMainThread()
 
         updateRegistrationReminderView()
+        reconcileExperienceUpgrades()
         loadCoordinator.loadIfNecessary()
     }
 
