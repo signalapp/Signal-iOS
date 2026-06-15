@@ -861,19 +861,7 @@ private class OWSProgressSourceNode: OWSProgressSource, OWSProgressChildNode {
     }
 
     func incrementCompletedUnitCount(by increment: UInt64) {
-        let incrementedUnitCount: UInt64 = {
-            if UInt64.max - increment < completedUnitCount {
-                // Avoid UInt64 overflow, if necessary.
-                return .max
-            }
-
-            return completedUnitCount + increment
-        }()
-
-        completedUnitCount = min(
-            totalUnitCount,
-            incrementedUnitCount,
-        )
+        completedUnitCount += min(increment, totalUnitCount - completedUnitCount)
         emitProgressIfNeeded()
     }
 
