@@ -440,7 +440,7 @@ class MediaGalleryAccessoriesHelper {
 
         viewController.view.layoutIfNeeded()
         let bottomInset = viewController.view.bounds.maxY - footerBar.frame.minY
-        viewController.scrollView.contentInset.bottom = bottomInset
+        viewController.scrollView.contentInset.bottom = bottomInset + 12
         viewController.scrollView.verticalScrollIndicatorInsets.bottom = bottomInset
 
     }
