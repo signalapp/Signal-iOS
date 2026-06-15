@@ -880,23 +880,20 @@ private class OWSProgressSourceNode: OWSProgressSource, OWSProgressChildNode {
     /// Tracks whether an async progress update task has been scheduled
     /// but not run yet; if true further calls to ``emitProgressIfNeeded``
     /// will early exit.
-    private var dirtyBit = false
+    private let dirtyBit = AtomicBool(false, lock: .init())
 
     fileprivate func emitProgressIfNeeded() {
-        guard !dirtyBit else {
+        guard dirtyBit.tryToSetFlag() else {
             return
         }
-        dirtyBit = true
-        // Retain self, so that if the caller updates progress
-        // to 100% then discards the reference to self, its
-        // still retained long enough to update observers.
+        // Retain self, so that if the caller updates progress to 100% then
+        // discards the reference to self, it's still retained long enough to
+        // update observers.
         Task { [self, rootNode] in
-            // It looks risky to write this value from an
-            // arbitrary task thread; but because we read
-            // the progress value after setting this it should
-            // never result in missed updates (just additional
-            // unecessary updates).
-            self.dirtyBit = false
+            // It looks risky to write this value from an arbitrary task thread; but
+            // because we read the progress value after setting this it should never
+            // result in missed updates (just additional unecessary updates).
+            self.dirtyBit.set(false)
             await rootNode.progressDidUpdate(updatedNode: self)
         }
     }
