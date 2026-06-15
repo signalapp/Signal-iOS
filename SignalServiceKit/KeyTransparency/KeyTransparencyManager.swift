@@ -494,11 +494,14 @@ public final class KeyTransparencyManager {
         )
 
         do {
-            try await KeyTransparency.resetField(
-                field,
-                for: localAci,
-                store: libSignalStore,
-            )
+            try await db.awaitableWrite { tx in
+                try KeyTransparency.resetField(
+                    field,
+                    for: localAci,
+                    store: libSignalStore,
+                    context: tx,
+                )
+            }
         } catch {
             // We should only end up here if there's malformed data.
             owsFailDebug("Failed to reset \(field) for local user!")
@@ -733,6 +736,14 @@ private struct KeyTransparencyStoreForLibSignal: KeyTransparency.Store {
         await db.awaitableWrite { tx in
             keyTransparencyStore.setKeyTransparencyBlob(data, aci: aci, tx: tx)
         }
+    }
+
+    func getAccountData(for aci: Aci, context: StoreContext) -> Data? {
+        keyTransparencyStore.getKeyTransparencyBlob(aci: aci, tx: context.asTransaction)
+    }
+
+    func setAccountData(_ data: Data, for aci: Aci, context: StoreContext) {
+        keyTransparencyStore.setKeyTransparencyBlob(data, aci: aci, tx: context.asTransaction)
     }
 }
 
