@@ -26,11 +26,9 @@ public extension OWSRequestFactory {
     }
 
     private enum BoostApiPaths {
-        private static let basePath = "v1/subscription/boost"
-
-        static let stripeCreatePaymentIntent = "\(basePath)/create"
-        static let paypalCreatePayment = "\(basePath)/paypal/create"
-        static let paypalConfirmPayment = "\(basePath)/paypal/confirm"
+        static let stripeCreatePaymentIntent = "v1/subscription/boost/create"
+        static let paypalCreatePayment = "v1/subscription/boost/paypal/create"
+        static let paypalConfirmPayment = "v1/subscription/boost/paypal/confirm"
     }
 
     /// A request to create a Stripe payment intent for a boost.
