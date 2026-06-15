@@ -198,6 +198,11 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
             return .success
         }
 
+        if interaction.uniqueThreadId == TSReleaseNotesThread.releaseNotesUniqueId {
+            // We skip archiving release notes messages.
+            return .success
+        }
+
         guard let chatId, let threadInfo else {
             partialErrors.append(.archiveFrameError(.referencedThreadIdMissing(interaction.uniqueThreadIdentifier)))
             return .partialSuccess(partialErrors)
