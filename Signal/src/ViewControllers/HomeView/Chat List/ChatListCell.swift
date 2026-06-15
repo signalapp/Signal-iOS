@@ -208,7 +208,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             lastReloadDate: configuration.lastReloadDate,
             timestamp: configuration.overrideDate ?? configuration.threadViewModel.chatListInfo?.lastMessageDate,
             isBlocked: configuration.threadViewModel.isBlocked,
-            shouldShowVerifiedBadge: configuration.threadViewModel.threadRecord.isNoteToSelf,
+            shouldShowVerifiedBadge: configuration.threadViewModel.threadRecord.isNoteToSelf || configuration.threadViewModel.threadRecord.isReleaseNotesThread,
             shouldShowMuteIndicator: Self.shouldShowMuteIndicator(configuration: configuration),
             hasOverrideSnippet: configuration.hasOverrideSnippet,
             messageStatusToken: Self.buildMessageStatusToken(configuration: configuration),
