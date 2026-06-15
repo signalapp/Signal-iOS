@@ -79,7 +79,6 @@
 		046926092E8EBAAE00B1FC74 /* TSInfoMessage+Polls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */; };
 		0477BE322FA4FC41002F9B47 /* TSReleaseNotesThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */; };
 		0480F0002E57C51A006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift */; };
-		0477BE362FB21EED002F9B47 /* TSReleaseNotesMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477BE352FB21EE7002F9B47 /* TSReleaseNotesMessage.swift */; };
 		0484CECE2F44B7BE009AB2CB /* AdminDeleteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */; };
 		0484CED02F44BD00009AB2CB /* AdminDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CECF2F44BCFB009AB2CB /* AdminDeleteManager.swift */; };
 		0484CED22F44DD01009AB2CB /* OutgoingAdminDeleteMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CED12F44DCFF009AB2CB /* OutgoingAdminDeleteMessage.swift */; };
@@ -4241,7 +4240,6 @@
 		046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Polls.swift"; sourceTree = "<group>"; };
 		0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSReleaseNotesThread.swift; sourceTree = "<group>"; };
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledRecentlyNotificationMegaphone.swift; sourceTree = "<group>"; };
-		0477BE352FB21EE7002F9B47 /* TSReleaseNotesMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSReleaseNotesMessage.swift; sourceTree = "<group>"; };
 		0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDeleteRecord.swift; sourceTree = "<group>"; };
 		0484CECF2F44BCFB009AB2CB /* AdminDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDeleteManager.swift; sourceTree = "<group>"; };
 		0484CED12F44DCFF009AB2CB /* OutgoingAdminDeleteMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingAdminDeleteMessage.swift; sourceTree = "<group>"; };
