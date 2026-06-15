@@ -75,6 +75,94 @@ struct SVRAuthCredentialManagerTest {
     }
 }
 
+struct SVRAuthCredentialDistributedTest {
+    @Test
+    func testTwoSignalOneCloud() {
+        let db = InMemoryDB()
+        // Each device has its own "local" store.
+        let localStore1 = KeyValueStore(collection: "Local.1")
+        let localStore2 = KeyValueStore(collection: "Local.2")
+        // But they share a single "cloud" store.
+        let cloudStore = KeyValueStore(collection: "Cloud")
+
+        let manager1 = SVRAuthCredentialManager(
+            credentialStores: [localStore1, cloudStore].map(SVRAuthCredentialLocalStore.init(kvStore:)),
+            usernameStore: localStore1,
+        )
+        let manager2 = SVRAuthCredentialManager(
+            credentialStores: [localStore2, cloudStore].map(SVRAuthCredentialLocalStore.init(kvStore:)),
+            usernameStore: localStore2,
+        )
+
+        // These are used to allow reading from individual stores.
+        let localOnly1 = SVRAuthCredentialManager(
+            credentialStores: [SVRAuthCredentialLocalStore(kvStore: localStore1)],
+            usernameStore: localStore1,
+        )
+        let localOnly2 = SVRAuthCredentialManager(
+            credentialStores: [SVRAuthCredentialLocalStore(kvStore: localStore2)],
+            usernameStore: localStore2,
+        )
+        let cloudOnly = SVRAuthCredentialManager(
+            credentialStores: [SVRAuthCredentialLocalStore(kvStore: cloudStore)],
+            usernameStore: KeyValueStore(collection: ""),
+        )
+
+        func getUsernames(_ manager: SVRAuthCredentialManager) -> Set<String> {
+            return Set(db.read { tx in
+                return manager.getAuthCredentials(tx).map(\.credential.username)
+            })
+        }
+
+        // Store a credential on Device 1.
+        let username1 = Randomness.generateRandomBytes(10).hexadecimalString
+        db.write { tx in
+            let credential = SVR2AuthCredential(credential: RemoteAttestationAuth(username: username1, password: "asdf"))
+            manager1.storeAuthCredentialForCurrentUsername(credential, tx)
+        }
+        // Store a credential on Device 2.
+        let username2 = Randomness.generateRandomBytes(10).hexadecimalString
+        db.write { tx in
+            let credential = SVR2AuthCredential(credential: RemoteAttestationAuth(username: username2, password: "asdf"))
+            manager2.storeAuthCredentialForCurrentUsername(credential, tx)
+        }
+
+        // At this point, both credentials are accessible.
+        #expect(getUsernames(manager1).contains(username1))
+        #expect(getUsernames(cloudOnly).contains(username1))
+        #expect(getUsernames(localOnly1).contains(username1))
+        #expect(getUsernames(manager2).contains(username2))
+        #expect(getUsernames(cloudOnly).contains(username2))
+        #expect(getUsernames(localOnly2).contains(username2))
+
+        // Remove the credential on Device 1.
+        db.write { tx in
+            manager1.removeSVR2CredentialsForCurrentUser(tx)
+        }
+        // It's totally gone from everything Device 1 can access.
+        #expect(!getUsernames(manager1).contains(username1))
+        #expect(!getUsernames(cloudOnly).contains(username1))
+        #expect(!getUsernames(localOnly1).contains(username1))
+        // But Device 2's credential is still accessible to Device 2.
+        #expect(getUsernames(manager2).contains(username2))
+        #expect(getUsernames(cloudOnly).contains(username2))
+        #expect(getUsernames(localOnly2).contains(username2))
+
+        // Store a new credential on Device 2.
+        db.write { tx in
+            let credential = SVR2AuthCredential(credential: RemoteAttestationAuth(username: username2, password: "1234"))
+            manager2.storeAuthCredentialForCurrentUsername(credential, tx)
+        }
+        // And ensure that username1 is still gone.
+        #expect(!getUsernames(manager1).contains(username1))
+        #expect(!getUsernames(cloudOnly).contains(username1))
+        #expect(!getUsernames(localOnly1).contains(username1))
+        #expect(getUsernames(manager2).contains(username2))
+        #expect(getUsernames(cloudOnly).contains(username2))
+        #expect(getUsernames(localOnly2).contains(username2))
+    }
+}
+
 struct SVRAuthCredentialConsolidationTest {
 
     typealias AuthCredential = SVRAuthCredentialManager.AuthCredential

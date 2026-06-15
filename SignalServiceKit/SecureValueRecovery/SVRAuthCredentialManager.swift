@@ -14,7 +14,7 @@ extension SVR {
 /// May simultaneously store credentials for multiple Signal accounts. This
 /// can happen if multiple Signal accounts share an iCloud account.
 ///
-/// Credentials are mirrored across all `credentialStores`. Typically there
+/// Credentials are stored across all `credentialStores`. Typically there
 /// are two stores: a local KeyValueStore and an encrypted iCloud container.
 ///
 /// They are written to local storage so we can reuse them locally if iCloud
@@ -90,7 +90,11 @@ public struct SVRAuthCredentialManager {
     ///
     /// Returns up to `SVR.maxSVRAuthCredentialsBackedUp` credentials.
     public func getAuthCredentials(_ transaction: DBReadTransaction) -> [SVR2AuthCredential] {
-        let consolidatedCredentials = Self.consolidateCredentials(allUnsortedCredentials: self.getCredentials(tx: transaction))
+        var credentials = [AuthCredential]()
+        for credentialStore in credentialStores {
+            credentials.append(contentsOf: getCredentials(in: credentialStore, tx: transaction))
+        }
+        let consolidatedCredentials = Self.consolidateCredentials(allUnsortedCredentials: credentials)
         return consolidatedCredentials.map { $0.toSVR2Credential() }
     }
 
@@ -143,26 +147,20 @@ public struct SVRAuthCredentialManager {
         usernameStore.setString(newValue, key: Self.usernameKey, transaction: transaction)
     }
 
-    private func getCredentials(tx: DBReadTransaction) -> [AuthCredential] {
-        var results = [AuthCredential]()
-        for credentialStore in credentialStores {
-            guard let encodedValue = credentialStore.getCredentialData(tx: tx) else {
-                continue
-            }
-            guard let credentials = try? JSONDecoder().decode([AuthCredential].self, from: encodedValue) else {
-                owsFailDebug("couldn't decode auth credential(s)")
-                continue
-            }
-            results.append(contentsOf: credentials)
+    private func getCredentials(in credentialStore: any SVRAuthCredentialStore, tx: DBReadTransaction) -> [AuthCredential] {
+        guard let encodedValue = credentialStore.getCredentialData(tx: tx) else {
+            return []
         }
-        return results
+        guard let credentials = try? JSONDecoder().decode([AuthCredential].self, from: encodedValue) else {
+            owsFailDebug("couldn't decode auth credential(s)")
+            return []
+        }
+        return credentials
     }
 
-    private func setCredentials(_ newValue: [AuthCredential], tx: DBWriteTransaction) {
+    private func setCredentials(_ newValue: [AuthCredential], in credentialStore: any SVRAuthCredentialStore, tx: DBWriteTransaction) {
         let encodedValue = failIfThrows { try JSONEncoder().encode(newValue) }
-        for credentialStore in credentialStores {
-            credentialStore.setCredentialData(encodedValue, tx: tx)
-        }
+        credentialStore.setCredentialData(encodedValue, tx: tx)
     }
 
     // MARK: - Helpers
@@ -171,12 +169,18 @@ public struct SVRAuthCredentialManager {
         _ transaction: DBWriteTransaction,
         _ block: (inout [AuthCredential]) -> Void,
     ) {
-        var credentials = getCredentials(tx: transaction)
-        credentials = Self.consolidateCredentials(allUnsortedCredentials: credentials)
-        block(&credentials)
-        // Consolidate again so that we sort and truncate.
-        credentials = Self.consolidateCredentials(allUnsortedCredentials: credentials)
-        setCredentials(credentials, tx: transaction)
+        // Apply `block` independently to each credentialStore. If Store A contains
+        // a credential that was deleted from Store B, adding an unrelated
+        // credential could resurrect the credential that was deleted, and that
+        // shouldn't happen. See also testTwoSignalOneCloud.
+        for credentialStore in credentialStores {
+            var credentials = getCredentials(in: credentialStore, tx: transaction)
+            credentials = Self.consolidateCredentials(allUnsortedCredentials: credentials)
+            block(&credentials)
+            // Consolidate again so that we sort and truncate.
+            credentials = Self.consolidateCredentials(allUnsortedCredentials: credentials)
+            setCredentials(credentials, in: credentialStore, tx: transaction)
+        }
     }
 
     // Exposed for testing.
