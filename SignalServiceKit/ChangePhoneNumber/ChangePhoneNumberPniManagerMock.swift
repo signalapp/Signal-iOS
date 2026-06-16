@@ -50,7 +50,7 @@ public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
         lastResortPreKey: Result<LibSignalClient.KyberPreKeyRecord, DecodingError>,
         registrationId: UInt32,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         // do nothing
     }
 }

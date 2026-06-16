@@ -102,7 +102,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         let (_, pendingState) = await generateIdentity(e164: e164).unwrapSuccess
 
         db.write { transaction in
-            try! changeNumberPniManager.finalizePniIdentity(
+            changeNumberPniManager.finalizePniIdentity(
                 identityKey: pendingState.pniIdentityKeyPair,
                 signedPreKey: .success(pendingState.localDevicePniSignedPreKeyRecord),
                 lastResortPreKey: .success(pendingState.localDevicePniPqLastResortPreKeyRecord),

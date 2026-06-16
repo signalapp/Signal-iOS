@@ -1365,17 +1365,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         case .changingNumber(let changeNumberState):
             if let pniState = changeNumberState.pniState {
-                let result = await finalizeChangeNumberPniState(
+                await finalizeChangeNumberPniState(
                     changeNumberState: changeNumberState,
                     pniState: pniState,
                     accountIdentity: accountIdentity,
                 )
-                switch result {
-                case .success:
-                    break
-                case .genericError:
-                    return .showErrorSheet(.genericError)
-                }
             }
             return await updateAccountAttributesAndFinish(accountIdentity: accountIdentity, failureCount: 0)
         }
@@ -4278,59 +4272,48 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    private enum FinalizeChangeNumberResult {
-        case success
-        case genericError
-    }
-
     private func finalizeChangeNumberPniState(
         changeNumberState: Mode.ChangeNumberState,
         pniState: Mode.ChangeNumberState.PendingPniState,
         accountIdentity: AccountIdentity,
-    ) async -> FinalizeChangeNumberResult {
+    ) async {
         logger.info("")
 
-        do {
-            try await self.db.awaitableWrite { tx in
-                try self.deps.changeNumberPniManager.finalizePniIdentity(
-                    identityKey: pniState.pniIdentityKeyPair,
-                    signedPreKey: pniState.localDevicePniSignedPreKeyRecord,
-                    lastResortPreKey: pniState.localDevicePniPqLastResortPreKeyRecord,
-                    registrationId: pniState.localDevicePniRegistrationId,
-                    tx: tx,
-                )
-                self._unsafeToModify_mode = .changingNumber(self.loader.savePendingChangeNumber(
-                    oldState: changeNumberState,
-                    pniState: nil,
-                    transaction: tx,
-                ))
+        await self.db.awaitableWrite { tx in
+            self.deps.changeNumberPniManager.finalizePniIdentity(
+                identityKey: pniState.pniIdentityKeyPair,
+                signedPreKey: pniState.localDevicePniSignedPreKeyRecord,
+                lastResortPreKey: pniState.localDevicePniPqLastResortPreKeyRecord,
+                registrationId: pniState.localDevicePniRegistrationId,
+                tx: tx,
+            )
+            self._unsafeToModify_mode = .changingNumber(self.loader.savePendingChangeNumber(
+                oldState: changeNumberState,
+                pniState: nil,
+                transaction: tx,
+            ))
 
-                logger.info(
-                    """
-                    Recording new phone number
-                    localAci: \(changeNumberState.localAci),
-                    localE164: \(changeNumberState.oldE164.stringValue),
-                    serviceAci: \(accountIdentity.aci),
-                    servicePni: \(accountIdentity.pni),
-                    serviceE164: \(accountIdentity.e164.stringValue)")
-                    """,
-                )
+            logger.info(
+                """
+                Recording new phone number
+                localAci: \(changeNumberState.localAci),
+                localE164: \(changeNumberState.oldE164.stringValue),
+                serviceAci: \(accountIdentity.aci),
+                servicePni: \(accountIdentity.pni),
+                serviceE164: \(accountIdentity.e164.stringValue)")
+                """,
+            )
 
-                // We do these here, and not in export state, so that we don't risk
-                // syncing out-of-date state to storage service.
-                self.deps.registrationStateChangeManager.didUpdateLocalPhoneNumber(
-                    accountIdentity.e164,
-                    aci: accountIdentity.aci,
-                    pni: accountIdentity.pni,
-                    tx: tx,
-                )
-                // Make sure we update our local account.
-                self.deps.storageServiceManager.recordPendingLocalAccountUpdates()
-            }
-            return .success
-        } catch {
-            logger.error("Failed to finalize change number state: \(error)")
-            return .genericError
+            // We do these here, and not in export state, so that we don't risk
+            // syncing out-of-date state to storage service.
+            self.deps.registrationStateChangeManager.didUpdateLocalPhoneNumber(
+                accountIdentity.e164,
+                aci: accountIdentity.aci,
+                pni: accountIdentity.pni,
+                tx: tx,
+            )
+            // Make sure we update our local account.
+            self.deps.storageServiceManager.recordPendingLocalAccountUpdates()
         }
     }
 
@@ -4718,7 +4701,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             break
         case .changingNumber(let changeNumberState):
             if let pniState = changeNumberState.pniState {
-                _ = await finalizeChangeNumberPniState(
+                await finalizeChangeNumberPniState(
                     changeNumberState: changeNumberState,
                     pniState: pniState,
                     accountIdentity: accountIdentity,

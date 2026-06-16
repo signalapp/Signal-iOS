@@ -51,7 +51,7 @@ public protocol ChangePhoneNumberPniManager {
         lastResortPreKey: Result<LibSignalClient.KyberPreKeyRecord, DecodingError>,
         registrationId: UInt32,
         tx: DBWriteTransaction,
-    ) throws
+    )
 }
 
 // MARK: - Change-Number PNI types
@@ -174,7 +174,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         lastResortPreKey: Result<LibSignalClient.KyberPreKeyRecord, DecodingError>,
         registrationId: UInt32,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         logger.info("Finalizing PNI identity.")
 
         // Store pending state in the right places
