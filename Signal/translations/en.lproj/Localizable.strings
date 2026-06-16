@@ -953,7 +953,7 @@
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED" = "You have %1$@ of media that's not on this device.";
 
 /* Subtitle for a view explaining that downloads are available but not running, and the user's paid subscription is expiring. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "You have %1$@ of media that's not on this device. Without a paid subscription media can't be offloaded.";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "You have %1$@ of media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Back Up Using Cellular";
