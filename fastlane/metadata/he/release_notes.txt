@@ -1,2 +1,2 @@
-• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
-• We also fixed a bug that prevented link previews from working correctly in Stories.
+• הגדרת אופטימיזציה חדשה יכולה לאחסן באופן מאובטח קבצים מצורפים ישנים יותר כדי לעזור לפנות שטח אחסון בטלפון שלך עם תוכנית גיבוי התשלום. ניתן להוריד מחדש את הקבצים המוצפנים מקצה לקצה הללו מהגיבוי האישי שלך בכל עת.
+• תיקנו גם באג שמנע מתצוגה מקדימה של לינקים לפעול כהלכה בסטוריז.

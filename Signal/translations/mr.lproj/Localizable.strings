@@ -581,10 +581,10 @@
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "रीकव्हरी की बरोबर आहे. आपली की सुरक्षित ठेवा.";
 
 /* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
-"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "<bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal. Store your recovery key somewhere safe and never share it with anyone.";
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "<bold>Signal कधीही तुमची रीकव्हरी की मागण्यासाठी</bold> तुम्हाला संदेश पाठवणार नाही. Signal असल्याची बतावणी करणाऱ्या कोणत्याही चॅटला उत्तर देऊ नका. तुमची रीकव्हरी की कुठेतरी सुरक्षित ठिकाणी साठवून ठेवा आणि ती कधीही कोणालाही देऊ नका.";
 
 /* Title for a warning sheet shown to discourage the user from sharing their 'Recovery Key'. */
-"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "Do Not Share Recovery Key";
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "रीकव्हरी की कोणालाही देऊ नका";
 
 /* Button label for action sheet to cancel backup onboarding */
 "BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "बॅकअप सेटअप मधून बाहेर पडा";
@@ -2351,22 +2351,22 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "चॅट हटवायचा?";
 
 /* Title for the button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that dismisses the sheet without pasting the key. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Don’t Share";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "देऊ नका";
 
 /* Message body for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, warning them not to share it. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_MESSAGE" = "Do not share your recovery key with anyone. This will let them take over your account. Signal will never message you for your recovery key. Never respond to a chat pretending to be Signal.";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_MESSAGE" = "तुमची रीकव्हरी की कोणालाही देऊ नका. असे केल्यास त्यांना तुमच्या खात्याचा ताबा घेता येईल. Signal कधीही तुमची रीकव्हरी की मागण्यासाठी तुम्हाला संदेश पाठवणार नाही. Signal असल्याची बतावणी करणाऱ्या कोणत्याही चॅटला उत्तर देऊ नका.";
 
 /* Title for the destructive button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that proceeds with the paste. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_PASTE_BUTTON_TITLE" = "Paste Key";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_PASTE_BUTTON_TITLE" = "की पेस्ट करा";
 
 /* Title for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_TITLE" = "Do Not Share Recovery Key";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_TITLE" = "रीकव्हरी की कोणालाही देऊ नका";
 
 /* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that dismisses the sheet without pasting the key. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Do Not Share Key";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "की देऊ नका";
 
 /* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that acknowledges the warning and proceeds with the paste. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_SHARE_BUTTON_TITLE" = "Share Key";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_SHARE_BUTTON_TITLE" = "की द्या";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "…साठी ही चॅट मूक करा";

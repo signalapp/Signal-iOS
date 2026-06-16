@@ -1,2 +1,2 @@
-• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
-• We also fixed a bug that prevented link previews from working correctly in Stories.
+• W płatnej usłudze tworzenia kopii zapasowych możesz teraz włączyć nowe ustawienie optymalizacji pamięci na urządzeniu. Pozwala ono bezpiecznie przenieść starsze załączniki z aplikacji Signal do kopii zapasowej i zwolnić miejsce w telefonie. Pliki są szyfrowane metodą end-to-end i w każdej chwili możesz je pobrać ze swojej kopii zapasowej z powrotem na urządzenie.
+• Naprawiliśmy też błąd, przez który podgląd linków w relacjach nie wyświetlał się prawidłowo.

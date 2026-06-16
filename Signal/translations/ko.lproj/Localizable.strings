@@ -581,10 +581,10 @@
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "복구 키가 맞습니다. 키를 안전하게 보관하세요.";
 
 /* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
-"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "<bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal. Store your recovery key somewhere safe and never share it with anyone.";
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "Signal은 사용자에게 복구 키를 요구하는 메시지를 <bold>절대</bold> 보내지 않습니다. Signal을 사칭하는 채팅에 절대 답장하지 마세요. 또한, 복구 키는 안전한 곳에 보관해 두고 다른 사람과 절대 공유하지 마세요.";
 
 /* Title for a warning sheet shown to discourage the user from sharing their 'Recovery Key'. */
-"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "Do Not Share Recovery Key";
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "복구 키를 공유하지 마세요";
 
 /* Button label for action sheet to cancel backup onboarding */
 "BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "백업 설정 종료";
@@ -2351,22 +2351,22 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "대화를 삭제할까요?";
 
 /* Title for the button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that dismisses the sheet without pasting the key. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Don’t Share";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "공유하지 않기";
 
 /* Message body for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, warning them not to share it. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_MESSAGE" = "Do not share your recovery key with anyone. This will let them take over your account. Signal will never message you for your recovery key. Never respond to a chat pretending to be Signal.";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_MESSAGE" = "다른 사람과 복구 키를 공유하지 마세요. 복구 키를 공유하면 다른 사람이 내 계정을 탈취할 수 있습니다. Signal은 사용자에게 복구 키를 요구하는 메시지를 절대 보내지 않습니다. Signal을 사칭하는 채팅에 절대 답장하지 마세요.";
 
 /* Title for the destructive button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that proceeds with the paste. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_PASTE_BUTTON_TITLE" = "Paste Key";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_PASTE_BUTTON_TITLE" = "복구 키 붙여넣기";
 
 /* Title for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_TITLE" = "Do Not Share Recovery Key";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_TITLE" = "복구 키를 공유하지 마세요";
 
 /* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that dismisses the sheet without pasting the key. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Do Not Share Key";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "복구 키 공유하지 않기";
 
 /* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that acknowledges the warning and proceeds with the paste. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_SHARE_BUTTON_TITLE" = "Share Key";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_SHARE_BUTTON_TITLE" = "복구 키 공유하기";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "다음 기간 동안 이 대화 알림 끄기";
