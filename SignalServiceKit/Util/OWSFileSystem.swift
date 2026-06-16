@@ -401,10 +401,25 @@ public enum OWSFileSystem {
     public static func freeSpaceInBytes(forPath path: URL) throws -> UInt64 {
         let resourceValues = try path.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
         guard let result = resourceValues.volumeAvailableCapacityForImportantUsage else {
-            throw OWSGenericError("Could not determine remaining disk space")
+            throw OWSAssertionError("Missing expected resource value!")
         }
         guard result >= 0 else {
-            throw OWSGenericError("Got negative remaining disk space!")
+            throw OWSAssertionError("Got negative remaining disk space!")
+        }
+        return UInt64(result)
+    }
+
+    /// Get the total capacity for a path's volume in bytes.
+    ///
+    /// This is the full size of the volume, including occupied space (e.g.,
+    /// ~16GB for a 16GB device), not just the space available to the app.
+    public static func totalSpaceInBytes(forPath path: URL) throws -> UInt64 {
+        let resourceValues = try path.resourceValues(forKeys: [.volumeTotalCapacityKey])
+        guard let result = resourceValues.volumeTotalCapacity else {
+            throw OWSAssertionError("Missing expected resource value!")
+        }
+        guard result >= 0 else {
+            throw OWSAssertionError("Got negative remaining disk space!")
         }
         return UInt64(result)
     }

@@ -9,6 +9,10 @@ import SignalUI
 @MainActor
 class ChatListFYISheetCoordinator {
     fileprivate enum FYISheet {
+        struct SMSVerificationCodeSent {
+            let timestampMs: UInt64
+        }
+
         struct BadgeThanks {
             let redemptionSuccess: DonationReceiptCredentialRedemptionSuccess
             let successMode: DonationReceiptCredentialResultStore.Mode
@@ -44,12 +48,13 @@ class ChatListFYISheetCoordinator {
 
         struct KeyTransparencySelfCheckFailed {}
 
-        struct SMSVerificationCodeSent {
-            let timestampMs: UInt64
-        }
-
         struct BackupArchiveError {}
 
+        struct LowDiskSpaceWarning {
+            let now: Date
+        }
+
+        case smsVerificationCodeSent(SMSVerificationCodeSent)
         case badgeThanks(BadgeThanks)
         case badgeIssue(BadgeIssue)
         case badgeExpiration(BadgeExpiration)
@@ -57,8 +62,8 @@ class ChatListFYISheetCoordinator {
         case backupSubscriptionExpired(BackupSubscriptionExpired)
         case backupSubscriptionFailedToRenew(BackupSubscriptionFailedToRenew)
         case keyTransparencySelfCheckFailed(KeyTransparencySelfCheckFailed)
-        case smsVerificationCodeSent(SMSVerificationCodeSent)
         case backupArchiveError(BackupArchiveError)
+        case lowDiskSpaceWarning(LowDiskSpaceWarning)
     }
 
     private let backupArchiveErrorStore: BackupArchiveErrorStore
@@ -70,6 +75,7 @@ class ChatListFYISheetCoordinator {
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     private let donationSubscriptionManager: DonationSubscriptionManager
     private let keyTransparencyStore: KeyTransparencyStore
+    private let lowDiskSpaceWarningManager: LowDiskSpaceWarningManager
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
     private let safetyTipsManager: SafetyTipsManager
@@ -84,6 +90,7 @@ class ChatListFYISheetCoordinator {
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         donationSubscriptionManager: DonationSubscriptionManager,
         keyTransparencyStore: KeyTransparencyStore,
+        lowDiskSpaceWarningManager: LowDiskSpaceWarningManager,
         networkManager: NetworkManager,
         profileManager: ProfileManager,
     ) {
@@ -96,6 +103,7 @@ class ChatListFYISheetCoordinator {
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
         self.donationSubscriptionManager = donationSubscriptionManager
         self.keyTransparencyStore = keyTransparencyStore
+        self.lowDiskSpaceWarningManager = lowDiskSpaceWarningManager
         self.networkManager = networkManager
         self.profileManager = profileManager
         self.safetyTipsManager = SafetyTipsManager()
@@ -160,6 +168,8 @@ class ChatListFYISheetCoordinator {
             return .keyTransparencySelfCheckFailed(FYISheet.KeyTransparencySelfCheckFailed())
         } else if backupArchiveErrorStore.hasError(tx: tx) {
             return .backupArchiveError(FYISheet.BackupArchiveError())
+        } else if lowDiskSpaceWarningManager.getNeedsWarning(now: now, tx: tx) {
+            return .lowDiskSpaceWarning(FYISheet.LowDiskSpaceWarning(now: now))
         } else {
             return nil
         }
@@ -292,6 +302,8 @@ class ChatListFYISheetCoordinator {
             await _present(keyTransparencySelfCheckFailed: keyTransparencySelfCheckFailed, from: chatListViewController)
         case .backupArchiveError(let backupArchiveError):
             await _present(backupArchiveError: backupArchiveError, from: chatListViewController)
+        case .lowDiskSpaceWarning(let lowDiskSpaceWarning):
+            await _present(lowDiskSpaceWarning: lowDiskSpaceWarning, from: chatListViewController)
         }
     }
 
@@ -584,6 +596,25 @@ class ChatListFYISheetCoordinator {
             }
         })
     }
+
+    private func _present(
+        lowDiskSpaceWarning: FYISheet.LowDiskSpaceWarning,
+        from chatListViewController: ChatListViewController,
+    ) async {
+        let logger = PrefixedLogger(prefix: "[DiskSpace]")
+        logger.warn("Showing LowDiskSpaceWarning FYI sheet.")
+
+        let warningSheet = LowDiskSpaceWarningHeroSheet()
+
+        chatListViewController.present(warningSheet, animated: true) { [self] in
+            db.write { tx in
+                lowDiskSpaceWarningManager.setShowedWarning(
+                    now: lowDiskSpaceWarning.now,
+                    tx: tx,
+                )
+            }
+        }
+    }
 }
 
 // MARK: - ChatListViewController: BadgeIssueSheetDelegate
@@ -800,6 +831,30 @@ private final class BackupArchiveErrorHeroSheet: HeroSheetViewController {
                 title: CommonStrings.notNowButton,
                 style: .secondary,
             ),
+        )
+    }
+}
+
+// MARK: -
+
+private final class LowDiskSpaceWarningHeroSheet: HeroSheetViewController {
+    init() {
+        super.init(
+            hero: .circleIcon(
+                icon: .errorTriangle,
+                iconSize: 40,
+                tintColor: .Signal.red,
+                backgroundColor: UIColor(rgbHex: 0xF8E0D9),
+            ),
+            title: OWSLocalizedString(
+                "LOW_DISK_SPACE_WARNING_SHEET_TITLE",
+                comment: "Title for a sheet warning the user that their device is low on storage space.",
+            ),
+            body: OWSLocalizedString(
+                "LOW_DISK_SPACE_WARNING_SHEET_MESSAGE",
+                comment: "Message for a sheet warning the user that their device is low on storage space.",
+            ),
+            primaryButton: .dismissing(title: CommonStrings.acknowledgeButton),
         )
     }
 }

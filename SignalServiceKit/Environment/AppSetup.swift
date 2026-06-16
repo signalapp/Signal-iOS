@@ -1299,6 +1299,10 @@ extension AppSetup.GlobalsContinuation {
             udManager: udManager,
         )
 
+        let lowDiskSpaceWarningManager = LowDiskSpaceWarningManager(
+            db: db,
+        )
+
         let incomingPniChangeNumberProcessor = IncomingPniChangeNumberProcessorImpl(
             identityManager: identityManager,
             pniProtocolStore: pniProtocolStore,
@@ -1792,6 +1796,7 @@ extension AppSetup.GlobalsContinuation {
             accountKeyStore: accountKeyStore,
             localProfileChecker: localProfileChecker,
             localUsernameManager: localUsernameManager,
+            lowDiskSpaceWarningManager: lowDiskSpaceWarningManager,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             messageStickerManager: messageStickerManager,
             nicknameManager: nicknameManager,

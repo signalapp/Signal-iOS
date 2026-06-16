@@ -140,6 +140,7 @@ public class DependenciesBridge {
     public let accountKeyStore: AccountKeyStore
     let localProfileChecker: LocalProfileChecker
     public let localUsernameManager: LocalUsernameManager
+    public let lowDiskSpaceWarningManager: LowDiskSpaceWarningManager
     public let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
     public let messageStickerManager: MessageStickerManager
     public let nicknameManager: any NicknameManager
@@ -284,6 +285,7 @@ public class DependenciesBridge {
         accountKeyStore: AccountKeyStore,
         localProfileChecker: LocalProfileChecker,
         localUsernameManager: LocalUsernameManager,
+        lowDiskSpaceWarningManager: LowDiskSpaceWarningManager,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
         messageStickerManager: MessageStickerManager,
         nicknameManager: any NicknameManager,
@@ -427,6 +429,7 @@ public class DependenciesBridge {
         self.accountKeyStore = accountKeyStore
         self.localProfileChecker = localProfileChecker
         self.localUsernameManager = localUsernameManager
+        self.lowDiskSpaceWarningManager = lowDiskSpaceWarningManager
         self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
         self.messageStickerManager = messageStickerManager
         self.nicknameManager = nicknameManager

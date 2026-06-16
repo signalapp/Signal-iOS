@@ -263,6 +263,7 @@ extension ChatListViewController {
     private func applicationDidBecomeActive(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
+        startMonitoringDiskSpace()
         reconcileExperienceUpgrades()
         updateShouldBeUpdatingView()
     }
@@ -271,6 +272,7 @@ extension ChatListViewController {
     private func applicationWillResignActive(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
+        stopMonitoringDiskSpace()
         updateShouldBeUpdatingView()
     }
 

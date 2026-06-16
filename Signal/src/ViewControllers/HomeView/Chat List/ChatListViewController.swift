@@ -102,6 +102,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         updatePaymentReminderView()
         updateUsernameReminderView()
         updateTableViewPaddingIfNeeded()
+        startMonitoringDiskSpace()
         observeNotifications()
     }
 
@@ -366,6 +367,20 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         ExperienceUpgradeManager.reconcilePresentedExperienceUpgrade(fromViewController: self)
     }
 
+    // MARK: - Disk Space
+
+    @objc
+    func startMonitoringDiskSpace() {
+        let lowDiskSpaceWarningManager = DependenciesBridge.shared.lowDiskSpaceWarningManager
+        lowDiskSpaceWarningManager.startMonitoringDiskSpace()
+    }
+
+    @objc
+    func stopMonitoringDiskSpace() {
+        let lowDiskSpaceWarningManager = DependenciesBridge.shared.lowDiskSpaceWarningManager
+        lowDiskSpaceWarningManager.stopMonitoringDiskSpace()
+    }
+
     // MARK: - FYI sheets
 
     @objc
@@ -380,6 +395,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             donationReceiptCredentialResultStore: DependenciesBridge.shared.donationReceiptCredentialResultStore,
             donationSubscriptionManager: DependenciesBridge.shared.donationSubscriptionManager,
             keyTransparencyStore: KeyTransparencyStore(),
+            lowDiskSpaceWarningManager: DependenciesBridge.shared.lowDiskSpaceWarningManager,
             networkManager: SSKEnvironment.shared.networkManagerRef,
             profileManager: SSKEnvironment.shared.profileManagerRef,
         )
