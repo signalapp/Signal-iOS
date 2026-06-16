@@ -15,7 +15,7 @@ public protocol RegistrationCoordinatorLoaderDelegate: AnyObject {
         oldState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
         pniState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniState?,
         transaction: DBWriteTransaction,
-    ) throws -> RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState
+    ) -> RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState
 }
 
 public class RegistrationCoordinatorImpl: RegistrationCoordinator {
@@ -4299,7 +4299,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     registrationId: pniState.localDevicePniRegistrationId,
                     tx: tx,
                 )
-                self._unsafeToModify_mode = .changingNumber(try self.loader.savePendingChangeNumber(
+                self._unsafeToModify_mode = .changingNumber(self.loader.savePendingChangeNumber(
                     oldState: changeNumberState,
                     pniState: nil,
                     transaction: tx,
@@ -4464,16 +4464,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case .reglockFailure, .rejectedVerificationMethod, .retryAfter:
                     // Explicit rejection by the server, we can safely
                     // wipe our local PNI state and regenerate when we retry.
-                    do {
-                        try db.write { tx in
-                            self._unsafeToModify_mode = .changingNumber(try loader.savePendingChangeNumber(
-                                oldState: changeNumberState,
-                                pniState: nil,
-                                transaction: tx,
-                            ))
-                        }
-                    } catch {
-                        return .showErrorSheet(.genericError)
+                    db.write { tx in
+                        self._unsafeToModify_mode = .changingNumber(loader.savePendingChangeNumber(
+                            oldState: changeNumberState,
+                            pniState: nil,
+                            transaction: tx,
+                        ))
                     }
                 case .deviceTransferPossible:
                     owsFailBeta("Should't get device transfer response on change number request.")
@@ -4601,14 +4597,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .failure:
             return .pniStateError
         case .success(let pniParams, let pniPendingState):
-            return await makeChangeNumberRequest(
+            return .serviceResponse(await makeChangeNumberRequest(
                 e164: e164,
                 verificationMethod: verificationMethod,
                 reglockToken: reglockToken,
                 changeNumberState: changeNumberState,
                 pniPendingState: pniPendingState,
                 pniParams: pniParams,
-            )
+            ))
         }
     }
 
@@ -4620,7 +4616,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
         pniPendingState: ChangePhoneNumberPni.PendingState,
         pniParams: PniDistribution.Parameters,
-    ) async -> ChangeNumberResult {
+    ) async -> AccountResponse {
         logger.info("")
 
         // Process all messages first. The caller doesn't invoke this method when
@@ -4628,19 +4624,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // "pniState" is set. So it's safe to always wait here.
         await deps.messageProcessor.waitForFetchingAndProcessing().awaitable()
 
-        do {
-            try db.write { tx in
-                self._unsafeToModify_mode = .changingNumber(try self.loader.savePendingChangeNumber(
-                    oldState: changeNumberState,
-                    pniState: pniPendingState.asRegPniState(),
-                    transaction: tx,
-                ))
-            }
-        } catch {
-            return .pniStateError
+        db.write { tx in
+            self._unsafeToModify_mode = .changingNumber(self.loader.savePendingChangeNumber(
+                oldState: changeNumberState,
+                pniState: pniPendingState.asRegPniState(),
+                transaction: tx,
+            ))
         }
 
-        return .serviceResponse(await Service.makeChangeNumberRequest(
+        return await Service.makeChangeNumberRequest(
             verificationMethod,
             e164: e164,
             reglockToken: reglockToken,
@@ -4648,7 +4640,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             pniChangeNumberParameters: pniParams,
             networkManager: deps.networkManager,
             logger: logger,
-        ))
+        )
     }
 
     @MainActor
@@ -4689,16 +4681,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             } else {
                 // We had an in progress change number, but we arent on that number now.
                 // pretend it never happened.
-                do {
-                    try db.write { tx in
-                        _unsafeToModify_mode = .changingNumber(try loader.savePendingChangeNumber(
-                            oldState: changeNumberState,
-                            pniState: nil,
-                            transaction: tx,
-                        ))
-                    }
-                } catch {
-                    return .showErrorSheet(.genericError)
+                db.write { tx in
+                    _unsafeToModify_mode = .changingNumber(loader.savePendingChangeNumber(
+                        oldState: changeNumberState,
+                        pniState: nil,
+                        transaction: tx,
+                    ))
                 }
                 return await nextStep()
             }

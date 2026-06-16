@@ -164,10 +164,12 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
             oldState: Mode.ChangeNumberState,
             pniState: Mode.ChangeNumberState.PendingPniState?,
             transaction: DBWriteTransaction,
-        ) throws -> Mode.ChangeNumberState {
+        ) -> Mode.ChangeNumberState {
             var newState = oldState
             newState.pniState = pniState
-            try loader.kvStore.setCodable(Mode.changingNumber(newState), key: Constants.modeKey, transaction: transaction)
+            failIfThrows {
+                try loader.kvStore.setCodable(Mode.changingNumber(newState), key: Constants.modeKey, transaction: transaction)
+            }
             let messagePipelineSupervisor = loader.deps.messagePipelineSupervisor
             let preKeyManager = loader.deps.preKeyManager
             transaction.addSyncCompletion {
