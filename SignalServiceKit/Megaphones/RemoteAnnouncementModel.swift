@@ -208,6 +208,8 @@ extension RemoteAnnouncementModel {
         /// announcement is presented.
         public let callToActionText: String?
 
+        public let bodyRanges: [BodyRange]?
+
         public init(
             id: String,
             title: String,
@@ -217,6 +219,7 @@ extension RemoteAnnouncementModel {
             mediaMimeType: String?,
             linkText: String?,
             callToActionText: String?,
+            bodyRanges: [BodyRange]?,
         ) {
             self.id = id
             self.title = title
@@ -227,6 +230,7 @@ extension RemoteAnnouncementModel {
             self.linkText = linkText
             self.callToActionText = callToActionText
             self.hasImage = false // Will be set later when we download image.
+            self.bodyRanges = bodyRanges
         }
 
         // MARK: Codable
@@ -241,6 +245,7 @@ extension RemoteAnnouncementModel {
             case linkText
             case callToActionText
             case hasImage
+            case bodyRanges
         }
 
         public init(from decoder: Decoder) throws {
@@ -256,6 +261,7 @@ extension RemoteAnnouncementModel {
             linkText = try container.decodeIfPresent(String.self, forKey: .linkText)
             callToActionText = try container.decodeIfPresent(String.self, forKey: .callToActionText)
             hasImage = try container.decode(Bool.self, forKey: .hasImage)
+            bodyRanges = try container.decodeIfPresent([BodyRange].self, forKey: .bodyRanges)
         }
 
         public func encode(to encoder: Encoder) throws {
@@ -286,6 +292,10 @@ extension RemoteAnnouncementModel {
             }
 
             try container.encode(hasImage, forKey: .hasImage)
+
+            if let bodyRanges {
+                try container.encode(bodyRanges, forKey: .bodyRanges)
+            }
         }
     }
 }
@@ -345,6 +355,44 @@ public extension RemoteAnnouncementModel.Manifest {
 // MARK: - Parsing translations
 
 public extension RemoteAnnouncementModel.Translation {
+    struct BodyRange: Codable {
+        private static let styleKey = "style"
+        private static let startKey = "start"
+        private static let lengthKey = "length"
+
+        public let style: MessageBodyRanges.SingleStyle
+        public let start: Int
+        public let length: Int
+
+        init?(params: [String: Any]) {
+            guard
+                let style: String = params[Self.styleKey] as? String,
+                let start: Int = params[Self.startKey] as? Int,
+                let length: Int = params[Self.lengthKey] as? Int
+            else {
+                return nil
+            }
+
+            self.start = start
+            self.length = length
+
+            if style == "bold" {
+                self.style = .bold
+            } else if style == "italic" {
+                self.style = .italic
+            } else if style == "spoiler" {
+                self.style = .spoiler
+            } else if style == "strikethrough" {
+                self.style = .strikethrough
+            } else if style == "mono" {
+                self.style = .monospace
+            } else {
+                Logger.error("Invalid body range style: \(style)")
+                return nil
+            }
+        }
+    }
+
     private static let uuidKey = "uuid"
     private static let mediaHeightKey = "mediaHeight"
     private static let mediaWidthKey = "mediaWidth"
@@ -354,6 +402,7 @@ public extension RemoteAnnouncementModel.Translation {
     private static let bodyKey = "body"
     private static let linkTextKey = "linkText"
     private static let ctaTextKey = "callToActionText"
+    private static let bodyRangesKey = "bodyRanges"
 
     static func parseFrom(parser: ParamParser) throws -> Self {
         let uuid: String = try parser.required(key: Self.uuidKey)
@@ -376,8 +425,10 @@ public extension RemoteAnnouncementModel.Translation {
         let body: String = try parser.required(key: Self.bodyKey)
         let linkText: String? = try parser.optional(key: Self.linkTextKey)
         let ctaText: String? = try parser.optional(key: Self.ctaTextKey)
-
-        // TODO: [KC] parse and handle bodyRanges
+        let bodyRanges: [BodyRange]? = try (parser.optional(key: Self.bodyRangesKey) as [Any]?)?.compactMap {
+            guard let bodyRangeDict = $0 as? [String: Any] else { return nil }
+            return BodyRange(params: bodyRangeDict)
+        }
 
         return RemoteAnnouncementModel.Translation(
             id: uuid,
@@ -388,6 +439,7 @@ public extension RemoteAnnouncementModel.Translation {
             mediaMimeType: mediaContentType,
             linkText: linkText,
             callToActionText: ctaText,
+            bodyRanges: bodyRanges,
         )
     }
 }

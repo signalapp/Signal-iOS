@@ -97,12 +97,25 @@ public class RemoteAnnouncementFetcher: RemoteReleaseNotesFetcher<RemoteAnnounce
                 )
             }
 
+            // offset body range by title length plus 2 newlines
+            let bodyRangeOffset = (translation.title as NSString).length + 2
+
+            var messageBodyStyles: [NSRangedValue<MessageBodyRanges.SingleStyle>] = []
+            if let bodyRanges = translation.bodyRanges {
+                for bodyRange in bodyRanges {
+                    messageBodyStyles.append(.init(bodyRange.style, range: NSRange(location: bodyRange.start + bodyRangeOffset, length: bodyRange.length)))
+                }
+            }
+
+            // Always bold the title.
+            messageBodyStyles.append(.init(.bold, range: NSRange(location: 0, length: (translation.title as NSString).length)))
+
             let validatedMessageBody = try await attachmentContentValidator.prepareOversizeTextIfNeeded(
                 MessageBody(
                     text: translation.title + "\n\n" + translation.body,
                     ranges: MessageBodyRanges(
                         mentions: [:],
-                        styles: [.init(.bold, range: NSRange(location: 0, length: (translation.title as NSString).length))],
+                        styles: messageBodyStyles,
                     ),
                 ),
             )

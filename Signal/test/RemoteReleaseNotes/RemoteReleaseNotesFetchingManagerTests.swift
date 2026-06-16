@@ -133,6 +133,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
             mediaMimeType: nil,
             linkText: nil,
             callToActionText: nil,
+            bodyRanges: nil,
         )]
 
         let titleBodyCombined = "Put a pin in it\n\nYour most frequently asked questions, dinner reservations, and vacation itineraries are already top of mind. Now they can be top of chat as well.\n\nNow you can pin up to three messages to the top of any 1-1 or group chat to share important information. Simple permissions make it easy to limit pinned messages to group admins, and messages can be pinned forever or for a limited time. Simply tap-and-hold any message and select \"Pin\" to get started."
@@ -156,6 +157,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
             mediaMimeType: nil,
             linkText: nil,
             callToActionText: nil,
+            bodyRanges: nil,
         )]
 
         try await remoteReleaseNotesFetchingManager.syncRemoteReleaseNotes()
@@ -196,6 +198,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
                 mediaMimeType: nil,
                 linkText: nil,
                 callToActionText: nil,
+                bodyRanges: nil,
             ),
             uuid2: RemoteAnnouncementModel.Translation(
                 id: uuid2,
@@ -206,6 +209,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
                 mediaMimeType: nil,
                 linkText: nil,
                 callToActionText: nil,
+                bodyRanges: nil,
             ),
         ]
 
@@ -248,6 +252,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
             mediaMimeType: nil,
             linkText: nil,
             callToActionText: nil,
+            bodyRanges: nil,
         )]
 
         try await remoteReleaseNotesFetchingManager.syncRemoteReleaseNotes()
@@ -290,6 +295,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
                 mediaMimeType: nil,
                 linkText: nil,
                 callToActionText: nil,
+                bodyRanges: nil,
             ),
             uuid2: RemoteAnnouncementModel.Translation(
                 id: uuid2,
@@ -300,6 +306,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
                 mediaMimeType: nil,
                 linkText: nil,
                 callToActionText: nil,
+                bodyRanges: nil,
             ),
         ]
 
@@ -348,6 +355,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
             mediaMimeType: nil,
             linkText: nil,
             callToActionText: nil,
+            bodyRanges: nil,
         )]
 
         try await remoteReleaseNotesFetchingManager.syncRemoteReleaseNotes()
@@ -382,6 +390,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
             mediaMimeType: nil,
             linkText: nil,
             callToActionText: nil,
+            bodyRanges: nil,
         )]
 
         try await remoteReleaseNotesFetchingManager.syncRemoteReleaseNotes()
