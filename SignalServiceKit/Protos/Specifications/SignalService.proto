@@ -811,6 +811,9 @@ message SyncMessage {
     // }
   }
 
+  message UsernameChange {
+  }
+
   optional Sent sent = 1;
   optional Contacts contacts = 2;
   reserved /*groups*/ 3;
@@ -836,6 +839,7 @@ message SyncMessage {
   optional DeviceNameChange deviceNameChange = 23;
   optional AttachmentBackfillRequest attachmentBackfillRequest = 24;
   optional AttachmentBackfillResponse attachmentBackfillResponse = 25;
+  optional UsernameChange usernameChange = 26;
 }
 
 message AttachmentPointer {

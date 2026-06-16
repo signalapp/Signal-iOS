@@ -2898,6 +2898,7 @@
 		D968B4982C9E1AD1006B14E1 /* SmsLockIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D968B4972C9E1AC3006B14E1 /* SmsLockIconView.swift */; };
 		D968F71E2C34884B00AB318B /* BackupArchiveReleaseNotesRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D968F71D2C34884B00AB318B /* BackupArchiveReleaseNotesRecipientArchiver.swift */; };
 		D9697C162FD78FE400119F72 /* BackupNeverShareRecoveryKeySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9697C152FD78FDD00119F72 /* BackupNeverShareRecoveryKeySheet.swift */; };
+		D9697C182FD8C4A700119F72 /* UsernameChangeSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9697C172FD8C4A300119F72 /* UsernameChangeSyncMessage.swift */; };
 		D96A94A72954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */; };
 		D97046062E81D4240034C05D /* InfoMessageGroupUpdateMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97046052E81D41F0034C05D /* InfoMessageGroupUpdateMigrator.swift */; };
 		D970460A2E81D5C00034C05D /* InfoMessageGroupUpdateMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97046092E81D5BB0034C05D /* InfoMessageGroupUpdateMigratorTest.swift */; };
@@ -7198,6 +7199,7 @@
 		D968B4972C9E1AC3006B14E1 /* SmsLockIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmsLockIconView.swift; sourceTree = "<group>"; };
 		D968F71D2C34884B00AB318B /* BackupArchiveReleaseNotesRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveReleaseNotesRecipientArchiver.swift; sourceTree = "<group>"; };
 		D9697C152FD78FDD00119F72 /* BackupNeverShareRecoveryKeySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupNeverShareRecoveryKeySheet.swift; sourceTree = "<group>"; };
+		D9697C172FD8C4A300119F72 /* UsernameChangeSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameChangeSyncMessage.swift; sourceTree = "<group>"; };
 		D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+MonthlyPaypalDonation.swift"; sourceTree = "<group>"; };
 		D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+Subscriptions.swift"; sourceTree = "<group>"; };
 		D97046052E81D41F0034C05D /* InfoMessageGroupUpdateMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoMessageGroupUpdateMigrator.swift; sourceTree = "<group>"; };
@@ -13410,6 +13412,7 @@
 				D93830732A703968006CDCDE /* LocalUsernameManager.swift */,
 				D93830712A703727006CDCDE /* UsernameApiClient.swift */,
 				D93830842A784210006CDCDE /* UsernameApiClientImpl.swift */,
+				D9697C172FD8C4A300119F72 /* UsernameChangeSyncMessage.swift */,
 				D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */,
 				D93830792A704123006CDCDE /* UsernameLinkManager.swift */,
 				D938307F2A705D64006CDCDE /* UsernameLogger.swift */,
@@ -20095,6 +20098,7 @@
 				F9D5BFCF2979AFF4001737E5 /* URLPathComponents.swift in Sources */,
 				D93830722A703728006CDCDE /* UsernameApiClient.swift in Sources */,
 				D93830852A784210006CDCDE /* UsernameApiClientImpl.swift in Sources */,
+				D9697C182FD8C4A700119F72 /* UsernameChangeSyncMessage.swift in Sources */,
 				D9C2D77E299D750200D79715 /* UsernameEducationManager.swift in Sources */,
 				D938307A2A704123006CDCDE /* UsernameLinkManager.swift in Sources */,
 				D93830802A705D64006CDCDE /* UsernameLogger.swift in Sources */,

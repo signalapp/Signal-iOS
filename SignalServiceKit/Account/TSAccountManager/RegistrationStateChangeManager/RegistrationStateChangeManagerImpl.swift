@@ -146,6 +146,16 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
         didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, deviceId: .primary, shouldUpdateStorageService: false, tx: tx)
 
+        // Our local phone E164 has changed, and we should inform LibSignal for
+        // KT self-check monitoring.
+        KeyTransparencyManager.handleSelfCheckIdentifierChanged(
+            accountDataField: .e164,
+            localAci: aci,
+            tx: tx,
+            db: db,
+            keyTransparencyStore: keyTransparencyStore,
+        )
+
         tx.addSyncCompletion {
             self.postLocalNumberDidChangeNotification()
         }

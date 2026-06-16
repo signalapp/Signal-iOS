@@ -16961,6 +16961,134 @@ extension SSKProtoSyncMessageAttachmentBackfillResponseBuilder {
 
 #endif
 
+// MARK: - SSKProtoSyncMessageUsernameChange
+
+@objc
+public class SSKProtoSyncMessageUsernameChange: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.UsernameChange
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.UsernameChange) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.UsernameChange(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.UsernameChange) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoSyncMessageUsernameChange {
+    @objc
+    public static func builder() -> SSKProtoSyncMessageUsernameChangeBuilder {
+        return SSKProtoSyncMessageUsernameChangeBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageUsernameChangeBuilder {
+        let builder = SSKProtoSyncMessageUsernameChangeBuilder()
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoSyncMessageUsernameChangeBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_SyncMessage.UsernameChange()
+
+    @objc
+    fileprivate override init() {}
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageUsernameChange {
+        return SSKProtoSyncMessageUsernameChange(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoSyncMessageUsernameChange(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoSyncMessageUsernameChange {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageUsernameChangeBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageUsernameChange? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessage
 
 @objc
@@ -17035,6 +17163,9 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
     public let attachmentBackfillResponse: SSKProtoSyncMessageAttachmentBackfillResponse?
 
     @objc
+    public let usernameChange: SSKProtoSyncMessageUsernameChange?
+
+    @objc
     public var padding: Data? {
         guard hasPadding else {
             return nil
@@ -17076,7 +17207,8 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                  deleteForMe: SSKProtoSyncMessageDeleteForMe?,
                  deviceNameChange: SSKProtoSyncMessageDeviceNameChange?,
                  attachmentBackfillRequest: SSKProtoSyncMessageAttachmentBackfillRequest?,
-                 attachmentBackfillResponse: SSKProtoSyncMessageAttachmentBackfillResponse?) {
+                 attachmentBackfillResponse: SSKProtoSyncMessageAttachmentBackfillResponse?,
+                 usernameChange: SSKProtoSyncMessageUsernameChange?) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -17100,6 +17232,7 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
         self.deviceNameChange = deviceNameChange
         self.attachmentBackfillRequest = attachmentBackfillRequest
         self.attachmentBackfillResponse = attachmentBackfillResponse
+        self.usernameChange = usernameChange
     }
 
     @objc
@@ -17218,6 +17351,11 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
             attachmentBackfillResponse = SSKProtoSyncMessageAttachmentBackfillResponse(proto.attachmentBackfillResponse)
         }
 
+        var usernameChange: SSKProtoSyncMessageUsernameChange?
+        if proto.hasUsernameChange {
+            usernameChange = SSKProtoSyncMessageUsernameChange(proto.usernameChange)
+        }
+
         self.init(proto: proto,
                   sent: sent,
                   contacts: contacts,
@@ -17240,7 +17378,8 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                   deleteForMe: deleteForMe,
                   deviceNameChange: deviceNameChange,
                   attachmentBackfillRequest: attachmentBackfillRequest,
-                  attachmentBackfillResponse: attachmentBackfillResponse)
+                  attachmentBackfillResponse: attachmentBackfillResponse,
+                  usernameChange: usernameChange)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -17351,6 +17490,9 @@ extension SSKProtoSyncMessage {
         }
         if let _value = attachmentBackfillResponse {
             builder.setAttachmentBackfillResponse(_value)
+        }
+        if let _value = usernameChange {
+            builder.setUsernameChange(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -17615,6 +17757,17 @@ public class SSKProtoSyncMessageBuilder: NSObject {
 
     public func setAttachmentBackfillResponse(_ valueParam: SSKProtoSyncMessageAttachmentBackfillResponse) {
         proto.attachmentBackfillResponse = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUsernameChange(_ valueParam: SSKProtoSyncMessageUsernameChange?) {
+        guard let valueParam = valueParam else { return }
+        proto.usernameChange = valueParam.proto
+    }
+
+    public func setUsernameChange(_ valueParam: SSKProtoSyncMessageUsernameChange) {
+        proto.usernameChange = valueParam.proto
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

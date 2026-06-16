@@ -337,6 +337,7 @@ public class GRDBSchemaMigrator {
         case clearAttachmentMediaName
         case addStoredReleaseNotesTable
         case migrate2FAStore
+        case wipeKeyTransparencyTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -460,7 +461,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 147
+    public static let grdbSchemaVersionLatest: UInt = 148
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5269,6 +5270,13 @@ public class GRDBSchemaMigrator {
             // Delete anything that might be orphaned.
             try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection = 'kOWS2FAManager_Collection'")
             try setHasEverHadPin(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.wipeKeyTransparencyTable) { tx in
+            try tx.database.execute(sql: """
+            DELETE FROM "KeyTransparency"
+            """)
             return .success(())
         }
 

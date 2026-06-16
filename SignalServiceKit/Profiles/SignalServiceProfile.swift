@@ -17,12 +17,15 @@ public class SignalServiceProfile {
 
     public struct Capabilities {
         fileprivate static let dummyCapabilityKey = "dummy"
+        fileprivate static let usernameChangeSyncMessageKey = "usernameChangeSyncMessage"
 
         /// A dummy capability that keeps this struct non-empty. If it were
         /// empty, the compiler would complain about much of the code in here
         /// being unused...which is true! But, we want to keep it around for the
         /// future, when we may add new capabilities.
         public let dummyCapability: Bool
+
+        public let usernameChangeSyncMessage: Bool
     }
 
     public let serviceId: ServiceId
@@ -132,10 +135,16 @@ public class SignalServiceProfile {
             throw ValidationError(description: "Missing or invalid capabilities JSON!")
         }
 
+        let capabilitiesParser = ParamParser(capabilitiesDict)
+
         return Capabilities(
             dummyCapability: parseCapabilityFlag(
-                capabilitiesParser: ParamParser(capabilitiesDict),
+                capabilitiesParser: capabilitiesParser,
                 capabilityKey: Capabilities.dummyCapabilityKey,
+            ),
+            usernameChangeSyncMessage: parseCapabilityFlag(
+                capabilitiesParser: capabilitiesParser,
+                capabilityKey: Capabilities.usernameChangeSyncMessageKey,
             ),
         )
     }

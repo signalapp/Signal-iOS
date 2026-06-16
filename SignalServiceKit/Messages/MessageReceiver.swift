@@ -855,6 +855,17 @@ public final class MessageReceiver {
                 registeredState: registeredState,
                 tx: tx,
             )
+        } else if let _ = syncMessage.usernameChange {
+            let db = DependenciesBridge.shared.db
+            let keyTransparencyStore = KeyTransparencyStore()
+
+            KeyTransparencyManager.handleSelfCheckIdentifierChanged(
+                accountDataField: .usernameHash,
+                localAci: registeredState.localIdentifiers.aci,
+                tx: tx,
+                db: db,
+                keyTransparencyStore: keyTransparencyStore,
+            )
         } else {
             Logger.warn("Ignoring unsupported sync message.")
         }
@@ -2568,6 +2579,9 @@ extension SSKProtoSyncMessage {
         }
         if attachmentBackfillResponse != nil {
             parts.append("attachmentBackfillResponse")
+        }
+        if usernameChange != nil {
+            parts.append("usernameChange")
         }
         if hasUnknownFields {
             parts.append("unknown fields")

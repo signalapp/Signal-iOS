@@ -2659,6 +2659,15 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
   /// Clears the value of `attachmentBackfillResponse`. Subsequent reads from it will return its default value.
   mutating func clearAttachmentBackfillResponse() {_uniqueStorage()._attachmentBackfillResponse = nil}
 
+  var usernameChange: SignalServiceProtos_SyncMessage.UsernameChange {
+    get {_storage._usernameChange ?? SignalServiceProtos_SyncMessage.UsernameChange()}
+    set {_uniqueStorage()._usernameChange = newValue}
+  }
+  /// Returns true if `usernameChange` has been explicitly set.
+  var hasUsernameChange: Bool {_storage._usernameChange != nil}
+  /// Clears the value of `usernameChange`. Subsequent reads from it will return its default value.
+  mutating func clearUsernameChange() {_uniqueStorage()._usernameChange = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct Sent: Sendable {
@@ -4062,6 +4071,16 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _targetConversation: SignalServiceProtos_ConversationIdentifier? = nil
     fileprivate var _attachments: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList? = nil
     fileprivate var _error: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.Error? = nil
+  }
+
+  struct UsernameChange: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
   }
 
   init() {}
@@ -7490,7 +7509,7 @@ extension SignalServiceProtos_Verified.State: SwiftProtobuf._ProtoNameProviding 
 
 extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SyncMessage"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sent\0\u{1}contacts\0\u{2}\u{2}request\0\u{1}read\0\u{1}blocked\0\u{1}verified\0\u{1}padding\0\u{1}configuration\0\u{1}stickerPackOperation\0\u{1}viewOnceOpen\0\u{1}fetchLatest\0\u{1}keys\0\u{1}messageRequestResponse\0\u{1}outgoingPayment\0\u{1}viewed\0\u{2}\u{2}pniChangeNumber\0\u{1}callEvent\0\u{1}callLinkUpdate\0\u{1}callLogEvent\0\u{1}deleteForMe\0\u{1}deviceNameChange\0\u{1}attachmentBackfillRequest\0\u{1}attachmentBackfillResponse\0\u{c}\u{3}\u{1}\u{c}\u{11}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sent\0\u{1}contacts\0\u{2}\u{2}request\0\u{1}read\0\u{1}blocked\0\u{1}verified\0\u{1}padding\0\u{1}configuration\0\u{1}stickerPackOperation\0\u{1}viewOnceOpen\0\u{1}fetchLatest\0\u{1}keys\0\u{1}messageRequestResponse\0\u{1}outgoingPayment\0\u{1}viewed\0\u{2}\u{2}pniChangeNumber\0\u{1}callEvent\0\u{1}callLinkUpdate\0\u{1}callLogEvent\0\u{1}deleteForMe\0\u{1}deviceNameChange\0\u{1}attachmentBackfillRequest\0\u{1}attachmentBackfillResponse\0\u{1}usernameChange\0\u{c}\u{3}\u{1}\u{c}\u{11}\u{1}")
 
   fileprivate class _StorageClass {
     var _sent: SignalServiceProtos_SyncMessage.Sent? = nil
@@ -7516,6 +7535,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _deviceNameChange: SignalServiceProtos_SyncMessage.DeviceNameChange? = nil
     var _attachmentBackfillRequest: SignalServiceProtos_SyncMessage.AttachmentBackfillRequest? = nil
     var _attachmentBackfillResponse: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse? = nil
+    var _usernameChange: SignalServiceProtos_SyncMessage.UsernameChange? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -7549,6 +7569,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _deviceNameChange = source._deviceNameChange
       _attachmentBackfillRequest = source._attachmentBackfillRequest
       _attachmentBackfillResponse = source._attachmentBackfillResponse
+      _usernameChange = source._usernameChange
     }
   }
 
@@ -7590,6 +7611,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 23: try { try decoder.decodeSingularMessageField(value: &_storage._deviceNameChange) }()
         case 24: try { try decoder.decodeSingularMessageField(value: &_storage._attachmentBackfillRequest) }()
         case 25: try { try decoder.decodeSingularMessageField(value: &_storage._attachmentBackfillResponse) }()
+        case 26: try { try decoder.decodeSingularMessageField(value: &_storage._usernameChange) }()
         default: break
         }
       }
@@ -7671,6 +7693,9 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._attachmentBackfillResponse {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 25)
       } }()
+      try { if let v = _storage._usernameChange {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 26)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7703,6 +7728,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._deviceNameChange != rhs_storage._deviceNameChange {return false}
         if _storage._attachmentBackfillRequest != rhs_storage._attachmentBackfillRequest {return false}
         if _storage._attachmentBackfillResponse != rhs_storage._attachmentBackfillResponse {return false}
+        if _storage._usernameChange != rhs_storage._usernameChange {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -9205,6 +9231,25 @@ extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentD
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList, rhs: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList) -> Bool {
     if lhs.attachments != rhs.attachments {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.UsernameChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".UsernameChange"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.UsernameChange, rhs: SignalServiceProtos_SyncMessage.UsernameChange) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

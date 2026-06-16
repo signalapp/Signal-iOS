@@ -16,12 +16,12 @@ public final class KeyTransparencyManager {
     private let identityManager: OWSIdentityManager
     private let keyTransparencyStore: KeyTransparencyStore
     private let localUsernameManager: LocalUsernameManager
+    private let messageProcessor: MessageProcessor
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
     private let udManager: OWSUDManager
 
-    private var notificationObservers: [NotificationCenter.Observer] = []
     private let taskQueue: KeyedConcurrentTaskQueue<Aci>
 
     init(
@@ -31,6 +31,7 @@ public final class KeyTransparencyManager {
         identityManager: OWSIdentityManager,
         keyTransparencyStore: KeyTransparencyStore,
         localUsernameManager: LocalUsernameManager,
+        messageProcessor: MessageProcessor,
         recipientDatabaseTable: RecipientDatabaseTable,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
@@ -42,39 +43,13 @@ public final class KeyTransparencyManager {
         self.identityManager = identityManager
         self.keyTransparencyStore = keyTransparencyStore
         self.localUsernameManager = localUsernameManager
+        self.messageProcessor = messageProcessor
         self.recipientDatabaseTable = recipientDatabaseTable
         self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
         self.udManager = udManager
 
         self.taskQueue = KeyedConcurrentTaskQueue(concurrentLimitPerKey: 1)
-
-        observeNotifications()
-    }
-
-    deinit {
-        for observer in notificationObservers {
-            NotificationCenter.default.removeObserver(observer)
-        }
-    }
-
-    private func observeNotifications() {
-        notificationObservers = [
-            NotificationCenter.default.addObserver(
-                name: Usernames.localUsernameStateChangedNotification,
-                block: { [weak self] _ in
-                    guard let self else { return }
-                    handleSelfCheckIdentifierChanged(field: .usernameHash)
-                },
-            ),
-            NotificationCenter.default.addObserver(
-                name: .localNumberDidChange,
-                block: { [weak self] _ in
-                    guard let self else { return }
-                    handleSelfCheckIdentifierChanged(field: .e164)
-                },
-            ),
-        ]
     }
 
     // MARK: Opt-out
@@ -358,7 +333,7 @@ public final class KeyTransparencyManager {
             throw OWSAssertionError("Missing E164Info.", logger: logger)
         }
 
-        let username: Username?
+        var username: Username?
         switch localUsernameManager.usernameState(tx: tx) {
         case .unset:
             username = nil
@@ -370,6 +345,12 @@ public final class KeyTransparencyManager {
             }
         case .usernameAndLinkCorrupted:
             throw OWSAssertionError("Local username is corrupted.", logger: logger)
+        }
+
+        // We can't self-check our own username until all our devices support
+        // UsernameChangeSyncMessage.
+        if !keyTransparencyStore.isUsernameChangeSyncMessageCapable(tx: tx) {
+            username = nil
         }
 
         return CheckParams(
@@ -384,6 +365,14 @@ public final class KeyTransparencyManager {
         localIdentifiers: LocalIdentifiers,
     ) async throws {
         do {
+            // Self-check also depends on UsernameChangeSyncMessages, so best-
+            // effort make sure we've drained our message queue.
+            try? await messageProcessor.waitForFetchingAndProcessing()
+
+            // Self-check depends on state that lives in Storage Service (i.e.,
+            // our username), so best-effort make sure we're up-to-date.
+            try? await storageServiceManager.waitForPendingRestores()
+
             let selfCheckParams = try db.read { tx in
                 return try prepareSelfCheck(
                     localIdentifiers: localIdentifiers,
@@ -468,43 +457,28 @@ public final class KeyTransparencyManager {
 
     /// If an `AccountDataField` value changes for the local user, we want to
     /// inform LibSignal so they can adjust state accordingly.
-    private func handleSelfCheckIdentifierChanged(field: KeyTransparency.AccountDataField) {
-        Task {
-            guard
-                let localIdentifiers = db.read(block: { tx in
-                    tsAccountManager.localIdentifiers(tx: tx)
-                })
-            else {
-                return
-            }
-
-            try await taskQueue.run(forKey: localIdentifiers.aci) {
-                await _handleSelfCheckIdentifierChanged(field: field, localAci: localIdentifiers.aci)
-            }
-        }
-    }
-
-    private func _handleSelfCheckIdentifierChanged(
-        field: KeyTransparency.AccountDataField,
+    public static func handleSelfCheckIdentifierChanged(
+        accountDataField: KeyTransparency.AccountDataField,
         localAci: Aci,
-    ) async {
+        tx: DBWriteTransaction,
+        db: DB,
+        keyTransparencyStore: KeyTransparencyStore,
+    ) {
         let libSignalStore = KeyTransparencyStoreForLibSignal(
             db: db,
             keyTransparencyStore: keyTransparencyStore,
         )
 
         do {
-            try await db.awaitableWrite { tx in
-                try KeyTransparency.resetField(
-                    field,
-                    for: localAci,
-                    store: libSignalStore,
-                    context: tx,
-                )
-            }
+            try KeyTransparency.resetField(
+                accountDataField,
+                for: localAci,
+                store: libSignalStore,
+                context: tx,
+            )
         } catch {
             // We should only end up here if there's malformed data.
-            owsFailDebug("Failed to reset \(field) for local user!")
+            owsFailDebug("Failed to reset \(accountDataField) for local user! \(error)")
         }
     }
 }
@@ -525,6 +499,10 @@ public struct KeyTransparencyStore {
         /// Keys to a `Bool` representing whether or not we should show
         /// first-time education about KT.
         static let shouldShowFirstTimeEducation = "shouldShowFirstTimeEducation"
+        /// Keys to a `Bool` representing whether or not our account is "KT
+        /// capable", as there are some cross-linked-device communications that
+        /// all our devices must support before we can start using KT.
+        static let isUsernameChangeSyncMessageCapable = "isUsernameChangeSyncMessageCapable"
         /// Keys to an opaque LibSignalClient blob.
         static let distinguishedTreeHead = "distinguishedTreeHead"
     }
@@ -558,6 +536,18 @@ public struct KeyTransparencyStore {
                 try KeyTransparencyRecord.deleteAll(tx.database)
             }
         }
+    }
+
+    // MARK: - Capability
+
+    /// Do all our devices have the `UsernameChangeSyncMessage` capability?
+    public func isUsernameChangeSyncMessageCapable(tx: DBReadTransaction) -> Bool {
+        return kvStore.fetchValue(Bool.self, forKey: KVStoreKeys.isUsernameChangeSyncMessageCapable, tx: tx) ?? false
+    }
+
+    /// Set that all our devices have the `UsernameChangeSyncMessage` capability.
+    public func setIsUsernameChangeSyncMessageCapable(tx: DBWriteTransaction) {
+        kvStore.writeValue(true, forKey: KVStoreKeys.isUsernameChangeSyncMessageCapable, tx: tx)
     }
 
     // MARK: - First-time education
@@ -732,14 +722,14 @@ private struct KeyTransparencyStoreForLibSignal: KeyTransparency.Store {
         }
     }
 
+    func getAccountData(for aci: Aci, context: StoreContext) -> Data? {
+        keyTransparencyStore.getKeyTransparencyBlob(aci: aci, tx: context.asTransaction)
+    }
+
     func setAccountData(_ data: Data, for aci: Aci) async {
         await db.awaitableWrite { tx in
             keyTransparencyStore.setKeyTransparencyBlob(data, aci: aci, tx: tx)
         }
-    }
-
-    func getAccountData(for aci: Aci, context: StoreContext) -> Data? {
-        keyTransparencyStore.getKeyTransparencyBlob(aci: aci, tx: context.asTransaction)
     }
 
     func setAccountData(_ data: Data, for aci: Aci, context: StoreContext) {

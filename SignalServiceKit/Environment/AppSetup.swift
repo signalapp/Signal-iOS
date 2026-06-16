@@ -1265,8 +1265,14 @@ extension AppSetup.GlobalsContinuation {
         )
         let localUsernameManager = LocalUsernameManagerImpl(
             db: db,
+            keyTransparencyStore: keyTransparencyStore,
             reachabilityManager: reachabilityManager,
             storageServiceManager: storageServiceManager,
+            syncMessageSender: LocalUsernameManagerImpl.UsernameChangeSyncMessageSenderImpl(
+                messageSenderJobQueue: messageSenderJobQueue,
+                threadStore: threadStore,
+            ),
+            tsAccountManager: tsAccountManager,
             usernameApiClient: usernameApiClient,
             usernameLinkManager: usernameLinkManager,
         )
@@ -1286,6 +1292,7 @@ extension AppSetup.GlobalsContinuation {
             identityManager: identityManager,
             keyTransparencyStore: keyTransparencyStore,
             localUsernameManager: localUsernameManager,
+            messageProcessor: messageProcessor,
             recipientDatabaseTable: recipientDatabaseTable,
             storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager,
@@ -1365,6 +1372,7 @@ extension AppSetup.GlobalsContinuation {
             db: db,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             identityManager: identityManager,
+            keyTransparencyStore: keyTransparencyStore,
             paymentsHelper: paymentsHelper,
             profileManager: profileManager,
             reachabilityManager: reachabilityManager,

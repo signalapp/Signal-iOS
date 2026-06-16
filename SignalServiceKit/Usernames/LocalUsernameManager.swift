@@ -92,6 +92,8 @@ public protocol LocalUsernameManager {
     ) async -> Usernames.RemoteMutationResult<Void>
 }
 
+// MARK: -
+
 public extension Usernames {
     static let localUsernameStateChangedNotification = NSNotification.Name(
         "localUsernameStateChanged",
@@ -165,7 +167,7 @@ public extension Usernames {
     }
 }
 
-// MARK: - Impl
+// MARK: -
 
 class LocalUsernameManagerImpl: LocalUsernameManager {
     private struct CorruptionStore {
@@ -262,8 +264,11 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
     private struct NoReachabilityError: Error {}
 
     private let db: any DB
+    private let keyTransparencyStore: KeyTransparencyStore
     private let reachabilityManager: SSKReachabilityManager
     private let storageServiceManager: StorageServiceManager
+    private let syncMessageSender: UsernameChangeSyncMessageSender
+    private let tsAccountManager: TSAccountManager
     private let usernameApiClient: UsernameApiClient
     private let usernameLinkManager: UsernameLinkManager
 
@@ -276,15 +281,21 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
 
     init(
         db: any DB,
+        keyTransparencyStore: KeyTransparencyStore,
         reachabilityManager: SSKReachabilityManager,
         storageServiceManager: StorageServiceManager,
+        syncMessageSender: UsernameChangeSyncMessageSender,
+        tsAccountManager: TSAccountManager,
         usernameApiClient: UsernameApiClient,
         usernameLinkManager: UsernameLinkManager,
         maxNetworkRequestRetries: Int = 2,
     ) {
         self.db = db
+        self.keyTransparencyStore = keyTransparencyStore
         self.reachabilityManager = reachabilityManager
         self.storageServiceManager = storageServiceManager
+        self.syncMessageSender = syncMessageSender
+        self.tsAccountManager = tsAccountManager
         self.usernameApiClient = usernameApiClient
         self.usernameLinkManager = usernameLinkManager
 
@@ -483,6 +494,10 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
                         tx: tx,
                     )
 
+                    // This device changed our username hash, which we need to
+                    // communicate out.
+                    self.usernameHashDidChangeLocally(tx: tx)
+
                     // We back up the username and link in StorageService, so
                     // trigger a backup now.
                     self.storageServiceManager.recordPendingLocalAccountUpdates()
@@ -532,6 +547,10 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             }
             await self.db.awaitableWrite { tx in
                 self.clearLocalUsername(tx: tx)
+
+                // This device changed our username hash, which we need to
+                // communicate out.
+                self.usernameHashDidChangeLocally(tx: tx)
             }
 
             // We back up the username and link in StorageService, so
@@ -548,6 +567,30 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             UsernameLogger.shared.error("Unknown error while deleting username. Username now assumed corrupted!")
             return .failure(.otherError)
         }
+    }
+
+    /// Performs necessary side-effects when we locally change our username such
+    /// that the username hash has changed.
+    private func usernameHashDidChangeLocally(tx: DBWriteTransaction) {
+        guard let localAci = tsAccountManager.localIdentifiers(tx: tx)?.aci else {
+            return
+        }
+
+        // Enqueue a username-change sync message, so our other devices learn
+        // about each of our username changes. (If we just relied on Storage
+        // Service, multiple quick updates might appear to a linked device as
+        // one update.)
+        syncMessageSender.addUsernameChangeSyncMessage(tx: tx)
+
+        // Our local username hash has changed, and we should inform
+        // LibSignal for KT self-check monitoring.
+        KeyTransparencyManager.handleSelfCheckIdentifierChanged(
+            accountDataField: .usernameHash,
+            localAci: localAci,
+            tx: tx,
+            db: db,
+            keyTransparencyStore: keyTransparencyStore,
+        )
     }
 
     // MARK: Username links and the service
@@ -722,17 +765,15 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             return .failure(.otherError)
         }
     }
-}
 
-// MARK: - Network retries
+    // MARK: - Network retries
 
-private extension LocalUsernameManagerImpl {
     /// Make the request in the given block, with retries.
     ///
     /// Because a failed username mutation request leaves us in a corrupted
     /// state, add retries for network errors to avoid unnecessary corruption
     /// where possible.
-    func makeRequestWithNetworkRetries<T>(
+    private func makeRequestWithNetworkRetries<T>(
         requestBlock: () async throws -> T,
         retriesRemaining: Int? = nil,
     ) async throws -> T {
@@ -754,6 +795,35 @@ private extension LocalUsernameManagerImpl {
             return try await self.makeRequestWithNetworkRetries(
                 requestBlock: requestBlock,
                 retriesRemaining: retriesRemaining - 1,
+            )
+        }
+    }
+
+    // MARK: -
+
+    /// Wrapper around `MessageSenderJobQueue`, for tests.
+    protocol UsernameChangeSyncMessageSender {
+        func addUsernameChangeSyncMessage(tx: DBWriteTransaction)
+    }
+
+    struct UsernameChangeSyncMessageSenderImpl: UsernameChangeSyncMessageSender {
+        let messageSenderJobQueue: MessageSenderJobQueue
+        let threadStore: ThreadStore
+
+        func addUsernameChangeSyncMessage(tx: DBWriteTransaction) {
+            guard let localThread = threadStore.getOrCreateLocalThread(tx: tx) else {
+                owsFailDebug("Failed to getOrCreateLocalThread!")
+                return
+            }
+
+            let usernameChangeSyncMessage = UsernameChangeSyncMessage(
+                localThread: localThread,
+                tx: tx,
+            )
+
+            messageSenderJobQueue.add(
+                message: .preprepared(transientMessageWithoutAttachments: usernameChangeSyncMessage),
+                transaction: tx,
             )
         }
     }

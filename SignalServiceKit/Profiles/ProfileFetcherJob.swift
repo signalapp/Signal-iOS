@@ -25,6 +25,7 @@ public class ProfileFetcherJob {
     private let db: any DB
     private let disappearingMessagesConfigurationStore: any DisappearingMessagesConfigurationStore
     private let identityManager: any OWSIdentityManager
+    private let keyTransparencyStore: KeyTransparencyStore
     private let paymentsHelper: any PaymentsHelper
     private let profileManager: any ProfileManager
     private let recipientDatabaseTable: RecipientDatabaseTable
@@ -43,6 +44,7 @@ public class ProfileFetcherJob {
         db: any DB,
         disappearingMessagesConfigurationStore: any DisappearingMessagesConfigurationStore,
         identityManager: any OWSIdentityManager,
+        keyTransparencyStore: KeyTransparencyStore,
         paymentsHelper: any PaymentsHelper,
         profileManager: any ProfileManager,
         recipientDatabaseTable: RecipientDatabaseTable,
@@ -60,6 +62,7 @@ public class ProfileFetcherJob {
         self.db = db
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.identityManager = identityManager
+        self.keyTransparencyStore = keyTransparencyStore
         self.paymentsHelper = paymentsHelper
         self.profileManager = profileManager
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -537,16 +540,26 @@ public class ProfileFetcherJob {
 
         var shouldSendProfileSync = false
 
-        if
-            localIdentifiers.aci == serviceId,
-            fetchedCapabilities.dummyCapability
-        {
+        if localIdentifiers.aci == serviceId {
             // Space to detect changes to our own capabilities, and run code
             // such as migrations in response.
             //
             // See comment on `dummyCapability`: it's always false, but lets us
             // keep this code around without the compiler complaining.
-            shouldSendProfileSync = true
+            if fetchedCapabilities.dummyCapability {
+                shouldSendProfileSync = true
+            }
+
+            // If's important that we check isUsernameChangeSyncMessageCapable
+            // before entering this block, lest we end up sending profile syncs
+            // between our devices in a loop as they re-fetch the local profile.
+            if
+                fetchedCapabilities.usernameChangeSyncMessage,
+                !keyTransparencyStore.isUsernameChangeSyncMessageCapable(tx: tx)
+            {
+                keyTransparencyStore.setIsUsernameChangeSyncMessageCapable(tx: tx)
+                shouldSendProfileSync = true
+            }
         }
 
         if

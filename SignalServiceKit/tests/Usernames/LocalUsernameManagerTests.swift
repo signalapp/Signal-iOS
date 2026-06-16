@@ -11,13 +11,12 @@ import XCTest
 
 class LocalUsernameManagerTests: XCTestCase {
     private var mockDB: InMemoryDB!
-
     private var mockReachabilityManager: MockReachabilityManager!
     private var mockStorageServiceManager: MockStorageServiceManager!
+    private var mockSyncMessageSender: MockUsernameChangeSyncMessageSender!
+    private var mockTSAccountManager: MockTSAccountManager!
     private var mockUsernameApiClient: MockUsernameApiClient!
     private var mockUsernameLinkManager: MockUsernameLinkManager!
-
-    private var kvStore: KeyValueStore!
 
     private var localUsernameManager: LocalUsernameManager!
 
@@ -26,10 +25,10 @@ class LocalUsernameManagerTests: XCTestCase {
 
         mockReachabilityManager = MockReachabilityManager()
         mockStorageServiceManager = MockStorageServiceManager()
+        mockSyncMessageSender = MockUsernameChangeSyncMessageSender()
+        mockTSAccountManager = MockTSAccountManager()
         mockUsernameApiClient = MockUsernameApiClient()
         mockUsernameLinkManager = MockUsernameLinkManager()
-
-        kvStore = KeyValueStore(collection: "localUsernameManager")
 
         setLocalUsernameManager(maxNetworkRequestRetries: 0)
     }
@@ -37,8 +36,11 @@ class LocalUsernameManagerTests: XCTestCase {
     private func setLocalUsernameManager(maxNetworkRequestRetries: Int) {
         localUsernameManager = LocalUsernameManagerImpl(
             db: mockDB,
+            keyTransparencyStore: KeyTransparencyStore(),
             reachabilityManager: mockReachabilityManager,
             storageServiceManager: mockStorageServiceManager,
+            syncMessageSender: mockSyncMessageSender,
+            tsAccountManager: mockTSAccountManager,
             usernameApiClient: mockUsernameApiClient,
             usernameLinkManager: mockUsernameLinkManager,
             maxNetworkRequestRetries: maxNetworkRequestRetries,
@@ -129,6 +131,7 @@ class LocalUsernameManagerTests: XCTestCase {
             .available(username: username, usernameLink: .mock(handle: linkHandle)),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 1)
     }
 
     func testConfirmBailsEarlyIfNotReachable() async {
@@ -141,6 +144,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value, .failure(.networkError))
         XCTAssertEqual(usernameState(), stateBeforeConfirm)
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testNoCorruptionIfFailToGenerateLink() async {
@@ -153,6 +157,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value, .failure(.otherError))
         XCTAssertEqual(usernameState(), stateBeforeConfirm)
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testCorruptionIfNetworkErrorWhileConfirming() async {
@@ -166,6 +171,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value, .failure(.networkError))
         XCTAssertEqual(usernameState(), .usernameAndLinkCorrupted)
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testCorruptionIfErrorWhileConfirming() async {
@@ -179,6 +185,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value, .failure(.otherError))
         XCTAssertEqual(usernameState(), .usernameAndLinkCorrupted)
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testNoCorruptionIfRejectedWhileConfirming() async {
@@ -192,6 +199,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value, .success(.rejected))
         XCTAssertEqual(usernameState(), stateBeforeConfirm)
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testNoCorruptionIfRateLimitedWhileConfirming() async {
@@ -205,6 +213,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value, .success(.rateLimited))
         XCTAssertEqual(usernameState(), stateBeforeConfirm)
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testSuccessfulConfirmationClearsLinkCorruption() async {
@@ -235,6 +244,7 @@ class LocalUsernameManagerTests: XCTestCase {
             .available(username: "boba_fett.43", usernameLink: expectedNewLink),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 1)
     }
 
     func testSuccessfulConfirmationClearsUsernameCorruption() async {
@@ -262,6 +272,7 @@ class LocalUsernameManagerTests: XCTestCase {
             .available(username: "boba_fett.43", usernameLink: expectedNewLink),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 1)
     }
 
     // MARK: Deletion
@@ -276,6 +287,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value.isSuccess, true)
         XCTAssertEqual(usernameState(), .unset)
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 1)
     }
 
     func testDeleteBailsEarlyIfNotReachable() async {
@@ -288,6 +300,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value.isNetworkError, true)
         XCTAssertEqual(usernameState(), stateBeforeConfirm)
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testCorruptionIfNetworkErrorWhileDeleting() async {
@@ -300,6 +313,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value.isNetworkError, true)
         XCTAssertEqual(usernameState(), .usernameAndLinkCorrupted)
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testCorruptionIfErrorWhileDeleting() async {
@@ -312,6 +326,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value.isOtherError, true)
         XCTAssertEqual(usernameState(), .usernameAndLinkCorrupted)
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testDeletionClearsCorruption() async {
@@ -328,6 +343,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value.isSuccess, true)
         XCTAssertEqual(usernameState(), .unset)
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 1)
     }
 
     func testDeletionClearsLinkCorruption() async {
@@ -347,6 +363,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value.isSuccess, true)
         XCTAssertEqual(usernameState(), .unset)
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 1)
     }
 
     // MARK: Rotate link
@@ -369,6 +386,7 @@ class LocalUsernameManagerTests: XCTestCase {
             .available(username: "boba_fett.42", usernameLink: expectedNewLink),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testRotationBailsEarlyIfNotReachable() async {
@@ -381,6 +399,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value, .failure(.networkError))
         XCTAssertEqual(usernameState(), stateBeforeConfirm)
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testNoCorruptionIfFailToGenerateNewLink() async {
@@ -393,6 +412,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value, .failure(.otherError))
         XCTAssertEqual(usernameState(), stateBeforeRotate)
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testCorruptionIfNetworkErrorWhileRotatingLink() async {
@@ -406,6 +426,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value, .failure(.networkError))
         XCTAssertEqual(usernameState(), .linkCorrupted(username: "boba_fett.42"))
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testCorruptionIfErrorWhileRotatingLink() async {
@@ -419,6 +440,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value, .failure(.otherError))
         XCTAssertEqual(usernameState(), .linkCorrupted(username: "boba_fett.42"))
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testSuccessfulRotationClearsCorruption() async {
@@ -446,6 +468,7 @@ class LocalUsernameManagerTests: XCTestCase {
             .available(username: "boba_fett.42", usernameLink: expectedNewLink),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testUpdateVisibleCaseHappyPath() async {
@@ -466,6 +489,7 @@ class LocalUsernameManagerTests: XCTestCase {
             .available(username: "BoBa_fEtT.42", usernameLink: currentLink),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testUpdateVisibleCaseBailsEarlyIfNotReachable() async {
@@ -478,6 +502,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value.isNetworkError, true)
         XCTAssertEqual(usernameState(), stateBeforeConfirm)
         XCTAssertFalse(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testUpdateVisibleCaseSetsLocalEvenIfNetworkError() async {
@@ -498,6 +523,7 @@ class LocalUsernameManagerTests: XCTestCase {
             .linkCorrupted(username: "BoBa_fEtT.42"),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     func testUpdateVisibleCaseSetsLocalEvenIfError() async {
@@ -518,6 +544,7 @@ class LocalUsernameManagerTests: XCTestCase {
             .linkCorrupted(username: "BoBa_fEtT.42"),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     // MARK: Network retries
@@ -548,6 +575,7 @@ class LocalUsernameManagerTests: XCTestCase {
             .available(username: "BoBa_fEtT.42", usernameLink: currentLink),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
+        XCTAssertEqual(mockSyncMessageSender.usernameChangeSyncMessageCount, 0)
     }
 
     // MARK: Utilities
@@ -651,4 +679,12 @@ private class MockStorageServiceManager: StorageServiceManager {
     func backupPendingChanges(authedDevice: AuthedDevice) { owsFail("Not implemented!") }
     func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice, masterKeySource: StorageService.MasterKeySource) -> Promise<Void> { owsFail("Not implemented!") }
     func rotateManifest(mode: ManifestRotationMode, authedDevice: AuthedDevice) async throws { owsFail("Not implemented!") }
+}
+
+private class MockUsernameChangeSyncMessageSender: LocalUsernameManagerImpl.UsernameChangeSyncMessageSender {
+    var usernameChangeSyncMessageCount = 0
+
+    func addUsernameChangeSyncMessage(tx: DBWriteTransaction) {
+        usernameChangeSyncMessageCount += 1
+    }
 }
