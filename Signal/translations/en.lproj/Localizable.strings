@@ -790,6 +790,12 @@
 /* Title for a view indicating we failed to fetch someone's Backup plan due to a network error. */
 "BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Network Error";
 
+/* Message for a view indicating we failed to fetch someone's Backup plan because they're not registered. */
+"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_MESSAGE" = "Couldn’t fetch your backup plan because you’re no longer registered.";
+
+/* Title for a view indicating we failed to fetch someone's Backup plan because they're not registered. */
+"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_TITLE" = "Couldn’t Fetch Backup Plan";
+
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Manage or Cancel";
 

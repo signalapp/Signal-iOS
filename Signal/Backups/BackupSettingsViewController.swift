@@ -903,7 +903,7 @@ class BackupSettingsViewController:
             switch viewModel.backupSubscriptionLoadingState {
             case .loading, .loaded:
                 break
-            case .networkError, .genericError:
+            case .networkError, .notRegisteredError, .genericError:
                 withAnimation {
                     viewModel.backupSubscriptionLoadingState = .loading
                 }
@@ -919,6 +919,8 @@ class BackupSettingsViewController:
                 return
             } catch let error where error.isNetworkFailureOrTimeout {
                 newLoadingState = .networkError
+            } catch is NotRegisteredError {
+                newLoadingState = .notRegisteredError
             } catch {
                 newLoadingState = .genericError
             }
@@ -1732,6 +1734,7 @@ private class BackupSettingsViewModel: ObservableObject {
         case loading
         case loaded(LoadedBackupSubscription)
         case networkError
+        case notRegisteredError
         case genericError
     }
 
@@ -2297,6 +2300,9 @@ private struct ReenableBackupsButton: View {
         switch backupSubscriptionLoadingState {
         case .loading, .networkError:
             // Don't let them reenable until we know more.
+            return nil
+        case .notRegisteredError:
+            // They won't be able to enable Backups if they're not registered.
             return nil
         case
             .loaded(.freeAndEnabled),
@@ -2888,6 +2894,28 @@ private struct BackupSubscriptionView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(minHeight: 140)
+        case .notRegisteredError:
+            VStack(alignment: .center) {
+                Text(OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_TITLE",
+                    comment: "Title for a view indicating we failed to fetch someone's Backup plan because they're not registered.",
+                ))
+                .font(.subheadline)
+                .bold()
+                .foregroundStyle(Color.Signal.secondaryLabel)
+
+                Spacer().frame(height: 12)
+
+                Text(OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_MESSAGE",
+                    comment: "Message for a view indicating we failed to fetch someone's Backup plan because they're not registered.",
+                ))
+                .font(.subheadline)
+                .foregroundStyle(Color.Signal.secondaryLabel)
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 140)
         case .genericError:
             VStack(alignment: .center) {
                 Text(OWSLocalizedString(
@@ -2898,6 +2926,8 @@ private struct BackupSubscriptionView: View {
                 .bold()
                 .foregroundStyle(Color.Signal.secondaryLabel)
 
+                Spacer().frame(height: 12)
+
                 Text(OWSLocalizedString(
                     "BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE",
                     comment: "Message for a view indicating we failed to fetch someone's Backup plan due to an unexpected error.",
@@ -2905,6 +2935,7 @@ private struct BackupSubscriptionView: View {
                 .font(.subheadline)
                 .foregroundStyle(Color.Signal.secondaryLabel)
             }
+            .padding(12)
             .frame(maxWidth: .infinity)
             .frame(minHeight: 140)
         }
@@ -3453,6 +3484,13 @@ private extension BackupSettingsViewModel {
 #Preview("Plan: Network Error") {
     BackupSettingsView(viewModel: .forPreview(
         backupSubscriptionLoadingState: .networkError,
+        backupPlan: .paid(optimizeLocalStorage: false),
+    ))
+}
+
+#Preview("Plan: Not Registered Error") {
+    BackupSettingsView(viewModel: .forPreview(
+        backupSubscriptionLoadingState: .notRegisteredError,
         backupPlan: .paid(optimizeLocalStorage: false),
     ))
 }
