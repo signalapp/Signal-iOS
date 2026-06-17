@@ -1436,9 +1436,8 @@ private extension CVComponentState.Builder {
         } else if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
             type = .video
         } else if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
-            // TODO: What?
             if referencedAttachment.reference.renderingFlag == .voiceMessage {
-                return false
+                return true
             }
             type = .audio
         } else {
