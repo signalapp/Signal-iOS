@@ -1489,45 +1489,37 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return false
             }
 
-            let type: MediaBandwidthPreferences.MediaType
+            let policy: AutoDownloadPolicy
             switch owner {
             case .message(.bodyAttachment), .storyMessage(.media):
-                if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
-                    type = .photo
-                } else if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
-                    type = .video
-                } else if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
-                    if renderingFlag == .voiceMessage {
-                        return false
-                    }
-                    type = .audio
-                } else {
-                    type = .document
-                }
+                policy = .forMimeType(mimeType, renderingFlag: renderingFlag)
             case .message(.oversizeText):
-                return false
+                policy = .always
             case .message(.sticker):
-                type = .photo
+                policy = .preference(mediaType: .photo)
             case .message(.quotedReply):
-                return false
+                policy = .always
             case .message(.linkPreview):
-                return false
+                policy = .always
             case .message(.contactAvatar):
-                return false
+                policy = .always
             case .storyMessage(.textStoryLinkPreview):
-                return false
+                policy = .always
             case .thread(.threadWallpaperImage), .thread(.globalThreadWallpaperImage):
-                return false
+                policy = .always
             }
 
-            let preference = mediaBandwidthPreferenceStore.preference(for: type, tx: tx)
-            switch preference {
-            case .never:
-                return true
-            case .wifiOnly:
-                return !reachabilityManager.isReachable(via: .wifi)
-            case .wifiAndCellular:
+            switch policy {
+            case .always:
+                // If we can always auto download it, then it's never blocked.
                 return false
+            case .preference(let mediaType):
+                return !AutoDownloadPolicy.canAutoDownload(
+                    mediaType: mediaType,
+                    preferenceStore: mediaBandwidthPreferenceStore,
+                    isReachableViaWiFi: { reachabilityManager.isReachable(via: .wifi) },
+                    tx: tx,
+                )
             }
         }
     }

@@ -1429,28 +1429,20 @@ private extension CVComponentState.Builder {
         let mediaBandwidthPreferenceStore = DependenciesBridge.shared.mediaBandwidthPreferenceStore
         let reachabilityManager = SSKEnvironment.shared.reachabilityManagerRef
 
-        let type: MediaBandwidthPreferences.MediaType
-        let mimeType = referencedAttachment.attachment.mimeType
-        if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
-            type = .photo
-        } else if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
-            type = .video
-        } else if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
-            if referencedAttachment.reference.renderingFlag == .voiceMessage {
-                return true
-            }
-            type = .audio
-        } else {
-            type = .document
-        }
-        let preference = mediaBandwidthPreferenceStore.preference(for: type, tx: transaction)
-        switch preference {
-        case .never:
-            return false
-        case .wifiOnly:
-            return reachabilityManager.isReachable(via: .wifi)
-        case .wifiAndCellular:
+        let policy = AutoDownloadPolicy.forMimeType(
+            referencedAttachment.attachment.mimeType,
+            renderingFlag: referencedAttachment.reference.renderingFlag,
+        )
+        switch policy {
+        case .always:
             return true
+        case .preference(let mediaType):
+            return AutoDownloadPolicy.canAutoDownload(
+                mediaType: mediaType,
+                preferenceStore: mediaBandwidthPreferenceStore,
+                isReachableViaWiFi: { reachabilityManager.isReachable(via: .wifi) },
+                tx: transaction,
+            )
         }
     }
 
