@@ -3507,23 +3507,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
 
         case .changingNumber:
-            // Change number is different; we do a limited number of operations and then finalize.
-            if let restoreStepNextStep = await performSVRRestoreStepsIfNeeded(accountIdentity: accountIdentity) {
-                return restoreStepNextStep
-            }
-
             let accountEntropyPool = getOrGenerateAccountEntropyPool()
-
-            if
-                let nextStep = await performSVRBackupStepsIfNeeded(
-                    resetPINReminderInterval: false,
-                    accountEntropyPool: accountEntropyPool,
-                    accountIdentity: accountIdentity,
-                )
-            {
-                return nextStep
-            }
-
             return await exportAndWipeState(
                 accountEntropyPool: accountEntropyPool,
                 accountIdentity: accountIdentity,
