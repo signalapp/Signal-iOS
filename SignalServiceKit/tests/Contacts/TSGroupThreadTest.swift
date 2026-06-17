@@ -8,7 +8,7 @@ import XCTest
 
 class TSGroupThreadTest: XCTestCase {
     func testHasSafetyNumbers() throws {
-        let groupThread = TSGroupThread.forUnitTest()
+        let groupThread = TSGroupThread.forUnitTest(groupId: Randomness.generateRandomBytes(32))
         XCTAssertFalse(groupThread.hasSafetyNumbers())
     }
 }

@@ -1887,7 +1887,7 @@ private extension TSOutgoingMessage {
 
 private extension TSGroupThread {
     static func randomForTesting() -> TSGroupThread {
-        let groupId = UInt8.random(in: 1...255)
-        return .forUnitTest(groupId: groupId)
+        let groupIdData = Randomness.generateRandomBytes(32)
+        return .forUnitTest(groupId: groupIdData)
     }
 }

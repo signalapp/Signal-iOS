@@ -347,7 +347,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         callDirection: CallRecord.CallDirection,
         groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
     ) -> (CallRecord, Data) {
-        let thread = TSGroupThread.forUnitTest(groupId: groupId)
+        let thread = TSGroupThread.forUnitTest(groupId: Data(repeating: groupId, count: 32))
 
         let (_, interactionRowId) = mockDB.write { tx in
             mockThreadStore.insertThread(thread)
@@ -720,7 +720,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
     }
 
     func testCreatesGroupCall() {
-        let groupThread = TSGroupThread.forUnitTest()
+        let groupThread = TSGroupThread.forUnitTest(groupId: Randomness.generateRandomBytes(32))
         mockThreadStore.insertThread(groupThread)
 
         func simulateIncoming(

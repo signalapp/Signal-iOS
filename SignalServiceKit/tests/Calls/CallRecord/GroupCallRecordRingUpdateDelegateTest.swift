@@ -43,7 +43,7 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
     /// case "premise", then simulates those ring updates to potentially
     /// "result" in a call record update and verifies the result is as expected.
     func testReceivedRingUpdateForExisting() {
-        let groupThread: TSGroupThread = .forUnitTest()
+        let groupThread: TSGroupThread = .forUnitTest(groupId: Randomness.generateRandomBytes(32))
         mockThreadStore.insertThread(groupThread)
 
         struct Premise: Hashable {
@@ -167,7 +167,7 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
     func testReceivedRingUpdateForExistingOutgoingCallDoesNotUpdate() {
         let ringId: Int64 = .maxRandom
 
-        let groupThread: TSGroupThread = .forUnitTest()
+        let groupThread: TSGroupThread = .forUnitTest(groupId: Data(repeating: 0, count: 32))
         mockThreadStore.insertThread(groupThread)
 
         mockDB.write { tx in
@@ -203,7 +203,7 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
     // MARK: - Creating new call records
 
     func testReceivedRingUpdateForNewCallRecord() {
-        let groupThread: TSGroupThread = .forUnitTest()
+        let groupThread: TSGroupThread = .forUnitTest(groupId: Data(repeating: 0, count: 32))
         mockThreadStore.insertThread(groupThread)
 
         struct Result {
@@ -258,7 +258,7 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
     func testReceivedRingUpdateForDeletedCallRecordDoesNothing() {
         mockCallRecordStore.fetchMock = { .matchDeleted }
 
-        let groupThread: TSGroupThread = .forUnitTest()
+        let groupThread: TSGroupThread = .forUnitTest(groupId: Data(repeating: 0, count: 32))
         mockThreadStore.insertThread(groupThread)
 
         mockGroupCallRecordManager.updateStub = { _, _ in

@@ -29,9 +29,9 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
         let bobPhoneNumber3 = E164("+16505550177")!
         let bobAddress1 = ssaCache.makeAddress(serviceId: bobAci, phoneNumber: bobPhoneNumber1)
 
-        let groupWithEveryone = TSGroupThread.forUnitTest(groupId: 1, groupMembers: [myAddress1, aliceAddress1, bobAddress1])
-        let groupWithoutAlice = TSGroupThread.forUnitTest(groupId: 2, groupMembers: [myAddress1, bobAddress1])
-        let groupArchived = TSGroupThread.forUnitTest(groupId: 3, groupMembers: [myAddress1, aliceAddress1, bobAddress1])
+        let groupWithEveryone = TSGroupThread.forUnitTest(groupId: Randomness.generateRandomBytes(32), groupMembers: [myAddress1, aliceAddress1, bobAddress1])
+        let groupWithoutAlice = TSGroupThread.forUnitTest(groupId: Randomness.generateRandomBytes(32), groupMembers: [myAddress1, bobAddress1])
+        let groupArchived = TSGroupThread.forUnitTest(groupId: Randomness.generateRandomBytes(32), groupMembers: [myAddress1, aliceAddress1, bobAddress1])
 
         let myThread = TSContactThread(contactAddress: myAddress1)
         myThread.shouldThreadBeVisible = true

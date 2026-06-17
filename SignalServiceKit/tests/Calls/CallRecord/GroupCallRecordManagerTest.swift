@@ -389,6 +389,6 @@ private class SnoopingGroupCallRecordManagerImpl: GroupCallRecordManagerImpl {
 
 private extension TSGroupThread {
     static func randomForTesting() -> TSGroupThread {
-        return .forUnitTest(groupId: 12)
+        return .forUnitTest(groupId: Randomness.generateRandomBytes(32))
     }
 }

@@ -133,7 +133,7 @@ class GroupMemberUpdaterTest: XCTestCase {
         let groupThreadMemberAddresses = groupThreadMembers.map {
             makeAddress(serviceId: $0.serviceId, phoneNumber: $0.phoneNumber)
         }
-        let groupThread = TSGroupThread.forUnitTest(groupMembers: groupThreadMemberAddresses)
+        let groupThread = TSGroupThread.forUnitTest(groupId: Randomness.generateRandomBytes(32), groupMembers: groupThreadMemberAddresses)
 
         for fetchableInteractionTimestamp in fetchableInteractionTimestamps {
             mockGroupMemberUpdaterTemporaryShims.fetchableLatestInteractionTimestamps.append((

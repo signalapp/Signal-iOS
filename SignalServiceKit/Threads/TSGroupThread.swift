@@ -335,31 +335,20 @@ open class TSGroupThread: TSThread {
 
 #if TESTABLE_BUILD
     static func forUnitTest(
-        groupId: UInt8 = 0,
-        groupMembers: [SignalServiceAddress] = [],
-    ) -> TSGroupThread {
-        return _forUnitTest(
-            groupId: Data(repeating: groupId, count: 32),
-            secretParamsData: Data(count: 1),
-            groupMembers: groupMembers,
-        )
-    }
-
-    static func forUnitTest(
         masterKey: GroupMasterKey,
         groupMembers: [SignalServiceAddress] = [],
     ) -> TSGroupThread {
         let secretParams = try! GroupSecretParams.deriveFromMasterKey(groupMasterKey: masterKey)
-        return _forUnitTest(
+        return forUnitTest(
             groupId: try! secretParams.getPublicParams().getGroupIdentifier().serialize(),
             secretParamsData: secretParams.serialize(),
             groupMembers: groupMembers,
         )
     }
 
-    private static func _forUnitTest(
+    static func forUnitTest(
         groupId: Data,
-        secretParamsData: Data,
+        secretParamsData: Data = Data(count: 1),
         groupMembers: [SignalServiceAddress] = [],
     ) -> TSGroupThread {
         let groupThreadId = TSGroupThread.defaultThreadId(forGroupId: groupId)
