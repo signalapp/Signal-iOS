@@ -1,2 +1,1 @@
-• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
-• We also fixed a bug that prevented link previews from working correctly in Stories.
+• 有料のバックアッププランでは、新しい最適化設定により、古い添付ファイルを安全に保存してスマートフォンの空き容量を増やすことができます。エンドツーエンド暗号化されたこれらのファイルは、いつでも個人バックアップから再ダウンロードできます。

@@ -1,2 +1,1 @@
-• Now you can enable the new "Optimize On-Device Storage" setting on a paid backup plan to securely offload older Signal attachments and free up space on your phone. These end-to-end encrypted files can be re-downloaded from your personal backup anytime.
-• We also fixed a bug that prevented link previews from working correctly in Stories.
+• يمكنك الآن تفعيل إعداد "تحسين سعة تخزين الجهاز" الجديد ضمن خطة النسخ الاحتياطي المدفوعة، لنقل مرفقات سيجنال القديمة بأمان وتوفير مساحة على هاتفك. يمكنك إعادة تنزيل هذه الملفات المُشفَّرة من طرف إلى طرف من نسختك الاحتياطية في أي وقت.
