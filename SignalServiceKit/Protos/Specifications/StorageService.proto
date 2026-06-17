@@ -279,10 +279,10 @@ message AccountRecord {
   // 44 and 45 related to notification profiles
   bool automaticKeyVerificationDisabled = 46;
   bool seenAdminDeleteEducationDialog = 47;
-  bool releaseNotesChatArchived = 48;
-  uint64 releaseNotesChatMutedUntilTimestamp = 49;
-  bool releaseNotesChatBlocked = 50;
-  bool releaseNotesChatMarkedUnread = 51;
+  optional bool releaseNotesChatArchived = 48;
+  optional uint64 releaseNotesChatMutedUntilTimestamp = 49;
+  optional bool releaseNotesChatBlocked = 50;
+  optional bool releaseNotesChatMarkedUnread = 51;
 }
 
 message StoryDistributionListRecord {

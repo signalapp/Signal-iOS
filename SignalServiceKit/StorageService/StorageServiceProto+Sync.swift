@@ -1819,23 +1819,47 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: releaseNotesThread, transaction: transaction)
 
         let localReleaseNotesBlocked = blockingManager.isReleaseNotesThreadBlocked(tx: transaction)
-        if localReleaseNotesBlocked != record.releaseNotesChatBlocked {
-            if record.releaseNotesChatBlocked {
+        if
+            let newReleaseNotesBlocked = record.releaseNotesChatBlocked,
+            localReleaseNotesBlocked != newReleaseNotesBlocked
+        {
+            if newReleaseNotesBlocked {
                 blockingManager.addBlockedReleaseNotesThread(thread: releaseNotesThread, blockMode: .remote, transaction: transaction)
             } else {
                 blockingManager.removeBlockedReleaseNotesThread(thread: releaseNotesThread, wasLocallyInitiated: false, transaction: transaction)
             }
         }
 
+        var updatedMutedTimestampValue: UInt64? = nil
+        var updatedArchivedValue: Bool? = nil
+        var updatedUnreadValue: Bool? = nil
+
         if
-            threadAssociatedData.mutedUntilTimestamp != record.releaseNotesChatMutedUntilTimestamp
-            || threadAssociatedData.isArchived != record.releaseNotesChatArchived
-            || threadAssociatedData.isMarkedUnread != record.releaseNotesChatMarkedUnread
+            let recordMutedUntilTimestamp = record.releaseNotesChatMutedUntilTimestamp,
+            recordMutedUntilTimestamp != threadAssociatedData.mutedUntilTimestamp
         {
+            updatedMutedTimestampValue = recordMutedUntilTimestamp
+        }
+
+        if
+            let recordArchived = record.releaseNotesChatArchived,
+            recordArchived != threadAssociatedData.isArchived
+        {
+            updatedArchivedValue = recordArchived
+        }
+
+        if
+            let recordUnread = record.releaseNotesChatMarkedUnread,
+            recordUnread != threadAssociatedData.isMarkedUnread
+        {
+            updatedUnreadValue = recordUnread
+        }
+
+        if updatedArchivedValue != nil || updatedUnreadValue != nil || updatedMutedTimestampValue != nil {
             threadAssociatedData.updateWith(
-                isArchived: record.releaseNotesChatArchived,
-                isMarkedUnread: record.releaseNotesChatMarkedUnread,
-                mutedUntilTimestamp: record.releaseNotesChatMutedUntilTimestamp,
+                isArchived: updatedArchivedValue,
+                isMarkedUnread: updatedUnreadValue,
+                mutedUntilTimestamp: updatedMutedTimestampValue,
                 updateStorageService: false,
                 transaction: transaction,
             )

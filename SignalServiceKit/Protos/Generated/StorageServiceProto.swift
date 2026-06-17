@@ -3599,18 +3599,46 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     public var seenAdminDeleteEducationDialog: Bool {
         return proto.seenAdminDeleteEducationDialog
     }
-    public var releaseNotesChatArchived: Bool {
+    public var releaseNotesChatArchived: Bool? {
+        guard hasReleaseNotesChatArchived else {
+            return nil
+        }
         return proto.releaseNotesChatArchived
     }
-    public var releaseNotesChatMutedUntilTimestamp: UInt64 {
+    public var hasReleaseNotesChatArchived: Bool {
+        return proto.hasReleaseNotesChatArchived
+    }
+
+    public var releaseNotesChatMutedUntilTimestamp: UInt64? {
+        guard hasReleaseNotesChatMutedUntilTimestamp else {
+            return nil
+        }
         return proto.releaseNotesChatMutedUntilTimestamp
     }
-    public var releaseNotesChatBlocked: Bool {
+    public var hasReleaseNotesChatMutedUntilTimestamp: Bool {
+        return proto.hasReleaseNotesChatMutedUntilTimestamp
+    }
+
+    public var releaseNotesChatBlocked: Bool? {
+        guard hasReleaseNotesChatBlocked else {
+            return nil
+        }
         return proto.releaseNotesChatBlocked
     }
-    public var releaseNotesChatMarkedUnread: Bool {
+    public var hasReleaseNotesChatBlocked: Bool {
+        return proto.hasReleaseNotesChatBlocked
+    }
+
+    public var releaseNotesChatMarkedUnread: Bool? {
+        guard hasReleaseNotesChatMarkedUnread else {
+            return nil
+        }
         return proto.releaseNotesChatMarkedUnread
     }
+    public var hasReleaseNotesChatMarkedUnread: Bool {
+        return proto.hasReleaseNotesChatMarkedUnread
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -3752,10 +3780,18 @@ extension StorageServiceProtoAccountRecord {
         }
         builder.setAutomaticKeyVerificationDisabled(automaticKeyVerificationDisabled)
         builder.setSeenAdminDeleteEducationDialog(seenAdminDeleteEducationDialog)
-        builder.setReleaseNotesChatArchived(releaseNotesChatArchived)
-        builder.setReleaseNotesChatMutedUntilTimestamp(releaseNotesChatMutedUntilTimestamp)
-        builder.setReleaseNotesChatBlocked(releaseNotesChatBlocked)
-        builder.setReleaseNotesChatMarkedUnread(releaseNotesChatMarkedUnread)
+        if let _value = releaseNotesChatArchived {
+            builder.setReleaseNotesChatArchived(_value)
+        }
+        if let _value = releaseNotesChatMutedUntilTimestamp {
+            builder.setReleaseNotesChatMutedUntilTimestamp(_value)
+        }
+        if let _value = releaseNotesChatBlocked {
+            builder.setReleaseNotesChatBlocked(_value)
+        }
+        if let _value = releaseNotesChatMarkedUnread {
+            builder.setReleaseNotesChatMarkedUnread(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }

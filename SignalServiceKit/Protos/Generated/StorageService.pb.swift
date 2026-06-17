@@ -902,24 +902,40 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
   }
 
   var releaseNotesChatArchived: Bool {
-    get {_storage._releaseNotesChatArchived}
+    get {_storage._releaseNotesChatArchived ?? false}
     set {_uniqueStorage()._releaseNotesChatArchived = newValue}
   }
+  /// Returns true if `releaseNotesChatArchived` has been explicitly set.
+  var hasReleaseNotesChatArchived: Bool {_storage._releaseNotesChatArchived != nil}
+  /// Clears the value of `releaseNotesChatArchived`. Subsequent reads from it will return its default value.
+  mutating func clearReleaseNotesChatArchived() {_uniqueStorage()._releaseNotesChatArchived = nil}
 
   var releaseNotesChatMutedUntilTimestamp: UInt64 {
-    get {_storage._releaseNotesChatMutedUntilTimestamp}
+    get {_storage._releaseNotesChatMutedUntilTimestamp ?? 0}
     set {_uniqueStorage()._releaseNotesChatMutedUntilTimestamp = newValue}
   }
+  /// Returns true if `releaseNotesChatMutedUntilTimestamp` has been explicitly set.
+  var hasReleaseNotesChatMutedUntilTimestamp: Bool {_storage._releaseNotesChatMutedUntilTimestamp != nil}
+  /// Clears the value of `releaseNotesChatMutedUntilTimestamp`. Subsequent reads from it will return its default value.
+  mutating func clearReleaseNotesChatMutedUntilTimestamp() {_uniqueStorage()._releaseNotesChatMutedUntilTimestamp = nil}
 
   var releaseNotesChatBlocked: Bool {
-    get {_storage._releaseNotesChatBlocked}
+    get {_storage._releaseNotesChatBlocked ?? false}
     set {_uniqueStorage()._releaseNotesChatBlocked = newValue}
   }
+  /// Returns true if `releaseNotesChatBlocked` has been explicitly set.
+  var hasReleaseNotesChatBlocked: Bool {_storage._releaseNotesChatBlocked != nil}
+  /// Clears the value of `releaseNotesChatBlocked`. Subsequent reads from it will return its default value.
+  mutating func clearReleaseNotesChatBlocked() {_uniqueStorage()._releaseNotesChatBlocked = nil}
 
   var releaseNotesChatMarkedUnread: Bool {
-    get {_storage._releaseNotesChatMarkedUnread}
+    get {_storage._releaseNotesChatMarkedUnread ?? false}
     set {_uniqueStorage()._releaseNotesChatMarkedUnread = newValue}
   }
+  /// Returns true if `releaseNotesChatMarkedUnread` has been explicitly set.
+  var hasReleaseNotesChatMarkedUnread: Bool {_storage._releaseNotesChatMarkedUnread != nil}
+  /// Clears the value of `releaseNotesChatMarkedUnread`. Subsequent reads from it will return its default value.
+  mutating func clearReleaseNotesChatMarkedUnread() {_uniqueStorage()._releaseNotesChatMarkedUnread = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2071,10 +2087,10 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _avatarColor: StorageServiceProtos_AvatarColor? = nil
     var _automaticKeyVerificationDisabled: Bool = false
     var _seenAdminDeleteEducationDialog: Bool = false
-    var _releaseNotesChatArchived: Bool = false
-    var _releaseNotesChatMutedUntilTimestamp: UInt64 = 0
-    var _releaseNotesChatBlocked: Bool = false
-    var _releaseNotesChatMarkedUnread: Bool = false
+    var _releaseNotesChatArchived: Bool? = nil
+    var _releaseNotesChatMutedUntilTimestamp: UInt64? = nil
+    var _releaseNotesChatBlocked: Bool? = nil
+    var _releaseNotesChatMarkedUnread: Bool? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -2308,18 +2324,18 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._seenAdminDeleteEducationDialog != false {
         try visitor.visitSingularBoolField(value: _storage._seenAdminDeleteEducationDialog, fieldNumber: 47)
       }
-      if _storage._releaseNotesChatArchived != false {
-        try visitor.visitSingularBoolField(value: _storage._releaseNotesChatArchived, fieldNumber: 48)
-      }
-      if _storage._releaseNotesChatMutedUntilTimestamp != 0 {
-        try visitor.visitSingularUInt64Field(value: _storage._releaseNotesChatMutedUntilTimestamp, fieldNumber: 49)
-      }
-      if _storage._releaseNotesChatBlocked != false {
-        try visitor.visitSingularBoolField(value: _storage._releaseNotesChatBlocked, fieldNumber: 50)
-      }
-      if _storage._releaseNotesChatMarkedUnread != false {
-        try visitor.visitSingularBoolField(value: _storage._releaseNotesChatMarkedUnread, fieldNumber: 51)
-      }
+      try { if let v = _storage._releaseNotesChatArchived {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 48)
+      } }()
+      try { if let v = _storage._releaseNotesChatMutedUntilTimestamp {
+        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 49)
+      } }()
+      try { if let v = _storage._releaseNotesChatBlocked {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 50)
+      } }()
+      try { if let v = _storage._releaseNotesChatMarkedUnread {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 51)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
