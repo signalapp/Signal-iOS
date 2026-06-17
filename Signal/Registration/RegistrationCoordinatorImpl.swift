@@ -1363,15 +1363,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 accountIdentity: accountIdentity,
             )
 
-        case .changingNumber(let changeNumberState):
-            if let pniState = changeNumberState.pniState {
-                await finalizeChangeNumberPniState(
-                    changeNumberState: changeNumberState,
-                    pniState: pniState,
-                    accountIdentity: accountIdentity,
-                )
-            }
-            return await updateAccountAttributesAndFinish(accountIdentity: accountIdentity, failureCount: 0)
+        case .changingNumber:
+            owsFail("must not call for change number")
         }
     }
 
@@ -3506,12 +3499,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 inMemoryState.hasOpenedConnection = true
             }
 
-        case .changingNumber:
-            let accountEntropyPool = getOrGenerateAccountEntropyPool()
-            return await exportAndWipeState(
-                accountEntropyPool: accountEntropyPool,
-                accountIdentity: accountIdentity,
-            )
+        case .changingNumber(let changeNumberState):
+            if let pniState = changeNumberState.pniState {
+                await finalizeChangeNumberPniState(
+                    changeNumberState: changeNumberState,
+                    pniState: pniState,
+                    accountIdentity: accountIdentity,
+                )
+            }
+            return await updateAccountAttributesAndFinish(accountIdentity: accountIdentity, failureCount: 0)
         }
 
         // We _must_ do these steps first.
