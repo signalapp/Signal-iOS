@@ -454,19 +454,28 @@ struct ConversationHeaderBuilder {
             let stackView = UIStackView()
             stackView.axis = .horizontal
             stackView.spacing = 16
+            stackView.alignment = .center
 
             let iconImage = Theme.iconImage(icon)
+            let iconSize: CGFloat = 15
             let imageView = UIImageView(image: iconImage)
             imageView.contentMode = .scaleAspectFit
             imageView.tintColor = Theme.primaryIconColor
-            imageView.autoSetDimensions(to: .square(15))
+            imageView.autoSetDimensions(to: .square(iconSize))
             stackView.addArrangedSubview(imageView)
+
+            // 16 comes from the hMargin of the backgroundContainer
+            let marginAndIconWidth = (16 * 2) + iconSize + stackView.spacing
+            let maxAvailableLabelWidth = delegate.tableViewController.view.width
+                - (delegate.tableViewController.cellOuterInsets.totalWidth + marginAndIconWidth)
 
             let label = UILabel()
             label.textAlignment = .natural
             label.numberOfLines = 0
             label.font = .dynamicTypeSubheadline
             label.text = text
+            label.lineBreakMode = .byWordWrapping
+            label.preferredMaxLayoutWidth = maxAvailableLabelWidth
 
             stackView.addArrangedSubview(label)
 
