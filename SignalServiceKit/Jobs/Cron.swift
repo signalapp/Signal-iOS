@@ -325,11 +325,25 @@ public class Cron {
         operation: () async throws(E) -> T,
         ctx: CronContext,
     ) async throws(E) -> Result<T, any Error> {
+        // If we're not registered, stop immediately and don't wait for any
+        // connection to open. Cron will be triggered again after we register, so
+        // we can/should fail quickly.
+        if mustBeRegistered, !ctx.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
+            return .failure(NotRegisteredError())
+        }
+
         // Before each attempt, wait until the network is available.
         do throws(CancellationError) {
             if mustBeConnected {
                 if mustBeRegistered {
                     try await ctx.chatConnectionManager.waitForIdentifiedConnectionToOpen()
+                    // The connection may open during registration when we've not yet completed
+                    // registration. Guard against this case by checking again after waiting
+                    // for the connection to open.
+                    // TODO: Don't open the connection until we're registered.
+                    if !ctx.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
+                        return .failure(NotRegisteredError())
+                    }
                 } else {
                     try await ctx.chatConnectionManager.waitForUnidentifiedConnectionToOpen()
                 }
@@ -338,10 +352,6 @@ public class Cron {
             return .failure(error)
         }
 
-        // Before each attempt, check if we're registered.
-        if mustBeRegistered, !ctx.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-            return .failure(NotRegisteredError())
-        }
         if let mustBeDeviceType, ctx.tsAccountManager.registrationStateWithMaybeSneakyTransaction.deviceType != mustBeDeviceType {
             return .failure(OWSGenericError("must be \(mustBeDeviceType)"))
         }
