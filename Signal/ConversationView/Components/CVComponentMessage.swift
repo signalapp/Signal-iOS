@@ -2891,6 +2891,18 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
     }
 
+    private func messageAllowsSwipeReplyAction() -> Bool {
+        guard
+            !wasRemotelyDeleted,
+            !thread.isReleaseNotesThread,
+            !thread.isTerminatedGroup,
+            !thread.isBlockedByAnnouncementOnly
+        else {
+            return false
+        }
+        return true
+    }
+
     private func tryToApplySwipeAction(componentView: CVComponentViewMessage) {
         AssertIsOnMainThread()
 
@@ -2898,7 +2910,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return
         }
 
-        guard !wasRemotelyDeleted else {
+        guard messageAllowsSwipeReplyAction() else {
             return
         }
 
