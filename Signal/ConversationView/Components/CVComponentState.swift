@@ -1374,7 +1374,7 @@ private extension CVComponentState.Builder {
                             .paidExpiringSoon(let optimizeLocalStorage):
                             if
                                 optimizeLocalStorage,
-                                canAutoDownloadAttachment(referencedAttachment: attachment),
+                                canAutoDownloadAttachment(pointer: pointer, reference: attachment),
                                 attachment.attachment.localRelativeFilePathThumbnail != nil
                             {
                                 // If optimize storage is enabled, auto-downloads are enabled,
@@ -1425,16 +1425,19 @@ private extension CVComponentState.Builder {
         return result
     }
 
-    private func canAutoDownloadAttachment(referencedAttachment: ReferencedAttachment) -> Bool {
+    private func canAutoDownloadAttachment(pointer: AttachmentPointer, reference: ReferencedAttachment) -> Bool {
         let mediaBandwidthPreferenceStore = DependenciesBridge.shared.mediaBandwidthPreferenceStore
         let reachabilityManager = SSKEnvironment.shared.reachabilityManagerRef
 
         let policy = AutoDownloadPolicy.build(
             context: .body,
-            mimeType: referencedAttachment.attachment.mimeType,
-            renderingFlag: referencedAttachment.reference.renderingFlag,
+            mimeType: reference.attachment.mimeType,
+            renderingFlag: reference.reference.renderingFlag,
+            plaintextSize: UInt64(safeCast: pointer.unencryptedByteCount),
         )
         switch policy {
+        case .never:
+            return false
         case .always:
             return true
         case .preference(let mediaType):

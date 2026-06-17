@@ -6,8 +6,9 @@
 import Foundation
 
 public enum AutoDownloadPolicy {
-    case always
+    case never
     case preference(mediaType: MediaBandwidthPreferences.MediaType)
+    case always
 
     public enum AttachmentContext {
         case avatar
@@ -19,11 +20,21 @@ public enum AutoDownloadPolicy {
         case wallpaper
     }
 
+    public enum Constants {
+        public static let alwaysLimit = 100 * UInt64.kilobyte
+        public static let neverLimit = 200 * UInt64.megabyte
+    }
+
     public static func build(
         context: AttachmentContext,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
+        plaintextSize: UInt64,
     ) -> Self {
+        let estimatedEncryptedSize = PaddingBucket.forUnpaddedPlaintextSize(plaintextSize)?.encryptedSize ?? .max
+        guard estimatedEncryptedSize <= Constants.neverLimit else {
+            return .never
+        }
         switch context {
         case .avatar:
             return .always
@@ -35,7 +46,7 @@ public enum AutoDownloadPolicy {
                 return .preference(mediaType: .video)
             }
             if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
-                if renderingFlag == .voiceMessage {
+                if renderingFlag == .voiceMessage, estimatedEncryptedSize < Constants.alwaysLimit {
                     return .always
                 }
                 return .preference(mediaType: .audio)
@@ -46,6 +57,9 @@ public enum AutoDownloadPolicy {
         case .reply:
             return .always
         case .sticker:
+            if estimatedEncryptedSize < Constants.alwaysLimit {
+                return .always
+            }
             return .preference(mediaType: .photo)
         case .text:
             return .always

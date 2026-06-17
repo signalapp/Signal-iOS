@@ -7,10 +7,14 @@ import SignalServiceKit
 import SignalUI
 
 class DataSettingsTableViewController: OWSTableViewController2 {
+    private var attachmentLimits: IncomingAttachmentLimits!
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString("SETTINGS_DATA_TITLE", comment: "The title for the data settings.")
+
+        self.attachmentLimits = IncomingAttachmentLimits.currentLimits(remoteConfig: .current)
 
         updateTableContents()
 
@@ -37,10 +41,24 @@ class DataSettingsTableViewController: OWSTableViewController2 {
             "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER",
             comment: "Header for the 'media auto-download' section in the data settings.",
         )
-        autoDownloadSection.footerTitle = OWSLocalizedString(
-            "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER",
-            comment: "Footer for the 'media auto-download' section in the data settings.",
-        )
+        var footerStrings = [String]()
+        footerStrings.append(String.nonPluralLocalizedStringWithFormat(
+            OWSLocalizedString(
+                "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER",
+                comment: "Footer for the 'media auto-download' section in the data settings. The replacement will be a formatted file size, such as '100 KB'.",
+            ),
+            AutoDownloadPolicy.Constants.alwaysLimit.formatted(.owsByteCount(zeroPadFractionDigits: false)),
+        ))
+        if AutoDownloadPolicy.Constants.neverLimit < self.attachmentLimits.maxEncryptedBytes {
+            footerStrings.append(String.nonPluralLocalizedStringWithFormat(
+                OWSLocalizedString(
+                    "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_NEVER_FOOTER",
+                    comment: "Footer for the 'media auto-download' section in the data settings. The replacement will be a formatted file size, such as '200 MB'.",
+                ),
+                AutoDownloadPolicy.Constants.neverLimit.formatted(.owsByteCount(zeroPadFractionDigits: false)),
+            ))
+        }
+        autoDownloadSection.footerTitle = footerStrings.joined(separator: " ")
 
         let mediaDownloadTypes = MediaBandwidthPreferences.MediaType.allCases
         var hasNonDefaultValue = false

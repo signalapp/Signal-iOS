@@ -10,8 +10,9 @@ import Testing
 extension AutoDownloadPolicy: @retroactive Equatable {
     static func ==(lhs: Self, rhs: Self) -> Bool {
         switch (lhs, rhs) {
-        case (.always, .always): true
+        case (.never, .never): true
         case (.preference(let lhs), .preference(let rhs)): lhs == rhs
+        case (.always, .always): true
         default: false
         }
     }
@@ -23,29 +24,37 @@ enum AutoDownloadPolicyTest {
             var context: AutoDownloadPolicy.AttachmentContext
             var mimeType: String
             var renderingFlag: AttachmentReference.RenderingFlag
+            var plaintextSize: UInt64
             var expectedPolicy: AutoDownloadPolicy
         }
 
         @Test(arguments: [
-            TestCase(context: .body, mimeType: "image/jpeg", renderingFlag: .default, expectedPolicy: .preference(mediaType: .photo)),
-            TestCase(context: .body, mimeType: "video/mp4", renderingFlag: .default, expectedPolicy: .preference(mediaType: .video)),
-            TestCase(context: .body, mimeType: "audio/aac", renderingFlag: .voiceMessage, expectedPolicy: .always),
-            TestCase(context: .body, mimeType: "audio/aac", renderingFlag: .default, expectedPolicy: .preference(mediaType: .audio)),
-            TestCase(context: .body, mimeType: "text/plain", renderingFlag: .default, expectedPolicy: .preference(mediaType: .document)),
-            TestCase(context: .text, mimeType: "text/x-signal-plain", renderingFlag: .default, expectedPolicy: .always),
-            TestCase(context: .text, mimeType: "text/plain", renderingFlag: .default, expectedPolicy: .always),
-            TestCase(context: .text, mimeType: "image/jpeg", renderingFlag: .default, expectedPolicy: .always),
-            TestCase(context: .sticker, mimeType: "image/webp", renderingFlag: .default, expectedPolicy: .preference(mediaType: .photo)),
-            TestCase(context: .sticker, mimeType: "video/mp4", renderingFlag: .default, expectedPolicy: .preference(mediaType: .photo)),
-            TestCase(context: .link, mimeType: "image/png", renderingFlag: .default, expectedPolicy: .always),
-            TestCase(context: .reply, mimeType: "image/jpeg", renderingFlag: .default, expectedPolicy: .always),
-            TestCase(context: .wallpaper, mimeType: "image/png", renderingFlag: .default, expectedPolicy: .always),
+            TestCase(context: .body, mimeType: "image/jpeg", renderingFlag: .default, plaintextSize: 50_000, expectedPolicy: .preference(mediaType: .photo)),
+            TestCase(context: .body, mimeType: "image/jpeg", renderingFlag: .default, plaintextSize: 199_000_000, expectedPolicy: .never),
+            TestCase(context: .body, mimeType: "video/mp4", renderingFlag: .default, plaintextSize: 50_000, expectedPolicy: .preference(mediaType: .video)),
+            TestCase(context: .body, mimeType: "video/mp4", renderingFlag: .default, plaintextSize: 500_000_000, expectedPolicy: .never),
+            TestCase(context: .body, mimeType: "audio/aac", renderingFlag: .voiceMessage, plaintextSize: 50_000, expectedPolicy: .always),
+            TestCase(context: .body, mimeType: "audio/aac", renderingFlag: .voiceMessage, plaintextSize: 100_001, expectedPolicy: .preference(mediaType: .audio)),
+            TestCase(context: .body, mimeType: "audio/aac", renderingFlag: .voiceMessage, plaintextSize: 200_000_001, expectedPolicy: .never),
+            TestCase(context: .body, mimeType: "audio/aac", renderingFlag: .default, plaintextSize: 50_000, expectedPolicy: .preference(mediaType: .audio)),
+            TestCase(context: .body, mimeType: "text/plain", renderingFlag: .default, plaintextSize: 50_000, expectedPolicy: .preference(mediaType: .document)),
+            TestCase(context: .body, mimeType: "text/plain", renderingFlag: .default, plaintextSize: 200_000_000, expectedPolicy: .never),
+            TestCase(context: .text, mimeType: "text/x-signal-plain", renderingFlag: .default, plaintextSize: 50_000, expectedPolicy: .always),
+            TestCase(context: .text, mimeType: "text/plain", renderingFlag: .default, plaintextSize: 50_000, expectedPolicy: .always),
+            TestCase(context: .text, mimeType: "image/jpeg", renderingFlag: .default, plaintextSize: 50_000, expectedPolicy: .always),
+            TestCase(context: .sticker, mimeType: "image/webp", renderingFlag: .default, plaintextSize: 50_000, expectedPolicy: .always),
+            TestCase(context: .sticker, mimeType: "image/webp", renderingFlag: .default, plaintextSize: 101_000, expectedPolicy: .preference(mediaType: .photo)),
+            TestCase(context: .sticker, mimeType: "video/mp4", renderingFlag: .default, plaintextSize: 50_000, expectedPolicy: .always),
+            TestCase(context: .link, mimeType: "image/png", renderingFlag: .default, plaintextSize: 50_000, expectedPolicy: .always),
+            TestCase(context: .reply, mimeType: "image/jpeg", renderingFlag: .default, plaintextSize: 50_000, expectedPolicy: .always),
+            TestCase(context: .wallpaper, mimeType: "image/png", renderingFlag: .default, plaintextSize: 50_000, expectedPolicy: .always),
         ])
         func testForMimeType(testCase: TestCase) {
             let actualPolicy = AutoDownloadPolicy.build(
                 context: testCase.context,
                 mimeType: testCase.mimeType,
                 renderingFlag: testCase.renderingFlag,
+                plaintextSize: testCase.plaintextSize,
             )
             #expect(actualPolicy == testCase.expectedPolicy)
         }

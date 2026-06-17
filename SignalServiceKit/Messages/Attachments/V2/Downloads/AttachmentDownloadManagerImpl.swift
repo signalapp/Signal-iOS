@@ -1342,8 +1342,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             let blockedByAutoDownloadSettings = self.isDownloadBlockedByAutoDownloadSettings(
                 priority: priority,
                 owner: reference.owner,
-                renderingFlag: reference.renderingFlag,
                 mimeType: mimeType,
+                renderingFlag: reference.renderingFlag,
+                plaintextSize: reference.sourceUnencryptedByteCount.map(UInt64.init(safeCast:)),
                 tx: tx,
             )
             if blockedByAutoDownloadSettings {
@@ -1473,8 +1474,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private func isDownloadBlockedByAutoDownloadSettings(
             priority: AttachmentDownloadPriority,
             owner: AttachmentReference.Owner,
-            renderingFlag: AttachmentReference.RenderingFlag,
             mimeType: String,
+            renderingFlag: AttachmentReference.RenderingFlag,
+            plaintextSize: UInt64?,
             tx: DBReadTransaction,
         ) -> Bool {
             switch priority {
@@ -1508,8 +1510,17 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .thread(.threadWallpaperImage), .thread(.globalThreadWallpaperImage):
                 context = .wallpaper
             }
-            let policy = AutoDownloadPolicy.build(context: context, mimeType: mimeType, renderingFlag: renderingFlag)
+            let policy = AutoDownloadPolicy.build(
+                context: context,
+                mimeType: mimeType,
+                renderingFlag: renderingFlag,
+                // TODO: Enforce that we always have a plaintext size at compile time.
+                plaintextSize: plaintextSize ?? .max,
+            )
             switch policy {
+            case .never:
+                // If we can never auto download it, then it's always blocked.
+                return true
             case .always:
                 // If we can always auto download it, then it's never blocked.
                 return false
