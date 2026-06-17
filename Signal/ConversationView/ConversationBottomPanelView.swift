@@ -60,6 +60,7 @@ class ConversationBottomPanelView: UIView {
             addSubview(glassContainerView)
             glassContainerView.translatesAutoresizingMaskIntoConstraints = false
 
+            backgroundView.clipsToBounds = true
             backgroundView.cornerConfiguration = .uniformBottomRadius(
                 .containerConcentric(minimum: 26),
                 topLeftRadius: .fixed(26),
