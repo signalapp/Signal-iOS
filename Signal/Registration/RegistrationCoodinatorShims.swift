@@ -83,11 +83,11 @@ public class _RegistrationCoordinator_CNContactsStoreWrapper: _RegistrationCoord
         await withCheckedContinuation { continuation in
             CNContactStore().requestAccess(for: CNEntityType.contacts) { granted, error -> Void in
                 if granted {
-                    Logger.info("User granted contacts permission")
+                    Logger.info("contacts permission granted")
+                } else if let error, case CNError.authorizationDenied = error {
+                    Logger.info("contacts permission denied")
                 } else {
-                    // Unfortunately, we can't easily disambiguate "not granted" and
-                    // "other error".
-                    Logger.warn("User denied contacts permission or there was an error. Error: \(String(describing: error))")
+                    Logger.warn("contacts permission unavailable: \(String(describing: error))")
                 }
                 continuation.resume()
             }
