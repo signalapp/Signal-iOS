@@ -101,6 +101,7 @@ public enum ThemeIcon: UInt {
     case buttonCompose
     case buttonEdit
     case buttonMute
+    case buttonUnmute
     case buttonDelete
     case buttonSearch
     case buttonForward
@@ -392,8 +393,10 @@ public extension Theme {
             return "compose"
         case .buttonEdit:
             return "edit"
-        case .buttonMute:
+        case .buttonUnmute:
             return "bell-slash"
+        case .buttonMute:
+            return "bell"
         case .buttonDelete:
             return "trash"
         case .buttonSearch:

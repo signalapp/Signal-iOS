@@ -352,8 +352,9 @@ struct ConversationHeaderBuilder {
         }
 
         if options.contains(.mute) {
+            let icon: ThemeIcon = delegate.threadViewModel.isMuted ? .buttonUnmute : .buttonMute
             buttons.append(buildIconButton(
-                icon: .buttonMute,
+                icon: icon,
                 title: delegate.threadViewModel.isMuted
                     ? OWSLocalizedString(
                         "CONVERSATION_SETTINGS_MUTED_BUTTON",

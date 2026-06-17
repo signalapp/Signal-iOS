@@ -189,8 +189,9 @@ extension ConversationViewController {
     }
 
     public func updateReleaseNotesBarButtonItems() {
+        let icon: UIImage = threadViewModel.isMuted ? Theme.iconImage(.buttonUnmute) : Theme.iconImage(.buttonMute)
         let muteButton = UIBarButtonItem(
-            image: Theme.iconImage(.buttonMute),
+            image: icon,
             menu: ConversationSettingsViewController.muteUnmuteMenu(
                 for: threadViewModel,
                 actionExecuted: {},
@@ -217,11 +218,11 @@ extension ConversationViewController {
         let iconSpacer = UIDevice.current.isNarrowerThanIPhone6 ? hairSpace : thinSpace
         let betweenItemSpacer = UIDevice.current.isNarrowerThanIPhone6 ? " " : "  "
 
-        let isMuted = threadViewModel.isMuted
+        let needsMutedBadge = threadViewModel.isMuted && !thread.isReleaseNotesThread
         let hasTimer = disappearingMessagesConfiguration.isEnabled
         let badgeType = conversationViewModel.badgeType
 
-        if isMuted {
+        if needsMutedBadge {
             subtitleText.appendTemplatedImage(named: "bell-slash-compact", font: subtitleFont)
             if badgeType == nil {
                 subtitleText.append(iconSpacer, attributes: attributes)
@@ -236,7 +237,7 @@ extension ConversationViewController {
         }
 
         if hasTimer {
-            if isMuted {
+            if needsMutedBadge {
                 subtitleText.append(betweenItemSpacer, attributes: attributes)
             }
 
@@ -254,7 +255,7 @@ extension ConversationViewController {
         if let badgeType {
             switch badgeType {
             case .verified:
-                if hasTimer || isMuted {
+                if hasTimer || needsMutedBadge {
                     subtitleText.append(betweenItemSpacer, attributes: attributes)
                 }
 
@@ -266,7 +267,7 @@ extension ConversationViewController {
                     attributes: attributes,
                 )
             case .official:
-                if isMuted {
+                if needsMutedBadge {
                     subtitleText.append(betweenItemSpacer, attributes: attributes)
                 }
                 subtitleText.append(
