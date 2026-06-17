@@ -7045,12 +7045,6 @@
 /* Title for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_TITLE" = "Verify your Signal PIN";
 
-/* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again tomorrow.";
-
-/* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
-
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks, after successfully entering it. */
 "PIN_REMINDER_MEGAPHONE_TWO_WEEK_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again in a couple of weeks.";
 

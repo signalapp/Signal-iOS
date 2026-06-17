@@ -78,7 +78,6 @@ public class OWS2FAManager {
     // MARK: -
 
     public enum PinReminderRepetitionInterval: TimeInterval {
-        case oneDay
         case threeDays
         case oneWeek
         case twoWeeks
@@ -88,7 +87,6 @@ public class OWS2FAManager {
         /// a literal in the raw value, so `.day` and such don't work.
         public init?(rawValue: TimeInterval) {
             switch rawValue {
-            case Self.oneDay.rawValue: self = .oneDay
             case Self.threeDays.rawValue: self = .threeDays
             case Self.oneWeek.rawValue: self = .oneWeek
             case Self.twoWeeks.rawValue: self = .twoWeeks
@@ -99,7 +97,6 @@ public class OWS2FAManager {
 
         public var rawValue: TimeInterval {
             switch self {
-            case .oneDay: 1 * .day
             case .threeDays: 3 * .day
             case .oneWeek: 1 * .week
             case .twoWeeks: 2 * .week
@@ -119,7 +116,7 @@ public class OWS2FAManager {
             return persisted
         }
 
-        return .oneDay
+        return .threeDays
     }
 
     public func setRepetitionInterval(
@@ -195,9 +192,7 @@ public class OWS2FAManager {
         if let repetitionIntervalAdjustment {
             newInterval = switch (repetitionIntervalAdjustment, currentInterval) {
             case (.setTo(let _newInterval), _): _newInterval
-            case (.shorter, .oneDay): .oneDay
-            case (.longer, .oneDay): .threeDays
-            case (.shorter, .threeDays): .oneDay
+            case (.shorter, .threeDays): .threeDays
             case (.longer, .threeDays): .oneWeek
             case (.shorter, .oneWeek): .threeDays
             case (.longer, .oneWeek): .twoWeeks

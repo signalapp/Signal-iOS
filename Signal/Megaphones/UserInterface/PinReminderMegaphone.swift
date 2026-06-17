@@ -90,16 +90,6 @@ class PinReminderMegaphone: Megaphone {
 
         let toastText: String
         switch (newRepetitionInterval, wasSuccessful) {
-        case (.oneDay, false):
-            toastText = OWSLocalizedString(
-                "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST",
-                comment: "Toast indicating that we'll ask you for your PIN again tomorrow.",
-            )
-        case (.oneDay, true):
-            toastText = OWSLocalizedString(
-                "PIN_REMINDER_MEGAPHONE_TOMORROW_SUCCESSFUL_TOAST",
-                comment: "Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it.",
-            )
         case (.threeDays, false):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST",
