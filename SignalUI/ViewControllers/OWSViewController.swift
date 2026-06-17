@@ -306,10 +306,6 @@ open class OWSViewController: UIViewController {
         let isHorizontalCompact = traitCollection.horizontalSizeClass == .compact
         let isiPad = traitCollection.userInterfaceIdiom == .pad
 
-        Logger.debug("Vertical compact: [\(isVerticalCompact ? "Y" : "N")]")
-        Logger.debug("Horizontal compact: [\(isHorizontalCompact ? "Y" : "N")]")
-        Logger.debug("Layout margins: [\(view.layoutMarginsGuide.layoutFrame)]")
-
         // Vertical
         if isVerticalCompact {
             // Whole available height.
