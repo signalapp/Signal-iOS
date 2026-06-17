@@ -20,20 +20,33 @@ extension AutoDownloadPolicy: @retroactive Equatable {
 enum AutoDownloadPolicyTest {
     struct ForMimeType {
         struct TestCase {
+            var context: AutoDownloadPolicy.AttachmentContext
             var mimeType: String
             var renderingFlag: AttachmentReference.RenderingFlag
             var expectedPolicy: AutoDownloadPolicy
         }
 
         @Test(arguments: [
-            TestCase(mimeType: "image/jpeg", renderingFlag: .default, expectedPolicy: .preference(mediaType: .photo)),
-            TestCase(mimeType: "video/mp4", renderingFlag: .default, expectedPolicy: .preference(mediaType: .video)),
-            TestCase(mimeType: "audio/aac", renderingFlag: .voiceMessage, expectedPolicy: .always),
-            TestCase(mimeType: "audio/aac", renderingFlag: .default, expectedPolicy: .preference(mediaType: .audio)),
-            TestCase(mimeType: "text/plain", renderingFlag: .default, expectedPolicy: .preference(mediaType: .document)),
+            TestCase(context: .body, mimeType: "image/jpeg", renderingFlag: .default, expectedPolicy: .preference(mediaType: .photo)),
+            TestCase(context: .body, mimeType: "video/mp4", renderingFlag: .default, expectedPolicy: .preference(mediaType: .video)),
+            TestCase(context: .body, mimeType: "audio/aac", renderingFlag: .voiceMessage, expectedPolicy: .always),
+            TestCase(context: .body, mimeType: "audio/aac", renderingFlag: .default, expectedPolicy: .preference(mediaType: .audio)),
+            TestCase(context: .body, mimeType: "text/plain", renderingFlag: .default, expectedPolicy: .preference(mediaType: .document)),
+            TestCase(context: .text, mimeType: "text/x-signal-plain", renderingFlag: .default, expectedPolicy: .always),
+            TestCase(context: .text, mimeType: "text/plain", renderingFlag: .default, expectedPolicy: .always),
+            TestCase(context: .text, mimeType: "image/jpeg", renderingFlag: .default, expectedPolicy: .always),
+            TestCase(context: .sticker, mimeType: "image/webp", renderingFlag: .default, expectedPolicy: .preference(mediaType: .photo)),
+            TestCase(context: .sticker, mimeType: "video/mp4", renderingFlag: .default, expectedPolicy: .preference(mediaType: .photo)),
+            TestCase(context: .link, mimeType: "image/png", renderingFlag: .default, expectedPolicy: .always),
+            TestCase(context: .reply, mimeType: "image/jpeg", renderingFlag: .default, expectedPolicy: .always),
+            TestCase(context: .wallpaper, mimeType: "image/png", renderingFlag: .default, expectedPolicy: .always),
         ])
         func testForMimeType(testCase: TestCase) {
-            let actualPolicy = AutoDownloadPolicy.forMimeType(testCase.mimeType, renderingFlag: testCase.renderingFlag)
+            let actualPolicy = AutoDownloadPolicy.build(
+                context: testCase.context,
+                mimeType: testCase.mimeType,
+                renderingFlag: testCase.renderingFlag,
+            )
             #expect(actualPolicy == testCase.expectedPolicy)
         }
     }

@@ -1429,8 +1429,9 @@ private extension CVComponentState.Builder {
         let mediaBandwidthPreferenceStore = DependenciesBridge.shared.mediaBandwidthPreferenceStore
         let reachabilityManager = SSKEnvironment.shared.reachabilityManagerRef
 
-        let policy = AutoDownloadPolicy.forMimeType(
-            referencedAttachment.attachment.mimeType,
+        let policy = AutoDownloadPolicy.build(
+            context: .body,
+            mimeType: referencedAttachment.attachment.mimeType,
             renderingFlag: referencedAttachment.reference.renderingFlag,
         )
         switch policy {

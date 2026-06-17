@@ -1489,26 +1489,26 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return false
             }
 
-            let policy: AutoDownloadPolicy
+            let context: AutoDownloadPolicy.AttachmentContext
             switch owner {
             case .message(.bodyAttachment), .storyMessage(.media):
-                policy = .forMimeType(mimeType, renderingFlag: renderingFlag)
+                context = .body
             case .message(.oversizeText):
-                policy = .always
+                context = .text
             case .message(.sticker):
-                policy = .preference(mediaType: .photo)
+                context = .sticker
             case .message(.quotedReply):
-                policy = .always
+                context = .reply
             case .message(.linkPreview):
-                policy = .always
+                context = .link
             case .message(.contactAvatar):
-                policy = .always
+                context = .avatar
             case .storyMessage(.textStoryLinkPreview):
-                policy = .always
+                context = .link
             case .thread(.threadWallpaperImage), .thread(.globalThreadWallpaperImage):
-                policy = .always
+                context = .wallpaper
             }
-
+            let policy = AutoDownloadPolicy.build(context: context, mimeType: mimeType, renderingFlag: renderingFlag)
             switch policy {
             case .always:
                 // If we can always auto download it, then it's never blocked.
