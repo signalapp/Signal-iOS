@@ -8,6 +8,9 @@ import SignalServiceKit
 import UIKit
 
 class PinReminderMegaphone: Megaphone {
+    private var db: DB { DependenciesBridge.shared.db }
+    private var ows2FAManager: OWS2FAManager { SSKEnvironment.shared.ows2FAManagerRef }
+
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
         super.init(experienceUpgrade: experienceUpgrade)
 
@@ -15,9 +18,12 @@ class PinReminderMegaphone: Megaphone {
         bodyText = OWSLocalizedString("PIN_REMINDER_MEGAPHONE_BODY", comment: "Body for PIN reminder megaphone")
         image = .pinMegaphone
 
-        let primaryButtonTitle = OWSLocalizedString("PIN_REMINDER_MEGAPHONE_ACTION", comment: "Action text for PIN reminder megaphone")
-
-        let primaryButton = Button(title: primaryButtonTitle) { [weak fromViewController] in
+        let primaryButton = Button(
+            title: OWSLocalizedString(
+                "PIN_REMINDER_MEGAPHONE_ACTION",
+                comment: "Action text for PIN reminder megaphone",
+            ),
+        ) { [weak fromViewController] in
             guard let fromViewController else { return }
 
             let vc = PinReminderViewController { [weak self] pinReminderViewController, result in
@@ -47,7 +53,27 @@ class PinReminderMegaphone: Megaphone {
             fromViewController.present(vc, animated: true)
         }
 
-        buttons = [primaryButton]
+        let secondaryButton = Button(
+            title: CommonStrings.notNowButton,
+        ) { [weak self, weak fromViewController] in
+            guard let self, let fromViewController else { return }
+
+            db.write { tx in
+                self.ows2FAManager.recordReminderCompleted(
+                    repetitionIntervalAdjustment: nil,
+                    tx: tx,
+                )
+            }
+
+            presentToastForNewRepetitionInterval(
+                wasSuccessful: false,
+                fromViewController: fromViewController,
+            )
+
+            NotificationCenter.default.post(name: .megaphoneStateDidChange, object: nil)
+        }
+
+        buttons = [primaryButton, secondaryButton]
     }
 
     required init(coder: NSCoder) {
@@ -58,49 +84,53 @@ class PinReminderMegaphone: Megaphone {
         wasSuccessful: Bool,
         fromViewController: UIViewController,
     ) {
+        let newRepetitionInterval: OWS2FAManager.PinReminderRepetitionInterval = db.read { tx in
+            ows2FAManager.repetitionInterval(tx: tx)
+        }
+
         let toastText: String
-        switch (SSKEnvironment.shared.ows2FAManagerRef.repetitionInterval, wasSuccessful) {
-        case (1 * .day, false):
+        switch (newRepetitionInterval, wasSuccessful) {
+        case (.oneDay, false):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again tomorrow.",
             )
-        case (1 * .day, true):
+        case (.oneDay, true):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_TOMORROW_SUCCESSFUL_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it.",
             )
-        case (3 * .day, false):
+        case (.threeDays, false):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again in 3 days.",
             )
-        case (3 * .day, true):
+        case (.threeDays, true):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_SUCCESSFUL_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it.",
             )
-        case (7 * .day, false):
+        case (.oneWeek, false):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again in a week.",
             )
-        case (7 * .day, true):
+        case (.oneWeek, true):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_WEEK_SUCCESSFUL_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it.",
             )
-        case (14 * .day, false):
+        case (.twoWeeks, false):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again tomorrow.",
             )
-        case (14 * .day, true):
+        case (.twoWeeks, true):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_TWO_WEEK_SUCCESSFUL_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again in 2 weeks, after successfully entering it.",
             )
-        default:
+        case (.fourWeeks, _):
             toastText = MegaphoneStrings.weWillRemindYouLater
         }
 

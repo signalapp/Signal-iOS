@@ -77,27 +77,60 @@ public class OWS2FAManager {
 
     // MARK: -
 
-    static var allRepetitionIntervals: [TimeInterval] = [1 * .day, 3 * .day, 7 * .day, 14 * .day, 28 * .day]
-    var defaultRepetitionInterval: TimeInterval {
-        return Self.allRepetitionIntervals.first!
+    public enum PinReminderRepetitionInterval: TimeInterval {
+        case oneDay
+        case threeDays
+        case oneWeek
+        case twoWeeks
+        case fourWeeks
+
+        /// Manual implementation because `RawRepresentable` requires you to use
+        /// a literal in the raw value, so `.day` and such don't work.
+        public init?(rawValue: TimeInterval) {
+            switch rawValue {
+            case Self.oneDay.rawValue: self = .oneDay
+            case Self.threeDays.rawValue: self = .threeDays
+            case Self.oneWeek.rawValue: self = .oneWeek
+            case Self.twoWeeks.rawValue: self = .twoWeeks
+            case Self.fourWeeks.rawValue: self = .fourWeeks
+            default: return nil
+            }
+        }
+
+        public var rawValue: TimeInterval {
+            switch self {
+            case .oneDay: 1 * .day
+            case .threeDays: 3 * .day
+            case .oneWeek: 1 * .week
+            case .twoWeeks: 2 * .week
+            case .fourWeeks: 4 * .week
+            }
+        }
     }
 
-    public func setDefaultRepetitionInterval(transaction: DBWriteTransaction) {
-        keyValueStore.removeValue(forKey: StoreKeys.repetitionInterval, tx: transaction)
+    public func repetitionInterval(tx: DBReadTransaction) -> PinReminderRepetitionInterval {
+        if
+            let persisted = keyValueStore.fetchValue(
+                Double.self,
+                forKey: StoreKeys.repetitionInterval,
+                tx: tx,
+            ).flatMap({ PinReminderRepetitionInterval(rawValue: $0) })
+        {
+            return persisted
+        }
+
+        return .oneDay
     }
 
-    public func setDefaultRepetitionIntervalForBackupRestore(transaction: DBWriteTransaction) {
-        keyValueStore.writeValue(7 * .day, forKey: StoreKeys.repetitionInterval, tx: transaction)
-        // Reset the interval as part of the restore
-        setLastCompletedReminderDate(Date(), transaction: transaction)
-    }
-
-    public var repetitionInterval: TimeInterval {
-        return db.read { repetitionInterval(transaction: $0) }
-    }
-
-    func repetitionInterval(transaction: DBReadTransaction) -> TimeInterval {
-        return keyValueStore.fetchValue(Double.self, forKey: StoreKeys.repetitionInterval, tx: transaction) ?? defaultRepetitionInterval
+    public func setRepetitionInterval(
+        _ interval: PinReminderRepetitionInterval?,
+        tx: DBWriteTransaction,
+    ) {
+        if let interval {
+            keyValueStore.writeValue(interval.rawValue, forKey: StoreKeys.repetitionInterval, tx: tx)
+        } else {
+            keyValueStore.removeValue(forKey: StoreKeys.repetitionInterval, tx: tx)
+        }
     }
 
     // MARK: -
@@ -116,58 +149,69 @@ public class OWS2FAManager {
 
     // MARK: -
 
-    public func lastCompletedReminderDate(transaction: DBReadTransaction) -> Date? {
-        return keyValueStore.fetchValue(Date.self, forKey: StoreKeys.lastSuccessfulReminderDate, tx: transaction)
+    private func lastCompletedReminderDate(tx: DBReadTransaction) -> Date? {
+        return keyValueStore.fetchValue(Date.self, forKey: StoreKeys.lastSuccessfulReminderDate, tx: tx)
     }
 
-    public func setLastCompletedReminderDate(_ date: Date, transaction: DBWriteTransaction) {
-        keyValueStore.writeValue(date, forKey: StoreKeys.lastSuccessfulReminderDate, tx: transaction)
+    private func setLastCompletedReminderDate(_ date: Date, tx: DBWriteTransaction) {
+        keyValueStore.writeValue(date, forKey: StoreKeys.lastSuccessfulReminderDate, tx: tx)
     }
 
-    public func nextReminderDate(transaction: DBReadTransaction) -> Date {
-        let lastCompletedReminderDate = lastCompletedReminderDate(transaction: transaction) ?? .distantPast
-        let repetitionInterval = repetitionInterval(transaction: transaction)
+    private func nextReminderDate(tx: DBReadTransaction) -> Date {
+        let lastCompletedReminderDate = lastCompletedReminderDate(tx: tx) ?? .distantPast
+        let repetitionInterval = repetitionInterval(tx: tx)
 
-        return lastCompletedReminderDate.addingTimeInterval(repetitionInterval)
+        return lastCompletedReminderDate.addingTimeInterval(repetitionInterval.rawValue)
     }
 
-    public func isDueForV2Reminder(transaction: DBReadTransaction) -> Bool {
+    public func isDueForV2Reminder(transaction tx: DBReadTransaction) -> Bool {
         guard
-            tsAccountManager.registrationState(tx: transaction).isRegistered,
-            isPinEnabled(tx: transaction),
-            areRemindersEnabled(transaction: transaction)
+            tsAccountManager.registrationState(tx: tx).isRegistered,
+            isPinEnabled(tx: tx),
+            areRemindersEnabled(transaction: tx)
         else {
             return false
         }
 
-        return nextReminderDate(transaction: transaction) < Date()
+        return nextReminderDate(tx: tx) < Date()
     }
 
-    public func reminderCompleted(incorrectAttempts: Bool) {
-        db.write { transaction in
-            setLastCompletedReminderDate(Date(), transaction: transaction)
+    // MARK: -
 
-            let oldInterval = repetitionInterval(transaction: transaction)
-            let newInterval = adjustRepetitionInterval(oldInterval: oldInterval, incorrectAttempts: incorrectAttempts)
-
-            Logger.info("Updating repetition interval: \(oldInterval) -> \(newInterval). Had incorrect attempts: \(incorrectAttempts)")
-            keyValueStore.writeValue(newInterval, forKey: StoreKeys.repetitionInterval, tx: transaction)
-        }
+    public enum PinReminderRepetitionIntervalAdjustment {
+        case setTo(PinReminderRepetitionInterval)
+        case shorter
+        case longer
     }
 
-    private func adjustRepetitionInterval(oldInterval: TimeInterval, incorrectAttempts: Bool) -> TimeInterval {
-        let allIntervals = Self.allRepetitionIntervals
-        guard let oldIndex = allIntervals.firstIndex(where: { oldInterval <= $0 }) else {
-            return allIntervals.first!
-        }
-        let newIndex: Int
-        if incorrectAttempts {
-            newIndex = oldIndex <= 0 ? 0 : oldIndex - 1
+    public func recordReminderCompleted(
+        repetitionIntervalAdjustment: PinReminderRepetitionIntervalAdjustment?,
+        tx: DBWriteTransaction,
+    ) {
+        setLastCompletedReminderDate(Date(), tx: tx)
+
+        let currentInterval = repetitionInterval(tx: tx)
+        let newInterval: PinReminderRepetitionInterval
+        if let repetitionIntervalAdjustment {
+            newInterval = switch (repetitionIntervalAdjustment, currentInterval) {
+            case (.setTo(let _newInterval), _): _newInterval
+            case (.shorter, .oneDay): .oneDay
+            case (.longer, .oneDay): .threeDays
+            case (.shorter, .threeDays): .oneDay
+            case (.longer, .threeDays): .oneWeek
+            case (.shorter, .oneWeek): .threeDays
+            case (.longer, .oneWeek): .twoWeeks
+            case (.shorter, .twoWeeks): .oneWeek
+            case (.longer, .twoWeeks): .fourWeeks
+            case (.shorter, .fourWeeks): .twoWeeks
+            case (.longer, .fourWeeks): .fourWeeks
+            }
         } else {
-            newIndex = oldIndex < allIntervals.count - 1 ? oldIndex + 1 : oldIndex
+            newInterval = currentInterval
         }
 
-        return allIntervals[newIndex]
+        Logger.info("Updating repetition interval: \(currentInterval) -> \(newInterval).")
+        setRepetitionInterval(newInterval, tx: tx)
     }
 
     // MARK: -
@@ -205,10 +249,9 @@ public class OWS2FAManager {
 
         if resetReminderInterval {
             // Reset the reminder repetition interval for the new pin.
-            setDefaultRepetitionInterval(transaction: transaction)
-
+            setRepetitionInterval(nil, tx: transaction)
             // Schedule next reminder relative to now
-            setLastCompletedReminderDate(Date(), transaction: transaction)
+            setLastCompletedReminderDate(Date(), tx: transaction)
         }
 
         transaction.addSyncCompletion {

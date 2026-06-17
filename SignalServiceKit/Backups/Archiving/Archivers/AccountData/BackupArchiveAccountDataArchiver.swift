@@ -586,7 +586,11 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             if settings.hasPinReminders {
                 ows2FAManager.setAreRemindersEnabled(settings.pinReminders, tx: context.tx)
                 if settings.pinReminders {
-                    ows2FAManager.resetDefaultRepetitionIntervalForBackupRestore(tx: context.tx)
+                    // When restoring, don't prompt a PIN reminder for 1wk.
+                    ows2FAManager.recordReminderCompleted(
+                        repetitionIntervalAdjustment: .setTo(.oneWeek),
+                        tx: context.tx,
+                    )
                 }
             }
 

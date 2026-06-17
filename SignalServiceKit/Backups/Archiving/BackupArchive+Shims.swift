@@ -188,7 +188,10 @@ public protocol _MessageBackup_OWS2FAManagerShim {
     func restorePinFromBackup(_ pin: String, tx: DBWriteTransaction)
     func areRemindersEnabled(tx: DBReadTransaction) -> Bool
     func setAreRemindersEnabled(_ areRemindersEnabled: Bool, tx: DBWriteTransaction)
-    func resetDefaultRepetitionIntervalForBackupRestore(tx: DBWriteTransaction)
+    func recordReminderCompleted(
+        repetitionIntervalAdjustment: OWS2FAManager.PinReminderRepetitionIntervalAdjustment?,
+        tx: DBWriteTransaction,
+    )
 }
 
 public class _MessageBackup_OWS2FAManagerWrapper: _MessageBackup_OWS2FAManagerShim {
@@ -214,8 +217,14 @@ public class _MessageBackup_OWS2FAManagerWrapper: _MessageBackup_OWS2FAManagerSh
         ows2FAManager.setAreRemindersEnabled(areRemindersEnabled, transaction: tx)
     }
 
-    public func resetDefaultRepetitionIntervalForBackupRestore(tx: DBWriteTransaction) {
-        ows2FAManager.setDefaultRepetitionIntervalForBackupRestore(transaction: tx)
+    public func recordReminderCompleted(
+        repetitionIntervalAdjustment: OWS2FAManager.PinReminderRepetitionIntervalAdjustment?,
+        tx: DBWriteTransaction,
+    ) {
+        ows2FAManager.recordReminderCompleted(
+            repetitionIntervalAdjustment: repetitionIntervalAdjustment,
+            tx: tx,
+        )
     }
 }
 
