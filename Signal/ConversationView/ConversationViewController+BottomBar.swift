@@ -79,6 +79,22 @@ public extension ConversationViewController {
             case .normal:
                 break
             }
+            if threadViewModel.hasPendingMessageRequest {
+                let messageRequestType = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                    return MessageRequestView.messageRequestType(forThread: self.threadViewModel.threadRecord, transaction: tx)
+                }
+                return .messageRequestView(messageRequestType: messageRequestType)
+            }
+            if isLocalUserRequestingMember {
+                return .memberRequestView
+            }
+
+            // Anything that uses BlockingErrorBottomPanelView should go below this check,
+            // it doesn't render correctly in the preview platter so we skip it.
+            if viewState.isInPreviewPlatter {
+                return .none
+            }
+
             if thread.isReleaseNotesThread {
                 return .releaseNotes
             }
@@ -100,15 +116,6 @@ public extension ConversationViewController {
                 return .groupEnded
             }
 
-            if threadViewModel.hasPendingMessageRequest {
-                let messageRequestType = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                    return MessageRequestView.messageRequestType(forThread: self.threadViewModel.threadRecord, transaction: tx)
-                }
-                return .messageRequestView(messageRequestType: messageRequestType)
-            }
-            if isLocalUserRequestingMember {
-                return .memberRequestView
-            }
             if hasBlockingLegacyGroup {
                 return .blockingLegacyGroup
             }
@@ -117,9 +124,6 @@ public extension ConversationViewController {
             }
             if isBlockedFromSendingByAnnouncementOnlyGroup {
                 return .announcementOnlyGroup
-            }
-            if viewState.isInPreviewPlatter {
-                return .none
             }
             return .inputToolbar
         }()
