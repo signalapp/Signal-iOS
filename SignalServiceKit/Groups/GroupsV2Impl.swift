@@ -1279,6 +1279,7 @@ public class GroupsV2Impl: GroupsV2 {
                 method: request.method,
                 headers: request.headers,
                 body: request.bodyData,
+                maxResponseSize: .max,
             )
 
             let statusCode = response.responseStatusCode

@@ -40,7 +40,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
             logger.info("attemptCount: \(attemptCount)")
         }
 
-        let urlSession = await signalService.sharedUrlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)
+        let urlSession = await signalService.sharedUrlSessionForCdn(cdnNumber: uploadForm.cdnNumber)
         let urlString = uploadForm.signedUploadLocation
         guard urlString.lowercased().hasPrefix("http") else {
             throw OWSAssertionError("Invalid signedUploadLocation.")
@@ -58,6 +58,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
                 method: .post,
                 headers: headers,
                 body: nil,
+                maxResponseSize: .max,
             )
 
             guard response.responseStatusCode == 201 else {
@@ -91,12 +92,13 @@ struct UploadEndpointCDN2: UploadEndpoint {
         headers["Content-Length"] = "0"
         headers["Content-Range"] = "bytes */\(attempt.encryptedDataLength)"
 
-        let urlSession = await signalService.sharedUrlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)
+        let urlSession = await signalService.sharedUrlSessionForCdn(cdnNumber: uploadForm.cdnNumber)
         let response = try await urlSession.performRequest(
             attempt.uploadLocation.absoluteString,
             method: .put,
             headers: headers,
             body: nil,
+            maxResponseSize: .max,
         )
 
         let statusCode = response.responseStatusCode
@@ -175,12 +177,13 @@ struct UploadEndpointCDN2: UploadEndpoint {
         }
 
         do {
-            let urlSession = await signalService.sharedUrlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)
+            let urlSession = await signalService.sharedUrlSessionForCdn(cdnNumber: uploadForm.cdnNumber)
             let response = try await urlSession.performUpload(
                 attempt.uploadLocation.absoluteString,
                 method: .put,
                 headers: headers,
                 requestData: uploadData,
+                maxResponseSize: .max,
                 progressBlock: progress?.asProgressBlock() ?? { _, _ in },
             )
             switch response.responseStatusCode {

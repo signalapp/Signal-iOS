@@ -794,7 +794,7 @@ final class MobileCoinHttpRequester: NSObject, HttpRequester {
         headers.addHeaderMap(headerMap, overwriteOnConflict: true)
 
         let promise = Promise.wrapAsync {
-            return try await owsUrlSession.performRequest(url.absoluteString, method: method.sskHTTPMethod, headers: headers, body: body)
+            return try await owsUrlSession.performRequest(url.absoluteString, method: method.sskHTTPMethod, headers: headers, body: body, maxResponseSize: .max)
         }
         promise.done { response in
             let headerFields = response.headers.headers

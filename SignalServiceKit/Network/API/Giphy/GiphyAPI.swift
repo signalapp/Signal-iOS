@@ -69,7 +69,7 @@ public enum GiphyAPI {
             guard ContentProxy.configureProxiedRequest(request: &request) else {
                 throw OWSAssertionError("Invalid URL")
             }
-            let response = try await urlSession.performRequest(request: request, ignoreAppExpiry: false)
+            let response = try await urlSession.performRequest(request: request, maxResponseSize: .max, ignoreAppExpiry: false)
             guard let responseData = response.responseBodyData else {
                 throw OWSAssertionError("Missing response body")
             }

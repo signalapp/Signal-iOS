@@ -365,6 +365,7 @@ private extension Stripe {
                 method: .post,
                 headers: headers,
                 body: formData,
+                maxResponseSize: .max,
             )
         }
     }

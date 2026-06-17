@@ -1748,23 +1748,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
 
-        fileprivate func performHeadRequest(
-            downloadState: DownloadState,
-            maxDownloadSizeBytes: UInt64,
-        ) async throws -> AttachmentDownloads.CdnInfo {
-            // We don't need maxDownloadSizeBytes for this request, but we include it
-            // to increase the likelihood of a shared URLSession cache hit.
-            let urlSession = await self.signalService.sharedUrlSessionForCdn(
-                cdnNumber: downloadState.cdnNumber(),
-                maxResponseSize: maxDownloadSizeBytes,
-            )
+        fileprivate func performHeadRequest(downloadState: DownloadState) async throws -> AttachmentDownloads.CdnInfo {
+            let urlSession = await self.signalService.sharedUrlSessionForCdn(cdnNumber: downloadState.cdnNumber())
             let urlPath = try downloadState.urlPath()
             var headers = downloadState.additionalHeaders()
             headers["Content-Type"] = MimeType.applicationOctetStream.rawValue
 
             // Perform a HEAD request to get the byte length & last modified date from cdn.
             let request = try urlSession.endpoint.buildRequest(urlPath, method: .head, headers: headers)
-            let response = try await urlSession.performRequest(request: request, ignoreAppExpiry: true)
+            let response = try await urlSession.performRequest(request: request, maxResponseSize: .max, ignoreAppExpiry: true)
             return try AttachmentDownloads.CdnInfo(response.headers)
         }
 
@@ -1780,17 +1772,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             maxDownloadSizeBytes: UInt64,
             length: UInt16,
         ) async throws -> (AttachmentDownloads.CdnInfo, Data?) {
-            let urlSession = await self.signalService.sharedUrlSessionForCdn(
-                cdnNumber: downloadState.cdnNumber(),
-                maxResponseSize: maxDownloadSizeBytes,
-            )
+            let urlSession = await self.signalService.sharedUrlSessionForCdn(cdnNumber: downloadState.cdnNumber())
             let urlPath = try downloadState.urlPath()
             var headers = downloadState.additionalHeaders()
             headers["Content-Type"] = MimeType.applicationOctetStream.rawValue
             headers["range"] = "bytes=0-\(length - 1)"
 
             let request = try urlSession.endpoint.buildRequest(urlPath, method: .get, headers: headers)
-            let response = try await urlSession.performRequest(request: request, ignoreAppExpiry: true)
+            let response = try await urlSession.performRequest(request: request, maxResponseSize: maxDownloadSizeBytes, ignoreAppExpiry: true)
             let cdnInfo = try AttachmentDownloads.CdnInfo(response.headers)
 
             return (cdnInfo, response.responseBodyData)
@@ -1854,10 +1843,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 expectedDownloadSizeBytes = size
             case .useHeadRequest:
                 // Perform a HEAD request just to get the byte length from cdn.
-                let downloadInfo = try await performHeadRequest(
-                    downloadState: downloadState,
-                    maxDownloadSizeBytes: maxDownloadSizeBytes,
-                )
+                let downloadInfo = try await performHeadRequest(downloadState: downloadState)
                 expectedDownloadSizeBytes = downloadInfo.contentLength
             }
 
@@ -1875,10 +1861,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 }
 
                 let resumeData = await resumeDataCache.object(forKey: downloadState)
-                let urlSession = await self.signalService.sharedUrlSessionForCdn(
-                    cdnNumber: downloadState.cdnNumber(),
-                    maxResponseSize: maxDownloadSizeBytes,
-                )
+                let urlSession = await self.signalService.sharedUrlSessionForCdn(cdnNumber: downloadState.cdnNumber())
 
                 var downloadTask: Task<OWSUrlDownloadResponse, Error>?
 
@@ -1933,6 +1916,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         return try await urlSession.performDownload(
                             requestUrl: requestUrl,
                             resumeData: resumeData,
+                            maxResponseSize: maxDownloadSizeBytes,
                             progressBlock: wrappedProgressSource.asProgressBlock(),
                         )
                     }
@@ -1943,6 +1927,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             urlPath,
                             method: .get,
                             headers: headers,
+                            maxResponseSize: maxDownloadSizeBytes,
                             progressBlock: wrappedProgressSource.asProgressBlock(),
                         )
                     }

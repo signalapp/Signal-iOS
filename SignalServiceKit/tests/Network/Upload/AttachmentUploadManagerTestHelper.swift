@@ -8,8 +8,8 @@ import LibSignalClient
 @testable import SignalServiceKit
 
 typealias PerformUploadFormRequestBlock = () throws -> UploadForm
-typealias PerformRequestBlock = (URLRequest) async throws -> HTTPResponse
-typealias PerformUploadBlock = (URLRequest, Data, OWSURLSession.ProgressBlock) async throws -> HTTPResponse
+typealias PerformRequestBlock = (URLRequest, UInt64, Bool) async throws -> HTTPResponse
+typealias PerformUploadBlock = (URLRequest, Data, UInt64, OWSURLSession.ProgressBlock) async throws -> HTTPResponse
 
 enum MockRequestType {
     case uploadForm(PerformUploadFormRequestBlock)
@@ -149,25 +149,25 @@ class AttachmentUploadManagerMockHelper {
             return try authDataTaskBlock()
         }
 
-        mockURLSession.performRequestBlock = { request in
+        mockURLSession.performRequestBlock = { request, maxResponseSize, ignoreAppExpiry in
             switch self.activeUploadRequestMocks.removeFirst() {
             case .uploadLocation(let requestBlock):
                 self.capturedRequests.append(.uploadLocation(request))
-                return try await requestBlock(request)
+                return try await requestBlock(request, maxResponseSize, ignoreAppExpiry)
             case .uploadProgress(let requestBlock):
                 self.capturedRequests.append(.uploadProgress(request))
-                return try await requestBlock(request)
+                return try await requestBlock(request, maxResponseSize, ignoreAppExpiry)
             case .uploadForm, .uploadTask:
                 throw OWSAssertionError("Mock request missing")
             }
         }
 
-        mockURLSession.performUploadDataBlock = { request, data, progressBlock in
+        mockURLSession.performUploadDataBlock = { request, data, maxResponseSize, progressBlock in
             guard case let .uploadTask(requestBlock) = self.activeUploadRequestMocks.removeFirst() else {
                 throw OWSAssertionError("Mock request missing")
             }
             self.capturedRequests.append(.uploadTask(request))
-            return try await requestBlock(request, data, progressBlock)
+            return try await requestBlock(request, data, maxResponseSize, progressBlock)
         }
 
         return insertMockAttachment(mockAttachment)
@@ -247,7 +247,7 @@ class AttachmentUploadManagerMockHelper {
             case .cdn2:
                 // Create a random, yet identifiable URL.  Helps with debugging the captured requests.
                 let fetchedUploadLocation = "https://upload/fetchedUploadLocation/\(UUID().uuidString)"
-                enqueue(auth: auth, request: .uploadLocation({ request in
+                enqueue(auth: auth, request: .uploadLocation({ request, _, _ in
                     let headers = ["Location": fetchedUploadLocation]
                     return HTTPResponse(
                         requestUrl: request.url!,
@@ -277,7 +277,7 @@ class AttachmentUploadManagerMockHelper {
     func addResumeProgressMock(cdn: CDNEndpoint, auth: String, location: String, type: ResumeProgressType) {
         switch cdn {
         case .cdn2:
-            enqueue(auth: auth, request: .uploadProgress({ request in
+            enqueue(auth: auth, request: .uploadProgress({ request, _, _ in
                 var headers = ["Location": "\(location)"]
                 var statusCode = 308
 
@@ -306,7 +306,7 @@ class AttachmentUploadManagerMockHelper {
                 )
             }))
         case .cdn3:
-            enqueue(auth: auth, request: .uploadProgress({ request in
+            enqueue(auth: auth, request: .uploadProgress({ request, _, _ in
                 var headers = ["Tus-Resumable": "1.0.0"]
                 var statusCode = 200
 
@@ -348,7 +348,7 @@ class AttachmentUploadManagerMockHelper {
         type: UploadResultType,
         completedCount: (completedByteCount: Int64, totalByteCount: Int64)? = nil,
     ) {
-        enqueue(auth: auth, request: .uploadTask({ request, url, progressBlock in
+        enqueue(auth: auth, request: .uploadTask({ request, url, _, progressBlock in
             if let completedCount {
                 await progressBlock(completedCount.completedByteCount, completedCount.totalByteCount)
             }

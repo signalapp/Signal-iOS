@@ -9,8 +9,8 @@ enum CDNDownloadOperation {
 
     // MARK: - Dependencies
 
-    private static func buildUrlSession(maxResponseSize: UInt64) async -> OWSURLSessionProtocol {
-        await SSKEnvironment.shared.signalServiceRef.sharedUrlSessionForCdn(cdnNumber: 0, maxResponseSize: maxResponseSize)
+    private static func buildUrlSession() async -> OWSURLSessionProtocol {
+        await SSKEnvironment.shared.signalServiceRef.sharedUrlSessionForCdn(cdnNumber: 0)
     }
 
     // MARK: -
@@ -25,9 +25,9 @@ enum CDNDownloadOperation {
         }
 
         do {
-            let urlSession = await self.buildUrlSession(maxResponseSize: maxDownloadSize)
+            let urlSession = await self.buildUrlSession()
             let headers: HttpHeaders = ["Content-Type": MimeType.applicationOctetStream.rawValue]
-            let response = try await urlSession.performDownload(urlPath, method: .get, headers: headers)
+            let response = try await urlSession.performDownload(urlPath, method: .get, headers: headers, maxResponseSize: maxDownloadSize)
 
             let downloadUrl = response.downloadUrl
             do {

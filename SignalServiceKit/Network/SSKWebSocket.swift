@@ -162,7 +162,6 @@ public class SSKWebSocketNative: SSKWebSocket {
             for: signalServiceInfo,
             endpoint: endpoint,
             configuration: configuration,
-            maxResponseSize: nil,
         )
         self.requestUrl = urlRequest.url!
         self.callbackScheduler = callbackScheduler

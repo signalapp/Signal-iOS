@@ -61,19 +61,14 @@ class _Upload_SleepTimerMock: Upload.Shims.SleepTimer {
 
 public class _AttachmentUploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
 
-    public var performUploadDataBlock: ((URLRequest, Data, OWSURLSession.ProgressBlock) async throws -> HTTPResponse)?
-    override public func performUpload(request: URLRequest, requestData: Data, progressBlock: OWSURLSession.ProgressBlock) async throws -> HTTPResponse {
-        return try await performUploadDataBlock!(request, requestData, progressBlock)
+    public var performUploadDataBlock: ((URLRequest, Data, UInt64, OWSURLSession.ProgressBlock) async throws -> HTTPResponse)?
+    override public func performUpload(request: URLRequest, requestData: Data, maxResponseSize: UInt64, progressBlock: OWSURLSession.ProgressBlock) async throws -> HTTPResponse {
+        return try await performUploadDataBlock!(request, requestData, maxResponseSize, progressBlock)
     }
 
-    public var performUploadFileBlock: ((URLRequest, URL, Bool, OWSURLSession.ProgressBlock) async throws -> HTTPResponse)?
-    override public func performUpload(request: URLRequest, fileUrl: URL, ignoreAppExpiry: Bool, progressBlock: OWSURLSession.ProgressBlock) async throws -> HTTPResponse {
-        return try await performUploadFileBlock!(request, fileUrl, ignoreAppExpiry, progressBlock)
-    }
-
-    public var performRequestBlock: ((URLRequest) async throws -> HTTPResponse)?
-    override public func performRequest(request: URLRequest, ignoreAppExpiry: Bool) async throws -> HTTPResponse {
-        return try await performRequestBlock!(request)
+    public var performRequestBlock: ((URLRequest, UInt64, Bool) async throws -> HTTPResponse)?
+    override public func performRequest(request: URLRequest, maxResponseSize: UInt64, ignoreAppExpiry: Bool) async throws -> HTTPResponse {
+        return try await performRequestBlock!(request, maxResponseSize, ignoreAppExpiry)
     }
 }
 

@@ -420,7 +420,7 @@ private enum DebugLogUploader {
 
     private static func getUploadParameters(fileUrl: URL) async throws -> UploadParameters {
         let url = URL(string: "https://debuglogs.org/")!
-        let response = try await buildOWSURLSession().performRequest(url.absoluteString, method: .get, ignoreAppExpiry: true)
+        let response = try await buildOWSURLSession().performRequest(url.absoluteString, method: .get, maxResponseSize: .max, ignoreAppExpiry: true)
         guard let params = response.responseBodyParamParser else {
             throw OWSAssertionError("Invalid response.")
         }
@@ -482,6 +482,7 @@ private enum DebugLogUploader {
             fileName: fileUrl.lastPathComponent,
             mimeType: mimeType,
             textParts: textParts,
+            maxResponseSize: .max,
             ignoreAppExpiry: true,
         )
 

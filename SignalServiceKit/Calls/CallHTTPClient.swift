@@ -55,6 +55,7 @@ extension CallHTTPClient: HTTPDelegate {
                     method: request.method.httpMethod,
                     headers: headers,
                     body: request.body,
+                    maxResponseSize: .max,
                 )
                 self.ringRtcHttpClient.receivedResponse(
                     requestId: requestId,

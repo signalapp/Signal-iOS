@@ -101,6 +101,7 @@ final class CallingAssetsFetcher {
         let response = try await signalService.urlSessionForUpdates2().performDownload(
             entry.path,
             method: .get,
+            maxResponseSize: .max,
         )
 
         guard let content = FileManager.default.contents(atPath: response.downloadUrl.path) else {

@@ -48,6 +48,7 @@ class RemoteReleaseNotesService: RemoteReleaseNotesServiceProtocol {
         let response = try await getUrlSession().performRequest(
             manifestUrlPath,
             method: .get,
+            maxResponseSize: .max,
         )
 
         guard let parser = response.responseBodyParamParser else {
@@ -70,7 +71,7 @@ class RemoteReleaseNotesService: RemoteReleaseNotesServiceProtocol {
     private func fetchTranslationParser(translationUrlPath: String) async throws -> ParamParser {
 
         Logger.info("Fetching remote release notes translation")
-        let response = try await getUrlSession().performRequest(translationUrlPath, method: .get)
+        let response = try await getUrlSession().performRequest(translationUrlPath, method: .get, maxResponseSize: .max)
         guard let parser = response.responseBodyParamParser else {
             throw OWSAssertionError("Missing or invalid body JSON for translation!")
         }
@@ -88,6 +89,7 @@ class RemoteReleaseNotesService: RemoteReleaseNotesServiceProtocol {
                 let response = try await getUrlSession().performDownload(
                     mediaRemoteUrlPath,
                     method: .get,
+                    maxResponseSize: .max,
                 )
 
                 do {

@@ -595,7 +595,7 @@ enum EmojiSearchIndex {
         let signalService = SSKEnvironment.shared.signalServiceRef
 
         let urlSession = signalService.urlSessionForUpdates()
-        let response = try await urlSession.performRequest("/dynamic/android/emoji/search/manifest.json", method: .get)
+        let response = try await urlSession.performRequest("/dynamic/android/emoji/search/manifest.json", method: .get, maxResponseSize: .max)
         guard response.responseStatusCode == 200 else {
             throw response.asError()
         }
@@ -674,6 +674,7 @@ enum EmojiSearchIndex {
         let response = try await urlSession.performRequest(
             "/static/android/emoji/search/\(version)/\(localization).json",
             method: .get,
+            maxResponseSize: .max,
         )
         guard response.responseStatusCode == 200 else {
             throw response.asError()

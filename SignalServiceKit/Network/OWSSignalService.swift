@@ -194,13 +194,11 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         for signalServiceInfo: SignalServiceInfo,
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration?,
-        maxResponseSize: UInt64?,
     ) -> OWSURLSessionProtocol {
         return buildUrlSession(
             endpoint: endpoint,
             configuration: configuration,
             assumesHTTP3Capable: signalServiceInfo.assumesHTTP3Capable,
-            maxResponseSize: maxResponseSize,
             shouldHandleRemoteDeprecation: signalServiceInfo.shouldHandleRemoteDeprecation,
             onFailureCallback: nil,
         )
@@ -210,14 +208,12 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration?,
         assumesHTTP3Capable: Bool,
-        maxResponseSize: UInt64?,
         shouldHandleRemoteDeprecation: Bool,
         onFailureCallback: ((any Error) -> Void)?,
     ) -> OWSURLSessionProtocol {
         let urlSession = OWSURLSession(
             endpoint: endpoint,
             configuration: configuration ?? OWSURLSession.defaultConfigurationWithoutCaching,
-            maxResponseSize: maxResponseSize,
             canUseSignalProxy: endpoint.frontingInfo == nil,
             onFailureCallback: onFailureCallback,
         )
@@ -231,7 +227,6 @@ public class OWSSignalService: OWSSignalServiceProtocol {
     private actor CDNSessionCache {
         struct Key: Hashable {
             let cdnNumber: UInt32
-            let maxResponseSize: UInt64?
             let ccParams: CensorshipConfigurationParams?
         }
 
@@ -260,18 +255,11 @@ public class OWSSignalService: OWSSignalServiceProtocol {
 
     private let cdnSessionCache = CDNSessionCache()
 
-    public func sharedUrlSessionForCdn(
-        cdnNumber: UInt32,
-        maxResponseSize: UInt64?,
-    ) async -> OWSURLSessionProtocol {
+    public func sharedUrlSessionForCdn(cdnNumber: UInt32) async -> OWSURLSessionProtocol {
         let ccParams = self.censorshipConfigurationParamsWithMaybeSneakyTransaction(
             censorshipCircumventionSupportedForService: true,
         )
-        let cacheKey = CDNSessionCache.Key(
-            cdnNumber: cdnNumber,
-            maxResponseSize: maxResponseSize,
-            ccParams: ccParams,
-        )
+        let cacheKey = CDNSessionCache.Key(cdnNumber: cdnNumber, ccParams: ccParams)
         return await cdnSessionCache.getOrBuildSession(
             key: cacheKey,
             buildFn: {
@@ -310,7 +298,6 @@ public class OWSSignalService: OWSSignalServiceProtocol {
                     // ephemeral sessions don't persist the Alt-Svc cache. This
                     // enables QUIC racing from the first request.
                     assumesHTTP3Capable: true,
-                    maxResponseSize: maxResponseSize,
                     shouldHandleRemoteDeprecation: false,
                     onFailureCallback: { [weak self] error in
                         Task {

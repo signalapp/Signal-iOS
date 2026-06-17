@@ -498,6 +498,7 @@ public struct StorageService {
                 method: method,
                 headers: httpHeaders,
                 body: body,
+                maxResponseSize: .max,
             )
         } catch {
             Logger.warn("Failure. <- \(requestDescription): \(error)")

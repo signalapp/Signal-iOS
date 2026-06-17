@@ -40,21 +40,16 @@ public class OWSSignalServiceMock: OWSSignalServiceProtocol {
         for signalServiceInfo: SignalServiceInfo,
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration?,
-        maxResponseSize: UInt64?,
     ) -> OWSURLSessionProtocol {
         return mockUrlSessionBuilder?(signalServiceInfo, endpoint, configuration) ?? BaseOWSURLSessionMock(
             endpoint: endpoint,
             configuration: .default,
-            maxResponseSize: maxResponseSize,
         )
     }
 
     public var mockCDNUrlSessionBuilder: ((_ cdnNumber: UInt32) -> BaseOWSURLSessionMock)?
 
-    public func sharedUrlSessionForCdn(
-        cdnNumber: UInt32,
-        maxResponseSize: UInt64?,
-    ) async -> OWSURLSessionProtocol {
+    public func sharedUrlSessionForCdn(cdnNumber: UInt32) async -> OWSURLSessionProtocol {
         let baseUrl: URL
         switch cdnNumber {
         case 0:
@@ -73,7 +68,6 @@ public class OWSSignalServiceMock: OWSSignalServiceProtocol {
                 extraHeaders: [:],
             ),
             configuration: .default,
-            maxResponseSize: maxResponseSize,
         )
     }
 }

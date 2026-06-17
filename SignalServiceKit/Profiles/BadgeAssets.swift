@@ -112,7 +112,7 @@ public class BadgeAssets {
 
         // TODO: Badges — Censorship circumvention
         let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates2()
-        let result = try await urlSession.performDownload(remoteSourceUrl.absoluteString, method: .get)
+        let result = try await urlSession.performDownload(remoteSourceUrl.absoluteString, method: .get, maxResponseSize: .max)
         let resultUrl = result.downloadUrl
         guard OWSFileSystem.fileOrFolderExists(url: resultUrl) else {
             throw OWSAssertionError("Sprite url missing")

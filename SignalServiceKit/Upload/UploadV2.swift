@@ -61,7 +61,7 @@ extension Upload.CDN0 {
         )
         try data.write(to: dataFileUrl)
 
-        let cdn0UrlSession = await SSKEnvironment.shared.signalServiceRef.sharedUrlSessionForCdn(cdnNumber: 0, maxResponseSize: nil)
+        let cdn0UrlSession = await SSKEnvironment.shared.signalServiceRef.sharedUrlSessionForCdn(cdnNumber: 0)
         // urlPath is "" for all endpoints that still use CDN0
         let request = try cdn0UrlSession.endpoint.buildRequest("", method: .post)
 
@@ -81,6 +81,7 @@ extension Upload.CDN0 {
                 fileName: "file",
                 mimeType: MimeType.applicationOctetStream.rawValue,
                 textParts: textParts,
+                maxResponseSize: .max,
             )
         } catch {
             Logger.warn("\(error)")

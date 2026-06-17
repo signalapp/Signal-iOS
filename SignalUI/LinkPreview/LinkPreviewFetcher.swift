@@ -142,7 +142,6 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             securityPolicy: OWSURLSession.defaultSecurityPolicy,
             configuration: sessionConfig,
             extraHeaders: extraHeaders,
-            maxResponseSize: Self.maxFetchedContentSize,
         )
         urlSession.allowRedirects = true
         urlSession.customRedirectHandler = { request in
@@ -169,7 +168,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
     func fetchStringOrImageResource(from url: URL) async throws -> StringOrImageResource {
         let response: HTTPResponse
         do {
-            response = try await self.buildOWSURLSession().performRequest(url.absoluteString, method: .get, ignoreAppExpiry: true)
+            response = try await self.buildOWSURLSession().performRequest(url.absoluteString, method: .get, maxResponseSize: Self.maxFetchedContentSize, ignoreAppExpiry: true)
         } catch {
             Logger.warn("Invalid response: \(error.shortDescription).")
             throw LinkPreviewError.fetchFailure
@@ -202,7 +201,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
     private func fetchImageResource(from url: URL) async throws -> Data {
         let response: HTTPResponse
         do {
-            response = try await self.buildOWSURLSession().performRequest(url.absoluteString, method: .get, ignoreAppExpiry: true)
+            response = try await self.buildOWSURLSession().performRequest(url.absoluteString, method: .get, maxResponseSize: Self.maxFetchedContentSize, ignoreAppExpiry: true)
         } catch {
             Logger.warn("Invalid response: \(error.shortDescription).")
             throw LinkPreviewError.fetchFailure

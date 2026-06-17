@@ -514,7 +514,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
     private func fetchFilenames(
         urlSession: OWSURLSessionProtocol,
     ) async throws -> [String] {
-        let response = try await urlSession.performRequest(Constants.manifestPath, method: .get)
+        let response = try await urlSession.performRequest(Constants.manifestPath, method: .get, maxResponseSize: .max)
         guard
             let responseDictionary = response.responseBodyDict,
             let version = responseDictionary[Constants.manifestVersionKey] as? String,
@@ -538,7 +538,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         urlSession: OWSURLSessionProtocol,
         url: String,
     ) async throws -> AttachmentDataSource {
-        let result = try await urlSession.performDownload(url, method: .get)
+        let result = try await urlSession.performDownload(url, method: .get, maxResponseSize: .max)
         let resultUrl = result.downloadUrl
 
         guard fileSystem.fileOrFolderExists(url: resultUrl) else {
