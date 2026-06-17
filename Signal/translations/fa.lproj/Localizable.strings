@@ -581,10 +581,10 @@
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "رمز بازیابی صحیح است. رمزتان را امن نگه دارید.";
 
 /* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
-"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "<bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal. Store your recovery key somewhere safe and never share it with anyone.";
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "Do not share your recovery key with anyone. This will let them take over your account. <bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal.";
 
 /* Title for a warning sheet shown to discourage the user from sharing their 'Recovery Key'. */
-"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "Do Not Share Recovery Key";
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "رمز بازیابی را به اشتراک نگذارید";
 
 /* Button label for action sheet to cancel backup onboarding */
 "BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "خروج از راه‌اندازی نسخه پشتیبان";
@@ -654,6 +654,12 @@
 
 /* Title for a sheet shown when your Backup plan is downgraded. */
 "BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "اشتراک نسخه پشتیبان شما منقضی شده است";
+
+/* Title for a label allowing users to view Signal's Terms & Conditions. */
+"BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Terms & Privacy Policy";
+
+/* Title for a button on a Backup plan upsell view that dismisses the upsell without subscribing. */
+"BACKUP_PLAN_UPSELL_NO_THANKS_BUTTON_TEXT" = "No Thanks";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "کپی به کلیپ‌بورد";
@@ -783,6 +789,12 @@
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to a network error. */
 "BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "خطا در شبکه";
+
+/* Message for a view indicating we failed to fetch someone's Backup plan because they're not registered. */
+"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_MESSAGE" = "Couldn’t fetch your backup plan because you’re no longer registered.";
+
+/* Title for a view indicating we failed to fetch someone's Backup plan because they're not registered. */
+"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_TITLE" = "Couldn’t Fetch Backup Plan";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "مدیریت یا لغو";
@@ -947,7 +959,7 @@
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED" = "شما %1$@ رسانه دارید که در این دستگاه نیست.";
 
 /* Subtitle for a view explaining that downloads are available but not running, and the user's paid subscription is expiring. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "شما %1$@ رسانه دارید که در این دستگاه نیست. بدون اشتراک پولی، امکان آفلود کردن رسانه نیست.";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "You have %1$@ of media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "پشتیبان‌گیری با استفاده از اینترنت همراه";
@@ -997,6 +1009,21 @@
 /* Title for an action sheet allowing users to download their offloaded media. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "رسانه آفلودشده دانلود شود؟";
 
+/* Action in a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, that dismisses the sheet. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Got It";
+
+/* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable storage optimization and download your media soon.";
+
+/* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Are you sure you want to enable Optimize Storage and offload your media? If your subscription expires, any media not on this device will be permanently deleted.";
+
+/* Action in a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription, that confirms enabling Optimize Storage. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_OFFLOAD_ACTION" = "Offload My Media";
+
+/* Title for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_TITLE" = "Enable Optimize Storage?";
+
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "فایل رسانه‌های قدیمی‌تر هنگام تهیه نسخه پشتیبان بعدی آفلود می‌شوند، اما می‌توانید آنها را در هر زمانی از نسخه پشتیبان خود بارگیری کنید.";
 
@@ -1005,6 +1032,12 @@
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "بهینه‌سازی فضای ذخیره‌سازی سیگنال";
+
+/* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to use storage optimization. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_BODY" = "Storage optimization can only be used with the paid tier of Signal Secure Backups. Upgrade your backup plan to start using this feature.";
+
+/* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to use storage optimization. */
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_TITLE" = "Upgrade to Turn On Storage Optimization";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "به سقف فضای ذخیره‌سازی نسخه پشتیبان خود رسیده‌اید. در سیگنال فضا آزاد کنید تا پشتیبان‌گیری گفتگوها و رسانه را ادامه دهید.";
@@ -1114,11 +1147,53 @@
 /* Title for a sheet shown when your Backup subscription fails to renew. */
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "اشتراک نسخه پشتیبان شما تمدید نشد";
 
+/* Body for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to back up all their media. Embeds {{ the amount of storage included in the paid plan, preformatted as a localized byte count, e.g. '100 GB' }}. */
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_BODY" = "Paid Signal Secure Backups keep all your media, up to %1$@.";
+
+/* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to back up all their media. */
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_PRIMARY_ACTION" = "Upgrade";
+
+/* Title for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to back up all their media. */
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_TITLE" = "Back up all your media";
+
+/* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to back up all their media. Embeds {{ the amount of storage included in the paid plan, preformatted as a localized byte count, e.g. '100 GB' }}. */
+"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_BODY" = "Paid Signal Secure Backups keep all your media, up to a maximum of %1$@. Never lose a photo or video when you get a new phone or reinstall Signal.";
+
+/* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to back up all their media. */
+"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_TITLE" = "Upgrade to Save All Media";
+
 /* Body for system notification when we detect an issue with Backup media. */
 "BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "مشکل غیرمنتظره‌ای در پشتیبان‌گیری فایل رسانه‌تان پیش آمد. لطفاً برای کمک به ما در رفع مشکل، گزارش اشکال‌زدایی ارسال کنید.";
 
 /* Title for system notification when we detect an issue with Backup media. */
 "BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "خطای رسانه پشتیبان";
+
+/* Body for a megaphone shown on the chat list encouraging users to enable Signal Secure Backups. */
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_BODY" = "Turn on Signal Secure Backups to preserve your messages and media";
+
+/* Title for a button on a megaphone encouraging users to enable Signal Secure Backups. */
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_PRIMARY_ACTION" = "Turn On";
+
+/* Title for a megaphone shown on the chat list encouraging users to enable Signal Secure Backups. */
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_TITLE" = "Never lose a message";
+
+/* Body for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
+"BACKUPS_SAVE_SPACE_MEGAPHONE_BODY" = "Signal Secure Backups can save storage space by offloading media.";
+
+/* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to save on-device storage space, when the user does not yet have Signal Secure Backups enabled. */
+"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_TURN_ON" = "Turn On";
+
+/* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to save on-device storage space, when the user already has Signal Secure Backups enabled. */
+"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_UPGRADE" = "Upgrade";
+
+/* Title for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
+"BACKUPS_SAVE_SPACE_MEGAPHONE_TITLE" = "Save space with paid backups";
+
+/* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to save on-device storage space. Embeds {{ the amount of storage space being consumed on-device by media, preformatted as a localized byte count, e.g. '1.2 GB' }}. */
+"BACKUPS_SAVE_SPACE_UPSELL_BODY" = "Signal is using %1$@ of storage space for media. Paid Signal Secure Backup plans can save storage space by offloading media, while preserving your entire chat history in your backup.";
+
+/* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
+"BACKUPS_SAVE_SPACE_UPSELL_TITLE" = "Save Space With Paid Backups";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "پشتیبان‌های امن";
@@ -1219,6 +1294,9 @@
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "گروه «%1$@» را مسدود و آن را ترک می‌کنید؟";
 
+/* Label for 'block release notes' action sheet title. */
+"BLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Block Signal?";
+
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%1$@ مسدود شود؟";
 
@@ -1275,6 +1353,9 @@
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "اعضای موجود می‌توانند شما را دوباره به گروه اضافه کنند.";
+
+/* An explanation of the consequences of blocking release notes. */
+"BLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Block getting Signal updates and news.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "کاربران مسدودشده، امکان تماس با شما یا ارسال پیام به شما را نخواهند داشت.";
@@ -1969,14 +2050,20 @@
 /* Message indicating a user should check connection and try again. */
 "CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "اتصال اینترنت خود را بررسی و دوباره امتحان کنید.";
 
-/* Text for a bullet point in a list of Backup features, describing that all media is included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "پشتیبان‌گیری کامل رسانه";
+/* Text for a bullet point in a list of Backup features, describing that all text messages and media are included. */
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_AND_MEDIA_BACKUP" = "Full text + media backup";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "پشتیبان‌گیری کامل پیامک";
 
+/* Text for a bullet point in a list of Backup features, describing that the paid Backup plan can save on-device storage space. */
+"CHOOSE_BACKUP_PLAN_BULLET_SAVE_DEVICE_STORAGE" = "Save on-device storage space";
+
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}. */
 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ فضای ذخیره‌سازی";
+
+/* Text for a bullet point in a list of Backup features, thanking the user for supporting Signal by subscribing to the paid Backup plan. */
+"CHOOSE_BACKUP_PLAN_BULLET_THANKS_FOR_SUPPORTING_SIGNAL" = "Thanks for supporting Signal!";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "برای فعال کردن پشتیبان‌گیری، باید ثبت‌نام کرده باشید.";
@@ -2022,9 +2109,6 @@
 
 /* Subtitle for a view allowing users to choose a Backup plan. */
 "CHOOSE_BACKUP_PLAN_SUBTITLE" = "نسخه‌های پشتیبان سرتاسر رمزگذاری شده‌اند. سیگنال یک شرکت غیرانتفاعی است. پرداخت هزینه برای پشتیبان‌گیری به پشتیبانی از ما کمک می‌کند.";
-
-/* Title for a label allowing users to view Signal's Terms & Conditions. */
-"CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "شرایط و سیاست های حفظ حریم خصوصی";
 
 /* Title for a view allowing users to choose a Backup plan. */
 "CHOOSE_BACKUP_PLAN_TITLE" = "طرح پشتیبان را انتخاب کنید";
@@ -2350,23 +2434,11 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "گفتگو پاک شود؟";
 
-/* Title for the button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that dismisses the sheet without pasting the key. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Don’t Share";
-
-/* Message body for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, warning them not to share it. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_MESSAGE" = "Do not share your recovery key with anyone. This will let them take over your account. Signal will never message you for your recovery key. Never respond to a chat pretending to be Signal.";
-
-/* Title for the destructive button in a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway, that proceeds with the paste. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_PASTE_BUTTON_TITLE" = "Paste Key";
-
-/* Title for a second confirmation sheet shown after the user opts to paste their 'Recovery Key' into the chat input text field anyway. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_CONFIRM_SHEET_TITLE" = "Do Not Share Recovery Key";
-
 /* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that dismisses the sheet without pasting the key. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "Do Not Share Key";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_DO_NOT_SHARE_BUTTON_TITLE" = "رمز را به اشتراک نگذارید";
 
 /* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that acknowledges the warning and proceeds with the paste. */
-"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_SHARE_BUTTON_TITLE" = "Share Key";
+"CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_SHARE_BUTTON_TITLE" = "اشتراک‌گذاری رمز";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "بی‌صدا کردن این گفتگو به‌مدت...";
@@ -2436,6 +2508,9 @@
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "مسدود کردن گروه";
+
+/* Label for 'block release notes' action in conversation settings view. */
+"CONVERSATION_SETTINGS_BLOCK_RELEASE_NOTES" = "Block";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "مسدود کردن کاربر";
@@ -2607,6 +2682,9 @@
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "رفع مسدودیت گروه";
+
+/* Label for 'unblock release notes' action in conversation settings view. */
+"CONVERSATION_SETTINGS_UNBLOCK_RELEASE_NOTES" = "Unblock";
 
 /* Label for 'unblock user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "رفع مسدودیت کاربر";
@@ -5203,6 +5281,12 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "پیام";
 
+/* Message for a sheet warning the user that their device is low on storage space. */
+"LOW_DISK_SPACE_WARNING_SHEET_MESSAGE" = "Your device is running low on storage space. If you run out of storage, you won't be able to use Signal. Free up space by managing your storage in Settings.";
+
+/* Title for a sheet warning the user that their device is low on storage space. */
+"LOW_DISK_SPACE_WARNING_SHEET_TITLE" = "Storage Space Low";
+
 /* Title for error sheet shown when the max video length is recorded with the in-app camera */
 "MAX_VIDEO_RECORDING_LENGTH_ALERT" = "به حداکثر طول مجاز ویدئو رسیده‌اید";
 
@@ -6072,6 +6156,9 @@
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "رد شدن و ایجاد یک رمز جدید";
+
+/* Label for the 'skip pin' button when reglock is disabled during onboarding. */
+"ONBOARDING_2FA_SKIP_PIN" = "Skip PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "اگر نمی‌توانید پین را به یاد بیاورید، یک پین جدید ایجاد کنید. شما می‌توانید ثبت‌نام و از حساب‌تان استفاده کنید اما تنظیمات ذخیره‌ شده مانند اطلاعت پروفایل‌تان را از دست می‌دهید.";
@@ -6957,12 +7044,6 @@
 
 /* Title for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_TITLE" = "پین سیگنال خود را تأیید کنید";
-
-/* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_SUCCESSFUL_TOAST" = "پین درست است. فردا دوباره به شما یادآوری خواهیم کرد.";
-
-/* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "فردا به شما یادآوری می‌کنیم";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks, after successfully entering it. */
 "PIN_REMINDER_MEGAPHONE_TWO_WEEK_SUCCESSFUL_TOAST" = "پین درست است. چند هفته دیگر دوباره به شما یادآوری خواهیم کرد.";
@@ -8467,11 +8548,14 @@
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "تماس‌ها";
 
-/* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "پیام‌های صوتی، رسانه‌ٔ یکبار مصرف، و استیکرها (زیر ۱۰۰ کیلوبایت) همیشه به صورت خودکار بارگیری می‌شوند.";
+/* Footer for the 'media auto-download' section in the data settings. The replacement will be a formatted file size, such as '100 KB'. */
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages and stickers smaller than %1$@ are always auto-downloaded.";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "بارگیری خودکار";
+
+/* Footer for the 'media auto-download' section in the data settings. The replacement will be a formatted file size, such as '200 MB'. */
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_NEVER_FOOTER" = "Media and files larger than %1$@ are never auto-downloaded.";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "بازنشانی تنظیمات بارگیری خودکار";
@@ -9963,6 +10047,12 @@
 
 /* Toast shown when tapping older media that can no longer be downloaded */
 "UNAVAILABLE_MEDIA_TAP_TOAST" = "این رسانه دیگر در دسترس نیست";
+
+/* Action sheet title when confirming you want to unblock release notes. */
+"UNBLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Unblock Signal?";
+
+/* Action sheet body when confirming you want to unblock release notes */
+"UNBLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Resume getting Signal updates and news.";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "کاربر در فهرست مخاطبان شما نیست. می‌خواهید او را مسدود کنید؟";

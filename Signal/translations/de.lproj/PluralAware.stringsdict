@@ -120,9 +120,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Text- und Medien-Backup von %1$d Tag</string>
+			<string>Vollständiges Text- sowie Medien-Backup von %1$d Tag</string>
 			<key>other</key>
-			<string>Text- und Medien-Backup von %1$d Tagen</string>
+			<string>Vollständiges Text- sowie Medien-Backup von %1$d Tagen</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
@@ -1123,9 +1123,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Übertrage all deine Textnachrichten und die Medien des letzten %1$d Tages</string>
+			<string>Übertrage deine Textnachrichten und die Medien des letzten %1$d Tages</string>
 			<key>other</key>
-			<string>Übertrage all deine Textnachrichten und die Medien der letzten %1$d Tage</string>
+			<string>Übertrage deine Textnachrichten und die Medien der letzten %1$d Tage</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
