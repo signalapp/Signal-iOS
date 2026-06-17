@@ -63,9 +63,11 @@ public class RemoteReleaseNotesFetchingManager {
             }
 
             let lastFetchedDate = remoteAnnouncementFetcher.lastFetchedReleaseNotes(tx: tx) ?? .distantPast
-            if now.timeIntervalSince(lastFetchedDate) < .week {
-                Logger.warn("Skipping release note fetching, not enough time has passed since last fetch.")
-                return []
+            if !BuildFlags.ReleaseNotesChannel.ignoreFetchDelay || CurrentAppContext().isRunningTests {
+                if now.timeIntervalSince(lastFetchedDate) < .week {
+                    Logger.warn("Skipping release note fetching, not enough time has passed since last fetch.")
+                    return []
+                }
             }
 
             // Only fetch translations for supported versions & UUIDs we have not stored before.
