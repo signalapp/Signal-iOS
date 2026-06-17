@@ -10,18 +10,20 @@ public enum MediaBandwidthPreferences {
     public static let mediaBandwidthPreferencesDidChange = Notification.Name("MediaBandwidthPreferencesDidChange")
 
     /// Order matters (CaseIterable shows these in the UI)
+    /// Values matter (they are persisted to the database)
     public enum Preference: UInt, CaseIterable {
-        case never
-        case wifiOnly
-        case wifiAndCellular
+        case never = 0
+        case wifiOnly = 1
+        case wifiAndCellular = 2
     }
 
     /// Order matters (CaseIterable shows these in the UI)
+    /// Values matter (they are persisted to the database)
     public enum MediaType: String, CaseIterable {
-        case photo
-        case video
-        case audio
-        case document
+        case photo = "photo"
+        case video = "video"
+        case audio = "audio"
+        case document = "document"
 
         public var defaultPreference: Preference {
             switch self {
