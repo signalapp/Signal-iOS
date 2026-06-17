@@ -317,6 +317,10 @@ struct KeyValueStoreMigrator {
         return try migrateKey(key, withValueOfType: NSDate.self, toNewValue: \.timeIntervalSince1970, tx: tx)
     }
 
+    func migrateUInt(_ key: String, tx: DBWriteTransaction) throws {
+        return try migrateKey(key, withValueOfType: NSNumber.self, toNewValue: { Int64(bitPattern: UInt64($0.uintValue)) }, tx: tx)
+    }
+
     func migrateUInt32(_ key: String, tx: DBWriteTransaction) throws {
         return try migrateKey(key, withValueOfType: NSNumber.self, toNewValue: { Int64($0.uint32Value) }, tx: tx)
     }

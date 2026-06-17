@@ -7,13 +7,13 @@ import Foundation
 
 public class MediaBandwidthPreferenceStoreImpl: MediaBandwidthPreferenceStore {
 
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
     private let reachabilityManager: SSKReachabilityManager
 
     public init(
         reachabilityManager: SSKReachabilityManager,
     ) {
-        self.kvStore = KeyValueStore(collection: "MediaBandwidthPreferences")
+        self.kvStore = NewKeyValueStore(collection: "MediaBandwidthPreferences")
         self.reachabilityManager = reachabilityManager
     }
 
@@ -21,7 +21,7 @@ public class MediaBandwidthPreferenceStoreImpl: MediaBandwidthPreferenceStore {
         for mediaDownloadType: MediaBandwidthPreferences.MediaType,
         tx: DBReadTransaction,
     ) -> MediaBandwidthPreferences.Preference {
-        guard let rawValue = kvStore.getUInt(mediaDownloadType.rawValue, transaction: tx) else {
+        guard let rawValue = kvStore.fetchValue(Int64.self, forKey: mediaDownloadType.rawValue, tx: tx) else {
             return mediaDownloadType.defaultPreference
         }
         guard let value = MediaBandwidthPreferences.Preference(rawValue: rawValue) else {
@@ -55,10 +55,10 @@ public class MediaBandwidthPreferenceStoreImpl: MediaBandwidthPreferenceStore {
         for mediaDownloadType: MediaBandwidthPreferences.MediaType,
         tx: DBWriteTransaction,
     ) {
-        kvStore.setUInt(
+        kvStore.writeValue(
             mediaBandwidthPreference.rawValue,
-            key: mediaDownloadType.rawValue,
-            transaction: tx,
+            forKey: mediaDownloadType.rawValue,
+            tx: tx,
         )
 
         tx.addSyncCompletion {
@@ -71,7 +71,7 @@ public class MediaBandwidthPreferenceStoreImpl: MediaBandwidthPreferenceStore {
 
     public func resetPreferences(tx: DBWriteTransaction) {
         for mediaDownloadType in MediaBandwidthPreferences.MediaType.allCases {
-            kvStore.removeValue(forKey: mediaDownloadType.rawValue, transaction: tx)
+            kvStore.removeValue(forKey: mediaDownloadType.rawValue, tx: tx)
         }
         tx.addSyncCompletion {
             NotificationCenter.default.postOnMainThread(

@@ -11,7 +11,7 @@ public enum MediaBandwidthPreferences {
 
     /// Order matters (CaseIterable shows these in the UI)
     /// Values matter (they are persisted to the database)
-    public enum Preference: UInt, CaseIterable {
+    public enum Preference: Int64, CaseIterable {
         case never = 0
         case wifiOnly = 1
         case wifiAndCellular = 2

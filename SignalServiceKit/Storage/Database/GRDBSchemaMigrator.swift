@@ -338,6 +338,7 @@ public class GRDBSchemaMigrator {
         case addStoredReleaseNotesTable
         case migrate2FAStore
         case wipeKeyTransparencyTable
+        case migrateAutoDownloadStore
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -461,7 +462,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 148
+    public static let grdbSchemaVersionLatest: UInt = 149
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5277,6 +5278,15 @@ public class GRDBSchemaMigrator {
             try tx.database.execute(sql: """
             DELETE FROM "KeyTransparency"
             """)
+            return .success(())
+        }
+
+        migrator.registerMigration(.migrateAutoDownloadStore) { tx in
+            let migrator = KeyValueStoreMigrator(collection: "MediaBandwidthPreferences")
+            try migrator.migrateUInt("photo", tx: tx)
+            try migrator.migrateUInt("video", tx: tx)
+            try migrator.migrateUInt("audio", tx: tx)
+            try migrator.migrateUInt("document", tx: tx)
             return .success(())
         }
 
