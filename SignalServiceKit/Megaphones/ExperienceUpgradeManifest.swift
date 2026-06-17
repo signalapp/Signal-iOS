@@ -277,13 +277,13 @@ public enum ExperienceUpgradeManifest: Codable, Equatable, Hashable {
         switch self {
         case
             .newLinkedDeviceNotification,
-            .introducingPins,
             .pinReminder,
             .backupsEnabledRecentlyNotification,
             .unrecognized:
             return false
         case
             .notificationPermissionReminder,
+            .introducingPins,
             .createUsernameReminder,
             .inactiveLinkedDeviceReminder,
             .inactivePrimaryDeviceReminder,
