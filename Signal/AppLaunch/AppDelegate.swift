@@ -1812,14 +1812,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         scheduleBgAppRefresh()
 
-        let attachmentDownloadmanager = DependenciesBridge.shared.attachmentDownloadManager
+        let attachmentDownloadManager = DependenciesBridge.shared.attachmentDownloadManager
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction()
         if let registeredState {
             Logger.info("localAci: \(registeredState.localIdentifiers.aci)")
 
-            attachmentDownloadmanager.beginDownloadingIfNecessary()
+            attachmentDownloadManager.beginDownloadingIfNecessary()
 
             // Schedule a Cron run if we're in the foreground.
             if !self.activeConnectionTokens.isEmpty {
