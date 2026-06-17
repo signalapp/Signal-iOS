@@ -41,15 +41,11 @@ final class CollapseSetInteraction: TSInteraction {
 
         let firstInteraction = collapsedInteractions[0]
         super.init(
-            customUniqueId: Self.id(firstInteraction: firstInteraction),
+            customUniqueId: "CollapseSet_\(firstInteraction.timestamp)_\(collapsedInteractions.count)",
             timestamp: firstInteraction.timestamp,
             receivedAtTimestamp: firstInteraction.receivedAtTimestamp,
             thread: thread,
         )
-    }
-
-    static func id(firstInteraction: TSInteraction) -> String {
-        "CollapseSet_\(firstInteraction.timestamp)"
     }
 
     private static func disappearingTimerDescription(
