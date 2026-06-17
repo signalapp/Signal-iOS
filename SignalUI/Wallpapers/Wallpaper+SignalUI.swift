@@ -154,7 +154,7 @@ public class WallpaperView {
                     imageView.backgroundColor = UIColor(rgbHex: 0x353A49)
                 } else {
                     imageView.tintColor = UIColor(rgbHex: 0xE3E4E9)
-                    imageView.backgroundColor = UIColor(rgbHex: 0xE8EAF8).withAlphaComponent(0.4)
+                    imageView.backgroundColor = UIColor(rgbHex: 0xECEDF4)
                 }
                 imageView.contentMode = .scaleAspectFill
                 imageView.clipsToBounds = true
