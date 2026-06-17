@@ -1427,24 +1427,32 @@ private extension CVComponentState.Builder {
 
     private func canAutoDownloadAttachment(referencedAttachment: ReferencedAttachment) -> Bool {
         let mediaBandwidthPreferenceStore = DependenciesBridge.shared.mediaBandwidthPreferenceStore
-        let autoDownloadableMediaTypes = mediaBandwidthPreferenceStore.autoDownloadableMediaTypes(tx: transaction)
+        let reachabilityManager = SSKEnvironment.shared.reachabilityManagerRef
+
+        let type: MediaBandwidthPreferences.MediaType
         let mimeType = referencedAttachment.attachment.mimeType
         if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
-            return autoDownloadableMediaTypes.contains(.photo)
-        }
-        if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
-            return autoDownloadableMediaTypes.contains(.video)
-        }
-        if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
-            if
-                autoDownloadableMediaTypes.contains(.audio),
-                referencedAttachment.reference.renderingFlag != .voiceMessage
-            {
-                return true
+            type = .photo
+        } else if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
+            type = .video
+        } else if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
+            // TODO: What?
+            if referencedAttachment.reference.renderingFlag == .voiceMessage {
+                return false
             }
-            return false
+            type = .audio
+        } else {
+            type = .document
         }
-        return autoDownloadableMediaTypes.contains(.document)
+        let preference = mediaBandwidthPreferenceStore.preference(for: type, tx: transaction)
+        switch preference {
+        case .never:
+            return false
+        case .wifiOnly:
+            return reachabilityManager.isReachable(via: .wifi)
+        case .wifiAndCellular:
+            return true
+        }
     }
 
     mutating func buildThreadDetails() -> ThreadDetails {

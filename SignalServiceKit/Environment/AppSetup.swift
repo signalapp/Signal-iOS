@@ -374,9 +374,7 @@ extension AppSetup.GlobalsContinuation {
             groupSendEndorsementStore: groupSendEndorsementStore,
         )
 
-        let mediaBandwidthPreferenceStore = MediaBandwidthPreferenceStoreImpl(
-            reachabilityManager: reachabilityManager,
-        )
+        let mediaBandwidthPreferenceStore = MediaBandwidthPreferenceStore()
 
         let interactionStore = InteractionStoreImpl()
         let storyStore = StoryStoreImpl()

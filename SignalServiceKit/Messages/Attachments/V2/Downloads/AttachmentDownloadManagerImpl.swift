@@ -1489,27 +1489,25 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return false
             }
 
-            let autoDownloadableMediaTypes = mediaBandwidthPreferenceStore.autoDownloadableMediaTypes(tx: tx)
-
+            let type: MediaBandwidthPreferences.MediaType
             switch owner {
             case .message(.bodyAttachment), .storyMessage(.media):
                 if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
-                    return !autoDownloadableMediaTypes.contains(.photo)
-                }
-                if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
-                    return !autoDownloadableMediaTypes.contains(.video)
-                }
-                if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
+                    type = .photo
+                } else if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
+                    type = .video
+                } else if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
                     if renderingFlag == .voiceMessage {
                         return false
                     }
-                    return !autoDownloadableMediaTypes.contains(.audio)
+                    type = .audio
+                } else {
+                    type = .document
                 }
-                return !autoDownloadableMediaTypes.contains(.document)
             case .message(.oversizeText):
                 return false
             case .message(.sticker):
-                return !autoDownloadableMediaTypes.contains(.photo)
+                type = .photo
             case .message(.quotedReply):
                 return false
             case .message(.linkPreview):
@@ -1519,6 +1517,16 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .storyMessage(.textStoryLinkPreview):
                 return false
             case .thread(.threadWallpaperImage), .thread(.globalThreadWallpaperImage):
+                return false
+            }
+
+            let preference = mediaBandwidthPreferenceStore.preference(for: type, tx: tx)
+            switch preference {
+            case .never:
+                return true
+            case .wifiOnly:
+                return !reachabilityManager.isReachable(via: .wifi)
+            case .wifiAndCellular:
                 return false
             }
         }

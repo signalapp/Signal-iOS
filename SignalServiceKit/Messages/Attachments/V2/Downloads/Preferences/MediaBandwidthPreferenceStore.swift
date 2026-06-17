@@ -40,36 +40,56 @@ public enum MediaBandwidthPreferences {
     }
 }
 
-public protocol MediaBandwidthPreferenceStore {
+public struct MediaBandwidthPreferenceStore {
 
-    func preference(
+    private let kvStore: NewKeyValueStore
+
+    public init() {
+        self.kvStore = NewKeyValueStore(collection: "MediaBandwidthPreferences")
+    }
+
+    public func preference(
         for mediaDownloadType: MediaBandwidthPreferences.MediaType,
         tx: DBReadTransaction,
-    ) -> MediaBandwidthPreferences.Preference
+    ) -> MediaBandwidthPreferences.Preference {
+        guard let rawValue = kvStore.fetchValue(Int64.self, forKey: mediaDownloadType.rawValue, tx: tx) else {
+            return mediaDownloadType.defaultPreference
+        }
+        guard let value = MediaBandwidthPreferences.Preference(rawValue: rawValue) else {
+            owsFailDebug("Invalid value: \(rawValue)")
+            return mediaDownloadType.defaultPreference
+        }
+        return value
+    }
 
-    func autoDownloadableMediaTypes(tx: DBReadTransaction) -> Set<MediaBandwidthPreferences.MediaType>
-
-    func set(
+    public func set(
         _ mediaBandwidthPreference: MediaBandwidthPreferences.Preference,
         for mediaDownloadType: MediaBandwidthPreferences.MediaType,
         tx: DBWriteTransaction,
-    )
+    ) {
+        kvStore.writeValue(
+            mediaBandwidthPreference.rawValue,
+            forKey: mediaDownloadType.rawValue,
+            tx: tx,
+        )
 
-    func resetPreferences(tx: DBWriteTransaction)
-}
-
-extension MediaBandwidthPreferenceStore {
-
-    public func loadPreferences(
-        tx: DBReadTransaction,
-    ) -> [MediaBandwidthPreferences.MediaType: MediaBandwidthPreferences.Preference] {
-        var result = [MediaBandwidthPreferences.MediaType: MediaBandwidthPreferences.Preference]()
-        for mediaDownloadType in MediaBandwidthPreferences.MediaType.allCases {
-            result[mediaDownloadType] = preference(
-                for: mediaDownloadType,
-                tx: tx,
+        tx.addSyncCompletion {
+            NotificationCenter.default.postOnMainThread(
+                name: MediaBandwidthPreferences.mediaBandwidthPreferencesDidChange,
+                object: nil,
             )
         }
-        return result
+    }
+
+    public func resetPreferences(tx: DBWriteTransaction) {
+        for mediaDownloadType in MediaBandwidthPreferences.MediaType.allCases {
+            kvStore.removeValue(forKey: mediaDownloadType.rawValue, tx: tx)
+        }
+        tx.addSyncCompletion {
+            NotificationCenter.default.postOnMainThread(
+                name: MediaBandwidthPreferences.mediaBandwidthPreferencesDidChange,
+                object: nil,
+            )
+        }
     }
 }

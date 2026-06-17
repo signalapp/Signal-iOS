@@ -1238,7 +1238,6 @@
 		66BE13CC2C1D02700081A1ED /* AttachmentDownloadStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BE13CA2C1D026A0081A1ED /* AttachmentDownloadStoreTests.swift */; };
 		66BE544D28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */; };
 		66BED7E32B9B8FDF00236BAD /* MediaBandwidthPreferenceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BED7E22B9B8FDF00236BAD /* MediaBandwidthPreferenceStore.swift */; };
-		66BED7E62B9B929600236BAD /* MediaBandwidthPreferenceStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BED7E52B9B929600236BAD /* MediaBandwidthPreferenceStoreImpl.swift */; };
 		66BED7EC2B9B9A8B00236BAD /* AttachmentDownloadManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BED7EB2B9B9A8B00236BAD /* AttachmentDownloadManagerMock.swift */; };
 		66C1A8772BB75E560076C65A /* AttachmentUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8762BB75E560076C65A /* AttachmentUploadManager.swift */; };
 		66C1A8802BB77EA50076C65A /* AttachmentUploadManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A87E2BB77E950076C65A /* AttachmentUploadManagerTests.swift */; };
@@ -5529,7 +5528,6 @@
 		66BE13CA2C1D026A0081A1ED /* AttachmentDownloadStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadStoreTests.swift; sourceTree = "<group>"; };
 		66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextOnboardingOverlayView.swift; sourceTree = "<group>"; };
 		66BED7E22B9B8FDF00236BAD /* MediaBandwidthPreferenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBandwidthPreferenceStore.swift; sourceTree = "<group>"; };
-		66BED7E52B9B929600236BAD /* MediaBandwidthPreferenceStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBandwidthPreferenceStoreImpl.swift; sourceTree = "<group>"; };
 		66BED7EB2B9B9A8B00236BAD /* AttachmentDownloadManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadManagerMock.swift; sourceTree = "<group>"; };
 		66C1A8762BB75E560076C65A /* AttachmentUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadManager.swift; sourceTree = "<group>"; };
 		66C1A87E2BB77E950076C65A /* AttachmentUploadManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadManagerTests.swift; sourceTree = "<group>"; };
@@ -10714,7 +10712,6 @@
 			isa = PBXGroup;
 			children = (
 				66BED7E22B9B8FDF00236BAD /* MediaBandwidthPreferenceStore.swift */,
-				66BED7E52B9B929600236BAD /* MediaBandwidthPreferenceStoreImpl.swift */,
 			);
 			path = Preferences;
 			sourceTree = "<group>";
@@ -19457,7 +19454,6 @@
 				D94AEB3A2D28837F00B03D7A /* MasterKey.swift in Sources */,
 				F9C5CE08289453B400548EEE /* Math+OWS.swift in Sources */,
 				66BED7E32B9B8FDF00236BAD /* MediaBandwidthPreferenceStore.swift in Sources */,
-				66BED7E62B9B929600236BAD /* MediaBandwidthPreferenceStoreImpl.swift in Sources */,
 				663A18A02BCD8F16005C1B41 /* MediaGalleryAttachmentFinder.swift in Sources */,
 				66A64D342D00E52400203F4B /* MediaGalleryChangeInfo.swift in Sources */,
 				C17586642E2AC3CE008B3A13 /* MediaRootBackupKey.swift in Sources */,
