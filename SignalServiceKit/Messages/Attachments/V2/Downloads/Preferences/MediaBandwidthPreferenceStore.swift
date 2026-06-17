@@ -9,24 +9,15 @@ public enum MediaBandwidthPreferences {
 
     public static let mediaBandwidthPreferencesDidChange = Notification.Name("MediaBandwidthPreferencesDidChange")
 
-    public enum Preference: UInt, Equatable, CaseIterable {
+    /// Order matters (CaseIterable shows these in the UI)
+    public enum Preference: UInt, CaseIterable {
         case never
         case wifiOnly
         case wifiAndCellular
-
-        public var sortKey: UInt {
-            switch self {
-            case .never:
-                return 1
-            case .wifiOnly:
-                return 2
-            case .wifiAndCellular:
-                return 3
-            }
-        }
     }
 
-    public enum MediaType: String, Equatable, CaseIterable {
+    /// Order matters (CaseIterable shows these in the UI)
+    public enum MediaType: String, CaseIterable {
         case photo
         case video
         case audio
@@ -42,19 +33,6 @@ public enum MediaBandwidthPreferences {
                 return .wifiAndCellular
             case .document:
                 return .wifiOnly
-            }
-        }
-
-        public var sortKey: UInt {
-            switch self {
-            case .photo:
-                return 1
-            case .video:
-                return 2
-            case .audio:
-                return 3
-            case .document:
-                return 4
             }
         }
     }

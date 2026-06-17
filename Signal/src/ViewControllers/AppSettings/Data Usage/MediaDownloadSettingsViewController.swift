@@ -36,9 +36,7 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
                 tx: transaction,
             )
         }
-        let mediaBandwidthPreferences = MediaBandwidthPreferences.Preference.allCases.sorted {
-            $0.sortKey < $1.sortKey
-        }
+        let mediaBandwidthPreferences = MediaBandwidthPreferences.Preference.allCases
         for preference in mediaBandwidthPreferences {
             let preferenceName = Self.name(forMediaBandwidthPreference: preference)
             section.add(OWSTableItem(

@@ -42,9 +42,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
             comment: "Footer for the 'media auto-download' section in the data settings.",
         )
 
-        let mediaDownloadTypes = MediaBandwidthPreferences.MediaType.allCases.sorted {
-            $0.sortKey < $1.sortKey
-        }
+        let mediaDownloadTypes = MediaBandwidthPreferences.MediaType.allCases
         var hasNonDefaultValue = false
         for mediaDownloadType in mediaDownloadTypes {
             let name = MediaDownloadSettingsViewController.name(forMediaDownloadType: mediaDownloadType)
