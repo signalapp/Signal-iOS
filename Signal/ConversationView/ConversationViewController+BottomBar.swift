@@ -79,6 +79,12 @@ public extension ConversationViewController {
             case .normal:
                 break
             }
+            if thread.isReleaseNotesThread {
+                if viewState.isInPreviewPlatter {
+                    return .none
+                }
+                return .releaseNotes
+            }
             if threadViewModel.hasPendingMessageRequest {
                 let messageRequestType = SSKEnvironment.shared.databaseStorageRef.read { tx in
                     return MessageRequestView.messageRequestType(forThread: self.threadViewModel.threadRecord, transaction: tx)
@@ -93,10 +99,6 @@ public extension ConversationViewController {
             // it doesn't render correctly in the preview platter so we skip it.
             if viewState.isInPreviewPlatter {
                 return .none
-            }
-
-            if thread.isReleaseNotesThread {
-                return .releaseNotes
             }
             if appExpiry.isExpired(now: Date()) {
                 return .appExpired
