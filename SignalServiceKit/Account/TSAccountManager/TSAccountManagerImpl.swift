@@ -193,6 +193,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             kvStore.removeValue(forKey: Keys.isDeregisteredOrDelinked, tx: tx)
             kvStore.removeValue(forKey: Keys.reregistrationPhoneNumber, tx: tx)
             kvStore.removeValue(forKey: Keys.reregistrationAci, tx: tx)
+            kvStore.removeValue(forKey: Keys.reregistrationWasPrimaryDevice, tx: tx)
         }
     }
 
@@ -229,7 +230,11 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             } else {
                 Self.regStateLogger.info("Resetting isDeregistered/Delinked")
             }
-            kvStore.writeValue(isDeregisteredOrDelinked, forKey: Keys.isDeregisteredOrDelinked, tx: tx)
+            if isDeregisteredOrDelinked {
+                kvStore.writeValue(isDeregisteredOrDelinked, forKey: Keys.isDeregisteredOrDelinked, tx: tx)
+            } else {
+                kvStore.removeValue(forKey: Keys.isDeregisteredOrDelinked, tx: tx)
+            }
             return true
         }
     }
@@ -256,7 +261,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     }
 
     public func setIsTransferInProgress(_ isTransferInProgress: Bool, tx: DBWriteTransaction) -> Bool {
-        let oldValue = kvStore.fetchValue(Bool.self, forKey: Keys.isTransferInProgress, tx: tx)
+        let oldValue = kvStore.fetchValue(Bool.self, forKey: Keys.isTransferInProgress, tx: tx) ?? false
         guard oldValue != isTransferInProgress else {
             return false
         }
@@ -266,13 +271,17 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             Self.regStateLogger.info("Resetting isTransferInProgress")
         }
         mutateWithLock(tx: tx) {
-            kvStore.writeValue(isTransferInProgress, forKey: Keys.isTransferInProgress, tx: tx)
+            if isTransferInProgress {
+                kvStore.writeValue(isTransferInProgress, forKey: Keys.isTransferInProgress, tx: tx)
+            } else {
+                kvStore.removeValue(forKey: Keys.isTransferInProgress, tx: tx)
+            }
         }
         return true
     }
 
     public func setWasTransferred(_ wasTransferred: Bool, tx: DBWriteTransaction) -> Bool {
-        let oldValue = kvStore.fetchValue(Bool.self, forKey: Keys.wasTransferred, tx: tx)
+        let oldValue = kvStore.fetchValue(Bool.self, forKey: Keys.wasTransferred, tx: tx) ?? false
         guard oldValue != wasTransferred else {
             return false
         }
@@ -282,7 +291,11 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             Self.regStateLogger.info("Resetting wasTransferred")
         }
         mutateWithLock(tx: tx) {
-            kvStore.writeValue(wasTransferred, forKey: Keys.wasTransferred, tx: tx)
+            if wasTransferred {
+                kvStore.writeValue(wasTransferred, forKey: Keys.wasTransferred, tx: tx)
+            } else {
+                kvStore.removeValue(forKey: Keys.wasTransferred, tx: tx)
+            }
         }
         return true
     }
@@ -298,7 +311,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
                     return
                 }
                 Self.regStateLogger.info("Transfer was in progress but app relaunched; resetting")
-                kvStore.writeValue(false, forKey: Keys.isTransferInProgress, tx: tx)
+                kvStore.removeValue(forKey: Keys.isTransferInProgress, tx: tx)
             }
         }
     }
@@ -487,7 +500,7 @@ extension TSAccountManagerImpl {
             let reregistrationPhoneNumber = kvStore.fetchValue(String.self, forKey: Keys.reregistrationPhoneNumber, tx: tx)
             // TODO: Eventually require reregistrationAci during re-registration.
             let reregistrationAci = Aci.parseFrom(aciString: kvStore.fetchValue(String.self, forKey: Keys.reregistrationAci, tx: tx))
-            let isDeregisteredOrDelinked = kvStore.fetchValue(Bool.self, forKey: Keys.isDeregisteredOrDelinked, tx: tx)
+            let isDeregisteredOrDelinked = kvStore.fetchValue(Bool.self, forKey: Keys.isDeregisteredOrDelinked, tx: tx) ?? false
             let wasTransferred = kvStore.fetchValue(Bool.self, forKey: Keys.wasTransferred, tx: tx) ?? false
 
             // Go in semi-reverse order; with higher priority stuff going first.
@@ -525,7 +538,7 @@ extension TSAccountManagerImpl {
                         aci: reregistrationAci,
                     )
                 }
-            } else if isDeregisteredOrDelinked == true {
+            } else if isDeregisteredOrDelinked {
                 // if isDeregistered is true, we may have been registered
                 // or not. But its being true means we should be deregistered
                 // (or delinked, based on whether this is a primary).
