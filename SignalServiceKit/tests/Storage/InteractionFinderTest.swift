@@ -8,57 +8,40 @@ import XCTest
 @testable import SignalServiceKit
 
 class InteractionFinderTest: SSKBaseTest {
-    func testInteractions() {
-        let address1 = SignalServiceAddress(phoneNumber: "+fake-id")
-        // Threads
-        let contactThread1 = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334444"))
-        let contactThread2 = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334445"))
-        // Messages
-        let outgoingMessage1 = TSOutgoingMessage(in: contactThread1, messageBody: "good heavens")
-        let outgoingMessage2 = TSOutgoingMessage(in: contactThread2, messageBody: "land's sakes")
-        let outgoingMessage3 = TSOutgoingMessage(in: contactThread2, messageBody: "oh my word")
-        let errorMessage1: TSErrorMessage = .nonblockingIdentityChange(
-            thread: contactThread1,
-            address: address1,
-            wasIdentityVerified: false,
-        )
-        let errorMessage2: TSErrorMessage = .failedDecryption(
-            thread: contactThread1,
-            timestamp: 0,
-            sender: nil,
-        )
-        // Non-message interactions
-        let missedCall = TSCall(
-            callType: .incomingMissed,
-            offerType: .audio,
-            thread: contactThread1,
-            sentAtTimestamp: NSDate.ows_millisecondTimeStamp(),
-        )
 
-        let finder1 = InteractionFinder(threadUniqueId: contactThread1.uniqueId)
-        let finder2 = InteractionFinder(threadUniqueId: contactThread2.uniqueId)
-        self.read { transaction in
-            XCTAssertEqual(0, try! finder1.fetchUniqueIdsForConversationView(rowIdFilter: .newest, limit: 100, tx: transaction).count)
-            XCTAssertEqual(0, try! finder2.fetchUniqueIdsForConversationView(rowIdFilter: .newest, limit: 100, tx: transaction).count)
-        }
-
+    func testBuildUniqueIdCursorForConversationView() {
+        let thread = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334444"))
+        var messages = [TSOutgoingMessage]()
         self.write { transaction in
-            // Threads
-            contactThread1.anyInsert(transaction: transaction)
-            contactThread2.anyInsert(transaction: transaction)
-            // Messages
-            outgoingMessage1.anyInsert(transaction: transaction)
-            outgoingMessage2.anyInsert(transaction: transaction)
-            outgoingMessage3.anyInsert(transaction: transaction)
-            errorMessage1.anyInsert(transaction: transaction)
-            errorMessage2.anyInsert(transaction: transaction)
-            // Non-message interactions
-            missedCall.anyInsert(transaction: transaction)
+            thread.anyInsert(transaction: transaction)
+            for idx in 1...5 {
+                let message = TSOutgoingMessage(in: thread, messageBody: "message \(idx)")
+                message.anyInsert(transaction: transaction)
+                messages.append(message)
+            }
+        }
+
+        let uniqueIds = messages.map { $0.uniqueId }
+        let rowIds = messages.map { $0.sqliteRowId! }
+
+        func drain(_ filter: InteractionFinder.RowIdFilter, tx: DBReadTransaction) -> [String] {
+            var cursor = InteractionFinder(threadUniqueId: thread.uniqueId)
+                .buildUniqueIdCursorForConversationView(rowIdFilter: filter, tx: tx)
+            var results = [String]()
+            while let uniqueId = cursor.next() {
+                results.append(uniqueId)
+            }
+            return results
         }
 
         self.read { transaction in
-            XCTAssertEqual(4, try! finder1.fetchUniqueIdsForConversationView(rowIdFilter: .newest, limit: 100, tx: transaction).count)
-            XCTAssertEqual(2, try! finder2.fetchUniqueIdsForConversationView(rowIdFilter: .newest, limit: 100, tx: transaction).count)
+            // These filters must yield uniqueIds newest first.
+            XCTAssertEqual(drain(.newest, tx: transaction), Array(uniqueIds.reversed()))
+            XCTAssertEqual(drain(.atOrBefore(rowIds[2]), tx: transaction), [uniqueIds[2], uniqueIds[1], uniqueIds[0]])
+            XCTAssertEqual(drain(.before(rowIds[2]), tx: transaction), [uniqueIds[1], uniqueIds[0]])
+            // These filters must yield uniqueIds oldest first.
+            XCTAssertEqual(drain(.after(rowIds[2]), tx: transaction), [uniqueIds[3], uniqueIds[4]])
+            XCTAssertEqual(drain(.range(rowIds[1]...rowIds[3]), tx: transaction), [uniqueIds[1], uniqueIds[2], uniqueIds[3]])
         }
     }
 

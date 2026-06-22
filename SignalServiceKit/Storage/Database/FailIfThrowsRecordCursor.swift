@@ -20,3 +20,19 @@ public struct FailIfThrowsRecordCursor<T: FetchableRecord>: IteratorProtocol, Se
         return failIfThrows(block: recordCursor.next)
     }
 }
+
+/// A convenience wrapper for `GRDB.FastDatabaseValueCursor` that swallows
+/// errors using `failIfThrows` and adds `Sequence` conformance.
+public struct FailIfThrowsValueCursor<T: DatabaseValueConvertible & StatementColumnConvertible>: IteratorProtocol, Sequence {
+    public typealias Element = T
+
+    private let valueCursor: FastDatabaseValueCursor<T>
+
+    public init(makeCursorBlock: () throws -> FastDatabaseValueCursor<T>) {
+        self.valueCursor = failIfThrows(block: makeCursorBlock)
+    }
+
+    public mutating func next() -> T? {
+        return failIfThrows(block: valueCursor.next)
+    }
+}

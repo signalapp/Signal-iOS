@@ -9,45 +9,69 @@ import XCTest
 @testable import SignalServiceKit
 
 class MessageLoaderTest: XCTestCase {
-    private var batchFetcher: MockBatchFetcher!
+    private var cursorFactory: MockCursorFactory!
     private var interactionFetcher: MockInteractionFetcher!
     private var messageLoader: MessageLoader!
     private var mockDB: InMemoryDB!
 
-    private class MockBatchFetcher: MessageLoaderBatchFetcher {
+    private class MockCursorFactory: MessageLoaderCursorFactory {
         var interactions = [TSInteraction]()
-        func fetchUniqueIds(filter: InteractionFinder.RowIdFilter, limit: Int, tx: DBReadTransaction) throws -> [String] {
+
+        /// The total number of uniqueIds vended across every cursor this
+        /// factory has built, so tests can assert how many rows the loader
+        /// actually consumed.
+        private(set) var vendedUniqueIdCount = 0
+
+        func buildUniqueIdCursor(filter: InteractionFinder.RowIdFilter, tx: DBReadTransaction) -> MessageLoaderUniqueIdCursor {
+            // Like the database-backed cursor, yield uniqueIds newest first
+            // for `.newest`, `.atOrBefore`, and `.before`, and oldest first
+            // for `.after` and `.range`.
+            let uniqueIds: [String]
             switch filter {
             case .newest:
-                return Array(interactions.lazy.suffix(limit).map { $0.uniqueId })
+                uniqueIds = interactions.reversed().map { $0.uniqueId }
             case .after(let rowId):
-                return Array(interactions.lazy.filter { $0.sqliteRowId! > rowId }.prefix(limit).map { $0.uniqueId })
+                uniqueIds = interactions.filter { $0.sqliteRowId! > rowId }.map { $0.uniqueId }
             case .atOrBefore(let rowId):
-                return Array(interactions.lazy.filter { $0.sqliteRowId! <= rowId }.suffix(limit).map { $0.uniqueId })
+                uniqueIds = interactions.reversed().filter { $0.sqliteRowId! <= rowId }.map { $0.uniqueId }
             case .before(let rowId):
-                return Array(interactions.lazy.filter { $0.sqliteRowId! < rowId }.suffix(limit).map { $0.uniqueId })
+                uniqueIds = interactions.reversed().filter { $0.sqliteRowId! < rowId }.map { $0.uniqueId }
             case .range(let rowIds):
-                return Array(interactions.lazy.filter { rowIds.contains($0.sqliteRowId!) }.map { $0.uniqueId })
+                uniqueIds = interactions.filter { rowIds.contains($0.sqliteRowId!) }.map { $0.uniqueId }
             }
+            return InMemoryUniqueIdCursor(
+                uniqueIds: uniqueIds,
+                onNext: { [weak self] in
+                    self?.vendedUniqueIdCount += 1
+                },
+            )
         }
     }
 
     private class MockInteractionFetcher: MessageLoaderInteractionFetcher {
-        var interactions = [TSInteraction]()
+        var interactions = [TSInteraction]() {
+            didSet {
+                interactionsByUniqueId = Dictionary(uniqueKeysWithValues: interactions.lazy.map { ($0.uniqueId, $0) })
+            }
+        }
+
+        private var interactionsByUniqueId = [String: TSInteraction]()
         func fetchInteractions(for uniqueIds: [String], tx: DBReadTransaction) -> [String: TSInteraction] {
-            return Dictionary(
-                uniqueKeysWithValues: interactions.lazy.filter { uniqueIds.contains($0.uniqueId) }.map { ($0.uniqueId, $0) },
-            )
+            var result = [String: TSInteraction]()
+            for uniqueId in uniqueIds {
+                result[uniqueId] = interactionsByUniqueId[uniqueId]
+            }
+            return result
         }
     }
 
     override func setUp() {
         super.setUp()
 
-        batchFetcher = MockBatchFetcher()
+        cursorFactory = MockCursorFactory()
         interactionFetcher = MockInteractionFetcher()
         messageLoader = MessageLoader(
-            batchFetcher: batchFetcher,
+            cursorFactory: cursorFactory,
             interactionFetchers: [interactionFetcher],
         )
         mockDB = InMemoryDB()
@@ -129,7 +153,7 @@ class MessageLoaderTest: XCTestCase {
     }
 
     private func setInteractions(_ interactions: [TSInteraction]) {
-        batchFetcher.interactions = interactions
+        cursorFactory.interactions = interactions
         interactionFetcher.interactions = interactions
     }
 
@@ -192,6 +216,147 @@ class MessageLoaderTest: XCTestCase {
         XCTAssertGreaterThan(messageLoader.loadedInteractions.count, 500)
         XCTAssertLessThanOrEqual(messageLoader.loadedDisplayableInteractions.count, 500)
         XCTAssertTrue(messageLoader.loadedDisplayableInteractions.contains { $0 is CollapseSetInteraction })
+    }
+
+    func test_loadInitialMessagePage_fetchesEachInteractionOnce() throws {
+        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
+        let initialMessages = createCollapsibleInteractions(5_000, thread: thread)
+        setInteractions(initialMessages)
+
+        try mockDB.read { tx in
+            try self.messageLoader.loadInitialMessagePage(
+                focusMessageId: nil,
+                reusableInteractions: [:],
+                deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(thread: thread),
+                tx: tx,
+            )
+        }
+
+        // Even though every interaction is collapsible (so each display unit
+        // costs maxCollapseSetSize raw interactions), the loader should fetch
+        // exactly the interactions it keeps, plus the single interaction past
+        // the window boundary that confirms the oldest collapse set is
+        // complete.
+        XCTAssertEqual(cursorFactory.vendedUniqueIdCount, messageLoader.loadedInteractions.count + 1)
+        XCTAssertLessThanOrEqual(messageLoader.loadedDisplayableInteractions.count, 500)
+    }
+
+    func test_loadOlderMessagePage_fetchesEachInteractionOnce() throws {
+        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
+        let initialMessages = createCollapsibleInteractions(15_000, thread: thread)
+        setInteractions(initialMessages)
+
+        try mockDB.read { tx in
+            try self.messageLoader.loadInitialMessagePage(
+                focusMessageId: nil,
+                reusableInteractions: [:],
+                deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(thread: thread),
+                tx: tx,
+            )
+            for _ in 0..<2 {
+                try self.messageLoader.loadOlderMessagePage(
+                    reusableInteractions: [:],
+                    deletedInteractionIds: [],
+                    preprocessingContext: preprocessingContext(thread: thread),
+                    tx: tx,
+                )
+            }
+        }
+
+        // Each of the three loads should only have fetched interactions that
+        // weren't already loaded, plus one discarded boundary interaction.
+        XCTAssertEqual(cursorFactory.vendedUniqueIdCount, messageLoader.loadedInteractions.count + 3)
+    }
+
+    func test_loadOlderMessagePage_keepsCollapseSetsStable() throws {
+        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
+        // Repeated [collapsible, collapsible, standalone] chunks: every
+        // collapse set should always appear with both of its interactions,
+        // even at the edge of the load window.
+        let initialMessages = createMixedInteractions(200, thread: thread)
+        setInteractions(initialMessages)
+
+        func assertDisplayUnitsAreWhole() {
+            for interaction in messageLoader.loadedDisplayableInteractions {
+                if let collapseSet = interaction as? CollapseSetInteraction {
+                    XCTAssertEqual(collapseSet.collapsedInteractions.count, 2)
+                } else if let infoMessage = interaction as? TSInfoMessage {
+                    // Collapsible interactions never appear outside a set.
+                    XCTAssertEqual(infoMessage.messageType, .userJoinedSignal)
+                }
+            }
+        }
+
+        func displayableIdsIgnoringDateHeaders() -> Set<String> {
+            Set(
+                messageLoader.loadedDisplayableInteractions.lazy
+                    .filter { !($0 is DateHeaderInteraction) }
+                    .map { $0.uniqueId },
+            )
+        }
+
+        try mockDB.read { tx in
+            try self.messageLoader.loadInitialMessagePage(
+                focusMessageId: nil,
+                reusableInteractions: [:],
+                deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(thread: thread),
+                tx: tx,
+            )
+            assertDisplayUnitsAreWhole()
+
+            var loadCount = 0
+            while self.messageLoader.canLoadOlder, loadCount < 100 {
+                let previousDisplayableIds = displayableIdsIgnoringDateHeaders()
+                try self.messageLoader.loadOlderMessagePage(
+                    reusableInteractions: [:],
+                    deletedInteractionIds: [],
+                    preprocessingContext: preprocessingContext(thread: thread),
+                    tx: tx,
+                )
+                loadCount += 1
+                assertDisplayUnitsAreWhole()
+                // Loading older pages must never change the identity of
+                // displayable items that were already loaded.
+                XCTAssertTrue(previousDisplayableIds.isSubset(of: displayableIdsIgnoringDateHeaders()))
+            }
+            XCTAssertFalse(self.messageLoader.canLoadOlder)
+        }
+    }
+
+    func test_loadInitialMessagePage_aroundFocus_balancesDisplayableUnits() throws {
+        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
+        // 100 collapsible interactions (two 50-item collapse sets) followed by
+        // a focus message and 300 standalone messages.
+        var initialMessages = createCollapsibleInteractions(100, thread: thread)
+        let focusInteraction = createInteraction(rowId: 101, thread: thread)
+        initialMessages.append(focusInteraction)
+        initialMessages += ((102 as Int64)...401).map { createInteraction(rowId: $0, thread: thread) }
+        setInteractions(initialMessages)
+
+        try mockDB.read { tx in
+            try self.messageLoader.loadInitialMessagePage(
+                focusMessageId: focusInteraction.uniqueId,
+                reusableInteractions: [:],
+                deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(thread: thread),
+                tx: tx,
+            )
+        }
+
+        // The older half of the window is measured in display units, not raw
+        // interactions: its two collapse sets cost fewer units than the older
+        // half of the load window, so the loader reaches the start of the chat.
+        XCTAssertFalse(messageLoader.canLoadOlder)
+        XCTAssertEqual(messageLoader.loadedInteractions.first?.uniqueId, initialMessages.first?.uniqueId)
+
+        // The newer side received the remaining units as standalone messages.
+        XCTAssertTrue(messageLoader.canLoadNewer)
+        let displayableIds = messageLoader.loadedDisplayableInteractions.map { $0.uniqueId }
+        let focusIndex = try XCTUnwrap(displayableIds.firstIndex(of: focusInteraction.uniqueId))
+        XCTAssertGreaterThanOrEqual(displayableIds.count - focusIndex - 1, 5)
     }
 
     func test_loadOlderMessagePage_withMixedCollapseSets_trimsNewerSide() throws {
@@ -423,7 +588,7 @@ class MessageLoaderTest: XCTestCase {
         // to jump earlier in the history.)
         for idx in stride(from: initialMessages.startIndex, to: initialMessages.endIndex, by: 10) {
             let message = initialMessages[idx]
-            let messageLoader = MessageLoader(batchFetcher: batchFetcher, interactionFetchers: [interactionFetcher])
+            let messageLoader = MessageLoader(cursorFactory: cursorFactory, interactionFetchers: [interactionFetcher])
             try mockDB.read { tx in
                 try messageLoader.loadInitialMessagePage(
                     focusMessageId: nil,

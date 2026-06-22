@@ -107,7 +107,7 @@ public class CVLoadCoordinator: NSObject {
             viewStateSnapshot: viewStateSnapshot,
         )
         self.messageLoader = MessageLoader(
-            batchFetcher: ConversationViewBatchFetcher(interactionFinder: InteractionFinder(threadUniqueId: thread.uniqueId)),
+            cursorFactory: ConversationViewCursorFactory(interactionFinder: InteractionFinder(threadUniqueId: thread.uniqueId)),
             interactionFetchers: [SSKEnvironment.shared.modelReadCachesRef.interactionReadCache, SDSInteractionFetcherImpl()],
         )
         super.init()

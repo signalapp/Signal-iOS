@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalUI
 
 class StoryGroupReplyLoader {
-    private let messageBatchFetcher: StoryGroupReplyBatchFetcher
+    private let messageCursorFactory: StoryGroupReplyCursorFactory
     private let messageLoader: MessageLoader
     private let threadUniqueId: String
     private let storyMessage: StoryMessage
@@ -52,12 +52,12 @@ class StoryGroupReplyLoader {
         self.threadUniqueId = threadUniqueId
         self.storyMessage = storyMessage
         self.tableView = tableView
-        self.messageBatchFetcher = StoryGroupReplyBatchFetcher(
+        self.messageCursorFactory = StoryGroupReplyCursorFactory(
             storyAuthor: storyMessage.authorAci,
             storyTimestamp: storyMessage.timestamp,
         )
         self.messageLoader = MessageLoader(
-            batchFetcher: messageBatchFetcher,
+            cursorFactory: messageCursorFactory,
             interactionFetchers: [SSKEnvironment.shared.modelReadCachesRef.interactionReadCache, SDSInteractionFetcherImpl()],
         )
 
@@ -159,13 +159,13 @@ class StoryGroupReplyLoader {
             reusableInteractions = [:]
         }
 
-        messageBatchFetcher.refetch(tx: transaction)
+        messageCursorFactory.refetch(tx: transaction)
 
         do {
             switch mode {
             case .initial:
                 try self.messageLoader.loadInitialMessagePage(
-                    focusMessageId: messageBatchFetcher.uniqueIdsAndRowIds.first?.uniqueId,
+                    focusMessageId: messageCursorFactory.uniqueIdsAndRowIds.first?.uniqueId,
                     reusableInteractions: reusableInteractions,
                     deletedInteractionIds: deletedInteractionIds,
                     tx: transaction,
@@ -194,7 +194,7 @@ class StoryGroupReplyLoader {
         }
 
         let newReplyItems = buildItems(reusableInteractionIds: Array(reusableInteractions.keys), transaction: transaction)
-        let replyUniqueIds = messageBatchFetcher.uniqueIdsAndRowIds.map { $0.uniqueId }
+        let replyUniqueIds = messageCursorFactory.uniqueIdsAndRowIds.map { $0.uniqueId }
         let oldestLoadedRow = messageLoader.loadedInteractions.first.flatMap { replyUniqueIds.firstIndex(of: $0.uniqueId) }
         let newestLoadedRow = messageLoader.loadedInteractions.last.flatMap { replyUniqueIds.firstIndex(of: $0.uniqueId) }
 
@@ -325,9 +325,9 @@ extension StoryGroupReplyLoader: DatabaseChangeDelegate {
     }
 }
 
-// MARK: - Batch Fetcher
+// MARK: - Cursor Factory
 
-private class StoryGroupReplyBatchFetcher: MessageLoaderBatchFetcher {
+private class StoryGroupReplyCursorFactory: MessageLoaderCursorFactory {
     private let storyAuthor: Aci
     private let storyTimestamp: UInt64
 
@@ -346,7 +346,10 @@ private class StoryGroupReplyBatchFetcher: MessageLoaderBatchFetcher {
         )
     }
 
-    func fetchUniqueIds(filter: InteractionFinder.RowIdFilter, limit: Int, tx: DBReadTransaction) throws -> [String] {
+    func buildUniqueIdCursor(
+        filter: InteractionFinder.RowIdFilter,
+        tx: DBReadTransaction,
+    ) -> MessageLoaderUniqueIdCursor {
         // This design is extremely weird. However, we already fetch all the
         // uniqueIds for a given story when rendering the view, and while we could
         // design a bunch of equivalent database queries to do the same thing, we
@@ -356,17 +359,44 @@ private class StoryGroupReplyBatchFetcher: MessageLoaderBatchFetcher {
         // do just as often as we invoked this method (from a big-O perspective)).
         // In the future, we should support proper paging on this view, but for
         // now, this is probably faster than what we had before.
+        //
+        // Like the database-backed cursor, this must yield uniqueIds newest
+        // first for the `.newest`, `.atOrBefore`, and `.before` filters, and
+        // oldest first for the `.after` and `.range` filters.
+        let uniqueIds: [String]
         switch filter {
         case .newest:
-            return Array(uniqueIdsAndRowIds.lazy.suffix(limit).map { $0.uniqueId })
+            uniqueIds = uniqueIdsAndRowIds.reversed().map { $0.uniqueId }
         case .atOrBefore(let rowId):
-            return Array(uniqueIdsAndRowIds.lazy.filter { $0.rowId <= rowId }.suffix(limit).map { $0.uniqueId })
+            uniqueIds = uniqueIdsAndRowIds.reversed().filter { $0.rowId <= rowId }.map { $0.uniqueId }
         case .before(let rowId):
-            return Array(uniqueIdsAndRowIds.lazy.filter { $0.rowId < rowId }.suffix(limit).map { $0.uniqueId })
+            uniqueIds = uniqueIdsAndRowIds.reversed().filter { $0.rowId < rowId }.map { $0.uniqueId }
         case .after(let rowId):
-            return Array(uniqueIdsAndRowIds.lazy.filter { $0.rowId > rowId }.prefix(limit).map { $0.uniqueId })
+            uniqueIds = uniqueIdsAndRowIds.filter { $0.rowId > rowId }.map { $0.uniqueId }
         case .range(let rowIds):
-            return Array(uniqueIdsAndRowIds.lazy.filter { rowIds.contains($0.rowId) }.prefix(limit).map { $0.uniqueId })
+            uniqueIds = uniqueIdsAndRowIds.filter { rowIds.contains($0.rowId) }.map { $0.uniqueId }
         }
+        return InMemoryUniqueIdCursor(uniqueIds: uniqueIds)
+    }
+}
+
+// MARK: -
+
+/// Yields the given `uniqueIds`, in the given order.
+struct InMemoryUniqueIdCursor: MessageLoaderUniqueIdCursor {
+    private var uniqueIds: ArraySlice<String>
+    private let onNext: (() -> Void)?
+
+    init(uniqueIds: [String], onNext: (() -> Void)? = nil) {
+        self.uniqueIds = uniqueIds[...]
+        self.onNext = onNext
+    }
+
+    mutating func next() -> String? {
+        guard let uniqueId = uniqueIds.popFirst() else {
+            return nil
+        }
+        onNext?()
+        return uniqueId
     }
 }

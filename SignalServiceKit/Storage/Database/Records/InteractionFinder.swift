@@ -1127,30 +1127,35 @@ public class InteractionFinder: NSObject {
         case range(ClosedRange<Int64>)
     }
 
-    /// Fetch interaction unique IDs covered by this finder, filtered and
-    /// ordered as they should appear in the conversation view.
-    public func fetchUniqueIdsForConversationView(
+    /// Builds a cursor over interaction unique IDs covered by this finder,
+    /// filtered as they should appear in the conversation view.
+    ///
+    /// Unique IDs are yielded in fetch order: descending (newest first) for
+    /// the `.newest`, `.atOrBefore`, and `.before` filters, and ascending
+    /// (oldest first) for the `.after` and `.range` filters.
+    public func buildUniqueIdCursorForConversationView(
         rowIdFilter: RowIdFilter,
-        limit: Int,
         tx: DBReadTransaction,
-    ) throws -> [String] {
-        let (rowIdClause, arguments, isAscending) = sqlClauseForInteractionsByRowId(
+    ) -> FailIfThrowsValueCursor<String> {
+        let (rowIdClause, arguments, _) = sqlClauseForInteractionsByRowId(
             rowIdFilter: rowIdFilter,
             additionalFiltering: .filterForConversationView,
-            limit: limit,
+            limit: nil,
         )
 
-        let uniqueIds = try String.fetchAll(
-            tx.database,
-            sql: """
+        return FailIfThrowsValueCursor {
+            let sql = """
             SELECT "uniqueId" FROM \(InteractionRecord.databaseTableName)
             INDEXED BY index_interactions_on_threadUniqueId_and_id
             \(rowIdClause)
-            """,
-            arguments: arguments,
-        )
+            """
 
-        return isAscending ? uniqueIds : Array(uniqueIds.reversed())
+            return try String.fetchCursor(
+                tx.database,
+                sql: sql,
+                arguments: arguments,
+            )
+        }
     }
 
     @objc

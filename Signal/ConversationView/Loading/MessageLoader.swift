@@ -16,13 +16,32 @@ private enum Constants {
     static let maxCollapseSetSize = 50
 }
 
-protocol MessageLoaderBatchFetcher {
-    func fetchUniqueIds(
+// MARK: -
+
+protocol MessageLoaderCursorFactory {
+    /// Builds a cursor over the `uniqueId`s of the messages that should be
+    /// displayed, matching `filter`.
+    ///
+    /// `uniqueId`s are yielded in fetch order: descending (newest first) for
+    /// the `.newest`, `.atOrBefore`, and `.before` filters, and ascending
+    /// (oldest first) for the `.after` and `.range` filters.
+    func buildUniqueIdCursor(
         filter: InteractionFinder.RowIdFilter,
-        limit: Int,
         tx: DBReadTransaction,
-    ) throws -> [String]
+    ) -> MessageLoaderUniqueIdCursor
 }
+
+// MARK: -
+
+protocol MessageLoaderUniqueIdCursor {
+    mutating func next() -> String?
+}
+
+// MARK: FailIfThrowsValueCursor<String>: MessageLoaderUniqueIdCursor
+
+extension FailIfThrowsValueCursor<String>: MessageLoaderUniqueIdCursor {}
+
+// MARK: -
 
 protocol MessageLoaderInteractionFetcher {
     func fetchInteractions(for uniqueIds: [String], tx: DBReadTransaction) -> [String: TSInteraction]
@@ -38,7 +57,7 @@ struct MessageLoaderPreprocessingContext {
 // MARK: -
 
 class MessageLoader {
-    private let batchFetcher: MessageLoaderBatchFetcher
+    private let cursorFactory: MessageLoaderCursorFactory
     private let interactionFetchers: [MessageLoaderInteractionFetcher]
 
     private(set) var loadedInteractions: [TSInteraction] = []
@@ -54,20 +73,20 @@ class MessageLoader {
 
     /// Initializes a MessageLoader.
     ///
-    /// - Parameter batchFetcher: An object responsible for fetching identifiers
-    /// for the messages that should be displayed.
+    /// - Parameter cursorFactory: An object responsible for building cursors
+    /// over the identifiers of the messages that should be displayed.
     ///
     /// - Parameter interactionFetchers: A list of objects that fetch
     /// fully-hydrated interaction objects for the identifiers returned from
-    /// `batchFetcher`. When fetching interactions, we will try each fetcher in
-    /// the order provided here. If the first fetcher returns a result for a
+    /// `cursorFactory`. When fetching interactions, we will try each fetcher
+    /// in the order provided here. If the first fetcher returns a result for a
     /// particular interaction, then we won't try to fetch that interaction from
     /// any of the subsequent fetchers.
     init(
-        batchFetcher: MessageLoaderBatchFetcher,
+        cursorFactory: MessageLoaderCursorFactory,
         interactionFetchers: [MessageLoaderInteractionFetcher],
     ) {
-        self.batchFetcher = batchFetcher
+        self.cursorFactory = cursorFactory
         self.interactionFetchers = interactionFetchers
     }
 
@@ -125,10 +144,6 @@ class MessageLoader {
             segments.flatMap(\.displayableInteractions)
         }
 
-        var rawInteractionCount: Int {
-            segments.lazy.map(\.rawInteractions.count).reduce(0, +)
-        }
-
         func trimmingDisplayableInteractions(
             trimOlder: Bool,
         ) -> LoadedPage {
@@ -157,7 +172,7 @@ class MessageLoader {
         preprocessingContext: MessageLoaderPreprocessingContext? = nil,
         tx: DBReadTransaction,
     ) throws {
-        try ensureLoaded(
+        ensureLoaded(
             .around(interactionUniqueId: interactionUniqueId),
             count: initialLoadCount,
             reusableInteractions: reusableInteractions,
@@ -173,7 +188,7 @@ class MessageLoader {
         preprocessingContext: MessageLoaderPreprocessingContext? = nil,
         tx: DBReadTransaction,
     ) throws {
-        try ensureLoaded(
+        ensureLoaded(
             .newer,
             count: initialLoadCount * 2,
             reusableInteractions: reusableInteractions,
@@ -189,7 +204,7 @@ class MessageLoader {
         preprocessingContext: MessageLoaderPreprocessingContext? = nil,
         tx: DBReadTransaction,
     ) throws {
-        try ensureLoaded(
+        ensureLoaded(
             .older,
             count: initialLoadCount * 2,
             reusableInteractions: reusableInteractions,
@@ -205,7 +220,7 @@ class MessageLoader {
         preprocessingContext: MessageLoaderPreprocessingContext? = nil,
         tx: DBReadTransaction,
     ) throws {
-        try ensureLoaded(
+        ensureLoaded(
             .newest,
             count: initialLoadCount,
             reusableInteractions: reusableInteractions,
@@ -223,7 +238,7 @@ class MessageLoader {
         tx: DBReadTransaction,
     ) throws {
         if let focusMessageId {
-            try ensureLoaded(
+            ensureLoaded(
                 .around(interactionUniqueId: focusMessageId),
                 count: initialLoadCount,
                 reusableInteractions: reusableInteractions,
@@ -247,9 +262,9 @@ class MessageLoader {
         preprocessingContext: MessageLoaderPreprocessingContext? = nil,
         tx: DBReadTransaction,
     ) throws {
-        try ensureLoaded(
+        ensureLoaded(
             .sameLocation,
-            count: max(initialLoadCount, loadedDisplayableInteractions.count),
+            count: initialLoadCount,
             reusableInteractions: reusableInteractions,
             deletedInteractionIds: deletedInteractionIds,
             preprocessingContext: preprocessingContext,
@@ -260,9 +275,10 @@ class MessageLoader {
     /// Loads (or reloads) messages for a conversation.
     ///
     /// - Parameter count: If we're creating a new load window, this represents
-    /// the number of interactions in the new load window. If we're expanding an
-    /// existing load window, this represents the number of interactions by
-    /// which to expand the new window.
+    /// the number of display units in the new load window. If we're expanding
+    /// an existing load window, this represents the number of display units by
+    /// which to expand the window. (A display unit is one top-level displayable
+    /// interaction: a standalone interaction or an entire collapse set.)
     private func ensureLoaded(
         _ direction: LoadWindowDirection,
         count: Int,
@@ -270,26 +286,16 @@ class MessageLoader {
         deletedInteractionIds: Set<String>?,
         preprocessingContext: MessageLoaderPreprocessingContext?,
         tx: DBReadTransaction,
-    ) throws {
+    ) {
         owsAssertDebug(count > 0)
+        let count = count.clamp(1, Constants.maxDisplayableInteractionCount)
 
-        let maxRawInteractionFetchCount = Constants.maxDisplayableInteractionCount * Constants.maxCollapseSetSize
-        let count = count.clamp(1, maxRawInteractionFetchCount)
-        let loadedDisplayableCount = loadedDisplayableInteractions.count
-
-        let desiredDisplayableInteractionCount: Int = switch direction {
-        case .older, .newer:
-            loadedDisplayableCount + count
-        case .sameLocation:
-            max(initialLoadCount, loadedDisplayableCount)
-        case .around, .newest:
-            count
-        }
-
-        var loadBatch = try buildLoadBatch(
+        var loadBatch = buildLoadBatch(
             direction,
             count: count,
+            reusableInteractions: reusableInteractions,
             deletedInteractionIds: deletedInteractionIds,
+            preprocessingContext: preprocessingContext,
             tx: tx,
         )
 
@@ -299,82 +305,6 @@ class MessageLoader {
             preprocessingContext: preprocessingContext,
             tx: tx,
         )
-
-        func loadMoreIfNeeded(context: MessageLoaderPreprocessingContext) throws -> Bool {
-            let loadedDisplayableInteractionCount = loadedPage.displayableInteractions.count
-            guard loadedDisplayableInteractionCount < desiredDisplayableInteractionCount else {
-                return false
-            }
-            // Heuristically adjust fetch size based on the proportion of
-            // messages so far that are collapsed.
-            let remainingCount = desiredDisplayableInteractionCount - loadedDisplayableInteractionCount
-            let estimatedRawInteractionsPerDisplayableInteraction = min(
-                Constants.maxCollapseSetSize,
-                max(
-                    1,
-                    Int(ceil(Double(loadedPage.rawInteractionCount) / Double(max(loadedDisplayableInteractionCount, 1)))),
-                ),
-            )
-            let fetchCount = min(
-                maxRawInteractionFetchCount,
-                max(count, remainingCount * estimatedRawInteractionsPerDisplayableInteraction),
-            )
-            guard fetchCount > 0 else {
-                return false
-            }
-
-            func fetchOlder() throws -> Bool {
-                guard
-                    loadBatch.canLoadOlder,
-                    let firstInteraction = loadedPage.segments.first?.rawInteractions.first,
-                    let rowId = firstInteraction.sqliteRowId
-                else {
-                    return false
-                }
-                return try self.fetchOlder(before: rowId, count: fetchCount, batch: &loadBatch, tx: tx) > 0
-            }
-
-            func fetchNewer() throws -> Bool {
-                guard
-                    loadBatch.canLoadNewer,
-                    let lastInteraction = loadedPage.segments.last?.rawInteractions.last,
-                    let rowId = lastInteraction.sqliteRowId
-                else {
-                    return false
-                }
-                return try self.fetchNewer(after: rowId, count: fetchCount, batch: &loadBatch, tx: tx) > 0
-            }
-
-            let didLoadMore: Bool
-            switch direction {
-            case .older, .newest:
-                didLoadMore = try fetchOlder()
-            case .newer:
-                didLoadMore = try fetchNewer()
-            case .sameLocation, .around:
-                if try fetchOlder() {
-                    didLoadMore = true
-                } else {
-                    didLoadMore = try fetchNewer()
-                }
-            }
-            guard didLoadMore else {
-                return false
-            }
-            loadedPage = buildLoadedPage(
-                for: loadBatch,
-                reusableInteractions: reusableInteractions,
-                preprocessingContext: context,
-                tx: tx,
-            )
-            return true
-        }
-
-        if let preprocessingContext {
-            while try loadMoreIfNeeded(context: preprocessingContext) {
-                // Loading more messages...
-            }
-        }
 
         trimLoadedPageIfNeeded(
             &loadBatch,
@@ -391,49 +321,56 @@ class MessageLoader {
     private func buildLoadBatch(
         _ direction: LoadWindowDirection,
         count: Int,
+        reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
+        preprocessingContext: MessageLoaderPreprocessingContext?,
         tx: DBReadTransaction,
-    ) throws -> MessageLoaderBatch {
-        func fetch(filter: InteractionFinder.RowIdFilter, limit: Int) throws -> [String] {
-            return try batchFetcher.fetchUniqueIds(
-                filter: filter,
-                limit: limit,
+    ) -> MessageLoaderBatch {
+        func _fetchDisplayUnits(
+            _ fetchDirection: FetchDirection,
+            count: Int,
+        ) -> FetchedDisplayUnits {
+            fetchDisplayUnits(
+                fetchDirection,
+                displayUnitCount: count,
+                preprocessingContext: preprocessingContext,
+                reusableInteractions: reusableInteractions,
                 tx: tx,
             )
         }
 
-        /// Fetches uniqueIds in the range of provided rowIds.
-        func fetchRange(_ rowIds: ClosedRange<Int64>) throws -> [String] {
-            return try fetch(filter: .range(rowIds), limit: rowIds.count)
+        /// Fetches a batch containing the newest `count` display units.
+        func loadNewest() -> MessageLoaderBatch {
+            let fetched = _fetchDisplayUnits(.older(than: nil), count: count)
+            return MessageLoaderBatch(
+                canLoadNewer: false,
+                canLoadOlder: !fetched.reachedEnd,
+                uniqueIds: fetched.interactions.map(\.uniqueId),
+            )
         }
 
-        /// Fetches a batch containing the newest messages in the chat.
-        func loadNewest() throws -> MessageLoaderBatch {
-            let uniqueIds: [String] = try fetch(filter: .newest, limit: count)
-            let didReachOldest = uniqueIds.count < count
-            return MessageLoaderBatch(canLoadNewer: false, canLoadOlder: !didReachOldest, uniqueIds: uniqueIds)
-        }
-
-        /// Fetches a batch surrounding `uniqueId`.
-        func loadAround(uniqueId: String) throws -> MessageLoaderBatch {
+        /// Fetches a batch of up to `count` display units surrounding `uniqueId`.
+        func loadAround(uniqueId: String) -> MessageLoaderBatch {
             guard let rowId = fetchInteractions(uniqueIds: [uniqueId], tx: tx).first?.sqliteRowId else {
                 // We can't find the message, so just return the newest messages.
-                return try loadNewest()
+                return loadNewest()
             }
             var batch = MessageLoaderBatch(canLoadNewer: true, canLoadOlder: true, uniqueIds: [uniqueId])
-            let olderCount = try fetchOlder(before: rowId, count: count / 2, batch: &batch, tx: tx)
-            try fetchNewer(after: rowId, count: count - olderCount, batch: &batch, tx: tx)
+            let older = _fetchDisplayUnits(.older(than: rowId), count: count / 2)
+            batch.insertOlder(uniqueIds: older.interactions.map(\.uniqueId), didReachOldest: older.reachedEnd)
+            let newer = _fetchDisplayUnits(.newer(than: rowId), count: count - older.unitCount)
+            batch.insertNewer(uniqueIds: newer.interactions.map(\.uniqueId), didReachNewest: newer.reachedEnd)
             return batch
         }
 
-        let priorLoad: (range: ClosedRange<Int64>, batch: MessageLoaderBatch)? = try {
+        let priorLoad: (range: ClosedRange<Int64>, batch: MessageLoaderBatch)? = {
             guard
                 let lowerBound = loadedInteractions.first?.sqliteRowId,
                 let upperBound = loadedInteractions.last?.sqliteRowId
             else {
                 return nil
             }
-            let interactionIds: [String]
+            var interactionIds: [String] = []
             if let deletedInteractionIds {
                 // We can figure out what was deleted without any queries. (This may be a
                 // premature optimization.)
@@ -442,7 +379,13 @@ class MessageLoader {
                 )
             } else {
                 // We can figure out what is left by re-checking prior rowids.
-                interactionIds = try fetchRange(lowerBound...upperBound)
+                var cursor = cursorFactory.buildUniqueIdCursor(
+                    filter: .range(lowerBound...upperBound),
+                    tx: tx,
+                )
+                while let uniqueId = cursor.next() {
+                    interactionIds.append(uniqueId)
+                }
             }
             // We compute lowerBound & upperBound *before* filtering. Because we only
             // expect to filter deleted messages, and because rowids aren't reused,
@@ -462,67 +405,243 @@ class MessageLoader {
         if let priorLoad {
             switch direction {
             case .newest:
-                var batch = try loadNewest()
+                var batch = loadNewest()
                 batch.mergeBatchIfOverlap(priorLoad.batch)
                 return batch
             case .older:
                 var batch = priorLoad.batch
-                try fetchOlder(before: priorLoad.range.lowerBound, count: count, batch: &batch, tx: tx)
+                let older = _fetchDisplayUnits(.older(than: priorLoad.range.lowerBound), count: count)
+                batch.insertOlder(uniqueIds: older.interactions.map(\.uniqueId), didReachOldest: older.reachedEnd)
                 return batch
-            case .sameLocation where !priorLoad.batch.canLoadNewer:
-                // If we're loading at the same location and are already at the end of the
-                // chat, switch to a `.newer` fetch to check if there's new messages.
-                fallthrough
             case .newer:
                 var batch = priorLoad.batch
-                try fetchNewer(after: priorLoad.range.upperBound, count: count, batch: &batch, tx: tx)
+                let newer = _fetchDisplayUnits(.newer(than: priorLoad.range.upperBound), count: count)
+                batch.insertNewer(uniqueIds: newer.interactions.map(\.uniqueId), didReachNewest: newer.reachedEnd)
                 return batch
             case .sameLocation:
                 var batch = priorLoad.batch
-                if batch.uniqueIds.count < initialLoadCount {
-                    try fetchOlder(before: priorLoad.range.lowerBound, count: initialLoadCount, batch: &batch, tx: tx)
-                    try fetchNewer(after: priorLoad.range.upperBound, count: initialLoadCount, batch: &batch, tx: tx)
+                var newestRowId = priorLoad.range.upperBound
+
+                // If we're loading at the same location and are at the end of
+                // the chat, always check if there's new messages. (We'll trim
+                // older messages if we fetch new messages that put us over the
+                // limit.)
+                if !batch.canLoadNewer {
+                    let newer = _fetchDisplayUnits(.newer(than: newestRowId), count: count)
+                    batch.insertNewer(uniqueIds: newer.interactions.map(\.uniqueId), didReachNewest: newer.reachedEnd)
+
+                    if let newestFetchedRowId = newer.interactions.last?.sqliteRowId {
+                        newestRowId = newestFetchedRowId
+                    }
                 }
+
+                // Grow the window if it holds fewer than `count` display units.
+                let unitCount = buildLoadedPage(
+                    for: batch,
+                    reusableInteractions: reusableInteractions,
+                    preprocessingContext: preprocessingContext,
+                    tx: tx,
+                ).segments.count
+                var remainingCount = count - unitCount
+
+                // Load half our remaining count older...
+                if remainingCount > 0, batch.canLoadOlder {
+                    let older = _fetchDisplayUnits(.older(than: priorLoad.range.lowerBound), count: remainingCount / 2)
+                    batch.insertOlder(uniqueIds: older.interactions.map(\.uniqueId), didReachOldest: older.reachedEnd)
+                    remainingCount -= older.unitCount
+                }
+
+                // ...and any finally remaining count newer.
+                if remainingCount > 0, batch.canLoadNewer {
+                    let newer = _fetchDisplayUnits(.newer(than: newestRowId), count: remainingCount)
+                    batch.insertNewer(uniqueIds: newer.interactions.map(\.uniqueId), didReachNewest: newer.reachedEnd)
+                }
+
                 return batch
             case .around(interactionUniqueId: let uniqueId):
-                var batch = try loadAround(uniqueId: uniqueId)
+                var batch = loadAround(uniqueId: uniqueId)
                 batch.mergeBatchIfOverlap(priorLoad.batch)
                 return batch
             }
         } else {
             switch direction {
             case .newest, .newer, .older, .sameLocation:
-                return try loadNewest()
+                return loadNewest()
             case .around(interactionUniqueId: let uniqueId):
-                return try loadAround(uniqueId: uniqueId)
+                return loadAround(uniqueId: uniqueId)
             }
         }
     }
 
-    /// Expands `batch` with `count` messages preceding `rowId`.
-    @discardableResult
-    private func fetchOlder(
-        before rowId: Int64,
-        count: Int,
-        batch: inout MessageLoaderBatch,
-        tx: DBReadTransaction,
-    ) throws -> Int {
-        let uniqueIds = try batchFetcher.fetchUniqueIds(filter: .before(rowId), limit: count, tx: tx)
-        batch.insertOlder(uniqueIds: uniqueIds, didReachOldest: uniqueIds.count < count)
-        return uniqueIds.count
+    private enum FetchDirection {
+        case older(than: Int64?)
+        case newer(than: Int64)
     }
 
-    /// Expands `batch` with `count` messages succeeding `rowId`.
-    @discardableResult
-    private func fetchNewer(
-        after rowId: Int64,
-        count: Int,
-        batch: inout MessageLoaderBatch,
+    private struct FetchedDisplayUnits {
+        /// The fetched interactions, in ascending (oldest first) order.
+        var interactions: [TSInteraction]
+        /// The number of display units `interactions` spans.
+        var unitCount: Int
+        /// Whether the cursor was exhausted, i.e. we've seen every message in
+        /// the fetch direction.
+        var reachedEnd: Bool
+    }
+
+    /// Fetches `displayUnitCount` whole display units adjacent to `rowId`,
+    /// iterating interactions using a `MessageLoaderUniqueIdCursor`.
+    ///
+    /// A "display unit" is what preprocessing will turn into one top-level
+    /// displayable interaction: a standalone interaction, or an run of
+    /// collapsible interactions capped at `maxCollapseSetSize`.
+    ///
+    /// Display units are guaranteed to be "complete", in that fetching more
+    /// interactions in `fetchDirection` once this method returns will never
+    /// produce interactions that should be merged into the existing display
+    /// unit at the boundary. For example, a set of "20 updates" will never
+    /// become "21 updates" if more interactions are fetched.
+    ///
+    /// - Important
+    /// The returned interactions are not yet collapsed: instead, they will be
+    /// collapsed in `preprocessInteractions`. Consequently, it is important
+    /// that this method collapse interactions using the same rules as
+    /// `preprocessInteractions` to minimize the likelihood that it collapses
+    /// differently than we expected during this fetch. (Divergence would result
+    /// in use fetching an incorrect number of interactions.)
+    ///
+    /// Note that collapsing may differ in `preprocessInteractions` anyway, when
+    /// the newly-fetched interactions are merged into the existing load window.
+    private func fetchDisplayUnits(
+        _ fetchDirection: FetchDirection,
+        displayUnitCount: Int,
+        preprocessingContext: MessageLoaderPreprocessingContext?,
+        reusableInteractions: [String: TSInteraction],
         tx: DBReadTransaction,
-    ) throws -> Int {
-        let uniqueIds = try batchFetcher.fetchUniqueIds(filter: .after(rowId), limit: count, tx: tx)
-        batch.insertNewer(uniqueIds: uniqueIds, didReachNewest: uniqueIds.count < count)
-        return uniqueIds.count
+    ) -> FetchedDisplayUnits {
+        guard displayUnitCount > 0 else {
+            return FetchedDisplayUnits(interactions: [], unitCount: 0, reachedEnd: false)
+        }
+
+        let filter: InteractionFinder.RowIdFilter
+        switch fetchDirection {
+        case .older(than: nil):
+            filter = .newest
+        case .older(than: .some(let rowId)):
+            filter = .before(rowId)
+        case .newer(than: let rowId):
+            filter = .after(rowId)
+        }
+
+        let todayDate = Date()
+        var cursor = cursorFactory.buildUniqueIdCursor(filter: filter, tx: tx)
+        var fetched = [TSInteraction]()
+        var fetchedUnitCount = 0
+        var currentUnitLength = 0
+        var reachedEnd = false
+
+        while true {
+            guard let uniqueId = cursor.next() else {
+                reachedEnd = true
+                break
+            }
+            guard
+                let interaction = fetchInteractions(
+                    uniqueIds: [uniqueId],
+                    reusableInteractions: reusableInteractions,
+                    tx: tx,
+                ).first
+            else {
+                owsFailDebug("Couldn't load interaction.")
+                continue
+            }
+            let continuesUnit: Bool
+            if let previousInteraction = fetched.last, currentUnitLength < Constants.maxCollapseSetSize {
+                let olderInteraction: TSInteraction
+                let newerInteraction: TSInteraction
+                switch fetchDirection {
+                case .older:
+                    (olderInteraction, newerInteraction) = (interaction, previousInteraction)
+                case .newer:
+                    (olderInteraction, newerInteraction) = (previousInteraction, interaction)
+                }
+                continuesUnit = Self.belongsToSameCollapseRun(
+                    older: olderInteraction,
+                    newer: newerInteraction,
+                    preprocessingContext: preprocessingContext,
+                    todayDate: todayDate,
+                )
+            } else {
+                continuesUnit = false
+            }
+            if continuesUnit {
+                fetched.append(interaction)
+                currentUnitLength += 1
+            } else if fetchedUnitCount < displayUnitCount {
+                fetched.append(interaction)
+                fetchedUnitCount += 1
+                currentUnitLength = 1
+            } else {
+                // This interaction would start a unit beyond the target;
+                // discard it. It confirmed the prior unit is complete.
+                break
+            }
+        }
+
+        switch fetchDirection {
+        case .older:
+            // We always want to return oldest -> newest, and if we're fetching
+            // older we'll have gotten the newest back first from the cursor.
+            fetched.reverse()
+        case .newer:
+            break
+        }
+
+        return FetchedDisplayUnits(
+            interactions: fetched,
+            unitCount: fetchedUnitCount,
+            reachedEnd: reachedEnd,
+        )
+    }
+
+    /// Whether `newer` would be collapsed into the same run as `older` by
+    /// `preprocessInteractions`, assuming the two are adjacent in the
+    /// conversation and the run isn't already at the size cap.
+    ///
+    /// This must mirror the boundary rules of `preprocessInteractions`: runs
+    /// only form when collapsing is enabled, never include interactions at or
+    /// past the unread indicator, never mix collapse set types, and never
+    /// cross date boundaries.
+    private static func belongsToSameCollapseRun(
+        older: TSInteraction,
+        newer: TSInteraction,
+        preprocessingContext: MessageLoaderPreprocessingContext?,
+        todayDate: Date,
+    ) -> Bool {
+        guard let preprocessingContext, BuildFlags.collapsingChatEvents else {
+            return false
+        }
+        // Interactions at or past the unread indicator aren't collapsed.
+        if let oldestUnreadSortId = preprocessingContext.oldestUnreadSortId, oldestUnreadSortId <= newer.sortId {
+            return false
+        }
+        let isGroupThread = preprocessingContext.thread.isGroupThread
+        guard
+            let olderType = collapseSetType(for: older, isGroupThread: isGroupThread),
+            let newerType = collapseSetType(for: newer, isGroupThread: isGroupThread),
+            olderType == newerType
+        else {
+            return false
+        }
+        // Collapse sets shouldn't cross date boundaries.
+        let olderDaysBeforeToday = DateUtil.daysFrom(
+            firstDate: Date(millisecondsSince1970: older.timestamp),
+            toSecondDate: todayDate,
+        )
+        let newerDaysBeforeToday = DateUtil.daysFrom(
+            firstDate: Date(millisecondsSince1970: newer.timestamp),
+            toSecondDate: todayDate,
+        )
+        return olderDaysBeforeToday == newerDaysBeforeToday
     }
 
     private func fetchInteractions(
@@ -826,23 +945,21 @@ class SDSInteractionFetcherImpl: MessageLoaderInteractionFetcher {
     }
 }
 
-// MARK: - Batch Fetcher
+// MARK: - Cursor Factory
 
-class ConversationViewBatchFetcher: MessageLoaderBatchFetcher {
+class ConversationViewCursorFactory: MessageLoaderCursorFactory {
     private let interactionFinder: InteractionFinder
 
     init(interactionFinder: InteractionFinder) {
         self.interactionFinder = interactionFinder
     }
 
-    func fetchUniqueIds(
+    func buildUniqueIdCursor(
         filter: InteractionFinder.RowIdFilter,
-        limit: Int,
         tx: DBReadTransaction,
-    ) throws -> [String] {
-        try interactionFinder.fetchUniqueIdsForConversationView(
+    ) -> MessageLoaderUniqueIdCursor {
+        interactionFinder.buildUniqueIdCursorForConversationView(
             rowIdFilter: filter,
-            limit: limit,
             tx: tx,
         )
     }
