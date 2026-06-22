@@ -54,7 +54,7 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 @property (nonatomic, getter=wasRead) BOOL read;
 
 @property (nonatomic, readonly) uint32_t expiresInSeconds;
-@property (nonatomic, readonly) uint64_t expireStartedAt;
+@property (nonatomic) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;
 
 - (instancetype)initWithCustomUniqueId:(NSString *)uniqueId
@@ -78,8 +78,6 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
                           thread:(TSContactThread *)thread
                  sentAtTimestamp:(uint64_t)sentAtTimestamp
                 expiresInSeconds:(uint32_t)expiresInSeconds NS_DESIGNATED_INITIALIZER;
-
-- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(DBWriteTransaction *)transaction;
 
 // --- CODE GENERATION MARKER
 

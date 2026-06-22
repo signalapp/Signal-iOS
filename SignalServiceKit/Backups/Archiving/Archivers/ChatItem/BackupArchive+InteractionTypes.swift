@@ -37,6 +37,58 @@ extension TSInteraction {
 // MARK: -
 
 extension BackupArchive {
+    struct ChatItemExpirationDetails: Equatable {
+        /// `nil` if the timer hasn't started.
+        let expireStartDate: UInt64?
+        let expiresInMs: UInt64
+        let expiresInSeconds: UInt32
+        /// `0` if the timer hasn't started.
+        let expireStartedAt: UInt64
+
+        init(expireStartedAt: UInt64, expiresInSeconds: UInt32) {
+            self.expireStartedAt = expireStartedAt
+            self.expiresInSeconds = expiresInSeconds
+            self.expireStartDate = expireStartedAt > 0 ? expireStartedAt : nil
+            self.expiresInMs = UInt64(expiresInSeconds) * 1000
+        }
+
+        init?(
+            chatItem: BackupProto_ChatItem,
+            wasRead: Bool,
+            restoreStartTimestamp: UInt64,
+        ) {
+            let expiresInSeconds: UInt32
+            if chatItem.hasExpiresInMs {
+                guard let _expiresInSeconds: UInt32 = .msToSecs(chatItem.expiresInMs) else {
+                    return nil
+                }
+                expiresInSeconds = _expiresInSeconds
+            } else {
+                // 0 == no expiration
+                expiresInSeconds = 0
+            }
+
+            let expireStartedAt: UInt64
+            if chatItem.hasExpireStartDate {
+                expireStartedAt = chatItem.expireStartDate
+            } else if expiresInSeconds > 0, wasRead {
+                // If marked as read but the chat timer hasn't started,
+                // thats a bug on the export side but we can recover
+                // from it now by starting the timer now.
+                expireStartedAt = restoreStartTimestamp
+            } else {
+                // 0 == hasn't started expiring.
+                expireStartedAt = 0
+            }
+
+            self.init(expireStartedAt: expireStartedAt, expiresInSeconds: expiresInSeconds)
+        }
+    }
+}
+
+// MARK: -
+
+extension BackupArchive {
 
     struct InteractionArchiveDetails {
         typealias DirectionalDetails = BackupProto_ChatItem.OneOf_DirectionalDetails

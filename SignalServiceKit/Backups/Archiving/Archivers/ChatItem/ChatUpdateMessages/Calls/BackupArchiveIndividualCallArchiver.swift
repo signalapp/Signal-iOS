@@ -124,13 +124,18 @@ final class BackupArchiveIndividualCallArchiver {
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
         chatUpdateMessage.update = .individualCall(individualCallUpdate)
 
+        let expirationDetails = BackupArchive.ChatItemExpirationDetails(
+            expireStartedAt: individualCallInteraction.expireStartedAt,
+            expiresInSeconds: individualCallInteraction.expiresInSeconds,
+        )
+
         switch Details.validateAndBuild(
             interactionUniqueId: individualCallInteraction.uniqueInteractionId,
             author: .localUser,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: individualCallInteraction.timestamp,
-            expireStartDate: nil,
-            expiresInMs: nil,
+            expireStartDate: expirationDetails.expireStartDate,
+            expiresInMs: expirationDetails.expiresInMs,
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false,
@@ -225,14 +230,24 @@ final class BackupArchiveIndividualCallArchiver {
             callerAci = contactThread.contactAddress.aci
         }
 
+        let expirationDetails = BackupArchive.ChatItemExpirationDetails(
+            chatItem: chatItem,
+            wasRead: individualCall.read,
+            restoreStartTimestamp: context.startDate.ows_millisecondsSince1970,
+        )
+        guard let expirationDetails else {
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.expirationTimerOverflowedLocalType))])
+        }
+
         let individualCallInteraction = TSCall(
             callType: callInteractionType,
             offerType: callInteractionOfferType,
             thread: contactThread,
             sentAtTimestamp: chatItem.dateSent,
-            expiresInSeconds: 0,
+            expiresInSeconds: expirationDetails.expiresInSeconds,
         )
         individualCallInteraction.wasRead = individualCall.read
+        individualCallInteraction.expireStartedAt = expirationDetails.expireStartedAt
 
         do {
             try interactionStore.insert(

@@ -15,7 +15,9 @@ public protocol ExpiringInteraction: TSInteraction {
     func updateWithExpireStarted(at expirationStartedAt: UInt64, transaction: DBWriteTransaction)
 }
 
-protocol ExpiringCallInteraction: ExpiringInteraction, OWSReadTracking {}
+protocol ExpiringCallInteraction: ExpiringInteraction, OWSReadTracking {
+    var expireStartedAt: UInt64 { get set }
+}
 
 extension ExpiringCallInteraction {
     private var hasExpiration: Bool { expiresInSeconds > 0 }
@@ -23,6 +25,14 @@ extension ExpiringCallInteraction {
 
     public func shouldStartExpireTimer() -> Bool {
         return hasExpirationStarted || (hasExpiration && wasRead)
+    }
+
+    public func updateWithExpireStarted(at expirationStartedAt: UInt64, transaction tx: DBWriteTransaction) {
+        owsAssertDebug(expirationStartedAt > 0)
+        anyUpdate(transaction: tx) { interaction in
+            guard let interaction = interaction as? Self else { return }
+            interaction.expireStartedAt = expirationStartedAt
+        }
     }
 
     func startExpirationIfNecessary(transaction tx: DBWriteTransaction) {

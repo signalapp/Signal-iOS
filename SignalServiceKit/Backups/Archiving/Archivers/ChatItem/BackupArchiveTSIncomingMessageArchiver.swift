@@ -177,12 +177,10 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             detailsAuthor = .contact(authorAddress)
         }
 
-        let expireStartDate: UInt64?
-        if incomingMessage.expireStartedAt > 0 {
-            expireStartDate = incomingMessage.expireStartedAt
-        } else {
-            expireStartDate = nil
-        }
+        let expirationDetails = BackupArchive.ChatItemExpirationDetails(
+            expireStartedAt: incomingMessage.expireStartedAt,
+            expiresInSeconds: incomingMessage.expiresInSeconds,
+        )
 
         let pinMessageDetails = pinnedMessageManager.pinMessageDetails(
             interactionId: incomingMessageRowId,
@@ -194,8 +192,8 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             author: detailsAuthor,
             directionalDetails: directionalDetails,
             dateCreated: incomingMessage.timestamp,
-            expireStartDate: expireStartDate,
-            expiresInMs: UInt64(incomingMessage.expiresInSeconds) * 1000,
+            expireStartDate: expirationDetails.expireStartDate,
+            expiresInMs: expirationDetails.expiresInMs,
             isSealedSender: !incomingMessage.wasReceivedByUD,
             chatItemType: chatItemType,
             isSmsPreviouslyRestoredFromBackup: incomingMessage.isSmsMessageRestoredFromBackup,
@@ -295,30 +293,13 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             return .messageFailure([.restoreFrameError(.invalidProtoData(.incomingMessageNotFromAciOrE164))])
         }
 
-        let expiresInSeconds: UInt32
-        if chatItem.hasExpiresInMs {
-            guard let _expiresInSeconds: UInt32 = .msToSecs(chatItem.expiresInMs) else {
-                return .messageFailure([.restoreFrameError(.invalidProtoData(.expirationTimerOverflowedLocalType))])
-            }
-            expiresInSeconds = _expiresInSeconds
-        } else {
-            // 0 == no expiration
-            expiresInSeconds = 0
-        }
-        let expireStartedAt: UInt64
-        if chatItem.hasExpireStartDate {
-            expireStartedAt = chatItem.expireStartDate
-        } else if
-            expiresInSeconds > 0,
-            incomingDetails.read
-        {
-            // If marked as read but the chat timer hasn't started,
-            // thats a bug on the export side but we can recover
-            // from it now by starting the timer now.
-            expireStartedAt = context.startDate.ows_millisecondsSince1970
-        } else {
-            // 0 = hasn't started expiring.
-            expireStartedAt = 0
+        let expirationDetails = BackupArchive.ChatItemExpirationDetails(
+            chatItem: chatItem,
+            wasRead: incomingDetails.read,
+            restoreStartTimestamp: context.startDate.ows_millisecondsSince1970,
+        )
+        guard let expirationDetails else {
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.expirationTimerOverflowedLocalType))])
         }
 
         let editState: TSEditState
@@ -365,10 +346,10 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
                 authorE164: authorE164,
                 messageBody: nil,
                 editState: editState,
-                expiresInSeconds: expiresInSeconds,
+                expiresInSeconds: expirationDetails.expiresInSeconds,
                 // Backed up messages don't set the chat timer; version is irrelevant.
                 expireTimerVersion: nil,
-                expireStartedAt: expireStartedAt,
+                expireStartedAt: expirationDetails.expireStartedAt,
                 read: wasReadForInteraction,
                 serverTimestamp: incomingDetails.dateServerSent,
                 serverDeliveryTimestamp: 0,

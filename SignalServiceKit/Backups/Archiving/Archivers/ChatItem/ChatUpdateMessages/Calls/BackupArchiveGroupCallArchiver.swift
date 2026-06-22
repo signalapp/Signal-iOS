@@ -118,13 +118,18 @@ final class BackupArchiveGroupCallArchiver {
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
         chatUpdateMessage.update = .groupCall(groupCallUpdate)
 
+        let expirationDetails = BackupArchive.ChatItemExpirationDetails(
+            expireStartedAt: groupCallInteraction.expireStartedAt,
+            expiresInSeconds: groupCallInteraction.expiresInSeconds,
+        )
+
         switch Details.validateAndBuild(
             interactionUniqueId: groupCallInteraction.uniqueInteractionId,
             author: .localUser,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: groupCallInteraction.timestamp,
-            expireStartDate: nil,
-            expiresInMs: nil,
+            expireStartDate: expirationDetails.expireStartDate,
+            expiresInMs: expirationDetails.expiresInMs,
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false,
@@ -169,14 +174,24 @@ final class BackupArchiveGroupCallArchiver {
             startedCallAci = nil
         }
 
+        let expirationDetails = BackupArchive.ChatItemExpirationDetails(
+            chatItem: chatItem,
+            wasRead: groupCall.read,
+            restoreStartTimestamp: context.startDate.ows_millisecondsSince1970,
+        )
+        guard let expirationDetails else {
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.expirationTimerOverflowedLocalType))])
+        }
+
         let groupCallInteraction = OWSGroupCallMessage(
             joinedMemberAcis: [],
             creatorAci: startedCallAci.map { AciObjC($0) },
             thread: groupThread,
             sentAtTimestamp: chatItem.dateSent,
-            expiresInSeconds: 0,
+            expiresInSeconds: expirationDetails.expiresInSeconds,
         )
         groupCallInteraction.wasRead = groupCall.read
+        groupCallInteraction.expireStartedAt = expirationDetails.expireStartedAt
 
         do {
             try interactionStore.insert(
