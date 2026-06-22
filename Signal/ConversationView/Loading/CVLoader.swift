@@ -81,7 +81,7 @@ public class CVLoader: NSObject {
                     transaction: transaction,
                 )
                 let preprocessingContext = MessageLoaderPreprocessingContext(
-                    thread: loadContext.thread,
+                    threadUniqueId: loadContext.threadUniqueId,
                     oldestUnreadSortId: viewStateSnapshot.oldestUnreadMessageSortId,
                 )
 

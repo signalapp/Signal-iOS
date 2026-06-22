@@ -161,6 +161,11 @@ class StoryGroupReplyLoader {
 
         messageCursorFactory.refetch(tx: transaction)
 
+        let messageLoaderPreprocessingContext = MessageLoaderPreprocessingContext(
+            threadUniqueId: threadUniqueId,
+            oldestUnreadSortId: nil,
+        )
+
         do {
             switch mode {
             case .initial:
@@ -168,24 +173,28 @@ class StoryGroupReplyLoader {
                     focusMessageId: messageCursorFactory.uniqueIdsAndRowIds.first?.uniqueId,
                     reusableInteractions: reusableInteractions,
                     deletedInteractionIds: deletedInteractionIds,
+                    preprocessingContext: messageLoaderPreprocessingContext,
                     tx: transaction,
                 )
             case .newer:
                 try self.messageLoader.loadNewerMessagePage(
                     reusableInteractions: reusableInteractions,
                     deletedInteractionIds: deletedInteractionIds,
+                    preprocessingContext: messageLoaderPreprocessingContext,
                     tx: transaction,
                 )
             case .older:
                 try self.messageLoader.loadOlderMessagePage(
                     reusableInteractions: reusableInteractions,
                     deletedInteractionIds: deletedInteractionIds,
+                    preprocessingContext: messageLoaderPreprocessingContext,
                     tx: transaction,
                 )
             case .reload:
                 try self.messageLoader.loadSameLocation(
                     reusableInteractions: reusableInteractions,
                     deletedInteractionIds: deletedInteractionIds,
+                    preprocessingContext: messageLoaderPreprocessingContext,
                     tx: transaction,
                 )
             }

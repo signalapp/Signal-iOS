@@ -50,7 +50,7 @@ protocol MessageLoaderInteractionFetcher {
 // MARK: -
 
 struct MessageLoaderPreprocessingContext {
-    let thread: TSThread
+    let threadUniqueId: String
     let oldestUnreadSortId: UInt64?
 }
 
@@ -169,7 +169,7 @@ class MessageLoader {
         aroundInteractionId interactionUniqueId: String,
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        preprocessingContext: MessageLoaderPreprocessingContext? = nil,
+        preprocessingContext: MessageLoaderPreprocessingContext,
         tx: DBReadTransaction,
     ) throws {
         ensureLoaded(
@@ -185,7 +185,7 @@ class MessageLoader {
     func loadNewerMessagePage(
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        preprocessingContext: MessageLoaderPreprocessingContext? = nil,
+        preprocessingContext: MessageLoaderPreprocessingContext,
         tx: DBReadTransaction,
     ) throws {
         ensureLoaded(
@@ -201,7 +201,7 @@ class MessageLoader {
     func loadOlderMessagePage(
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        preprocessingContext: MessageLoaderPreprocessingContext? = nil,
+        preprocessingContext: MessageLoaderPreprocessingContext,
         tx: DBReadTransaction,
     ) throws {
         ensureLoaded(
@@ -217,7 +217,7 @@ class MessageLoader {
     func loadNewestMessagePage(
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        preprocessingContext: MessageLoaderPreprocessingContext? = nil,
+        preprocessingContext: MessageLoaderPreprocessingContext,
         tx: DBReadTransaction,
     ) throws {
         ensureLoaded(
@@ -234,7 +234,7 @@ class MessageLoader {
         focusMessageId: String?,
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        preprocessingContext: MessageLoaderPreprocessingContext? = nil,
+        preprocessingContext: MessageLoaderPreprocessingContext,
         tx: DBReadTransaction,
     ) throws {
         if let focusMessageId {
@@ -259,7 +259,7 @@ class MessageLoader {
     func loadSameLocation(
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        preprocessingContext: MessageLoaderPreprocessingContext? = nil,
+        preprocessingContext: MessageLoaderPreprocessingContext,
         tx: DBReadTransaction,
     ) throws {
         ensureLoaded(
@@ -284,7 +284,7 @@ class MessageLoader {
         count: Int,
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        preprocessingContext: MessageLoaderPreprocessingContext?,
+        preprocessingContext: MessageLoaderPreprocessingContext,
         tx: DBReadTransaction,
     ) {
         owsAssertDebug(count > 0)
@@ -323,7 +323,7 @@ class MessageLoader {
         count: Int,
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        preprocessingContext: MessageLoaderPreprocessingContext?,
+        preprocessingContext: MessageLoaderPreprocessingContext,
         tx: DBReadTransaction,
     ) -> MessageLoaderBatch {
         func _fetchDisplayUnits(
@@ -514,7 +514,7 @@ class MessageLoader {
     private func fetchDisplayUnits(
         _ fetchDirection: FetchDirection,
         displayUnitCount: Int,
-        preprocessingContext: MessageLoaderPreprocessingContext?,
+        preprocessingContext: MessageLoaderPreprocessingContext,
         reusableInteractions: [String: TSInteraction],
         tx: DBReadTransaction,
     ) -> FetchedDisplayUnits {
@@ -614,20 +614,19 @@ class MessageLoader {
     private static func belongsToSameCollapseRun(
         older: TSInteraction,
         newer: TSInteraction,
-        preprocessingContext: MessageLoaderPreprocessingContext?,
+        preprocessingContext: MessageLoaderPreprocessingContext,
         todayDate: Date,
     ) -> Bool {
-        guard let preprocessingContext, BuildFlags.collapsingChatEvents else {
+        guard BuildFlags.collapsingChatEvents else {
             return false
         }
         // Interactions at or past the unread indicator aren't collapsed.
         if let oldestUnreadSortId = preprocessingContext.oldestUnreadSortId, oldestUnreadSortId <= newer.sortId {
             return false
         }
-        let isGroupThread = preprocessingContext.thread.isGroupThread
         guard
-            let olderType = collapseSetType(for: older, isGroupThread: isGroupThread),
-            let newerType = collapseSetType(for: newer, isGroupThread: isGroupThread),
+            let olderType = collapseSetType(for: older),
+            let newerType = collapseSetType(for: newer),
             olderType == newerType
         else {
             return false
@@ -665,7 +664,7 @@ class MessageLoader {
     private func buildLoadedPage(
         for batch: MessageLoaderBatch,
         reusableInteractions: [String: TSInteraction],
-        preprocessingContext: MessageLoaderPreprocessingContext?,
+        preprocessingContext: MessageLoaderPreprocessingContext,
         tx: DBReadTransaction,
     ) -> LoadedPage {
         let rawInteractions = fetchInteractions(
@@ -707,21 +706,14 @@ class MessageLoader {
         }
     }
 
-    /// Converts interactions into page segments. When a preprocessing context
-    /// is provided, this also inserts dynamic items (date headers and unread
-    /// indicators) and collapse sets.
+    /// Converts interactions into displayable "segments", which consist of
+    /// dynamic items (date headers, unread indicators, collapse-set anchors)
+    /// followed by one or more of the given interactions.
     private static func preprocessInteractions(
         _ interactions: [TSInteraction],
-        preprocessingContext: MessageLoaderPreprocessingContext?,
+        preprocessingContext: MessageLoaderPreprocessingContext,
     ) -> [LoadedSegment] {
-        guard let preprocessingContext else {
-            return interactions.map { interaction in
-                LoadedSegment(rawInteractions: [interaction], displayableInteractions: [interaction])
-            }
-        }
-
-        let thread = preprocessingContext.thread
-        let isGroupThread = thread.isGroupThread
+        let threadUniqueId = preprocessingContext.threadUniqueId
         let oldestUnreadSortId = preprocessingContext.oldestUnreadSortId
 
         let todayDate = Date()
@@ -756,7 +748,7 @@ class MessageLoader {
                 return
             }
             let collapseSetInteraction = CollapseSetInteraction(
-                thread: thread,
+                threadUniqueId: threadUniqueId,
                 collapsedInteractions: currentRun,
                 collapseSetType: runType,
             )
@@ -789,7 +781,10 @@ class MessageLoader {
             {
                 // Collapse sets shouldn't cross date boundaries
                 finalizeSet()
-                pendingDisplayableInteractions.append(DateHeaderInteraction(thread: thread, timestamp: timestamp))
+                pendingDisplayableInteractions.append(DateHeaderInteraction(
+                    threadUniqueId: threadUniqueId,
+                    timestamp: timestamp,
+                ))
                 shouldShowDateOnNextViewItem = false
             }
             previousDaysBeforeToday = daysBeforeToday
@@ -803,7 +798,7 @@ class MessageLoader {
             if let oldestUnreadSortId, oldestUnreadSortId <= interaction.sortId {
                 finalizeSet()
                 let unreadIndicatorInteraction = UnreadIndicatorInteraction(
-                    thread: thread,
+                    threadUniqueId: threadUniqueId,
                     timestamp: timestamp,
                     receivedAtTimestamp: interaction.receivedAtTimestamp,
                 )
@@ -818,7 +813,7 @@ class MessageLoader {
                 continue
             }
 
-            let collapseType = collapseSetType(for: interaction, isGroupThread: isGroupThread)
+            let collapseType = collapseSetType(for: interaction)
             if let collapseType {
                 let isDifferentSetThanCurrentRun = currentRunType != nil && currentRunType != collapseType
                 let exceededCurrentRunLimit = currentRun.count >= Constants.maxCollapseSetSize
@@ -854,7 +849,6 @@ class MessageLoader {
 
     private static func collapseSetType(
         for interaction: TSInteraction,
-        isGroupThread: Bool,
     ) -> CollapseSetInteraction.MessagesType? {
         switch interaction.interactionType {
         case .info:
@@ -891,13 +885,13 @@ class MessageLoader {
                     }
                 }
 
-                return isGroupThread ? .groupUpdates : .chatUpdates
+                return .chatUpdates
             case .verificationStateChange,
                  .profileUpdate,
                  .phoneNumberChange,
                  .typeEndPoll,
                  .typePinnedMessage:
-                return isGroupThread ? .groupUpdates : .chatUpdates
+                return .chatUpdates
             default:
                 return nil
             }
@@ -907,7 +901,7 @@ class MessageLoader {
                 return nil
             }
             if errorMessage.errorType == .nonBlockingIdentityChange {
-                return isGroupThread ? .groupUpdates : .chatUpdates
+                return .chatUpdates
             }
             return nil
         case .call:

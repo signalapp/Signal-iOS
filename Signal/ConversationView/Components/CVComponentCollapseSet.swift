@@ -268,8 +268,7 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
 
     private var leadingIcon: SignalSymbol {
         switch collapseSet.collapseSetType {
-        case .groupUpdates: return .group
-        case .chatUpdates: return .thread
+        case .chatUpdates: return itemModel.thread.isGroupThread ? .group : .thread
         case .callEvents: return .phone
         case .timerChanges: return .timer
         }
@@ -358,7 +357,7 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
         finalTimerDescription: String? = nil,
     ) -> String {
         switch type {
-        case .groupUpdates:
+        case .chatUpdates where itemModel.thread.isGroupThread:
             return String(
                 format: OWSLocalizedString(
                     "COLLAPSE_SET_GROUP_UPDATES_%d",

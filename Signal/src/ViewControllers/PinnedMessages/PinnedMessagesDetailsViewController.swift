@@ -94,7 +94,7 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
 
             if daysPrior != currentDaysBefore {
                 currentDaysBefore = daysPrior
-                let dateInteraction = DateHeaderInteraction(thread: threadViewModel.threadRecord, timestamp: message.timestamp)
+                let dateInteraction = DateHeaderInteraction(threadUniqueId: threadViewModel.threadUniqueId, timestamp: message.timestamp)
                 if let dateItem = buildDateRenderItem(dateInteraction: dateInteraction, tx: tx) {
                     let cellView = CVCellView()
                     cellView.configure(renderItem: dateItem, componentDelegate: self)

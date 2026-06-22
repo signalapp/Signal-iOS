@@ -49,7 +49,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 - (instancetype)initWithCustomUniqueId:(NSString *)uniqueId
                              timestamp:(uint64_t)timestamp
                    receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                                thread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
+                        threadUniqueId:(NSString *)threadUniqueId NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
               receivedAtTimestamp:(uint64_t)receivedAtTimestamp

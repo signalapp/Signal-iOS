@@ -18,14 +18,14 @@ public class TypingIndicatorInteraction: TSInteraction {
 
     public let address: SignalServiceAddress
 
-    public init(thread: TSThread, timestamp: UInt64, address: SignalServiceAddress) {
+    public init(threadUniqueId: String, timestamp: UInt64, address: SignalServiceAddress) {
         self.address = address
 
         super.init(
             customUniqueId: TypingIndicatorInteraction.TypingIndicatorId,
             timestamp: timestamp,
             receivedAtTimestamp: 0,
-            thread: thread,
+            threadUniqueId: threadUniqueId,
         )
     }
 

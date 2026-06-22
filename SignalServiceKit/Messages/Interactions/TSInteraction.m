@@ -59,7 +59,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 - (instancetype)initWithCustomUniqueId:(NSString *)uniqueId
                              timestamp:(uint64_t)timestamp
                    receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                                thread:(TSThread *)thread
+                        threadUniqueId:(NSString *)threadUniqueId
 {
     self = [super initWithUniqueId:uniqueId];
 
@@ -69,7 +69,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
     _timestamp = timestamp;
     _receivedAtTimestamp = receivedAtTimestamp;
-    _uniqueThreadId = thread.uniqueId;
+    _uniqueThreadId = threadUniqueId;
 
     return self;
 }
@@ -235,8 +235,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (OWSInteractionType)interactionType
 {
-    OWSFailDebug(@"unknown interaction type.");
-
     return OWSInteractionType_Unknown;
 }
 

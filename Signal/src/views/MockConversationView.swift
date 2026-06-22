@@ -159,7 +159,7 @@ class MockConversationView: UIView {
                 let interaction: TSInteraction
                 switch item {
                 case .date:
-                    interaction = DateHeaderInteraction(thread: self.thread, timestamp: NSDate.ows_millisecondTimeStamp())
+                    interaction = DateHeaderInteraction(threadUniqueId: self.thread.uniqueId, timestamp: NSDate.ows_millisecondTimeStamp())
                 case .outgoing:
                     interaction = MockOutgoingMessage(messageBody: text!, thread: self.thread, transaction: transaction)
                 case .incoming:

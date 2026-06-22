@@ -77,15 +77,15 @@ class MessageLoaderTest: XCTestCase {
         mockDB = InMemoryDB()
     }
 
-    private func createInteractions(_ count: Int64) -> [TSInteraction] {
+    private func createInteractions(_ count: Int64, threadUniqueId: String) -> [TSInteraction] {
         return ((1 as Int64)...count).map { rowId in
-            TSInteraction(grdbId: rowId, uniqueId: UUID().uuidString, receivedAtTimestamp: 0, sortId: 0, timestamp: 0, uniqueThreadId: "")
+            TSInteraction(grdbId: rowId, uniqueId: UUID().uuidString, receivedAtTimestamp: 0, sortId: 0, timestamp: 0, uniqueThreadId: threadUniqueId)
         }
     }
 
     private func createInfoMessage(
         rowId: Int64,
-        thread: TSThread,
+        threadUniqueId: String,
         messageType: TSInfoMessageType,
     ) -> TSInteraction {
         return TSInfoMessage(
@@ -94,7 +94,7 @@ class MessageLoaderTest: XCTestCase {
             receivedAtTimestamp: UInt64(rowId),
             sortId: UInt64(rowId),
             timestamp: UInt64(rowId),
-            uniqueThreadId: thread.uniqueId,
+            uniqueThreadId: threadUniqueId,
             body: nil,
             bodyRanges: nil,
             contactShare: nil,
@@ -127,27 +127,27 @@ class MessageLoaderTest: XCTestCase {
         )
     }
 
-    private func createInteraction(rowId: Int64, thread: TSThread) -> TSInteraction {
-        return createInfoMessage(rowId: rowId, thread: thread, messageType: .userJoinedSignal)
+    private func createInteraction(rowId: Int64, threadUniqueId: String) -> TSInteraction {
+        return createInfoMessage(rowId: rowId, threadUniqueId: threadUniqueId, messageType: .userJoinedSignal)
     }
 
-    private func createCollapsibleInteraction(rowId: Int64, thread: TSThread) -> TSInteraction {
-        return createInfoMessage(rowId: rowId, thread: thread, messageType: .typeDisappearingMessagesUpdate)
+    private func createCollapsibleInteraction(rowId: Int64, threadUniqueId: String) -> TSInteraction {
+        return createInfoMessage(rowId: rowId, threadUniqueId: threadUniqueId, messageType: .typeDisappearingMessagesUpdate)
     }
 
-    private func createCollapsibleInteractions(_ count: Int64, thread: TSThread) -> [TSInteraction] {
+    private func createCollapsibleInteractions(_ count: Int64, threadUniqueId: String) -> [TSInteraction] {
         return ((1 as Int64)...count).map { rowId in
-            createCollapsibleInteraction(rowId: rowId, thread: thread)
+            createCollapsibleInteraction(rowId: rowId, threadUniqueId: threadUniqueId)
         }
     }
 
-    private func createMixedInteractions(_ chunkCount: Int64, thread: TSThread) -> [TSInteraction] {
+    private func createMixedInteractions(_ chunkCount: Int64, threadUniqueId: String) -> [TSInteraction] {
         return ((0 as Int64)..<chunkCount).flatMap { chunkIndex -> [TSInteraction] in
             let rowId = chunkIndex * 3 + 1
             return [
-                createCollapsibleInteraction(rowId: rowId, thread: thread),
-                createCollapsibleInteraction(rowId: rowId + 1, thread: thread),
-                createInteraction(rowId: rowId + 2, thread: thread),
+                createCollapsibleInteraction(rowId: rowId, threadUniqueId: threadUniqueId),
+                createCollapsibleInteraction(rowId: rowId + 1, threadUniqueId: threadUniqueId),
+                createInteraction(rowId: rowId + 2, threadUniqueId: threadUniqueId),
             ]
         }
     }
@@ -157,19 +157,21 @@ class MessageLoaderTest: XCTestCase {
         interactionFetcher.interactions = interactions
     }
 
-    private func preprocessingContext(thread: TSThread) -> MessageLoaderPreprocessingContext {
+    private func preprocessingContext(threadUniqueId: String) -> MessageLoaderPreprocessingContext {
         return MessageLoaderPreprocessingContext(
-            thread: thread,
+            threadUniqueId: threadUniqueId,
             oldestUnreadSortId: nil,
         )
     }
 
     func test_loadInitialMessagePage_empty() throws {
+        let threadUniqueId = UUID().uuidString
         try mockDB.read { tx in
             try self.messageLoader.loadInitialMessagePage(
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -177,13 +179,15 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func test_loadInitialMessagePage_nonempty() throws {
-        let initialMessages = createInteractions(5)
+        let threadUniqueId = UUID().uuidString
+        let initialMessages = createInteractions(5, threadUniqueId: threadUniqueId)
         setInteractions(initialMessages)
         try mockDB.read { tx in
             try self.messageLoader.loadInitialMessagePage(
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -192,8 +196,8 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func test_loadInitialMessagePage_countsCollapsedInteractionsAsTopLevel() throws {
-        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
-        let initialMessages = createCollapsibleInteractions(2_000, thread: thread)
+        let threadUniqueId = UUID().uuidString
+        let initialMessages = createCollapsibleInteractions(2_000, threadUniqueId: threadUniqueId)
         setInteractions(initialMessages)
 
         try mockDB.read { tx in
@@ -201,10 +205,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                preprocessingContext: MessageLoaderPreprocessingContext(
-                    thread: thread,
-                    oldestUnreadSortId: nil,
-                ),
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -219,8 +220,8 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func test_loadInitialMessagePage_fetchesEachInteractionOnce() throws {
-        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
-        let initialMessages = createCollapsibleInteractions(5_000, thread: thread)
+        let threadUniqueId = UUID().uuidString
+        let initialMessages = createCollapsibleInteractions(5_000, threadUniqueId: threadUniqueId)
         setInteractions(initialMessages)
 
         try mockDB.read { tx in
@@ -228,7 +229,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                preprocessingContext: preprocessingContext(thread: thread),
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -243,8 +244,8 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func test_loadOlderMessagePage_fetchesEachInteractionOnce() throws {
-        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
-        let initialMessages = createCollapsibleInteractions(15_000, thread: thread)
+        let threadUniqueId = UUID().uuidString
+        let initialMessages = createCollapsibleInteractions(15_000, threadUniqueId: threadUniqueId)
         setInteractions(initialMessages)
 
         try mockDB.read { tx in
@@ -252,14 +253,14 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                preprocessingContext: preprocessingContext(thread: thread),
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
             for _ in 0..<2 {
                 try self.messageLoader.loadOlderMessagePage(
                     reusableInteractions: [:],
                     deletedInteractionIds: [],
-                    preprocessingContext: preprocessingContext(thread: thread),
+                    preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                     tx: tx,
                 )
             }
@@ -271,11 +272,11 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func test_loadOlderMessagePage_keepsCollapseSetsStable() throws {
-        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
+        let threadUniqueId = UUID().uuidString
         // Repeated [collapsible, collapsible, standalone] chunks: every
         // collapse set should always appear with both of its interactions,
         // even at the edge of the load window.
-        let initialMessages = createMixedInteractions(200, thread: thread)
+        let initialMessages = createMixedInteractions(200, threadUniqueId: threadUniqueId)
         setInteractions(initialMessages)
 
         func assertDisplayUnitsAreWhole() {
@@ -302,7 +303,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                preprocessingContext: preprocessingContext(thread: thread),
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
             assertDisplayUnitsAreWhole()
@@ -313,7 +314,7 @@ class MessageLoaderTest: XCTestCase {
                 try self.messageLoader.loadOlderMessagePage(
                     reusableInteractions: [:],
                     deletedInteractionIds: [],
-                    preprocessingContext: preprocessingContext(thread: thread),
+                    preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                     tx: tx,
                 )
                 loadCount += 1
@@ -327,13 +328,13 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func test_loadInitialMessagePage_aroundFocus_balancesDisplayableUnits() throws {
-        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
+        let threadUniqueId = UUID().uuidString
         // 100 collapsible interactions (two 50-item collapse sets) followed by
         // a focus message and 300 standalone messages.
-        var initialMessages = createCollapsibleInteractions(100, thread: thread)
-        let focusInteraction = createInteraction(rowId: 101, thread: thread)
+        var initialMessages = createCollapsibleInteractions(100, threadUniqueId: threadUniqueId)
+        let focusInteraction = createInteraction(rowId: 101, threadUniqueId: threadUniqueId)
         initialMessages.append(focusInteraction)
-        initialMessages += ((102 as Int64)...401).map { createInteraction(rowId: $0, thread: thread) }
+        initialMessages += ((102 as Int64)...401).map { createInteraction(rowId: $0, threadUniqueId: threadUniqueId) }
         setInteractions(initialMessages)
 
         try mockDB.read { tx in
@@ -341,7 +342,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: focusInteraction.uniqueId,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                preprocessingContext: preprocessingContext(thread: thread),
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -360,8 +361,8 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func test_loadOlderMessagePage_withMixedCollapseSets_trimsNewerSide() throws {
-        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
-        let initialMessages = createMixedInteractions(900, thread: thread)
+        let threadUniqueId = UUID().uuidString
+        let initialMessages = createMixedInteractions(900, threadUniqueId: threadUniqueId)
         setInteractions(initialMessages)
 
         try mockDB.read { tx in
@@ -369,7 +370,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                preprocessingContext: preprocessingContext(thread: thread),
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -383,7 +384,7 @@ class MessageLoaderTest: XCTestCase {
                 try self.messageLoader.loadOlderMessagePage(
                     reusableInteractions: [:],
                     deletedInteractionIds: [],
-                    preprocessingContext: preprocessingContext(thread: thread),
+                    preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                     tx: tx,
                 )
                 loadCount += 1
@@ -396,8 +397,8 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func test_loadNewerMessagePage_withMixedCollapseSets_trimsOlderSide() throws {
-        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
-        let initialMessages = createMixedInteractions(900, thread: thread)
+        let threadUniqueId = UUID().uuidString
+        let initialMessages = createMixedInteractions(900, threadUniqueId: threadUniqueId)
         setInteractions(initialMessages)
 
         let focusInteraction = initialMessages[100]
@@ -406,7 +407,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: focusInteraction.uniqueId,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                preprocessingContext: preprocessingContext(thread: thread),
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -419,7 +420,7 @@ class MessageLoaderTest: XCTestCase {
                 try self.messageLoader.loadNewerMessagePage(
                     reusableInteractions: [:],
                     deletedInteractionIds: [],
-                    preprocessingContext: preprocessingContext(thread: thread),
+                    preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                     tx: tx,
                 )
                 loadCount += 1
@@ -434,7 +435,8 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func test_reloadInteractions_deletes() throws {
-        let initialMessages = createInteractions(5)
+        let threadUniqueId = UUID().uuidString
+        let initialMessages = createInteractions(5, threadUniqueId: threadUniqueId)
         setInteractions(initialMessages)
 
         try mockDB.read { tx in
@@ -442,6 +444,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -456,6 +459,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: deletedInteractionIds,
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -463,7 +467,8 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func test_reloadInteractions_inserts() throws {
-        let allMessages = createInteractions(5)
+        let threadUniqueId = UUID().uuidString
+        let allMessages = createInteractions(5, threadUniqueId: threadUniqueId)
 
         setInteractions(Array(allMessages.prefix(2)))
         try mockDB.read { tx in
@@ -471,6 +476,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -480,6 +486,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -488,7 +495,8 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func test_reloadInteractions_insertsAndDeletes() throws {
-        let allMessages = createInteractions(5)
+        let threadUniqueId = UUID().uuidString
+        let allMessages = createInteractions(5, threadUniqueId: threadUniqueId)
         let initialMessages = Array(allMessages.prefix(4))
 
         setInteractions(initialMessages)
@@ -497,6 +505,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -509,6 +518,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: deletedInteractionIds,
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -517,7 +527,8 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func test_reloadInteractions_removeAll() throws {
-        let initialMessages = createInteractions(5)
+        let threadUniqueId = UUID().uuidString
+        let initialMessages = createInteractions(5, threadUniqueId: threadUniqueId)
         setInteractions(initialMessages)
 
         try mockDB.read { tx in
@@ -525,6 +536,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -539,6 +551,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: removedIds,
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -548,7 +561,8 @@ class MessageLoaderTest: XCTestCase {
 
     func test_reloadInteractions_fix_crash() throws {
         // Create more messages than are part of the first batch.
-        let initialMessages = createInteractions(400)
+        let threadUniqueId = UUID().uuidString
+        let initialMessages = createInteractions(400, threadUniqueId: threadUniqueId)
         setInteractions(initialMessages)
 
         try mockDB.read { tx in
@@ -556,6 +570,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -571,6 +586,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: removedIds,
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -580,7 +596,8 @@ class MessageLoaderTest: XCTestCase {
 
     func test_loadAroundEdge() throws {
         // Create more messages than are part of the first batch.
-        let initialMessages = createInteractions(100)
+        let threadUniqueId = UUID().uuidString
+        let initialMessages = createInteractions(100, threadUniqueId: threadUniqueId)
         setInteractions(initialMessages)
 
         // For each message, load the end of the chat, and then jump to that
@@ -594,6 +611,7 @@ class MessageLoaderTest: XCTestCase {
                     focusMessageId: nil,
                     reusableInteractions: [:],
                     deletedInteractionIds: [],
+                    preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                     tx: tx,
                 )
                 XCTAssertLessThan(messageLoader.loadedInteractions.count, initialMessages.count)
@@ -601,6 +619,7 @@ class MessageLoaderTest: XCTestCase {
                     aroundInteractionId: message.uniqueId,
                     reusableInteractions: [:],
                     deletedInteractionIds: [],
+                    preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                     tx: tx,
                 )
             }
@@ -609,7 +628,8 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func testTotalDeletion() throws {
-        let allMessages = createInteractions(15)
+        let threadUniqueId = UUID().uuidString
+        let allMessages = createInteractions(15, threadUniqueId: threadUniqueId)
 
         let batch1 = Array(allMessages[0..<5])
         let batch2 = Array(allMessages[5..<10])
@@ -621,6 +641,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -631,6 +652,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: Set(batch1.map { $0.uniqueId }),
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -641,6 +663,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -651,6 +674,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: Set(batch2.map { $0.uniqueId }),
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -659,7 +683,8 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func testDeletionAndLoadOlder() throws {
-        var messages = createInteractions(200)
+        let threadUniqueId = UUID().uuidString
+        var messages = createInteractions(200, threadUniqueId: threadUniqueId)
 
         setInteractions(messages)
         try mockDB.read { tx in
@@ -667,6 +692,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: messages[100].uniqueId, // pretend this is the first unread message
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -687,6 +713,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadOlderMessagePage(
                 reusableInteractions: [:],
                 deletedInteractionIds: Set(removedInteractions1.map { $0.uniqueId }),
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -708,6 +735,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadOlderMessagePage(
                 reusableInteractions: [:],
                 deletedInteractionIds: Set(removedInteractions2.map { $0.uniqueId }),
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -718,7 +746,8 @@ class MessageLoaderTest: XCTestCase {
     }
 
     func testDeletionAndLoadNewer() throws {
-        var messages = createInteractions(200)
+        let threadUniqueId = UUID().uuidString
+        var messages = createInteractions(200, threadUniqueId: threadUniqueId)
 
         setInteractions(messages)
         try mockDB.read { tx in
@@ -726,6 +755,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: messages[100].uniqueId, // pretend this is the first unread message
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -746,6 +776,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadNewerMessagePage(
                 reusableInteractions: [:],
                 deletedInteractionIds: Set(removedInteractions1.map { $0.uniqueId }),
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }
@@ -767,6 +798,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadNewerMessagePage(
                 reusableInteractions: [:],
                 deletedInteractionIds: Set(removedInteractions2.map { $0.uniqueId }),
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
                 tx: tx,
             )
         }

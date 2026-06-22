@@ -15,14 +15,14 @@ public class UnreadIndicatorInteraction: TSInteraction {
         .unreadIndicator
     }
 
-    public init(thread: TSThread, timestamp: UInt64, receivedAtTimestamp: UInt64) {
+    public init(threadUniqueId: String, timestamp: UInt64, receivedAtTimestamp: UInt64) {
         // Include timestamp in uniqueId to ensure invariant that
         // interactions don't move in the chat history ordering.
         super.init(
             customUniqueId: "UnreadIndicator_\(timestamp)",
             timestamp: timestamp,
             receivedAtTimestamp: receivedAtTimestamp,
-            thread: thread,
+            threadUniqueId: threadUniqueId,
         )
     }
 

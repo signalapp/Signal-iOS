@@ -109,7 +109,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                 threadDetailsTimestamp = 1
             }
             let threadDetails = ThreadDetailsInteraction(
-                thread: thread,
+                threadUniqueId: thread.uniqueId,
                 timestamp: threadDetailsTimestamp,
             )
             let item = addItem(interaction: threadDetails)
@@ -135,7 +135,7 @@ struct CVItemModelBuilder: CVItemBuilding {
             )
         {
             let interaction = DefaultDisappearingMessageTimerInteraction(
-                thread: thread,
+                threadUniqueId: thread.uniqueId,
                 timestamp: NSDate.ows_millisecondTimeStamp() - 1,
             )
             let item = addItem(interaction: interaction)
@@ -144,7 +144,7 @@ struct CVItemModelBuilder: CVItemBuilding {
 
         if let typingIndicatorsSender = viewStateSnapshot.typingIndicatorsSender {
             let interaction = TypingIndicatorInteraction(
-                thread: thread,
+                threadUniqueId: thread.uniqueId,
                 timestamp: NSDate.ows_millisecondTimeStamp(),
                 address: typingIndicatorsSender,
             )

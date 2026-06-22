@@ -235,7 +235,10 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         if forceDateHeader || daysPrior > currentDaysBefore {
             currentDaysBefore = daysPrior
 
-            let dateInteraction = DateHeaderInteraction(thread: thread, timestamp: interaction.timestamp)
+            let dateInteraction = DateHeaderInteraction(
+                threadUniqueId: thread.uniqueId,
+                timestamp: interaction.timestamp,
+            )
             if
                 let dateItem = CVLoader.buildStandaloneRenderItem(
                     interaction: dateInteraction,

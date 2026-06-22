@@ -8,7 +8,6 @@ import SignalServiceKit
 final class CollapseSetInteraction: TSInteraction {
 
     enum MessagesType: Equatable {
-        case groupUpdates
         case chatUpdates
         case timerChanges
         case callEvents
@@ -27,7 +26,7 @@ final class CollapseSetInteraction: TSInteraction {
     override var shouldBeSaved: Bool { false }
 
     init(
-        thread: TSThread,
+        threadUniqueId: String,
         collapsedInteractions: [TSInteraction],
         collapseSetType: MessagesType,
     ) {
@@ -44,7 +43,7 @@ final class CollapseSetInteraction: TSInteraction {
             customUniqueId: "CollapseSet_\(firstInteraction.timestamp)_\(collapsedInteractions.count)",
             timestamp: firstInteraction.timestamp,
             receivedAtTimestamp: firstInteraction.receivedAtTimestamp,
-            thread: thread,
+            threadUniqueId: threadUniqueId,
         )
     }
 
