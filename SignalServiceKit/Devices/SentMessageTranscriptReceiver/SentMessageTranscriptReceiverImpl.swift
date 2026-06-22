@@ -354,7 +354,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         /// case it needs to back-date the expiration.
         if messageParams.expirationStartedAt != 0 {
             disappearingMessagesExpirationJob.startExpiration(
-                forMessage: outgoingMessage,
+                for: outgoingMessage,
                 expirationStartedAt: messageParams.expirationStartedAt,
                 tx: tx,
             )

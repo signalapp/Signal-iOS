@@ -53,6 +53,7 @@ public class GroupCallManager {
     private var interactionStore: InteractionStore { DependenciesBridge.shared.interactionStore }
     private var notificationPresenter: any NotificationPresenter { SSKEnvironment.shared.notificationPresenterRef }
     private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
+    private var disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore { DependenciesBridge.shared.disappearingMessagesConfigurationStore }
 
     private let logger = GroupCallPeekLogger.shared
 
@@ -306,6 +307,7 @@ public class GroupCallManager {
             creatorAci: creatorAci,
             groupThread: groupThread,
             callEventTimestamp: triggerEventTimestamp,
+            expiresInSeconds: disappearingMessagesConfigurationStore.durationSeconds(for: groupThread, tx: tx),
             tx: tx,
         )
 

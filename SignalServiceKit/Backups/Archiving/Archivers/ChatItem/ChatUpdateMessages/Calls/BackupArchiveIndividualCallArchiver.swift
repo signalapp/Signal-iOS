@@ -230,6 +230,7 @@ final class BackupArchiveIndividualCallArchiver {
             offerType: callInteractionOfferType,
             thread: contactThread,
             sentAtTimestamp: chatItem.dateSent,
+            expiresInSeconds: 0,
         )
         individualCallInteraction.wasRead = individualCall.read
 

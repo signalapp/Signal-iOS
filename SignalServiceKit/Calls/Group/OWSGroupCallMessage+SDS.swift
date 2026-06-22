@@ -79,9 +79,9 @@ class OWSGroupCallMessageSerializer: SDSSerializer {
         let customMessage: String? = nil
         let envelopeData: Data? = nil
         let errorType: TSErrorMessageType? = nil
-        let expireStartedAt: UInt64? = nil
-        let expiresAt: UInt64? = nil
-        let expiresInSeconds: UInt32? = nil
+        let expireStartedAt: UInt64? = model.expireStartedAt
+        let expiresAt: UInt64? = model.expiresAt
+        let expiresInSeconds: UInt32? = model.expiresInSeconds
         let groupMetaMessage: Int? = nil
         let hasLegacyMessageState: Bool? = nil
         let hasSyncedTranscript: Bool? = nil

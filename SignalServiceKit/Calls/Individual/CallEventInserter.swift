@@ -12,6 +12,7 @@ public class CallEventInserter {
     private var callRecordStore: any CallRecordStore { DependenciesBridge.shared.callRecordStore }
     private var individualCallRecordManager: any IndividualCallRecordManager { DependenciesBridge.shared.individualCallRecordManager }
     private var interactionStore: any InteractionStore { DependenciesBridge.shared.interactionStore }
+    private var disappearingMessagesConfigurationStore: any DisappearingMessagesConfigurationStore { DependenciesBridge.shared.disappearingMessagesConfigurationStore }
     private var notificationPresenter: any NotificationPresenter { SSKEnvironment.shared.notificationPresenterRef }
 
     private let offerMediaType: TSRecentCallOfferType
@@ -115,11 +116,13 @@ public class CallEventInserter {
         Logger.info("No existing call interaction found; creating")
 
         // If we found nothing, create a new interaction.
+        let expiration = disappearingMessagesConfigurationStore.durationSeconds(for: self.thread, tx: tx)
         let callInteraction = TSCall(
             callType: callType,
             offerType: self.offerMediaType,
             thread: self.thread,
             sentAtTimestamp: self.sentAtTimestamp,
+            expiresInSeconds: expiration,
         )
         callInteraction.anyInsert(transaction: tx)
         self.callInteraction = callInteraction

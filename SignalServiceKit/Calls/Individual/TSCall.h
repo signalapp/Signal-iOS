@@ -53,6 +53,10 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 /// - SeeAlso ``OWSReadTracking``
 @property (nonatomic, getter=wasRead) BOOL read;
 
+@property (nonatomic, readonly) uint32_t expiresInSeconds;
+@property (nonatomic, readonly) uint64_t expireStartedAt;
+@property (nonatomic, readonly) uint64_t expiresAt;
+
 - (instancetype)initWithCustomUniqueId:(NSString *)uniqueId
                              timestamp:(uint64_t)timestamp
                    receivedAtTimestamp:(uint64_t)receivedAtTimestamp
@@ -72,7 +76,10 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 - (instancetype)initWithCallType:(RPRecentCallType)callType
                        offerType:(TSRecentCallOfferType)offerType
                           thread:(TSContactThread *)thread
-                 sentAtTimestamp:(uint64_t)sentAtTimestamp NS_DESIGNATED_INITIALIZER;
+                 sentAtTimestamp:(uint64_t)sentAtTimestamp
+                expiresInSeconds:(uint32_t)expiresInSeconds NS_DESIGNATED_INITIALIZER;
+
+- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(DBWriteTransaction *)transaction;
 
 // --- CODE GENERATION MARKER
 
@@ -88,9 +95,12 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                         callType:(RPRecentCallType)callType
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
                        offerType:(TSRecentCallOfferType)offerType
                             read:(BOOL)read
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:callType:offerType:read:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:callType:expireStartedAt:expiresAt:expiresInSeconds:offerType:read:));
 
 // clang-format on
 

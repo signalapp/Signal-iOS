@@ -68,6 +68,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     private lazy var groupCallRecordRingUpdateDelegate: GroupCallRecordRingUpdateDelegate = {
         return GroupCallRecordRingUpdateHandler(
             callRecordStore: DependenciesBridge.shared.callRecordStore,
+            disappearingMessagesConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
             groupCallRecordManager: DependenciesBridge.shared.groupCallRecordManager,
             interactionStore: DependenciesBridge.shared.interactionStore,
             threadStore: DependenciesBridge.shared.threadStore,

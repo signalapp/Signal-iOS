@@ -99,6 +99,7 @@ public extension GroupCallRecordManager {
 
 public class GroupCallRecordManagerImpl: GroupCallRecordManager {
     private let callRecordStore: CallRecordStore
+    private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     private let interactionStore: InteractionStore
     private let outgoingSyncMessageManager: OutgoingCallEventSyncMessageManager
     private let statusTransitionManager: GroupCallRecordStatusTransitionManager
@@ -107,10 +108,12 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
 
     init(
         callRecordStore: CallRecordStore,
+        disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         interactionStore: InteractionStore,
         outgoingSyncMessageManager: OutgoingCallEventSyncMessageManager,
     ) {
         self.callRecordStore = callRecordStore
+        self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.interactionStore = interactionStore
         self.outgoingSyncMessageManager = outgoingSyncMessageManager
         self.statusTransitionManager = GroupCallRecordStatusTransitionManager()
@@ -150,6 +153,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             let (newGroupCallInteraction, interactionRowId) = interactionStore.insertGroupCallInteraction(
                 groupThread: groupThread,
                 callEventTimestamp: callEventTimestamp,
+                expiresInSeconds: disappearingMessagesConfigurationStore.durationSeconds(for: groupThread, tx: tx),
                 tx: tx,
             )
 

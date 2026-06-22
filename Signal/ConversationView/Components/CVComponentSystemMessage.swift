@@ -479,7 +479,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         var innerHStackSubviewInfos = [ManualStackSubviewInfo]()
         innerHStackSubviewInfos.append(textSize.size.asManualSubviewInfo)
 
-        if let infoMessage = interaction as? TSInfoMessage, infoMessage.hasPerConversationExpiration {
+        if expiration != nil {
             let timerSize = MessageTimerView.measureSize
             innerHStackSubviewInfos.append(timerSize.asManualSubviewInfo(hasFixedWidth: true))
         }
@@ -1556,24 +1556,17 @@ extension CVComponentSystemMessage {
         forInteraction interaction: TSInteraction,
         transaction: DBReadTransaction,
     ) -> CVComponentState.SystemMessage.Expiration? {
-        if let infoMessage = interaction as? TSInfoMessage {
-            return expiration(forInfoMessage: infoMessage, transaction: transaction)
-        }
-        // Expiration state not supported.
-        return nil
-    }
-
-    private static func expiration(
-        forInfoMessage infoMessage: TSInfoMessage,
-        transaction: DBReadTransaction,
-    ) -> CVComponentState.SystemMessage.Expiration? {
-        guard infoMessage.expiresAt > 0, infoMessage.expiresInSeconds > 0 else {
+        guard
+            let expiringInteraction = interaction as? ExpiringInteraction,
+            expiringInteraction.expiresAt > 0,
+            expiringInteraction.expiresInSeconds > 0
+        else {
             return nil
         }
 
         return CVComponentState.SystemMessage.Expiration(
-            expirationTimestamp: infoMessage.expiresAt,
-            expiresInSeconds: infoMessage.expiresInSeconds,
+            expirationTimestamp: expiringInteraction.expiresAt,
+            expiresInSeconds: expiringInteraction.expiresInSeconds,
         )
     }
 }

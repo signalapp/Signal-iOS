@@ -46,6 +46,7 @@ public extension InteractionStore {
         creatorAci: Aci? = nil,
         groupThread: TSGroupThread,
         callEventTimestamp: UInt64,
+        expiresInSeconds: UInt32,
         tx: DBWriteTransaction,
     ) -> (OWSGroupCallMessage, Int64) {
         let groupCallInteraction = OWSGroupCallMessage(
@@ -53,6 +54,7 @@ public extension InteractionStore {
             creatorAci: creatorAci.map { AciObjC($0) },
             thread: groupThread,
             sentAtTimestamp: callEventTimestamp,
+            expiresInSeconds: expiresInSeconds,
         )
         insertInteraction(groupCallInteraction, tx: tx)
 

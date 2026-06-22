@@ -39,6 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// - SeeAlso ``OWSReadTracking``
 @property (nonatomic, getter=wasRead) BOOL read;
 
+@property (nonatomic, readonly) uint32_t expiresInSeconds;
+@property (nonatomic, readonly) uint64_t expireStartedAt;
+@property (nonatomic, readonly) uint64_t expiresAt;
+
 /// This property is deprecated, but remains here to preserve compatibility with
 /// legacy data. Specifically, it will only be populated on old messages -
 /// recent messages will instead have a corresponding ``CallRecord`` storing a
@@ -64,7 +68,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithJoinedMemberAcis:(NSArray<AciObjC *> *)joinedMemberAcis
                               creatorAci:(nullable AciObjC *)creatorAci
                                   thread:(TSGroupThread *)thread
-                         sentAtTimestamp:(uint64_t)sentAtTimestamp NS_DESIGNATED_INITIALIZER;
+                         sentAtTimestamp:(uint64_t)sentAtTimestamp
+                        expiresInSeconds:(uint32_t)expiresInSeconds NS_DESIGNATED_INITIALIZER;
+
+- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(DBWriteTransaction *)transaction;
 
 // --- CODE GENERATION MARKER
 
@@ -81,10 +88,13 @@ NS_ASSUME_NONNULL_BEGIN
                   uniqueThreadId:(NSString *)uniqueThreadId
                      creatorUuid:(nullable NSString *)creatorUuid
                            eraId:(nullable NSString *)eraId
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
                         hasEnded:(BOOL)hasEnded
                joinedMemberUuids:(nullable NSArray<NSString *> *)joinedMemberUuids
                             read:(BOOL)read
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:creatorUuid:eraId:hasEnded:joinedMemberUuids:read:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:creatorUuid:eraId:expireStartedAt:expiresAt:expiresInSeconds:hasEnded:joinedMemberUuids:read:));
 
 // clang-format on
 

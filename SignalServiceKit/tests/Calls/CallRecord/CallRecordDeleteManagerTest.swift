@@ -48,7 +48,13 @@ final class CallRecordDeleteManagerTest: XCTestCase {
 
     private func insertIndividualCallInteraction() -> (TSCall, TSContactThread) {
         let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
-        let interaction = TSCall(callType: .outgoing, offerType: .audio, thread: thread, sentAtTimestamp: 0)
+        let interaction = TSCall(
+            callType: .outgoing,
+            offerType: .audio,
+            thread: thread,
+            sentAtTimestamp: 0,
+            expiresInSeconds: 0,
+        )
 
         mockDB.write { tx in
             mockThreadStore.insertThread(thread)
@@ -61,7 +67,13 @@ final class CallRecordDeleteManagerTest: XCTestCase {
     private func insertGroupCallInteraction() -> (OWSGroupCallMessage, TSGroupThread) {
         let secretParams = try! GroupSecretParams.generate()
         let thread = TSGroupThread(groupModel: try! TSGroupModelBuilder(secretParams: secretParams).buildAsV2())
-        let interaction = OWSGroupCallMessage(joinedMemberAcis: [], creatorAci: nil, thread: thread, sentAtTimestamp: 0)
+        let interaction = OWSGroupCallMessage(
+            joinedMemberAcis: [],
+            creatorAci: nil,
+            thread: thread,
+            sentAtTimestamp: 0,
+            expiresInSeconds: 0,
+        )
 
         mockDB.write { tx in
             mockThreadStore.insertThread(thread)

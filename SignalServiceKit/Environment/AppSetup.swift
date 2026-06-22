@@ -824,8 +824,10 @@ extension AppSetup.GlobalsContinuation {
             callLinkStore: callLinkStore,
             outgoingSyncMessageManager: outgoingCallEventSyncMessageManager,
         )
+        let disappearingMessagesConfigurationStore = DisappearingMessagesConfigurationStoreImpl()
         let groupCallRecordManager = GroupCallRecordManagerImpl(
             callRecordStore: callRecordStore,
+            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             interactionStore: interactionStore,
             outgoingSyncMessageManager: outgoingCallEventSyncMessageManager,
         )
@@ -865,7 +867,6 @@ extension AppSetup.GlobalsContinuation {
             tsAccountManager: tsAccountManager,
         )
 
-        let disappearingMessagesConfigurationStore = DisappearingMessagesConfigurationStoreImpl()
         let disappearingMessagesExpirationJob = DisappearingMessagesExpirationJob(
             dateProvider: dateProvider,
             db: db,
@@ -893,6 +894,7 @@ extension AppSetup.GlobalsContinuation {
             callLinkStore: callLinkStore,
             callRecordStore: callRecordStore,
             callRecordDeleteManager: callRecordDeleteManager,
+            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             groupCallRecordManager: groupCallRecordManager,
             individualCallRecordManager: individualCallRecordManager,
             interactionDeleteManager: interactionDeleteManager,

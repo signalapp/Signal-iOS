@@ -29,6 +29,7 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
 
         self.ringUpdateHandler = GroupCallRecordRingUpdateHandler(
             callRecordStore: mockCallRecordStore,
+            disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore(),
             groupCallRecordManager: mockGroupCallRecordManager,
             interactionStore: mockInteractionStore,
             threadStore: mockThreadStore,

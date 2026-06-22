@@ -1812,6 +1812,7 @@
 		B9A87A382A9E34BD009FCA13 /* Hatsuishi-UPM800.otf in Resources */ = {isa = PBXBuildFile; fileRef = B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */; };
 		B9AAC9512D5A6FA900E223C0 /* CVComponentUndownloadableAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9AAC9502D5A6FA900E223C0 /* CVComponentUndownloadableAttachment.swift */; };
 		B9B2AA942BC598B60060B56C /* ContactNoteSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */; };
+		B9B432262FD37E9B0059FCB9 /* ExpiringInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B432252FD37E9B0059FCB9 /* ExpiringInteraction.swift */; };
 		B9B7BC652D41C61500C26E42 /* NewLinkedDeviceNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B7BC642D41C61500C26E42 /* NewLinkedDeviceNotificationMegaphone.swift */; };
 		B9B89EED2C064E760093A2FA /* notification_simple-01.caf in Resources */ = {isa = PBXBuildFile; fileRef = B9B89EEC2C064E700093A2FA /* notification_simple-01.caf */; };
 		B9D413742BCDDE66006D4E48 /* Tooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D413732BCDDE66006D4E48 /* Tooltip.swift */; };
@@ -6107,6 +6108,7 @@
 		B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hatsuishi-UPM800.otf"; sourceTree = "<group>"; };
 		B9AAC9502D5A6FA900E223C0 /* CVComponentUndownloadableAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentUndownloadableAttachment.swift; sourceTree = "<group>"; };
 		B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactNoteSheet.swift; sourceTree = "<group>"; };
+		B9B432252FD37E9B0059FCB9 /* ExpiringInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpiringInteraction.swift; sourceTree = "<group>"; };
 		B9B7BC642D41C61500C26E42 /* NewLinkedDeviceNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLinkedDeviceNotificationMegaphone.swift; sourceTree = "<group>"; };
 		B9B89EEC2C064E700093A2FA /* notification_simple-01.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "notification_simple-01.caf"; sourceTree = "<group>"; };
 		B9D413732BCDDE66006D4E48 /* Tooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tooltip.swift; sourceTree = "<group>"; };
@@ -14162,6 +14164,7 @@
 			children = (
 				502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */,
 				D98BC5392EE49EEE0052A81F /* DisappearingMessagesExpirationJob.swift */,
+				B9B432252FD37E9B0059FCB9 /* ExpiringInteraction.swift */,
 				66F6D69B2C73F01900EFAF75 /* VersionedDisappearingMessageToken.swift */,
 			);
 			path = DisappearingMessages;
@@ -19329,6 +19332,7 @@
 				D9C7CECB28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift in Sources */,
 				D97992AC2FC147C5002E79F3 /* ExperienceUpgradeStore.swift in Sources */,
 				D98BC5332EE387A30052A81F /* ExpirationJob.swift in Sources */,
+				B9B432262FD37E9B0059FCB9 /* ExpiringInteraction.swift in Sources */,
 				C1FB9B752B16498C00D51A3B /* ExternalPendingDonationStore.swift in Sources */,
 				F9C5CE57289453B400548EEE /* Factories.swift in Sources */,
 				F9C5CC1D289453B300548EEE /* FailedMessagesJob.swift in Sources */,

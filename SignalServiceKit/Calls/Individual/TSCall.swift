@@ -11,14 +11,19 @@ extension RPRecentCallType: CustomStringConvertible {
     }
 }
 
+// MARK: - Disappearing messages
+
+extension TSCall: ExpiringCallInteraction {
+    @objc
+    func ensureExpirationStarted(transaction tx: DBWriteTransaction) {
+        startExpirationIfNecessary(transaction: tx)
+    }
+}
+
 // MARK: - OWSReadTracking
 
 @objc
 extension TSCall: OWSReadTracking {
-    public var expireStartedAt: UInt64 {
-        return 0
-    }
-
     public func markAsRead(
         atTimestamp readTimestamp: UInt64,
         thread: TSThread,

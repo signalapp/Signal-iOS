@@ -584,6 +584,9 @@ extension TSInteraction {
             let uniqueThreadId: String = record.threadUniqueId
             let creatorUuid: String? = record.creatorUuid
             let eraId: String? = record.eraId
+            let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             let hasEnded: Bool = try SDSDeserialization.required(record.hasEnded, name: "hasEnded")
             let joinedMemberUuidsSerialized: Data? = record.joinedMemberUuids
             let joinedMemberUuids: [String]? = try joinedMemberUuidsSerialized.map({ try SDSDeserialization.unarchivedArrayOfObjects(ofClass: NSString.self, from: $0) as [String] })
@@ -597,6 +600,9 @@ extension TSInteraction {
                                        uniqueThreadId: uniqueThreadId,
                                        creatorUuid: creatorUuid,
                                        eraId: eraId,
+                                       expireStartedAt: expireStartedAt,
+                                       expiresAt: expiresAt,
+                                       expiresInSeconds: expiresInSeconds,
                                        hasEnded: hasEnded,
                                        joinedMemberUuids: joinedMemberUuids,
                                        read: read)
@@ -1355,6 +1361,9 @@ extension TSInteraction {
             guard let callType: RPRecentCallType = record.callType else {
                throw SDSError.missingRequiredField()
             }
+            let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
             guard let offerType: TSRecentCallOfferType = record.offerType else {
                throw SDSError.missingRequiredField()
             }
@@ -1367,6 +1376,9 @@ extension TSInteraction {
                           timestamp: timestamp,
                           uniqueThreadId: uniqueThreadId,
                           callType: callType,
+                          expireStartedAt: expireStartedAt,
+                          expiresAt: expiresAt,
+                          expiresInSeconds: expiresInSeconds,
                           offerType: offerType,
                           read: read)
 
@@ -4681,6 +4693,9 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let callType: RPRecentCallType = modelToCopy.callType
+            let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expiresAt: UInt64 = modelToCopy.expiresAt
+            let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             let offerType: TSRecentCallOfferType = modelToCopy.offerType
             let read: Bool = modelToCopy.wasRead
 
@@ -4691,6 +4706,9 @@ extension TSInteraction: DeepCopyable {
                           timestamp: timestamp,
                           uniqueThreadId: uniqueThreadId,
                           callType: callType,
+                          expireStartedAt: expireStartedAt,
+                          expiresAt: expiresAt,
+                          expiresInSeconds: expiresInSeconds,
                           offerType: offerType,
                           read: read)
         }
@@ -4704,6 +4722,9 @@ extension TSInteraction: DeepCopyable {
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let creatorUuid: String? = modelToCopy.creatorUuid
             let eraId: String? = modelToCopy.eraId
+            let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expiresAt: UInt64 = modelToCopy.expiresAt
+            let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
             let hasEnded: Bool = modelToCopy.hasEnded
             let joinedMemberUuids: [String]?
             if let joinedMemberUuidsForCopy = modelToCopy.joinedMemberUuids {
@@ -4721,6 +4742,9 @@ extension TSInteraction: DeepCopyable {
                                        uniqueThreadId: uniqueThreadId,
                                        creatorUuid: creatorUuid,
                                        eraId: eraId,
+                                       expireStartedAt: expireStartedAt,
+                                       expiresAt: expiresAt,
+                                       expiresInSeconds: expiresInSeconds,
                                        hasEnded: hasEnded,
                                        joinedMemberUuids: joinedMemberUuids,
                                        read: read)

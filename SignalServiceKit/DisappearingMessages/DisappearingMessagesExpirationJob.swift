@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public final class DisappearingMessagesExpirationJob: ExpirationJob<TSMessage> {
+public final class DisappearingMessagesExpirationJob: ExpirationJob<ExpiringInteraction> {
     private let interactionDeleteManager: InteractionDeleteManager
 
     init(
@@ -22,30 +22,34 @@ public final class DisappearingMessagesExpirationJob: ExpirationJob<TSMessage> {
 
     // MARK: -
 
-    override public func nextExpiringElement(tx: DBReadTransaction) -> TSMessage? {
-        return InteractionFinder.nextExpiringMessage(transaction: tx)
+    override public func nextExpiringElement(tx: DBReadTransaction) -> ExpiringInteraction? {
+        return InteractionFinder.nextExpiringInteraction(transaction: tx)
     }
 
-    override public func expirationDate(ofElement message: TSMessage) -> Date {
-        return Date(millisecondsSince1970: message.expiresAt)
+    override public func expirationDate(ofElement interaction: ExpiringInteraction) -> Date {
+        return Date(millisecondsSince1970: interaction.expiresAt)
     }
 
-    override public func deleteExpiredElement(_ message: TSMessage, tx: DBWriteTransaction) {
-        interactionDeleteManager.delete(message, sideEffects: .default(), tx: tx)
+    override public func deleteExpiredElement(_ interaction: ExpiringInteraction, tx: DBWriteTransaction) {
+        interactionDeleteManager.delete(
+            interaction,
+            sideEffects: .custom(associatedCallDelete: .localDeleteOnly),
+            tx: tx,
+        )
     }
 
     // MARK: -
 
     public func startExpiration(
-        forMessage message: TSMessage,
+        for interaction: ExpiringInteraction,
         expirationStartedAt: UInt64,
         tx: DBWriteTransaction,
     ) {
-        guard message.shouldStartExpireTimer() else { return }
+        guard interaction.shouldStartExpireTimer() else { return }
 
         // Don't clobber if multiple actions simultaneously triggered expiration.
-        if message.expireStartedAt == 0 || message.expireStartedAt > expirationStartedAt {
-            message.updateWithExpireStarted(at: expirationStartedAt, transaction: tx)
+        if interaction.expireStartedAt == 0 || interaction.expireStartedAt > expirationStartedAt {
+            interaction.updateWithExpireStarted(at: expirationStartedAt, transaction: tx)
         }
 
         restart()
@@ -64,7 +68,7 @@ public class DisappearingMessagesExpirationJobObjcBridge: NSObject {
     ) {
         DependenciesBridge.shared.disappearingMessagesExpirationJob
             .startExpiration(
-                forMessage: message,
+                for: message,
                 expirationStartedAt: expirationStartedAt,
                 tx: tx,
             )

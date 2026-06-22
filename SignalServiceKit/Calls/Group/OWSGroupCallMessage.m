@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
                               creatorAci:(nullable AciObjC *)creatorAci
                                   thread:(TSGroupThread *)thread
                          sentAtTimestamp:(uint64_t)sentAtTimestamp
+                        expiresInSeconds:(uint32_t)expiresInSeconds
 {
     self = [super initWithTimestamp:sentAtTimestamp
                 receivedAtTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -24,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
+
+    _expiresInSeconds = expiresInSeconds;
 
     NSMutableArray<NSString *> *uuids = [[NSMutableArray alloc] initWithCapacity:joinedMemberAcis.count];
     for (AciObjC *aci in joinedMemberAcis) {
@@ -51,6 +54,9 @@ NS_ASSUME_NONNULL_BEGIN
                   uniqueThreadId:(NSString *)uniqueThreadId
                      creatorUuid:(nullable NSString *)creatorUuid
                            eraId:(nullable NSString *)eraId
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
                         hasEnded:(BOOL)hasEnded
                joinedMemberUuids:(nullable NSArray<NSString *> *)joinedMemberUuids
                             read:(BOOL)read
@@ -68,6 +74,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     _creatorUuid = creatorUuid;
     _eraId = eraId;
+    _expireStartedAt = expireStartedAt;
+    _expiresAt = expiresAt;
+    _expiresInSeconds = expiresInSeconds;
     _hasEnded = hasEnded;
     _joinedMemberUuids = joinedMemberUuids;
     _read = read;
@@ -136,6 +145,32 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_Call;
+}
+
+#pragma mark - Disappearing messages
+
+- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(DBWriteTransaction *)transaction
+{
+    OWSAssertDebug(expireStartedAt > 0);
+
+    [self anyUpdateGroupCallMessageWithTransaction:transaction
+                                             block:^(OWSGroupCallMessage *message) {
+                                                 message->_expireStartedAt = expireStartedAt;
+                                                 message->_expiresAt
+                                                     = expireStartedAt + (uint64_t)message->_expiresInSeconds * 1000;
+                                             }];
+}
+
+- (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+    [self ensureExpirationStartedWithTransaction:transaction];
+}
+
+- (void)anyDidUpdateWithTransaction:(DBWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+    [self ensureExpirationStartedWithTransaction:transaction];
 }
 
 @end

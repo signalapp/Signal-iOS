@@ -21,6 +21,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
     private let callLinkStore: CallLinkRecordStore
     private let callRecordStore: CallRecordStore
     private let callRecordDeleteManager: CallRecordDeleteManager
+    private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     private let groupCallRecordManager: GroupCallRecordManager
     private let individualCallRecordManager: IndividualCallRecordManager
     private let interactionDeleteManager: InteractionDeleteManager
@@ -34,6 +35,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
         callLinkStore: CallLinkRecordStore,
         callRecordStore: CallRecordStore,
         callRecordDeleteManager: CallRecordDeleteManager,
+        disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         groupCallRecordManager: GroupCallRecordManager,
         individualCallRecordManager: IndividualCallRecordManager,
         interactionDeleteManager: InteractionDeleteManager,
@@ -46,6 +48,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
         self.callLinkStore = callLinkStore
         self.callRecordStore = callRecordStore
         self.callRecordDeleteManager = callRecordDeleteManager
+        self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.groupCallRecordManager = groupCallRecordManager
         self.individualCallRecordManager = individualCallRecordManager
         self.interactionDeleteManager = interactionDeleteManager
@@ -443,11 +446,13 @@ private extension IncomingCallEventSyncMessageManagerImpl {
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction,
     ) {
+        let expiration = disappearingMessagesConfigurationStore.durationSeconds(for: contactThread, tx: tx)
         let newIndividualCallInteraction = TSCall(
             callType: individualCallInteractionType,
             offerType: callType.individualCallOfferType,
             thread: contactThread,
             sentAtTimestamp: callTimestamp,
+            expiresInSeconds: expiration,
         )
         interactionStore.insertInteraction(newIndividualCallInteraction, tx: tx)
 
@@ -523,6 +528,10 @@ private extension IncomingCallEventSyncMessageManagerImpl {
         let (newGroupCallInteraction, interactionRowId) = interactionStore.insertGroupCallInteraction(
             groupThread: groupThread,
             callEventTimestamp: callEventTimestamp,
+            expiresInSeconds: disappearingMessagesConfigurationStore.durationSeconds(
+                for: groupThread,
+                tx: tx,
+            ),
             tx: tx,
         )
 

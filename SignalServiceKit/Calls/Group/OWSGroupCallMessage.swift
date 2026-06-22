@@ -132,14 +132,19 @@ extension OWSGroupCallMessage: OWSPreviewText {
     }
 }
 
+// MARK: - Disappearing messages
+
+extension OWSGroupCallMessage: ExpiringCallInteraction {
+    @objc
+    func ensureExpirationStarted(transaction tx: DBWriteTransaction) {
+        startExpirationIfNecessary(transaction: tx)
+    }
+}
+
 // MARK: - OWSReadTracking
 
 @objc
 extension OWSGroupCallMessage: OWSReadTracking {
-    public var expireStartedAt: UInt64 {
-        return 0
-    }
-
     public func markAsRead(
         atTimestamp readTimestamp: UInt64,
         thread: TSThread,

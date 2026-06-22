@@ -11,6 +11,7 @@ import XCTest
 final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
     private var mockCallRecordStore: MockCallRecordStore!
     private var mockCallRecordDeleteManager: MockCallRecordDeleteManager!
+    private var mockDisappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore!
     private var mockGroupCallRecordManager: MockGroupCallRecordManager!
     private var mockIndividualCallRecordManager: MockIndividualCallRecordManager!
     private var mockInteractionDeleteManager: MockInteractionDeleteManager!
@@ -25,6 +26,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
     override func setUp() {
         mockCallRecordStore = MockCallRecordStore()
         mockCallRecordDeleteManager = MockCallRecordDeleteManager()
+        mockDisappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
         mockGroupCallRecordManager = MockGroupCallRecordManager()
         mockIndividualCallRecordManager = MockIndividualCallRecordManager()
         mockInteractionDeleteManager = MockInteractionDeleteManager()
@@ -45,6 +47,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
             callLinkStore: CallLinkRecordStore(),
             callRecordStore: mockCallRecordStore,
             callRecordDeleteManager: mockCallRecordDeleteManager,
+            disappearingMessagesConfigurationStore: mockDisappearingMessagesConfigurationStore,
             groupCallRecordManager: mockGroupCallRecordManager,
             individualCallRecordManager: mockIndividualCallRecordManager,
             interactionDeleteManager: mockInteractionDeleteManager,
@@ -218,6 +221,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
             offerType: .audio,
             thread: thread,
             sentAtTimestamp: UInt64.maxRandom,
+            expiresInSeconds: 0,
         )
 
         mockDB.write { tx in
@@ -354,6 +358,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
             return mockInteractionStore.insertGroupCallInteraction(
                 groupThread: thread,
                 callEventTimestamp: .maxRandom,
+                expiresInSeconds: 0,
                 tx: tx,
             )
         }

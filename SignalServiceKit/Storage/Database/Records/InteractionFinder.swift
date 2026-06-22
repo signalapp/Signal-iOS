@@ -221,9 +221,9 @@ public class InteractionFinder: NSObject {
 
     // MARK: -
 
-    public class func nextExpiringMessage(
+    public class func nextExpiringInteraction(
         transaction: DBReadTransaction,
-    ) -> TSMessage? {
+    ) -> ExpiringInteraction? {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
@@ -238,8 +238,8 @@ public class InteractionFinder: NSObject {
 
         return failIfThrows {
             while let interaction = try cursor.next() {
-                if let message = interaction as? TSMessage {
-                    return message
+                if let expiringInteraction = interaction as? ExpiringInteraction {
+                    return expiringInteraction
                 } else {
                     owsFailDebug("Unexpected object: \(type(of: interaction))")
                 }

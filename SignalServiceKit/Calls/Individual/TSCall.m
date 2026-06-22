@@ -54,6 +54,7 @@ NSString *NSStringFromCallType(RPRecentCallType callType)
                        offerType:(TSRecentCallOfferType)offerType
                           thread:(TSContactThread *)thread
                  sentAtTimestamp:(uint64_t)sentAtTimestamp
+                expiresInSeconds:(uint32_t)expiresInSeconds
 {
     self = [super initWithTimestamp:sentAtTimestamp
                 receivedAtTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -65,6 +66,7 @@ NSString *NSStringFromCallType(RPRecentCallType callType)
 
     _callType = callType;
     _offerType = offerType;
+    _expiresInSeconds = expiresInSeconds;
 
     // Ensure users are notified of missed calls.
     switch (callType) {
@@ -96,6 +98,9 @@ NSString *NSStringFromCallType(RPRecentCallType callType)
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                         callType:(RPRecentCallType)callType
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
                        offerType:(TSRecentCallOfferType)offerType
                             read:(BOOL)read
 {
@@ -111,6 +116,9 @@ NSString *NSStringFromCallType(RPRecentCallType callType)
     }
 
     _callType = callType;
+    _expireStartedAt = expireStartedAt;
+    _expiresAt = expiresAt;
+    _expiresInSeconds = expiresInSeconds;
     _offerType = offerType;
     _read = read;
 
@@ -211,6 +219,31 @@ NSString *NSStringFromCallType(RPRecentCallType callType)
                 @"info message text in conversation view for when a call was dropped because the contact is blocked in "
                 @"iOS settings");
     }
+}
+
+#pragma mark - Disappearing messages
+
+- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(DBWriteTransaction *)transaction
+{
+    OWSAssertDebug(expireStartedAt > 0);
+
+    [self anyUpdateCallWithTransaction:transaction
+                                 block:^(TSCall *call) {
+                                     call->_expireStartedAt = expireStartedAt;
+                                     call->_expiresAt = expireStartedAt + (uint64_t)call->_expiresInSeconds * 1000;
+                                 }];
+}
+
+- (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+    [self ensureExpirationStartedWithTransaction:transaction];
+}
+
+- (void)anyDidUpdateWithTransaction:(DBWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+    [self ensureExpirationStartedWithTransaction:transaction];
 }
 
 @end

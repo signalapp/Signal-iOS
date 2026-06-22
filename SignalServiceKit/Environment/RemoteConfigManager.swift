@@ -382,6 +382,10 @@ public class RemoteConfig {
         ))
     }
 
+    public var disappearingCalls: Bool {
+        return isEnabled(.disappearingCalls, defaultValue: false)
+    }
+
     // MARK: - RingRTC
 
     public var ringrtcNwPathMonitorTrial: Bool {
@@ -640,6 +644,7 @@ private enum IsEnabledFlag: String, FlagType {
     case cardGiftDonationKillSwitch = "ios.cardGiftDonationKillSwitch"
     case cardMonthlyDonationKillSwitch = "ios.cardMonthlyDonationKillSwitch"
     case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
+    case disappearingCalls = "ios.disappearingCalls"
     case dynamicSendMessageTimeoutKillSwitch = "ios.dynamicSendMessageTimeoutKillSwitch"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
@@ -669,6 +674,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .cardGiftDonationKillSwitch: false
         case .cardMonthlyDonationKillSwitch: false
         case .cardOneTimeDonationKillSwitch: false
+        case .disappearingCalls: true
         case .dynamicSendMessageTimeoutKillSwitch: true
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false

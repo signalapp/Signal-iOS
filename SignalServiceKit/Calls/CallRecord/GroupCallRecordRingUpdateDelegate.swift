@@ -30,6 +30,7 @@ public protocol GroupCallRecordRingUpdateDelegate: AnyObject {
 @available(iOSApplicationExtension, unavailable)
 public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDelegate {
     private let callRecordStore: CallRecordStore
+    private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     private let groupCallRecordManager: GroupCallRecordManager
     private let interactionStore: InteractionStore
     private let threadStore: ThreadStore
@@ -38,11 +39,13 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
 
     public init(
         callRecordStore: CallRecordStore,
+        disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         groupCallRecordManager: GroupCallRecordManager,
         interactionStore: InteractionStore,
         threadStore: ThreadStore,
     ) {
         self.callRecordStore = callRecordStore
+        self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.groupCallRecordManager = groupCallRecordManager
         self.interactionStore = interactionStore
         self.threadStore = threadStore
@@ -199,6 +202,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
             let (newGroupCallInteraction, interactionRowId) = interactionStore.insertGroupCallInteraction(
                 groupThread: groupThread,
                 callEventTimestamp: callEventTimestamp,
+                expiresInSeconds: disappearingMessagesConfigurationStore.durationSeconds(for: groupThread, tx: tx),
                 tx: tx,
             )
 

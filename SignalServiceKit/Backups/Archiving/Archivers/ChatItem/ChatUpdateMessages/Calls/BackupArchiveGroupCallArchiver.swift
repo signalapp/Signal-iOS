@@ -174,6 +174,7 @@ final class BackupArchiveGroupCallArchiver {
             creatorAci: startedCallAci.map { AciObjC($0) },
             thread: groupThread,
             sentAtTimestamp: chatItem.dateSent,
+            expiresInSeconds: 0,
         )
         groupCallInteraction.wasRead = groupCall.read
 

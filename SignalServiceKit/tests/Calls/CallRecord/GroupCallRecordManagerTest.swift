@@ -29,11 +29,13 @@ final class GroupCallRecordManagerTest: XCTestCase {
         mockDB = InMemoryDB()
         snoopingGroupCallRecordManager = SnoopingGroupCallRecordManagerImpl(
             callRecordStore: mockCallRecordStore,
+            disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore(),
             interactionStore: mockInteractionStore,
             outgoingSyncMessageManager: mockOutgoingSyncMessageManager,
         )
         groupCallRecordManager = GroupCallRecordManagerImpl(
             callRecordStore: mockCallRecordStore,
+            disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore(),
             interactionStore: mockInteractionStore,
             outgoingSyncMessageManager: mockOutgoingSyncMessageManager,
         )
@@ -48,6 +50,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             creatorAci: nil,
             thread: thread,
             sentAtTimestamp: .maxRandom,
+            expiresInSeconds: 0,
         )
         interaction.updateRowId(.maxRandom)
 

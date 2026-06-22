@@ -339,6 +339,7 @@ public class GRDBSchemaMigrator {
         case migrate2FAStore
         case wipeKeyTransparencyTable
         case migrateAutoDownloadStore
+        case zeroOutCallExpirationColumns
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5287,6 +5288,16 @@ public class GRDBSchemaMigrator {
             try migrator.migrateUInt("video", tx: tx)
             try migrator.migrateUInt("audio", tx: tx)
             try migrator.migrateUInt("document", tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.zeroOutCallExpirationColumns) { tx in
+            try tx.database.execute(sql: """
+                UPDATE model_TSInteraction
+                SET expiresInSeconds = 0, expireStartedAt = 0, expiresAt = 0
+                WHERE recordType IN (\(SDSRecordType.call.rawValue), \(SDSRecordType.groupCallMessage.rawValue))
+                AND expiresInSeconds IS NULL
+            """)
             return .success(())
         }
 
