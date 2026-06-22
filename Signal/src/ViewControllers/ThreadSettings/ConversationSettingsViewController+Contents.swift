@@ -32,14 +32,18 @@ extension ConversationSettingsViewController {
 
         let isNoteToSelf = thread.isNoteToSelf
 
-        let callDetailsSection = createCallSection()
-        if let callDetailsSection {
-            contents.add(callDetailsSection)
-        }
-
         let mainSection = OWSTableSection()
 
-        let firstSection = callDetailsSection ?? mainSection
+        let firstSection: OWSTableSection
+        if thread.isReleaseNotesThread {
+            firstSection = createReleaseNoteSection()
+            contents.add(firstSection)
+        } else if let callDetailsSection = createCallSection() {
+            firstSection = callDetailsSection
+            contents.add(callDetailsSection)
+        } else {
+            firstSection = mainSection
+        }
 
         let header = buildMainHeader()
         firstSection.customHeaderView = header
@@ -121,6 +125,66 @@ extension ConversationSettingsViewController {
         } else {
             setContents()
         }
+    }
+
+    func createReleaseNoteSection() -> OWSTableSection {
+        func descriptionLine(icon: ThemeIcon, text: String) -> UIStackView {
+            let stackView = UIStackView()
+            stackView.axis = .horizontal
+            stackView.spacing = 12
+            stackView.alignment = .center
+
+            let iconImage = Theme.iconImage(icon)
+            let iconSize: CGFloat = 20
+            let imageView = UIImageView(image: iconImage)
+            imageView.contentMode = .scaleAspectFit
+            imageView.tintColor = UIColor.Signal.label
+            imageView.autoSetDimensions(to: .square(iconSize))
+            stackView.addArrangedSubview(imageView)
+
+            let label = UILabel()
+            label.textAlignment = .natural
+            label.numberOfLines = 0
+            label.font = .dynamicTypeSubheadline
+            label.text = text
+            label.textColor = UIColor.Signal.label
+            label.lineBreakMode = .byWordWrapping
+            stackView.addArrangedSubview(label)
+
+            return stackView
+        }
+
+        let section = OWSTableSection()
+        section.add(.init(
+            customCellBlock: {
+                let cell = OWSTableItem.newCell()
+                cell.isUserInteractionEnabled = false
+                let outerStackView = UIStackView()
+                outerStackView.axis = .vertical
+                outerStackView.spacing = 12
+
+                let firstDescription = descriptionLine(
+                    icon: ThemeIcon.officialNoColor,
+                    text: OWSLocalizedString(
+                        "RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT",
+                        comment: "Settings description label for the release notes thread telling a user this is the only official chat",
+                    ),
+                )
+
+                let secondDescription = descriptionLine(
+                    icon: ThemeIcon.settingsNotifications,
+                    text: OWSLocalizedString(
+                        "RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED",
+                        comment: "Settings description label for the release notes thread telling a user to keep up to date",
+                    ),
+                )
+                outerStackView.addArrangedSubviews([firstDescription, secondDescription])
+                cell.contentView.addSubview(outerStackView)
+                outerStackView.autoPinEdgesToSuperviewMargins()
+                return cell
+            },
+        ))
+        return section
     }
 
     // MARK: Calls section

@@ -249,7 +249,6 @@ struct ConversationHeaderBuilder {
         )
 
         builder.addButtons()
-        builder.addReleaseNotesDescription()
         return builder.build()
     }
 
@@ -447,74 +446,6 @@ struct ConversationHeaderBuilder {
         }
 
         return button
-    }
-
-    mutating func addReleaseNotesDescription() {
-        func descriptionLine(icon: ThemeIcon, text: String) -> UIStackView {
-            let stackView = UIStackView()
-            stackView.axis = .horizontal
-            stackView.spacing = 16
-            stackView.alignment = .center
-
-            let iconImage = Theme.iconImage(icon)
-            let iconSize: CGFloat = 15
-            let imageView = UIImageView(image: iconImage)
-            imageView.contentMode = .scaleAspectFit
-            imageView.tintColor = Theme.primaryIconColor
-            imageView.autoSetDimensions(to: .square(iconSize))
-            stackView.addArrangedSubview(imageView)
-
-            // 16 comes from the hMargin of the backgroundContainer
-            let marginAndIconWidth = (16 * 2) + iconSize + stackView.spacing
-            let maxAvailableLabelWidth = delegate.tableViewController.view.width
-                - (delegate.tableViewController.cellOuterInsets.totalWidth + marginAndIconWidth)
-
-            let label = UILabel()
-            label.textAlignment = .natural
-            label.numberOfLines = 0
-            label.font = .dynamicTypeSubheadline
-            label.text = text
-            label.lineBreakMode = .byWordWrapping
-            label.preferredMaxLayoutWidth = maxAvailableLabelWidth
-
-            stackView.addArrangedSubview(label)
-
-            return stackView
-        }
-
-        subviews.append(UIView.spacer(withHeight: 12))
-        let backgroundContainer = UIView()
-        backgroundContainer.backgroundColor = delegate.tableViewController.cellBackgroundColor
-        backgroundContainer.layer.cornerRadius = 20
-        backgroundContainer.layer.masksToBounds = true
-
-        let outerStackView = UIStackView()
-        outerStackView.axis = .vertical
-        outerStackView.spacing = 12
-
-        let firstDescription = descriptionLine(
-            icon: ThemeIcon.officialNoColor,
-            text: OWSLocalizedString(
-                "RELEASE_NOTES_SETTINGS_DESCRIPTION_ONLY_OFFICAL_CHAT",
-                comment: "Settings description label for the release notes thread telling a user this is the only official chat",
-            ),
-        )
-
-        let secondDescription = descriptionLine(
-            icon: ThemeIcon.settingsNotifications,
-            text: OWSLocalizedString(
-                "RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED",
-                comment: "Settings description label for the release notes thread telling a user to keep up to date",
-            ),
-        )
-
-        outerStackView.addArrangedSubviews([firstDescription, secondDescription])
-
-        backgroundContainer.addSubview(outerStackView)
-        backgroundContainer.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 20)
-        outerStackView.autoPinEdgesToSuperviewMargins()
-
-        subviews.append(backgroundContainer)
     }
 
     mutating func addGroupDescriptionPreview(text: String) {
