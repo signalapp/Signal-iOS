@@ -31,6 +31,11 @@ extension TSCall: OWSReadTracking {
         shouldClearNotifications: Bool,
         transaction tx: DBWriteTransaction,
     ) {
+        if readTimestamp < expireStartedAt {
+            // This device already read the item but a linked device read it earlier
+            startOrUpdateExpiration(readTimestamp: readTimestamp, tx: tx)
+        }
+
         if wasRead {
             return
         }
@@ -58,7 +63,8 @@ extension TSCall: OWSReadTracking {
                 )
             }
         case .onLinkedDevice, .onLinkedDeviceWhilePendingMessageRequest:
-            break
+            // This device has not read the item but a linked device has
+            startOrUpdateExpiration(readTimestamp: readTimestamp, tx: tx)
         @unknown default:
             break
         }

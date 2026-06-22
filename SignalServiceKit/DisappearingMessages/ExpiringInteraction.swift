@@ -37,6 +37,15 @@ extension ExpiringCallInteraction {
             tx: tx,
         )
     }
+
+    func startOrUpdateExpiration(readTimestamp: UInt64, tx: DBWriteTransaction) {
+        guard RemoteConfig.current.disappearingCalls else { return }
+        DependenciesBridge.shared.disappearingMessagesExpirationJob.startExpiration(
+            for: self,
+            expirationStartedAt: readTimestamp,
+            tx: tx,
+        )
+    }
 }
 
 extension TSMessage: ExpiringInteraction {}

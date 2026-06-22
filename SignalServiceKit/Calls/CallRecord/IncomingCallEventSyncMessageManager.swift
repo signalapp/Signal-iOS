@@ -649,15 +649,13 @@ final class _IncomingCallEventSyncMessageManagerImpl_MarkAsReadImpl: _IncomingCa
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction,
     ) {
-        if !callInteraction.wasRead {
-            callInteraction.markAsRead(
-                atTimestamp: syncMessageTimestamp,
-                thread: thread,
-                circumstance: .onLinkedDevice,
-                shouldClearNotifications: true,
-                transaction: tx,
-            )
-        }
+        callInteraction.markAsRead(
+            atTimestamp: syncMessageTimestamp,
+            thread: thread,
+            circumstance: .onLinkedDevice,
+            shouldClearNotifications: true,
+            transaction: tx,
+        )
 
         OWSReceiptManager.markAllCallInteractionsAsReadLocally(
             beforeSQLId: callInteraction.grdbId,
