@@ -249,10 +249,8 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 logger: logger,
             )
         } catch {
-            throw OWSAssertionError(
-                "Failed to get paid-tier product from StoreKit! \(error)",
-                logger: logger,
-            )
+            owsFailDebug("Failed to get paid-tier product from StoreKit! \(error)")
+            throw error
         }
     }
 
