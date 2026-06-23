@@ -399,9 +399,14 @@ extension ThreadContextualActionProvider where Self: UIViewController {
             }
         } catch {
             if case PinnedThreadError.tooManyPinnedThreads = error {
-                OWSActionSheets.showActionSheet(title: OWSLocalizedString(
+                let format = OWSLocalizedString(
                     "PINNED_CONVERSATION_LIMIT",
-                    comment: "An explanation that you have already pinned the maximum number of conversations.",
+                    tableName: "PluralAware",
+                    comment: "An explanation that you have already pinned the maximum number of conversations. Embeds {{ the maximum number of pinned conversations }}.",
+                )
+                OWSActionSheets.showActionSheet(title: String.localizedStringWithFormat(
+                    format,
+                    Int(clamping: PinnedThreads.maxPinnedThreads),
                 ))
             } else {
                 owsFailDebug("Error: \(error)")
