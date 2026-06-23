@@ -2860,6 +2860,7 @@
 		D958C67B2B9FBFBC002F6888 /* IncomingCallLogEventSyncMessageParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958C67A2B9FBFBC002F6888 /* IncomingCallLogEventSyncMessageParams.swift */; };
 		D958C67D2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958C67C2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift */; };
 		D958E2AF2B58696700EE9831 /* ConsumableMockGuarantee.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958E2AE2B58696700EE9831 /* ConsumableMockGuarantee.swift */; };
+		D959F1172FE4581900006744 /* ScreenshotBlocking.swift in Sources */ = {isa = PBXBuildFile; fileRef = D959F1162FE4580E00006744 /* ScreenshotBlocking.swift */; };
 		D95A79A82AB125D80013DB00 /* CallRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95A79A72AB125D80013DB00 /* CallRecordStore.swift */; };
 		D95C39E6296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */; };
 		D95C39E8296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */; };
@@ -7165,6 +7166,7 @@
 		D958C67A2B9FBFBC002F6888 /* IncomingCallLogEventSyncMessageParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallLogEventSyncMessageParams.swift; sourceTree = "<group>"; };
 		D958C67C2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallLogEventSyncMessageManagerTest.swift; sourceTree = "<group>"; };
 		D958E2AE2B58696700EE9831 /* ConsumableMockGuarantee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsumableMockGuarantee.swift; sourceTree = "<group>"; };
+		D959F1162FE4580E00006744 /* ScreenshotBlocking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotBlocking.swift; sourceTree = "<group>"; };
 		D95A79A72AB125D80013DB00 /* CallRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordStore.swift; sourceTree = "<group>"; };
 		D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+BoostPayments.swift"; sourceTree = "<group>"; };
 		D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+Usernames.swift"; sourceTree = "<group>"; };
@@ -11167,6 +11169,7 @@
 				888CC15828E3CE8100A13493 /* ProxyConnectionChecker.swift */,
 				66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */,
 				7677E41229F84C2100AC6A75 /* ScreenLockUI.swift */,
+				D959F1162FE4580E00006744 /* ScreenshotBlocking.swift */,
 				667EDE6328F8D6B7001FB487 /* SDAnimatedImage+Duration.swift */,
 				4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */,
 				660248EF2BBCD29D009E2956 /* TSMessage+RenderableContent.swift */,
@@ -18767,6 +18770,7 @@
 				044EA2232FC0EFAE005B5A3E /* SafetyTipsSheet.swift in Sources */,
 				C1D9B1552B7FA28200D94595 /* SafetyTipsViewController.swift in Sources */,
 				7677E41329F84C2100AC6A75 /* ScreenLockUI.swift in Sources */,
+				D959F1172FE4581900006744 /* ScreenshotBlocking.swift in Sources */,
 				667EDE6428F8D6B7001FB487 /* SDAnimatedImage+Duration.swift in Sources */,
 				88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */,
 				4C4AE6A1224AF35700D4AF6F /* SendMediaNavigationController.swift in Sources */,
