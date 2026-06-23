@@ -168,7 +168,7 @@ public enum OWSRequestFactory {
         owsAssertDebug(!ephemeralDeviceId.isEmpty)
 
         return .init(
-            url: .init(pathComponents: ["v1", "provisioning", ephemeralDeviceId])!,
+            url: URL(string: "v1/provisioning/\(ephemeralDeviceId)")!,
             method: "PUT",
             parameters: ["body": messageBody.base64EncodedString()],
         )
@@ -178,7 +178,7 @@ public enum OWSRequestFactory {
 
     static func setSubscriberID(_ subscriberID: Data) -> TSRequest {
         var result = TSRequest(
-            url: .init(pathComponents: ["v1", "subscription", subscriberID.asBase64Url])!,
+            url: URL(string: "v1/subscription/\(subscriberID.asBase64Url)")!,
             method: "PUT",
             parameters: nil,
         )
@@ -189,7 +189,7 @@ public enum OWSRequestFactory {
 
     static func deleteSubscriberID(_ subscriberID: Data) -> TSRequest {
         var result = TSRequest(
-            url: .init(pathComponents: ["v1", "subscription", subscriberID.asBase64Url])!,
+            url: URL(string: "v1/subscription/\(subscriberID.asBase64Url)")!,
             method: "DELETE",
             parameters: nil,
         )
@@ -204,14 +204,7 @@ public enum OWSRequestFactory {
         paymentMethodId: String,
     ) -> TSRequest {
         var result = TSRequest(
-            url: .init(pathComponents: [
-                "v1",
-                "subscription",
-                subscriberId.asBase64Url,
-                "default_payment_method",
-                processor,
-                paymentMethodId,
-            ])!,
+            url: URL(string: "v1/subscription/\(subscriberId.asBase64Url)/default_payment_method/\(processor)/\(paymentMethodId)")!,
             method: "POST",
             parameters: nil,
         )
@@ -225,13 +218,7 @@ public enum OWSRequestFactory {
         setupIntentId: String,
     ) -> TSRequest {
         var result = TSRequest(
-            url: .init(pathComponents: [
-                "v1",
-                "subscription",
-                subscriberId.asBase64Url,
-                "default_payment_method_for_ideal",
-                setupIntentId,
-            ])!,
+            url: URL(string: "v1/subscription/\(subscriberId.asBase64Url)/default_payment_method_for_ideal/\(setupIntentId)")!,
             method: "POST",
             parameters: nil,
         )
@@ -242,12 +229,7 @@ public enum OWSRequestFactory {
 
     static func subscriptionCreateStripePaymentMethodRequest(subscriberID: Data) -> TSRequest {
         var result = TSRequest(
-            url: .init(pathComponents: [
-                "v1",
-                "subscription",
-                subscriberID.asBase64Url,
-                "create_payment_method",
-            ])!,
+            url: URL(string: "v1/subscription/\(subscriberID.asBase64Url)/create_payment_method")!,
             method: "POST",
             parameters: nil,
         )
@@ -262,13 +244,7 @@ public enum OWSRequestFactory {
         cancelURL: URL,
     ) -> TSRequest {
         var result = TSRequest(
-            url: .init(pathComponents: [
-                "v1",
-                "subscription",
-                subscriberID.asBase64Url,
-                "create_payment_method",
-                "paypal",
-            ])!,
+            url: URL(string: "v1/subscription/\(subscriberID.asBase64Url)/create_payment_method/paypal")!,
             method: "POST",
             parameters: [
                 "returnUrl": returnURL.absoluteString,
@@ -287,15 +263,7 @@ public enum OWSRequestFactory {
         idempotencyKey: String,
     ) -> TSRequest {
         var result = TSRequest(
-            url: .init(pathComponents: [
-                "v1",
-                "subscription",
-                subscriberID.asBase64Url,
-                "level",
-                String(level),
-                currency,
-                idempotencyKey,
-            ])!,
+            url: URL(string: "v1/subscription/\(subscriberID.asBase64Url)/level/\(level)/\(currency)/\(idempotencyKey)")!,
             method: "PUT",
             parameters: nil,
         )
@@ -309,12 +277,7 @@ public enum OWSRequestFactory {
         receiptCredentialRequest: ReceiptCredentialRequest,
     ) -> TSRequest {
         var result = TSRequest(
-            url: .init(pathComponents: [
-                "v1",
-                "subscription",
-                subscriberID.asBase64Url,
-                "receipt_credentials",
-            ])!,
+            url: URL(string: "v1/subscription/\(subscriberID.asBase64Url)/receipt_credentials")!,
             method: "POST",
             parameters: [
                 "receiptCredentialRequest": receiptCredentialRequest.serialize().base64EncodedString(),
@@ -330,11 +293,7 @@ public enum OWSRequestFactory {
         displayBadgesOnProfile: Bool,
     ) -> TSRequest {
         return TSRequest(
-            url: .init(pathComponents: [
-                "v1",
-                "donation",
-                "redeem-receipt",
-            ])!,
+            url: URL(string: "v1/donation/redeem-receipt")!,
             method: "POST",
             parameters: [
                 "receiptCredentialPresentation": receiptCredentialPresentation.base64EncodedString(),
@@ -350,12 +309,7 @@ public enum OWSRequestFactory {
         receiptCredentialRequest: ReceiptCredentialRequest,
     ) -> TSRequest {
         var result = TSRequest(
-            url: .init(pathComponents: [
-                "v1",
-                "subscription",
-                "boost",
-                "receipt_credentials",
-            ])!,
+            url: URL(string: "v1/subscription/boost/receipt_credentials")!,
             method: "POST",
             parameters: [
                 "paymentIntentId": paymentIntentID,
@@ -369,12 +323,7 @@ public enum OWSRequestFactory {
 
     public static func bankMandateRequest(bankTransferType: StripePaymentMethod.BankTransfer) -> TSRequest {
         var result = TSRequest(
-            url: .init(pathComponents: [
-                "v1",
-                "subscription",
-                "bank_mandate",
-                bankTransferType.rawValue,
-            ])!,
+            url: URL(string: "v1/subscription/bank_mandate/\(bankTransferType.rawValue)")!,
             method: "GET",
             parameters: nil,
         )

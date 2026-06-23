@@ -12,18 +12,10 @@ public extension OWSRequestFactory {
         withServerGuid serverGuid: String,
         reportingToken: SpamReportingToken?,
     ) -> TSRequest {
-        let url: URL = {
-            let urlWithGuid = URL(
-                pathComponents: ["v1", "messages", "report", sender.serviceIdString, serverGuid],
-            )!
-            if serverGuid.isEmpty {
-                // This will probably never happen, but the server should be allowed to provide an
-                // empty message ID.
-                return URL(string: urlWithGuid.path + "/")!
-            } else {
-                return urlWithGuid
-            }
-        }()
+        // If serverGuid is empty, this produces a trailing slash (e.g.
+        // "v1/messages/report/<serviceId>/"). This will probably never happen, but the server should
+        // be allowed to provide an empty message ID.
+        let url = URL(string: "v1/messages/report/\(sender.serviceIdString)/\(serverGuid)")!
 
         let parameters: [String: String]?
         if let reportingTokenString = reportingToken?.base64EncodedString().nilIfEmpty {
