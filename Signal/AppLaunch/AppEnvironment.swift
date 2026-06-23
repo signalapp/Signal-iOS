@@ -204,7 +204,7 @@ public class AppEnvironment: NSObject {
             operation: { try await backupSubscriptionManager.redeemSubscriptionIfNecessary() },
             handleResult: {
                 switch $0 {
-                case .success, .failure(is CancellationError):
+                case .success, .failure(is CancellationError), .failure(is NotRegisteredError):
                     break
                 case .failure(let error):
                     Logger.warn("Terminally failed to redeem Backups subscription! \(error)")
@@ -219,7 +219,7 @@ public class AppEnvironment: NSObject {
             operation: { try await backupTestFlightEntitlementManager.renewEntitlementIfNecessary() },
             handleResult: {
                 switch $0 {
-                case .success, .failure(is CancellationError):
+                case .success, .failure(is CancellationError), .failure(is NotRegisteredError):
                     break
                 case .failure(let error):
                     Logger.warn("Terminally failed to redeem Backups TestFlight subscription! \(error)")
@@ -234,7 +234,7 @@ public class AppEnvironment: NSObject {
             operation: { try await donationSubscriptionManager.redeemSubscriptionIfNecessary() },
             handleResult: {
                 switch $0 {
-                case .success, .failure(is CancellationError):
+                case .success, .failure(is CancellationError), .failure(is NotRegisteredError):
                     break
                 case .failure(let error):
                     Logger.warn("Terminally failed to redeem Donations subscription! \(error)")
