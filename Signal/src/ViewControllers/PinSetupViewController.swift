@@ -72,7 +72,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     }()
 
     private lazy var pinTextField: UITextField = {
-        let textField = UITextField()
+        let textField = NoAutofillSecureEntryTextField()
         textField.textAlignment = .center
         textField.textColor = .Signal.label
         if #available(iOS 26, *) {
@@ -80,8 +80,6 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         }
         textField.backgroundColor = .Signal.secondaryGroupedBackground
         textField.font = .systemFont(ofSize: 22)
-        textField.textContentType = .password
-        textField.isSecureTextEntry = true
         textField.defaultTextAttributes.updateValue(5, forKey: .kern)
         textField.accessibilityIdentifier = "pinCreation.pinTextField"
         if #available(iOS 26, *) {

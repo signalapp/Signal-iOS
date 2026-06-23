@@ -224,7 +224,7 @@ class RegistrationPinViewController: OWSViewController {
     }()
 
     private lazy var pinTextField: UITextField = {
-        let result = UITextField()
+        let result = NoAutofillSecureEntryTextField()
 
         let font = UIFont.systemFont(ofSize: 22)
         result.font = font
@@ -232,8 +232,6 @@ class RegistrationPinViewController: OWSViewController {
         result.textAlignment = .center
         result.textColor = .Signal.label
         result.tintColor = .Signal.label // caret color
-        result.textContentType = .password
-        result.isSecureTextEntry = true
         result.backgroundColor = .Signal.secondaryBackground
         result.defaultTextAttributes.updateValue(5, forKey: .kern)
         result.accessibilityIdentifier = "registration.pin.pinTextField"

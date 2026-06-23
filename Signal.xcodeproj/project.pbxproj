@@ -3338,6 +3338,8 @@
 		D9E8EDED2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E8EDEC2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift */; };
 		D9EA2A872C2B609800B367DF /* BackupArchiveChatUpdateMessageArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EA2A862C2B609800B367DF /* BackupArchiveChatUpdateMessageArchiver.swift */; };
 		D9EA2A892C2B929400B367DF /* BackupArchiveSimpleChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EA2A882C2B929400B367DF /* BackupArchiveSimpleChatUpdateArchiver.swift */; };
+		D9EB006E2FE0730300F81AD0 /* NoAutofillSecureEntryTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB006D2FE0730100F81AD0 /* NoAutofillSecureEntryTextField.swift */; };
+		D9EB006F2FE0730300F81AD0 /* NoAutofillSecureEntryTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB006D2FE0730100F81AD0 /* NoAutofillSecureEntryTextField.swift */; };
 		D9EB221E2A4B636C00C73E1D /* Bitmaps+LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */; };
 		D9EB221F2A4B636C00C73E1D /* Bitmaps+Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */; };
 		D9EB22202A4B636C00C73E1D /* Bitmaps+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */; };
@@ -7655,6 +7657,7 @@
 		D9E8EDEC2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageManagerTest.swift; sourceTree = "<group>"; };
 		D9EA2A862C2B609800B367DF /* BackupArchiveChatUpdateMessageArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveChatUpdateMessageArchiver.swift; sourceTree = "<group>"; };
 		D9EA2A882C2B929400B367DF /* BackupArchiveSimpleChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveSimpleChatUpdateArchiver.swift; sourceTree = "<group>"; };
+		D9EB006D2FE0730100F81AD0 /* NoAutofillSecureEntryTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoAutofillSecureEntryTextField.swift; sourceTree = "<group>"; };
 		D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+LineDrawing.swift"; sourceTree = "<group>"; };
 		D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Shapes.swift"; sourceTree = "<group>"; };
 		D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Image.swift"; sourceTree = "<group>"; };
@@ -12078,6 +12081,7 @@
 				B91751C52EC552B100FF7A9C /* AppIcons */,
 				5045F44129E0DAA400058E5F /* AppLaunch */,
 				661AEE462C2088DF0046B1D8 /* Attachments */,
+				D9EB00702FE0730700F81AD0 /* Autofill */,
 				D9F96EDB2D824E6900466C6A /* Avatars */,
 				D951F52F2D9B233300C5EBF3 /* Backups */,
 				D9E43BE12CC194140001536E /* Calls */,
@@ -14168,6 +14172,14 @@
 				66F6D69B2C73F01900EFAF75 /* VersionedDisappearingMessageToken.swift */,
 			);
 			path = DisappearingMessages;
+			sourceTree = "<group>";
+		};
+		D9EB00702FE0730700F81AD0 /* Autofill */ = {
+			isa = PBXGroup;
+			children = (
+				D9EB006D2FE0730100F81AD0 /* NoAutofillSecureEntryTextField.swift */,
+			);
+			path = Autofill;
 			sourceTree = "<group>";
 		};
 		D9F6553029D6530B002A330A /* SDSCodableModel */ = {
@@ -18058,6 +18070,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9EB006E2FE0730300F81AD0 /* NoAutofillSecureEntryTextField.swift in Sources */,
 				347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */,
 				3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */,
 				7677E40F29F79BF300AC6A75 /* SAEScreenLockViewController.swift in Sources */,
@@ -18610,6 +18623,7 @@
 				B9B7BC652D41C61500C26E42 /* NewLinkedDeviceNotificationMegaphone.swift in Sources */,
 				D954276F2F49240E006F78FB /* NewPollViewController2.swift in Sources */,
 				B9D65E532BAE1DA70067322A /* NicknameEditorViewController.swift in Sources */,
+				D9EB006F2FE0730300F81AD0 /* NoAutofillSecureEntryTextField.swift in Sources */,
 				88D23D1223CEBFB200B0E74B /* NotificationActionHandler.swift in Sources */,
 				8806EF19248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift in Sources */,
 				887B380D25F042BE00685845 /* NotificationSettingsContentViewController.swift in Sources */,

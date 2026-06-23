@@ -34,14 +34,13 @@ public class PinReminderViewController: OWSViewController {
     }()
 
     private lazy var pinTextField: UITextField = {
-        let textField = UITextField()
+        let textField = NoAutofillSecureEntryTextField()
         textField.textColor = .Signal.label
         if #available(iOS 26, *) {
             textField.tintColor = .Signal.label
         }
         textField.font = .systemFont(ofSize: 22)
         textField.textAlignment = .center
-        textField.isSecureTextEntry = true
         textField.backgroundColor = .Signal.secondaryGroupedBackground
         textField.defaultTextAttributes.updateValue(5, forKey: .kern)
         textField.accessibilityIdentifier = "pinReminder.pinTextField"
