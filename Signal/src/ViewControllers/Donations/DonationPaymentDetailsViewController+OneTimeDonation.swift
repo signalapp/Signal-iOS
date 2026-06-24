@@ -55,11 +55,14 @@ extension DonationPaymentDetailsViewController {
                         }
 
                         Logger.info("[Donations] Creating and redeeming one-time boost receipt")
-                        try await DonationViewsUtil.completeOneTimeDonation(
+                        try await DonationViewsUtil.redeemOneTimeDonation(
                             paymentIntentId: intentId,
                             amount: amount,
+                            paymentProcessor: .stripe,
                             paymentMethod: validForm.donationPaymentMethod,
-                            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+                            db: DependenciesBridge.shared.db,
+                            donationSubscriptionManager: DependenciesBridge.shared.donationSubscriptionManager,
+                            idealStore: DependenciesBridge.shared.externalPendingIDEALDonationStore,
                         )
                     },
                 )

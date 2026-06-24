@@ -103,28 +103,23 @@ extension DonateViewController {
         monthlyState monthly: State.MonthlyState,
         selectedSubscriptionLevel: DonationSubscriptionLevel,
     ) async throws {
+        let db = DependenciesBridge.shared.db
+        let donationSubscriptionManager = DependenciesBridge.shared.donationSubscriptionManager
+        let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
+
         return try await DonationViewsUtil.wrapInProgressView(
             from: self,
             operation: {
-                Logger.info("[Donations] Finalizing new subscription for PayPal donation")
-                _ = try await DependenciesBridge.shared.donationSubscriptionManager.finalizeNewSubscription(
-                    forSubscriberId: subscriberId,
+                try await DonationViewsUtil.finalizeAndRedeemMonthlyDonation(
+                    subscriberId: subscriberId,
                     paymentType: .paypal(paymentMethodId: paymentMethodId),
-                    subscription: selectedSubscriptionLevel,
+                    newSubscriptionLevel: selectedSubscriptionLevel,
+                    priorSubscriptionLevel: monthly.currentSubscriptionLevel,
                     currencyCode: monthly.selectedCurrencyCode,
+                    db: db,
+                    donationSubscriptionManager: donationSubscriptionManager,
+                    idealStore: idealStore,
                 )
-
-                Logger.info("[Donations] Redeeming monthly receipt for PayPal donation")
-                try await DonationViewsUtil.waitForRedemption(paymentMethod: .paypal) {
-                    try await DependenciesBridge.shared.donationSubscriptionManager.requestAndRedeemReceipt(
-                        subscriberId: subscriberId,
-                        subscriptionLevel: selectedSubscriptionLevel.level,
-                        priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
-                        paymentProcessor: .braintree,
-                        paymentMethod: .paypal,
-                        isNewSubscription: true,
-                    )
-                }
             },
         )
     }

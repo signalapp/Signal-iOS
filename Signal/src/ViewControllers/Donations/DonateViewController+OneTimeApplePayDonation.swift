@@ -46,14 +46,15 @@ extension DonateViewController {
                 try await DonationViewsUtil.wrapInProgressView(
                     from: self,
                     operation: {
-                        try await DonationViewsUtil.waitForRedemption(paymentMethod: .applePay) {
-                            try await DependenciesBridge.shared.donationSubscriptionManager.requestAndRedeemReceipt(
-                                boostPaymentIntentId: confirmedIntent.paymentIntentId,
-                                amount: amount,
-                                paymentProcessor: .stripe,
-                                paymentMethod: .applePay,
-                            )
-                        }
+                        try await DonationViewsUtil.redeemOneTimeDonation(
+                            paymentIntentId: confirmedIntent.paymentIntentId,
+                            amount: amount,
+                            paymentProcessor: .stripe,
+                            paymentMethod: .applePay,
+                            db: DependenciesBridge.shared.db,
+                            donationSubscriptionManager: DependenciesBridge.shared.donationSubscriptionManager,
+                            idealStore: DependenciesBridge.shared.externalPendingIDEALDonationStore,
+                        )
                     },
                 )
                 self.didCompleteDonation(receiptCredentialSuccessMode: .oneTimeBoost)

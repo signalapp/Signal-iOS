@@ -16,6 +16,8 @@ extension DonationViewsUtil {
         type donationType: Stripe.IDEALCallbackType,
         rootViewController: UIViewController,
         databaseStorage: SDSDatabaseStorage,
+        donationSubscriptionManager: DonationSubscriptionManager,
+        idealStore: ExternalPendingIDEALDonationStore,
         appReadiness: AppReadinessSetter,
     ) async throws {
         let donationStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
@@ -51,6 +53,8 @@ extension DonationViewsUtil {
                 type: donationType,
                 from: donationsVC,
                 databaseStorage: databaseStorage,
+                donationSubscriptionManager: donationSubscriptionManager,
+                idealStore: idealStore,
             )
         } else {
             Self.handleIDEALDonationIssue(
@@ -111,6 +115,8 @@ extension DonationViewsUtil {
         type donationType: Stripe.IDEALCallbackType,
         from donationsVC: DonationSettingsViewController,
         databaseStorage: SDSDatabaseStorage,
+        donationSubscriptionManager: DonationSubscriptionManager,
+        idealStore: ExternalPendingIDEALDonationStore,
     ) async throws {
         let badge = try await Self.loadBadgeForDonation(type: donationType, databaseStorage: databaseStorage)
 
@@ -127,6 +133,8 @@ extension DonationViewsUtil {
                     try await DonationViewsUtil.completeIDEALDonation(
                         donationType: donationType,
                         databaseStorage: databaseStorage,
+                        donationSubscriptionManager: donationSubscriptionManager,
+                        idealStore: idealStore,
                     )
                 },
             )

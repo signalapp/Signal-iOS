@@ -1902,6 +1902,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             let urlOpener = UrlOpener(
                 appReadiness: appReadiness,
                 databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+                donationSubscriptionManager: DependenciesBridge.shared.donationSubscriptionManager,
+                idealStore: DependenciesBridge.shared.externalPendingIDEALDonationStore,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             )
 

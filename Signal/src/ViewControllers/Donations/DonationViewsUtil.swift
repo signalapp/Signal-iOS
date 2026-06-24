@@ -229,108 +229,87 @@ public enum DonationViewsUtil {
         return ConversationAvatarView(sizeClass: sizeClass, localUserDisplayMode: .asUser)
     }
 
-    /// Complete the monthly donation and allow for an optional onFinished block to be called with the
-    /// result of the subscription.  Regardless of success or failure here, the pending donation is cleared
-    /// since there isn't anything actionable for the user to do on failure other than try again with a new
-    /// donation.
-    public static func completeMonthlyDonations(
+    public static func finalizeAndRedeemMonthlyDonation(
         subscriberId: Data,
         paymentType: DonationSubscriptionManager.RecurringSubscriptionPaymentType,
         newSubscriptionLevel: DonationSubscriptionLevel,
         priorSubscriptionLevel: DonationSubscriptionLevel?,
         currencyCode: Currency.Code,
-        databaseStorage: SDSDatabaseStorage,
+        db: DB,
+        donationSubscriptionManager: DonationSubscriptionManager,
+        idealStore: ExternalPendingIDEALDonationStore,
     ) async throws {
-        let pendingStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         var rethrowError: Error?
         do {
-            try await DonationViewsUtil.finalizeAndRedeemSubscription(
-                subscriberId: subscriberId,
+            _ = try await donationSubscriptionManager.finalizeNewSubscription(
+                forSubscriberId: subscriberId,
                 paymentType: paymentType,
-                newSubscriptionLevel: newSubscriptionLevel,
-                priorSubscriptionLevel: priorSubscriptionLevel,
+                subscription: newSubscriptionLevel,
                 currencyCode: currencyCode,
             )
+
+            return try await DonationViewsUtil.waitForRedemption(paymentMethod: paymentType.paymentMethod) {
+                try await donationSubscriptionManager.requestAndRedeemReceipt(
+                    subscriberId: subscriberId,
+                    subscriptionLevel: newSubscriptionLevel.level,
+                    priorSubscriptionLevel: priorSubscriptionLevel?.level,
+                    paymentProcessor: paymentType.paymentProcessor,
+                    paymentMethod: paymentType.paymentMethod,
+                    isNewSubscription: true,
+                )
+            }
         } catch {
             rethrowError = error
         }
-        await databaseStorage.awaitableWrite { tx in
-            pendingStore.clearPendingSubscription(tx: tx)
+
+        switch paymentType.paymentMethod {
+        case .applePay, .creditOrDebitCard, .paypal, .sepa:
+            break
+        case .ideal:
+            await db.awaitableWrite { tx in
+                idealStore.clearPendingSubscription(tx: tx)
+            }
         }
+
         if let rethrowError {
             throw rethrowError
         }
     }
 
-    /// Complete the one-time donation and allow for an optional onFinished
-    /// block to be called with the result of the transaction.
-    public static func completeOneTimeDonation(
+    public static func redeemOneTimeDonation(
         paymentIntentId: String,
         amount: FiatMoney,
+        paymentProcessor: DonationPaymentProcessor,
         paymentMethod: DonationPaymentMethod,
-        databaseStorage: SDSDatabaseStorage,
+        db: DB,
+        donationSubscriptionManager: DonationSubscriptionManager,
+        idealStore: ExternalPendingIDEALDonationStore,
     ) async throws {
-        let pendingStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         var rethrowError: Error?
         do {
-            try await DonationViewsUtil.createAndRedeemOneTimeDonation(
-                paymentIntentId: paymentIntentId,
-                amount: amount,
-                paymentMethod: paymentMethod,
-            )
+            return try await DonationViewsUtil.waitForRedemption(paymentMethod: paymentMethod) {
+                try await donationSubscriptionManager.requestAndRedeemReceipt(
+                    boostPaymentIntentId: paymentIntentId,
+                    amount: amount,
+                    paymentProcessor: paymentProcessor,
+                    paymentMethod: paymentMethod,
+                )
+            }
         } catch {
             rethrowError = error
         }
-        await databaseStorage.awaitableWrite { tx in
-            pendingStore.clearPendingOneTimeDonation(tx: tx)
+
+        switch paymentMethod {
+        case .applePay, .creditOrDebitCard, .paypal, .sepa:
+            break
+        case .ideal:
+            await db.awaitableWrite { tx in
+                idealStore.clearPendingOneTimeDonation(tx: tx)
+            }
         }
+
         if let rethrowError {
             throw rethrowError
-        }
-    }
-
-    public static func createAndRedeemOneTimeDonation(
-        paymentIntentId: String,
-        amount: FiatMoney,
-        paymentMethod: DonationPaymentMethod,
-    ) async throws {
-        return try await DonationViewsUtil.waitForRedemption(paymentMethod: paymentMethod) {
-            try await DependenciesBridge.shared.donationSubscriptionManager.requestAndRedeemReceipt(
-                boostPaymentIntentId: paymentIntentId,
-                amount: amount,
-                paymentProcessor: .stripe,
-                paymentMethod: paymentMethod,
-            )
-        }
-    }
-
-    public static func finalizeAndRedeemSubscription(
-        subscriberId: Data,
-        paymentType: DonationSubscriptionManager.RecurringSubscriptionPaymentType,
-        newSubscriptionLevel: DonationSubscriptionLevel,
-        priorSubscriptionLevel: DonationSubscriptionLevel?,
-        currencyCode: Currency.Code,
-    ) async throws {
-        Logger.info("[Donations] Finalizing new subscription")
-
-        _ = try await DependenciesBridge.shared.donationSubscriptionManager.finalizeNewSubscription(
-            forSubscriberId: subscriberId,
-            paymentType: paymentType,
-            subscription: newSubscriptionLevel,
-            currencyCode: currencyCode,
-        )
-
-        Logger.info("[Donations] Redeeming monthly receipts")
-
-        return try await DonationViewsUtil.waitForRedemption(paymentMethod: paymentType.paymentMethod) {
-            try await DependenciesBridge.shared.donationSubscriptionManager.requestAndRedeemReceipt(
-                subscriberId: subscriberId,
-                subscriptionLevel: newSubscriptionLevel.level,
-                priorSubscriptionLevel: priorSubscriptionLevel?.level,
-                paymentProcessor: paymentType.paymentProcessor,
-                paymentMethod: paymentType.paymentMethod,
-                isNewSubscription: true,
-            )
         }
     }
 
@@ -388,13 +367,14 @@ public enum DonationViewsUtil {
     static func completeIDEALDonation(
         donationType: Stripe.IDEALCallbackType,
         databaseStorage: SDSDatabaseStorage,
+        donationSubscriptionManager: DonationSubscriptionManager,
+        idealStore: ExternalPendingIDEALDonationStore,
     ) async throws {
-        let paymentStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         switch donationType {
         case let .monthly(success, clientSecret, intentId):
             guard
                 let monthlyDonation = databaseStorage.read(block: { tx in
-                    paymentStore.getPendingSubscription(tx: tx)
+                    idealStore.getPendingSubscription(tx: tx)
                 })
             else {
                 throw OWSGenericError("[Donations] Could not find iDEAL subscription to complete")
@@ -409,18 +389,20 @@ public enum DonationViewsUtil {
                 throw OWSGenericError("")
             }
 
-            return try await DonationViewsUtil.completeMonthlyDonations(
+            return try await DonationViewsUtil.finalizeAndRedeemMonthlyDonation(
                 subscriberId: monthlyDonation.subscriberId,
                 paymentType: .ideal(setupIntentId: monthlyDonation.setupIntentId),
                 newSubscriptionLevel: monthlyDonation.newSubscriptionLevel,
                 priorSubscriptionLevel: monthlyDonation.oldSubscriptionLevel,
                 currencyCode: monthlyDonation.amount.currencyCode,
-                databaseStorage: databaseStorage,
+                db: databaseStorage,
+                donationSubscriptionManager: donationSubscriptionManager,
+                idealStore: idealStore,
             )
         case let .oneTime(success, intentId):
             guard
                 let oneTimePayment = databaseStorage.read(block: { tx in
-                    paymentStore.getPendingOneTimeDonation(tx: tx)
+                    idealStore.getPendingOneTimeDonation(tx: tx)
                 })
             else {
                 throw OWSGenericError("[Donations] Could not find iDEAL payment to complete")
@@ -432,11 +414,14 @@ public enum DonationViewsUtil {
                 throw OWSGenericError("")
             }
 
-            return try await DonationViewsUtil.completeOneTimeDonation(
+            return try await DonationViewsUtil.redeemOneTimeDonation(
                 paymentIntentId: oneTimePayment.paymentIntentId,
                 amount: oneTimePayment.amount,
+                paymentProcessor: .stripe,
                 paymentMethod: .ideal,
-                databaseStorage: databaseStorage,
+                db: databaseStorage,
+                donationSubscriptionManager: donationSubscriptionManager,
+                idealStore: idealStore,
             )
         }
     }

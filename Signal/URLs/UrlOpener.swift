@@ -22,15 +22,21 @@ private enum OpenableUrl {
 class UrlOpener {
     private let appReadiness: AppReadinessSetter
     private let databaseStorage: SDSDatabaseStorage
+    private let donationSubscriptionManager: DonationSubscriptionManager
+    private let idealStore: ExternalPendingIDEALDonationStore
     private let tsAccountManager: TSAccountManager
 
     init(
         appReadiness: AppReadinessSetter,
         databaseStorage: SDSDatabaseStorage,
+        donationSubscriptionManager: DonationSubscriptionManager,
+        idealStore: ExternalPendingIDEALDonationStore,
         tsAccountManager: TSAccountManager,
     ) {
         self.appReadiness = appReadiness
         self.databaseStorage = databaseStorage
+        self.donationSubscriptionManager = donationSubscriptionManager
+        self.idealStore = idealStore
         self.tsAccountManager = tsAccountManager
     }
 
@@ -270,6 +276,8 @@ class UrlOpener {
                         type: donationType,
                         rootViewController: rootViewController,
                         databaseStorage: databaseStorage,
+                        donationSubscriptionManager: donationSubscriptionManager,
+                        idealStore: idealStore,
                         appReadiness: appReadiness,
                     )
                     Logger.info("[Donations] Completed iDEAL donation")

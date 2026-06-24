@@ -82,14 +82,15 @@ extension DonateViewController {
             approvalParams: approvalParams,
         )
 
-        try await DonationViewsUtil.waitForRedemption(paymentMethod: .paypal) {
-            try await DependenciesBridge.shared.donationSubscriptionManager.requestAndRedeemReceipt(
-                boostPaymentIntentId: paymentIntentId,
-                amount: amount,
-                paymentProcessor: .braintree,
-                paymentMethod: .paypal,
-            )
-        }
+        try await DonationViewsUtil.redeemOneTimeDonation(
+            paymentIntentId: paymentIntentId,
+            amount: amount,
+            paymentProcessor: .braintree,
+            paymentMethod: .paypal,
+            db: DependenciesBridge.shared.db,
+            donationSubscriptionManager: DependenciesBridge.shared.donationSubscriptionManager,
+            idealStore: DependenciesBridge.shared.externalPendingIDEALDonationStore,
+        )
     }
 }
 

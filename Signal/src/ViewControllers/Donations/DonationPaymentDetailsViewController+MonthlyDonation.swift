@@ -16,8 +16,11 @@ extension DonationPaymentDetailsViewController {
         priorSubscriptionLevel: DonationSubscriptionLevel?,
         subscriberID existingSubscriberId: Data?,
     ) {
+        let db = DependenciesBridge.shared.db
+        let donationSubscriptionManager = DependenciesBridge.shared.donationSubscriptionManager
+        let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
+
         let currencyCode = self.donationAmount.currencyCode
-        let donationStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
 
         Logger.info("[Donations] Starting monthly donation")
 
@@ -28,13 +31,13 @@ extension DonationPaymentDetailsViewController {
                     operation: {
                         if let existingSubscriberId {
                             Logger.info("[Donations] Cancelling existing subscription")
-                            try await DependenciesBridge.shared.donationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
+                            try await donationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
                         } else {
                             Logger.info("[Donations] No existing subscription to cancel")
                         }
 
                         Logger.info("[Donations] Preparing new monthly subscription")
-                        let subscriberId = try await DependenciesBridge.shared.donationSubscriptionManager.prepareNewSubscription(currencyCode: currencyCode)
+                        let subscriberId = try await donationSubscriptionManager.prepareNewSubscription(currencyCode: currencyCode)
 
                         Logger.info("[Donations] Creating Signal payment method for new monthly subscription")
                         let clientSecret = try await Stripe.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
@@ -56,9 +59,9 @@ extension DonationPaymentDetailsViewController {
                                     oldSubscriptionLevel: priorSubscriptionLevel,
                                     amount: self.donationAmount,
                                 )
-                                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                                await db.awaitableWrite { tx in
                                     do {
-                                        try donationStore.setPendingSubscription(donation: confirmedDonation, tx: tx)
+                                        try idealStore.setPendingSubscription(donation: confirmedDonation, tx: tx)
                                     } catch {
                                         owsFailDebug("[Donations] Failed to persist pending iDEAL subscription.")
                                     }
@@ -79,13 +82,15 @@ extension DonationPaymentDetailsViewController {
                             paymentType = .ideal(setupIntentId: confirmedIntent.setupIntentId)
                         }
 
-                        try await DonationViewsUtil.completeMonthlyDonations(
+                        try await DonationViewsUtil.finalizeAndRedeemMonthlyDonation(
                             subscriberId: subscriberId,
                             paymentType: paymentType,
                             newSubscriptionLevel: newSubscriptionLevel,
                             priorSubscriptionLevel: priorSubscriptionLevel,
                             currencyCode: currencyCode,
-                            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+                            db: db,
+                            donationSubscriptionManager: donationSubscriptionManager,
+                            idealStore: idealStore,
                         )
                     },
                 )

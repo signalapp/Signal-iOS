@@ -17,6 +17,10 @@ extension DonateViewController {
         didAuthorizePayment payment: PKPayment,
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void,
     ) {
+        let db = DependenciesBridge.shared.db
+        let donationSubscriptionManager = DependenciesBridge.shared.donationSubscriptionManager
+        let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
+
         guard
             let monthly = state.monthly,
             let selectedSubscriptionLevel = monthly.selectedSubscriptionLevel
@@ -30,16 +34,17 @@ extension DonateViewController {
 
         Task {
             let subscriberId: Data
+            let confirmedSetupIntent: Stripe.ConfirmedSetupIntent
             do {
                 if let existingSubscriberId = monthly.subscriberID {
                     Logger.info("[Donations] Cancelling existing subscription")
-                    try await DependenciesBridge.shared.donationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
+                    try await donationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
                 } else {
                     Logger.info("[Donations] No existing subscription to cancel")
                 }
 
                 Logger.info("[Donations] Preparing new monthly subscription with Apple Pay")
-                subscriberId = try await DependenciesBridge.shared.donationSubscriptionManager.prepareNewSubscription(
+                subscriberId = try await donationSubscriptionManager.prepareNewSubscription(
                     currencyCode: monthly.selectedCurrencyCode,
                 )
 
@@ -47,18 +52,9 @@ extension DonateViewController {
                 let clientSecret = try await Stripe.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
 
                 Logger.info("[Donations] Authorizing payment for new monthly subscription with Apple Pay")
-                let confirmedIntent = try await Stripe.setupNewSubscription(
+                confirmedSetupIntent = try await Stripe.setupNewSubscription(
                     clientSecret: clientSecret,
                     paymentMethod: .applePay(payment: payment),
-                )
-                let paymentMethodId = confirmedIntent.paymentMethodId
-
-                Logger.info("[Donations] Finalizing new subscription for Apple Pay donation")
-                _ = try await DependenciesBridge.shared.donationSubscriptionManager.finalizeNewSubscription(
-                    forSubscriberId: subscriberId,
-                    paymentType: .applePay(paymentMethodId: paymentMethodId),
-                    subscription: selectedSubscriptionLevel,
-                    currencyCode: monthly.selectedCurrencyCode,
                 )
 
                 let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
@@ -75,16 +71,16 @@ extension DonateViewController {
                 try await DonationViewsUtil.wrapInProgressView(
                     from: self,
                     operation: {
-                        try await DonationViewsUtil.waitForRedemption(paymentMethod: .applePay) {
-                            try await DependenciesBridge.shared.donationSubscriptionManager.requestAndRedeemReceipt(
-                                subscriberId: subscriberId,
-                                subscriptionLevel: selectedSubscriptionLevel.level,
-                                priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
-                                paymentProcessor: .stripe,
-                                paymentMethod: .applePay,
-                                isNewSubscription: true,
-                            )
-                        }
+                        try await DonationViewsUtil.finalizeAndRedeemMonthlyDonation(
+                            subscriberId: subscriberId,
+                            paymentType: .applePay(paymentMethodId: confirmedSetupIntent.paymentMethodId),
+                            newSubscriptionLevel: selectedSubscriptionLevel,
+                            priorSubscriptionLevel: monthly.currentSubscriptionLevel,
+                            currencyCode: monthly.selectedCurrencyCode,
+                            db: db,
+                            donationSubscriptionManager: donationSubscriptionManager,
+                            idealStore: idealStore,
+                        )
                     },
                 )
                 Logger.info("[Donations] Monthly card donation finished")
