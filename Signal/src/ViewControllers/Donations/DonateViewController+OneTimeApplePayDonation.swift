@@ -17,6 +17,8 @@ extension DonateViewController {
         didAuthorizePayment payment: PKPayment,
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void,
     ) {
+        let networkManager = SSKEnvironment.shared.networkManagerRef
+
         guard let oneTime = state.oneTime, let amount = oneTime.amount else {
             owsFail("Amount or currency code are missing")
         }
@@ -24,21 +26,24 @@ extension DonateViewController {
         let boostBadge = oneTime.profileBadge
 
         Task {
-            let confirmedIntent: Stripe.ConfirmedPaymentIntent
+            let confirmedPaymentIntent: Stripe.ConfirmedPaymentIntent
             do {
-                confirmedIntent = try await Stripe.boost(
-                    amount: amount,
-                    level: .boostBadge,
-                    for: .applePay(payment: payment),
-                )
-                owsPrecondition(
-                    confirmedIntent.redirectToUrl == nil,
+                confirmedPaymentIntent = try await Retry.performWithBackoff(maxAttempts: 3) {
+                    return try await Stripe.boost(
+                        amount: amount,
+                        level: .boostBadge,
+                        for: .applePay(payment: payment),
+                        networkManager: networkManager,
+                    )
+                }
+                owsAssertBeta(
+                    confirmedPaymentIntent.redirectToUrl == nil,
                     "[Donations] There shouldn't be a 3DS redirect for Apple Pay",
                 )
-                completion(.init(status: .success, errors: nil))
+                completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
             } catch {
-                completion(.init(status: .failure, errors: [error]))
-                owsFailDebugUnlessNetworkFailure(error)
+                owsFailDebug("Failed to confirm Apple Pay payment intent!")
+                completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
                 return
             }
 
@@ -47,7 +52,7 @@ extension DonateViewController {
                     from: self,
                     operation: {
                         try await DonationViewsUtil.redeemOneTimeDonation(
-                            paymentIntentId: confirmedIntent.paymentIntentId,
+                            paymentIntentId: confirmedPaymentIntent.paymentIntentId,
                             amount: amount,
                             paymentProcessor: .stripe,
                             paymentMethod: .applePay,

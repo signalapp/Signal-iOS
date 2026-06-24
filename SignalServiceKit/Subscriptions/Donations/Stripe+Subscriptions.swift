@@ -11,11 +11,15 @@ extension Stripe {
     ///
     /// - Returns
     /// A Stripe secret used to authorize payment for the new subscription.
-    public static func createSignalPaymentMethodForSubscription(subscriberId: Data) async throws -> String {
-        let request = OWSRequestFactory.subscriptionCreateStripePaymentMethodRequest(subscriberID: subscriberId)
-
-        let response = try await SSKEnvironment.shared.networkManagerRef
-            .asyncRequest(request, retryPolicy: .hopefullyRecoverable)
+    public static func createSignalPaymentMethodForSubscription(
+        subscriberId: Data,
+        networkManager: NetworkManager,
+    ) async throws -> String {
+        let response = try await networkManager.asyncRequest(
+            OWSRequestFactory.subscriptionCreateStripePaymentMethodRequest(
+                subscriberID: subscriberId,
+            ),
+        )
 
         guard response.responseStatusCode == 200 else {
             throw response.asError()

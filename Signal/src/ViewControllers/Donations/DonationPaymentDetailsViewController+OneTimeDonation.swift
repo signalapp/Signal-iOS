@@ -12,6 +12,8 @@ extension DonationPaymentDetailsViewController {
     ///
     /// See also: code for other payment methods, such as Apple Pay.
     func oneTimeDonation(with validForm: FormState.ValidForm) {
+        let networkManager = SSKEnvironment.shared.networkManagerRef
+
         Logger.info("[Donations] Starting one-time donation")
 
         let amount = self.donationAmount
@@ -21,11 +23,14 @@ extension DonationPaymentDetailsViewController {
                 try await DonationViewsUtil.wrapInProgressView(
                     from: self,
                     operation: {
-                        let confirmedIntent = try await Stripe.boost(
-                            amount: amount,
-                            level: .boostBadge,
-                            for: validForm.stripePaymentMethod,
-                        )
+                        let confirmedIntent = try await Retry.performWithBackoff(maxAttempts: 3) {
+                            return try await Stripe.boost(
+                                amount: amount,
+                                level: .boostBadge,
+                                for: validForm.stripePaymentMethod,
+                                networkManager: networkManager,
+                            )
+                        }
 
                         let intentId: String
                         if let redirectUrl = confirmedIntent.redirectToUrl {

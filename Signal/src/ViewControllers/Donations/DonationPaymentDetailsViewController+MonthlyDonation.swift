@@ -19,6 +19,7 @@ extension DonationPaymentDetailsViewController {
         let db = DependenciesBridge.shared.db
         let donationSubscriptionManager = DependenciesBridge.shared.donationSubscriptionManager
         let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
+        let networkManager = SSKEnvironment.shared.networkManagerRef
 
         let currencyCode = self.donationAmount.currencyCode
 
@@ -40,13 +41,20 @@ extension DonationPaymentDetailsViewController {
                         let subscriberId = try await donationSubscriptionManager.prepareNewSubscription(currencyCode: currencyCode)
 
                         Logger.info("[Donations] Creating Signal payment method for new monthly subscription")
-                        let clientSecret = try await Stripe.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
+                        let clientSecret = try await Retry.performWithBackoff(maxAttempts: 3) {
+                            try await Stripe.createSignalPaymentMethodForSubscription(
+                                subscriberId: subscriberId,
+                                networkManager: networkManager,
+                            )
+                        }
 
                         Logger.info("[Donations] Authorizing payment for new monthly subscription")
-                        let confirmedIntent = try await Stripe.setupNewSubscription(
-                            clientSecret: clientSecret,
-                            paymentMethod: validForm.stripePaymentMethod,
-                        )
+                        let confirmedIntent = try await Retry.performWithBackoff(maxAttempts: 3) {
+                            try await Stripe.setupNewSubscription(
+                                clientSecret: clientSecret,
+                                paymentMethod: validForm.stripePaymentMethod,
+                            )
+                        }
 
                         if let redirectToUrl = confirmedIntent.redirectToUrl {
                             if case .ideal = validForm.donationPaymentMethod {

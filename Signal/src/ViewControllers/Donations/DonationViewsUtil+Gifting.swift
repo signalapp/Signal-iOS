@@ -84,15 +84,29 @@ extension DonationViewsUtil {
             amount: FiatMoney,
             withStripePaymentMethod paymentMethod: Stripe.PaymentMethod,
         ) async throws -> PreparedGiftPayment {
+            let networkManager = SSKEnvironment.shared.networkManagerRef
+
             do {
                 return try await withCooperativeTimeout(seconds: 30) {
-                    let paymentIntent = try await Stripe.createBoostPaymentIntent(
-                        for: amount,
-                        level: .giftBadge(.signalGift),
-                        paymentMethod: paymentMethod.stripePaymentMethod,
+                    let paymentIntent = try await Retry.performWithBackoff(maxAttempts: 3) {
+                        return try await Stripe.createBoostPaymentIntent(
+                            for: amount,
+                            level: .giftBadge(.signalGift),
+                            paymentMethod: paymentMethod.stripePaymentMethod,
+                            networkManager: networkManager,
+                        )
+                    }
+
+                    let paymentMethodId = try await Retry.performWithBackoff(maxAttempts: 3) {
+                        try await Stripe.createPaymentMethod(
+                            with: paymentMethod,
+                        )
+                    }
+
+                    return .forStripe(
+                        paymentIntent: paymentIntent,
+                        paymentMethodId: paymentMethodId,
                     )
-                    let paymentMethodId = try await Stripe.createPaymentMethod(with: paymentMethod)
-                    return .forStripe(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)
                 }
             } catch is CooperativeTimeoutError {
                 Logger.warn("[Gifting] Timed out while preparing gift badge payment")

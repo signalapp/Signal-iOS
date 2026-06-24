@@ -20,6 +20,7 @@ extension DonateViewController {
         let db = DependenciesBridge.shared.db
         let donationSubscriptionManager = DependenciesBridge.shared.donationSubscriptionManager
         let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
+        let networkManager = SSKEnvironment.shared.networkManagerRef
 
         guard
             let monthly = state.monthly,
@@ -49,13 +50,20 @@ extension DonateViewController {
                 )
 
                 Logger.info("[Donations] Creating Signal payment method for new monthly subscription with Apple Pay")
-                let clientSecret = try await Stripe.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
+                let clientSecret = try await Retry.performWithBackoff(maxAttempts: 3) {
+                    return try await Stripe.createSignalPaymentMethodForSubscription(
+                        subscriberId: subscriberId,
+                        networkManager: networkManager,
+                    )
+                }
 
                 Logger.info("[Donations] Authorizing payment for new monthly subscription with Apple Pay")
-                confirmedSetupIntent = try await Stripe.setupNewSubscription(
-                    clientSecret: clientSecret,
-                    paymentMethod: .applePay(payment: payment),
-                )
+                confirmedSetupIntent = try await Retry.performWithBackoff(maxAttempts: 3) {
+                    return try await Stripe.setupNewSubscription(
+                        clientSecret: clientSecret,
+                        paymentMethod: .applePay(payment: payment),
+                    )
+                }
 
                 let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
                 completion(authResult)

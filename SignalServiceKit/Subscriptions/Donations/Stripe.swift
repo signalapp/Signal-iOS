@@ -12,7 +12,7 @@ import PassKit
 /// 1. Start flow
 ///     - ``Stripe/boost(amount:level:for:)``
 /// 2. Intent creation
-///     - ``Stripe/createBoostPaymentIntent(for:level:paymentMethod:)``
+///     - ``Stripe/createBoostPaymentIntent``
 /// 3. Payment source tokenization
 ///     - `Stripe.API.createToken(with:)`
 ///     - Cards need to be tokenized.
@@ -38,8 +38,15 @@ public enum Stripe {
         amount: FiatMoney,
         level: OneTimeBadgeLevel,
         for paymentMethod: PaymentMethod,
+        networkManager: NetworkManager,
     ) async throws -> ConfirmedPaymentIntent {
-        let intent = try await createBoostPaymentIntent(for: amount, level: level, paymentMethod: paymentMethod.stripePaymentMethod)
+        let intent = try await createBoostPaymentIntent(
+            for: amount,
+            level: level,
+            paymentMethod: paymentMethod.stripePaymentMethod,
+            networkManager: networkManager,
+        )
+
         return try await confirmPaymentIntent(
             for: paymentMethod,
             clientSecret: intent.clientSecret,
@@ -52,18 +59,15 @@ public enum Stripe {
         for amount: FiatMoney,
         level: OneTimeBadgeLevel,
         paymentMethod: OWSRequestFactory.StripePaymentMethod,
+        networkManager: NetworkManager,
     ) async throws -> PaymentIntent {
-        // The description is never translated as it's populated into an
-        // english only receipt by Stripe.
         let request = OWSRequestFactory.boostStripeCreatePaymentIntent(
             integerMoneyValue: DonationUtilities.integralAmount(for: amount),
             inCurrencyCode: amount.currencyCode,
             level: level.rawValue,
             paymentMethod: paymentMethod,
         )
-
-        let response = try await SSKEnvironment.shared.networkManagerRef
-            .asyncRequest(request, retryPolicy: .hopefullyRecoverable)
+        let response = try await networkManager.asyncRequest(request)
         guard let parser = response.responseBodyParamParser else {
             throw OWSAssertionError("Missing or invalid JSON")
         }
