@@ -67,7 +67,7 @@ public enum BuildFlags {
 
     public enum AdminDelete {
         public static let receive = true
-        public static let send = build <= .internal
+        public static let send = true
     }
 
     public enum GroupTerminate {
