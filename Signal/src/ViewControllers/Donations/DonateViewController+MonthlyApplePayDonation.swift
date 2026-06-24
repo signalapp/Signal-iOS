@@ -72,9 +72,14 @@ extension DonateViewController {
                 let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
                 completion(authResult)
             } catch {
-                let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])
-                completion(authResult)
-                owsFailDebug("[Donations] Error setting up subscription, \(error)")
+                Logger.warn("[Donations] Monthly Apple Pay donation failed")
+                completion(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
+                self.didFailDonation(
+                    error: error,
+                    mode: .monthly,
+                    badge: selectedSubscriptionLevel.badge,
+                    paymentMethod: .applePay,
+                )
                 return
             }
 
@@ -95,12 +100,13 @@ extension DonateViewController {
                         )
                     },
                 )
-                Logger.info("[Donations] Monthly card donation finished")
+
+                Logger.info("[Donations] Monthly Apple Pay donation finished")
                 self.didCompleteDonation(
                     receiptCredentialSuccessMode: .recurringSubscriptionInitiation,
                 )
             } catch {
-                Logger.info("[Donations] Monthly card donation failed")
+                Logger.warn("[Donations] Monthly Apple Pay donation failed")
                 self.didFailDonation(
                     error: error,
                     mode: .monthly,

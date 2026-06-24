@@ -461,6 +461,13 @@ public enum DonationViewsUtil {
                 paymentMethod: paymentMethod,
                 error: redirectError,
             )
+        } else if
+            let httpError = error as? OWSHTTPError,
+            httpError.responseStatusCode == 429
+        {
+            presentRateLimitedSheet(
+                from: viewController,
+            )
         } else {
             presentBadgeCantBeAddedSheet(
                 from: viewController,
@@ -563,6 +570,24 @@ public enum DonationViewsUtil {
                 animated: true,
             )
         }
+    }
+
+    private static func presentRateLimitedSheet(
+        from viewController: UIViewController,
+    ) {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE",
+                comment: "Title for a sheet shown when a donation request is rate-limited.",
+            ),
+            message: OWSLocalizedString(
+                "SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE",
+                comment: "Message for a sheet shown when a donation request is rate-limited.",
+            ),
+        )
+        actionSheet.addAction(.ok)
+
+        viewController.presentActionSheet(actionSheet)
     }
 
     private static func presentBadgeCantBeAddedSheet(

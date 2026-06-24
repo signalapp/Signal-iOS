@@ -35,6 +35,7 @@ extension DonateViewController {
                 confirmedPaymentIntent = try await Retry.performWithBackoff(maxAttempts: 3) {
                     let donationPermit = try await donationPermitFetcher.fetchDonationPermit()
 
+                    Logger.info("[Donations] Starting one-time Apple Pay donation")
                     return try await Stripe.boost(
                         amount: amount,
                         level: .boostBadge,
@@ -49,8 +50,14 @@ extension DonateViewController {
                 )
                 completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
             } catch {
-                owsFailDebug("Failed to confirm Apple Pay payment intent!")
-                completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
+                Logger.warn("[Donations] One-time Apple Pay donation failed")
+                completion(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
+                self.didFailDonation(
+                    error: error,
+                    mode: .oneTime,
+                    badge: boostBadge,
+                    paymentMethod: .applePay,
+                )
                 return
             }
 
@@ -69,9 +76,11 @@ extension DonateViewController {
                         )
                     },
                 )
+
+                Logger.info("[Donations] One-time Apple Pay donation finished")
                 self.didCompleteDonation(receiptCredentialSuccessMode: .oneTimeBoost)
             } catch {
-                owsFailDebugUnlessNetworkFailure(error)
+                Logger.warn("[Donations] One-time Apple Pay donation failed")
                 self.didFailDonation(
                     error: error,
                     mode: .oneTime,
