@@ -370,12 +370,12 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         let prepareOversizeTextAttachmentsProgressSink: OWSProgressSink?
         let exportProgress: BackupArchiveExportProgress?
         if let progressSink {
-            prepareOversizeTextAttachmentsProgressSink = await progressSink.addChild(
+            prepareOversizeTextAttachmentsProgressSink = progressSink.addChild(
                 withLabel: "Export Backup: Oversize Text Attachments",
                 unitCount: 5,
             )
-            exportProgress = await .prepare(
-                sink: await progressSink.addChild(
+            exportProgress = .prepare(
+                sink: progressSink.addChild(
                     withLabel: "Export Backup: Export Frames",
                     unitCount: 95,
                 ),
@@ -799,7 +799,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     public func finalizeBackupImport(progress: OWSProgressSink?) async throws {
         let oversizedTextProgress: OWSProgressSink?
         if let progress {
-            oversizedTextProgress = await progress.addChild(
+            oversizedTextProgress = progress.addChild(
                 withLabel: "Import Backup: Process Oversized Text Attachments",
                 unitCount: 5,
             )
@@ -837,20 +837,20 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         let recreateIndexesProgress: BackupArchiveImportRecreateIndexesProgress?
         let finalizeProgress: OWSProgressSink?
         if let progressSink {
-            frameRestoreProgress = try await .prepare(
-                sink: await progressSink.addChild(
+            frameRestoreProgress = try .prepare(
+                sink: progressSink.addChild(
                     withLabel: "Import Backup: Import Frames",
                     unitCount: 83,
                 ),
                 fileUrl: fileUrl,
             )
-            recreateIndexesProgress = await .prepare(
-                sink: await progressSink.addChild(
+            recreateIndexesProgress = .prepare(
+                sink: progressSink.addChild(
                     withLabel: "Import Backup: Recreate Indexes",
                     unitCount: 12,
                 ),
             )
-            finalizeProgress = await progressSink.addChild(
+            finalizeProgress = progressSink.addChild(
                 withLabel: "Import Backup: Finalize",
                 unitCount: 5,
             )

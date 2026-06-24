@@ -119,7 +119,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
 
         let progressSource: OWSProgressSource?
         if let progress {
-            progressSource = await progress.addSource(
+            progressSource = progress.addSource(
                 withLabel: "BackupOversizeTextCache",
                 unitCount: UInt64(attachmentIds.count),
             )
@@ -357,7 +357,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
                         .fetchCount(tx.database)
                 }
             }
-            progressSource = await progress.addSource(withLabel: "OversizedTexts", unitCount: UInt64(max(1, unitCount)))
+            progressSource = progress.addSource(withLabel: "OversizedTexts", unitCount: UInt64(max(1, unitCount)))
         } else {
             progressSource = nil
         }

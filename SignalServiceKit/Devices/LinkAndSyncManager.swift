@@ -293,9 +293,9 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             defer { deviceSleepManager?.removeBlock(blockObject: blockObject) }
 
             // Immediately finish the first two progresses.
-            _ = await progress.child(for: .waitingForBackup)
+            _ = progress.child(for: .waitingForBackup)
                 .addSource(withLabel: "waitingForBackupSource", unitCount: 0)
-            _ = await progress.child(for: .downloadingBackup)
+            _ = progress.child(for: .downloadingBackup)
                 .addSource(withLabel: "downloadingBackupSource", unitCount: 0)
 
             do {
@@ -361,7 +361,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         tokenId: DeviceProvisioningTokenId,
         progress: OWSProgressSink,
     ) async throws(PrimaryLinkNSyncError) -> Requests.WaitForDeviceToLinkResponse {
-        let progressSource = await progress.addSource(
+        let progressSource = progress.addSource(
             withLabel: PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue,
             // Unit count is irrelevant as there's just one child source and we use a timer.
             unitCount: 100,
@@ -483,7 +483,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         // Do this in a detachedtask; we want to report a status to the server even
         // if the user cancels the current task.
         let task = Task {
-            let progressSource = await progress.addSource(
+            let progressSource = progress.addSource(
                 withLabel: PrimaryLinkNSyncProgressPhase.finishing.rawValue,
                 // Unit count is irrelevant as there's just one child source and we use a timer.
                 unitCount: 100,
@@ -577,7 +577,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         auth: ChatServiceAuth,
         progress: OWSProgressSink,
     ) async throws -> Requests.ExportAndUploadBackupResult {
-        let progressSource = await progress.addSource(
+        let progressSource = progress.addSource(
             withLabel: SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue,
             // Unit count is irrelevant as there's just one child source and we use a timer.
             unitCount: 100,

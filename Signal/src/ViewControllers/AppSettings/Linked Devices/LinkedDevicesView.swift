@@ -268,7 +268,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
         }
 
         let linkNSyncTask = Task { @MainActor in
-            let progress = await OWSSequentialProgress<PrimaryLinkNSyncProgressPhase>.createSink { progress in
+            let progress = OWSSequentialProgress<PrimaryLinkNSyncProgressPhase>.createSink { progress in
                 await MainActor.run {
                     linkAndSyncProgressModal.viewModel.updatePrimaryLinkingProgress(progress: progress)
                 }

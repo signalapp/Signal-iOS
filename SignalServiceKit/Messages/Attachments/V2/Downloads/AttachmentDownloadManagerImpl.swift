@@ -1860,7 +1860,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
             var progressSources: [OWSProgressSource] = []
             for progress in progresses {
-                progressSources.append(await progress.addSource(
+                progressSources.append(progress.addSource(
                     withLabel: AttachmentDownloads.downloadProgressLabel,
                     unitCount: expectedDownloadSizeBytes,
                 ))
@@ -1912,7 +1912,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         attachmentId: attachmentId,
                     )
                 }
-                let wrappedProgressSource = await wrappedProgress.addSource(
+                let wrappedProgressSource = wrappedProgress.addSource(
                     withLabel: "source",
                     unitCount: expectedDownloadSizeBytes,
                 )

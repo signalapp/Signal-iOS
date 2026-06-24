@@ -323,17 +323,17 @@ struct LinkAndSyncProvisioningProgressView: View {
     let view = LinkAndSyncProvisioningProgressView(viewModel: LinkAndSyncSecondaryProgressViewModel())
 
     let task = Task { @MainActor in
-        let progressSink = await OWSSequentialProgress<SecondaryLinkNSyncProgressPhase>.createSink { progress in
+        let progressSink = OWSSequentialProgress<SecondaryLinkNSyncProgressPhase>.createSink { progress in
             await MainActor.run {
                 view.viewModel.updateProgress(progress)
             }
         }
 
-        let nonCancellableProgressSource = await progressSink.child(for: .waitingForBackup).addSource(
+        let nonCancellableProgressSource = progressSink.child(for: .waitingForBackup).addSource(
             withLabel: SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue,
             unitCount: 10,
         )
-        let download = await progressSink.child(for: .downloadingBackup)
+        let download = progressSink.child(for: .downloadingBackup)
             .addSource(withLabel: "download", unitCount: 10_000_000)
 
         try? await Task.sleep(for: .seconds(1))

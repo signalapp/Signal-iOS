@@ -119,7 +119,7 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
             await self?.updateObservers(progress)
         })
 
-        let source = await sink.addSource(withLabel: "", unitCount: totalByteCount)
+        let source = sink.addSource(withLabel: "", unitCount: totalByteCount)
         if totalByteCount > pendingByteCount {
             source.incrementCompletedUnitCount(by: totalByteCount - pendingByteCount)
         }

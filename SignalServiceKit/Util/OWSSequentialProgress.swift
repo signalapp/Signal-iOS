@@ -70,15 +70,15 @@ public struct OWSSequentialProgress<StepEnum>: Equatable, SomeOWSProgress where 
     /// See class docs of ``OWSProgress`` for usage.
     public static func createSink(
         _ observer: @escaping (OWSSequentialProgress<StepEnum>) async -> Void,
-    ) async -> OWSSequentialProgressRootSink<StepEnum> {
+    ) -> OWSSequentialProgressRootSink<StepEnum> {
         let sink = OWSProgress.createSink { progress in
             await observer(progress.sequential(StepEnum.self))
         }
-        return await OWSSequentialProgressRootSink(sink: sink)
+        return OWSSequentialProgressRootSink(sink: sink)
     }
 
     /// Like ``createSink(_:)``, but instead of using an observer block to emit progress values, emits using a returned AsyncStream.
-    public static func createSink() async -> (OWSSequentialProgressRootSink<StepEnum>, AsyncStream<OWSSequentialProgress<StepEnum>>) {
+    public static func createSink() -> (OWSSequentialProgressRootSink<StepEnum>, AsyncStream<OWSSequentialProgress<StepEnum>>) {
         var stepStreamContinuation: AsyncStream<OWSSequentialProgress<StepEnum>>.Continuation!
         let stepStream = AsyncStream<OWSSequentialProgress<StepEnum>> { continuation in
             stepStreamContinuation = continuation
@@ -90,7 +90,7 @@ public struct OWSSequentialProgress<StepEnum>: Equatable, SomeOWSProgress where 
             }
             stepStreamContinuation.finish()
         }
-        return await (OWSSequentialProgressRootSink(sink: sink), stepStream)
+        return (OWSSequentialProgressRootSink(sink: sink), stepStream)
     }
 }
 
@@ -102,11 +102,11 @@ public struct OWSSequentialProgressRootSink<StepEnum: OWSSequentialProgressStep>
 
     private let children: [StepEnum: OWSProgressSink]
 
-    fileprivate init(sink: OWSProgressSink) async {
+    fileprivate init(sink: OWSProgressSink) {
         self.sink = sink
         var children = [StepEnum: OWSProgressSink]()
         for step in StepEnum.allCases {
-            children[step] = await sink.addChild(withLabel: step.rawValue, unitCount: step.progressUnitCount)
+            children[step] = sink.addChild(withLabel: step.rawValue, unitCount: step.progressUnitCount)
         }
         self.children = children
     }

@@ -281,7 +281,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             return attachmentStore.fetch(id: attachmentId, tx: tx)?.streamInfo?.encryptedByteCount
         } ?? 0
 
-        let progressSource = await progress?.addSource(
+        let progressSource = progress?.addSource(
             withLabel: "upload",
             unitCount: UInt64(encryptedByteCount),
         )

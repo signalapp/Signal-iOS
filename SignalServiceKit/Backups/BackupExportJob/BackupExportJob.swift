@@ -328,9 +328,7 @@ class BackupExportJob {
     ) async rethrows {
         try await work()
 
-        await progress
-            .addSource(withLabel: "", unitCount: 1)
-            .complete()
+        progress.addSource(withLabel: "", unitCount: 1).complete()
     }
 }
 

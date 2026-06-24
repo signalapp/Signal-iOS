@@ -94,10 +94,10 @@ public actor BackupAttachmentUploadProgressImpl: BackupAttachmentUploadProgress 
 
     // MARK: - Public API
 
-    public func addObserver(_ block: @escaping (OWSProgress) -> Void) async throws -> Observer {
+    public func addObserver(_ block: @escaping (OWSProgress) -> Void) throws -> Observer {
         let queueSnapshot = try self.computeRemainingUnuploadedByteCount()
         let sink = OWSProgress.createSink(block)
-        let source = await sink.addSource(withLabel: "", unitCount: queueSnapshot.totalByteCount)
+        let source = sink.addSource(withLabel: "", unitCount: queueSnapshot.totalByteCount)
         source.incrementCompletedUnitCount(by: queueSnapshot.completedByteCount)
         let observer = Observer(
             queueSnapshot: queueSnapshot,
@@ -396,7 +396,7 @@ open class BackupAttachmentUploadProgressMock: BackupAttachmentUploadProgress {
         mockObserverBlocks.update { $0.append(block) }
 
         let sink = OWSProgress.createSink(block)
-        let source = await sink.addSource(withLabel: "", unitCount: progressMock.totalUnitCount)
+        let source = sink.addSource(withLabel: "", unitCount: progressMock.totalUnitCount)
         return BackupAttachmentUploadProgressObserver(
             queueSnapshot: BackupAttachmentUploadProgressImpl.UploadQueueSnapshot(
                 totalByteCount: progressMock.totalUnitCount,

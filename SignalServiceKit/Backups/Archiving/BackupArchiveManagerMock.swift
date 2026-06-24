@@ -51,7 +51,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         progress: OWSProgressSink?,
         logger: PrefixedLogger,
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
-        let source = await progress?.addSource(withLabel: "", unitCount: 1)
+        let source = progress?.addSource(withLabel: "", unitCount: 1)
         source?.incrementCompletedUnitCount(by: 1)
         return Upload.EncryptedBackupUploadMetadata(
             exportStartDate: Date(),
@@ -81,7 +81,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         progress: OWSProgressSink?,
         logger: PrefixedLogger,
     ) async throws {
-        let source = await progress?.addSource(withLabel: "", unitCount: 1)
+        let source = progress?.addSource(withLabel: "", unitCount: 1)
         source?.incrementCompletedUnitCount(by: 1)
     }
 
@@ -91,7 +91,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
     ) async throws {}
 
     public func finalizeBackupImport(progress: OWSProgressSink?) async throws {
-        let source = await progress?.addSource(withLabel: "", unitCount: 1)
+        let source = progress?.addSource(withLabel: "", unitCount: 1)
         source?.incrementCompletedUnitCount(by: 1)
     }
 

@@ -26,7 +26,7 @@ public enum AttachmentUpload {
     ) async throws -> Upload.Result<Metadata> {
         try Task.checkCancellation()
 
-        let progressSource = await progress?.addSource(
+        let progressSource = progress?.addSource(
             withLabel: "upload",
             unitCount: UInt64(attempt.encryptedDataLength),
         )
@@ -151,7 +151,7 @@ public enum AttachmentUpload {
             internalProgress = progress
         } else {
             let internalProgressSink = OWSProgress.createSink { _ in }
-            internalProgress = await internalProgressSink.addSource(withLabel: "upload", unitCount: UInt64(totalDataLength))
+            internalProgress = internalProgressSink.addSource(withLabel: "upload", unitCount: UInt64(totalDataLength))
         }
 
         // Total progress is (progress from previous attempts/slices +

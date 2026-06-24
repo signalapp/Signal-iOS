@@ -14,7 +14,7 @@ public struct BackupArchiveExportProgress {
     public static func prepare(
         sink: OWSProgressSink,
         db: any DB,
-    ) async -> Self {
+    ) -> Self {
         let estimatedFrameCount = failIfThrows {
             try db.read { tx in
                 // Get all the major things we iterate over. It doesn't have
@@ -28,7 +28,7 @@ public struct BackupArchiveExportProgress {
             }
         }
 
-        let progressSource = await sink.addSource(
+        let progressSource = sink.addSource(
             withLabel: "Backup Export",
             unitCount: UInt64(estimatedFrameCount),
         )
@@ -59,10 +59,10 @@ public struct BackupArchiveImportFramesProgress {
     public static func prepare(
         sink: OWSProgressSink,
         fileUrl: URL,
-    ) async throws -> Self {
+    ) throws -> Self {
         let totalByteCount = try OWSFileSystem.fileSize(of: fileUrl)
 
-        let progressSource = await sink.addSource(
+        let progressSource = sink.addSource(
             withLabel: "Backup Import: Frame Restore",
             unitCount: totalByteCount,
         )
@@ -99,8 +99,8 @@ public class BackupArchiveImportRecreateIndexesProgress {
 
     public static func prepare(
         sink: OWSProgressSink,
-    ) async -> BackupArchiveImportRecreateIndexesProgress {
-        let progressSource = await sink.addSource(
+    ) -> BackupArchiveImportRecreateIndexesProgress {
+        let progressSource = sink.addSource(
             withLabel: "Backup Import: Recreate Indexes",
             unitCount: Constants.progressSourceUnitCount,
         )

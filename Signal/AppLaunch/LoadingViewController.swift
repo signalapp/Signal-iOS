@@ -298,7 +298,7 @@ class LoadingViewController: UIViewController {
     }
 
     let task = Task {
-        let source = await progressSink.addSource(withLabel: "count", unitCount: 100)
+        let source = progressSink.addSource(withLabel: "count", unitCount: 100)
         while source.completedUnitCount < 100 {
             do {
                 try Task.checkCancellation()

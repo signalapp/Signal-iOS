@@ -433,19 +433,19 @@ private func setupDemoProgressBackupRestore(
     modal: BackupRestoreProgressModal,
     instantComplete: Bool,
 ) async throws {
-    let progress = await OWSSequentialProgress<BackupRestoreProgressPhase>.createSink { progress in
+    let progress = OWSSequentialProgress<BackupRestoreProgressPhase>.createSink { progress in
         modal.viewModel.updateBackupRestoreProgress(progress: progress)
     }
 
-    let download = await progress.child(for: .downloadingBackup)
+    let download = progress.child(for: .downloadingBackup)
         .addSource(withLabel: "download", unitCount: 10_000_000)
 
-    let importingBackupProgress = await progress.child(for: .importingBackup).addSource(
+    let importingBackupProgress = progress.child(for: .importingBackup).addSource(
         withLabel: BackupRestoreProgressPhase.importingBackup.rawValue,
         unitCount: BackupRestoreProgressPhase.importingBackup.progressUnitCount,
     )
 
-    let finishingProgress = await progress.child(for: .finishing).addSource(
+    let finishingProgress = progress.child(for: .finishing).addSource(
         withLabel: BackupRestoreProgressPhase.finishing.rawValue,
         unitCount: BackupRestoreProgressPhase.finishing.progressUnitCount,
     )
@@ -478,23 +478,23 @@ private func setupDemoProgress(
     modal: BackupRestoreProgressModal,
     slowLinking: Bool,
 ) async throws {
-    let progress = await OWSSequentialProgress<PrimaryLinkNSyncProgressPhase>.createSink { progress in
+    let progress = OWSSequentialProgress<PrimaryLinkNSyncProgressPhase>.createSink { progress in
         modal.viewModel.updatePrimaryLinkingProgress(progress: progress)
     }
 
-    let waitForLinkingProgress = await progress.child(for: .waitingForLinking).addSource(
+    let waitForLinkingProgress = progress.child(for: .waitingForLinking).addSource(
         withLabel: PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue,
         unitCount: PrimaryLinkNSyncProgressPhase.waitingForLinking.progressUnitCount,
     )
-    let exportingBackupProgress = await progress.child(for: .exportingBackup).addSource(
+    let exportingBackupProgress = progress.child(for: .exportingBackup).addSource(
         withLabel: PrimaryLinkNSyncProgressPhase.exportingBackup.rawValue,
         unitCount: PrimaryLinkNSyncProgressPhase.exportingBackup.progressUnitCount,
     )
-    let uploadingBackupProgress = await progress.child(for: .uploadingBackup).addSource(
+    let uploadingBackupProgress = progress.child(for: .uploadingBackup).addSource(
         withLabel: PrimaryLinkNSyncProgressPhase.uploadingBackup.rawValue,
         unitCount: PrimaryLinkNSyncProgressPhase.uploadingBackup.progressUnitCount,
     )
-    let markUploadedProgress = await progress.child(for: .finishing).addSource(
+    let markUploadedProgress = progress.child(for: .finishing).addSource(
         withLabel: PrimaryLinkNSyncProgressPhase.finishing.rawValue,
         unitCount: PrimaryLinkNSyncProgressPhase.finishing.progressUnitCount,
     )

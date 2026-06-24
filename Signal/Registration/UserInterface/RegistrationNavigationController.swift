@@ -742,7 +742,7 @@ extension RegistrationNavigationController: RegistrationRestoreFromBackupConfirm
     func restoreFromBackupConfirmed() {
         Task { @MainActor in
             let progressModal = BackupRestoreProgressModal(style: .backupRestore)
-            let (progress, stream) = await OWSSequentialProgress<BackupRestoreProgressPhase>.createSink()
+            let (progress, stream) = OWSSequentialProgress<BackupRestoreProgressPhase>.createSink()
             Task { @MainActor in
                 for await progress in stream {
                     progressModal.viewModel.updateBackupRestoreProgress(progress: progress)

@@ -437,7 +437,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         progressViewModel: LinkAndSyncSecondaryProgressViewModel,
         undoAllPreviousSteps: @escaping () async throws -> Void,
     ) async throws(CompleteProvisioningError) {
-        let linkNSyncProgress = await OWSSequentialProgress<SecondaryLinkNSyncProgressPhase>.createSink { progress in
+        let linkNSyncProgress = OWSSequentialProgress<SecondaryLinkNSyncProgressPhase>.createSink { progress in
             await MainActor.run {
                 progressViewModel.updateProgress(progress)
             }

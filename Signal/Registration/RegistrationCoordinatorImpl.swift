@@ -587,11 +587,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) async {
         logger.info("")
         return await _doBackupRestoreStep {
-            let downloadProgress = await progress?.child(for: .downloadingBackup).addChild(
+            let downloadProgress = progress?.child(for: .downloadingBackup).addChild(
                 withLabel: "",
                 unitCount: 100,
             )
-            let importProgress = await progress?.child(for: .importingBackup).addChild(
+            let importProgress = progress?.child(for: .importingBackup).addChild(
                 withLabel: "",
                 unitCount: 100,
             )
@@ -3666,7 +3666,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             accountIdentity: accountIdentity,
         ) {
         case .restored:
-            finalizeProgress = await inMemoryState.restoreFromBackupProgressSink?
+            finalizeProgress = inMemoryState.restoreFromBackupProgressSink?
                 .child(for: .finishing)
                 .addSource(withLabel: "", unitCount: 100)
             loadProfileState()
