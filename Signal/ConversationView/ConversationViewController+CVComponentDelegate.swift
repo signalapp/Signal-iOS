@@ -1473,7 +1473,20 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapReleaseNotesAnnouncementAction(action: RemoteAnnouncementModel.Manifest.Action) {
         switch action {
         case .backupSettings:
-            SignalApp.shared.showAppSettings(mode: .backups())
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            let isPrimaryDevice = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false
+            if isPrimaryDevice {
+                SignalApp.shared.showAppSettings(mode: .backups())
+            } else {
+                let actionSheet = ActionSheetController(
+                    message: OWSLocalizedString(
+                        "BACKUPS_SETUP_ON_PRIMARY_MESSAGE",
+                        comment: "Message for an action sheet shown on iPad saying you need to set up backups on your phone",
+                    ),
+                )
+                actionSheet.addAction(.ok)
+                present(actionSheet, animated: true)
+            }
         case .unrecognized(let actionId):
             owsFailDebug("Ignoring unrecognized actionId \(actionId)")
         }
