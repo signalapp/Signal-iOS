@@ -478,7 +478,6 @@ class MediaGallery {
         guard !relevantAttachments.isEmpty else {
             return
         }
-        Logger.debug("")
 
         let dates = relevantAttachments.lazy.map {
             GalleryDate(date: Date(millisecondsSince1970: $0.timestamp))
@@ -641,7 +640,6 @@ class MediaGallery {
         userData: MediaGalleryUpdateUserData? = nil,
         completion: ((_ newSections: IndexSet) -> Void)? = nil,
     ) {
-        Logger.info("")
         let anchorItem: MediaGalleryItem? = sections.loadedItem(at: MediaGalleryIndexPath(item: itemIndex, section: sectionIndex))
 
         // May include a negative start location.
@@ -678,7 +676,6 @@ class MediaGallery {
         }()
 
         if async {
-            Logger.info("will ensure loaded asynchronously")
             mutateAsync { sections, callback in
                 sections.asyncEnsureItemsLoaded(
                     in: naiveRequestRange,
@@ -691,7 +688,6 @@ class MediaGallery {
                 completion?(newlyLoadedSections)
             }
         } else {
-            Logger.info("will ensure loaded synchronously")
             let newlyLoadedSections = mutate { sections in
                 sections.ensureItemsLoaded(
                     in: naiveRequestRange,
@@ -724,7 +720,6 @@ class MediaGallery {
     }
 
     func reloadItem(referencedAttachment: ReferencedAttachment) -> MediaGalleryItem? {
-        Logger.info("")
         return SSKEnvironment.shared.databaseStorageRef.read { transaction -> MediaGalleryItem? in
             guard
                 let focusedItem = buildGalleryItem(
@@ -768,7 +763,6 @@ class MediaGallery {
     }
 
     func ensureLoadedForDetailView(focusedAttachment: ReferencedAttachment) -> MediaGalleryItem? {
-        Logger.info("")
         let newItem: MediaGalleryItem? = reloadItem(referencedAttachment: focusedAttachment)
 
         guard let focusedItem = newItem else {
@@ -777,14 +771,12 @@ class MediaGallery {
 
         // For a speedy load, we only fetch a few items on either side of
         // the initial message
-        Logger.info("ensureGalleryItemsLoaded: will call")
         ensureGalleryItemsLoaded(
             .around,
             item: focusedItem,
             amount: kGallerySwipeLoadBatchSize * 2,
             shouldLoadAlbumRemainder: true,
         )
-        Logger.info("ensureGalleryItemsLoaded: finished")
 
         return focusedItem
     }
@@ -1027,12 +1019,10 @@ class MediaGallery {
     private let kGallerySwipeLoadBatchSize: Int = 5
 
     func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem? {
-        Logger.debug("")
         return galleryItem(.after, item: currentItem)
     }
 
     func galleryItem(before currentItem: MediaGalleryItem) -> MediaGalleryItem? {
-        Logger.debug("")
         return galleryItem(.before, item: currentItem)
     }
 
