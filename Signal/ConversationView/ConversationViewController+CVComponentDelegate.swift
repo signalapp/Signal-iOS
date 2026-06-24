@@ -1472,6 +1472,8 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func didTapReleaseNotesAnnouncementAction(action: RemoteAnnouncementModel.Manifest.Action) {
         switch action {
+        case .backupSettings:
+            SignalApp.shared.showAppSettings(mode: .backups())
         case .unrecognized(let actionId):
             owsFailDebug("Ignoring unrecognized actionId \(actionId)")
         }

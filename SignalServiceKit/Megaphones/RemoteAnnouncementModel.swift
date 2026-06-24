@@ -131,17 +131,22 @@ extension RemoteAnnouncementModel.Manifest {
     /// interaction with this release note.
     public enum Action: Codable, Equatable {
         case unrecognized(actionId: String)
+        case backupSettings
 
         public var actionId: String {
             switch self {
             case .unrecognized(let conditionalId):
                 return conditionalId
+            case .backupSettings:
+                return "backupSettings"
             }
         }
 
         public init(fromActionId actionId: String) {
             self = {
                 switch actionId {
+                case "backupSettings":
+                    return .backupSettings
                 default:
                     return .unrecognized(actionId: actionId)
                 }
