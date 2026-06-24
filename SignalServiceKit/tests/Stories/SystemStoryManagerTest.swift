@@ -416,8 +416,8 @@ class SystemStoryManagerTest: SSKBaseTest {
         let imageNamesString = "[\(imageNames.map({ "\"\($0)\"" }).joined(separator: ","))]"
         let string = """
         {
-            "\(SystemStoryManager.Constants.manifestVersionKey)": "1234",
-            "\(SystemStoryManager.Constants.manifestLanguagesKey)": {
+            "version": "1234",
+            "languages": {
                 "\(Locale.current.languageCode!)": \(imageNamesString),
                 "anImpossibleLanguageCode": [
                     "fail"

@@ -511,26 +511,29 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
 
     // MARK: Downloading
 
+    struct StoryManifest: Decodable {
+        let languages: [String: [String]]
+        let version: String
+
+        func filenames(for languageCode: String?, or fallbackCode: String) throws -> [String] {
+            if let languageCode, let result = self.languages[languageCode] {
+                return result
+            }
+            if let result = self.languages[fallbackCode] {
+                return result
+            }
+            throw OWSAssertionError("Unable to locate onboarding image set")
+        }
+    }
+
     private func fetchFilenames(
         urlSession: OWSURLSessionProtocol,
     ) async throws -> [String] {
         let response = try await urlSession.performRequest(Constants.manifestPath, method: .get, maxResponseSize: .max)
-        guard
-            let responseDictionary = response.responseBodyDict,
-            let version = responseDictionary[Constants.manifestVersionKey] as? String,
-            let languages = responseDictionary[Constants.manifestLanguagesKey] as? [String: AnyObject]
-        else {
-            throw OWSAssertionError("Missing or invalid JSON")
-        }
-        guard
-            let assetFilenames = Locale.current.languageCode.map({ languageCode in
-                languages[languageCode] as? [String]
-            }) ?? (languages[Constants.fallbackLanguageCode] as? [String])
-        else {
-            throw OWSAssertionError("Unable to locate onboarding image set")
-        }
-        return assetFilenames.map {
-            return Constants.imagePath(version: version, filename: $0)
+        let manifest = try JSONDecoder().decode(StoryManifest.self, from: response.responseBodyData ?? Data())
+        let filenames = try manifest.filenames(for: Locale.current.languageCode, or: Constants.fallbackLanguageCode)
+        return filenames.map {
+            return Constants.imagePath(version: manifest.version, filename: $0)
         }
     }
 
@@ -701,8 +704,6 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         static let kvStoreGroupStoryEducationSheetViewedKey = "GroupStoryEducationSheetViewed"
 
         static let manifestPath = "dynamic/ios/stories/onboarding/manifest.json"
-        static let manifestVersionKey = "version"
-        static let manifestLanguagesKey = "languages"
         static let fallbackLanguageCode = "en"
 
         static func imagePath(version: String, filename: String) -> String {
