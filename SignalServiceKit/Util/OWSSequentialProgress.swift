@@ -39,7 +39,7 @@ public struct OWSSequentialProgress<StepEnum>: Equatable, SomeOWSProgress where 
 
     /// Get the latest progress for any source/sink at any layer of the progress tree.
     /// Maps from source/child sink label to the progress of all nodes with that label.
-    public func progressesForAllChildren(withLabel label: String) -> [OWSProgress.ChildProgress] {
+    public func progressesForAllChildren(withLabel label: String) -> some Collection<OWSProgress.ChildProgress> {
         return progress.progressesForAllChildren(withLabel: label)
     }
 

@@ -3315,17 +3315,13 @@ private extension OWSSequentialProgress<BackupExportJobStage> {
     static func forPreview(
         _ step: BackupExportJobStage,
     ) -> OWSSequentialProgress<BackupExportJobStage> {
-        return OWSProgress(
-            completedUnitCount: 0,
-            totalUnitCount: 1,
-            childProgresses: [
-                step.rawValue: [OWSProgress.ChildProgress(
-                    completedUnitCount: 33,
-                    totalUnitCount: 100,
-                    label: step.rawValue,
-                    parentLabel: nil,
-                )],
-            ],
+        return OWSProgress.withChildProgressForTesting(
+            OWSProgress.ChildProgress(
+                completedUnitCount: 33,
+                totalUnitCount: 100,
+                label: step.rawValue,
+                parentLabel: nil,
+            ),
         ).sequential(BackupExportJobStage.self)
     }
 }

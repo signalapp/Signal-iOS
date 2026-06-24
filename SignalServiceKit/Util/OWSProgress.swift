@@ -115,23 +115,34 @@ public class OWSProgress: Equatable, SomeOWSProgress, CustomStringConvertible {
     public init(
         completedUnitCount: UInt64,
         totalUnitCount: UInt64,
-        childProgresses: [String: [ChildProgress]] = [:],
     ) {
         self.completedUnitCount = completedUnitCount
         self.totalUnitCount = totalUnitCount
-        self.childProgresses = childProgresses
-        self.rootChildProgresses = nil
+        self.descendantProgresses = [:]
     }
+
+#if DEBUG
+
+    public static func withChildProgressForTesting(_ childProgress: ChildProgress) -> OWSProgress {
+        return OWSProgress(
+            completedUnitCount: 0,
+            totalUnitCount: 1,
+            descendantProgresses: [
+                childProgress.label: [.root().appending(childLabel: childProgress.label): childProgress],
+            ],
+        )
+    }
+
+#endif
 
     fileprivate init(
         completedUnitCount: UInt64,
         totalUnitCount: UInt64,
-        rootChildProgresses: [String: [OWSProgressRootNode.Identifier: ChildProgress]],
+        descendantProgresses: [String: [OWSProgressRootNode.Identifier: ChildProgress]],
     ) {
         self.completedUnitCount = completedUnitCount
         self.totalUnitCount = totalUnitCount
-        self.rootChildProgresses = rootChildProgresses
-        self.childProgresses = nil
+        self.descendantProgresses = descendantProgresses
     }
 
     public var description: String {
@@ -144,10 +155,7 @@ public class OWSProgress: Equatable, SomeOWSProgress, CustomStringConvertible {
                 completedUnitCount: completedUnitCount,
                 totalUnitCount: totalUnitCount,
             )
-        } else if
-            childProgresses?.isEmpty != false,
-            rootChildProgresses?.isEmpty != false
-        {
+        } else if descendantProgresses.isEmpty {
             // With no children, don't count as complete.
             return 0
         } else {
@@ -161,10 +169,7 @@ public class OWSProgress: Equatable, SomeOWSProgress, CustomStringConvertible {
     public var isFinished: Bool {
         if totalUnitCount > 0 {
             return totalUnitCount == completedUnitCount
-        } else if
-            childProgresses?.isEmpty != false,
-            rootChildProgresses?.isEmpty != false
-        {
+        } else if descendantProgresses.isEmpty {
             // With no children, don't count as complete.
             return false
         } else {
@@ -175,8 +180,7 @@ public class OWSProgress: Equatable, SomeOWSProgress, CustomStringConvertible {
         }
     }
 
-    private let childProgresses: [String: [ChildProgress]]?
-    private let rootChildProgresses: [String: [OWSProgressRootNode.Identifier: ChildProgress]]?
+    private let descendantProgresses: [String: [OWSProgressRootNode.Identifier: ChildProgress]]
 
     /// Get the latest progress for any source/sink at any layer of the progress tree.
     /// Maps from source/child sink label to the progress of that node.
@@ -186,38 +190,21 @@ public class OWSProgress: Equatable, SomeOWSProgress, CustomStringConvertible {
     /// If not, use `progressesForAllChildren` to get the full acounting
     /// of duplicate labels.
     public func progressForChild(label: String) -> ChildProgress? {
-        return rootChildProgresses?[label]?.first?.value
-            ?? childProgresses?[label]?.first
+        return descendantProgresses[label]?.first?.value
     }
 
     /// Get the latest progress for any source/sink at any layer of the progress tree.
     /// Maps from source/child sink label to the progress of all nodes with that label.
-    public func progressesForAllChildren(withLabel label: String) -> [ChildProgress] {
-        if let dict = rootChildProgresses?[label] {
-            return Array(dict.values)
-        } else {
-            return childProgresses?[label] ?? []
-        }
+    public func progressesForAllChildren(withLabel label: String) -> some Collection<ChildProgress> {
+        return descendantProgresses[label, default: [:]].values
     }
 
     public var allChildProgresses: [ChildProgress] {
-        if let rootChildProgresses {
-            var progresses = [ChildProgress]()
-            for dict in rootChildProgresses.values {
-                for progress in dict.values {
-                    progresses.append(progress)
-                }
-            }
-            return progresses
-        } else {
-            var progresses = [ChildProgress]()
-            for arr in (childProgresses ?? [:]).values {
-                for progress in arr {
-                    progresses.append(progress)
-                }
-            }
-            return progresses
+        var progresses = [ChildProgress]()
+        for dict in descendantProgresses.values {
+            progresses.append(contentsOf: dict.values)
         }
+        return progresses
     }
 
 #if DEBUG
@@ -253,9 +240,9 @@ public class OWSProgress: Equatable, SomeOWSProgress, CustomStringConvertible {
     }
 
     public static func ==(lhs: OWSProgress, rhs: OWSProgress) -> Bool {
+        // TODO: Why is descendantProgress omitted here?
         return lhs.completedUnitCount == rhs.completedUnitCount
             && lhs.totalUnitCount == rhs.totalUnitCount
-            && lhs.childProgresses == rhs.childProgresses
     }
 }
 
@@ -492,7 +479,7 @@ private actor OWSProgressRootNode: OWSProgressSink {
         let progress = OWSProgress(
             completedUnitCount: self.completedUnitCountOfDirectChildren,
             totalUnitCount: self.totalUnitCountOfDirectChildren,
-            rootChildProgresses: self.childProgresses,
+            descendantProgresses: self.childProgresses,
         )
         observerQueue.enqueue { [streamContinuation, progress] in
             streamContinuation.yield(progress)
@@ -573,7 +560,7 @@ private actor OWSProgressRootNode: OWSProgressSink {
         let progress = OWSProgress(
             completedUnitCount: completedUnitCountOfDirectChildren,
             totalUnitCount: totalUnitCountOfDirectChildren,
-            rootChildProgresses: childProgresses,
+            descendantProgresses: childProgresses,
         )
         observerQueue.enqueue { [streamContinuation, progress] in
             streamContinuation.yield(progress)
