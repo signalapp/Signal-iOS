@@ -1,1 +1,1 @@
-8.18.0.{build_number}-internal
+8.18.0.{build_number}-beta
