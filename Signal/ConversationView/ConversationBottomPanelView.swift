@@ -153,6 +153,9 @@ class ConversationBottomPanelView: UIView {
         guard let backgroundViewLeading, let backgroundViewTrailing, let backgroundViewBottom else { return }
 
         var margin = safeAreaInsets.bottom
+
+        guard margin < 35 else { return }
+
         if margin.isZero {
             margin = 8
         }
