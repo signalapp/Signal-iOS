@@ -2869,6 +2869,7 @@
 		D95D9D302E56866200855DE4 /* BackupKeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95D9D2F2E56866200855DE4 /* BackupKeyService.swift */; };
 		D95DA7ED28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */; };
 		D95E149D2E3D22FD00B5B70B /* ObjectRetainerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E149C2E3D22FA00B5B70B /* ObjectRetainerTest.swift */; };
+		D95F6DEF2FEAE6EF00268900 /* DonationPermitFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95F6DEE2FEAE6EB00268900 /* DonationPermitFetcher.swift */; };
 		D96149C72E947CF400EF2147 /* BackupSubscriptionIssueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96149C62E947CEA00EF2147 /* BackupSubscriptionIssueStore.swift */; };
 		D961E91A2F86F5A20000205B /* Emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = D961E9192F86F5A20000205B /* Emoji.swift */; };
 		D962346B2C0E937500DAF6CB /* InterleavingCompositeCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D931080A2B338CE5006A034E /* InterleavingCompositeCursor.swift */; };
@@ -7175,6 +7176,7 @@
 		D95D9D2F2E56866200855DE4 /* BackupKeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyService.swift; sourceTree = "<group>"; };
 		D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+SystemMessageItems.swift"; sourceTree = "<group>"; };
 		D95E149C2E3D22FA00B5B70B /* ObjectRetainerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectRetainerTest.swift; sourceTree = "<group>"; };
+		D95F6DEE2FEAE6EB00268900 /* DonationPermitFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPermitFetcher.swift; sourceTree = "<group>"; };
 		D96149C62E947CEA00EF2147 /* BackupSubscriptionIssueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionIssueStore.swift; sourceTree = "<group>"; };
 		D961E9192F86F5A20000205B /* Emoji.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
 		D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeMostRecentAddressableMessageCursor.swift; sourceTree = "<group>"; };
@@ -13373,6 +13375,7 @@
 				D97992A42D9E58E00080A4F5 /* Currencies */,
 				D986D1362CC8332F00F9803D /* Donations */,
 				D9905D862EB2B98500BF22EC /* ReceiptCredentials */,
+				D95F6DEE2FEAE6EB00268900 /* DonationPermitFetcher.swift */,
 				D98300B12936E6C70018FDC2 /* SubscriptionConfigManager.swift */,
 				D97054192CFE49E200AC7954 /* SubscriptionFetcher.swift */,
 				D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */,
@@ -19315,6 +19318,7 @@
 				7254653E2BA01FCC00EABFD2 /* DonationMode.swift in Sources */,
 				D91A39E72AE2F44400F57A61 /* DonationPaymentMethod.swift in Sources */,
 				D91A39E92AE2F4C000F57A61 /* DonationPaymentProcessor.swift in Sources */,
+				D95F6DEF2FEAE6EF00268900 /* DonationPermitFetcher.swift in Sources */,
 				F9C5CD7F289453B300548EEE /* DonationReceipt.swift in Sources */,
 				7254653A2BA01FAA00EABFD2 /* DonationReceiptCredentialRedemptionJobQueue.swift in Sources */,
 				D9AE0AD32918715E0063488B /* DonationReceiptCredentialRedemptionJobRecord.swift in Sources */,

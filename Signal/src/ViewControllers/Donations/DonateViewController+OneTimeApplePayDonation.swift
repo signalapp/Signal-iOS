@@ -17,6 +17,10 @@ extension DonateViewController {
         didAuthorizePayment payment: PKPayment,
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void,
     ) {
+        let db = DependenciesBridge.shared.db
+        let donationPermitFetcher = DependenciesBridge.shared.donationPermitFetcher
+        let donationSubscriptionManager = DependenciesBridge.shared.donationSubscriptionManager
+        let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         let networkManager = SSKEnvironment.shared.networkManagerRef
 
         guard let oneTime = state.oneTime, let amount = oneTime.amount else {
@@ -29,10 +33,13 @@ extension DonateViewController {
             let confirmedPaymentIntent: Stripe.ConfirmedPaymentIntent
             do {
                 confirmedPaymentIntent = try await Retry.performWithBackoff(maxAttempts: 3) {
+                    let donationPermit = try await donationPermitFetcher.fetchDonationPermit()
+
                     return try await Stripe.boost(
                         amount: amount,
                         level: .boostBadge,
                         for: .applePay(payment: payment),
+                        donationPermit: donationPermit,
                         networkManager: networkManager,
                     )
                 }
@@ -56,9 +63,9 @@ extension DonateViewController {
                             amount: amount,
                             paymentProcessor: .stripe,
                             paymentMethod: .applePay,
-                            db: DependenciesBridge.shared.db,
-                            donationSubscriptionManager: DependenciesBridge.shared.donationSubscriptionManager,
-                            idealStore: DependenciesBridge.shared.externalPendingIDEALDonationStore,
+                            db: db,
+                            donationSubscriptionManager: donationSubscriptionManager,
+                            idealStore: idealStore,
                         )
                     },
                 )

@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-
 public extension OWSRequestFactory {
     enum StripePaymentMethod {
         public enum BankTransfer: String {
@@ -37,6 +35,7 @@ public extension OWSRequestFactory {
         inCurrencyCode currencyCode: Currency.Code,
         level: UInt64,
         paymentMethod: StripePaymentMethod,
+        donationPermit: DonationPermit,
     ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: BoostApiPaths.stripeCreatePaymentIntent)!,
@@ -48,6 +47,7 @@ public extension OWSRequestFactory {
                 "paymentMethod": paymentMethod.rawValue,
             ],
         )
+        request.headers["Donation-Permit"] = donationPermit.serializedPermit.base64EncodedString()
         request.auth = .anonymous
         return request
     }

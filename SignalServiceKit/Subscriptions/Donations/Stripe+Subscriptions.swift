@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-
 extension Stripe {
     /// Create a payment method entry with the Signal service for a subscription
     /// processed by Stripe.
@@ -13,11 +11,13 @@ extension Stripe {
     /// A Stripe secret used to authorize payment for the new subscription.
     public static func createSignalPaymentMethodForSubscription(
         subscriberId: Data,
+        donationPermit: DonationPermit,
         networkManager: NetworkManager,
     ) async throws -> String {
         let response = try await networkManager.asyncRequest(
             OWSRequestFactory.subscriptionCreateStripePaymentMethodRequest(
                 subscriberID: subscriberId,
+                donationPermit: donationPermit,
             ),
         )
 

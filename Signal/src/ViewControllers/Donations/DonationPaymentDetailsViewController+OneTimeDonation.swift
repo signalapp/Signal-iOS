@@ -12,6 +12,10 @@ extension DonationPaymentDetailsViewController {
     ///
     /// See also: code for other payment methods, such as Apple Pay.
     func oneTimeDonation(with validForm: FormState.ValidForm) {
+        let db = DependenciesBridge.shared.db
+        let donationPermitFetcher = DependenciesBridge.shared.donationPermitFetcher
+        let donationSubscriptionManager = DependenciesBridge.shared.donationSubscriptionManager
+        let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         let networkManager = SSKEnvironment.shared.networkManagerRef
 
         Logger.info("[Donations] Starting one-time donation")
@@ -24,10 +28,13 @@ extension DonationPaymentDetailsViewController {
                     from: self,
                     operation: {
                         let confirmedIntent = try await Retry.performWithBackoff(maxAttempts: 3) {
+                            let donationPermit = try await donationPermitFetcher.fetchDonationPermit()
+
                             return try await Stripe.boost(
                                 amount: amount,
                                 level: .boostBadge,
                                 for: validForm.stripePaymentMethod,
+                                donationPermit: donationPermit,
                                 networkManager: networkManager,
                             )
                         }
@@ -40,9 +47,9 @@ extension DonationPaymentDetailsViewController {
                                     paymentIntentId: confirmedIntent.paymentIntentId,
                                     amount: amount,
                                 )
-                                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+                                await db.awaitableWrite { transaction in
                                     do {
-                                        try DependenciesBridge.shared.externalPendingIDEALDonationStore.setPendingOneTimeDonation(
+                                        try idealStore.setPendingOneTimeDonation(
                                             donation: donation,
                                             tx: transaction,
                                         )
@@ -65,9 +72,9 @@ extension DonationPaymentDetailsViewController {
                             amount: amount,
                             paymentProcessor: .stripe,
                             paymentMethod: validForm.donationPaymentMethod,
-                            db: DependenciesBridge.shared.db,
-                            donationSubscriptionManager: DependenciesBridge.shared.donationSubscriptionManager,
-                            idealStore: DependenciesBridge.shared.externalPendingIDEALDonationStore,
+                            db: db,
+                            donationSubscriptionManager: donationSubscriptionManager,
+                            idealStore: idealStore,
                         )
                     },
                 )

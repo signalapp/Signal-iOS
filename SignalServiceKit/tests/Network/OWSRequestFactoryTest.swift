@@ -52,10 +52,15 @@ class OWSRequestFactoryTest: XCTestCase {
                 inCurrencyCode: "CHF",
                 level: 456,
                 paymentMethod: paymentMethod,
+                donationPermit: DonationPermit(
+                    serializedPermit: Data([255, 128]),
+                    expiration: Date().addingTimeInterval(8 * .hour),
+                ),
             )
 
             XCTAssertEqual(request.url.path, "v1/subscription/boost/create")
             XCTAssertEqual(request.method, "POST")
+            XCTAssertEqual(request.headers["Donation-Permit"], "/4A=")
             XCTAssertEqual(Set(request.parameters.keys), Set(["currency", "amount", "level", "paymentMethod"]))
             XCTAssertEqual(request.parameters["currency"] as? String, "chf")
             XCTAssertEqual(request.parameters["amount"] as? UInt, 123)
@@ -90,10 +95,17 @@ class OWSRequestFactoryTest: XCTestCase {
     }
 
     func testSetSubscriberID() {
-        let request = OWSRequestFactory.setSubscriberID(.init([255, 128]))
+        let request = OWSRequestFactory.setSubscriberID(
+            Data([255, 128]),
+            donationPermit: DonationPermit(
+                serializedPermit: Data([255, 128]),
+                expiration: Date().addingTimeInterval(8 * .hour),
+            ),
+        )
 
         XCTAssertEqual(request.url.path, "v1/subscription/_4A")
         XCTAssertEqual(request.method, "PUT")
+        XCTAssertEqual(request.headers["Donation-Permit"], "/4A=")
     }
 
     func testDeleteSubscriberID() {
@@ -116,11 +128,16 @@ class OWSRequestFactoryTest: XCTestCase {
 
     func testSubscriptionCreateStripePaymentMethodRequest() {
         let request = OWSRequestFactory.subscriptionCreateStripePaymentMethodRequest(
-            subscriberID: .init([255, 128]),
+            subscriberID: Data([255, 128]),
+            donationPermit: DonationPermit(
+                serializedPermit: Data([255, 128]),
+                expiration: Date().addingTimeInterval(8 * .hour),
+            ),
         )
 
         XCTAssertEqual(request.url.path, "v1/subscription/_4A/create_payment_method")
         XCTAssertEqual(request.method, "POST")
+        XCTAssertEqual(request.headers["Donation-Permit"], "/4A=")
     }
 
     func testSubscriptionCreatePaypalPaymentMethodRequest() {

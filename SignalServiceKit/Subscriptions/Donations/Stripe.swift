@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+public import LibSignalClient
 import PassKit
 
 /// Stripe donations
@@ -38,12 +38,14 @@ public enum Stripe {
         amount: FiatMoney,
         level: OneTimeBadgeLevel,
         for paymentMethod: PaymentMethod,
+        donationPermit: DonationPermit,
         networkManager: NetworkManager,
     ) async throws -> ConfirmedPaymentIntent {
         let intent = try await createBoostPaymentIntent(
             for: amount,
             level: level,
             paymentMethod: paymentMethod.stripePaymentMethod,
+            donationPermit: donationPermit,
             networkManager: networkManager,
         )
 
@@ -59,6 +61,7 @@ public enum Stripe {
         for amount: FiatMoney,
         level: OneTimeBadgeLevel,
         paymentMethod: OWSRequestFactory.StripePaymentMethod,
+        donationPermit: DonationPermit,
         networkManager: NetworkManager,
     ) async throws -> PaymentIntent {
         let request = OWSRequestFactory.boostStripeCreatePaymentIntent(
@@ -66,6 +69,7 @@ public enum Stripe {
             inCurrencyCode: amount.currencyCode,
             level: level.rawValue,
             paymentMethod: paymentMethod,
+            donationPermit: donationPermit,
         )
         let response = try await networkManager.asyncRequest(request)
         guard let parser = response.responseBodyParamParser else {

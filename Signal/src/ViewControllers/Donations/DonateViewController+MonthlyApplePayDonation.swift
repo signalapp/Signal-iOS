@@ -18,6 +18,7 @@ extension DonateViewController {
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void,
     ) {
         let db = DependenciesBridge.shared.db
+        let donationPermitFetcher = DependenciesBridge.shared.donationPermitFetcher
         let donationSubscriptionManager = DependenciesBridge.shared.donationSubscriptionManager
         let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         let networkManager = SSKEnvironment.shared.networkManagerRef
@@ -51,8 +52,11 @@ extension DonateViewController {
 
                 Logger.info("[Donations] Creating Signal payment method for new monthly subscription with Apple Pay")
                 let clientSecret = try await Retry.performWithBackoff(maxAttempts: 3) {
+                    let donationPermit = try await donationPermitFetcher.fetchDonationPermit()
+
                     return try await Stripe.createSignalPaymentMethodForSubscription(
                         subscriberId: subscriberId,
+                        donationPermit: donationPermit,
                         networkManager: networkManager,
                     )
                 }

@@ -157,6 +157,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     private let backupSubscriptionRedeemer: BackupSubscriptionRedeemer
     private let dateProvider: DateProvider
     private let db: any DB
+    private let donationPermitFetcher: DonationPermitFetcher
     private let networkManager: NetworkManager
     private let storageServiceManager: StorageServiceManager
     private let store: Store
@@ -170,6 +171,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         backupSubscriptionRedeemer: BackupSubscriptionRedeemer,
         dateProvider: @escaping DateProvider,
         db: any DB,
+        donationPermitFetcher: DonationPermitFetcher,
         networkManager: NetworkManager,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
@@ -181,6 +183,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         self.backupSubscriptionRedeemer = backupSubscriptionRedeemer
         self.dateProvider = dateProvider
         self.db = db
+        self.donationPermitFetcher = donationPermitFetcher
         self.networkManager = networkManager
         self.storageServiceManager = storageServiceManager
         self.store = Store()
@@ -755,6 +758,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             checkerStore: store,
             dateProvider: dateProvider,
             db: db,
+            donationPermitFetcher: donationPermitFetcher,
             logger: logger,
             networkManager: networkManager,
             tsAccountManager: tsAccountManager,
@@ -827,8 +831,12 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
         /// First, we tell the server (unauthenticated) that a new subscriber ID
         /// exists. At this point, it won't be associated with anything.
+        let donationPermit = try await donationPermitFetcher.fetchDonationPermit()
         let registerSubscriberIdResponse = try await networkManager.asyncRequest(
-            .registerSubscriberId(subscriberId: newSubscriberId),
+            .registerSubscriberId(
+                subscriberId: newSubscriberId,
+                donationPermit: donationPermit,
+            ),
         )
 
         guard registerSubscriberIdResponse.responseStatusCode == 200 else {
@@ -1001,8 +1009,14 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 // MARK: -
 
 private extension TSRequest {
-    static func registerSubscriberId(subscriberId: Data) -> TSRequest {
-        return OWSRequestFactory.setSubscriberID(subscriberId)
+    static func registerSubscriberId(
+        subscriberId: Data,
+        donationPermit: DonationPermit,
+    ) -> TSRequest {
+        return OWSRequestFactory.setSubscriberID(
+            subscriberId,
+            donationPermit: donationPermit,
+        )
     }
 
     static func associateSubscriberId(

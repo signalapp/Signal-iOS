@@ -87,6 +87,7 @@ public class DonationSubscriptionManager {
     fileprivate static let mostRecentSubscriptionPaymentMethodKey = "mostRecentSubscriptionPaymentMethod"
 
     private let db: any DB
+    private let donationPermitFetcher: DonationPermitFetcher
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
@@ -101,6 +102,7 @@ public class DonationSubscriptionManager {
 
     init(
         db: any DB,
+        donationPermitFetcher: DonationPermitFetcher,
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         networkManager: NetworkManager,
         profileManager: ProfileManager,
@@ -109,6 +111,7 @@ public class DonationSubscriptionManager {
         tsAccountManager: TSAccountManager,
     ) {
         self.db = db
+        self.donationPermitFetcher = donationPermitFetcher
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
         self.networkManager = networkManager
         self.profileManager = profileManager
@@ -242,7 +245,12 @@ public class DonationSubscriptionManager {
         Logger.info("[Donations] Setting up new subscriber ID")
 
         let newSubscriberID = Randomness.generateRandomBytes(UInt(32))
-        let request = OWSRequestFactory.setSubscriberID(newSubscriberID)
+
+        let donationPermit = try await donationPermitFetcher.fetchDonationPermit()
+        let request = OWSRequestFactory.setSubscriberID(
+            newSubscriberID,
+            donationPermit: donationPermit,
+        )
 
         let response = try await networkManager
             .asyncRequest(request, retryPolicy: .hopefullyRecoverable)
@@ -442,6 +450,7 @@ public class DonationSubscriptionManager {
             checkerStore: CheckerStore(donationSubscriptionManager: self),
             dateProvider: { Date() },
             db: db,
+            donationPermitFetcher: donationPermitFetcher,
             logger: logger,
             networkManager: networkManager,
             tsAccountManager: tsAccountManager,

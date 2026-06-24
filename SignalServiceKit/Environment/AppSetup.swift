@@ -456,6 +456,11 @@ extension AppSetup.GlobalsContinuation {
             twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager),
         )
 
+        let donationPermitFetcher = DonationPermitFetcher(
+            dateProvider: dateProvider,
+            networkManager: networkManager,
+        )
+
         let backupAttachmentDownloadStore = BackupAttachmentDownloadStore()
         let backupAttachmentDownloadProgress = BackupAttachmentDownloadProgressImpl(
             appContext: appContext,
@@ -510,6 +515,7 @@ extension AppSetup.GlobalsContinuation {
             ),
             dateProvider: dateProvider,
             db: db,
+            donationPermitFetcher: donationPermitFetcher,
             networkManager: networkManager,
             storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager,
@@ -1246,6 +1252,7 @@ extension AppSetup.GlobalsContinuation {
         let donationReceiptCredentialResultStore = DonationReceiptCredentialResultStore()
         let donationSubscriptionManager = DonationSubscriptionManager(
             db: db,
+            donationPermitFetcher: donationPermitFetcher,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
             networkManager: networkManager,
             profileManager: profileManager,
@@ -1766,6 +1773,7 @@ extension AppSetup.GlobalsContinuation {
             deviceStore: deviceStore,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             disappearingMessagesExpirationJob: disappearingMessagesExpirationJob,
+            donationPermitFetcher: donationPermitFetcher,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,
             donationSubscriptionManager: donationSubscriptionManager,
             editManager: editManager,

@@ -49,6 +49,7 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobContext> {
     private let checkerStore: SubscriptionRedemptionNecessityCheckerStore
     private let dateProvider: DateProvider
     private let db: any DB
+    private let donationPermitFetcher: DonationPermitFetcher
     private let logger: PrefixedLogger
     private let networkManager: NetworkManager
     private let tsAccountManager: TSAccountManager
@@ -58,6 +59,7 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobContext> {
         checkerStore: SubscriptionRedemptionNecessityCheckerStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
+        donationPermitFetcher: DonationPermitFetcher,
         logger: PrefixedLogger,
         networkManager: NetworkManager,
         tsAccountManager: TSAccountManager,
@@ -65,6 +67,7 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobContext> {
         self.checkerStore = checkerStore
         self.dateProvider = dateProvider
         self.db = db
+        self.donationPermitFetcher = donationPermitFetcher
         self.logger = logger
         self.networkManager = networkManager
         self.tsAccountManager = tsAccountManager
@@ -229,8 +232,13 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobContext> {
 
     /// Let the server know that a client still cares about this subscriberId.
     private func performSubscriberIdHeartbeat(_ subscriberId: Data) async throws {
+        let donationPermit = try await donationPermitFetcher.fetchDonationPermit()
+
         let registerSubscriberIdResponse = try await networkManager.asyncRequest(
-            OWSRequestFactory.setSubscriberID(subscriberId),
+            OWSRequestFactory.setSubscriberID(
+                subscriberId,
+                donationPermit: donationPermit,
+            ),
         )
 
         guard registerSubscriberIdResponse.responseStatusCode == 200 else {

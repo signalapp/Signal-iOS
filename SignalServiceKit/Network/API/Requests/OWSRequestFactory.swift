@@ -176,12 +176,16 @@ public enum OWSRequestFactory {
 
     // MARK: - Donations
 
-    static func setSubscriberID(_ subscriberID: Data) -> TSRequest {
+    static func setSubscriberID(
+        _ subscriberID: Data,
+        donationPermit: DonationPermit,
+    ) -> TSRequest {
         var result = TSRequest(
             url: URL(string: "v1/subscription/\(subscriberID.asBase64Url)")!,
             method: "PUT",
             parameters: nil,
         )
+        result.headers["Donation-Permit"] = donationPermit.serializedPermit.base64EncodedString()
         result.auth = .anonymous
         result.applyRedactionStrategy(.redactURL())
         return result
@@ -227,12 +231,16 @@ public enum OWSRequestFactory {
         return result
     }
 
-    static func subscriptionCreateStripePaymentMethodRequest(subscriberID: Data) -> TSRequest {
+    static func subscriptionCreateStripePaymentMethodRequest(
+        subscriberID: Data,
+        donationPermit: DonationPermit,
+    ) -> TSRequest {
         var result = TSRequest(
             url: URL(string: "v1/subscription/\(subscriberID.asBase64Url)/create_payment_method")!,
             method: "POST",
             parameters: nil,
         )
+        result.headers["Donation-Permit"] = donationPermit.serializedPermit.base64EncodedString()
         result.auth = .anonymous
         result.applyRedactionStrategy(.redactURL())
         return result

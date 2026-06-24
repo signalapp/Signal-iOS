@@ -17,6 +17,7 @@ extension DonationPaymentDetailsViewController {
         subscriberID existingSubscriberId: Data?,
     ) {
         let db = DependenciesBridge.shared.db
+        let donationPermitFetcher = DependenciesBridge.shared.donationPermitFetcher
         let donationSubscriptionManager = DependenciesBridge.shared.donationSubscriptionManager
         let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         let networkManager = SSKEnvironment.shared.networkManagerRef
@@ -42,8 +43,11 @@ extension DonationPaymentDetailsViewController {
 
                         Logger.info("[Donations] Creating Signal payment method for new monthly subscription")
                         let clientSecret = try await Retry.performWithBackoff(maxAttempts: 3) {
-                            try await Stripe.createSignalPaymentMethodForSubscription(
+                            let donationPermit = try await donationPermitFetcher.fetchDonationPermit()
+
+                            return try await Stripe.createSignalPaymentMethodForSubscription(
                                 subscriberId: subscriberId,
+                                donationPermit: donationPermit,
                                 networkManager: networkManager,
                             )
                         }

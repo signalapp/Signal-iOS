@@ -84,15 +84,19 @@ extension DonationViewsUtil {
             amount: FiatMoney,
             withStripePaymentMethod paymentMethod: Stripe.PaymentMethod,
         ) async throws -> PreparedGiftPayment {
+            let donationPermitFetcher = DependenciesBridge.shared.donationPermitFetcher
             let networkManager = SSKEnvironment.shared.networkManagerRef
 
             do {
                 return try await withCooperativeTimeout(seconds: 30) {
                     let paymentIntent = try await Retry.performWithBackoff(maxAttempts: 3) {
+                        let donationPermit = try await donationPermitFetcher.fetchDonationPermit()
+
                         return try await Stripe.createBoostPaymentIntent(
                             for: amount,
                             level: .giftBadge(.signalGift),
                             paymentMethod: paymentMethod.stripePaymentMethod,
+                            donationPermit: donationPermit,
                             networkManager: networkManager,
                         )
                     }
