@@ -758,7 +758,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             checkerStore: store,
             dateProvider: dateProvider,
             db: db,
-            donationPermitFetcher: donationPermitFetcher,
             logger: logger,
             networkManager: networkManager,
             tsAccountManager: tsAccountManager,

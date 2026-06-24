@@ -94,7 +94,7 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.parameters["cancelUrl"] as? String, "https://example.com/canceled")
     }
 
-    func testSetSubscriberID() {
+    func testSetSubscriberID_permit() {
         let request = OWSRequestFactory.setSubscriberID(
             Data([255, 128]),
             donationPermit: DonationPermit(
@@ -106,6 +106,17 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.url.path, "v1/subscription/_4A")
         XCTAssertEqual(request.method, "PUT")
         XCTAssertEqual(request.headers["Donation-Permit"], "/4A=")
+    }
+
+    func testSetSubscriberID_noPermit() {
+        let request = OWSRequestFactory.setSubscriberID(
+            Data([255, 128]),
+            donationPermit: nil,
+        )
+
+        XCTAssertEqual(request.url.path, "v1/subscription/_4A")
+        XCTAssertEqual(request.method, "PUT")
+        XCTAssertEqual(request.headers["Donation-Permit"], nil)
     }
 
     func testDeleteSubscriberID() {

@@ -176,16 +176,23 @@ public enum OWSRequestFactory {
 
     // MARK: - Donations
 
+    /// Creates a new suscriberID record on the server. If the subscriberID
+    /// already exists, extends its TTL.
+    ///
+    /// - Parameter donationPermit
+    /// Required to create a new subscriberID; optional for an existing one.
     static func setSubscriberID(
         _ subscriberID: Data,
-        donationPermit: DonationPermit,
+        donationPermit: DonationPermit?,
     ) -> TSRequest {
         var result = TSRequest(
             url: URL(string: "v1/subscription/\(subscriberID.asBase64Url)")!,
             method: "PUT",
             parameters: nil,
         )
-        result.headers["Donation-Permit"] = donationPermit.serializedPermit.base64EncodedString()
+        if let donationPermit {
+            result.headers["Donation-Permit"] = donationPermit.serializedPermit.base64EncodedString()
+        }
         result.auth = .anonymous
         result.applyRedactionStrategy(.redactURL())
         return result

@@ -50,7 +50,7 @@ public class DonationPermitFetcher {
 
         // If we get here, we've drained cachedPermits.
 
-        let permitContext = try DonationPermitRequestContext.forCount(count: 10)
+        let permitContext = try DonationPermitRequestContext.forCount(count: 3)
         let permitRequest = permitContext.request()
 
         let response = try await networkManager.asyncRequest(

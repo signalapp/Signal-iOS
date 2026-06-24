@@ -450,7 +450,6 @@ public class DonationSubscriptionManager {
             checkerStore: CheckerStore(donationSubscriptionManager: self),
             dateProvider: { Date() },
             db: db,
-            donationPermitFetcher: donationPermitFetcher,
             logger: logger,
             networkManager: networkManager,
             tsAccountManager: tsAccountManager,
