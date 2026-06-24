@@ -581,7 +581,7 @@
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Klíč pro obnovení je správný. Uchovávejte svůj klíč v bezpečí.";
 
 /* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
-"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "Do not share your recovery key with anyone. This will let them take over your account. <bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal.";
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "Svůj klíč pro obnovení s nikým nesdílejte. Útočník by pomocí něj mohl ovládnout váš účet. <bold>Signal od vás nikdy nebude ve zprávě</bold> vyžadovat váš klíč pro obnovení. Nikdy neodpovídejte na chat, který se tváří jako Signal.";
 
 /* Title for a warning sheet shown to discourage the user from sharing their 'Recovery Key'. */
 "BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "Klíč pro obnovení nesdílejte";
@@ -656,10 +656,10 @@
 "BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "Platnost vašeho předplatného zálohování vypršela";
 
 /* Title for a label allowing users to view Signal's Terms & Conditions. */
-"BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Terms & Privacy Policy";
+"BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Smluvní podmínky a zásady ochrany osobních údajů";
 
 /* Title for a button on a Backup plan upsell view that dismisses the upsell without subscribing. */
-"BACKUP_PLAN_UPSELL_NO_THANKS_BUTTON_TEXT" = "No Thanks";
+"BACKUP_PLAN_UPSELL_NO_THANKS_BUTTON_TEXT" = "Ne, díky";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Zkopírovat do schránky";
@@ -791,10 +791,10 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Chyba sítě";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan because they're not registered. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_MESSAGE" = "Couldn’t fetch your backup plan because you’re no longer registered.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_MESSAGE" = "Nepodařilo se načíst váš plán zálohování, protože již nejste zaregistrováni.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan because they're not registered. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_TITLE" = "Couldn’t Fetch Backup Plan";
+"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_TITLE" = "Nepodařilo se načíst plán zálohování";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Spravovat nebo zrušit";
@@ -959,7 +959,7 @@
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED" = "Máte %1$@ médií, která nejsou v tomto zařízení.";
 
 /* Subtitle for a view explaining that downloads are available but not running, and the user's paid subscription is expiring. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "You have %1$@ of media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "V záloze máte %1$@ médií, která nejsou v tomto zařízení. Nestažená média budou bez placeného předplatného trvale odstraněna.";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Zálohování pomocí mobilní sítě";
@@ -1010,19 +1010,19 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Stáhnout odložená média?";
 
 /* Action in a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, that dismisses the sheet. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Got It";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Rozumím";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable storage optimization and download your media soon.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Are you sure you want to enable Optimize Storage and offload your media? If your subscription expires, any media not on this device will be permanently deleted.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Opravdu chcete zapnout optimalizaci úložiště a odložit média jinam? Pokud vám vyprší předplatné, veškerá média, která nejsou v tomto zařízení, budou trvale smazána.";
 
 /* Action in a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription, that confirms enabling Optimize Storage. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_OFFLOAD_ACTION" = "Offload My Media";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_OFFLOAD_ACTION" = "Odložit moje média";
 
 /* Title for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_TITLE" = "Enable Optimize Storage?";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_TITLE" = "Zapnout optimalizaci úložiště?";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Starší média budou při příštím zálohování odložena, ale můžete si je kdykoli stáhnout ze zálohy.";
@@ -1034,10 +1034,10 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimalizovat úložiště Signal";
 
 /* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to use storage optimization. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_BODY" = "Storage optimization can only be used with the paid tier of Signal Secure Backups. Upgrade your backup plan to start using this feature.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_BODY" = "Optimalizaci úložiště lze použít pouze s placenou verzí zabezpečeného zálohování Signal. Aktualizujte svůj plán zálohování, abyste mohli začít tuto funkci používat.";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to use storage optimization. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_TITLE" = "Upgrade to Turn On Storage Optimization";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_TITLE" = "Přejděte na vyšší verzi a zapněte optimalizaci úložiště";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "Dosáhli jste limitu úložiště pro zálohy. Uvolněte v aplikaci Signal místo a pokračujte v zálohování chatů a médií.";
@@ -1148,19 +1148,19 @@
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "Předplatné pro zálohování se nepodařilo obnovit";
 
 /* Body for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to back up all their media. Embeds {{ the amount of storage included in the paid plan, preformatted as a localized byte count, e.g. '100 GB' }}. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_BODY" = "Paid Signal Secure Backups keep all your media, up to %1$@.";
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_BODY" = "Placené plány zabezpečeného zálohování Signal uchovávají všechna vaše média, a to až do objemu %1$@.";
 
 /* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to back up all their media. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_PRIMARY_ACTION" = "Upgrade";
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_PRIMARY_ACTION" = "Aktualizovat";
 
 /* Title for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to back up all their media. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_TITLE" = "Back up all your media";
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_TITLE" = "Zálohujte si všechna média";
 
 /* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to back up all their media. Embeds {{ the amount of storage included in the paid plan, preformatted as a localized byte count, e.g. '100 GB' }}. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_BODY" = "Paid Signal Secure Backups keep all your media, up to a maximum of %1$@. Never lose a photo or video when you get a new phone or reinstall Signal.";
+"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_BODY" = "Placené plány zabezpečeného zálohování Signal uchovávají všechna vaše média, a to až do maximálního objemu %1$@. Při pořízení nového telefonu nebo přeinstalování aplikace Signal už nikdy nepřijdete o žádnou fotografii nebo video.";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to back up all their media. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_TITLE" = "Upgrade to Save All Media";
+"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_TITLE" = "Přejděte na vyšší verzi a ukládejte všechna média";
 
 /* Body for system notification when we detect an issue with Backup media. */
 "BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "Během zálohování médií došlo k neočekávané chybě. Odešlete prosím protokoly ladění, abychom mohli problém vyřešit.";
@@ -1169,34 +1169,37 @@
 "BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "Chyba při zálohování médií";
 
 /* Body for a megaphone shown on the chat list encouraging users to enable Signal Secure Backups. */
-"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_BODY" = "Turn on Signal Secure Backups to preserve your messages and media";
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_BODY" = "Zapněte si funkci Zabezpečené zálohování Signal a uchovejte své zprávy i média.";
 
 /* Title for a button on a megaphone encouraging users to enable Signal Secure Backups. */
-"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_PRIMARY_ACTION" = "Turn On";
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_PRIMARY_ACTION" = "Zapnout";
 
 /* Title for a megaphone shown on the chat list encouraging users to enable Signal Secure Backups. */
-"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_TITLE" = "Never lose a message";
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_TITLE" = "Mějte své zprávy v bezpečí";
 
 /* Body for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_BODY" = "Signal Secure Backups can save storage space by offloading media.";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_BODY" = "Zabezpečené zálohování Signal může ušetřit místo v úložišti odložením médií jinam.";
 
 /* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to save on-device storage space, when the user does not yet have Signal Secure Backups enabled. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_TURN_ON" = "Turn On";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_TURN_ON" = "Zapnout";
 
 /* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to save on-device storage space, when the user already has Signal Secure Backups enabled. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_UPGRADE" = "Upgrade";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_UPGRADE" = "Aktualizovat";
 
 /* Title for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_TITLE" = "Save space with paid backups";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_TITLE" = "Šetřete místo s placeným zálohováním";
 
 /* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to save on-device storage space. Embeds {{ the amount of storage space being consumed on-device by media, preformatted as a localized byte count, e.g. '1.2 GB' }}. */
-"BACKUPS_SAVE_SPACE_UPSELL_BODY" = "Signal is using %1$@ of storage space for media. Paid Signal Secure Backup plans can save storage space by offloading media, while preserving your entire chat history in your backup.";
+"BACKUPS_SAVE_SPACE_UPSELL_BODY" = "Signal využívá %1$@ místa v úložišti pro média. Placené plány zabezpečeného zálohování Signal mohou ušetřit místo v úložišti zařízení odložením médií, a současně v záloze uchovávají kompletní historii chatů.";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
-"BACKUPS_SAVE_SPACE_UPSELL_TITLE" = "Save Space With Paid Backups";
+"BACKUPS_SAVE_SPACE_UPSELL_TITLE" = "Šetřete místo s placeným zálohováním";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Zabezpečené zálohování";
+
+/* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Zálohování služby Signal bylo pro tento účet zapnuto na %1$@. Klepnutím zobrazíte.";
@@ -1295,7 +1298,7 @@
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Blokovat a opustit skupinu „%1$@“?";
 
 /* Label for 'block release notes' action sheet title. */
-"BLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Block Signal?";
+"BLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Blokovat novinky z aplikace Signal?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blokovat uživatele %1$@?";
@@ -1355,7 +1358,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Stávající členové vás nyní mohou opět přidat do skupiny.";
 
 /* An explanation of the consequences of blocking release notes. */
-"BLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Block getting Signal updates and news.";
+"BLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Blokovat přijímání aktualizací a novinek od služby Signal.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokovaní uživatelé vám nebudou moci volat ani posílat zprávy.";
@@ -2051,19 +2054,19 @@
 "CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "Zkontrolujte připojení k internetu a zkuste to znovu.";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages and media are included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_AND_MEDIA_BACKUP" = "Full text + media backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_AND_MEDIA_BACKUP" = "Zálohování všech textových zpráv a médií";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Zálohování celých textových zpráv";
 
 /* Text for a bullet point in a list of Backup features, describing that the paid Backup plan can save on-device storage space. */
-"CHOOSE_BACKUP_PLAN_BULLET_SAVE_DEVICE_STORAGE" = "Save on-device storage space";
+"CHOOSE_BACKUP_PLAN_BULLET_SAVE_DEVICE_STORAGE" = "Šetří místo v úložišti zařízení";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}. */
 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ úložiště";
 
 /* Text for a bullet point in a list of Backup features, thanking the user for supporting Signal by subscribing to the paid Backup plan. */
-"CHOOSE_BACKUP_PLAN_BULLET_THANKS_FOR_SUPPORTING_SIGNAL" = "Thanks for supporting Signal!";
+"CHOOSE_BACKUP_PLAN_BULLET_THANKS_FOR_SUPPORTING_SIGNAL" = "Děkujeme, že podporujete Signal!";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "Pro zapnutí zálohování musíte být registrováni.";
@@ -2510,7 +2513,7 @@
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Blokovat skupinu";
 
 /* Label for 'block release notes' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_RELEASE_NOTES" = "Block";
+"CONVERSATION_SETTINGS_BLOCK_RELEASE_NOTES" = "Blokovat";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Blokovat uživatele";
@@ -2684,7 +2687,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Odblokovat skupinu";
 
 /* Label for 'unblock release notes' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_RELEASE_NOTES" = "Unblock";
+"CONVERSATION_SETTINGS_UNBLOCK_RELEASE_NOTES" = "Odblokovat";
 
 /* Label for 'unblock user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Odblokovat uživatele";
@@ -5282,10 +5285,10 @@
 "LONG_TEXT_VIEW_TITLE" = "Zpráva";
 
 /* Message for a sheet warning the user that their device is low on storage space. */
-"LOW_DISK_SPACE_WARNING_SHEET_MESSAGE" = "Your device is running low on storage space. If you run out of storage, you won't be able to use Signal. Free up space by managing your storage in Settings.";
+"LOW_DISK_SPACE_WARNING_SHEET_MESSAGE" = "Ve vašem zařízení dochází místo v úložišti. Pokud vám dojde místo v úložišti, nebudete moci aplikaci Signal používat. Uvolněte místo správou úložiště v Nastavení.";
 
 /* Title for a sheet warning the user that their device is low on storage space. */
-"LOW_DISK_SPACE_WARNING_SHEET_TITLE" = "Storage Space Low";
+"LOW_DISK_SPACE_WARNING_SHEET_TITLE" = "Málo místa v úložišti";
 
 /* Title for error sheet shown when the max video length is recorded with the in-app camera */
 "MAX_VIDEO_RECORDING_LENGTH_ALERT" = "Bylo dosaženo maximální délky videa";
@@ -6158,7 +6161,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Přeskočit a zadat nový PIN.";
 
 /* Label for the 'skip pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN" = "Skip PIN";
+"ONBOARDING_2FA_SKIP_PIN" = "Přeskočit PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Pokud si nepamatujete váš PIN, můžete si vytvořit nový. Můžete se zaregistrovat a používat váš účet, ale ztratíte některá uložená nastavení, jako jsou vaše profilové informace.";
@@ -7065,9 +7068,6 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN musí být aspoň 4 číslice.";
-
-/* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Připnout lze maximálně 4 chaty.";
 
 /* Accessibility label prefix for banner showing a pinned message */
 "PINNED_MESSAGE_BANNER_AX_LABEL" = "Připnutá zpráva:";
@@ -8549,13 +8549,13 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Volání";
 
 /* Footer for the 'media auto-download' section in the data settings. The replacement will be a formatted file size, such as '100 KB'. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages and stickers smaller than %1$@ are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Hlasové zprávy a nálepky menší než %1$@ se vždy stahují automaticky.";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Automatické stahování";
 
 /* Footer for the 'media auto-download' section in the data settings. The replacement will be a formatted file size, such as '200 MB'. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_NEVER_FOOTER" = "Media and files larger than %1$@ are never auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_NEVER_FOOTER" = "Média a soubory větší než %1$@ se nikdy nestahují automaticky.";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Obnovit nastavení automatického stahování";
@@ -9862,6 +9862,12 @@
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Příspěvek se zpracovává…";
 
+/* Message for a sheet shown when a donation request is rate-limited. */
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+
+/* Title for a sheet shown when a donation request is rate-limited. */
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Obnoví se %1$@";
 
@@ -10049,10 +10055,10 @@
 "UNAVAILABLE_MEDIA_TAP_TOAST" = "Toto médium již není k dispozici";
 
 /* Action sheet title when confirming you want to unblock release notes. */
-"UNBLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Unblock Signal?";
+"UNBLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Odblokovat novinky z aplikace Signal?";
 
 /* Action sheet body when confirming you want to unblock release notes */
-"UNBLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Resume getting Signal updates and news.";
+"UNBLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Obnovit odběr aktualizací a novinek od služby Signal.";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Uživatel není ve vašich kontaktech. Chcete tohoto uživatele zablokovat?";

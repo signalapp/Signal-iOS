@@ -1480,6 +1480,22 @@
 			<string>&apos;%2$@&apos; की ओर से भेजे गए %1$d इनवाइट रद्द करने हैं?</string>
 		</dict>
 	</dict>
+	<key>PINNED_CONVERSATION_LIMIT</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>You can only pin up to %1$d chat.</string>
+			<key>other</key>
+			<string>You can only pin up to %1$d chats.</string>
+		</dict>
+	</dict>
 	<key>POLL_VOTE_COUNT</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

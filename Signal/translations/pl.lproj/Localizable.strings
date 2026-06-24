@@ -581,7 +581,7 @@
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Kod odzyskiwania jest poprawny. Przechowuj kod w bezpiecznym miejscu.";
 
 /* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
-"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "Do not share your recovery key with anyone. This will let them take over your account. <bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal.";
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "Nie podawaj nikomu swojego kodu odzyskiwania. Osoba, która zna Twój kod, może przejąć Twoje konto. <bold>Signal nigdy nie wyśle do Ciebie wiadomości</bold> z prośbą o kod odzyskiwania. Nigdy nie odpowiadaj na wiadomości od osób podszywających się pod pracowników Signal.";
 
 /* Title for a warning sheet shown to discourage the user from sharing their 'Recovery Key'. */
 "BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "Nie udostępniaj kodu odzyskiwania";
@@ -656,10 +656,10 @@
 "BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "Twoja subskrypcja kopii zapasowych wygasła";
 
 /* Title for a label allowing users to view Signal's Terms & Conditions. */
-"BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Terms & Privacy Policy";
+"BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Regulamin i polityka prywatności";
 
 /* Title for a button on a Backup plan upsell view that dismisses the upsell without subscribing. */
-"BACKUP_PLAN_UPSELL_NO_THANKS_BUTTON_TEXT" = "No Thanks";
+"BACKUP_PLAN_UPSELL_NO_THANKS_BUTTON_TEXT" = "Nie teraz";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Skopiuj do schowka";
@@ -791,10 +791,10 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Błąd sieci";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan because they're not registered. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_MESSAGE" = "Couldn’t fetch your backup plan because you’re no longer registered.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_MESSAGE" = "Nie udało się wczytać informacji o trybie tworzenia kopii zapasowej, ponieważ urządzenie nie jest już zarejestrowane.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan because they're not registered. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_TITLE" = "Couldn’t Fetch Backup Plan";
+"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_TITLE" = "Nie udało się wczytać trybu tworzenia kopii zapasowych";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Zarządzaj lub anuluj";
@@ -845,7 +845,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "Tworzenie kopii zapasowych zostało wyłączone, a Twoje dane zostały usunięte z usługi bezpiecznego przechowywania Signal.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Tworzenie kopii zapasowych zostało wyłączone, a wszystkie multimedia, które nie znajdują się na urządzeniu, są właśnie pobierane. Następnie zostaną one usunięte z usługi bezpiecznego przechowywania Signal.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "Tworzenie kopii zapasowych zostało wyłączone, a wszystkie multimedia, które nie znajdują się na urządzeniu, są właśnie pobierane. Następnie zostaną usunięte z usługi bezpiecznego przechowywania Signal.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "Wystąpił błąd. Skontaktuj się z naszą pomocą techniczną.";
@@ -959,7 +959,7 @@
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED" = "Masz %1$@ multimediów, które nie zostały pobrane na to urządzenie.";
 
 /* Subtitle for a view explaining that downloads are available but not running, and the user's paid subscription is expiring. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "You have %1$@ of media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "W kopii zapasowej masz %1$@ multimediów, które nie zostały jeszcze pobrane na to urządzenie. Jeśli nie wykupisz subskrypcji kopii zapasowych, niepobrane multimedia zostaną trwale usunięte.";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Tworzenie kopii zapasowej przy użyciu sieci komórkowej";
@@ -1010,22 +1010,22 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Pobrać pozostałe multimedia?";
 
 /* Action in a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, that dismisses the sheet. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Got It";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Rozumiem";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable storage optimization and download your media soon.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Are you sure you want to enable Optimize Storage and offload your media? If your subscription expires, any media not on this device will be permanently deleted.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Czy chcesz włączyć optymalizację pamięci i przenieść swoje multimedia do pamięci w chmurze? Jeśli subskrypcja wygaśnie, multimedia niezapisane na tym urządzeniu zostaną trwale usunięte.";
 
 /* Action in a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription, that confirms enabling Optimize Storage. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_OFFLOAD_ACTION" = "Offload My Media";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_OFFLOAD_ACTION" = "Przenieś multimedia do chmury";
 
 /* Title for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_TITLE" = "Enable Optimize Storage?";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_TITLE" = "Włączyć optymalizację pamięci?";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Przy następnym tworzeniu kopii zapasowej starsze multimedia zostaną przeniesione z urządzenia do kopii zapasowej, ale w każdej chwili będzie można je pobrać z powrotem na urządzenie.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Podczas tworzenia kolejnej kopii zapasowej starsze multimedia zostaną przeniesione z urządzenia do kopii zapasowej, ale w każdej chwili będzie można je pobrać z powrotem na urządzenie.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "Optymalizacja pamięci jest dostępna tylko w ramach płatnej usługi kopii zapasowych Signal. Aby korzystać z tej funkcji, wykup płatny tryb tworzenia kopii zapasowych.";
@@ -1034,10 +1034,10 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optymalizuj pamięć, którą zajmuje Signal";
 
 /* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to use storage optimization. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_BODY" = "Storage optimization can only be used with the paid tier of Signal Secure Backups. Upgrade your backup plan to start using this feature.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_BODY" = "Optymalizacja pamięci jest dostępna tylko w płatnym trybie tworzenia bezpiecznych kopii zapasowych Signal. Aby korzystać z tej funkcji, wykup płatny tryb tworzenia kopii zapasowych.";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to use storage optimization. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_TITLE" = "Upgrade to Turn On Storage Optimization";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_TITLE" = "Wykup subskrypcję i włącz optymalizację pamięci";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "Wykorzystano limit miejsca na kopie zapasowe. Aby dalej tworzyć kopie zapasowe czatów i multimediów, zwolnij najpierw trochę miejsca w aplikacji Signal.";
@@ -1049,13 +1049,13 @@
 "BACKUP_SETTINGS_REENABLE_BACKUPS_BUTTON_TITLE" = "Włącz z powrotem";
 
 /* Message for a sheet warning the user about skipping downloads while disabling Backups. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "W kopii zapasowej masz multimedia, które nie zostały jeszcze pobrane na to urządzenie. Jeśli wyłączysz tworzenie kopii zapasowych, niepobrane multimedia zostaną trwale usunięte.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_MESSAGE" = "W kopii zapasowej masz multimedia, które nie zostały jeszcze pobrane na to urządzenie. Gdy wyłączysz tworzenie kopii zapasowych, niepobrane multimedia zostaną trwale usunięte.";
 
 /* Title for a sheet warning the user about skipping downloads while disabling Backups. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_DISABLING_WARNING_SHEET_TITLE" = "Pominąć pobieranie?";
 
 /* Message for a sheet warning the user about skipping downloads that will expire. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "W kopii zapasowej masz multimedia, które nie zostały jeszcze pobrane na to urządzenie. Jeśli nie wykupisz subskrypcji kopii zapasowych, Twoje niepobrane multimedia zostaną trwale usunięte.";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_MESSAGE" = "W kopii zapasowej masz multimedia, które nie zostały jeszcze pobrane na to urządzenie. Jeśli nie wykupisz subskrypcji kopii zapasowych, niepobrane multimedia zostaną trwale usunięte.";
 
 /* Title for a sheet warning the user about skipping downloads that will expire. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_EXPIRING_WARNING_SHEET_TITLE" = "Pominąć pobieranie?";
@@ -1064,7 +1064,7 @@
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_ACTION_SKIP" = "Pomiń pobieranie";
 
 /* Message for a double-confirmation sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Na pewno chcesz pominąć pobieranie swoich multimediów?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_MESSAGE" = "Nie chcesz pobrać swoich multimediów?";
 
 /* Title for a double-confirmation sheet warning the user about skipping downloads. */
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_SECOND_WARNING_SHEET_TITLE" = "Pominąć pobieranie?";
@@ -1115,16 +1115,16 @@
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Może to trochę potrwać. Podczas tworzenia kopii zapasowej możesz normalnie korzystać z aplikacji.";
 
 /* Footer for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Przy następnym tworzeniu kopii zapasowej starsze multimedia zostaną przeniesione z urządzenia do kopii zapasowej, ale w każdej chwili będzie można je pobrać z powrotem na urządzenie.";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_FOOTER" = "Podczas tworzenia kolejnej kopii zapasowej starsze multimedia zostaną przeniesione z urządzenia do kopii zapasowej, ale w każdej chwili będzie można je pobrać z powrotem na urządzenie.";
 
 /* Title for a toggle shown after the user enables backups, letting them enable the Optimize Storage feature. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_OPTIMIZE_MEDIA_TOGGLE_TITLE" = "Optymalizuj pamięć, którą zajmuje Signal";
 
 /* Title for a sheet shown after the user enables backups. */
-"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Wszystko gotowe. Możesz już utworzyć bezpieczną kopię zapasową";
+"BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_TITLE" = "Wszystko gotowe. Możesz już utworzyć bezpieczną kopię zapasową.";
 
 /* Body for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "W kopii zapasowej masz multimedia, które nie zostały jeszcze pobrane na to urządzenie. Jeśli nie wykupisz subskrypcji kopii zapasowych, Twoje niepobrane multimedia zostaną trwale usunięte.\n\nW każdej chwili możesz wznowić płatność za dalsze tworzenie kopii zapasowych multimediów.";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_BODY" = "W kopii zapasowej masz multimedia, które nie zostały jeszcze pobrane na to urządzenie. Jeśli nie wykupisz subskrypcji kopii zapasowych, niepobrane multimedia zostaną trwale usunięte.\n\nW każdej chwili możesz wznowić płatności za dalsze tworzenie kopii zapasowych multimediów.";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
 "BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_FIRST_WARNING_TITLE" = "Pobierz multimedia z kopii zapasowej";
@@ -1133,7 +1133,7 @@
 "BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_PRIMARY_BUTTON" = "Pobierz kopię zapasową";
 
 /* Title for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
-"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Pobierz multimedia z kopii zapasowej już dziś";
+"BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECOND_WARNING_TITLE" = "Pobierz multimedia z kopii zapasowej teraz";
 
 /* Secondary button for a sheet warning users that their Backup subscription is expiring soon, and they have pending downloads. */
 "BACKUP_SUBSCRIPTION_EXPIRING_SOON_PENDING_DOWNLOADS_HERO_SHEET_SECONDARY_BUTTON" = "Nie pobieraj kopii zapasowej";
@@ -1148,19 +1148,19 @@
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "Nie udało się odnowić usługi kopii zapasowych";
 
 /* Body for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to back up all their media. Embeds {{ the amount of storage included in the paid plan, preformatted as a localized byte count, e.g. '100 GB' }}. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_BODY" = "Paid Signal Secure Backups keep all your media, up to %1$@.";
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_BODY" = "W płatnym trybie tworzenia bezpiecznych kopii zapasowych Signal zyskujesz do %1$@ miejsca na multimedia.";
 
 /* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to back up all their media. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_PRIMARY_ACTION" = "Upgrade";
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_PRIMARY_ACTION" = "Aktywuj tryb rozszerzony";
 
 /* Title for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to back up all their media. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_TITLE" = "Back up all your media";
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_TITLE" = "Przechowuj wszystkie multimedia w kopii zapasowej";
 
 /* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to back up all their media. Embeds {{ the amount of storage included in the paid plan, preformatted as a localized byte count, e.g. '100 GB' }}. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_BODY" = "Paid Signal Secure Backups keep all your media, up to a maximum of %1$@. Never lose a photo or video when you get a new phone or reinstall Signal.";
+"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_BODY" = "W płatnym trybie tworzenia bezpiecznych kopii zapasowych Signal zyskujesz do %1$@ miejsca na wszystkie multimedia. Dzięki temu nie stracisz żadnego zdjęcia ani filmu, nawet gdy zmienisz telefon lub ponownie zainstalujesz aplikację Signal.";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to back up all their media. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_TITLE" = "Upgrade to Save All Media";
+"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_TITLE" = "Przechowuj w kopii zapasowej wszystkie multimedia";
 
 /* Body for system notification when we detect an issue with Backup media. */
 "BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "Wystąpił nieoczekiwany błąd kopii zapasowej Twoich multimediów. Aby pomóc nam rozwiązać ten problem, prześlij dzienniki debugowania.";
@@ -1169,34 +1169,37 @@
 "BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "Błąd kopii zapasowej multimediów";
 
 /* Body for a megaphone shown on the chat list encouraging users to enable Signal Secure Backups. */
-"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_BODY" = "Turn on Signal Secure Backups to preserve your messages and media";
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_BODY" = "Włącz usługę bezpiecznych kopii zapasowych Signal, aby nigdy nie stracić historii wiadomości ani multimediów";
 
 /* Title for a button on a megaphone encouraging users to enable Signal Secure Backups. */
-"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_PRIMARY_ACTION" = "Turn On";
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_PRIMARY_ACTION" = "Włącz";
 
 /* Title for a megaphone shown on the chat list encouraging users to enable Signal Secure Backups. */
-"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_TITLE" = "Never lose a message";
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_TITLE" = "Nie strać historii czatów";
 
 /* Body for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_BODY" = "Signal Secure Backups can save storage space by offloading media.";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_BODY" = "Dzięki bezpiecznym kopiom zapasowym Signal możesz przenieść multimedia z pamięci urządzenia do chmury.";
 
 /* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to save on-device storage space, when the user does not yet have Signal Secure Backups enabled. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_TURN_ON" = "Turn On";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_TURN_ON" = "Włącz";
 
 /* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to save on-device storage space, when the user already has Signal Secure Backups enabled. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_UPGRADE" = "Upgrade";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_UPGRADE" = "Aktywuj tryb rozszerzony";
 
 /* Title for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_TITLE" = "Save space with paid backups";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_TITLE" = "Oszczędzaj miejsce na urządzeniu";
 
 /* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to save on-device storage space. Embeds {{ the amount of storage space being consumed on-device by media, preformatted as a localized byte count, e.g. '1.2 GB' }}. */
-"BACKUPS_SAVE_SPACE_UPSELL_BODY" = "Signal is using %1$@ of storage space for media. Paid Signal Secure Backup plans can save storage space by offloading media, while preserving your entire chat history in your backup.";
+"BACKUPS_SAVE_SPACE_UPSELL_BODY" = "Multimedia z aplikacji Signal zajmują %1$@ miejsca na urządzeniu. Bezpieczne kopie zapasowe Signal w płatnym trybie umożliwiają przeniesienie multimediów do pamięci w chmurze oraz zachowanie całej historii wiadomości w kopii zapasowej.";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
-"BACKUPS_SAVE_SPACE_UPSELL_TITLE" = "Save Space With Paid Backups";
+"BACKUPS_SAVE_SPACE_UPSELL_TITLE" = "Oszczędzaj miejsce na urządzeniu";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Bezpieczne kopie zapasowe";
+
+/* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Kopie zapasowe Signal zostały włączone na tym koncie o godz. %1$@. Dotknij, aby wyświetlić.";
@@ -1295,7 +1298,7 @@
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Zablokować i opuścić grupę „%1$@”?";
 
 /* Label for 'block release notes' action sheet title. */
-"BLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Block Signal?";
+"BLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Zablokować powiadomienia o nowościach Signal?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Zablokować tę osobę: %1$@?";
@@ -1355,7 +1358,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Osoby z tej grupy znów mogą Cię do niej dodać.";
 
 /* An explanation of the consequences of blocking release notes. */
-"BLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Block getting Signal updates and news.";
+"BLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Zablokuj informacje o aktualizacjach i nowościach w aplikacji Signal.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Zablokowane osoby nie będą mogły do Ciebie dzwonić ani wysyłać Ci wiadomości.";
@@ -2051,19 +2054,19 @@
 "CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages and media are included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_AND_MEDIA_BACKUP" = "Full text + media backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_AND_MEDIA_BACKUP" = "Kopia zapasowa wszystkich wiadomości tekstowych oraz multimediów";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Kopia zapasowa wszystkich wiadomości tekstowych";
 
 /* Text for a bullet point in a list of Backup features, describing that the paid Backup plan can save on-device storage space. */
-"CHOOSE_BACKUP_PLAN_BULLET_SAVE_DEVICE_STORAGE" = "Save on-device storage space";
+"CHOOSE_BACKUP_PLAN_BULLET_SAVE_DEVICE_STORAGE" = "Oszczędzaj miejsce na urządzeniu";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}. */
 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ miejsca";
 
 /* Text for a bullet point in a list of Backup features, thanking the user for supporting Signal by subscribing to the paid Backup plan. */
-"CHOOSE_BACKUP_PLAN_BULLET_THANKS_FOR_SUPPORTING_SIGNAL" = "Thanks for supporting Signal!";
+"CHOOSE_BACKUP_PLAN_BULLET_THANKS_FOR_SUPPORTING_SIGNAL" = "Wsparcie dla aplikacji Signal";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "Aby włączyć tworzenie kopii zapasowych, najpierw musisz zarejestrować urządzenie.";
@@ -2510,7 +2513,7 @@
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Zablokuj grupę";
 
 /* Label for 'block release notes' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_RELEASE_NOTES" = "Block";
+"CONVERSATION_SETTINGS_BLOCK_RELEASE_NOTES" = "Zablokuj";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Zablokuj osobę";
@@ -2684,7 +2687,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Odblokuj grupę";
 
 /* Label for 'unblock release notes' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_RELEASE_NOTES" = "Unblock";
+"CONVERSATION_SETTINGS_UNBLOCK_RELEASE_NOTES" = "Odblokuj";
 
 /* Label for 'unblock user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Odblokuj osobę";
@@ -5282,10 +5285,10 @@
 "LONG_TEXT_VIEW_TITLE" = "Wiadomość";
 
 /* Message for a sheet warning the user that their device is low on storage space. */
-"LOW_DISK_SPACE_WARNING_SHEET_MESSAGE" = "Your device is running low on storage space. If you run out of storage, you won't be able to use Signal. Free up space by managing your storage in Settings.";
+"LOW_DISK_SPACE_WARNING_SHEET_MESSAGE" = "Na urządzeniu kończy się wolne miejsce. Jeśli go zabraknie, nie będzie można korzystać z aplikacji Signal. Zwolnij miejsce w ustawieniach pamięci urządzenia.";
 
 /* Title for a sheet warning the user that their device is low on storage space. */
-"LOW_DISK_SPACE_WARNING_SHEET_TITLE" = "Storage Space Low";
+"LOW_DISK_SPACE_WARNING_SHEET_TITLE" = "Za mało miejsca na urządzeniu";
 
 /* Title for error sheet shown when the max video length is recorded with the in-app camera */
 "MAX_VIDEO_RECORDING_LENGTH_ALERT" = "Osiągnięto maksymalną długość filmu";
@@ -6158,7 +6161,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Pomiń i utwórz nowy PIN";
 
 /* Label for the 'skip pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN" = "Skip PIN";
+"ONBOARDING_2FA_SKIP_PIN" = "Pomiń PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Jeśli nie pamiętasz PIN-u, masz możliwość utworzenia nowego. Możesz się zarejestrować i korzystać ze swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje w profilu.";
@@ -7065,9 +7068,6 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN musi mieć co najmniej 4 cyfry.";
-
-/* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Możesz przypiąć maksymalnie 4 czaty.";
 
 /* Accessibility label prefix for banner showing a pinned message */
 "PINNED_MESSAGE_BANNER_AX_LABEL" = "Przypięta wiadomość:";
@@ -7994,7 +7994,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT" = "Zwolnij %1$@ na urządzeniu";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "W kopii zapasowej masz multimedia, które nie zostały jeszcze pobrane na to urządzenie. Jeśli nie wykupisz subskrypcji kopii zapasowych, Twoje niepobrane multimedia zostaną trwale usunięte.";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE" = "W kopii zapasowej masz multimedia, które nie zostały jeszcze pobrane na to urządzenie. Jeśli nie wykupisz subskrypcji kopii zapasowych, niepobrane multimedia zostaną trwale usunięte.";
 
 /* Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE" = "Jeśli pominiesz pobieranie, pozostałe multimedia i załączniki z kopii zapasowej będzie można pobrać później, gdy zwolni się miejsce na urządzeniu.";
@@ -8096,7 +8096,7 @@
 "SAFETY_TIPS_CRYPTO_TITLE" = "Oszustwa związane z pieniędzmi, w tym kryptowalutami";
 
 /* Message body describing the enable reglock safety tip. */
-"SAFETY_TIPS_ENABLE_REGLOCK_BODY" = "To dodatkowe zabezpieczenie Twojego konta w przypadku ponownej rejestracji – oprócz kodu weryfikacyjnego wymagany będzie także kod PIN Signal.";
+"SAFETY_TIPS_ENABLE_REGLOCK_BODY" = "To dodatkowe zabezpieczenie Twojego konta. W przypadku ponownej rejestracji oprócz kodu weryfikacyjnego wymagany będzie także kod PIN Signal.";
 
 /* Message title describing the enable reglock safety tip. */
 "SAFETY_TIPS_ENABLE_REGLOCK_TITLE" = "Włącz blokadę rejestracji w ustawieniach konta";
@@ -8549,13 +8549,13 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Połączenia";
 
 /* Footer for the 'media auto-download' section in the data settings. The replacement will be a formatted file size, such as '100 KB'. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages and stickers smaller than %1$@ are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Wiadomości głosowe i naklejki mniejsze niż %1$@ zawsze pobierają się automatycznie.";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Automatyczne pobieranie";
 
 /* Footer for the 'media auto-download' section in the data settings. The replacement will be a formatted file size, such as '200 MB'. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_NEVER_FOOTER" = "Media and files larger than %1$@ are never auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_NEVER_FOOTER" = "Multimedia i pliki większe niż %1$@ nigdy nie pobierają się automatycznie.";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Zresetuj ustawienia automatycznego pobierania";
@@ -9862,6 +9862,12 @@
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Przetwarzanie darowizny…";
 
+/* Message for a sheet shown when a donation request is rate-limited. */
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+
+/* Title for a sheet shown when a donation request is rate-limited. */
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Kolejna wpłata %1$@";
 
@@ -10049,10 +10055,10 @@
 "UNAVAILABLE_MEDIA_TAP_TOAST" = "Te multimedia nie są już dostępne";
 
 /* Action sheet title when confirming you want to unblock release notes. */
-"UNBLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Unblock Signal?";
+"UNBLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Odblokować powiadomienia o nowościach Signal?";
 
 /* Action sheet body when confirming you want to unblock release notes */
-"UNBLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Resume getting Signal updates and news.";
+"UNBLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Bądź znów na bieżąco z nowościami w aplikacji Signal.";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Nie masz tej osoby w kontaktach. Czy chcesz ją zablokować?";

@@ -581,7 +581,7 @@
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "回復キーが確認されました。キーの取り扱いは厳重にしてください。";
 
 /* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
-"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "Do not share your recovery key with anyone. This will let them take over your account. <bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal.";
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "回復キーは誰とも共有しないでください。共有するとアカウントが乗っ取られる可能性があります。回復キーについて、<bold>Signalは決して皆さんにメッセージしません</bold>。Signalを装ったチャットには返信しないでください。";
 
 /* Title for a warning sheet shown to discourage the user from sharing their 'Recovery Key'. */
 "BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "回復キーは共有しないでください";
@@ -656,10 +656,10 @@
 "BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "バックアップサブスクリプションの有効期限が切れています";
 
 /* Title for a label allowing users to view Signal's Terms & Conditions. */
-"BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Terms & Privacy Policy";
+"BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "利用規約とプライバシーポリシー";
 
 /* Title for a button on a Backup plan upsell view that dismisses the upsell without subscribing. */
-"BACKUP_PLAN_UPSELL_NO_THANKS_BUTTON_TEXT" = "No Thanks";
+"BACKUP_PLAN_UPSELL_NO_THANKS_BUTTON_TEXT" = "今はしない";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "クリップボードにコピー";
@@ -791,10 +791,10 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "ネットワークエラー";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan because they're not registered. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_MESSAGE" = "Couldn’t fetch your backup plan because you’re no longer registered.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_MESSAGE" = "登録を解除したため、バックアッププランを取得できませんでした。";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan because they're not registered. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_TITLE" = "Couldn’t Fetch Backup Plan";
+"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_TITLE" = "バックアッププランを取得できませんでした";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "変更またはキャンセル";
@@ -959,7 +959,7 @@
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED" = "この端末に保存されていないメディアが%1$@あります。";
 
 /* Subtitle for a view explaining that downloads are available but not running, and the user's paid subscription is expiring. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "You have %1$@ of media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "この端末に保存されていないメディアが、バックアップ内に%1$@あります。有料サブスクリプションに加入していない場合は、ダウンロードしていないメディアは完全に消去されます。";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "モバイルデータ通信を使ってバックアップ";
@@ -1010,19 +1010,19 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "オフロード済みのメディアをダウンロードしますか？";
 
 /* Action in a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, that dismisses the sheet. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Got It";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "わかりました";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable storage optimization and download your media soon.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Are you sure you want to enable Optimize Storage and offload your media? If your subscription expires, any media not on this device will be permanently deleted.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "ストレージの最適化を有効にしてメディアをオフロードしますか？サブスクリプションの有効期限が切れると、この端末上に保存されていないメディアが完全に消去されます。";
 
 /* Action in a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription, that confirms enabling Optimize Storage. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_OFFLOAD_ACTION" = "Offload My Media";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_OFFLOAD_ACTION" = "メディアをオフロード";
 
 /* Title for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_TITLE" = "Enable Optimize Storage?";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_TITLE" = "ストレージの最適化を有効化しますか？";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "過去のメディアは次回バックアップの際にオフロードされますが、バックアップからいつでもダウンロードできます。";
@@ -1034,10 +1034,10 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Signalのストレージの最適化";
 
 /* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to use storage optimization. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_BODY" = "Storage optimization can only be used with the paid tier of Signal Secure Backups. Upgrade your backup plan to start using this feature.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_BODY" = "ストレージの最適化は、Signalセキュアバックアップの有料版でのみご利用いただけます。この機能をご利用になるには、バックアッププランをアップグレードしてください。";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to use storage optimization. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_TITLE" = "Upgrade to Turn On Storage Optimization";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_TITLE" = "アップグレードしてストレージの最適化をオンにしましょう";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "バックアップストレージの上限に達しました。チャットやメディアのバックアップを続けるには、Signalの空き容量を増やしてください。";
@@ -1148,19 +1148,19 @@
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "バックアップサブスクリプションの更新ができませんでした";
 
 /* Body for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to back up all their media. Embeds {{ the amount of storage included in the paid plan, preformatted as a localized byte count, e.g. '100 GB' }}. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_BODY" = "Paid Signal Secure Backups keep all your media, up to %1$@.";
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_BODY" = "有料のSignalセキュアバックアップなら、すべてのメディアを最大%1$@まで保存できます。";
 
 /* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to back up all their media. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_PRIMARY_ACTION" = "Upgrade";
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_PRIMARY_ACTION" = "アップグレード";
 
 /* Title for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to back up all their media. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_TITLE" = "Back up all your media";
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_TITLE" = "すべてのメディアをバックアップ";
 
 /* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to back up all their media. Embeds {{ the amount of storage included in the paid plan, preformatted as a localized byte count, e.g. '100 GB' }}. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_BODY" = "Paid Signal Secure Backups keep all your media, up to a maximum of %1$@. Never lose a photo or video when you get a new phone or reinstall Signal.";
+"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_BODY" = "有料のSignalセキュアバックアップなら、すべてのメディアを最大%1$@まで保存できます。スマートフォンを買い替えたりSignalを再インストールしたりしても、写真や動画を失うことはありません。";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to back up all their media. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_TITLE" = "Upgrade to Save All Media";
+"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_TITLE" = "アップグレードしてすべてのメディアを保存しましょう";
 
 /* Body for system notification when we detect an issue with Backup media. */
 "BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "メディアのバックアップ中に予期しない問題が発生しました。問題解決のため、デバッグログを送信してください。";
@@ -1169,34 +1169,37 @@
 "BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "メディアのバックアップにエラーが発生しました";
 
 /* Body for a megaphone shown on the chat list encouraging users to enable Signal Secure Backups. */
-"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_BODY" = "Turn on Signal Secure Backups to preserve your messages and media";
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_BODY" = "メッセージとメディアを保存するために、Signalセキュアバックアップをオンにしましょう";
 
 /* Title for a button on a megaphone encouraging users to enable Signal Secure Backups. */
-"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_PRIMARY_ACTION" = "Turn On";
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_PRIMARY_ACTION" = "有効にする";
 
 /* Title for a megaphone shown on the chat list encouraging users to enable Signal Secure Backups. */
-"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_TITLE" = "Never lose a message";
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_TITLE" = "メッセージを失わないために";
 
 /* Body for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_BODY" = "Signal Secure Backups can save storage space by offloading media.";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_BODY" = "Signalセキュアバックアップを使えば、メディアをオフロードすることでストレージを節約できます。";
 
 /* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to save on-device storage space, when the user does not yet have Signal Secure Backups enabled. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_TURN_ON" = "Turn On";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_TURN_ON" = "有効にする";
 
 /* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to save on-device storage space, when the user already has Signal Secure Backups enabled. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_UPGRADE" = "Upgrade";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_UPGRADE" = "アップグレード";
 
 /* Title for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_TITLE" = "Save space with paid backups";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_TITLE" = "有料バックアップでストレージを節約しましょう";
 
 /* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to save on-device storage space. Embeds {{ the amount of storage space being consumed on-device by media, preformatted as a localized byte count, e.g. '1.2 GB' }}. */
-"BACKUPS_SAVE_SPACE_UPSELL_BODY" = "Signal is using %1$@ of storage space for media. Paid Signal Secure Backup plans can save storage space by offloading media, while preserving your entire chat history in your backup.";
+"BACKUPS_SAVE_SPACE_UPSELL_BODY" = "Signalは、メディアの保存のために%1$@のストレージ容量を使用しています。有料のSignalセキュアバックアップなら、メディアをオフロードすることでストレージ容量を節約しながらチャット履歴すべてをバックアップに保存できます。";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
-"BACKUPS_SAVE_SPACE_UPSELL_TITLE" = "Save Space With Paid Backups";
+"BACKUPS_SAVE_SPACE_UPSELL_TITLE" = "有料バックアップでストレージを節約しましょう";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "セキュアバックアップ";
+
+/* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "このアカウントで、Signalバックアップは%1$@に有効になりました。タップして確認できます。";
@@ -1295,7 +1298,7 @@
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "ブロックして「%1$@」グループを抜けますか？";
 
 /* Label for 'block release notes' action sheet title. */
-"BLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Block Signal?";
+"BLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Signalをブロックしますか？";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%1$@ をブロックしますか？";
@@ -1355,7 +1358,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "既存のメンバーは、あなたをグループに再加入させることができます。";
 
 /* An explanation of the consequences of blocking release notes. */
-"BLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Block getting Signal updates and news.";
+"BLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Signalのアップデート情報やニュースを受信しません。";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "ブロックされたユーザーは、あなたにメッセージや通話を発信することができなくなります。";
@@ -2051,19 +2054,19 @@
 "CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "インターネット接続を確認してもう一度お試しください。";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages and media are included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_AND_MEDIA_BACKUP" = "Full text + media backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_AND_MEDIA_BACKUP" = "すべてのテキストメッセージとすべてのメディアのバックアップ";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "すべてのテキストメッセージのバックアップ";
 
 /* Text for a bullet point in a list of Backup features, describing that the paid Backup plan can save on-device storage space. */
-"CHOOSE_BACKUP_PLAN_BULLET_SAVE_DEVICE_STORAGE" = "Save on-device storage space";
+"CHOOSE_BACKUP_PLAN_BULLET_SAVE_DEVICE_STORAGE" = "端末ストレージ容量を節約";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}. */
 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@のストレージ";
 
 /* Text for a bullet point in a list of Backup features, thanking the user for supporting Signal by subscribing to the paid Backup plan. */
-"CHOOSE_BACKUP_PLAN_BULLET_THANKS_FOR_SUPPORTING_SIGNAL" = "Thanks for supporting Signal!";
+"CHOOSE_BACKUP_PLAN_BULLET_THANKS_FOR_SUPPORTING_SIGNAL" = "Signalをサポートしていただきありがとうございます！";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "バックアップを有効にするには登録が必要です。";
@@ -2510,7 +2513,7 @@
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "グループをブロックする";
 
 /* Label for 'block release notes' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_RELEASE_NOTES" = "Block";
+"CONVERSATION_SETTINGS_BLOCK_RELEASE_NOTES" = "ブロック";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "ユーザーをブロックする";
@@ -2684,7 +2687,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "グループのブロックを解除";
 
 /* Label for 'unblock release notes' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_RELEASE_NOTES" = "Unblock";
+"CONVERSATION_SETTINGS_UNBLOCK_RELEASE_NOTES" = "ブロック解除";
 
 /* Label for 'unblock user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "ユーザーのブロックを解除";
@@ -5282,10 +5285,10 @@
 "LONG_TEXT_VIEW_TITLE" = "メッセージ";
 
 /* Message for a sheet warning the user that their device is low on storage space. */
-"LOW_DISK_SPACE_WARNING_SHEET_MESSAGE" = "Your device is running low on storage space. If you run out of storage, you won't be able to use Signal. Free up space by managing your storage in Settings.";
+"LOW_DISK_SPACE_WARNING_SHEET_MESSAGE" = "端末のストレージが不足しています。ストレージが不足すると、Signalを利用できなくなります。設定でストレージを管理して容量を確保してください。";
 
 /* Title for a sheet warning the user that their device is low on storage space. */
-"LOW_DISK_SPACE_WARNING_SHEET_TITLE" = "Storage Space Low";
+"LOW_DISK_SPACE_WARNING_SHEET_TITLE" = "ストレージ容量が不足しています。";
 
 /* Title for error sheet shown when the max video length is recorded with the in-app camera */
 "MAX_VIDEO_RECORDING_LENGTH_ALERT" = "これ以上長い動画は録画できません";
@@ -6158,7 +6161,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "スキップして新しいPINを作成";
 
 /* Label for the 'skip pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN" = "Skip PIN";
+"ONBOARDING_2FA_SKIP_PIN" = "PIN を使用しない";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "もしPINを忘れてしまっても、新しく作成できます。アカウントを登録して使用することもできますが、プロフィールなどの保存されている設定情報は失われます。";
@@ -7065,9 +7068,6 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PINは4桁以上の数字にしてください。";
-
-/* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "ピン留めできるチャットは4件までです。";
 
 /* Accessibility label prefix for banner showing a pinned message */
 "PINNED_MESSAGE_BANNER_AX_LABEL" = "ピン留めされたメッセージ：";
@@ -8549,13 +8549,13 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "通話";
 
 /* Footer for the 'media auto-download' section in the data settings. The replacement will be a formatted file size, such as '100 KB'. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages and stickers smaller than %1$@ are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "%1$@未満のボイスメッセージとステッカーは常に自動でダウンロードされます。";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "自動ダウンロード";
 
 /* Footer for the 'media auto-download' section in the data settings. The replacement will be a formatted file size, such as '200 MB'. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_NEVER_FOOTER" = "Media and files larger than %1$@ are never auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_NEVER_FOOTER" = "%1$@以上のメディアとファイルは自動でダウンロードされません。";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "自動ダウンロードの設定をリセットする";
@@ -9862,6 +9862,12 @@
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "寄付の処理中です...";
 
+/* Message for a sheet shown when a donation request is rate-limited. */
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+
+/* Title for a sheet shown when a donation request is rate-limited. */
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "更新 %1$@";
 
@@ -10049,10 +10055,10 @@
 "UNAVAILABLE_MEDIA_TAP_TOAST" = "このメディアはすでに消去されています";
 
 /* Action sheet title when confirming you want to unblock release notes. */
-"UNBLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Unblock Signal?";
+"UNBLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Signalのブロックを解除しますか？";
 
 /* Action sheet body when confirming you want to unblock release notes */
-"UNBLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Resume getting Signal updates and news.";
+"UNBLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Signalのアップデート情報やニュースを受信します。";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "連絡先にないユーザーです。このユーザーをブロックしますか？";

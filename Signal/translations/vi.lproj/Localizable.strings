@@ -581,7 +581,7 @@
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Mã khóa khôi phục đúng. Cất giữ mã khóa một cách an toàn.";
 
 /* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
-"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "Do not share your recovery key with anyone. This will let them take over your account. <bold>Signal will never message you</bold> for your recovery key. Never respond to a chat pretending to be Signal.";
+"BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "Không chia sẻ mã khóa khôi phục của bạn với bất kỳ ai. Thông tin này sẽ giúp người khác chiếm được tài khoản của bạn. <bold>Signal sẽ không bao giờ nhắn tin yêu cầu bạn</bold> cung cấp mã khóa khôi phục. Đừng bao giờ trả lời tin nhắn giả mạo Signal.";
 
 /* Title for a warning sheet shown to discourage the user from sharing their 'Recovery Key'. */
 "BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_TITLE" = "Không chia sẻ mã khóa khôi phục";
@@ -656,10 +656,10 @@
 "BACKUP_PLAN_DOWNGRADED_SHEET_TITLE" = "Gói đăng ký sao lưu của bạn đã hết hạn";
 
 /* Title for a label allowing users to view Signal's Terms & Conditions. */
-"BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Terms & Privacy Policy";
+"BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT" = "Điều khoản và Chính sách bảo mật";
 
 /* Title for a button on a Backup plan upsell view that dismisses the upsell without subscribing. */
-"BACKUP_PLAN_UPSELL_NO_THANKS_BUTTON_TEXT" = "No Thanks";
+"BACKUP_PLAN_UPSELL_NO_THANKS_BUTTON_TEXT" = "Không, cảm ơn";
 
 /* Title for a button allowing users to copy their 'Recovery Key' to the clipboard. */
 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE" = "Sao chép vào Bảng kẹp";
@@ -791,10 +791,10 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_TITLE" = "Lỗi Kết nối mạng";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan because they're not registered. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_MESSAGE" = "Couldn’t fetch your backup plan because you’re no longer registered.";
+"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_MESSAGE" = "Không thể tải thông tin gói sao lưu của bạn vì bạn không còn đăng ký nữa.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan because they're not registered. */
-"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_TITLE" = "Couldn’t Fetch Backup Plan";
+"BACKUP_SETTINGS_BACKUP_PLAN_NOT_REGISTERED_ERROR_TITLE" = "Không thể lấy thông tin gói Sao lưu";
 
 /* Title for a button allowing users to manage or cancel their paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_ACTION_BUTTON_TITLE" = "Quản lý hoặc hủy";
@@ -959,7 +959,7 @@
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED" = "Bạn có %1$@ tập tin đa phương tiện không có trên thiết bị này.";
 
 /* Subtitle for a view explaining that downloads are available but not running, and the user's paid subscription is expiring. Embeds {{ the amount available to download as a file size, e.g. 100 MB }}. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "You have %1$@ of media in your backup that’s not on this device. Undownloaded media will be permanently deleted without a paid subscription.";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_SUSPENDED_PAID_SUBSCRIPTION_EXPIRING" = "Bạn có %1$@ tập tin đa phương tiện trong bản sao lưu không có trên thiết bị này. Các tập tin đa phương tiện chưa được tải xuống sẽ bị xóa vĩnh viễn nếu không có gói đăng ký trả phí.";
 
 /* Label for a toggleable menu item describing whether to make backups on cellular data. */
 "BACKUP_SETTINGS_ENABLED_BACKUP_ON_CELLULAR_LABEL" = "Sao lưu bằng dữ liệu di động";
@@ -1010,19 +1010,19 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "Tải tập tin đa phương tiện đã offload?";
 
 /* Action in a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, that dismisses the sheet. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Got It";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Đã hiểu";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable storage optimization and download your media soon.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Are you sure you want to enable Optimize Storage and offload your media? If your subscription expires, any media not on this device will be permanently deleted.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Bạn có chắc muốn bật tính năng Tối ưu hóa dung lượng và giảm tải dữ liệu đa phương tiện của mình không? Nếu gói đăng ký của bạn hết hạn, bất kỳ tập tin đa phương tiện nào không có ở trên thiết bị này sẽ bị xóa vĩnh viễn.";
 
 /* Action in a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription, that confirms enabling Optimize Storage. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_OFFLOAD_ACTION" = "Offload My Media";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_OFFLOAD_ACTION" = "Giảm tải tập tin đa phương tiện";
 
 /* Title for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_TITLE" = "Enable Optimize Storage?";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_TITLE" = "Bật Tối ưu hóa dung lượng?";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is available. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "Các tập tin đa phương tiện cũ hơn sẽ được gỡ khi bạn tạo bản sao lưu tiếp theo, nhưng có thể được tải xuống từ bản sao lưu bất cứ lúc nào.";
@@ -1034,10 +1034,10 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Tối ưu hóa dung lượng của Signal";
 
 /* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to use storage optimization. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_BODY" = "Storage optimization can only be used with the paid tier of Signal Secure Backups. Upgrade your backup plan to start using this feature.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_BODY" = "Tối ưu hóa lưu trữ là tính năng của gói trả phí Sao lưu bảo mật Signal. Nâng cấp gói sao lưu để bắt đầu sử dụng tính năng này.";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to use storage optimization. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_TITLE" = "Upgrade to Turn On Storage Optimization";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_TITLE" = "Nâng cấp để bật Tối ưu hóa dung lượng";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "Bạn đã đạt giới hạn dung lượng sao lưu. Giải phóng dung lượng trong Signal để tiếp tục sao lưu cuộc trò chuyện và tập tin đa phương tiện.";
@@ -1148,19 +1148,19 @@
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "Gia hạn không thành công gói đăng ký sao lưu của bạn";
 
 /* Body for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to back up all their media. Embeds {{ the amount of storage included in the paid plan, preformatted as a localized byte count, e.g. '100 GB' }}. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_BODY" = "Paid Signal Secure Backups keep all your media, up to %1$@.";
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_BODY" = "Gói Sao lưu bảo mật Signal trả phí giữ tất cả tập tin đa phương tiện của bạn, lên đến %1$@.";
 
 /* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to back up all their media. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_PRIMARY_ACTION" = "Upgrade";
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_PRIMARY_ACTION" = "Nâng cấp";
 
 /* Title for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to back up all their media. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_TITLE" = "Back up all your media";
+"BACKUPS_BACK_UP_YOUR_MEDIA_MEGAPHONE_TITLE" = "Sao lưu tất cả đa phương tiện";
 
 /* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to back up all their media. Embeds {{ the amount of storage included in the paid plan, preformatted as a localized byte count, e.g. '100 GB' }}. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_BODY" = "Paid Signal Secure Backups keep all your media, up to a maximum of %1$@. Never lose a photo or video when you get a new phone or reinstall Signal.";
+"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_BODY" = "Gói Sao lưu bảo mật Signal trả phí giữ tất cả tập tin đa phương tiện của bạn, tối đa đến %1$@. Không để mất hình ảnh hoặc video trên điện thoại mới hoặc khi cài đặt lại Signal.";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to back up all their media. */
-"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_TITLE" = "Upgrade to Save All Media";
+"BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_TITLE" = "Nâng cấp để lưu tất cả tập tin đa phương tiện";
 
 /* Body for system notification when we detect an issue with Backup media. */
 "BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "Đã xảy ra lỗi liên quan đến bản sao lưu đa phương tiện. Vui lòng gửi nhật ký gỡ lỗi để giúp chúng tôi giải quyết vấn đề.";
@@ -1169,34 +1169,37 @@
 "BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "Lỗi bản sao lưu đa phương tiện";
 
 /* Body for a megaphone shown on the chat list encouraging users to enable Signal Secure Backups. */
-"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_BODY" = "Turn on Signal Secure Backups to preserve your messages and media";
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_BODY" = "Bật Sao lưu bảo mật Signal để bảo vệ tin nhắn và tập tin đa phương tiện của bạn";
 
 /* Title for a button on a megaphone encouraging users to enable Signal Secure Backups. */
-"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_PRIMARY_ACTION" = "Turn On";
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_PRIMARY_ACTION" = "Bật";
 
 /* Title for a megaphone shown on the chat list encouraging users to enable Signal Secure Backups. */
-"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_TITLE" = "Never lose a message";
+"BACKUPS_NEVER_LOSE_A_MESSAGE_MEGAPHONE_TITLE" = "Không để mất tin nhắn";
 
 /* Body for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_BODY" = "Signal Secure Backups can save storage space by offloading media.";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_BODY" = "Sao lưu bảo mật Signal có thể tiết kiệm dung lượng lưu trữ bằng cách giảm tải tập tin đa phương tiện.";
 
 /* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to save on-device storage space, when the user does not yet have Signal Secure Backups enabled. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_TURN_ON" = "Turn On";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_TURN_ON" = "Bật";
 
 /* Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to save on-device storage space, when the user already has Signal Secure Backups enabled. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_UPGRADE" = "Upgrade";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_PRIMARY_ACTION_UPGRADE" = "Nâng cấp";
 
 /* Title for a megaphone shown on the chat list encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
-"BACKUPS_SAVE_SPACE_MEGAPHONE_TITLE" = "Save space with paid backups";
+"BACKUPS_SAVE_SPACE_MEGAPHONE_TITLE" = "Tiết kiệm dung lượng với các bản sao lưu trả phí";
 
 /* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to save on-device storage space. Embeds {{ the amount of storage space being consumed on-device by media, preformatted as a localized byte count, e.g. '1.2 GB' }}. */
-"BACKUPS_SAVE_SPACE_UPSELL_BODY" = "Signal is using %1$@ of storage space for media. Paid Signal Secure Backup plans can save storage space by offloading media, while preserving your entire chat history in your backup.";
+"BACKUPS_SAVE_SPACE_UPSELL_BODY" = "Signal đang sử dụng %1$@ dung lượng cho tập tin đa phương tiện. Gói Sao lưu bảo mật Signal trả phí có thể tiết kiệm dung lượng lưu trữ bằng cách giảm tải tập tin đa phương tiện, và vẫn giữ nguyên toàn bộ lịch sử trò chuyện trong bản sao lưu của bạn.";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
-"BACKUPS_SAVE_SPACE_UPSELL_TITLE" = "Save Space With Paid Backups";
+"BACKUPS_SAVE_SPACE_UPSELL_TITLE" = "Tiết kiệm dung lượng với các bản sao lưu trả phí";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Sao lưu bảo mật";
+
+/* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Đã bật tính năng Sao lưu cho tài khoản này vào %1$@. Nhấn để xem.";
@@ -1295,7 +1298,7 @@
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Chặn và Rời Nhóm \"%1$@\" ?";
 
 /* Label for 'block release notes' action sheet title. */
-"BLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Block Signal?";
+"BLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Chặn Signal?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Chặn %1$@?";
@@ -1355,7 +1358,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Các thành viên đang trong nhóm có thể thêm bạn vào nhóm trở lại.";
 
 /* An explanation of the consequences of blocking release notes. */
-"BLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Block getting Signal updates and news.";
+"BLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Ngừng nhận cập nhật và tin tức của Signal.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Người dùng bị chặn sẽ không thể gửi tin nhắn hay gọi cho bạn.";
@@ -2051,19 +2054,19 @@
 "CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "Kiểm tra kết nối internet của bạn và thử lại.";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages and media are included. */
-"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_AND_MEDIA_BACKUP" = "Full text + media backup";
+"CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_AND_MEDIA_BACKUP" = "Sao lưu toàn bộ tin nhắn văn bản + đa phương tiện";
 
 /* Text for a bullet point in a list of Backup features, describing that all text messages are included. */
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP" = "Sao lưu toàn bộ tin nhắn văn bản";
 
 /* Text for a bullet point in a list of Backup features, describing that the paid Backup plan can save on-device storage space. */
-"CHOOSE_BACKUP_PLAN_BULLET_SAVE_DEVICE_STORAGE" = "Save on-device storage space";
+"CHOOSE_BACKUP_PLAN_BULLET_SAVE_DEVICE_STORAGE" = "Tiết kiệm dung lượng lưu trữ trên thiết bị";
 
 /* Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}. */
 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ dung lượng lưu trữ";
 
 /* Text for a bullet point in a list of Backup features, thanking the user for supporting Signal by subscribing to the paid Backup plan. */
-"CHOOSE_BACKUP_PLAN_BULLET_THANKS_FOR_SUPPORTING_SIGNAL" = "Thanks for supporting Signal!";
+"CHOOSE_BACKUP_PLAN_BULLET_THANKS_FOR_SUPPORTING_SIGNAL" = "Cảm ơn bạn đã hỗ trợ Signal!";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "Bạn phải đăng ký gói để bật Sao lưu.";
@@ -2510,7 +2513,7 @@
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Chặn Nhóm";
 
 /* Label for 'block release notes' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_RELEASE_NOTES" = "Block";
+"CONVERSATION_SETTINGS_BLOCK_RELEASE_NOTES" = "Chặn";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Chặn Người Dùng";
@@ -2684,7 +2687,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Bỏ chặn Nhóm";
 
 /* Label for 'unblock release notes' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_RELEASE_NOTES" = "Unblock";
+"CONVERSATION_SETTINGS_UNBLOCK_RELEASE_NOTES" = "Bỏ chặn";
 
 /* Label for 'unblock user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Bỏ chặn Người Dùng";
@@ -5282,10 +5285,10 @@
 "LONG_TEXT_VIEW_TITLE" = "Tin nhắn";
 
 /* Message for a sheet warning the user that their device is low on storage space. */
-"LOW_DISK_SPACE_WARNING_SHEET_MESSAGE" = "Your device is running low on storage space. If you run out of storage, you won't be able to use Signal. Free up space by managing your storage in Settings.";
+"LOW_DISK_SPACE_WARNING_SHEET_MESSAGE" = "Thiết bị của bạn sắp hết dung lượng lưu trữ. Nếu hết dung lượng, bạn sẽ không thể sử dụng Signal. Giải phóng dung lượng bằng cách quản lý trong Cài đặt.";
 
 /* Title for a sheet warning the user that their device is low on storage space. */
-"LOW_DISK_SPACE_WARNING_SHEET_TITLE" = "Storage Space Low";
+"LOW_DISK_SPACE_WARNING_SHEET_TITLE" = "Dung lượng lưu trữ thấp";
 
 /* Title for error sheet shown when the max video length is recorded with the in-app camera */
 "MAX_VIDEO_RECORDING_LENGTH_ALERT" = "Đã đạt giới hạn độ dài của video";
@@ -6158,7 +6161,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Bỏ qua và Tạo PIN mới";
 
 /* Label for the 'skip pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN" = "Skip PIN";
+"ONBOARDING_2FA_SKIP_PIN" = "Bỏ qua mã PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Nếu bạn không nhớ mã PIN, bạn có thể tạo PIN mới. Bạn có thể đăng kí và dùng tài khoản của bạn nhưng sẽ mất một vài dữ liệu như thông tin hồ sơ.";
@@ -7065,9 +7068,6 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "Mã PIN phải có ít nhất 4 kí tự.";
-
-/* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Bạn chỉ có thể ghim tối đa 4 cuộc trò chuyện.";
 
 /* Accessibility label prefix for banner showing a pinned message */
 "PINNED_MESSAGE_BANNER_AX_LABEL" = "Tin nhắn đã ghim:";
@@ -8549,13 +8549,13 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Cuộc gọi";
 
 /* Footer for the 'media auto-download' section in the data settings. The replacement will be a formatted file size, such as '100 KB'. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages and stickers smaller than %1$@ are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Tin nhắn thoại và nhãn dán dưới %1$@ luôn được tự động tải xuống.";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Tự động-Tải";
 
 /* Footer for the 'media auto-download' section in the data settings. The replacement will be a formatted file size, such as '200 MB'. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_NEVER_FOOTER" = "Media and files larger than %1$@ are never auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_NEVER_FOOTER" = "Các tập tin và tập tin đa phương tiện có kích thước lớn hơn %1$@ sẽ không bao giờ được tự động tải xuống.";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Đặt lại Cài đặt Tải Tự động";
@@ -9862,6 +9862,12 @@
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Đang xử lý khoản ủng hộ…";
 
+/* Message for a sheet shown when a donation request is rate-limited. */
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+
+/* Title for a sheet shown when a donation request is rate-limited. */
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Làm mới %1$@";
 
@@ -10049,10 +10055,10 @@
 "UNAVAILABLE_MEDIA_TAP_TOAST" = "Tập tin đa phương tiện không còn khả dụng";
 
 /* Action sheet title when confirming you want to unblock release notes. */
-"UNBLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Unblock Signal?";
+"UNBLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Bỏ chặn Signal?";
 
 /* Action sheet body when confirming you want to unblock release notes */
-"UNBLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Resume getting Signal updates and news.";
+"UNBLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Tiếp tục nhận cập nhật và tin tức của Signal.";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Người dùng không có trong danh bạ của bạn. Bạn có muốn chặn người này không?";

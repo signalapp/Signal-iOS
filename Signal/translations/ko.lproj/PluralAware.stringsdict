@@ -78,7 +78,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>멤버 %1$d명을 &quot;%2$@&quot;에 추가할까요?</string>
+			<string>멤버 %1$d명을 &apos;%2$@&apos;에 추가할까요?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -1292,6 +1292,20 @@
 			<string>d</string>
 			<key>other</key>
 			<string>&quot;%2$@&quot; 님이 보낸 %1$d개 초대를 취소할까요?</string>
+		</dict>
+	</dict>
+	<key>PINNED_CONVERSATION_LIMIT</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>You can only pin up to %1$d chats.</string>
 		</dict>
 	</dict>
 	<key>POLL_VOTE_COUNT</key>

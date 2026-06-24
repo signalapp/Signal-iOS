@@ -1294,6 +1294,20 @@
 			<string>要撤銷由&quot;%2$@&quot;傳送的%1$d個邀請嗎？</string>
 		</dict>
 	</dict>
+	<key>PINNED_CONVERSATION_LIMIT</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>You can only pin up to %1$d chats.</string>
+		</dict>
+	</dict>
 	<key>POLL_VOTE_COUNT</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
