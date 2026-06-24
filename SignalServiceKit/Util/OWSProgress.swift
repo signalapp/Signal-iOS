@@ -414,7 +414,6 @@ private actor OWSProgressRootNode: OWSProgressSink {
         }
 
         var label: String? { chain.last }
-        var parentLabel: String? { chain.dropLast().last }
 
         static func root() -> Self {
             return Self(chain: [])
@@ -423,12 +422,18 @@ private actor OWSProgressRootNode: OWSProgressSink {
         func appending(childLabel: String) -> Identifier {
             return Identifier(chain: chain + [childLabel])
         }
+
+        func parent() -> Identifier? {
+            if chain.isEmpty {
+                return nil
+            } else {
+                return Identifier(chain: chain.dropLast())
+            }
+        }
     }
 
     // Maps from parent identifier to labels of direct children.
     private var childLabels = [Identifier: Set<String>]()
-    // Maps from child label to label of parent.
-    private var parentIdentifiers = [Identifier: Identifier]()
 
     // Maps from parent label to the sum of unit counts of direct
     // children. We cache this since it doesn't change often and
@@ -527,7 +532,6 @@ private actor OWSProgressRootNode: OWSProgressSink {
         // First, add the node to its parent's child references.
         self.allDescendantNodes[identifier] = Weak(value: child)
         self.childLabels[parentIdentifier, default: Set()].insert(label)
-        self.parentIdentifiers[identifier] = parentIdentifier
         if child is OWSProgressParentNode {
             self.totalUnitCountOfChildren[identifier] = 0
             self.completedUnitCountOfChildren[identifier] = 0
@@ -602,7 +606,7 @@ private actor OWSProgressRootNode: OWSProgressSink {
         // Mark all its children
 
         guard
-            let parentIdentifier = self.parentIdentifiers[identifier],
+            let parentIdentifier = identifier.parent(),
             let removedNodeProgress = self.childProgresses[label]?[identifier]
         else {
             owsFailDebug("Removing a label that didn't exist?")
@@ -658,7 +662,6 @@ private actor OWSProgressRootNode: OWSProgressSink {
             let childLabels = self.childLabels.removeValue(forKey: identifierToRemove) ?? Set()
             identifiersToRemove.formUnion(childLabels.map({ identifierToRemove.appending(childLabel: $0) }))
             self.allDescendantNodes.removeValue(forKey: identifierToRemove)
-            self.parentIdentifiers.removeValue(forKey: identifierToRemove)
             self.totalUnitCountOfChildren.removeValue(forKey: identifierToRemove)
             self.completedUnitCountOfChildren.removeValue(forKey: identifierToRemove)
             self.childProgresses[identifierToRemove.label!]?.removeValue(forKey: identifierToRemove)
@@ -675,11 +678,11 @@ private actor OWSProgressRootNode: OWSProgressSink {
             completedUnitCount: newCompletedUnitCount,
             totalUnitCount: oldChildProgress.totalUnitCount,
             label: label,
-            parentLabel: identifier.parentLabel,
+            parentLabel: identifier.parent()?.label,
         )
         self.childProgresses[label]![identifier] = newChildProgress
 
-        let parentIdentifier = self.parentIdentifiers[identifier]!
+        let parentIdentifier = identifier.parent()!
         if parentIdentifier == .root() {
             self.completedUnitCountOfDirectChildren -= oldChildProgress.completedUnitCount
             self.completedUnitCountOfDirectChildren += newChildProgress.completedUnitCount
