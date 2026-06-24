@@ -1,1 +1,7 @@
-• Теперь вы можете включить новую настройку «Оптимизировать хранилище на устройстве» в платном плане резервного копирования, чтобы безопасно выгрузить старые вложения Signal и освободить место на вашем телефоне. Эти защищённые сквозным шифрованием файлы могут быть повторно загружены из вашей личной резервной копии в любое время.
+• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+
+• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+
+• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+
+• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
