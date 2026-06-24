@@ -1999,7 +1999,9 @@ extension StorageServiceAccountRecordUpdater {
                     transaction: transaction,
                 )
                 pinnedThreadIds.append(threadUniqueId)
-            default:
+            case .releaseNotes:
+                pinnedThreadIds.append(TSReleaseNotesThread.releaseNotesUniqueId)
+            case nil:
                 break
             }
         }
@@ -2040,6 +2042,9 @@ extension StorageServiceAccountRecordUpdater {
                     owsFailDebug("Missing uuid and phone number for thread")
                 }
                 pinnedConversationBuilder.setIdentifier(.contact(contactBuilder.buildInfallibly()))
+            } else if pinnedThread is TSReleaseNotesThread {
+                let releaseNotesBuilder = StorageServiceProtoAccountRecordPinnedConversationReleaseNotes.builder()
+                pinnedConversationBuilder.setIdentifier(.releaseNotes(releaseNotesBuilder.buildInfallibly()))
             }
 
             pinnedConversationProtos.append(pinnedConversationBuilder.buildInfallibly())
