@@ -484,11 +484,6 @@ private actor OWSProgressRootNode: OWSProgressSink {
             return
         }
 
-        guard updatedNode.completedUnitCount != childProgresses[updatedNode.label]![updatedNode.identifier]!.completedUnitCount else {
-            // No change!
-            return
-        }
-
         self.recursiveUpdateCompletedUnitCounts(
             forNodeWithIdentifier: updatedNode.identifier,
             newCompletedUnitCount: updatedNode.completedUnitCount,
@@ -804,7 +799,12 @@ private class OWSProgressSourceNode: OWSProgressSource, OWSProgressChildNode {
     }
 
     func incrementCompletedUnitCount(by increment: UInt64) {
-        completedUnitCount += min(increment, totalUnitCount - completedUnitCount)
+        var increment = increment
+        increment = min(increment, totalUnitCount - completedUnitCount)
+        if increment == 0 {
+            return
+        }
+        completedUnitCount += increment
         emitProgressIfNeeded()
     }
 
