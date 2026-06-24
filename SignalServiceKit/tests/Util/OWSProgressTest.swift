@@ -6,6 +6,12 @@
 import XCTest
 @testable import SignalServiceKit
 
+private extension OWSProgress {
+    func progressForChild(label: String) -> ChildProgress? {
+        return self.descendantProgresses(withLabel: label).first
+    }
+}
+
 class OWSProgressTest: XCTestCase {
 
     func testSimpleSourceSink() async {
@@ -1059,7 +1065,7 @@ class OWSProgressTest: XCTestCase {
             }
             XCTAssertEqual(progress.completedUnitCount, 100)
             XCTAssertEqual(progress.totalUnitCount, 600)
-            let progressesFor1 = progress.progressesForAllChildren(withLabel: "1")
+            let progressesFor1 = progress.descendantProgresses(withLabel: "1")
             XCTAssertEqual(progressesFor1.count, 2)
             XCTAssert(progressesFor1.contains(
                 OWSProgress.ChildProgress(

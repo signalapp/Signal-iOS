@@ -57,7 +57,7 @@ class BackupRestoreProgressViewModel: ObservableObject {
 #endif
 
         if
-            let downloadSource = progress.progressForChild(label: AttachmentDownloads.downloadProgressLabel),
+            let downloadSource = progress.descendantProgresses(withLabel: AttachmentDownloads.downloadProgressLabel).first,
             downloadSource.completedUnitCount > 0,
             !downloadSource.isFinished
         {

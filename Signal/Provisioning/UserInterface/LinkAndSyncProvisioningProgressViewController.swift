@@ -44,24 +44,15 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
             // regardless of state.
             canBeCancelled = true
         } else {
-            canBeCancelled = progress
-                .progress(for: .waitingForBackup)?
-                .isFinished
-                ?? false
+            canBeCancelled = progress.progress(for: .waitingForBackup)?.isFinished ?? false
         }
 
         guard !didTapCancel else { return }
 
-        self.isIndeterminate = !(
-            progress
-                .progress(for: .waitingForBackup)?
-                .isFinished ?? false
-        )
+        self.isIndeterminate = !(progress.progress(for: .waitingForBackup)?.isFinished ?? false)
 
         if
-            let downloadSource = progress.progressForChild(
-                label: AttachmentDownloads.downloadProgressLabel,
-            ),
+            let downloadSource = progress.descendantProgresses(withLabel: AttachmentDownloads.downloadProgressLabel).first,
             downloadSource.completedUnitCount > 0,
             !downloadSource.isFinished
         {

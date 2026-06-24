@@ -27,20 +27,9 @@ public struct OWSSequentialProgress<StepEnum>: Equatable, SomeOWSProgress where 
     public var totalUnitCount: UInt64 { progress.totalUnitCount }
 
     /// Get the latest progress for any source/sink at any layer of the progress tree.
-    /// Maps from source/child sink label to the progress of that node.
-    /// Note: if there are multiple children with the same label, will pick an
-    /// arbitrary child. In most cases, there will be just one child and this
-    /// is fine and this API is provided for simplicity.
-    /// If not, use `progressesForAllChildren` to get the full acounting
-    /// of duplicate labels.
-    public func progressForChild(label: String) -> OWSProgress.ChildProgress? {
-        return progress.progressForChild(label: label)
-    }
-
-    /// Get the latest progress for any source/sink at any layer of the progress tree.
     /// Maps from source/child sink label to the progress of all nodes with that label.
-    public func progressesForAllChildren(withLabel label: String) -> some Collection<OWSProgress.ChildProgress> {
-        return progress.progressesForAllChildren(withLabel: label)
+    public func descendantProgresses(withLabel label: String) -> some Collection<OWSProgress.ChildProgress> {
+        return progress.descendantProgresses(withLabel: label)
     }
 
     public var percentComplete: Float { return progress.percentComplete }
@@ -52,8 +41,7 @@ public struct OWSSequentialProgress<StepEnum>: Equatable, SomeOWSProgress where 
     }
 
     public func progress(for step: StepEnum) -> OWSProgress.ChildProgress? {
-        return self.progressesForAllChildren(withLabel: step.rawValue)
-            .first(where: { $0.parentLabel == nil })
+        return self.descendantProgresses(withLabel: step.rawValue).first(where: { $0.parentLabel == nil })
     }
 
     public var currentStep: StepEnum {

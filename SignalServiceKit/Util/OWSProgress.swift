@@ -118,7 +118,7 @@ public class OWSProgress: Equatable, SomeOWSProgress, CustomStringConvertible {
     ) {
         self.completedUnitCount = completedUnitCount
         self.totalUnitCount = totalUnitCount
-        self.descendantProgresses = [:]
+        self._descendantProgresses = [:]
     }
 
 #if DEBUG
@@ -142,7 +142,7 @@ public class OWSProgress: Equatable, SomeOWSProgress, CustomStringConvertible {
     ) {
         self.completedUnitCount = completedUnitCount
         self.totalUnitCount = totalUnitCount
-        self.descendantProgresses = descendantProgresses
+        self._descendantProgresses = descendantProgresses
     }
 
     public var description: String {
@@ -155,7 +155,7 @@ public class OWSProgress: Equatable, SomeOWSProgress, CustomStringConvertible {
                 completedUnitCount: completedUnitCount,
                 totalUnitCount: totalUnitCount,
             )
-        } else if descendantProgresses.isEmpty {
+        } else if _descendantProgresses.isEmpty {
             // With no children, don't count as complete.
             return 0
         } else {
@@ -169,7 +169,7 @@ public class OWSProgress: Equatable, SomeOWSProgress, CustomStringConvertible {
     public var isFinished: Bool {
         if totalUnitCount > 0 {
             return totalUnitCount == completedUnitCount
-        } else if descendantProgresses.isEmpty {
+        } else if _descendantProgresses.isEmpty {
             // With no children, don't count as complete.
             return false
         } else {
@@ -180,31 +180,11 @@ public class OWSProgress: Equatable, SomeOWSProgress, CustomStringConvertible {
         }
     }
 
-    private let descendantProgresses: [String: [OWSProgressRootNode.Identifier: ChildProgress]]
+    private let _descendantProgresses: [String: [OWSProgressRootNode.Identifier: ChildProgress]]
 
-    /// Get the latest progress for any source/sink at any layer of the progress tree.
-    /// Maps from source/child sink label to the progress of that node.
-    /// Note: if there are multiple children with the same label, will pick an
-    /// arbitrary child. In most cases, there will be just one child and this
-    /// is fine and this API is provided for simplicity.
-    /// If not, use `progressesForAllChildren` to get the full acounting
-    /// of duplicate labels.
-    public func progressForChild(label: String) -> ChildProgress? {
-        return descendantProgresses[label]?.first?.value
-    }
-
-    /// Get the latest progress for any source/sink at any layer of the progress tree.
-    /// Maps from source/child sink label to the progress of all nodes with that label.
-    public func progressesForAllChildren(withLabel label: String) -> some Collection<ChildProgress> {
-        return descendantProgresses[label, default: [:]].values
-    }
-
-    public var allChildProgresses: [ChildProgress] {
-        var progresses = [ChildProgress]()
-        for dict in descendantProgresses.values {
-            progresses.append(contentsOf: dict.values)
-        }
-        return progresses
+    /// Get the latest progresses for all descendants with a given label.
+    public func descendantProgresses(withLabel label: String) -> some Collection<ChildProgress> {
+        return _descendantProgresses[label, default: [:]].values
     }
 
 #if DEBUG
