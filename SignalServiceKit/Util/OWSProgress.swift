@@ -67,8 +67,8 @@ import Foundation
 /// OWSProgress optimizes for single-threaded updates; batching observer updates to do so efficiently.
 /// * NSProgress requires you to know unit counts for all children up-front and they must all share units.
 /// OWSProgress lets you add children lazily and renormalizes disparate units at each level of the tree.
-public class OWSProgress: Equatable, SomeOWSProgress, CustomStringConvertible {
-    public class ChildProgress: Equatable, SomeOWSProgress {
+public struct OWSProgress: Equatable, SomeOWSProgress, CustomStringConvertible {
+    public struct ChildProgress: Equatable, SomeOWSProgress {
         /// The completed unit count of this particular source/sink.
         /// The units DO NOT necessarily correspond to the units of the root OWSProgress.
         public let completedUnitCount: UInt64
