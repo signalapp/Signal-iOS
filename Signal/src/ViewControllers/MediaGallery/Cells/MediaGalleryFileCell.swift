@@ -563,4 +563,6 @@ extension MediaGalleryFileCell: CVComponentDelegate {
     func didTapViewPinnedMessage(pinnedMessageUniqueId: String) {}
 
     func didTapSafetyTips() {}
+
+    func didTapReleaseNotesAnnouncementAction(action: RemoteAnnouncementModel.Manifest.Action) {}
 }

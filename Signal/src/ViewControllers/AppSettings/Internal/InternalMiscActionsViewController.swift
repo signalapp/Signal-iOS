@@ -56,6 +56,7 @@ class InternalMiscActionsViewController: OWSTableViewController2 {
                         appVersion: AppVersionImpl.shared,
                         dateProvider: { Date() },
                         remoteReleaseNotesService: DependenciesBridge.shared.remoteReleaseNotesService,
+                        releaseNoteStore: ReleaseNoteStore(),
                     )
                     Task {
                         try await remoteReleaseNotesFetchingManager.syncRemoteReleaseNotes()

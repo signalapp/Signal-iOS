@@ -1359,6 +1359,8 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapViewPinnedMessage(pinnedMessageUniqueId: String) {}
 
     func didTapSafetyTips() {}
+
+    func didTapReleaseNotesAnnouncementAction(action: RemoteAnnouncementModel.Manifest.Action) {}
 }
 
 extension MessageDetailViewController: UINavigationControllerDelegate {

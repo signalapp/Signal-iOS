@@ -1469,6 +1469,13 @@ extension ConversationViewController: CVComponentDelegate {
         )
         present(viewController, animated: true)
     }
+
+    public func didTapReleaseNotesAnnouncementAction(action: RemoteAnnouncementModel.Manifest.Action) {
+        switch action {
+        case .unrecognized(let actionId):
+            owsFailDebug("Ignoring unrecognized actionId \(actionId)")
+        }
+    }
 }
 
 // MARK: - OWSNavigationChildController

@@ -376,6 +376,8 @@ public struct ConversationStyle {
             return isDarkThemeEnabled ? .ows_whiteAlpha90 : .ows_accentBlue
         } else if message is TSOutgoingMessage {
             return isDarkThemeEnabled ? .ows_whiteAlpha90 : .white
+        } else if message is TSReleaseNotesMessage {
+            return .ows_whiteAlpha90
         } else {
             owsFailDebug("Unexpected message type: \(message)")
             return bubbleTextColorOutgoing

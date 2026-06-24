@@ -19,7 +19,8 @@ struct RemoteReleaseNotesFetchingManagerTests {
     private let mockRemoteReleaseNotesService: MockRemoteReleaseNotesService = MockRemoteReleaseNotesService()
     private let mockAppVersion: MockAppVersion
     private var mockTSAccountManager = MockTSAccountManager()
-    private let blockedReleaseNotesStore: BlockedReleaseNotesStore = BlockedReleaseNotesStore()
+    private let blockedReleaseNotesStore = BlockedReleaseNotesStore()
+    private let releaseNotesStore = ReleaseNoteStore()
 
     init() {
         // To avoid hitting the ThreadAssociatedData dependency that testing can't support, pre-seed the thread in the thread store.
@@ -40,6 +41,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
             appVersion: mockAppVersion,
             dateProvider: { Date() },
             remoteReleaseNotesService: mockRemoteReleaseNotesService,
+            releaseNoteStore: releaseNotesStore,
         )
     }
 
@@ -58,6 +60,7 @@ struct RemoteReleaseNotesFetchingManagerTests {
             appVersion: mockAppVersion,
             dateProvider: dateProvider,
             remoteReleaseNotesService: mockRemoteReleaseNotesService,
+            releaseNoteStore: releaseNotesStore,
         )
     }
 
@@ -407,12 +410,8 @@ struct RemoteReleaseNotesFetchingManagerTests {
         messages = mockInteractionStore.insertedInteractions
         #expect(messages.count == 0, "We marked this UUID as seen already, so no new messages should have been inserted")
 
-        let releaseNote = try db.read { tx in
-            try StoredReleaseNote.fetchOne(
-                tx.database,
-                sql: "SELECT * FROM \(StoredReleaseNote.databaseTableName) WHERE \(StoredReleaseNote.CodingKeys.uniqueId.rawValue) = ?",
-                arguments: [uuid],
-            )
+        let releaseNote = db.read { tx in
+            releaseNotesStore.existingReleaseNoteForManifestId(uuid, tx: tx)
         }
         #expect(releaseNote != nil, "The release note received while blocking should be marked as seen")
     }

@@ -129,10 +129,10 @@ extension RemoteAnnouncementModel {
 extension RemoteAnnouncementModel.Manifest {
     /// Identifies a known action to take in response to a known user
     /// interaction with this release note.
-    public enum Action: Codable {
+    public enum Action: Codable, Equatable {
         case unrecognized(actionId: String)
 
-        var actionId: String {
+        public var actionId: String {
             switch self {
             case .unrecognized(let conditionalId):
                 return conditionalId

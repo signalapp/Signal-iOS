@@ -14,6 +14,7 @@ public class RemoteReleaseNotesFetchingManager {
     private let db: DB
     private let appVersion: AppVersion
     private let tsAccountManager: TSAccountManager
+    private let releaseNoteStore: ReleaseNoteStore
 
     init(
         db: DB,
@@ -27,11 +28,13 @@ public class RemoteReleaseNotesFetchingManager {
         appVersion: AppVersion,
         dateProvider: @escaping DateProvider,
         remoteReleaseNotesService: any RemoteReleaseNotesServiceProtocol,
+        releaseNoteStore: ReleaseNoteStore,
     ) {
         self.remoteReleaseNotesService = remoteReleaseNotesService
         self.db = db
         self.appVersion = appVersion
         self.tsAccountManager = tsAccountManager
+        self.releaseNoteStore = releaseNoteStore
 
         self.remoteMegaphoneFetcher = RemoteMegaphoneFetcher(
             db: db,
@@ -48,6 +51,7 @@ public class RemoteReleaseNotesFetchingManager {
             interactionStore: interactionStore,
             dateProvider: dateProvider,
             remoteReleaseNotesService: remoteReleaseNotesService,
+            releaseNoteStore: releaseNoteStore,
         )
     }
 
@@ -79,13 +83,7 @@ public class RemoteReleaseNotesFetchingManager {
                 }
 
                 let manifest = $0
-                let existingReleaseNote = failIfThrows {
-                    try StoredReleaseNote.fetchOne(
-                        tx.database,
-                        sql: "SELECT * FROM \(StoredReleaseNote.databaseTableName) WHERE \(StoredReleaseNote.CodingKeys.uniqueId.rawValue) = ?",
-                        arguments: [manifest.id],
-                    )
-                }
+                let existingReleaseNote = releaseNoteStore.existingReleaseNoteForManifestId(manifest.id, tx: tx)
 
                 guard existingReleaseNote == nil else {
                     Logger.warn("Ignoring release note we've already stored.")

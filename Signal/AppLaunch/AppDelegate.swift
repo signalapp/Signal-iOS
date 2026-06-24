@@ -655,6 +655,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             appVersion: AppVersionImpl.shared,
             dateProvider: { Date() },
             remoteReleaseNotesService: DependenciesBridge.shared.remoteReleaseNotesService,
+            releaseNoteStore: ReleaseNoteStore(),
         )
         cron.schedulePeriodically(
             uniqueKey: .fetchMegaphones,

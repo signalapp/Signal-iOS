@@ -277,6 +277,8 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
     func didTapViewPinnedMessage(pinnedMessageUniqueId: String)
 
     func didTapSafetyTips()
+
+    func didTapReleaseNotesAnnouncementAction(action: RemoteAnnouncementModel.Manifest.Action)
 }
 
 // MARK: -
@@ -322,6 +324,7 @@ struct CVMessageAction: Equatable {
         case didTapViewVotes(poll: OWSPoll)
         case didTapViewPoll(pollInteractionUniqueId: String)
         case didTapViewPinnedMessage(pinnedMessageUniqueId: String)
+        case didTapReleaseNotesAnnouncementAction(action: RemoteAnnouncementModel.Manifest.Action)
 
         func perform(delegate: CVComponentDelegate) {
             switch self {
@@ -387,6 +390,8 @@ struct CVMessageAction: Equatable {
                 delegate.didTapViewPoll(pollInteractionUniqueId: pollInteractionUniqueId)
             case .didTapViewPinnedMessage(let pinnedMessageUniqueId):
                 delegate.didTapViewPinnedMessage(pinnedMessageUniqueId: pinnedMessageUniqueId)
+            case .didTapReleaseNotesAnnouncementAction(let action):
+                delegate.didTapReleaseNotesAnnouncementAction(action: action)
             }
         }
     }

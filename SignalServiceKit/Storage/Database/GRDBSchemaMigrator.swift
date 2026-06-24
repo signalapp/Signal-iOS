@@ -340,6 +340,7 @@ public class GRDBSchemaMigrator {
         case wipeKeyTransparencyTable
         case migrateAutoDownloadStore
         case zeroOutCallExpirationColumns
+        case addReleaseNotesCallToAction
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -463,7 +464,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 149
+    public static let grdbSchemaVersionLatest: UInt = 150
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5298,6 +5299,22 @@ public class GRDBSchemaMigrator {
                 WHERE recordType IN (\(SDSRecordType.call.rawValue), \(SDSRecordType.groupCallMessage.rawValue))
                 AND expiresInSeconds IS NULL
             """)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addReleaseNotesCallToAction) { tx in
+            try tx.database.alter(table: StoredReleaseNote.databaseTableName) { (table: TableAlteration) -> Void in
+                table.add(column: "interactionId", .integer)
+                table.add(column: "ctaId", .text)
+                table.add(column: "ctaText", .text)
+            }
+
+            try tx.database.create(
+                index: "partial_index_StoredReleaseNote_on_interactionId",
+                on: StoredReleaseNote.databaseTableName,
+                columns: ["interactionId"],
+                condition: Column("interactionId") != nil,
+            )
             return .success(())
         }
 

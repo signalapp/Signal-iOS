@@ -654,4 +654,6 @@ extension PinnedMessagesDetailsViewController: CVComponentDelegate {
     func didTapViewPinnedMessage(pinnedMessageUniqueId: String) {}
 
     func didTapSafetyTips() {}
+
+    func didTapReleaseNotesAnnouncementAction(action: RemoteAnnouncementModel.Manifest.Action) {}
 }

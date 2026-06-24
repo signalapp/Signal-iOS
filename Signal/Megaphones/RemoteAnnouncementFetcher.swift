@@ -18,6 +18,7 @@ public class RemoteAnnouncementFetcher: RemoteReleaseNotesFetcher<RemoteAnnounce
     private let dateProvider: DateProvider
     private let kvStore: NewKeyValueStore
     private let lastFetchedReleaseNotesKey = "lastFetchedReleaseNotes"
+    private let releaseNoteStore: ReleaseNoteStore
 
     init(
         db: any DB,
@@ -30,6 +31,7 @@ public class RemoteAnnouncementFetcher: RemoteReleaseNotesFetcher<RemoteAnnounce
         interactionStore: InteractionStore,
         dateProvider: @escaping DateProvider,
         remoteReleaseNotesService: any RemoteReleaseNotesServiceProtocol,
+        releaseNoteStore: ReleaseNoteStore,
     ) {
         self.attachmentContentValidator = attachmentContentValidator
         self.attachmentManager = attachmentManager
@@ -39,6 +41,7 @@ public class RemoteAnnouncementFetcher: RemoteReleaseNotesFetcher<RemoteAnnounce
         self.threadStore = threadStore
         self.interactionStore = interactionStore
         self.dateProvider = dateProvider
+        self.releaseNoteStore = releaseNoteStore
         self.kvStore = NewKeyValueStore(collection: "RemoteReleaseNotes")
 
         super.init(db: db, remoteReleaseNotesService: remoteReleaseNotesService)
@@ -124,7 +127,13 @@ public class RemoteAnnouncementFetcher: RemoteReleaseNotesFetcher<RemoteAnnounce
                 let releaseNotesThread = getOrCreateThread(tx: tx)
                 guard !blockingManager.isThreadBlocked(releaseNotesThread, transaction: tx) else {
                     Logger.info("Skipping release notes update: thread is blocked")
-                    storeReleaseNoteAndUpdateLastFetchTime(uniqueId: manifest.id, tx: tx)
+                    storeReleaseNoteAndUpdateLastFetchTime(
+                        uniqueId: manifest.id,
+                        messageInteractionId: nil,
+                        callToAction: nil,
+                        ctaText: nil,
+                        tx: tx,
+                    )
                     return
                 }
 
@@ -160,7 +169,14 @@ public class RemoteAnnouncementFetcher: RemoteReleaseNotesFetcher<RemoteAnnounce
                     thread: releaseNotesThread,
                     transaction: tx,
                 )
-                storeReleaseNoteAndUpdateLastFetchTime(uniqueId: manifest.id, tx: tx)
+
+                storeReleaseNoteAndUpdateLastFetchTime(
+                    uniqueId: manifest.id,
+                    messageInteractionId: releaseNotesMessage.sqliteRowId!,
+                    callToAction: manifest.action,
+                    ctaText: translation.callToActionText,
+                    tx: tx,
+                )
             }
 
             // There may be more than one release note, but we will only show the first eligible one.
@@ -211,10 +227,14 @@ public class RemoteAnnouncementFetcher: RemoteReleaseNotesFetcher<RemoteAnnounce
         kvStore.fetchValue(Date.self, forKey: lastFetchedReleaseNotesKey, tx: tx)
     }
 
-    func storeReleaseNoteAndUpdateLastFetchTime(uniqueId: String, tx: DBWriteTransaction) {
-        failIfThrows {
-            try StoredReleaseNote(uniqueId: uniqueId).insert(tx.database)
-        }
+    func storeReleaseNoteAndUpdateLastFetchTime(uniqueId: String, messageInteractionId: Int64?, callToAction: RemoteAnnouncementModel.Manifest.Action?, ctaText: String?, tx: DBWriteTransaction) {
+        releaseNoteStore.storeReleaseNote(
+            uniqueId: uniqueId,
+            interactionId: messageInteractionId,
+            ctaText: ctaText,
+            callToActionId: callToAction?.actionId,
+            tx: tx,
+        )
         updateLastFetchedReleaseNotes(dateProvider(), tx: tx)
     }
 }

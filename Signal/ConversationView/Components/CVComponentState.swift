@@ -1310,6 +1310,10 @@ private extension CVComponentState.Builder {
             }
         }
 
+        if let tsReleaseNotesMessage = message as? TSReleaseNotesMessage {
+            addReleaseNotesBottomButtonIfNecessary(message: tsReleaseNotesMessage, transaction: transaction)
+        }
+
         // Could be incoming or outgoing; protocol covers both
         if
             let paymentMessage = message as? OWSPaymentMessage,
@@ -2119,5 +2123,30 @@ private extension CVComponentState.Builder {
         }
 
         return build()
+    }
+
+    mutating func addReleaseNotesBottomButtonIfNecessary(message: TSReleaseNotesMessage, transaction: DBReadTransaction) {
+        let releaseNoteStore = ReleaseNoteStore()
+        let releaseNote = releaseNoteStore.existingReleaseNoteForInteractionId(message.sqliteRowId!, tx: transaction)
+
+        if
+            let releaseNote,
+            let callToActionId = releaseNote.ctaId,
+            let ctaText = releaseNote.ctaText
+        {
+            let callToAction = RemoteAnnouncementModel.Manifest.Action(fromActionId: callToActionId)
+
+            if case .unrecognized(let actionId) = callToAction {
+                Logger.debug("Ignoring unrecognized actionId \(actionId)")
+                return
+            }
+
+            let action = CVMessageAction(
+                title: ctaText,
+                accessibilityIdentifier: "announcement_action",
+                action: .didTapReleaseNotesAnnouncementAction(action: callToAction),
+            )
+            bottomButtonsActions.append(action)
+        }
     }
 }
