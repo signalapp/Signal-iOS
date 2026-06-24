@@ -480,9 +480,9 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         result: Requests.ExportAndUploadBackupResult,
         progress: OWSProgressSink,
     ) async throws(PrimaryLinkNSyncError) -> Void {
-        // Do this in a detachedtask; we want to report a status
-        // to the server even if the user cancels the current task.
-        let task = Task.detached(priority: Task.currentPriority) {
+        // Do this in a detachedtask; we want to report a status to the server even
+        // if the user cancels the current task.
+        let task = Task {
             let progressSource = await progress.addSource(
                 withLabel: PrimaryLinkNSyncProgressPhase.finishing.rawValue,
                 // Unit count is irrelevant as there's just one child source and we use a timer.
