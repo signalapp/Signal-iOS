@@ -684,7 +684,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     @MainActor
     private func _doBackupRestoreStep(
-        _ block: @escaping () async throws -> Void,
+        _ block: () async throws -> Void,
     ) async {
         do {
             try await block()
