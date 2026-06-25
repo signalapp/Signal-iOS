@@ -462,9 +462,7 @@ private class StickerPickerPageView: UIView {
         let oldStickerPacks = stickerPacks
 
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            self.stickerPacks = StickerManager.installedStickerPacks(transaction: transaction).sorted {
-                $0.dateCreated > $1.dateCreated
-            }
+            self.stickerPacks = StickerManager.orderedInstalledStickerPacks(transaction: transaction)
         }
 
         // These go (via delegate) as source data to the toolbar.
