@@ -25,6 +25,13 @@ public class DateUtil {
         return formatter
     }()
 
+    private static let accessibilityTimeFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .spellOut
+        formatter.allowedUnits = [.hour, .minute]
+        return formatter
+    }()
+
     public static let weekdayFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.setLocalizedDateFormatFromTemplate("EEEE")
@@ -170,6 +177,11 @@ public class DateUtil {
         return timeFormatter.string(from: date)
     }
 
+    public static func formatDateAsTimeForAccessibility(_ date: Date) -> String {
+        let components = Calendar.current.dateComponents([.hour, .minute], from: date)
+        return accessibilityTimeFormatter.string(from: components) ?? timeFormatter.string(from: date)
+    }
+
     // MARK: Formatting for UI
 
     // We might receive a message "from the future" due to a bug or
@@ -206,6 +218,10 @@ public class DateUtil {
             let format = shouldUseLongFormat ? longFormat : shortFormat
             return String.localizedStringWithFormat(format, minutesDiff)
         } else {
+            if shouldUseLongFormat {
+                let components = Calendar.current.dateComponents([.hour, .minute], from: date)
+                return accessibilityTimeFormatter.string(from: components) ?? timeFormatter.string(from: date)
+            }
             return timeFormatter.string(from: date)
         }
     }

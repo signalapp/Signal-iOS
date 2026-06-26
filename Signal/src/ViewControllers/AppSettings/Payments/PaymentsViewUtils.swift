@@ -357,9 +357,29 @@ extension TSPaymentModel {
         return result
     }
 
+    func statusDescriptionForAccessibility(isLongForm: Bool) -> String {
+        var result = statusDescription(isLongForm: isLongForm)
+        // Replace the appended date with the accessibility-friendly version.
+        result = String(result.dropLast(Self.formatDate(sortDate, isLongForm: isLongForm).count + 1))
+        result.append(" ")
+        result.append(Self.formatDateForAccessibility(sortDate, isLongForm: isLongForm))
+        return result
+    }
+
     static func formatDate(_ date: Date, isLongForm: Bool) -> String {
         if isLongForm {
             return statusDateTimeLongFormatter.string(from: date)
+        } else {
+            return statusDateShortFormatter.string(from: date)
+        }
+    }
+
+    static func formatDateForAccessibility(_ date: Date, isLongForm: Bool) -> String {
+        if isLongForm {
+            // Replace only the time portion with the spoken form; keep the date portion visual.
+            let datePart = DateFormatter.localizedString(from: date, dateStyle: .medium, timeStyle: .none)
+            let timePart = DateUtil.formatDateAsTimeForAccessibility(date)
+            return "\(datePart) \(timePart)"
         } else {
             return statusDateShortFormatter.string(from: date)
         }

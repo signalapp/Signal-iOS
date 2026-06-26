@@ -123,6 +123,10 @@ public struct PaymentsHistoryModelItem: PaymentsHistoryItem {
         paymentModel.statusDescription(isLongForm: isLongForm)
     }
 
+    public func statusDescriptionForAccessibility(isLongForm: Bool) -> String? {
+        paymentModel.statusDescriptionForAccessibility(isLongForm: isLongForm)
+    }
+
     public func markAsRead(tx: DBWriteTransaction) {
         PaymentUtils.markPaymentAsRead(paymentModel, transaction: tx)
     }
