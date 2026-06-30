@@ -89,6 +89,35 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
     static let missingFileData = Data("Missing File".utf8)
     static let missingFileHash = Data(SHA256.hash(data: missingFileData))
 
+    static func validatedPath(for relativePath: String, within baseDirectory: URL) throws -> String {
+        guard !relativePath.isEmpty, !relativePath.hasPrefix("/") else {
+            throw OWSAssertionError("Received invalid transfer file path")
+        }
+
+        let resolvedBase = baseDirectory
+            .standardizedFileURL
+            .resolvingSymlinksInPath()
+        let resolvedUrl = URL(fileURLWithPath: relativePath, relativeTo: resolvedBase)
+            .standardizedFileURL
+
+        let basePathComponents = resolvedBase.pathComponents
+        guard
+            resolvedUrl.pathComponents.count > basePathComponents.count,
+            resolvedUrl.pathComponents.starts(with: basePathComponents)
+        else {
+            throw OWSAssertionError("Received transfer file path that escapes its base directory")
+        }
+
+        var currentUrl = resolvedBase
+        for pathComponent in resolvedUrl.pathComponents.dropFirst(basePathComponents.count) {
+            currentUrl.appendPathComponent(pathComponent)
+            if (try? currentUrl.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) == true {
+                throw OWSAssertionError("Received transfer file path containing a symbolic link")
+            }
+        }
+        return resolvedUrl.path
+    }
+
     // This must also be updated in the info.plist
     private static let newDeviceServiceIdentifier = "sgnl-new-device"
 

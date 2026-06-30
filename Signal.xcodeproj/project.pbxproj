@@ -741,6 +741,7 @@
 		505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */; };
 		505C2ED629971D4E00C23FB2 /* DeviceLimitExceededError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */; };
 		505C2ED92997422D00C23FB2 /* SelfSignedIdentityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */; };
+		6218A0022F00000000000001 /* DeviceTransferPathTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6218A0012F00000000000001 /* DeviceTransferPathTest.swift */; };
 		505CC1672F22BC7A00D311CD /* OutgoingPaymentActivationRequestMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505CC1662F22BC7A00D311CD /* OutgoingPaymentActivationRequestMessage.swift */; };
 		505CC1692F22C2EC00D311CD /* OutgoingPaymentActivationRequestFinishedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505CC1682F22C2EC00D311CD /* OutgoingPaymentActivationRequestFinishedMessage.swift */; };
 		505F76332BC45C0700B1B51C /* BuildFlags+Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505F76322BC45C0700B1B51C /* BuildFlags+Generated.swift */; };
@@ -5030,6 +5031,7 @@
 		505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkDeviceViewController.swift; sourceTree = "<group>"; };
 		505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLimitExceededError.swift; sourceTree = "<group>"; };
 		505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentityTest.swift; sourceTree = "<group>"; };
+		6218A0012F00000000000001 /* DeviceTransferPathTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferPathTest.swift; sourceTree = "<group>"; };
 		505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceContactTest.swift; sourceTree = "<group>"; };
 		505CC1662F22BC7A00D311CD /* OutgoingPaymentActivationRequestMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingPaymentActivationRequestMessage.swift; sourceTree = "<group>"; };
 		505CC1682F22C2EC00D311CD /* OutgoingPaymentActivationRequestFinishedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingPaymentActivationRequestFinishedMessage.swift; sourceTree = "<group>"; };
@@ -9811,6 +9813,7 @@
 		505C2ED72997421E00C23FB2 /* DeviceTransfer */ = {
 			isa = PBXGroup;
 			children = (
+				6218A0012F00000000000001 /* DeviceTransferPathTest.swift */,
 				505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */,
 			);
 			path = DeviceTransfer;
@@ -18912,6 +18915,7 @@
 				F93999F628C81F2100E34899 /* DataMessagePaddingTests.swift in Sources */,
 				3494BBE026E66FC30079B11B /* DateUtilTest.swift in Sources */,
 				C17A54962D7B3D9E00E1D267 /* DeviceProvisioningURLTest.swift in Sources */,
+				6218A0022F00000000000001 /* DeviceTransferPathTest.swift in Sources */,
 				D92812E22FA95C1400667DCF /* DisplayableAccountEntropyPoolTest.swift in Sources */,
 				45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */,
 				F90B7BC12912B90100F50A59 /* DonateViewControllerTest.swift in Sources */,
