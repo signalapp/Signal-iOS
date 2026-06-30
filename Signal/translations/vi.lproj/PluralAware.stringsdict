@@ -1305,7 +1305,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>Bạn có thể ghim tối đa %1$d cuộc trò chuyện.</string>
 		</dict>
 	</dict>
 	<key>POLL_VOTE_COUNT</key>

@@ -8,10 +8,10 @@
 "ABOUT_SECTION_TITLE" = "‫Signal ھەققىدە";
 
 /* Label for forward button in media control panel */
-"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "ئۇلاپ يوللا";
+"ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "يوللاش";
 
 /* Accessibility label for attachment. */
-"ACCESSIBILITY_LABEL_ATTACHMENT" = "قوشۇمچە";
+"ACCESSIBILITY_LABEL_ATTACHMENT" = "قوشۇمچە ماتېرىيال";
 
 /* Accessibility label for audio. */
 "ACCESSIBILITY_LABEL_AUDIO" = "ئۈن";
@@ -23,19 +23,19 @@
 "ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "%1$@ ئالاقە ئۇچۇرى";
 
 /* Accessibility label for media. */
-"ACCESSIBILITY_LABEL_MEDIA" = "ۋاسىتە";
+"ACCESSIBILITY_LABEL_MEDIA" = "مېدىيا";
 
 /* Accessibility label for stickers. */
-"ACCESSIBILITY_LABEL_STICKER" = "چىراي ئىپادە";
+"ACCESSIBILITY_LABEL_STICKER" = "چاپلاق";
 
 /* Accessibility label for stickers. Embeds {{ name of top emoji the sticker resembles }} */
 "ACCESSIBILITY_LABEL_STICKER_FORMAT" = "%1$@ گە ئوخشاش چاپلاق";
 
 /* Accessibility label for a voice memo. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO" = "ئۈن ئۇچۇر";
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "ئاۋازلىق ئۇچۇر";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "دوكلاتنى چىقىرىش";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "دوكلاتنى ئېكسپورتلاش";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
 "ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Signal ھېسابات ئۇچۇرلىرىڭىزنى پەقەت ئۆزىڭىز ئىشىنىدىغان كىشىلەر ياكى ئەپلەر بىلەن ئورتاقلىشىڭ.";
@@ -44,7 +44,7 @@
 "ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "تور ئۇلىنىشىڭىزنى تەكشۈرۈپ قايتا سىناڭ.";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the title on that error. */
-"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "دوكلات ھاسىل قىلالمىدى";
+"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "دوكلاتنى ھاسىل قىلالمىدى";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
 "ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "ماشىنا ئوقۇيالايدىغان ھۆججەت";
@@ -56,13 +56,13 @@
 "ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "ئوقۇشقا ئاسان تېكىست ھۆججىتى";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to plain text mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "TXT شەكلىدە چىقىرىش";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "TXT شەكلىدە ئېكسپورتلاش";
 
 /* Users can request a report of their account data. Users tap this button to export their data. */
-"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "دوكلاتنى چىقىرىش";
+"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "دوكلاتنى ئېكسپورتلاش";
 
 /* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
-"ACCOUNT_DATA_REPORT_FOOTER" = "دوكلاتىڭىز چىقىرىلىدىغان ۋاقىتتىلا ھاسىللىنىدىغان بولۇپ، ئۇنى Signal ئۈسكۈنىڭىزدە ساقلىمايدۇ.";
+"ACCOUNT_DATA_REPORT_FOOTER" = "دوكلاتىڭىز چىقىرىلىدىغان ۋاقىتتىلا ھاسىللىنىدىغان بولۇپ، ئۇنى ئۈسكۈنىڭىزدىكى Signal ساقلىمايدۇ.";
 
 /* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
 "ACCOUNT_DATA_REPORT_SUBTITLE" = "Signal ھېساباتىڭىزنىڭ سانلىق مەلۇماتلىرىنى چۈشۈرۈپ چىقىرىشقا بولىدۇ. بۇ دوكلات ھېچقانداق ئۇچۇر ياكى مېدىيانى ئۆز ئىچىگە ئالمايدۇ.";
@@ -74,7 +74,7 @@
 "ACTION_INVITE" = "Signal ئىشلىتىش تەكلىپى";
 
 /* Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "ئۇچۇر يوللا";
+"ACTION_SEND_MESSAGE" = "ئۇچۇر يوللاش";
 
 /* Message shown in an action sheet when a generic error occurs. */
 "ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR" = "خاتالىق كۆرۈلدى. ياردەمچى خادىم بىلەن ئالاقىلىشىڭ.";
@@ -83,7 +83,7 @@
 "ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR" = "خاتالىق كۆرۈلدى. تور ئۇلىنىشىڭىزنى تەكشۈرۈپ قايتا سىناڭ.";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "چېكىلسە چۈشۈرىدۇ";
+"ACTION_TAP_TO_DOWNLOAD" = "چېكىپ چۈشۈرۈش";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "سىنلىق چاقىرىش";
@@ -101,7 +101,7 @@
 "ADD_TO_CONTACTS_OFFER" = "بۇ ئىشلەتكۈچىنى ئالاقەداشلارغا قوشامسىز؟";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "باشقا بىر گۇرۇپپىغا قوشىدۇ";
+"ADD_TO_GROUP" = "باشقا بىر گۇرۇپپىغا قوشۇش";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "گۇرۇپپىغا قوش";
@@ -110,22 +110,22 @@
 "ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "«%1$@» نى «%2$@» گە قوشامسىز؟";
 
 /* The title on the 'add to group' confirmation action sheet. */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "يېڭى ئەزا قوش";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "يېڭى ئەزا قوشۇش";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
 "ADD_TO_GROUP_ALREADY_A_MEMBER" = "بۇ گۇرۇپپىنىڭ ئەزاسى";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ «%2$@» گە قوشۇلدى";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ %2$@ گە قوشۇلدى";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "گۇرۇپپىغا قوش";
+"ADD_TO_GROUP_TITLE" = "بىر گۇرۇپپىغا قوشۇش";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "سەپلىمە ھۆججىتىڭىزنى بۇ ئىشلەتكۈچىگە ھەمبەھىرلەمسىز؟";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "بىلدىم";
+"ALERT_ACTION_ACKNOWLEDGE" = "خەۋەر تاپتىم";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "بۇ پاراڭدا %1$@ ئەۋەتكەن مەلۇم ئۇچۇر، چاپلاق، ئىنكاس، ئوقۇلغانلىق ئۇقتۇرۇشى ياكى مېدىيا سىزگە يەتكۈزۈلمىدى.";
@@ -137,16 +137,16 @@
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%1$@ ئەۋەتكەن مەلۇم ئۇچۇر، چاپلاق، ئىنكاس ياكى ئوقۇلغانلىق ئۇقتۇرۇشىنى سىزگە يەتكۈزۈلمىدى. ئۇلار ئۇنى سىزگە بىۋاسىتە ياكى گۇرۇپپىدا يوللاپ سىناپ باقسا بولىدۇ.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "تاشلىۋەت";
+"ALERT_DISCARD_BUTTON" = "تاشلىۋېتىش";
 
 /* The label for the 'don't save' button in action sheets. */
-"ALERT_DONT_SAVE" = "ساقلىما";
+"ALERT_DONT_SAVE" = "ساقلىماڭ";
 
 /* Generic error indicator. */
 "ALERT_ERROR_TITLE" = "خاتالىق";
 
 /* The label for the 'save' button in action sheets. */
-"ALERT_SAVE" = "ساقلا";
+"ALERT_SAVE" = "ساقلاش";
 
 /* Message for UI warning about an unknown contact thread. */
 "ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "بۇ كىشى بىلەن ئورتاق گۇرۇپپىڭىز يوق. كېرەكسىز ئۇچۇرلاردىن ساقلىنىش ئۈچۈن قوشۇلۇشتىن ئىلگىرى تەلەپلەرنى ئەستايىدىللىق بىلەن تەكشۈرۈڭ.";
@@ -173,16 +173,16 @@
 "ALL_MEDIA_FILE_TYPE_FILES" = "ھۆججەتلەر";
 
 /* Media (i.e., graphical) file type in All Meda file type picker. */
-"ALL_MEDIA_FILE_TYPE_MEDIA" = "ۋاسىتە";
+"ALL_MEDIA_FILE_TYPE_MEDIA" = "مېدىيا";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIF";
+"ALL_MEDIA_FILTER_GIFS" = "GIFلار";
 
 /* Menu option to remove content type restriction in All Media view */
 "ALL_MEDIA_FILTER_NONE" = "بارلىق مېدىيا";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "رەسىم";
+"ALL_MEDIA_FILTER_PHOTOS" = "رەسىملەر";
 
 /* Menu option to limit All Media view to displaying only videos */
 "ALL_MEDIA_FILTER_VIDEOS" = "سىن";
@@ -275,7 +275,7 @@
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "ئاتىڭىزنى كىرگۈزۈڭ";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "يېڭىلا";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "يېڭىلاش";
 
 /* Name indicating that the dark theme is enabled. */
 "APPEARANCE_SETTINGS_DARK_THEME_NAME" = "قاراڭغۇ";
@@ -1013,7 +1013,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "بىلدىم";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش(Optimize Storage)نى ئەمەلدىن قالدۇرۇپ، مۇشتەرىلىكىڭىزنىڭ ۋاقتى ئۆتۈپ كېتىشتىن بۇرۇن مېدىيارىڭىزنى تېزدىن چۈشۈرۈۋېلىشقا كاپالەتلىك قىلىڭ.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "ساقلاش بوشلۇقىنى ئەلالاشتۇرۇشنى قوزغىتىپ مېدىيانى چۈشۈرۈۋېتىشنى جەزىملەشتۈرەمسىز؟ ئەگەر سىزنىڭ مۇشتەرىلىكىڭىز ئاخىرلاشسا، بۇ ئۈسكۈنىدە يوق ھەرقانداق مېدىيا مەڭگۈلۈك ئۆچۈرۈۋېتىلىدۇ.";
@@ -1199,7 +1199,7 @@
 "BACKUPS_SETTINGS_TITLE" = "بىخەتەر زاپاسلانمىلار";
 
 /* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
-"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "زاپاسلاشنى سەپلەش ئۈچۈن، ئاساسىي iPhone ياكى Android ئۈسكۈنىڭىزدىكى Signal نى ئېچىپ، «تەڭشەكلەر > زاپاسلاش» قا كىرىڭ.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "بۇ ھېسابات ئۈچۈن Signal زاپاسلانمىسى %1$@ دە ئېچىلدى. كۆرۈش ئۈچۈن چېكىڭ.";
@@ -9863,10 +9863,10 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "ئىئانە بىر تەرەپ قىلىنىۋاتىدۇ...";
 
 /* Message for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "ھېساباتىڭىزغا ئىزنىكىڭىزنى قوشقىلى بولمىدى چۈنكى سىز بەك كۆپ قېتىم سىناپ كەتتىڭىز. كېيىن قايتا سىناڭ.";
 
 /* Title for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "ئىزنەك قوشالمىدى";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "يېڭىلىنىش ۋاقتى %1$@";

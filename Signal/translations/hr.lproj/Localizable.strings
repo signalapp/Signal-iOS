@@ -1013,7 +1013,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Shvaćam";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Isključite optimizaciju pohrane i preuzmite svoje medijske zapise prije nego što istekne vaša pretplata.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Sigurno želite omogućiti optimizaciju pohrane i premještanje medijskih zapisa? Ako vaša pretplata istekne, medijski zapisi koji se ne nalaze na uređaju bit će trajno izbrisani.";
@@ -1199,7 +1199,7 @@
 "BACKUPS_SETTINGS_TITLE" = "Zaštićene sigurnosne kopije";
 
 /* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
-"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "Za postavljanje sigurnosnog kopiranja, otvorite Signal na vašem primarnom iPhone ili Android uređaju te idite na Postavke > Sigurnosne kopije.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Sigurnosne kopije Signala uključene su za ovaj račun u %1$@. Dodirnite za pregled.";
@@ -9863,10 +9863,10 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Obrada donacije u tijeku…";
 
 /* Message for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Vašu značku nije bilo moguće dodati na profil zbog prevelikog broja neuspjelih pokušaja. Pokušajte ponovno kasnije.";
 
 /* Title for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Nije moguće dodati značku";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Obnavlja se %1$@";

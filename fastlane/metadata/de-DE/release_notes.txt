@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Der offizielle Signal Versions-Chat ist eine neue Möglichkeit, sich über die neuesten Verbesserungen und Funktionen zu informieren. Standardmäßig ist der Chat stummgeschaltet – wenn du diese Nachrichten lieber nicht erhalten möchtest, sind wir dir auch nicht böse, wenn du den Chat blockierst.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Gruppenadminis können jetzt kürzlich gesendete Nachrichten in einem Gruppenchat löschen. Wenn jemand in eurem Buchclub versehentlich zu viel verrät und dann das Handy beiseite legt, kann ein Gruppenadmin den Beitrag löschen, damit der Plot-Twist nicht vorweggenommen wird. Du kannst ganz einfach erkennen, wann eine Nachricht gelöscht wurde und wer sie entfernt hat – genau wie bei der bestehenden Funktion »Für alle löschen«.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Jetzt musst du nicht mehr so weit nach unten scrollen, um die neuesten Nachrichten zu sehen. Wenn mehrere neue Mitglieder einem gut besuchten Gruppenchat beitreten oder du mehrere verpasste Anrufe hintereinander erhältst, können diese häufigen Chat-Ereignisse automatisch zu einer übersichtlichen Ansicht zusammengefasst werden. Manchmal ist weniger mehr, aber diese Listen kannst du jederzeit ein- und ausklappen.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• Außerdem haben wir die maximale Anzahl der fixierten Chats von 4 auf 10 erhöht, damit du 6 weiteren Leuten zeigen kannst, wie sehr dir gefällt, was sie zu erzählen haben.

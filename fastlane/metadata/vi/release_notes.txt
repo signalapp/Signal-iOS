@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Kênh trò chuyện cập nhật về Signal chính thức là một cách mới để bạn tìm hiểu về những cải tiến và tính năng mới nhất.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Quản trị viên nhóm giờ đây có thể xóa các tin nhắn vừa gửi trong cuộc trò chuyện nhóm. Bạn có thể dễ dàng xem thời điểm tin nhắn được xóa và ai là người xóa, giống như tính năng "Xóa cho mọi người" hiện có.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Các sự kiện trò chuyện lặp lại (như nhiều cuộc gọi nhỡ) có thể được tự động nhóm lại thành một bảng hiển thị nhỏ gọn, giúp bạn không cần phải cuộn quá nhiều để xem các tin nhắn mới nhất.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• Chúng tôi cũng đã tăng số lượng tối đa các cuộc trò chuyện được ghim từ 4 lên 10.

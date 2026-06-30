@@ -1013,7 +1013,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Entendido";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Desative a opção Otimizar Armazenamento e transfira os seus ficheiros multimédia antes de a sua subscrição expirar.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Tem a certeza de que quer ativar o armazenamento otimizado e carregar os seus ficheiros multimédia? Se a sua subscrição expirar, quaisquer ficheiros multimédia fora deste dispositivo serão permanentemente eliminados.";
@@ -1199,7 +1199,7 @@
 "BACKUPS_SETTINGS_TITLE" = "Cópias de segurança protegidas";
 
 /* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
-"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "Para configurar as cópias de segurança, abra o Signal no seu iPhone ou Android primários e vá a Definições > Cópias de segurança.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "As cópias de segurança do Signal estão ativadas para esta conta em %1$@. Toque para ver.";
@@ -9863,10 +9863,10 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "A processar donativo…";
 
 /* Message for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "O seu emblema não pôde ser adicionado à sua conta porque tentou demasiadas vezes. Tente novamente mais tarde.";
 
 /* Title for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Não foi possível adicionar o crachá";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Renova a %1$@";

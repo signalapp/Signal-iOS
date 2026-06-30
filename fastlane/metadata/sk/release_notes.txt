@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Oficiálny čet so Signal novinkami je nový spôsob, ako sa dozvedieť o najnovších vylepšeniach a funkciách.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Správcovia skupiny môžu teraz mazať nedávno odoslané správy v skupinovom čete. Rovnako ako v prípade funkcie „Vymazať pre všetkých“, môžete jednoducho vidieť, kedy bola správa vymazaná a kto ju odstránil.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Opakované udalosti v čete (napríklad viacero zmeškaných hovorov) je možné automaticky zoskupiť do kompaktného zobrazenia, takže nebudete musieť toľko skrolovať, aby ste si prečítali najnovšie správy.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• Zvýšili sme aj maximálny počet pripnutých četov zo 4 na 10.

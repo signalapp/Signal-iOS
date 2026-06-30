@@ -1013,7 +1013,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Rozumiem";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Pamiętaj, aby wyłączyć optymalizację pamięci i pobrać swoje multimedia przed wygaśnięciem subskrypcji.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Czy chcesz włączyć optymalizację pamięci i przenieść swoje multimedia do pamięci w chmurze? Jeśli subskrypcja wygaśnie, multimedia niezapisane na tym urządzeniu zostaną trwale usunięte.";
@@ -1199,7 +1199,7 @@
 "BACKUPS_SETTINGS_TITLE" = "Bezpieczne kopie zapasowe";
 
 /* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
-"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "Aby skonfigurować kopie zapasowe, otwórz aplikację Signal na swoim głównym smartfonie z systemem iOS lub Android i przejdź do sekcji Ustawienia > Kopie zapasowe.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Kopie zapasowe Signal zostały włączone na tym koncie o godz. %1$@. Dotknij, aby wyświetlić.";
@@ -9863,10 +9863,10 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Przetwarzanie darowizny…";
 
 /* Message for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Nie udało się dodać odznaki do Twojego konta z powodu zbyt wielu prób. Spróbuj ponownie później.";
 
 /* Title for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Nie udało się dodać odznaki";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Kolejna wpłata %1$@";

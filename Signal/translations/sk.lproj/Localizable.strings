@@ -1013,7 +1013,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Rozumiem";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Pred vypršaním platnosti predplatného nezabudnite vypnúť optimalizáciu úložiska a stiahnuť si médiá.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Naozaj chcete povoliť optimalizáciu úložiska a presunúť médiá? Ak vaše predplatné vyprší, všetky médiá, ktoré nie sú v tomto zariadení, budú natrvalo vymazané.";
@@ -1199,7 +1199,7 @@
 "BACKUPS_SETTINGS_TITLE" = "Bezpečné zálohy";
 
 /* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
-"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "Ak chcete nakonfigurovať zálohovanie, otvorte Signal na svojom hlavnom iPhone alebo Androide a prejdite do časti Nastavenia > Zálohy.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Zálohy Signal boli pre tento účet zapnuté o %1$@. Ťuknutím zistíte viac.";
@@ -9863,10 +9863,10 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Spracúva sa príspevok…";
 
 /* Message for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Váš odznak sa nepodarilo pridať do vášho účtu, pretože ste to skúsili príliš veľakrát. Skúste to znova neskôr.";
 
 /* Title for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Odznak sa nepodarilo pridať";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Obnoví sa %1$@";

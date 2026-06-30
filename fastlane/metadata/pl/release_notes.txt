@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Teraz możesz dowiadywać się o najnowszych funkcjach i aktualizacjach na oficjalnym czacie twórców aplikacji Signal. Domyślnie ten czat jest wyciszony. Jeśli nie chcesz otrzymywać takich wiadomości, możesz go nawet zablokować. Nie obrazimy się.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Administratorzy grup mogą teraz usuwać wiadomości wysłane niedawno na czacie grupowym. Jeśli ktoś przypadkowo opublikuje spoiler w grupie czytelniczej, administrator może od razu usunąć wpis, aby nie zepsuć nikomu niespodzianki. To, że wiadomość została usunięta oraz kto ją usunął, jest wyraźnie widoczne – podobnie jak w przypadku prawdopodobnie znanej Ci już funkcji „Usuń u wszystkich”.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Teraz nie trzeba już dużo przewijać, aby nadrobić zaległości na czatach. Jeśli do czatu grupowego dołączy kilka nowych osób lub będziesz w nim mieć kilka nieodebranych połączeń, powtarzające się powiadomienia mogą zostać automatycznie zgrupowane w kompaktową listę. Czasem mniej znaczy więcej, a listę powiadomień w razie potrzeby możesz w każdej chwili rozwinąć lub zwinąć.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• Zwiększyliśmy także maksymalną liczbę przypiętych czatów z 4 do 10, więc możesz wyróżnić na swojej liście czatów jeszcze 6 osób.

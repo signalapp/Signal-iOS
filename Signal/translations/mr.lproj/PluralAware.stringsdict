@@ -1491,9 +1491,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can only pin up to %1$d chat.</string>
+			<string>तुम्ही जास्तीत जास्त फक्त %1$d चॅट पिन करु शकता.</string>
 			<key>other</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>तुम्ही जास्तीत जास्त फक्त %1$d चॅट्स पिन करु शकता.</string>
 		</dict>
 	</dict>
 	<key>POLL_VOTE_COUNT</key>

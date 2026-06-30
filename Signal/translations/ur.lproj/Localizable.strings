@@ -1013,7 +1013,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "سمجھ گیا";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "اسٹوریج کو بہتر کریں کو غیر فعال کرنے اور سبسکرپشن کی معیاد ختم ہونے سے پہلے اپنا میڈیا ڈاؤن لوڈ کو یقینی بنائیں۔";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "کیا آپ واقعی اسٹوریج کو بہتر بنائیں کو فعال کرنا اور اپنے میڈیا کو آف لوڈ کرنا چاہتے ہیں؟ اگر آپ کی سبسکرپشن کی معیاد ختم ہو جاتی ہے، تو اس ڈیوائس میں کوئی بھی غیر موجود میڈیا مستقل طور پر حذف ہو جائے گا۔";
@@ -1199,7 +1199,7 @@
 "BACKUPS_SETTINGS_TITLE" = "محفوظ بیک اپس";
 
 /* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
-"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "بیک اپس ترتیب دینے کے لیے، اپنے پرائمری iPhone یا Android پر Signal کھولیں اور سیٹنگز > بیک اپس میں جائیں۔";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "اس اکاؤنٹ کے لیے Signal بیک اپس %1$@ کو فعال کیے گئے تھے. دیکھنے کے لیے ٹیپ کریں۔";
@@ -9863,10 +9863,10 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "عطیے پر عمل کاری ہو رہی ہے...";
 
 /* Message for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "آپ کا بیج آپ کے اکاؤنٹ میں شامل نہیں کیا جا سکتا کیونکہ آپ نے بہت زیادہ کوششیں کر لی ہیں۔ براہ کرم بعد میں دوبارہ کوشش کریں۔";
 
 /* Title for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "بیج شامل نہیں کر سکے";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "%1$@ کی تجدید کرتا ہے";

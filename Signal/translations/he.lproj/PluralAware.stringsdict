@@ -1863,13 +1863,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can only pin up to %1$d chat.</string>
+			<string>אפשר להצמיד רק עד צ׳אט %1$d.</string>
 			<key>two</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>אפשר להצמיד רק עד %1$d צ׳אטים.</string>
 			<key>many</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>אפשר להצמיד רק עד %1$d צ׳אטים.</string>
 			<key>other</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>אפשר להצמיד רק עד %1$d צ׳אטים.</string>
 		</dict>
 	</dict>
 	<key>POLL_VOTE_COUNT</key>

@@ -1013,7 +1013,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "J'ai compris";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Pensez à désactiver l'option \"Optimiser l'espace de stockage\" et à télécharger vos médias avant l'expiration de votre abonnement.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Voulez-vous vraiment activer l'option \"Optimiser l'espace de stockage\" et déplacer vos médias vers la sauvegarde ? Si votre abonnement expire, tous les médias qui ne seront pas enregistrés sur cet appareil seront définitivement supprimés.";
@@ -1190,7 +1190,7 @@
 "BACKUPS_SAVE_SPACE_MEGAPHONE_TITLE" = "Optez pour les sauvegardes payantes et libérez de l'espace";
 
 /* Body for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to save on-device storage space. Embeds {{ the amount of storage space being consumed on-device by media, preformatted as a localized byte count, e.g. '1.2 GB' }}. */
-"BACKUPS_SAVE_SPACE_UPSELL_BODY" = "Signal consomme %1$@ d'espace pour stocker vos médias. La version payante des sauvegardes sécurisées permet de libérer de l'espace de stockage en déplaçant les médias vers la sauvegarde. Tous vos messages sont également sauvegardés.";
+"BACKUPS_SAVE_SPACE_UPSELL_BODY" = "Signal consomme %1$@ d'espace pour stocker vos médias. La version payante des sauvegardes sécurisées permet de déplacer les médias vers la sauvegarde afin de libérer de l'espace de stockage. Tous vos messages sont également sauvegardés.";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to save on-device storage space. */
 "BACKUPS_SAVE_SPACE_UPSELL_TITLE" = "Optez pour les sauvegardes payantes et libérez de l'espace";
@@ -1199,7 +1199,7 @@
 "BACKUPS_SETTINGS_TITLE" = "Sauvegardes sécurisées";
 
 /* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
-"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "Pour configurer les sauvegardes, ouvrez Signal sur votre appareil principal (iPhone ou Android), puis accédez à Paramètres > Sauvegardes.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Les sauvegardes Signal ont été activées sur ce compte à %1$@. Appuyez pour plus d'infos.";
@@ -1358,7 +1358,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Les membres existants peuvent maintenant vous réintégrer au groupe.";
 
 /* An explanation of the consequences of blocking release notes. */
-"BLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Bloquer la réception des notes de version et des actualités Signal.";
+"BLOCK_RELEASE_NOTES_BEHAVIOR_EXPLANATION" = "Vous ne recevrez plus les notes de version ni les actualités de Signal.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront ni vous appeler, ni vous envoyer des messages.";
@@ -9863,10 +9863,10 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Don en cours de traitement...";
 
 /* Message for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Nous n'avons pas pu ajouter le macaron à votre compte, car vous avez dépassé le nombre de tentatives autorisées. Veuillez réessayer plus tard.";
 
 /* Title for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Impossible d'ajouter le macaron.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Prochaine échéance : %1$@";

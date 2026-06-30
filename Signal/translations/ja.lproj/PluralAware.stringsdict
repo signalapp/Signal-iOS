@@ -1305,7 +1305,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>ピン留めできるチャットは最大%1$d件です。</string>
 		</dict>
 	</dict>
 	<key>POLL_VOTE_COUNT</key>

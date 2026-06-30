@@ -1013,7 +1013,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "સમજાઈ ગયું";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "તમારા સબ્સ્ક્રિપ્શનની સમયસીમા સમાપ્ત થાય તે પહેલાં ઑપ્ટિમાઇઝ સ્ટોરેજને અક્ષમ કરવાનું અને તમારા મીડિયાને ડાઉનલોડ કરવાનું ભૂલશો નહીં.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "શું તમે ખરેખર સ્ટોરેજને ઑપ્ટિમાઇઝ કરવાનું સક્ષમ કરવા અને તમારા મીડિયાને ઓફલોડ કરવા માગો છો? જો તમારું સબ્સ્ક્રિપ્શન સમાપ્ત થાય તો આ ડિવાઇસ પર ન હોય તેવા કોઈ પણ મીડિયા કાયમીરૂપે ડિલીટ થઈ જશે.";
@@ -1199,7 +1199,7 @@
 "BACKUPS_SETTINGS_TITLE" = "સુરક્ષિત બેકઅપ";
 
 /* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
-"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "બેકઅપ કન્ફિગર કરવા માટે, તમારા પ્રાથમિક iPhone કે Android પર Signal ખોલો અને સેટિંગ્સ > બેકઅપ પર જાઓ.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "%1$@ વાગ્યે આ એકાઉન્ટ માટે Signal બેકઅપ ચાલુ કરવામાં આવ્યા હતા. જોવા માટે ટેપ કરો.";
@@ -9863,10 +9863,10 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "દાનની પ્રક્રિયા થઈ રહી છે...";
 
 /* Message for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "તમારું બૅજ તમારા એકાઉન્ટ પર ઉમેરી ન શકાયું કારણ કે તમે ઘણી બધી વખત પ્રયાસ કર્યો છે. કૃપા કરીને પછી ફરી પ્રયાસ કરો.";
 
 /* Title for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "બૅજ ઉમેરી ન શક્યા";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "%1$@ના રોજ રિન્યૂ થશે";

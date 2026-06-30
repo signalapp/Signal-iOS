@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Découvrez le canal de diffusion officiel de Signal, qui vous informe des nouvelles fonctionnalités et améliorations. Cette conversation est mise en sourdine par défaut. Et si vous ne souhaitez pas recevoir ces messages, vous êtes libre de la bloquer.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Dans les conversations de groupe, les admins peuvent désormais supprimer les messages récents. Si un membre un peu étourdi de votre club de lecture dévoile un spoiler, l'admin peut vite supprimer le message pour préserver le mystère. Vous savez donc si un message a été supprimé et par qui, exactement comme avec la fonctionnalité "Supprimer pour tout le monde".
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Ne vous laissez plus dépasser par les événements. Plusieurs personnes ont rejoint une conversation de groupe ? Vous avez manqué plusieurs appels à la suite ? Ces événements répétés sont maintenant regroupés et affichés sous forme de liste compacte. Pour consulter toutes les mises à jour dans le détail, il vous suffit de dérouler la liste.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• Le nombre maximal de conversations épinglées est également passé de 4 à 10. Vous pouvez donc montrer à 6 personnes supplémentaires que vous buvez leurs paroles.

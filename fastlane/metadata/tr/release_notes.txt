@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Resmi Signal duyuru sohbeti, en yeni geliştirme ve özelliklerden haberdar olmanın yeni bir yoludur. Varsayılan olarak sessize alınmıştır. Bu mesajları almak istemiyorsan sohbeti engelleyebilirsin.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Grup yöneticileri artık bir grup sohbetinde kısa süre önce gönderilen mesajları silebilir. Birisi kazara gruba spoiler gönderir ve telefonundan uzaklaşırsa, grup yöneticisi sürprizi bozmamak adına mesajı hemen silebilir. Bir mesajın ne zaman silindiğini ve mesajı kimin kaldırdığını, tıpkı mevcut "Herkesten Sil" özelliği gibi kolayca görebilirsin.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Tekrarlayan sohbet etkinlikleri (çok sayıda cevapsız arama gibi) otomatik olarak daha kompakt bir görünümde gruplanabilir. Böylece güncel mesajlara ulaşmak için fazla uzaklaşmana gerek kalmaz. Bazen sadeleşmek iyidir fakat bu listeleri istediğin zaman genişletip küçültebilirsin.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• Ayrıca sabitlenmiş sohbetlerin maksimum sayısını 4'ten 10'a çıkardık.

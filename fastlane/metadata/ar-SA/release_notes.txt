@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• الدردشة الرسمية لإصدارات سيجنال هي طريقة جديدة للتعرّف على أحدث التحسينات والميزات. هي معطّلة افتراضيًا، وإذا كنت تفضل عدم تلقي هذه الرسائل، فليست مشكلة إذا قمت بحظر الدردشة أيضًا.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• يمكن لمشرفي المجموعات الآن حذف الرسائل التي تم إرسالها مؤخرًا في محادثة جماعية. إذا نشر أحدهم عن غير قصد معلومة تكشف عن أحداث القصة في مجموعة نادي القراءة الخاصة بك ثم ابتعد عن هاتفه، فيمكن لمشرف المجموعة حذفها للحفاظ على عنصر المفاجأة في القصة. يمكنك بسهولة معرفة متى تم حذف رسالة ما ومن قام بحذفها، تمامًا مثل ميزة "حذف للجميع" الموجودة حاليًا.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• الآن لن تضطر إلى التمرير لمسافة طويلة لمتابعة أحدث الرسائل. إذا انضمّ عدة أشخاص جُدُد إلى دردشة جماعية نشِطة، أو تلقيتَ عدة مكالمات فائتة متتالية، فسيتم تجميع أحداث الدردشة المُتكرِّرة هذه تلقائيًا ضمن عرضٍ مُختصَر. أحيانًا يكون الاختصار أفضل، ولكن يمكنك في أي وقت توسيع هذه القوائم أو إغلاقها بسهولة.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• كما قمنا بزيادة الحد الأقصى لعدد الدردشات المثبتة من 4 إلى 10، حتى تتمكن من إظهار مدى تقديرك لما يقوله 6 أشخاص إضافيين.

@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Signal kini resmi menghadirkan chat khusus rilisan, cara praktis untuk selalu mengikuti berbagai update dan fitur terbaru. Secara default, chat ini akan dibisukan, dan tak masalah jika Anda tidak ingin menerima pesannya.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Admin grup kini bisa menghapus pesan yang baru saja dikirim di chat grup. Anda juga bisa dengan mudah melihat kapan pesan dihapus dan siapa yang menghapusnya, sama seperti fitur “Hapus untuk Semua Orang” yang sudah ada.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Aktivitas chat yang berulang (seperti beberapa panggilan tak terjawab) bisa digabungkan secara otomatis agar tampilannya lebih ringkas, sehingga Anda bisa lebih cepat menemukan pesan terbaru.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• Kami juga meningkatkan jumlah maksimum chat yang bisa disematkan, dari 4 menjadi 10.

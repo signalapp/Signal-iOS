@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Signal 的官方發佈聊天是了解最新改進與功能的新途徑。這聊天預設為靜音，如果你不想收到這些訊息，即使你封鎖這聊天，我們也不會介意的。
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• 群組管理員現在可以刪除群組聊天中最近發送的訊息。如果有人在你的讀書會群組不小心爆雷，然後就放著手機不管，群組管理員可以將其刪除，以保持劇情轉折的完整性。你可以輕鬆查看訊息何時被刪除以及是由誰刪除的，就好像目前的「為所有人刪除」功能一樣。
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• 現在，你無需再向下捲動那麼久就能查看最新訊息。如果有幾個新人加入繁忙的群組聊天，或是連續收到多通未接來電，這些重複的聊天事件會自動歸類成簡潔的列表顯示。有時「簡單就是美」，但你隨時都能展開或收合這些列表。
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+我們還將「釘選聊天」的上限從 4 個增加至 10 個，這樣你就能向另外 6 位朋友展現，你有多喜歡他們所說的話。

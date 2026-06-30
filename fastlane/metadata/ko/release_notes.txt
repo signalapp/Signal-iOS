@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• 새로운 기능과 업데이트 소식을 전해드리는 Signal 공식 릴리스 채팅을 만나보세요. 채팅의 알림은 기본적으로 꺼져 있으며, 소식을 원치 않으실 경우 채팅방을 차단하셔도 괜찮습니다.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• 그룹 관리자는 이제 그룹 채팅에서 최근에 전송된 메시지를 삭제할 수 있습니다. 기존의 '모든 사람에게서 삭제' 기능과 마찬가지로, 메시지가 언제 삭제되었는지와 누가 삭제했는지를 쉽게 확인할 수 있습니다.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• 여러 건의 부재중 전화와 같이 반복되는 알림은 화면을 많이 차지하지 않도록 자동으로 묶어서 표시됩니다. 이제 화면을 크게 내리지 않고도 최신 대화 내용을 빠르게 확인할 수 있습니다.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• 또한, 상단에 고정할 수 있는 채팅의 최대 개수를 4개에서 10개로 늘렸습니다.

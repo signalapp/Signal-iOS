@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Официальный чат о новинках Signal — это новый способ узнавать о последних улучшениях и функциях. Уведомления в нём отключены по умолчанию, но если вы предпочитаете не получать эти сообщения совсем, мы не обидимся, если вы заблокируете этот чат.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Администраторы групп теперь могут удалять недавно отправленные сообщения в групповом чате. Если кто-то случайно разместит спойлер в вашей группе «Книжный клуб», а затем отойдёт от телефона, администратор группы может удалить его сообщение и сохранить интригу для остальных. Вы легко можете посмотреть, кем и когда удалено сообщение, как и в существующей функции «Удалить для всех».
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Теперь вам не нужно будет прокручивать страницу так далеко в попытке поймать последние сообщения. Если к оживлённому групповому чату присоединятся новички или вы пропустите несколько звонков подряд, эти повторяющиеся события в чате могут быть автоматически сгруппированы и отображены компактно. Иногда меньше значит больше — но вы можете развернуть и свернуть эти списки в любой момент.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• Мы также увеличили максимальное количество прикреплённых чатов с 4 до 10.

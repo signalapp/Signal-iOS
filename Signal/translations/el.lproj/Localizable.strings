@@ -1013,7 +1013,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Εντάξει";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Απενεργοποίησε τη βελτιστοποίηση αποθηκευτικού χώρου και κατέβασε σύντομα τα πολυμέσα σου πριν λήξει η συνδρομή σου.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Θέλεις σίγουρα να ενεργοποιήσεις τη βελτιστοποίηση αποθηκευτικού χώρου και να μεταφέρεις τα πολυμέσα σου; Εάν λήξει η συνδρομή σου, όλα τα αρχεία πολυμέσων που δεν βρίσκονται σε αυτή τη συσκευή θα διαγραφούν οριστικά.";
@@ -1199,7 +1199,7 @@
 "BACKUPS_SETTINGS_TITLE" = "Ασφαλή αντίγραφα";
 
 /* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
-"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "Για να παραμετροποιήσεις τα αντίγραφα ασφαλείας, άνοιξε το Signal στην κύρια συσκευή σου iPhone ή Android και πήγε Ρυθμίσεις > Αντίγραφα ασφαλείας.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Τα αντίγραφα ασφαλείας σήματος ενεργοποιήθηκαν για αυτόν τον λογαριασμό στις %1$@. Πάτα για να δεις.";
@@ -9863,10 +9863,10 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Επεξεργασία δωρεάς…";
 
 /* Message for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Το έμβλημά σου δεν μπόρεσε να προστεθεί στο λογαριασμό σου γιατί προσπάθησες πάρα πολλές φορές. Δοκίμασε αργότερα.";
 
 /* Title for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Αδυναμία προσθήκης εμβλήματος";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Ανανέωση: %1$@";

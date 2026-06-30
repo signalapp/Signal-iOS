@@ -1013,7 +1013,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "Зразумела";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Праверце, ці аптымізацыя сховішча адключана, і спампуйце свае медыяфайлы да заканчэння тэрміну дзеяння падпіскі.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Вы ўпэўнены, што жадаеце ўключыць аптымізацыю сховішча і выгрузіць свае медыяфайлы? Калі тэрмін дзеяння вашай падпіскі скончыцца, усе медыяфайлы, што не захаваны на гэтай прыладзе, будуць выдалены назаўсёды.";
@@ -1199,7 +1199,7 @@
 "BACKUPS_SETTINGS_TITLE" = "Бяспечнае рэзервовае капіраванне";
 
 /* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
-"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "Каб наладзіць рэзервовыя копіі, адкрыйце Signal на сваім асноўным iPhone або Android і перайдзіце ў Налады > Рэзервовыя копіі.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Для гэтага ўліковага запісу рэзервовыя копіі Signal былі ўключаны ў %1$@. Націснуць, каб прагледзець.";
@@ -2264,7 +2264,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_2_STEP_TWO" = "Націсніце «Кантакты»";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Уключыце доступ да кантактаў";
+"CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Дазвольце доступ да кантактаў";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Каб убачыць імёны кантактаў і фатаграфіі ў вашых чатах:";
@@ -2285,7 +2285,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Дазволіць доступ";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Дайце доступ да вашых кантактаў, каб хутка знайсці іх у Signal.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Дазвольце доступ да вашых кантактаў, каб хутка знайсці іх у Signal.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Знайсці кантакты ў Signal";
@@ -9863,10 +9863,10 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Апрацоўка ахвяравання…";
 
 /* Message for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Не атрымалася дадаць ваш значок у ваш уліковы запіс, таму што вы зрабілі занадта шмат спроб. Калі ласка, паўтарыце спробу пазней.";
 
 /* Title for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Не атрымалася дадаць значок";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Аднаўленне %1$@";

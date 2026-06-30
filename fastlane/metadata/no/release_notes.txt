@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Signals offisielle nyhetschat forteller deg om nye funksjoner og andre forbedringer.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Gruppeadministratorer kan nå slette nye meldinger i gruppesamtaler. Du kan enkelt se hvilke meldinger som er slettet og hvem som slettet dem, akkurat som i «Slett for alle»-funksjonen.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Nå kan flere samtaleoppdateringer (f.eks. tapte anrop) grupperes sammen i en kompakt visning, slik at du slipper å skrolle langt for å se de nyeste meldingene i samtalen.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• Vi har også økt grensen for festede samtaler fra 4 til 10 samtaler.

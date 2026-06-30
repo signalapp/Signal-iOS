@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• अधिकृत Signal प्रकाशन चॅट हा नवीन सुधारणांविषयी आणि वैशिष्ट्यांविषयी माहिती मिळवण्याचा एक नवा मार्ग आहे. हा आपोआप म्युट केलेला असतो, आणि जर तुम्हाला हे संदेश नको असतील तर तुम्ही बिनधास्त चॅट ब्लॉक करू शकता, आम्हाला राग येणार नाही.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• गट अॅडमिन आता गट चॅटमध्ये अलीकडेच पाठवलेले संदेश हटवू शकतात. जर कोणीतरी तुमच्या पुस्तक कट्ट्याच्या गटामध्ये चुकून स्पॉईलर टाकला आणि फोन बाजूला टाकून निघून गेले, तर गट अॅडमिन तो हटवून टाकून प्लॉट ट्विस्ट गुप्त ठेवू शकतात. एखादा संदेश हटवण्यात आला असेल तर आणि तो कोणी काढला हे तुम्ही सहज पाहू शकता, आत्ताच्या सगळ्यांसाठी हटवून टाका वैशिष्ट्याप्रमाणे.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• आता तुम्हाला नवे संदेश पाहण्यासाठी एवढे स्क्रोल करावे लागणार नाही. जर अनेक लोक एखाद्या गजबजलेल्या गट चॅटमध्ये सामील झाले, किंवा तुम्हाला सलग अनेक मिस्ड कॉल्स आले, तर ते वारंवार उद्भवणारे चॅटचे प्रसंग आपोआप एका छोट्या दृश्यात मावतील असे एकत्रित करता येतात. कधीकधी छोट्या गोष्टी मोठी सोय करतात, पण तुम्ही या याद्यांची कधीही उघडमिट करू शकता.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• आम्ही चॅट्सची पिन करता येणाऱ्या संख्या 4 वरून 10 वर नेली, त्यामुळे तुम्हाला त्यांच्याशी बोलायला किती आवडते हे आता आणखी 6 लोकांना दाखवू शकता.

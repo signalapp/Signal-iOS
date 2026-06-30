@@ -1305,7 +1305,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>كۆپ بولغاندا %1$d پاراڭلارنى مىقلىيالايسىز.</string>
 		</dict>
 	</dict>
 	<key>POLL_VOTE_COUNT</key>

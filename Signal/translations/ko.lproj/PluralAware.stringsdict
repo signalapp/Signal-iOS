@@ -1305,7 +1305,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>최대 %1$d개의 채팅만 고정할 수 있습니다.</string>
 		</dict>
 	</dict>
 	<key>POLL_VOTE_COUNT</key>

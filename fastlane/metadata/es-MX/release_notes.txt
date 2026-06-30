@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• El chat oficial de actualizaciones de Signal es una nueva forma de enterarte de las últimas mejoras y funciones. Está silenciado por defecto, pero si aún así prefieres no recibir estos mensajes, también puedes bloquear el chat (¡no nos ofenderemos!).
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Ahora, los admins de grupo pueden eliminar mensajes enviados recientemente en un chat grupal. Si alguien en tu chat de amigos suelta un resultado o un gol antes de tiempo, un admin del grupo puede borrarlo para no arruinar la emoción del partido ni la sorpresa del marcador del Mundial de Fútbol. Al igual que con la función actual "Eliminar para todos", podrás ver fácilmente cuándo se eliminó un mensaje (y quién lo borró).
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Dile adiós a tener que deslizar sin parar para ponerte al día con tus mensajes. Ahora, los eventos de chat repetidos (como nuevos participantes en un chat grupal o varias llamadas perdidas) se agrupan automáticamente en una lista compacta. Y sí, menos es más, pero si quieres enterarte de todos los detalles puedes mostrar o minimizar estas listas en cualquier momento.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• También hemos aumentado el número máximo de chats fijados de 4 a 10, así que ahora puedes darle tratamiento VIP a 6 personas más.

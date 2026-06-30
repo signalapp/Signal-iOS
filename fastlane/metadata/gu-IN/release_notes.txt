@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• સત્તાવાર Signal રિલીઝ ચેટ એ લેટેસ્ટ સુધારાઓ અને સુવિધાઓ વિશે જાણવાની એક નવી રીત છે.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• ગ્રૂપ એડમિન હવે ગ્રૂપ ચેટમાં તાજેતરમાં મોકલેલા મેસેજ ડિલીટ કરી શકે છે. તમે સરળતાથી જોઈ શકો છો કે મેસેજ ક્યારે ડિલીટ કરવામાં આવ્યો હતો અને કોણે તેને દૂર કર્યો હતો, હાલના "બધા માટે ડિલીટ કરો" ફીચરની જેમ જ.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• પુનરાવર્તિત ચેટ ઇવેન્ટ (જેમ કે એકથી વધુ મિસ્ડ કૉલ) ને આપમેળે એક કોમ્પેક્ટ ડિસ્પ્લેમાં એકસાથે ગ્રૂપબદ્ધ કરી શકાય છે જેથી તમારે લેટેસ્ટ મેસેજ મેળવવા માટે દૂર સુધી સ્ક્રોલ કરવાની જરૂર નહીં પડે.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• અમે પિન કરેલી ચેટની મહત્તમ સંખ્યા 4થી વધારીને 10 કરી છે.

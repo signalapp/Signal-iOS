@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Signal کی آفیشل ریلیز چیٹ جدید ترین بہتریوں اور فیچرز کے بارے میں جاننے کا ایک نیا طریقہ ہے۔ اس کی ڈیفالٹ سیٹنگ میوٹ پر ہوتی ہے اور اگر آپ یہ میسج وصول نہیں کرنا چاہتے تو آپ یہ چیٹ بلاک بھی کر سکتے ہیں، ہم ناراض نہیں ہوں گے۔
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• گروپ ایڈمنز اب کسی گروپ چیٹ میں بھیجے گئے حالیہ میسجز کو حذف کر سکتے ہیں۔ اگر کوئی یوزر غلطی سے آپ کے بٗک کلب میں سپائلر پوسٹ کر دے اور فون چھوڑ کر چلا جائے تو گروپ ایڈمن پلاٹ کو دلچسپ رکھنے کے لیے یہ پوسٹ حذف کر سکتا ہے۔ آپ با آسانی دیکھ سکتے ہیں کہ کب کوئی میسج خذف کیا گیا تھا اور اسے کس نے حذف کیا، بالکل "ہر کسی کے لیے حذف کریں" کے موجودہ فیچر کی طرح۔
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• اب آپ کو تازہ ترین میسج دیکھنے کے لیے سکرول نہیں کرنا پڑے گا۔ اگر کسی بہت مصروف گروپ چیٹ میں بہت سے لوگوں سے میسج کیے ہیں، یا آپ کو بار بار مس کالز موصول ہوں تو یہ بار بار دہرائے جانے والے چیٹ ایونٹس (جیسے متعدد مسڈ کالز) خود کار طور پر ایک کمپیکٹ ڈسپلے میں اکٹھے ہو سکتے ہیں۔کبھی کبھار تھوڑا ہی بہت زیادہ ہوتا ہے، لیکن پھر بھی آپ کبھی بھی یہ لسٹ کھول اور بند کر سکتے ہیں۔
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• ہم نے پن کردہ چیٹس کی زیادہ سے زیادہ تعداد 4 سے بڑھا کر 10 کر دی ہے تاکہ آپ 6 اور لوگوں کو بتا سکیں کہ آپ کو ان کی باتیں کتنی پسند ہیں۔

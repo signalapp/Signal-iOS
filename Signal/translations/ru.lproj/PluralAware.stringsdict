@@ -1863,13 +1863,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can only pin up to %1$d chat.</string>
+			<string>Вы можете закрепить не более %1$d чата.</string>
 			<key>few</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>Вы можете закрепить не более %1$d чата.</string>
 			<key>many</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>Вы можете закрепить не более %1$d чатов.</string>
 			<key>other</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>Вы можете закрепить не более %1$d чата.</string>
 		</dict>
 	</dict>
 	<key>POLL_VOTE_COUNT</key>

@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Signal की ऑफ़िशियल रिलीज़ चैट, नए सुधारों और फ़ीचर के बारे में जानने का नया ज़रिया है। यह चैट डिफ़ॉल्ट रूप से म्यूट होती है। अगर आपको ये मैसेज नहीं चाहिए, तो इस चैट को ब्लॉक कर दें, हमें बिल्कुल भी बुरा नहीं लगेगा।
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• ग्रुप ऐडमिन अब ग्रुप चैट में हाल ही में भेजे गए मैसेज डिलीट कर सकते हैं। अगर आपके 'बुक क्लब' ग्रुप में कोई गलती से किसी सस्पेंस कहानी का अंत पोस्ट कर दे और उसे डिलीट करने से पहले ही अपने फ़ोन से दूर हो जाए, तो ग्रुप ऐडमिन के पास उसे डिलीट करने का विकल्प होता है, ताकि कहानी का ट्विस्ट बना रहे। आपको यह दिख जाएगा कि कोई मैसेज कब डिलीट किया गया है और उसे किसने हटाया है, ठीक वैसे ही जैसे मौजूदा 'सभी के लिए डिलीट करें' फ़ीचर में होता है।
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• अब आपको नए मैसेज देखने के लिए स्क्रॉल करने की ज़रूरत नहीं है। अगर किसी बिज़ी ग्रुप चैट से कई नए लोग जुड़ते हैं या आपको लगातार कई मिस्ड कॉल आते हैं, तो बार-बार होने वाले इन चैट इवेंट को ऑटोमैटिक तरीके से एक कॉम्पैक्ट डिस्प्ले में एक साथ ग्रुप किया जा सकता है। कई बार कम मगर ज़्यादा असरदार जानकारी बेहतर रहती है, फिर भी इन लिस्ट को कभी भी बड़ा या छोटा किया जा सकता है।
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• हमने पिन की गई चैट की अधिकतम संख्या को भी 4 से बढ़ाकर 10 कर दिया है, ताकि आप 6 और लोगों को दिखा सकें कि आपको उनकी बातें कितनी पसंद हैं।

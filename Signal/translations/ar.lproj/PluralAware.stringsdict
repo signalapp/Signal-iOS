@@ -2235,17 +2235,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>يمكنك تثبيت ما يصل إلى %1$d دردشات فقط.</string>
 			<key>one</key>
-			<string>You can only pin up to %1$d chat.</string>
+			<string>يمكنك تثبيت ما يصل إلى %1$d دردشة فقط.</string>
 			<key>two</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>يمكنك تثبيت ما يصل إلى %1$d دردشتين فقط.</string>
 			<key>few</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>يمكنك تثبيت ما يصل إلى %1$d دردشات فقط.</string>
 			<key>many</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>يمكنك تثبيت ما يصل إلى %1$d دردشة فقط.</string>
 			<key>other</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>يمكنك تثبيت ما يصل إلى %1$d دردشة فقط.</string>
 		</dict>
 	</dict>
 	<key>POLL_VOTE_COUNT</key>

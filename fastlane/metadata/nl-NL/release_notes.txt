@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• De officiële Signal-releasechat is een nieuwe manier om op de hoogte te blijven van de nieuwste verbeteringen en functies. Deze is standaard gedempt. Als je deze berichten liever niet ontvangt, blokkeer dan gerust de chat.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Groepsbeheerders kunnen nu recent verzonden berichten in een groepschat verwijderen. Als iemand per ongeluk een spoiler in je leesclubgroep plaatst en even de telefoon neerlegt, kan een groepsbeheerder deze verwijderen om de plottwist geheim te houden. Je kunt gemakkelijk zien wanneer een bericht is verwijderd en wie het heeft verwijderd, net als bij de bestaande functie ‘Verwijderen voor iedereen’.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Je hoeft nu niet meer zo ver te scrollen om de nieuwste berichten te zien. Herhaalde gebeurtenissen in een drukke groepschat, zoals meerdere nieuwe deelnemers of verschillende gemiste oproepen achter elkaar, worden automatisch gegroepeerd in een overzichtelijke weergave. Je kunt de lijsten gemakkelijk in- en uitklappen.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• We hebben ook het maximale aantal vastgezette chats verhoogd van 4 naar 10.

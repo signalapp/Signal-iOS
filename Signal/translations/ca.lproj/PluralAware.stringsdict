@@ -1491,9 +1491,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can only pin up to %1$d chat.</string>
+			<string>Pots fixar fins a %1$d xat.</string>
 			<key>other</key>
-			<string>You can only pin up to %1$d chats.</string>
+			<string>Pots fixar fins a %1$d xats.</string>
 		</dict>
 	</dict>
 	<key>POLL_VOTE_COUNT</key>

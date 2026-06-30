@@ -1013,7 +1013,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "कळले";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Make sure to disable Optimize Storage and download your media before your subscription expires.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "तुमचे सदस्यत्व संपण्यापूर्वी साठवण ऑप्टिमाईझ करणे खात्रीने बंद करा आणि तुमचा मीडिया डाऊनलोड करून ठेवा.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "तुम्हाला नक्की तुमची साठवण ऑप्टिमाईझ सक्रिय करायचे आहे आणि तुमचा मीडिया ऑफलोड करायचा आहे? जर तुमचे सदस्यत्व संपले, तर या डिव्हाईसवर नसलेला कोणताही मीडिया कायमस्वरूपी हटवला जाईल.";
@@ -1199,7 +1199,7 @@
 "BACKUPS_SETTINGS_TITLE" = "बॅकअप्स सुरक्षित करा";
 
 /* Message for an action sheet shown on iPad saying you need to set up backups on your phone */
-"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "To configure Backups, open Signal on your primary iPhone or Android and go to Settings > Backups.";
+"BACKUPS_SETUP_ON_PRIMARY_MESSAGE" = "बॅकअप्स तयार करण्यासाठी, तुमच्या मुख्य iPhone वर किंवा Android वर Signal उघडा आणि सेटिंग्ज > बॅकअप्स मध्ये जा.";
 
 /* Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }} */
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "Signal बॅकअप्स या खात्यासाठी %1$@ येथे चालू झाले होते. पहाण्यासाठी टॅप करा.";
@@ -9863,10 +9863,10 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "देणगीवर प्रक्रिया करत आहे...";
 
 /* Message for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "Your badge could not be added to your account because you've tried too many times. Please try again later.";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_MESSAGE" = "तुमचा बॅज तुमच्या खात्यामध्ये जोडता आला नाही कारण तुम्ही अनेकवेळा प्रयत्न करून झाले आहे. कृपया नंतर पुन्हा प्रयत्न करा.";
 
 /* Title for a sheet shown when a donation request is rate-limited. */
-"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_RATE_LIMITED_PROCESSING_PAYMENT_TITLE" = "बॅज जोडता आला नाही";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "नूतनीकरणे %1$@";

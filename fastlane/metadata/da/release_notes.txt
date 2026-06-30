@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Den officielle Signal-udgivelseschat er en ny måde at holde dig opdateret på de nyeste forbedringer og funktioner. Den er som standard sat på lydløs, og hvis du foretrækker ikke at modtage disse beskeder, bliver vi ikke fornærmede, hvis du også blokerer chatten.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Gruppeadministratorer kan nu slette nyligt sendte beskeder i en gruppechat. Hvis en person ved et uheld deler en spoiler i din bogklub-gruppe og går fra mobilen, kan en gruppeadministrator slette den for at holde plottwistet intakt. Det er nemt at se, hvornår en besked er slettet og af hvem, ligesom den eksisterende "Slet for alle"-funktion.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Nu behøver du ikke rulle så langt for at se de nyeste beskeder. Hvis flere nye personer deltager i en meget aktiv gruppechat, eller du modtager flere ubesvarede opkald i træk, kan disse gentagne chatbegivenheder automatisk samles i en kompakt visning. Nogle gange kan mindre være bedre, men du kan altid udvide eller skjule disse lister.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• Vi har også øget grænsen for fastgjorte chats fra 4 til 10, så du kan vise 6 ekstra personer, hvor vild du er med det, de har på hjertet.

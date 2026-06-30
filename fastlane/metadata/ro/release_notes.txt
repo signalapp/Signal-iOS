@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Chatul oficial al aplicației Signal reprezintă o nouă modalitate de a afla despre cele mai recente îmbunătățiri și funcționalități. În mod implicit, este dezactivat sunetul, iar dacă preferi să nu primești aceste mesaje, nu ne vom supăra dacă blochezi și chatul.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Administratorii grupurilor pot șterge acum mesajele trimise recent într-o conversație de grup. Dacă cineva postează din greșeală un spoiler în grupul vostru „Clubul de lectură” și apoi uită de telefon, un administrator al grupului îl poate șterge, pentru a păstra intactă surpriza din intrigă. Poți vedea cu ușurință când a fost eliminat un mesaj și cine l-a șters, la fel ca în cazul funcției existente „Șterge pentru toți”.
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Acum, nu va mai trebui să derulezi atât de mult pentru a vedea cele mai recente mesaje. Dacă mai multe persoane noi se alătură unei conversații de grup aglomerate sau dacă primești mai multe apeluri pierdute la rând, aceste evenimente repetate pot fi grupate automat într-un afișaj compact. Uneori, mai puțin înseamnă mai mult, dar poți extinde și reduce cu ușurință aceste liste în orice moment.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• Am mărit și numărul maxim de conversații fixate, de la 4 la 10, astfel încât să poți arăta altor 6 persoane cât de mult îți place ce au de spus.

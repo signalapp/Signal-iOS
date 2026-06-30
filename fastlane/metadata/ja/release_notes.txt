@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• Signalの公式リリースチャットは、最新の改良点や新機能について知るための新しい方法です。
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• グループ管理者は、グループチャット内の最近送信されたメッセージを消去できるようになりました。これまでの「全員に対して消去」機能と同様に、メッセージがいつ、誰によって消去されたかを簡単に確認できます。
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• チャット内での同じ種類の通知（不在着信が何件もあったなど）は自動的にコンパクトな表示にまとめられるので、最新のメッセージを見るためにスクロールする手間が省略できます。
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• また、ピン留めできるチャットの最大数を4件から10件に増やしました。

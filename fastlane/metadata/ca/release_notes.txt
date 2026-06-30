@@ -1,7 +1,7 @@
-• The official Signal release chat is a new way to find out about the latest improvements and features. It’s muted by default, and if you’d prefer to not get these messages we won’t be offended if you block the chat too.
+• El xat oficial d'actualitzacions de Signal és una nova forma d'estar al dia de les darreres millores i funcions.
 
-• Group admins can now delete recently sent messages in a group chat. If someone accidentally posts a spoiler in your Book Club group and then walks away from their phone, a group admin can delete it to keep the plot twist intact. You can easily see when a message was deleted and who removed it, just like the existing “Delete for Everyone” feature.
+• Ara, els admins de grup poden eliminar missatges enviats recentment a un xat grupal. Igual que amb la funció actual "Eliminar per a tothom", podràs veure fàcilment quan s'ha eliminat (i qui ho ha fet).
 
-• Now you won’t need to scroll as far to catch up on the latest messages. If several new people join a busy group chat, or you receive multiple missed calls in a row, those repeated chat events can be automatically grouped together into a compact display. Sometimes less is more, but you can expand and collapse these lists at any time.
+• Ara, les accions de xat repetides (com ara múltiples trucades perdudes) es poden agrupar en llistes compactes perquè puguis posar-te al dia dels teus missatges més fàcilment.
 
-• We also increased the maximum number of pinned chats from 4 to 10, so you can show 6 more people how much you love what they have to say.
+• També hem augmentat el nombre màxim de xats fixats de 4 a 10.
