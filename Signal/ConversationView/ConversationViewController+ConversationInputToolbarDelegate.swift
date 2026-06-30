@@ -988,6 +988,10 @@ extension ConversationViewController: SendMediaNavDataSource {
         return [displayName]
     }
 
+    var sendMediaNavSendButtonTintColor: UIColor? {
+        viewState.conversationStyle.bubbleChatColorOutgoing.asChatUIElementTintColor()
+    }
+
     func sendMediaNavMentionableAcis(tx: DBReadTransaction) -> [Aci] {
         supportsMentions ? thread.recipientAddresses(with: tx).compactMap(\.aci) : []
     }

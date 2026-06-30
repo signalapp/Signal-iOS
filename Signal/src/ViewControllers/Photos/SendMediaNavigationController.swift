@@ -34,9 +34,15 @@ protocol SendMediaNavDataSource: AnyObject {
 
     var sendMediaNavRecipientNames: [String] { get }
 
+    var sendMediaNavSendButtonTintColor: UIColor? { get }
+
     func sendMediaNavMentionableAcis(tx: DBReadTransaction) -> [Aci]
 
     func sendMediaNavMentionCacheInvalidationKey() -> String
+}
+
+extension SendMediaNavDataSource {
+    var sendMediaNavSendButtonTintColor: UIColor? { nil }
 }
 
 class CameraFirstCaptureNavigationController: SendMediaNavigationController {
@@ -640,6 +646,10 @@ class SendMediaNavigationController: OWSNavigationController, AttachmentApproval
 
     var attachmentApprovalRecipientNames: [String] {
         sendMediaNavDataSource?.sendMediaNavRecipientNames ?? []
+    }
+
+    var attachmentApprovalSendButtonTintColor: UIColor? {
+        sendMediaNavDataSource?.sendMediaNavSendButtonTintColor
     }
 
     func attachmentApprovalMentionableAcis(tx: DBReadTransaction) -> [Aci] {

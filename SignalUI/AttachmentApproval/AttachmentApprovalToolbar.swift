@@ -18,10 +18,23 @@ class AttachmentApprovalToolbar: UIView {
         var canChangeMediaQuality = true
         var canSaveMedia = false
         var doneButtonIcon: DoneButtonIcon = .send
+        var doneButtonTintColor: UIColor?
 
         enum DoneButtonIcon: String {
             case send = "send-blue-42-dark"
             case next = "chevron-right-colored-42"
+        }
+
+        static func == (lhs: Configuration, rhs: Configuration) -> Bool {
+            lhs.isAddMoreVisible == rhs.isAddMoreVisible &&
+                lhs.isMediaStripVisible == rhs.isMediaStripVisible &&
+                lhs.isMediaHighQualityEnabled == rhs.isMediaHighQualityEnabled &&
+                lhs.isViewOnceOn == rhs.isViewOnceOn &&
+                lhs.canToggleViewOnce == rhs.canToggleViewOnce &&
+                lhs.canChangeMediaQuality == rhs.canChangeMediaQuality &&
+                lhs.canSaveMedia == rhs.canSaveMedia &&
+                lhs.doneButtonIcon == rhs.doneButtonIcon &&
+                lhs.doneButtonTintColor?.isEqual(rhs.doneButtonTintColor) ?? (rhs.doneButtonTintColor == nil)
         }
     }
 
@@ -192,7 +205,10 @@ class AttachmentApprovalToolbar: UIView {
         // to get a nice animation.
         mediaToolbar.isHiddenInStackView = isEditingMediaMessage
 
-        mediaToolbar.sendButton.setImage(UIImage(imageLiteralResourceName: configuration.doneButtonIcon.rawValue), for: .normal)
+        mediaToolbar.updateDoneButton(
+            icon: configuration.doneButtonIcon,
+            tintColor: configuration.doneButtonTintColor,
+        )
         mediaToolbar.setIsMediaQualityHigh(enabled: configuration.isMediaHighQualityEnabled, animated: animated)
 
         let availableButtons: MediaToolbar.AvailableButtons = {
@@ -445,10 +461,6 @@ private class MediaToolbar: UIView {
     )
     let sendButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(
-            UIImage(imageLiteralResourceName: AttachmentApprovalToolbar.Configuration.DoneButtonIcon.send.rawValue),
-            for: .normal,
-        )
         button.ows_contentEdgeInsets = UIEdgeInsets(margin: UIDevice.current.isNarrowerThanIPhone6 ? 4 : 8)
         button.accessibilityLabel = MessageStrings.sendButton
         button.sizeToFit()
@@ -457,6 +469,30 @@ private class MediaToolbar: UIView {
 
     private static let imageMediaQualityHigh = UIImage(imageLiteralResourceName: "quality-high")
     private static let imageMediaQualityStandard = UIImage(imageLiteralResourceName: "quality-standard")
+
+    fileprivate func updateDoneButton(
+        icon: AttachmentApprovalToolbar.Configuration.DoneButtonIcon,
+        tintColor: UIColor?,
+    ) {
+        switch (icon, tintColor) {
+        case (.send, .some(let tintColor)):
+            sendButton.setImage(
+                UIImage(imageLiteralResourceName: icon.rawValue).withRenderingMode(.alwaysTemplate),
+                for: .normal,
+            )
+            sendButton.tintColor = tintColor
+        case (.send, .none):
+            sendButton.setImage(
+                UIImage(imageLiteralResourceName: icon.rawValue).withRenderingMode(.alwaysOriginal),
+                for: .normal,
+            )
+        case (.next, _):
+            sendButton.setImage(
+                UIImage(imageLiteralResourceName: icon.rawValue).withRenderingMode(.alwaysOriginal),
+                for: .normal,
+            )
+        }
+    }
 
     fileprivate func setIsMediaQualityHigh(enabled: Bool, animated: Bool) {
         let image = enabled ? MediaToolbar.imageMediaQualityHigh : MediaToolbar.imageMediaQualityStandard
