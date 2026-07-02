@@ -137,6 +137,25 @@ public class RemoteAnnouncementFetcher: RemoteReleaseNotesFetcher<RemoteAnnounce
                     return
                 }
 
+                let backupsUUID = UUID(uuidString: "c7498e24-ff57-4182-bb89-975cb5803ba3")!
+                if let manifestUUID = UUID(uuidString: manifest.id), manifestUUID == backupsUUID {
+                    let backupSettingsStore = BackupSettingsStore()
+                    switch backupSettingsStore.backupPlan(tx: tx) {
+                    case .disabled:
+                        break
+                    case .disabling, .free, .paid, .paidAsTester, .paidExpiringSoon:
+                        Logger.info("Skipping release notes update for backups when its already enabled")
+                        storeReleaseNoteAndUpdateLastFetchTime(
+                            uniqueId: manifest.id,
+                            messageInteractionId: nil,
+                            callToAction: nil,
+                            ctaText: nil,
+                            tx: tx,
+                        )
+                        return
+                    }
+                }
+
                 let releaseNotesMessage = TSReleaseNotesMessage(
                     thread: releaseNotesThread,
                     messageBody: validatedMessageBody,
