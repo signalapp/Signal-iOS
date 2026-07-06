@@ -100,6 +100,7 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
         ])
 
         // Thumbnail strip is positioned above the protection background (pre-iOS 26), directly over media.
+        galleryRailView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(galleryRailView)
 
         let visualEffectView: UIVisualEffectView
@@ -110,12 +111,10 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
         }
         visualEffectView.preservesSuperviewLayoutMargins = true
         visualEffectView.contentView.preservesSuperviewLayoutMargins = true
-        addSubview(visualEffectView)
-        visualEffectView.contentView.addSubview(containerStackView)
-
-        galleryRailView.translatesAutoresizingMaskIntoConstraints = false
         visualEffectView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(visualEffectView)
         containerStackView.translatesAutoresizingMaskIntoConstraints = false
+        visualEffectView.contentView.addSubview(containerStackView)
 
         NSLayoutConstraint.activate([
             galleryRailView.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
