@@ -182,6 +182,9 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
             if configuration.canChangeMediaQuality {
                 buttons.insert(.mediaQuality)
             }
+            if configuration.isAddMoreVisible {
+                buttons.insert(.addMedia)
+            }
             switch currentAttachmentItem.type {
             case .image:
                 buttons.insert(.pen)
