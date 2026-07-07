@@ -605,7 +605,7 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "Ponovno prikaži ključ";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just saved.";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Unesite ključ za oporavak koji ste upravo spremili.";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Potvrdite svoj ključ za oporavak";
@@ -671,10 +671,10 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Stvori novi ključ";
 
 /* Subtitle for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
-"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "This new key will replace your old one, and will be required to recover your account and data. Store this key somewhere safe. If you lose it, you won’t be able to recover your account.";
+"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "Novi ključ za oporavak zamijenit će prethodni, a potreban je za oporavak vašeg računa i vaših podataka. Spremite svoj ključ na sigurno mjesto. Ako ga izgubite ili zaboravite, nećete moći oporaviti svoj račun.";
 
 /* Title for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
-"BACKUP_RECORD_KEY_NEW_TITLE" = "Save Your New Recovery Key";
+"BACKUP_RECORD_KEY_NEW_TITLE" = "Spremite svoj novi ključ za oporavak";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
 "BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Spremi u upravitelju lozinki";
@@ -701,7 +701,7 @@
 "BACKUP_RECORD_KEY_SUBTITLE" = "Ovaj je ključ potreban za oporavak vašeg računa i vaših podataka. Spremite svoj ključ na sigurno mjesto. Ako ga izgubite ili zaboravite, nećete moći oporaviti svoj račun.";
 
 /* Title for a view allowing users to save their 'Recovery Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Save Your Recovery Key";
+"BACKUP_RECORD_KEY_TITLE" = "Spremite svoj ključ za oporavak";
 
 /* Title for a button offering help if the user has forgotten their recovery key. */
 "BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "Zaboravili ste ključ?";
@@ -5303,7 +5303,7 @@
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Svi medijski zapisi";
 
 /* Placeholder for message text input field in media editor. */
-"MEDIA_EDITOR_CAPTION_PLACEHOLDER" = "Message";
+"MEDIA_EDITOR_CAPTION_PLACEHOLDER" = "Poruka";
 
 /* Title for the button that discards all edits in media editor. */
 "MEDIA_EDITOR_CLEAR_ALL" = "Poništi sve";
@@ -7745,7 +7745,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Unesite broj telefona za početak.";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "We may need to send a verification code to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "Možda ćemo morati ponovno poslati potvrdni kôd na ovaj broj:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Vaš broj telefona";
@@ -7853,10 +7853,10 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Nevažeći broj telefona";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "We may need to send a verification code to this number. Is the phone number above correct?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Možda ćemo morati ponovno poslati potvrdni kôd na ovaj broj. Je li navedeni broj telefona točan?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Phone Number Confirmation: %1$@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Broj telefona za potvrdu: %1$@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Uredi";

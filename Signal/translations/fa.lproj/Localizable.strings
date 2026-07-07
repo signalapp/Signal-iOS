@@ -605,7 +605,7 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "مشاهده دوباره کلید";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just saved.";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "رمز بازیابی که همین حالا ذخیره کردید را وارد کنید.";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "رمز بازیابی خود را تأیید کنید";
@@ -671,10 +671,10 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "ایجاد رمز جدید";
 
 /* Subtitle for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
-"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "This new key will replace your old one, and will be required to recover your account and data. Store this key somewhere safe. If you lose it, you won’t be able to recover your account.";
+"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "این رمز جدید جایگزین رمز قدیمی شما خواهد شد و برای بازیابی حساب و داده‌هایتان الزامی خواهد بود. این رمز را در مکان امنی نگهداری کنید. اگر آن را گم کنید، نمی‌توانید حسابتان را بازیابی کنید.";
 
 /* Title for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
-"BACKUP_RECORD_KEY_NEW_TITLE" = "Save Your New Recovery Key";
+"BACKUP_RECORD_KEY_NEW_TITLE" = "رمز بازیابی جدیدتان را ذخیره کنید";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
 "BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "ذخیره در مدیر رمز عبور";
@@ -701,7 +701,7 @@
 "BACKUP_RECORD_KEY_SUBTITLE" = "این کلید برای بازیابی حساب و اطلاعات شما ضروری است. این کلید را در مکانی امن نگهداری کنید. اگر آن را گم کنید، نمی‌توانید حساب خود را بازیابی کنید.";
 
 /* Title for a view allowing users to save their 'Recovery Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Save Your Recovery Key";
+"BACKUP_RECORD_KEY_TITLE" = "رمز بازیابی خود را ذخیره کنید";
 
 /* Title for a button offering help if the user has forgotten their recovery key. */
 "BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "رمز را فراموش کردید؟";
@@ -5303,7 +5303,7 @@
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "تمام رسانه‌ها";
 
 /* Placeholder for message text input field in media editor. */
-"MEDIA_EDITOR_CAPTION_PLACEHOLDER" = "Message";
+"MEDIA_EDITOR_CAPTION_PLACEHOLDER" = "پیام";
 
 /* Title for the button that discards all edits in media editor. */
 "MEDIA_EDITOR_CLEAR_ALL" = "پاک کردن همه";
@@ -7745,7 +7745,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "برای شروع، شماره تلفن خود را وارد کنید.";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "We may need to send a verification code to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "ممکن است لازم باشد کد تأیید را به این شماره ارسال کنیم:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "شماره تلفن شما";
@@ -7853,10 +7853,10 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "شماره تلفن معتبر نیست";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "We may need to send a verification code to this number. Is the phone number above correct?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "شاید لازم باشد کد تأیید را به این شماره ارسال کنیم. شماره تلفن بالا صحیح است؟";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Phone Number Confirmation: %1$@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "تأیید شماره تلفن:‏ ‎%1$@‎";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "ویرایش";

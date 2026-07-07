@@ -1,1 +1,1 @@
-• Polls can now be created in individual chats too. Present a curated list of choices to your indecisive friend, or recapture the magic of passing a note to your crush by creating a “Do you like me? Y/N/Maybe” poll.
+• 이제 1:1 채팅에서도 투표를 만들어 보세요. 친구의 의견이 궁금할 때도, 살짝 용기가 필요한 질문을 건넬 때도, 투표로 부담 없이 물어볼 수 있어요.

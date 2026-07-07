@@ -605,7 +605,7 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "کیی کو دوبارہ دیکھیں";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just saved.";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "وہ بحالی کی کیی درج کریں جو آپ نے ابھی محفوظ کی ہے۔";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "اپنی ریکوری کیی کی تصدیق کریں";
@@ -671,10 +671,10 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "نئی کیی تخلیق کریں";
 
 /* Subtitle for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
-"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "This new key will replace your old one, and will be required to recover your account and data. Store this key somewhere safe. If you lose it, you won’t be able to recover your account.";
+"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "یہ نئی کیی آپ کی پرانی کیی کو تبدیل کر دے گی، اور آپ کے اکاؤنٹ اور ڈیٹا کو بحال کرنے کے لیے درکار ہو گی۔ اس کیی کو کسی محفوظ جگہ پر اسٹور کریں۔ اگر آپ اسے کھو دیتے ہیں، تو آپ اپنا اکاؤنٹ بحال نہیں کر سکیں گے۔";
 
 /* Title for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
-"BACKUP_RECORD_KEY_NEW_TITLE" = "Save Your New Recovery Key";
+"BACKUP_RECORD_KEY_NEW_TITLE" = "اپنی نئی بحالی کی کیی کو محفوظ کریں";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
 "BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "پاسورڈ مینیجر میں محفوظ کریں";
@@ -701,7 +701,7 @@
 "BACKUP_RECORD_KEY_SUBTITLE" = "یہ کیی آپ کے اکاؤنٹ اور ڈیٹا کو بحال کرنے کے لیے درکار ہوتی ہے۔ اس کیی کو کسی محفوظ جگہ پر اسٹور کریں۔ اگر آپ اسے کھو دیتے ہیں، تو آپ اپنا اکاؤنٹ بحال نہیں کر سکیں گے۔";
 
 /* Title for a view allowing users to save their 'Recovery Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Save Your Recovery Key";
+"BACKUP_RECORD_KEY_TITLE" = "اپنی بحالی کی کیی محفوظ کریں";
 
 /* Title for a button offering help if the user has forgotten their recovery key. */
 "BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "کیی بھول گئے ہیں؟";
@@ -5303,7 +5303,7 @@
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "تمام میڈیا";
 
 /* Placeholder for message text input field in media editor. */
-"MEDIA_EDITOR_CAPTION_PLACEHOLDER" = "Message";
+"MEDIA_EDITOR_CAPTION_PLACEHOLDER" = "پیغام";
 
 /* Title for the button that discards all edits in media editor. */
 "MEDIA_EDITOR_CLEAR_ALL" = "سب صاف کریں";
@@ -7745,7 +7745,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "شروع کرنے کے لیے اپنا فون نمبر درج کریں۔";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "We may need to send a verification code to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "ہمیں آپ کو اس نمبر پر ایک تصدیقی کوڈ بھیجنے کی ضرورت پڑ سکتی ہے:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "آپ کا فون نمبر";
@@ -7853,10 +7853,10 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "غلط فون نمبر";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "We may need to send a verification code to this number. Is the phone number above correct?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "ہمیں اس نمبر پر ایک تصدیقی کوڈ بھیجنے کی ضرورت پڑ سکتی ہے۔ کیا مذکورہ بالا نمبر درست ہے؟";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Phone Number Confirmation: %1$@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "فون نمبر کی تصدیق: %1$@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "ترتیب دیں";

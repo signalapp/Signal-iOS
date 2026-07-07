@@ -605,7 +605,7 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "اطَّلِع على المفتاح مُجدَّدًا";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just saved.";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "أدخِل مفتاح الاستعادة الذي حفظته للتو.";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "قُم بتأكيد مفتاح الاستعادة الخاص بك";
@@ -671,10 +671,10 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "إنشاء مفتاح جديد";
 
 /* Subtitle for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
-"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "This new key will replace your old one, and will be required to recover your account and data. Store this key somewhere safe. If you lose it, you won’t be able to recover your account.";
+"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "سَيحل هذا المفتاح الجديد محل المفتاح القديم، وسيُطلَب منك استخدامه لاسترجاع حسابك وبياناتك. احتفِظ بهذا المفتاح في مكانٍ آمن. إذا فقدته، لن تتمكّن من استرجاع حسابك.";
 
 /* Title for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
-"BACKUP_RECORD_KEY_NEW_TITLE" = "Save Your New Recovery Key";
+"BACKUP_RECORD_KEY_NEW_TITLE" = "احفظ مفتاح الاستعادة الجديد الخاص بك";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
 "BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "حفظ في مدير كلمات المرور";
@@ -701,7 +701,7 @@
 "BACKUP_RECORD_KEY_SUBTITLE" = "هذا المفتاح مطلوب لاسترجاع بياناتك وحسابك. احتفِظ بهذا المفتاح في مكانٍ آمن. إذا فقدته، لن تتمكّن من استرجاع حسابك.";
 
 /* Title for a view allowing users to save their 'Recovery Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Save Your Recovery Key";
+"BACKUP_RECORD_KEY_TITLE" = "حفظ مفتاح الاستعادة الخاص بك";
 
 /* Title for a button offering help if the user has forgotten their recovery key. */
 "BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "هل نسيت المفتاح؟";
@@ -2891,7 +2891,7 @@
 "DEBUG_LOG_INFO_BUTTON" = "معلومات عن سجل الأخطاء";
 
 /* Header text displayed above the debug log preview */
-"DEBUG_LOG_PREVIEW_HEADER" = "عند الإرسال، سيتم نشر سجلّك على الإنترنت لمدة 30 يومًا في عنوان URL فريد غير منشور.";
+"DEBUG_LOG_PREVIEW_HEADER" = "عند الإرسال، سيتم نشر سجلك على الإنترنت لمدة 30 يومًا في عنوان URL فريد غير منشور.";
 
 /* Button below the debug log preview which continues the submission flow */
 "DEBUG_LOG_PREVIEW_SUBMIT_BUTTON" = "إرسال";
@@ -4961,7 +4961,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "تمَّ الإبلاغ عنها كرسالة غير مرغوب فيها";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "من أجل أمانك، لم يتم نقل سجل الدردشة الخاص بك إلى الأجهزة المرتبطة الجديدة.";
+"INFO_MESSAGE_SYNCED_THREAD" = "من أجل أمانك، لم يتم نقل سجل الدردشة الخاص بك إلى الأجهزة المُرتبِطة الجديدة.";
 
 /* An info message inserted into a group chat when you unblock the group. */
 "INFO_MESSAGE_UNBLOCKED_GROUP" = "رفعتَ الحظر عن هذه المجموعة.";
@@ -5117,7 +5117,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_PAID_PLAN_SUBTITLE" = "انقل رسائلك النصية وكل ملفات الوسائط الخاصة بك";
 
 /* title for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "نقل سجلّ الرسائل";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "نقل سجل الرسائل";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "كود الـ QR هذا غير صالح. يُرجى التأكُّد من أنك تقوم بمسح كود الـ QR المعروض على الجهاز الذي تريد ربطه.";
@@ -5303,7 +5303,7 @@
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "جميع الوسائط";
 
 /* Placeholder for message text input field in media editor. */
-"MEDIA_EDITOR_CAPTION_PLACEHOLDER" = "Message";
+"MEDIA_EDITOR_CAPTION_PLACEHOLDER" = "الرسالة";
 
 /* Title for the button that discards all edits in media editor. */
 "MEDIA_EDITOR_CLEAR_ALL" = "إزالة الكل";
@@ -7745,7 +7745,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "أدخِل رقم هاتفك للبدء.";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "We may need to send a verification code to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "قد نحتاج إلى إرسال كود تحقُّق إلى هذا الرقم:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "رقم هاتفك";
@@ -7853,10 +7853,10 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "رقم الهاتف غير صحيح";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "We may need to send a verification code to this number. Is the phone number above correct?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "قد نحتاج إلى إرسال كود تحقُّق إلى هذا الرقم. هل رقم الهاتف أعلاه صحيح؟";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Phone Number Confirmation: %1$@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "التحقُّق من رقم الهاتف:%1$@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "تحرير";

@@ -149,10 +149,10 @@
 "ALERT_SAVE" = "Enregistrer";
 
 /* Message for UI warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Vous n'avez aucun groupe en commun avec cette personne. Pour éviter les messages indésirables, examinez attentivement les demandes avant de les accepter.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Vous n'avez aucun groupe en commun avec cette personne. Pour éviter les messages indésirables, examinez attentivement les invitations avant de les accepter.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Aucun des membres de ce groupe ne fait partie de vos contacts. Examinez attentivement les demandes avant de les accepter pour éviter les messages indésirables.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Aucun des membres de ce groupe ne fait partie de vos contacts. Pour éviter les messages indésirables, examinez attentivement les invitations avant de les accepter.";
 
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "À propos des invitations par message";
@@ -605,7 +605,7 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "Réafficher la clé";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just saved.";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Saisissez la clé de récupération que vous venez d'enregistrer.";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Confirmer la clé de récupération";
@@ -671,10 +671,10 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Créer une nouvelle clé";
 
 /* Subtitle for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
-"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "This new key will replace your old one, and will be required to recover your account and data. Store this key somewhere safe. If you lose it, you won’t be able to recover your account.";
+"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "Cette nouvelle clé remplacera l'ancienne. Vous en aurez besoin pour restaurer votre compte et vos données. Conservez-la en lieu sûr. Si vous la perdez, vous ne pourrez pas restaurer votre compte.";
 
 /* Title for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
-"BACKUP_RECORD_KEY_NEW_TITLE" = "Save Your New Recovery Key";
+"BACKUP_RECORD_KEY_NEW_TITLE" = "Enregistrez votre nouvelle clé de récupération";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
 "BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "Enregistrer dans le gestionnaire de mots de passe";
@@ -701,7 +701,7 @@
 "BACKUP_RECORD_KEY_SUBTITLE" = "Vous devrez saisir cette clé pour restaurer votre compte et vos données. Conservez-la en lieu sûr. Si vous la perdez, vous ne pourrez pas restaurer votre compte.";
 
 /* Title for a view allowing users to save their 'Recovery Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Save Your Recovery Key";
+"BACKUP_RECORD_KEY_TITLE" = "Enregistrez votre clé de récupération";
 
 /* Title for a button offering help if the user has forgotten their recovery key. */
 "BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "Clé oubliée ?";
@@ -1019,7 +1019,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_GOT_IT_ACTION" = "J'ai compris";
 
 /* Message for a sheet shown after the user enabled Optimize Storage with a soon-expiring subscription, reminding them to download their media before the subscription expires. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Pensez à désactiver l'option \"Optimiser l'espace de stockage\" et à télécharger vos médias avant l'expiration de votre abonnement.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_OFFLOADED_SHEET_MESSAGE" = "Pensez à désactiver l'optimisation du stockage et à télécharger vos médias avant l'expiration de votre abonnement.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with a soon-expiring subscription. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_EXPIRING_WARNING_SHEET_MESSAGE" = "Voulez-vous vraiment activer l'option \"Optimiser l'espace de stockage\" et déplacer vos médias vers la sauvegarde ? Si votre abonnement expire, tous les médias qui ne seront pas enregistrés sur cet appareil seront définitivement supprimés.";
@@ -7745,7 +7745,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Prêt à vous lancer ? Saisissez votre numéro de téléphone.";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "We may need to send a verification code to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "Nous devrons peut-être envoyer un code de vérification à ce numéro :";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Votre numéro de téléphone";
@@ -7853,10 +7853,10 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Numéro de téléphone incorrect";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "We may need to send a verification code to this number. Is the phone number above correct?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Nous devrons peut-être envoyer un code de vérification au numéro de téléphone ci-dessus. Est-il correct ?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Phone Number Confirmation: %1$@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Vérification du numéro de téléphone : %1$@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Modifier";
@@ -7877,7 +7877,7 @@
 "RELEASE_NOTES_CHANNEL_NAME" = "Signal";
 
 /* Label displayed in thread details of the release notes chat */
-"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Conversation officielle";
+"RELEASE_NOTES_CHANNEL_OFFICIAL_LABEL" = "Canal de diffusion officiel ";
 
 /* Settings description label for the release notes thread telling a user to keep up to date */
 "RELEASE_NOTES_DESCRIPTION_KEEP_UPDATED" = "Pour découvrir les nouveautés et notes de version";
@@ -9908,7 +9908,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Lorsque vous enverrez des messages à ce contact, le délai avant disparition des messages éphémères sera défini sur %1$@.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Examinez attentivement les demandes";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Examinez attentivement les invitations";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Toucher pour remplacer un émoji";

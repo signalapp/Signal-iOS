@@ -1,1 +1,1 @@
-• Polls can now be created in individual chats too. Present a curated list of choices to your indecisive friend, or recapture the magic of passing a note to your crush by creating a “Do you like me? Y/N/Maybe” poll.
+• Sondajele pot fi create acum și în conversațiile individuale. Prezintă-i prietenului tău indecis o listă de opțiuni atent selecționate sau retrăiește magia momentului în care îi dădeai un bilet celui pe care îl plăceai, creând un sondaj de tipul „Mă placi? Da/Nu/Poate”.

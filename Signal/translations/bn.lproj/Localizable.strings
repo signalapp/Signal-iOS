@@ -605,7 +605,7 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "'কি'-টি আবার দেখুন";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Enter the recovery key you just saved.";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "আপনার মাত্র সেভ করা পুনরুদ্ধার 'কি'-টি লিখুন।";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "আপনার পুনরুদ্ধার 'কি' নিশ্চিত করুন";
@@ -671,10 +671,10 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "নতুন 'কি' তৈরি করুন";
 
 /* Subtitle for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
-"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "This new key will replace your old one, and will be required to recover your account and data. Store this key somewhere safe. If you lose it, you won’t be able to recover your account.";
+"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "পুরোনোটির পরিবর্তে আপনার এই নতুন 'কি'-টি কার্যকর হবে এবং আপনার অ্যাকাউন্ট ও ডেটা পুনরুদ্ধার করার জন্য এটি প্রয়োজন হবে। এই 'কি'-টি নিরাপদ কোথাও সংরক্ষণ করুন। এটি হারিয়ে ফেললে, আপনি আপনার অ্যাকাউন্টের ব্যাকআপ পুনরুদ্ধার করতে পারবেন না।";
 
 /* Title for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
-"BACKUP_RECORD_KEY_NEW_TITLE" = "Save Your New Recovery Key";
+"BACKUP_RECORD_KEY_NEW_TITLE" = "আপনার নতুন পুনরুদ্ধার 'কি' সেভ করুন";
 
 /* Title for a button allowing users to save their 'Recovery Key' to a password manager. */
 "BACKUP_RECORD_KEY_PASSWORD_MANAGER_BUTTON_TITLE" = "পাসওয়ার্ড ম্যানেজারে সেভ করুন";
@@ -701,7 +701,7 @@
 "BACKUP_RECORD_KEY_SUBTITLE" = "আপনার অ্যাকাউন্ট এবং ডেটা পুনরুদ্ধার করতে এই 'কি' প্রয়োজন। এই 'কি'-টি নিরাপদ কোথাও সংরক্ষণ করুন। এটি হারিয়ে ফেললে, আপনি আপনার অ্যাকাউন্টের ব্যাকআপ পুনরুদ্ধার করতে পারবেন না।";
 
 /* Title for a view allowing users to save their 'Recovery Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Save Your Recovery Key";
+"BACKUP_RECORD_KEY_TITLE" = "আপনার পুনরুদ্ধার 'কি' সেভ করুন";
 
 /* Title for a button offering help if the user has forgotten their recovery key. */
 "BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "'কি' ভুলে গেছেন?";
@@ -5303,7 +5303,7 @@
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "সকল মিডিয়া";
 
 /* Placeholder for message text input field in media editor. */
-"MEDIA_EDITOR_CAPTION_PLACEHOLDER" = "Message";
+"MEDIA_EDITOR_CAPTION_PLACEHOLDER" = "ম্যাসেজ";
 
 /* Title for the button that discards all edits in media editor. */
 "MEDIA_EDITOR_CLEAR_ALL" = "সব মুছুন";
@@ -7745,7 +7745,7 @@
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "শুরু করতে আপনার ফোন নম্বর লিখুন।";
 
 /* During re-registration, users are asked to confirm their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "We may need to send a verification code to this number:";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE_2" = "এই নম্বরে আমাদের একটি যাচাইকরণ কোড পাঠাতে হতে পারে:";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "আপনার ফোন নম্বর";
@@ -7853,10 +7853,10 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "ভুল ফোন নম্বর";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "We may need to send a verification code to this number. Is the phone number above correct?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "এই নম্বরে আমাদের একটি যাচাইকরণ কোড পাঠাতে হতে পারে। উপরের এই ফোন নম্বরটি কি ঠিক আছে?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Phone Number Confirmation: %1$@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "ফোন নম্বর নিশ্চিতকরণ: %1$@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "সম্পাদনা করুন";

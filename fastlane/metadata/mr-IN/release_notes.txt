@@ -1,1 +1,1 @@
-• Polls can now be created in individual chats too. Present a curated list of choices to your indecisive friend, or recapture the magic of passing a note to your crush by creating a “Do you like me? Y/N/Maybe” poll.
+• पोल आता स्वतंत्र चॅट्स मध्ये सुद्धा तयार करता येतात. तुमच्या मित्राला निर्णय घ्यायला मदत करण्यासाठी चांगले पर्याय नेमून द्या, किंवा तुमच्या क्रशला टीप पाठवण्याची मजा "तुला मी आवडतो का? हो/नाही/कदाचित" पोल तयार करून अनुभवा.
