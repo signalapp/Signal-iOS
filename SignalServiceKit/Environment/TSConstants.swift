@@ -188,7 +188,6 @@ public class TSConstantsProduction: TSConstantsProtocol {
     public let svr2Enclaves = [
         MrEnclave("ced8217b26228e4b210c985786999d095c4958a94faf37b14acaf25c4cbb02a4"),
         MrEnclave("1240acbd4aa26974184844c8a46b1022d3957ac8a76c1fd8f5b1a15141ee0708"),
-        MrEnclave("29cd63c87bea751e3bfd0fbd401279192e2e5c99948b4ee9437eafc4968355fb"),
     ]
 
     public let activeSvr2EnclaveCount: Int = 1
