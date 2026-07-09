@@ -44,6 +44,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE",
             comment: "Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend.",
         )
+        view.backgroundColor = .Signal.groupedBackground
 
         shouldAvoidKeyboard = true
         updateTableContents()

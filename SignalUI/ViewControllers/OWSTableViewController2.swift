@@ -191,16 +191,11 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
     }
 
     private func applyTheme() {
-        // We need to update `view.backgroundColor` as well to make sure that
-        // if there's a footer view (which is UITableView's sibling) it
-        // also has a proper background color.
         switch backgroundStyle {
         case .default:
             tableView.backgroundColor = self.tableBackgroundColor
-            view.backgroundColor = self.tableBackgroundColor
         case .clear:
             tableView.backgroundColor = nil
-            view.backgroundColor = .Signal.background
         case .none:
             break
         }

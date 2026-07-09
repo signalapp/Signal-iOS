@@ -126,6 +126,8 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     override public func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = .Signal.groupedBackground
+
         let isPresentedStandalone = navigationController?.viewControllers.first == self
         if isPresentedStandalone {
             navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)

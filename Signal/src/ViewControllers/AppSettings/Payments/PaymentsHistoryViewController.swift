@@ -75,6 +75,8 @@ class PaymentsHistoryViewController: OWSTableViewController2, PaymentsHistoryDat
             comment: "Label for the 'all payment records' section of the app settings.",
         )
 
+        view.backgroundColor = .Signal.groupedBackground
+
         dataSource.delegate = self
 
         updateTableContents()

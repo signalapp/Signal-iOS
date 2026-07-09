@@ -55,6 +55,7 @@ class DonationReceiptViewController: OWSTableViewController2 {
         super.viewDidLoad()
 
         title = OWSLocalizedString("DONATION_RECEIPT_DETAILS", comment: "Title on the view where you can see a single receipt")
+        view.backgroundColor = .Signal.groupedBackground
 
         updateTableContents()
         updateSignalLogoImage()

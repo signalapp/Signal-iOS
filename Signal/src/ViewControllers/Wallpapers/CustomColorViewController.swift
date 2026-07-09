@@ -123,6 +123,8 @@ class CustomColorViewController: OWSTableViewController2 {
             },
         )
 
+        view.backgroundColor = .Signal.groupedBackground
+
         createSubviews()
 
         updateNavigation()

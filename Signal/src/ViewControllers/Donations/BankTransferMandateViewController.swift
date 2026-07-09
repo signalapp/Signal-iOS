@@ -43,6 +43,7 @@ class BankTransferMandateViewController: OWSTableViewController2 {
         super.viewDidLoad()
 
         navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
+        view.backgroundColor = .Signal.groupedBackground
 
         updateTableContents()
         updateBottomFooter()
