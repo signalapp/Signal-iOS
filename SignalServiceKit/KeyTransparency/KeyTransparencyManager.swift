@@ -176,16 +176,12 @@ public final class KeyTransparencyManager {
                             return nil
                         }
                     },
-                    isRetryable: { error -> Bool in
+                    isRetryable: { error in
                         switch error {
-                        case SignalError.rateLimitedError,
-                             SignalError.connectionFailed,
-                             SignalError.ioError,
-                             SignalError.webSocketError,
-                             SignalError.chatServiceInactive:
-                            return true
-                        default:
-                            return false
+                        case SignalError.rateLimitedError: true
+                        // isRetryable covers network errors.
+                        case _ where error.isRetryable: true
+                        default: false
                         }
                     },
                     block: {
