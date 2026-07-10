@@ -181,7 +181,8 @@ public final class KeyTransparencyManager {
                         case SignalError.rateLimitedError,
                              SignalError.connectionFailed,
                              SignalError.ioError,
-                             SignalError.webSocketError:
+                             SignalError.webSocketError,
+                             SignalError.chatServiceInactive:
                             return true
                         default:
                             return false
