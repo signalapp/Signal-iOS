@@ -39,14 +39,6 @@ class ApprovalRailCellView: GalleryRailCellView {
         return button
     }()
 
-    // Protection for the trash button.
-    private let dimmerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .ows_blackAlpha40
-        view.alpha = 0
-        return view
-    }()
-
     init() {
         // On iOS 26 selected thumbnail doesn't have a border, but instead
         // it has some extra space around it. Similar to what Photos app does.
@@ -77,23 +69,16 @@ class ApprovalRailCellView: GalleryRailCellView {
             itemBorderColor: borderColor,
             focusedItemBorderWidth: focusedBorderWidth,
             focusedItemBorderColor: focusedBorderColor,
-            focusedItemOverlayColor: .ows_blackAlpha50,
+            focusedItemOverlayColor: .ows_blackAlpha40,
             focusedItemExtraPadding: extraPadding,
         )
         super.init(configuration: configuration)
 
-        dimmerView.translatesAutoresizingMaskIntoConstraints = false
         deleteButton.translatesAutoresizingMaskIntoConstraints = false
 
-        addSubview(dimmerView)
         addSubview(deleteButton)
 
         NSLayoutConstraint.activate([
-            dimmerView.topAnchor.constraint(equalTo: topAnchor),
-            dimmerView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            dimmerView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            dimmerView.bottomAnchor.constraint(equalTo: bottomAnchor),
-
             deleteButton.centerXAnchor.constraint(equalTo: centerXAnchor),
             deleteButton.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
@@ -106,10 +91,8 @@ class ApprovalRailCellView: GalleryRailCellView {
     override var isCellFocused: Bool {
         didSet {
             if isCellFocused, let approvalRailCellDelegate, approvalRailCellDelegate.canRemoveApprovalRailCellView(self) {
-                dimmerView.alpha = 1
                 deleteButton.alpha = 1
             } else {
-                dimmerView.alpha = 0
                 deleteButton.alpha = 0
             }
         }
