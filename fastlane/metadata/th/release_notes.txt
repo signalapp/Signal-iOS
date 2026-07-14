@@ -1,1 +1,1 @@
-• Group admins can now bring chats to their natural conclusion with the new "End Group" option in group settings. Ending a group prevents group members from sending messages or starting calls, and also disables invites. Now you can make sure everyone stays on the right thread by ending last year's sewing meetup group before stitching a new one together. 
+• เพิ่มตัวเลือกใหม่ในการตั้งค่ากลุ่มเพื่อให้ผู้ดูแลกลุ่มสามารถปิดห้องแชทได้ด้วยการ "ปิดกลุ่ม" โดยการปิดกลุ่มจะทำให้สมาชิกไม่สามารถส่งข้อความหรือเริ่มต้นการโทร รวมถึงส่งคำเชิญเข้ากลุ่มได้อีก 

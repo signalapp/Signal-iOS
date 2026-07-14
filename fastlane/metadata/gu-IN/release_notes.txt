@@ -1,1 +1,1 @@
-• Group admins can now bring chats to their natural conclusion with the new "End Group" option in group settings. Ending a group prevents group members from sending messages or starting calls, and also disables invites. Now you can make sure everyone stays on the right thread by ending last year's sewing meetup group before stitching a new one together. 
+• ગ્રૂપ એડમિન હવે ગ્રૂપ સેટિંગ્સમાં નવા "ગ્રૂપ સમાપ્ત કરો" વિકલ્પ સાથે ચેટને તેમના કુદરતી સમાપન પર લાવી શકે છે. ગ્રૂપ સમાપ્ત કરવાથી ગ્રૂપના સભ્યોને મેસેજ મોકલવા અથવા કૉલ શરૂ કરવાથી રોકે છે તેમજ આમંત્રણો પણ અક્ષમ કરે છે. 

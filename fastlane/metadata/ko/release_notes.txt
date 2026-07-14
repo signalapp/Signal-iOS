@@ -1,1 +1,1 @@
-• Group admins can now bring chats to their natural conclusion with the new "End Group" option in group settings. Ending a group prevents group members from sending messages or starting calls, and also disables invites. Now you can make sure everyone stays on the right thread by ending last year's sewing meetup group before stitching a new one together. 
+• 이제 그룹 관리자는 그룹 설정의 새로운 '그룹 종료' 옵션으로 대화를 마무리할 수 있습니다. 그룹이 종료되면 그룹 멤버가 메시지를 보내거나 전화를 시작할 수 없으며, 초대 기능도 비활성화됩니다. 
