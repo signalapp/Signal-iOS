@@ -1441,9 +1441,7 @@ final class CameraTopBar: MediaTopBar {
         buttonStack.spacing = 4
         buttonStack.directionalLayoutMargins = .init(hMargin: 6, vMargin: 0)
 
-        let glassEffect = UIGlassEffect(style: .regular)
-        glassEffect.isInteractive = true
-        let glassEffectView = UIVisualEffectView(effect: glassEffect)
+        let glassEffectView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
         glassEffectView.cornerConfiguration = .capsule()
         glassEffectView.contentView.addSubview(buttonStack)
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
