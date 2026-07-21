@@ -1433,8 +1433,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     /// A background fetching task that keeps the web socket open while the app
     /// is in the background.
     private var backgroundFetchHandle: BackgroundTaskHandle?
-    private var expirationJobQueue = SerialTaskQueue()
+    private var expirationJobTask: Task<Void, Never>?
 
+    @MainActor
     private func refreshConnection(isAppActive: Bool) {
         let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager
 
@@ -1448,9 +1449,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             self.startCronTask()
 
             // Start expiration jobs on activation.
-            expirationJobQueue.enqueueCancellingPrevious(operation: {
+            let oldExpirationJobTask = self.expirationJobTask
+            oldExpirationJobTask?.cancel()
+            self.expirationJobTask = Task {
+                await oldExpirationJobTask?.value
                 await self.runExpirationJobs()
-            })
+            }
 
             // We're back in the foreground. We've passed off connection management to
             // the foreground logic, so just tear it down without waiting for anything.
@@ -1463,10 +1467,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             let cronTask = self.cronTask.take()
             let startDate = MonotonicDate()
             let isPastRegistration = SignalApp.shared.conversationSplitViewController != nil
-            // Enqueue a barrier job so we know when the current one is done.
-            let expirationJobCompletion = expirationJobQueue.enqueue(operation: {})
+            let expirationJobTask = self.expirationJobTask
             self.backgroundFetchHandle = UIApplication.shared.beginBackgroundTask(
-                backgroundBlock: { [expirationJobQueue] in
+                backgroundBlock: {
                     do {
                         await backgroundFetcher.start()
                         oldActiveConnectionTokens.forEach { $0.releaseConnection() }
@@ -1492,7 +1495,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         // We were canceled, either because we entered the foreground or our
                         // background execution time expired.
                     }
-                    expirationJobQueue.cancelAll()
+                    expirationJobTask?.cancel()
                 },
                 completionHandler: { result in
                     switch result {
@@ -1500,7 +1503,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         await backgroundFetcher.reset()
                     case .finished, .expired:
                         await backgroundFetcher.stopAndWaitBeforeSuspending()
-                        try? await expirationJobCompletion.value
+                        await expirationJobTask?.value
                     }
                 },
             )
