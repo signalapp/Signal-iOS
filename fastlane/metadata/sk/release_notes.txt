@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• Predstavujeme miznúce hovory: Zmeškané, odchádzajúce a prijaté hovory, ktoré sa uskutočnia po tom, ako nainštalujete túto aktualizáciu, teraz automaticky zmiznú v každom čete, v ktorom sú zapnuté miznúce správy.

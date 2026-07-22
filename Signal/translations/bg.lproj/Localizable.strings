@@ -548,28 +548,28 @@
 "BACK_BUTTON" = "Обратно";
 
 /* Message for an error sheet shown when confirming the user's Recovery Key via their password manager fails. */
-"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_MESSAGE" = "Your recovery key could not be confirmed. Make sure you've saved it in your password manager, or save it manually.";
+"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_MESSAGE" = "Неуспешно потвърждаване на вашия ключ за възстановяване. Уверете се, че сте го запазили в мениджъра ви на пароли, или го запишете ръчно.";
 
 /* Title for a button that begins saving the user's Recovery Key manually, in an error sheet shown when confirming it via their password manager fails. */
-"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_MANUALLY_BUTTON_TITLE" = "Save Key Manually";
+"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_MANUALLY_BUTTON_TITLE" = "Ръчно записване на ключа";
 
 /* Title for a button that retries saving the user's Recovery Key to their password manager, in an error sheet shown when confirming it fails. */
-"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Запазване в мениджър на пароли";
 
 /* Title for an error sheet shown when confirming the user's Recovery Key via their password manager fails. */
-"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_TITLE" = "Error Confirming Recovery Key";
+"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_TITLE" = "Грешка при потвърждаването на ключа за възстановяване";
 
 /* Title for a button that begins confirming the user's Recovery Key, in a sheet shown after it was saved to their password manager. */
-"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_CONFIRM_BUTTON_TITLE" = "Confirm Recovery Key";
+"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_CONFIRM_BUTTON_TITLE" = "Потвърдете ключа за възстановяване";
 
 /* Message for a sheet shown to confirm the user's Recovery Key after it was saved to their password manager. */
-"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_MESSAGE" = "Confirm that your recovery key was recorded correctly. You will be prompted to sign in with your saved password in the next step.";
+"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_MESSAGE" = "Уверете се, че вашият ключ за възстановяване е записан правилно. Ще получите подкана да влезете със запазената парола в следващата стъпка.";
 
 /* Title for a button that returns the user to view their Recovery Key, in a sheet shown after it was saved to their password manager. */
-"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_SEE_KEY_AGAIN_BUTTON_TITLE" = "See Key Again";
+"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_SEE_KEY_AGAIN_BUTTON_TITLE" = "Вижте ключа отново";
 
 /* Title for a sheet shown to confirm the user's Recovery Key after it was saved to their password manager. */
-"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_TITLE" = "Confirm Your Recovery Key";
+"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_TITLE" = "Потвърдете ключа ви за възстановяване";
 
 /* Action text for Recovery Key reminder megaphone */
 "BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Включване";
@@ -605,7 +605,7 @@
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Правилен ключ за възстановяване. Пазете ключа си на сигурно място.";
 
 /* Title for a button that lets the user see their whole Recovery Key, from a preview. */
-"BACKUP_KEY_SEE_FULL_KEY_BUTTON_TITLE" = "See Full Key";
+"BACKUP_KEY_SEE_FULL_KEY_BUTTON_TITLE" = "Преглед на целия ключ";
 
 /* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
 "BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "Не споделяйте своя ключ за възстановяване с никого. Това ще позволи на други хора да откраднат акаунта ви. <bold>Signal никога няма да ви изпраща съобщения</bold>, за да иска вашия ключ за възстановяване. Никога не отговаряйте на чатове, в които някой се преструва за Signal.";
@@ -731,22 +731,22 @@
 "BACKUP_RESTORE_MODAL_TITLE" = "Възстановяване на съобщенията…";
 
 /* Message for a confirmation sheet shown before saving the user's Recovery Key to their password manager. */
-"BACKUP_SAVE_KEY_PW_MGR_CONFIRM_SHEET_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+"BACKUP_SAVE_KEY_PW_MGR_CONFIRM_SHEET_MESSAGE" = "Съхранявайте ключа ви за възстановяване само в мениджър на пароли, който считате за сигурен. Signal не предоставя препоръки относно това кой мениджър на пароли е подходящ за вас.";
 
 /* Title for a confirmation sheet shown before saving the user's Recovery Key to their password manager. */
-"BACKUP_SAVE_KEY_PW_MGR_CONFIRM_SHEET_TITLE" = "Save to password manager?";
+"BACKUP_SAVE_KEY_PW_MGR_CONFIRM_SHEET_TITLE" = "Запазване в мениджър на пароли?";
 
 /* Message for an error sheet shown when saving the user's Recovery Key to their password manager fails. */
-"BACKUP_SAVE_KEY_PW_MGR_ERROR_SHEET_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+"BACKUP_SAVE_KEY_PW_MGR_ERROR_SHEET_MESSAGE" = "Възможно е да нямате настроен мениджър на пароли или мениджърът на пароли, който използвате, може да не се поддържа. Можете да изберете мениджъра на пароли, който предпочитате, в настройките на телефона си.";
 
 /* Title for an error sheet shown when saving the user's Recovery Key to their password manager fails. */
-"BACKUP_SAVE_KEY_PW_MGR_ERROR_SHEET_TITLE" = "Can't save to password manager";
+"BACKUP_SAVE_KEY_PW_MGR_ERROR_SHEET_TITLE" = "Неуспешно запазване в мениджър на пароли";
 
 /* Title for a button that begins saving the user's Recovery Key manually. */
-"BACKUP_SAVE_KEY_SAVE_MANUALLY_BUTTON_TITLE" = "Save Manually";
+"BACKUP_SAVE_KEY_SAVE_MANUALLY_BUTTON_TITLE" = "Ръчно записване";
 
 /* Title for a button that begins saving the user's Recovery Key to their password manager. */
-"BACKUP_SAVE_KEY_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_SAVE_KEY_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Запазване в мениджър на пароли";
 
 /* Message describing that the Background App Refresh permission is disabled for Signal. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE" = "Автоматичното архивиране е деактивирано. Активирайте автоматичното архивиране, като актуализирате разрешенията на Signal.";
@@ -899,7 +899,7 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Подробности за резервно копие";
 
 /* Toast shown when the user's Recovery Key has been confirmed successfully. */
-"BACKUP_SETTINGS_CONFIRM_KEY_SUCCESS_TOAST" = "Recovery Key Confirmed";
+"BACKUP_SETTINGS_CONFIRM_KEY_SUCCESS_TOAST" = "Ключът за възстановяване е потвърден";
 
 /* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "За да създадете нов ключ за възстановяване, трябва да имате регистрация.";
@@ -3026,16 +3026,16 @@
 "DEREGISTRATION_WARNING_ACTION_TITLE" = "Пререгистриране на устройство";
 
 /* Label indicating a linked device was last active about three days ago. */
-"DEVICE_LAST_ACTIVE_ABOUT_THREE_DAYS_AGO" = "Last active about three days ago";
+"DEVICE_LAST_ACTIVE_ABOUT_THREE_DAYS_AGO" = "Последна активност преди около три дни";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active around %1$@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Последна активност около %1$@";
 
 /* Label indicating a linked device was last active within the past day. */
-"DEVICE_LAST_ACTIVE_PAST_DAY" = "Last active in the past day";
+"DEVICE_LAST_ACTIVE_PAST_DAY" = "Последна активност в изминалия ден";
 
 /* Label indicating a linked device was last active within the past two days. */
-"DEVICE_LAST_ACTIVE_PAST_TWO_DAYS" = "Last active in the past two days";
+"DEVICE_LAST_ACTIVE_PAST_TWO_DAYS" = "Последна активност в изминалите два дни";
 
 /* {{Short Date}} when device was linked. */
 "DEVICE_LINKED_AT_LABEL" = "Свързано на %1$@";
@@ -4898,7 +4898,7 @@
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "За да настроите своето повтарящо се дарение, докоснете „Продължаване“, за да потвърдите заплащането на %1$@ от вашата банка. Сумата ще бъде възстановена автоматично и позволява вашето дарение от %2$@/месец да се изтегля от сметката ви.";
 
 /* The image editor tool (on/off switch) that detects and blurs faces in the photo. */
-"IMAGE_EDITOR_BLUR_FACES" = "Blur Faces";
+"IMAGE_EDITOR_BLUR_FACES" = "Замъгляване на лица";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Рисувайте където пожелаете, за да се размаже";
@@ -5264,16 +5264,16 @@
 "LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Управлението на контакти на телефона вече не е достъпно на iPad. За да добавите контакти в Signal към контактите на телефона си, отворете Signal на телефона си.";
 
 /* Bullet point on the linked devices info sheet, describing what can be linked. */
-"LINKED_DEVICE_INFO_SHEET_BULLET_1" = "You can link a desktop, tablet or additional phone.";
+"LINKED_DEVICE_INFO_SHEET_BULLET_1" = "Можете да свържете компютър, таблет или допълнителен телефон.";
 
 /* Bullet point on the linked devices info sheet, describing that the primary device manages linking. */
-"LINKED_DEVICE_INFO_SHEET_BULLET_2" = "Your primary device manages what's linked, you can link up to 5 devices.";
+"LINKED_DEVICE_INFO_SHEET_BULLET_2" = "На основното ви устройство се управлява какво е свързано и можете да свържете до 5 устройства.";
 
 /* Bullet point on the linked devices info sheet, describing that some settings are primary-only. */
-"LINKED_DEVICE_INFO_SHEET_BULLET_3" = "Some account settings are managed on your primary device only, including account settings and backups.";
+"LINKED_DEVICE_INFO_SHEET_BULLET_3" = "Някои настройки на акаунта се управляват само на основното ви устройство, включително настройките на акаунта и архивните копия.";
 
 /* Lead paragraph for a sheet explaining linked devices. The text within the <bold></bold> tags is styled bold. */
-"LINKED_DEVICE_INFO_SHEET_HEADER" = "<bold>Linked Devices</bold> let you access your Signal account and messages securely on any of your additional devices.";
+"LINKED_DEVICE_INFO_SHEET_HEADER" = "<bold>Свързаните устройства</bold> ви позволяват да осъществявате сигурен достъп до вашите акаунт и съобщения в Signal на допълнителните ви устройства.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
 "LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Управлението на контакти на телефона вече не се поддържа на iPad. Това устройство ще продължи да синхронизира промените на списъка ви с контакти от Signal на телефона ви.";
@@ -5384,7 +5384,7 @@
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Всякаква мултимедия";
 
 /* Title for the button that discards all edits in media editor. */
-"MEDIA_EDITOR_BUTTON_CLEAR" = "Clear";
+"MEDIA_EDITOR_BUTTON_CLEAR" = "Изчистване";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_CAPTION_PLACEHOLDER" = "Съобщение";
@@ -7286,7 +7286,7 @@
 "POLL_END_CONFIRMATION" = "Приключване на анкетата?";
 
 /* Message for an action sheet confirming the user wants to end a poll. */
-"POLL_END_CONFIRMATION_MESSAGE" = "Members of this chat will no longer be able to vote in this poll.";
+"POLL_END_CONFIRMATION_MESSAGE" = "Членовете на този чат вече няма да могат да гласуват в тази анкета.";
 
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ приключи анкетата: %2$@";
@@ -8732,16 +8732,16 @@
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Извличайте визуализации на връзки директно от уебсайтове за съобщения, които изпращате.";
 
 /* Subtitle of a card on a linked device's account settings, explaining that account settings are managed on the primary device. */
-"SETTINGS_LINKED_DEVICE_ACCOUNT_CARD_SUBTITLE" = "To manage your account settings, open Signal on your primary device.";
+"SETTINGS_LINKED_DEVICE_ACCOUNT_CARD_SUBTITLE" = "За да управлявате настройките на акаунта си, отворете Signal на основното си устройство.";
 
 /* Title of a card on a linked device's account settings, indicating that this is a linked device. */
-"SETTINGS_LINKED_DEVICE_ACCOUNT_CARD_TITLE" = "This is a Linked Device";
+"SETTINGS_LINKED_DEVICE_ACCOUNT_CARD_TITLE" = "Това е свързано устройство";
 
 /* Label for a button that deletes all Signal data from a linked device. */
-"SETTINGS_LINKED_DEVICE_DELETE_DATA_BUTTON" = "Delete App Data";
+"SETTINGS_LINKED_DEVICE_DELETE_DATA_BUTTON" = "Изтриване на данните на приложението";
 
 /* Footer below the 'delete app data' button, shown on a linked device's account settings. */
-"SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "This will remove all data from the Signal app on this device.";
+"SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "Това ще премахне всички данни от приложението на Signal на това устройство.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Никога";

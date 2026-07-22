@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• L'historique des appels passe en mode éphémère. Avec cette mise à jour, lorsque les messages éphémères sont activés dans une conversation, l'historique des appels manqués, sortants et entrants disparaît automatiquement.

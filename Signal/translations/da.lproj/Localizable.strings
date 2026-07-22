@@ -548,28 +548,28 @@
 "BACK_BUTTON" = "Tilbage";
 
 /* Message for an error sheet shown when confirming the user's Recovery Key via their password manager fails. */
-"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_MESSAGE" = "Your recovery key could not be confirmed. Make sure you've saved it in your password manager, or save it manually.";
+"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_MESSAGE" = "Din gendannelsesnøgle kunne ikke bekræftes. Sørg for, at du har gemt den i din adgangskodeadministrator, eller gem den manuelt.";
 
 /* Title for a button that begins saving the user's Recovery Key manually, in an error sheet shown when confirming it via their password manager fails. */
-"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_MANUALLY_BUTTON_TITLE" = "Save Key Manually";
+"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_MANUALLY_BUTTON_TITLE" = "Gem nøglen manuelt";
 
 /* Title for a button that retries saving the user's Recovery Key to their password manager, in an error sheet shown when confirming it fails. */
-"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Gem i adgangskodeadministrator";
 
 /* Title for an error sheet shown when confirming the user's Recovery Key via their password manager fails. */
-"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_TITLE" = "Error Confirming Recovery Key";
+"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_TITLE" = "Der skete en fejl ved bekræftelse af gendannelsesnøgle";
 
 /* Title for a button that begins confirming the user's Recovery Key, in a sheet shown after it was saved to their password manager. */
-"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_CONFIRM_BUTTON_TITLE" = "Confirm Recovery Key";
+"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_CONFIRM_BUTTON_TITLE" = "Bekræft gendannelsesnøgle";
 
 /* Message for a sheet shown to confirm the user's Recovery Key after it was saved to their password manager. */
-"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_MESSAGE" = "Confirm that your recovery key was recorded correctly. You will be prompted to sign in with your saved password in the next step.";
+"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_MESSAGE" = "Bekræft, at din gendannelsesnøgle blev registreret korrekt. Du bliver bedt om at logge ind med din gemte adgangskode i næste trin.";
 
 /* Title for a button that returns the user to view their Recovery Key, in a sheet shown after it was saved to their password manager. */
-"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_SEE_KEY_AGAIN_BUTTON_TITLE" = "See Key Again";
+"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_SEE_KEY_AGAIN_BUTTON_TITLE" = "Se nøglen igen";
 
 /* Title for a sheet shown to confirm the user's Recovery Key after it was saved to their password manager. */
-"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_TITLE" = "Confirm Your Recovery Key";
+"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_TITLE" = "Bekræft din gendannelsesnøgle";
 
 /* Action text for Recovery Key reminder megaphone */
 "BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "Aktivér";
@@ -605,7 +605,7 @@
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "Gendannelsesnøglen er korrekt. Opbevar din nøgle sikkert";
 
 /* Title for a button that lets the user see their whole Recovery Key, from a preview. */
-"BACKUP_KEY_SEE_FULL_KEY_BUTTON_TITLE" = "See Full Key";
+"BACKUP_KEY_SEE_FULL_KEY_BUTTON_TITLE" = "Se hele nøglen";
 
 /* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
 "BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "Del ikke din gendannelsesnøgle med nogen. Dette giver dem mulighed for at overtage din konto. <bold>Signal kontakter dig aldrig</bold> for at bede om din gendannelsesnøgle. Svar aldrig på en chat, der udgiver sig for at være fra Signal.";
@@ -731,22 +731,22 @@
 "BACKUP_RESTORE_MODAL_TITLE" = "Gendanner beskeder…";
 
 /* Message for a confirmation sheet shown before saving the user's Recovery Key to their password manager. */
-"BACKUP_SAVE_KEY_PW_MGR_CONFIRM_SHEET_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+"BACKUP_SAVE_KEY_PW_MGR_CONFIRM_SHEET_MESSAGE" = "Gem kun din gendannelsesnøgle i en adgangskodeadministrator, som du har tillid til er sikker. Signal giver ikke en anbefaling til, hvilken adgangskodeadministrator der er den rigtige for dig.";
 
 /* Title for a confirmation sheet shown before saving the user's Recovery Key to their password manager. */
-"BACKUP_SAVE_KEY_PW_MGR_CONFIRM_SHEET_TITLE" = "Save to password manager?";
+"BACKUP_SAVE_KEY_PW_MGR_CONFIRM_SHEET_TITLE" = "Vil du gemme i adgangskodeadministratoren?";
 
 /* Message for an error sheet shown when saving the user's Recovery Key to their password manager fails. */
-"BACKUP_SAVE_KEY_PW_MGR_ERROR_SHEET_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+"BACKUP_SAVE_KEY_PW_MGR_ERROR_SHEET_MESSAGE" = "Du har muligvis ikke konfigureret en adgangskodeadministrator, ellers er den, du bruger, muligvis ikke understøttet. Du kan vælge din foretrukne adgangskodeadministrator i telefonens indstillinger.";
 
 /* Title for an error sheet shown when saving the user's Recovery Key to their password manager fails. */
-"BACKUP_SAVE_KEY_PW_MGR_ERROR_SHEET_TITLE" = "Can't save to password manager";
+"BACKUP_SAVE_KEY_PW_MGR_ERROR_SHEET_TITLE" = "Kan ikke gemmes i adgangskodeadministrator";
 
 /* Title for a button that begins saving the user's Recovery Key manually. */
-"BACKUP_SAVE_KEY_SAVE_MANUALLY_BUTTON_TITLE" = "Save Manually";
+"BACKUP_SAVE_KEY_SAVE_MANUALLY_BUTTON_TITLE" = "Gem manuelt";
 
 /* Title for a button that begins saving the user's Recovery Key to their password manager. */
-"BACKUP_SAVE_KEY_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_SAVE_KEY_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Gem i adgangskodeadministrator";
 
 /* Message describing that the Background App Refresh permission is disabled for Signal. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE" = "Automatiske sikkerhedskopier er deaktiveret. Aktivér automatiske sikkerhedskopier ved at opdatere tilladelser for Signal.";
@@ -899,7 +899,7 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "Sikkerhedskopioplysninger";
 
 /* Toast shown when the user's Recovery Key has been confirmed successfully. */
-"BACKUP_SETTINGS_CONFIRM_KEY_SUCCESS_TOAST" = "Recovery Key Confirmed";
+"BACKUP_SETTINGS_CONFIRM_KEY_SUCCESS_TOAST" = "Gendannelsesnøgle bekræftet";
 
 /* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "Du skal være registreret for at oprette en ny gendannelsesnøgle.";
@@ -3026,16 +3026,16 @@
 "DEREGISTRATION_WARNING_ACTION_TITLE" = "Registrér enheden igen";
 
 /* Label indicating a linked device was last active about three days ago. */
-"DEVICE_LAST_ACTIVE_ABOUT_THREE_DAYS_AGO" = "Last active about three days ago";
+"DEVICE_LAST_ACTIVE_ABOUT_THREE_DAYS_AGO" = "Sidst aktiv for cirka tre dage siden";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active around %1$@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Sidst aktiv omkring den %1$@";
 
 /* Label indicating a linked device was last active within the past day. */
-"DEVICE_LAST_ACTIVE_PAST_DAY" = "Last active in the past day";
+"DEVICE_LAST_ACTIVE_PAST_DAY" = "Sidst aktiv inden for det seneste døgn";
 
 /* Label indicating a linked device was last active within the past two days. */
-"DEVICE_LAST_ACTIVE_PAST_TWO_DAYS" = "Last active in the past two days";
+"DEVICE_LAST_ACTIVE_PAST_TWO_DAYS" = "Sidst aktiv inden for de seneste to dage";
 
 /* {{Short Date}} when device was linked. */
 "DEVICE_LINKED_AT_LABEL" = "Forbundet %1$@";
@@ -4898,7 +4898,7 @@
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Tryk fortsæt for at bekræfte opkrævningen af et gebyr på %1$@ hos din bank, så du kan konfigurere din donation med løbende betaling. Dette refunderes automatisk og gør det muligt at opkræve din donation på %2$@/måned fra din konto.";
 
 /* The image editor tool (on/off switch) that detects and blurs faces in the photo. */
-"IMAGE_EDITOR_BLUR_FACES" = "Blur Faces";
+"IMAGE_EDITOR_BLUR_FACES" = "Slør ansigter";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Tegn hvor som helst for at sløre";
@@ -5264,16 +5264,16 @@
 "LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Håndtering af din telefons kontakter er ikke længere tilgængelig på iPad. Hvis du vil tilføje Signal-kontakter til din telefons kontakter, skal du åbne Signal på din telefon.";
 
 /* Bullet point on the linked devices info sheet, describing what can be linked. */
-"LINKED_DEVICE_INFO_SHEET_BULLET_1" = "You can link a desktop, tablet or additional phone.";
+"LINKED_DEVICE_INFO_SHEET_BULLET_1" = "Du kan tilknytte en computer, en tablet eller en ekstra telefon.";
 
 /* Bullet point on the linked devices info sheet, describing that the primary device manages linking. */
-"LINKED_DEVICE_INFO_SHEET_BULLET_2" = "Your primary device manages what's linked, you can link up to 5 devices.";
+"LINKED_DEVICE_INFO_SHEET_BULLET_2" = "Din primære enhed administrerer, hvilke enheder der er tilknyttet. Du kan tilknytte op til 5 enheder.";
 
 /* Bullet point on the linked devices info sheet, describing that some settings are primary-only. */
-"LINKED_DEVICE_INFO_SHEET_BULLET_3" = "Some account settings are managed on your primary device only, including account settings and backups.";
+"LINKED_DEVICE_INFO_SHEET_BULLET_3" = "Nogle kontoindstillinger administreres kun på din primære enhed, herunder kontoindstillinger og sikkerhedskopier.";
 
 /* Lead paragraph for a sheet explaining linked devices. The text within the <bold></bold> tags is styled bold. */
-"LINKED_DEVICE_INFO_SHEET_HEADER" = "<bold>Linked Devices</bold> let you access your Signal account and messages securely on any of your additional devices.";
+"LINKED_DEVICE_INFO_SHEET_HEADER" = "<bold>Tilknyttede enheder</bold> giver dig sikker adgang til din Signal-konto og dine beskeder på dine andre enheder.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
 "LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Håndtering af din telefons kontakter understøttes ikke længere på iPad. Enheden fortsætter med at synkronisere eventuelle ændringer i din kontaktliste fra Signal på din telefon.";
@@ -5384,7 +5384,7 @@
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Alle mediefiler";
 
 /* Title for the button that discards all edits in media editor. */
-"MEDIA_EDITOR_BUTTON_CLEAR" = "Clear";
+"MEDIA_EDITOR_BUTTON_CLEAR" = "Fjern";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_CAPTION_PLACEHOLDER" = "Besked";
@@ -7286,7 +7286,7 @@
 "POLL_END_CONFIRMATION" = "Vil du afslutte afstemningen?";
 
 /* Message for an action sheet confirming the user wants to end a poll. */
-"POLL_END_CONFIRMATION_MESSAGE" = "Members of this chat will no longer be able to vote in this poll.";
+"POLL_END_CONFIRMATION_MESSAGE" = "Medlemmer vil ikke længere kunne stemme i denne afstemning.";
 
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ afsluttede afstemningen: %2$@";
@@ -8732,16 +8732,16 @@
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Hent forhåndsvisninger direkte fra websteder for links, du sender i beskeder.";
 
 /* Subtitle of a card on a linked device's account settings, explaining that account settings are managed on the primary device. */
-"SETTINGS_LINKED_DEVICE_ACCOUNT_CARD_SUBTITLE" = "To manage your account settings, open Signal on your primary device.";
+"SETTINGS_LINKED_DEVICE_ACCOUNT_CARD_SUBTITLE" = "Åbn Signal på din primære enhed for at administrere dine kontoindstillinger.";
 
 /* Title of a card on a linked device's account settings, indicating that this is a linked device. */
-"SETTINGS_LINKED_DEVICE_ACCOUNT_CARD_TITLE" = "This is a Linked Device";
+"SETTINGS_LINKED_DEVICE_ACCOUNT_CARD_TITLE" = "Dette er en tilknyttet enhed";
 
 /* Label for a button that deletes all Signal data from a linked device. */
-"SETTINGS_LINKED_DEVICE_DELETE_DATA_BUTTON" = "Delete App Data";
+"SETTINGS_LINKED_DEVICE_DELETE_DATA_BUTTON" = "Slet appdata";
 
 /* Footer below the 'delete app data' button, shown on a linked device's account settings. */
-"SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "This will remove all data from the Signal app on this device.";
+"SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "Dette sletter alle data fra Signal-appen på denne enhed.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Aldrig";

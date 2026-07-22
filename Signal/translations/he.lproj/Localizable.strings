@@ -548,28 +548,28 @@
 "BACK_BUTTON" = "הקודם";
 
 /* Message for an error sheet shown when confirming the user's Recovery Key via their password manager fails. */
-"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_MESSAGE" = "Your recovery key could not be confirmed. Make sure you've saved it in your password manager, or save it manually.";
+"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_MESSAGE" = "לא ניתן היה לאשר את מפתח השחזור שלך. יש לוודא ששמרת אותו במנהל הסיסמאות, או לשמור אותו באופן ידני.";
 
 /* Title for a button that begins saving the user's Recovery Key manually, in an error sheet shown when confirming it via their password manager fails. */
-"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_MANUALLY_BUTTON_TITLE" = "Save Key Manually";
+"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_MANUALLY_BUTTON_TITLE" = "שמירת מפתח באופן ידני";
 
 /* Title for a button that retries saving the user's Recovery Key to their password manager, in an error sheet shown when confirming it fails. */
-"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_TO_PW_MGR_BUTTON_TITLE" = "שמירה במנהל הסיסמאות";
 
 /* Title for an error sheet shown when confirming the user's Recovery Key via their password manager fails. */
-"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_TITLE" = "Error Confirming Recovery Key";
+"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_TITLE" = "שגיאה באישור מפתח השחזור";
 
 /* Title for a button that begins confirming the user's Recovery Key, in a sheet shown after it was saved to their password manager. */
-"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_CONFIRM_BUTTON_TITLE" = "Confirm Recovery Key";
+"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_CONFIRM_BUTTON_TITLE" = "אישור מפתח השחזור";
 
 /* Message for a sheet shown to confirm the user's Recovery Key after it was saved to their password manager. */
-"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_MESSAGE" = "Confirm that your recovery key was recorded correctly. You will be prompted to sign in with your saved password in the next step.";
+"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_MESSAGE" = "צריך לאשר שמפתח השחזור שלך תועד כהלכה. נבקש ממך להתחבר שוב עם הסיסמה השמורה שלך בשלב הבא.";
 
 /* Title for a button that returns the user to view their Recovery Key, in a sheet shown after it was saved to their password manager. */
-"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_SEE_KEY_AGAIN_BUTTON_TITLE" = "See Key Again";
+"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_SEE_KEY_AGAIN_BUTTON_TITLE" = "צפייה חוזרת במפתח";
 
 /* Title for a sheet shown to confirm the user's Recovery Key after it was saved to their password manager. */
-"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_TITLE" = "Confirm Your Recovery Key";
+"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_TITLE" = "אישור מפתח השחזור שלך";
 
 /* Action text for Recovery Key reminder megaphone */
 "BACKUP_ENABLEMENT_REMINDER_MEGAPHONE_ACTION" = "הפעל";
@@ -605,7 +605,7 @@
 "BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "מפתח השחזור נכון. שמור על המפתח שלך במקום בטוח.";
 
 /* Title for a button that lets the user see their whole Recovery Key, from a preview. */
-"BACKUP_KEY_SEE_FULL_KEY_BUTTON_TITLE" = "See Full Key";
+"BACKUP_KEY_SEE_FULL_KEY_BUTTON_TITLE" = "הצגת המפתח המלא";
 
 /* Body for a warning sheet shown to discourage the user from sharing their 'Recovery Key', warning them not to share it with anyone. */
 "BACKUP_NEVER_SHARE_RECOVERY_KEY_SHEET_BODY" = "אין לשתף את מפתח השחזור שלך עם אף אחד. זה יאפשר השתלטות על החשבון שלך. <bold>Signal לעולם לא תשלח לך הודעה</bold> כדי לבקש את מפתח השחזור שלך. אף פעם אין להשיב לצ׳אט ממישהו שמתחזה ל–Signal.";
@@ -731,22 +731,22 @@
 "BACKUP_RESTORE_MODAL_TITLE" = "משחזרים הודעות…";
 
 /* Message for a confirmation sheet shown before saving the user's Recovery Key to their password manager. */
-"BACKUP_SAVE_KEY_PW_MGR_CONFIRM_SHEET_MESSAGE" = "Only store your recovery key in a password manager that you trust is secure. Signal does not make a recommendation on which password manager is right for you.";
+"BACKUP_SAVE_KEY_PW_MGR_CONFIRM_SHEET_MESSAGE" = "חשוב לאחסן את מפתח השחזור שלך רק במנהל סיסמאות שידוע לך בוודאות שהוא מאובטח. Signal לא ממליצה על מנהל סיסמאות מסוים שמתאים עבורך.";
 
 /* Title for a confirmation sheet shown before saving the user's Recovery Key to their password manager. */
-"BACKUP_SAVE_KEY_PW_MGR_CONFIRM_SHEET_TITLE" = "Save to password manager?";
+"BACKUP_SAVE_KEY_PW_MGR_CONFIRM_SHEET_TITLE" = "לשמור במנהל הסיסמאות?";
 
 /* Message for an error sheet shown when saving the user's Recovery Key to their password manager fails. */
-"BACKUP_SAVE_KEY_PW_MGR_ERROR_SHEET_MESSAGE" = "You may not have a password manager set up, or the password manager you're using may not be supported. You can choose your preferred password manager in your phone's settings.";
+"BACKUP_SAVE_KEY_PW_MGR_ERROR_SHEET_MESSAGE" = "ייתכן שלא הוגדר מנהל סיסמאות, או שמנהל הסיסמאות שבו נעשה שימוש אינו נתמך. אפשר לבחור את מנהל הסיסמאות המועדף עליך בהגדרות הטלפון שלך.";
 
 /* Title for an error sheet shown when saving the user's Recovery Key to their password manager fails. */
-"BACKUP_SAVE_KEY_PW_MGR_ERROR_SHEET_TITLE" = "Can't save to password manager";
+"BACKUP_SAVE_KEY_PW_MGR_ERROR_SHEET_TITLE" = "לא ניתן לשמור במנהל הסיסמאות";
 
 /* Title for a button that begins saving the user's Recovery Key manually. */
-"BACKUP_SAVE_KEY_SAVE_MANUALLY_BUTTON_TITLE" = "Save Manually";
+"BACKUP_SAVE_KEY_SAVE_MANUALLY_BUTTON_TITLE" = "שמירה ידנית";
 
 /* Title for a button that begins saving the user's Recovery Key to their password manager. */
-"BACKUP_SAVE_KEY_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Save to Password Manager";
+"BACKUP_SAVE_KEY_SAVE_TO_PW_MGR_BUTTON_TITLE" = "שמירה במנהל הסיסמאות";
 
 /* Message describing that the Background App Refresh permission is disabled for Signal. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE" = "גיבויים אוטומטיים מושבתים. אפשר להפעיל גיבויים אוטומטיים על ידי עדכון ההרשאות של Signal.";
@@ -899,7 +899,7 @@
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "פרטי גיבוי";
 
 /* Toast shown when the user's Recovery Key has been confirmed successfully. */
-"BACKUP_SETTINGS_CONFIRM_KEY_SUCCESS_TOAST" = "Recovery Key Confirmed";
+"BACKUP_SETTINGS_CONFIRM_KEY_SUCCESS_TOAST" = "מפתח שחזור אושר";
 
 /* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "חובה להיות מחובר/ת כדי ליצור מפתח שחזור חדש.";
@@ -3026,16 +3026,16 @@
 "DEREGISTRATION_WARNING_ACTION_TITLE" = "רישום מכשיר מחדש";
 
 /* Label indicating a linked device was last active about three days ago. */
-"DEVICE_LAST_ACTIVE_ABOUT_THREE_DAYS_AGO" = "Last active about three days ago";
+"DEVICE_LAST_ACTIVE_ABOUT_THREE_DAYS_AGO" = "פעיל לאחרונה לפני כשלושה ימים";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active around %1$@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "פעיל לאחרונה סביב %1$@";
 
 /* Label indicating a linked device was last active within the past day. */
-"DEVICE_LAST_ACTIVE_PAST_DAY" = "Last active in the past day";
+"DEVICE_LAST_ACTIVE_PAST_DAY" = "פעיל לאחרונה במהלך היום האחרון";
 
 /* Label indicating a linked device was last active within the past two days. */
-"DEVICE_LAST_ACTIVE_PAST_TWO_DAYS" = "Last active in the past two days";
+"DEVICE_LAST_ACTIVE_PAST_TWO_DAYS" = "פעיל לאחרונה ביומיים האחרונים";
 
 /* {{Short Date}} when device was linked. */
 "DEVICE_LINKED_AT_LABEL" = "קושר %1$@";
@@ -4898,7 +4898,7 @@
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "כדי להגדיר את התרומה החוזרת שלך, יש ללחוץ על המשך כדי לאשר חיוב של %1$@ בבנק שלך. הסכום יוחזר אוטומטית ויאפשר את חיוב התרומה החוזרת שלך על סך %2$@ לחודש מהחשבון שלך.";
 
 /* The image editor tool (on/off switch) that detects and blurs faces in the photo. */
-"IMAGE_EDITOR_BLUR_FACES" = "Blur Faces";
+"IMAGE_EDITOR_BLUR_FACES" = "טשטש פרצופים";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "צייר בכל מקום כדי לטשטש";
@@ -5264,16 +5264,16 @@
 "LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "ניהול אנשי הקשר של הטלפון כבר לא זמין ב–iPad. כדי להוסיף חברי Signal לאנשי הקשר של הטלפון שלך, צריך לפתוח את Signal בטלפון.";
 
 /* Bullet point on the linked devices info sheet, describing what can be linked. */
-"LINKED_DEVICE_INFO_SHEET_BULLET_1" = "You can link a desktop, tablet or additional phone.";
+"LINKED_DEVICE_INFO_SHEET_BULLET_1" = "אפשר לקשר מחשב, טאבלט, או טלפון נוסף.";
 
 /* Bullet point on the linked devices info sheet, describing that the primary device manages linking. */
-"LINKED_DEVICE_INFO_SHEET_BULLET_2" = "Your primary device manages what's linked, you can link up to 5 devices.";
+"LINKED_DEVICE_INFO_SHEET_BULLET_2" = "המכשיר הראשי שלך מנהל את מה שמקושר, ואפשר לקשר עד 5 מכשירים.";
 
 /* Bullet point on the linked devices info sheet, describing that some settings are primary-only. */
-"LINKED_DEVICE_INFO_SHEET_BULLET_3" = "Some account settings are managed on your primary device only, including account settings and backups.";
+"LINKED_DEVICE_INFO_SHEET_BULLET_3" = "הגדרות מסוימות מנוהלות אך ורק במכשיר הראשי שלך, כולל הגדרות החשבון והגיבויים.";
 
 /* Lead paragraph for a sheet explaining linked devices. The text within the <bold></bold> tags is styled bold. */
-"LINKED_DEVICE_INFO_SHEET_HEADER" = "<bold>Linked Devices</bold> let you access your Signal account and messages securely on any of your additional devices.";
+"LINKED_DEVICE_INFO_SHEET_HEADER" = "<bold>מכשירים מקושרים</bold> מאפשרים לך לגשת לחשבון Signal ולהודעות שלך באופן מאובטח בכל אחד מהמכשירים הנוספים שלך.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
 "LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "ניהול אנשי הקשר של הטלפון כבר לא נתמך ב–iPad. המכשיר הזה ימשיך לסנכרן כל שינוי ברשימת אנשי הקשר שלך מ–Signal בטלפון שלך.";
@@ -5384,7 +5384,7 @@
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "כל המדיה";
 
 /* Title for the button that discards all edits in media editor. */
-"MEDIA_EDITOR_BUTTON_CLEAR" = "Clear";
+"MEDIA_EDITOR_BUTTON_CLEAR" = "ניקוי";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_CAPTION_PLACEHOLDER" = "שליחת הודעה";
@@ -7286,7 +7286,7 @@
 "POLL_END_CONFIRMATION" = "לסיים את הסקר?";
 
 /* Message for an action sheet confirming the user wants to end a poll. */
-"POLL_END_CONFIRMATION_MESSAGE" = "Members of this chat will no longer be able to vote in this poll.";
+"POLL_END_CONFIRMATION_MESSAGE" = "חברי הצ׳אט לא יוכלו יותר להצביע בסקר הזה.";
 
 /* Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}. */
 "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE" = "%1$@ סיימה את הסקר: %2$@";
@@ -8732,16 +8732,16 @@
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "אחזר תצוגות מקדימות של קישורים ישירות מאתרים עבור הודעות שאתה שולח.";
 
 /* Subtitle of a card on a linked device's account settings, explaining that account settings are managed on the primary device. */
-"SETTINGS_LINKED_DEVICE_ACCOUNT_CARD_SUBTITLE" = "To manage your account settings, open Signal on your primary device.";
+"SETTINGS_LINKED_DEVICE_ACCOUNT_CARD_SUBTITLE" = "כדי לנהל את הגדרות החשבון שלך, יש לפתוח את Signal במכשיר הראשי שלך.";
 
 /* Title of a card on a linked device's account settings, indicating that this is a linked device. */
-"SETTINGS_LINKED_DEVICE_ACCOUNT_CARD_TITLE" = "This is a Linked Device";
+"SETTINGS_LINKED_DEVICE_ACCOUNT_CARD_TITLE" = "זה מכשיר מקושר";
 
 /* Label for a button that deletes all Signal data from a linked device. */
-"SETTINGS_LINKED_DEVICE_DELETE_DATA_BUTTON" = "Delete App Data";
+"SETTINGS_LINKED_DEVICE_DELETE_DATA_BUTTON" = "מחיקת נתוני אפליקציה";
 
 /* Footer below the 'delete app data' button, shown on a linked device's account settings. */
-"SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "This will remove all data from the Signal app on this device.";
+"SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "זה יסיר את כל הנתונים מאפליקציית Signal במכשיר הזה.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "אף פעם";

@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• Predstavljamo nestajuće aktivnosti vezane za pozive: svi propušteni, odlazni i dolazni pozivi nakon ažuriranja aplikacije automatski će nestajati iz svih razgovora u kojima su omogućene poruke koje nestaju.

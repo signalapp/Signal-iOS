@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• 통화 내역 자동 삭제 기능 도입: 이 업데이트를 설치한 후에는 자동 삭제 메시지가 설정된 모든 채팅에서 부재중 전화, 발신 및 수신 기록도 자동으로 삭제됩니다.

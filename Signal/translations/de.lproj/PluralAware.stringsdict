@@ -1043,9 +1043,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gruppen-Story · %1$d Betrachter</string>
+			<string>Gruppen-Story · %1$d Betrachter*in</string>
 			<key>other</key>
-			<string>Gruppen-Story · %1$d Betrachter</string>
+			<string>Gruppen-Story · %1$d Betrachter*innen</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -1283,9 +1283,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Betrachter</string>
+			<string>%1$d Betrachter*in</string>
 			<key>other</key>
-			<string>%1$d Betrachter</string>
+			<string>%1$d Betrachter*innen</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1299,9 +1299,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Betrachter</string>
+			<string>%1$d Betrachter*in</string>
 			<key>other</key>
-			<string>%1$d Betrachter</string>
+			<string>%1$d Betrachter*innen</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -1315,9 +1315,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Alle Signal-Kontakte · %1$d Betrachter</string>
+			<string>Alle Signal-Kontakte · %1$d Betrachter*in</string>
 			<key>other</key>
-			<string>Alle Signal-Kontakte · %1$d Betrachter</string>
+			<string>Alle Signal-Kontakte · %1$d Betrachter*innen</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -1347,9 +1347,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nur für · %1$d Betrachter freigeben</string>
+			<string>Nur für · %1$d Betrachter*in freigeben</string>
 			<key>other</key>
-			<string>Nur für · %1$d Betrachter freigeben</string>
+			<string>Nur für · %1$d Betrachter*innen freigeben</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1379,9 +1379,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Betrachter</string>
+			<string>%1$d Betrachter*in</string>
 			<key>other</key>
-			<string>%1$d Betrachter</string>
+			<string>%1$d Betrachter*innen</string>
 		</dict>
 	</dict>
 	<key>OVERFLOW_REACTIONS_ACCESSIBILITY_LABEL_%d</key>
@@ -1523,9 +1523,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Benutzerdefinierte Story · %1$d Betrachter</string>
+			<string>Benutzerdefinierte Story · %1$d Betrachter*in</string>
 			<key>other</key>
-			<string>Benutzerdefinierte Story · %1$d Betrachter</string>
+			<string>Benutzerdefinierte Story · %1$d Betrachter*innen</string>
 		</dict>
 	</dict>
 	<key>RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE</key>
@@ -1607,9 +1607,9 @@ Versuche es in %1$d Stunden erneut.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Betrachter</string>
+			<string>%1$d Betrachter*in</string>
 			<key>other</key>
-			<string>%1$d Betrachter</string>
+			<string>%1$d Betrachter*innen</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>

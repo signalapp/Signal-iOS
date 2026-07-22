@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• Îți prezentăm funcția „Apeluri care dispar”: apelurile pierdute, efectuate și primite după instalarea acestei actualizări vor dispărea acum automat din orice conversație în care sunt activate mesajele care dispar.

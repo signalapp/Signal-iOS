@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• 推出「自動銷毀通話相關事件」功能：安裝此更新後出現的未接來電、撥出通話及接聽來電，現在都會在已啟用「自動銷毀訊息」的任何聊天中自動消失。

@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• تعرَّفوا على ميزة اختفاء المكالمات: ستختفي تلقائيًا المكالمات الفائتة والصادرة والواردة التي تتم بعد تثبيت هذا التحديث في أي دردشة تمَّ تفعيل ميزة اختفاء الرسائل فيها.

@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• Giới thiệu tính năng sự kiện cuộc gọi tự xóa: Các cuộc gọi nhỡ, cuộc gọi đi và cuộc gọi đến sau khi bạn cài đặt bản cập nhật này sẽ tự động biến mất trong bất kỳ cuộc trò chuyện nào đã bật tính năng tin nhắn tự xóa.

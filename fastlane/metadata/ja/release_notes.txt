@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• 通話関連履歴、自動消去のお知らせを追加しました。このアップデートをインストールすると、消えるメッセージが有効になっているチャットでは、不在着信、発信、着信履歴が自動的に消去されます。

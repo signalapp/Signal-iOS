@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• Bemutatjuk az eltűnő híváseseményeket: a frissítés telepítése után a nem fogadott, a kimenő és a fogadott hívások mostantól automatikusan eltűnnek minden olyan csevegésből, ahol az eltűnő üzenetek engedélyezve vannak.

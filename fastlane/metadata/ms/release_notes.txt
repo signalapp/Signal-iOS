@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• Memperkenalkan acara panggilan menghilang: Panggilan tidak dijawab, panggilan keluar dan panggilan diterima yang berlaku selepas anda memasang kemas kini ini sekarang akan hilang secara automatik dalam mana-mana sembang yang mengaktifkan mesej menghilang.

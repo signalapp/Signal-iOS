@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• অদৃশ্য হতে যাওয়া কল ইভেন্ট চালু করা হচ্ছে: এই আপডেটটি ইনস্টল করার পর হওয়া মিসড, আউটগোয়িং এবং রিসিভ করা কলগুলো এখন থেকে অদৃশ্য হতে যাওয়া মেসেজ চালু থাকা যেকোনো চ্যাট থেকে স্বয়ংক্রিয়ভাবে অদৃশ্য হয়ে যাবে।

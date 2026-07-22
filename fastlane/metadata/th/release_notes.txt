@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• ขอแนะนำฟีเจอร์ใหม่: กิจกรรมการโทรที่จะหายไป ฟีเจอร์นี้จะทำให้กิจกรรมการโทรต่างๆ (สายโทรออก สายที่รับ/ไม่ได้รับ) หายไปจากแชทเองโดยอัตโนมัติหากแชทนั้นตั้งเวลาข้อความที่จะหายไปเอาไว้

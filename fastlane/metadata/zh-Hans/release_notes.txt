@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• 推出限时通话事件功能：安装此更新后，在任何启用了限时消息的聊天中，未接来电、拨出通话和已接来电将自动消失。

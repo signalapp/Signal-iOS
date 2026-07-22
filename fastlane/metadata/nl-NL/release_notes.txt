@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• Nieuw: verdwijnende oproepen. Gemiste, uitgaande en ontvangen oproepen die plaatsvinden nadat je deze update hebt geïnstalleerd, verdwijnen automatisch in iedere chat waar verdwijnende berichten zijn ingeschakeld.

@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• Kaybolan arama etkinlikleri: Bu güncellemeyi yükledikten sonra gerçekleşen cevapsız, yapılan ve gelen arama kayıtları, kaybolan mesajların etkinleştirildiği sohbetlerde otomatik olarak kaybolur.

@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• Vi introducerar försvinnande samtalshändelser: Missade, utgående och mottagna samtal som sker efter att du har installerat den här uppdateringen försvinner nu automatiskt i alla chattar där försvinnande meddelanden är aktiverade.

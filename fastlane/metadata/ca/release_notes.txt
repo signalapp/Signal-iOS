@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• Arriben les trucades que desapareixen: totes les trucades que facis o rebis després d'instal·lar aquesta actualització desapareixeran de qualsevol xat en què estiguin habilitats els missatges a desaparèixer.

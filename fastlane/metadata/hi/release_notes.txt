@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• पेश है 'गायब होने वाले कॉल इवेंट': इस अपडेट को इंस्टॉल करने के बाद, जो भी मिस्ड, आउटगोइंग, और रिसीव की गईं कॉल होंगी, उनका रिकॉर्ड उन सभी चैट से अपने-आप गायब हो जाएगा जिनमें मैसेज गायब होने की सुविधा चालू है।

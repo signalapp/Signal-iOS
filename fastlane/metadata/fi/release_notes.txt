@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• Esittelyssä katoavat puhelutapahtumat: kun olet asentanut tämän päivityksen, kaikki sen jälkeiset vastaamattomat, lähtevät ja vastatut puhelut katoavat automaattisesti keskusteluista, joissa katoavat viestit ovat käytössä.

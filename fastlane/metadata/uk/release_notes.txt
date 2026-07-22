@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• Представляємо тимчасові сповіщення про виклики: після цього оновлення всі пропущені, вихідні та отримані дзвінки автоматично зникатимуть у чатах, де ввімкнено тимчасові повідомлення.

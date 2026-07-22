@@ -1,1 +1,1 @@
-• Introducing disappearing call events: Missed, outgoing, and received calls that occur after you install this update will now automatically disappear in any chat where disappearing messages are enabled.
+• Presentamos las notificaciones de llamadas temporales: las llamadas perdidas y aquellas que hagas o recibas después de instalar esta actualización desaparecerán de cualquier chat en el que estén habilitados los mensajes temporales.
