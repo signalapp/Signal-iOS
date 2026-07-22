@@ -16,14 +16,14 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
     private let chatStyleArchiver: BackupArchiveChatStyleArchiver
     private let contactRecipientArchiver: BackupArchiveContactRecipientArchiver
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
-    private let pinnedThreadStore: PinnedThreadStoreWrite
+    private let pinnedThreadStore: PinnedThreadStore
     private let threadStore: BackupArchiveThreadStore
 
     public init(
         chatStyleArchiver: BackupArchiveChatStyleArchiver,
         contactRecipientArchiver: BackupArchiveContactRecipientArchiver,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
-        pinnedThreadStore: PinnedThreadStoreWrite,
+        pinnedThreadStore: PinnedThreadStore,
         threadStore: BackupArchiveThreadStore,
     ) {
         self.chatStyleArchiver = chatStyleArchiver
@@ -233,7 +233,7 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
         )
 
         let thisThreadPinnedOrder: UInt32?
-        let pinnedThreadIds = pinnedThreadStore.pinnedThreadIds(tx: context.tx)
+        let pinnedThreadIds = pinnedThreadStore.pinnedThreadUniqueIds(tx: context.tx)
         if let pinnedThreadIndex: Int = pinnedThreadIds.firstIndex(of: thread.tsThread.uniqueId) {
             // Add one so we don't start at 0.
             thisThreadPinnedOrder = UInt32(clamping: pinnedThreadIndex + 1)
@@ -406,7 +406,7 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
                 newPinnedThreadChatId: chat.chatId,
                 newPinnedThreadIndex: chat.pinnedOrder,
             )
-            pinnedThreadStore.updatePinnedThreadIds(newPinnedThreadIds.map(\.value), tx: context.tx)
+            pinnedThreadStore.updatePinnedThreadUniqueIds(newPinnedThreadIds.map(\.value), tx: context.tx)
         }
 
         let expiresInSeconds: UInt32

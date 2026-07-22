@@ -7,59 +7,33 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class MockPinnedThreadStore: PinnedThreadStore {
+struct MockPinnedThreadManager: PinnedThreadManager {
 
-    public init() {}
+    init() {}
 
-    public var pinnedThreadIds = [String]()
+    let mockStore = PinnedThreadStore()
 
-    public func pinnedThreadIds(tx: DBReadTransaction) -> [String] {
-        return pinnedThreadIds
+    var threadGenerator: (String) -> TSThread? = { _ in nil }
+
+    func pinnedThreads(tx: DBReadTransaction) -> [TSThread] {
+        return mockStore.pinnedThreadUniqueIds(tx: tx).compactMap(threadGenerator)
     }
 
-    public func isThreadPinned(_ thread: TSThread, tx: DBReadTransaction) -> Bool {
-        return pinnedThreadIds.contains(where: { $0 == thread.uniqueId })
-    }
-}
-
-public class MockPinnedThreadManager: PinnedThreadManager {
-
-    public init() {}
-
-    private var mockStore = MockPinnedThreadStore()
-
-    public var pinnedThreadIds: [String] {
-        get { mockStore.pinnedThreadIds }
-        set { mockStore.pinnedThreadIds = newValue }
+    func updatePinnedThreadUniqueIds(_ pinnedThreadUniqueIds: [String], updateStorageService: Bool, tx: DBWriteTransaction) {
+        mockStore.updatePinnedThreadUniqueIds(pinnedThreadUniqueIds, tx: tx)
     }
 
-    public func pinnedThreadIds(tx: DBReadTransaction) -> [String] {
-        mockStore.pinnedThreadIds(tx: tx)
+    func pinThread(uniqueId: String, updateStorageService: Bool, tx: DBWriteTransaction) throws(TooManyPinnedThreadsError) {
+        let pinnedThreadUniqueIds = mockStore.pinnedThreadUniqueIds(tx: tx)
+        mockStore.updatePinnedThreadUniqueIds(pinnedThreadUniqueIds + [uniqueId], tx: tx)
     }
 
-    public var threadGenerator: (String) -> TSThread? = { _ in nil }
-
-    public func pinnedThreads(tx: DBReadTransaction) -> [TSThread] {
-        return pinnedThreadIds.compactMap(threadGenerator)
+    func unpinThread(uniqueId: String, updateStorageService: Bool, tx: DBWriteTransaction) {
+        let pinnedThreadUniqueIds = mockStore.pinnedThreadUniqueIds(tx: tx)
+        mockStore.updatePinnedThreadUniqueIds(pinnedThreadUniqueIds.filter({ $0 != uniqueId }), tx: tx)
     }
 
-    public func isThreadPinned(_ thread: TSThread, tx: DBReadTransaction) -> Bool {
-        mockStore.isThreadPinned(thread, tx: tx)
-    }
-
-    public func updatePinnedThreadIds(_ pinnedThreadIds: [String], updateStorageService: Bool, tx: DBWriteTransaction) {
-        self.pinnedThreadIds = pinnedThreadIds
-    }
-
-    public func pinThread(_ thread: TSThread, updateStorageService: Bool, tx: DBWriteTransaction) throws {
-        self.pinnedThreadIds.append(thread.uniqueId)
-    }
-
-    public func unpinThread(_ thread: TSThread, updateStorageService: Bool, tx: DBWriteTransaction) throws {
-        self.pinnedThreadIds.removeAll(where: { $0 == thread.uniqueId })
-    }
-
-    public func handleUpdatedThread(_ thread: TSThread, tx: DBWriteTransaction) {
+    func handleUpdatedThread(_ thread: TSThread, tx: DBWriteTransaction) {
         // Do nothing
     }
 }

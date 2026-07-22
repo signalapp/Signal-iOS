@@ -316,12 +316,12 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             var groupItems: [GroupConversationItem] = []
             var seenAddresses: Set<SignalServiceAddress> = Set()
 
-            let pinnedThreadIds = DependenciesBridge.shared.pinnedThreadStore.pinnedThreadIds(tx: transaction)
+            let pinnedThreadUniqueIds = DependenciesBridge.shared.pinnedThreadStore.pinnedThreadUniqueIds(tx: transaction)
 
             // We append any pinned threads at the start of the "recent"
             // section, so we decrease our maximum recent items based
             // on how many threads are currently pinned.
-            let maxRecentCount = 25 - pinnedThreadIds.count
+            let maxRecentCount = 25 - pinnedThreadUniqueIds.count
 
             let addThread = { (thread: TSThread) -> Void in
                 guard self.threadFilter(thread) else { return }
@@ -354,7 +354,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     )
 
                     seenAddresses.insert(contactThread.contactAddress)
-                    if sectionOptions.contains(.recents), pinnedThreadIds.contains(thread.uniqueId) {
+                    if sectionOptions.contains(.recents), pinnedThreadUniqueIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         pinnedItemsByThreadId[thread.uniqueId] = recentItem
                     } else if sectionOptions.contains(.recents), recentItems.count < maxRecentCount {
@@ -374,7 +374,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                         transaction: transaction,
                     )
 
-                    if sectionOptions.contains(.recents), pinnedThreadIds.contains(thread.uniqueId) {
+                    if sectionOptions.contains(.recents), pinnedThreadUniqueIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
                         pinnedItemsByThreadId[thread.uniqueId] = recentItem
                     } else if sectionOptions.contains(.recents), recentItems.count < maxRecentCount {
@@ -432,8 +432,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
             let pinnedItems = pinnedItemsByThreadId.sorted { lhs, rhs in
                 guard
-                    let lhsIndex = pinnedThreadIds.firstIndex(of: lhs.key),
-                    let rhsIndex = pinnedThreadIds.firstIndex(of: rhs.key)
+                    let lhsIndex = pinnedThreadUniqueIds.firstIndex(of: lhs.key),
+                    let rhsIndex = pinnedThreadUniqueIds.firstIndex(of: rhs.key)
                 else {
                     owsFailDebug("Unexpectedly have pinned item without pinned thread id")
                     return false

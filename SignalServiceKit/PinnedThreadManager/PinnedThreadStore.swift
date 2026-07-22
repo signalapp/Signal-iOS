@@ -5,20 +5,7 @@
 
 import Foundation
 
-public protocol PinnedThreadStore {
-
-    func pinnedThreadIds(tx: DBReadTransaction) -> [String]
-
-    func isThreadPinned(_ thread: TSThread, tx: DBReadTransaction) -> Bool
-}
-
-/// Only to be used by PinnedThreadStoreManager
-public protocol PinnedThreadStoreWrite: PinnedThreadStore {
-
-    func updatePinnedThreadIds(_ pinnedThreadIds: [String], tx: DBWriteTransaction)
-}
-
-public class PinnedThreadStoreImpl: PinnedThreadStoreWrite {
+public struct PinnedThreadStore {
 
     private static let pinnedThreadIdsKey = "pinnedThreadIds"
 
@@ -28,15 +15,11 @@ public class PinnedThreadStoreImpl: PinnedThreadStoreWrite {
         self.keyValueStore = KeyValueStore(collection: "PinnedConversationManager")
     }
 
-    public func pinnedThreadIds(tx: DBReadTransaction) -> [String] {
+    public func pinnedThreadUniqueIds(tx: DBReadTransaction) -> [String] {
         return keyValueStore.getStringArray(Self.pinnedThreadIdsKey, transaction: tx) ?? []
     }
 
-    public func isThreadPinned(_ thread: TSThread, tx: DBReadTransaction) -> Bool {
-        return pinnedThreadIds(tx: tx).contains(thread.uniqueId)
-    }
-
-    public func updatePinnedThreadIds(_ pinnedThreadIds: [String], tx: DBWriteTransaction) {
+    public func updatePinnedThreadUniqueIds(_ pinnedThreadIds: [String], tx: DBWriteTransaction) {
         keyValueStore.setStringArray(pinnedThreadIds, key: Self.pinnedThreadIdsKey, transaction: tx)
     }
 }

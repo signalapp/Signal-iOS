@@ -1974,7 +1974,7 @@ extension StorageServiceAccountRecordUpdater {
             Logger.warn("Received unexpected number of pinned threads (\(pinnedConversations.count))")
         }
 
-        var pinnedThreadIds = [String]()
+        var pinnedThreadUniqueIds = [String]()
         for pinnedConversation in pinnedConversations {
             switch pinnedConversation.identifier {
             case .contact(let contact)?:
@@ -1990,25 +1990,25 @@ extension StorageServiceAccountRecordUpdater {
                     continue
                 }
                 let thread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
-                pinnedThreadIds.append(thread.uniqueId)
+                pinnedThreadUniqueIds.append(thread.uniqueId)
             case .groupMasterKey(let masterKey)?:
                 let contextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
                 let threadUniqueId = TSGroupThread.threadUniqueId(forGroupId: contextInfo.groupId.serialize(), transaction: transaction)
-                pinnedThreadIds.append(threadUniqueId)
+                pinnedThreadUniqueIds.append(threadUniqueId)
             case .legacyGroupID(let groupId)?:
                 let threadUniqueId = TSGroupThread.threadUniqueId(
                     forGroupId: groupId,
                     transaction: transaction,
                 )
-                pinnedThreadIds.append(threadUniqueId)
+                pinnedThreadUniqueIds.append(threadUniqueId)
             case .releaseNotes:
-                pinnedThreadIds.append(TSReleaseNotesThread.releaseNotesUniqueId)
+                pinnedThreadUniqueIds.append(TSReleaseNotesThread.releaseNotesUniqueId)
             case nil:
                 break
             }
         }
 
-        pinnedThreadManager.updatePinnedThreadIds(pinnedThreadIds, updateStorageService: false, tx: transaction)
+        pinnedThreadManager.updatePinnedThreadUniqueIds(pinnedThreadUniqueIds, updateStorageService: false, tx: transaction)
     }
 
     private func pinnedConversationProtos(

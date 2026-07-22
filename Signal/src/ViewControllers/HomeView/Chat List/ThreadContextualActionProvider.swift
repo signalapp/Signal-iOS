@@ -389,44 +389,36 @@ extension ThreadContextualActionProvider where Self: UIViewController {
     private func pinThread(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
-        do {
-            try SSKEnvironment.shared.databaseStorageRef.write { transaction in
+        do throws(TooManyPinnedThreadsError) {
+            try SSKEnvironment.shared.databaseStorageRef.write { (tx) throws(TooManyPinnedThreadsError) in
                 try DependenciesBridge.shared.pinnedThreadManager.pinThread(
-                    threadViewModel.threadRecord,
+                    uniqueId: threadViewModel.threadUniqueId,
                     updateStorageService: true,
-                    tx: transaction,
+                    tx: tx,
                 )
             }
         } catch {
-            if case PinnedThreadError.tooManyPinnedThreads = error {
-                let format = OWSLocalizedString(
-                    "PINNED_CONVERSATION_LIMIT",
-                    tableName: "PluralAware",
-                    comment: "An explanation that you have already pinned the maximum number of conversations. Embeds {{ the maximum number of pinned conversations }}.",
-                )
-                OWSActionSheets.showActionSheet(title: String.localizedStringWithFormat(
-                    format,
-                    Int(clamping: PinnedThreads.maxPinnedThreads),
-                ))
-            } else {
-                owsFailDebug("Error: \(error)")
-            }
+            let format = OWSLocalizedString(
+                "PINNED_CONVERSATION_LIMIT",
+                tableName: "PluralAware",
+                comment: "An explanation that you have already pinned the maximum number of conversations. Embeds {{ the maximum number of pinned conversations }}.",
+            )
+            OWSActionSheets.showActionSheet(title: String.localizedStringWithFormat(
+                format,
+                Int(clamping: PinnedThreads.maxPinnedThreads),
+            ))
         }
     }
 
     private func unpinThread(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
-        do {
-            try SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                try DependenciesBridge.shared.pinnedThreadManager.unpinThread(
-                    threadViewModel.threadRecord,
-                    updateStorageService: true,
-                    tx: transaction,
-                )
-            }
-        } catch {
-            owsFailDebug("Error: \(error)")
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            DependenciesBridge.shared.pinnedThreadManager.unpinThread(
+                uniqueId: threadViewModel.threadUniqueId,
+                updateStorageService: true,
+                tx: transaction,
+            )
         }
     }
 }

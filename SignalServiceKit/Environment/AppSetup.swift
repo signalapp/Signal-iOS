@@ -961,7 +961,7 @@ extension AppSetup.GlobalsContinuation {
             wallpaperStore: wallpaperStore,
         )
 
-        let pinnedThreadStore = PinnedThreadStoreImpl()
+        let pinnedThreadStore = PinnedThreadStore()
         let pinnedThreadManager = PinnedThreadManagerImpl(
             db: db,
             pinnedThreadStore: pinnedThreadStore,
@@ -1010,6 +1010,7 @@ extension AppSetup.GlobalsContinuation {
                 groupMemberStore: groupMemberStore,
                 interactionStore: interactionStore,
                 pinnedThreadManager: pinnedThreadManager,
+                pinnedThreadStore: pinnedThreadStore,
                 profileManager: profileManager,
                 recipientMergeNotifier: RecipientMergeNotifier(),
                 signalServiceAddressCache: signalServiceAddressCache,

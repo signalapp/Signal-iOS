@@ -14,6 +14,7 @@ final class ThreadMerger {
     private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     private let interactionStore: InteractionStore
     private let pinnedThreadManager: PinnedThreadManager
+    private let pinnedThreadStore: PinnedThreadStore
     private let sdsThreadMerger: Shims.SDSThreadMerger
     private let threadAssociatedDataManager: Shims.ThreadAssociatedDataManager
     private let threadAssociatedDataStore: ThreadAssociatedDataStore
@@ -31,6 +32,7 @@ final class ThreadMerger {
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         interactionStore: InteractionStore,
         pinnedThreadManager: PinnedThreadManager,
+        pinnedThreadStore: PinnedThreadStore,
         sdsThreadMerger: Shims.SDSThreadMerger,
         threadAssociatedDataManager: Shims.ThreadAssociatedDataManager,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
@@ -47,6 +49,7 @@ final class ThreadMerger {
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.interactionStore = interactionStore
         self.pinnedThreadManager = pinnedThreadManager
+        self.pinnedThreadStore = pinnedThreadStore
         self.sdsThreadMerger = sdsThreadMerger
         self.threadAssociatedDataManager = threadAssociatedDataManager
         self.threadAssociatedDataStore = threadAssociatedDataStore
@@ -162,19 +165,19 @@ final class ThreadMerger {
     }
 
     private func mergePinnedThreads(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
-        var pinnedThreadIds = pinnedThreadManager.pinnedThreadIds(tx: tx)
-        let pinnedIndexPair = threadPair.map { pinnedThreadIds.firstIndex(of: $0.uniqueId) }
+        var pinnedThreadUniqueIds = pinnedThreadStore.pinnedThreadUniqueIds(tx: tx)
+        let pinnedIndexPair = threadPair.map { pinnedThreadUniqueIds.firstIndex(of: $0.uniqueId) }
 
         // If the old thread was pinned, unpin it.
         if let fromPinnedIndex = pinnedIndexPair.fromValue {
-            pinnedThreadIds.remove(at: fromPinnedIndex)
+            pinnedThreadUniqueIds.remove(at: fromPinnedIndex)
 
             // If the new thread *wasn't* pinned, pin it.
             if pinnedIndexPair.intoValue == nil {
-                pinnedThreadIds.insert(threadPair.intoValue.uniqueId, at: fromPinnedIndex)
+                pinnedThreadUniqueIds.insert(threadPair.intoValue.uniqueId, at: fromPinnedIndex)
             }
 
-            pinnedThreadManager.updatePinnedThreadIds(pinnedThreadIds, updateStorageService: true, tx: tx)
+            pinnedThreadManager.updatePinnedThreadUniqueIds(pinnedThreadUniqueIds, updateStorageService: true, tx: tx)
         }
     }
 
@@ -492,6 +495,7 @@ extension ThreadMerger {
             threadStore: threadStore,
             wallpaperStore: wallpaperStore,
         )
+        let pinnedThreadManager = MockPinnedThreadManager()
         return ThreadMerger(
             callRecordStore: MockCallRecordStore(),
             chatColorSettingStore: chatColorSettingStore,
@@ -499,7 +503,8 @@ extension ThreadMerger {
             disappearingMessagesConfigurationManager: ThreadMerger_MockDisappearingMessagesConfigurationManager(disappearingMessagesConfigurationStore),
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             interactionStore: interactionStore,
-            pinnedThreadManager: MockPinnedThreadManager(),
+            pinnedThreadManager: pinnedThreadManager,
+            pinnedThreadStore: pinnedThreadManager.mockStore,
             sdsThreadMerger: ThreadMerger_MockSDSThreadMerger(),
             threadAssociatedDataManager: ThreadMerger_MockThreadAssociatedDataManager(threadAssociatedDataStore),
             threadAssociatedDataStore: threadAssociatedDataStore,

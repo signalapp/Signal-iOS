@@ -70,7 +70,7 @@ public class CLVLoader {
         let isViewingArchive = viewInfo.chatListMode == .archive
 
         let pinnedThreadUniqueIds = DependenciesBridge.shared.pinnedThreadStore
-            .pinnedThreadIds(tx: transaction)
+            .pinnedThreadUniqueIds(tx: transaction)
 
         let visibleThreadUniqueIds: [String]
         if isViewingArchive {
