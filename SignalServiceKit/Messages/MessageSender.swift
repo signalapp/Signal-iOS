@@ -610,9 +610,18 @@ public class MessageSenderImpl: MessageSender, DeviceMessageBuilder {
                 localDeviceId: localDeviceId,
             )
         })
-        // Send the sync message if it succeeded overall or for any recipient.
+
+        // Send the sync message if it...
+        let shouldSendSyncMessage: Bool
+        if case .success(let result) = sendResult, result.sendMessageFailure == nil {
+            // succeeded overall...
+            shouldSendSyncMessage = true
+        } else {
+            // or for any recipient.
+            shouldSendSyncMessage = message.wasSentToAnyRecipient
+        }
         let syncResult: Result<Void, any Error>?
-        if sendResult.isSuccess || message.wasSentToAnyRecipient {
+        if shouldSendSyncMessage {
             syncResult = await Result(catching: {
                 try await handleMessageSentLocally(
                     message,
@@ -624,10 +633,14 @@ public class MessageSenderImpl: MessageSender, DeviceMessageBuilder {
         } else {
             syncResult = nil
         }
+
         // If we encountered an error when sending, return that.
         if let sendFailure = try sendResult.get().sendMessageFailure {
             return sendFailure
         }
+        // If we didn't, then we must have tried to send a sync message.
+        owsPrecondition(shouldSendSyncMessage)
+
         // Otherwise, if only the sync message failed, return that.
         try syncResult?.get()
         return nil
