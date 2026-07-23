@@ -327,6 +327,7 @@ public final class OWSUserProfile: NSObject, SDSCodableModel, Decodable {
         self.lastFetchDate = lastFetchDate
         self.lastMessagingDate = lastMessagingDate
         self.isPhoneNumberShared = isPhoneNumberShared
+        self.hasPaymentAddress = hasPaymentAddress
     }
 
     @objc
