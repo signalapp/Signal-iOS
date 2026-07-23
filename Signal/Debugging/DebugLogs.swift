@@ -11,6 +11,7 @@ import zlib
 struct DebugLogDumper {
     fileprivate var accountManager: (any TSAccountManager)?
     fileprivate var appVersion: any AppVersion
+    fileprivate var backupPlanManager: (any BackupPlanManager)?
     fileprivate var db: (any DB)?
 
     static func preLaunch() -> Self {
@@ -21,6 +22,7 @@ struct DebugLogDumper {
         return Self(
             accountManager: DependenciesBridge.shared.tsAccountManager,
             appVersion: AppVersionImpl.shared,
+            backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             db: DependenciesBridge.shared.db,
         )
     }
@@ -33,6 +35,16 @@ struct DebugLogDumper {
         let challengeFloorDate = Date().addingTimeInterval(.day * -3)
         return db.read { tx in
             SupportKeyValueStore().lastChallengeWithinTimeframe(transaction: tx, lastChallengeFloor: challengeFloorDate)
+        }
+    }
+
+    func backupPlan() -> BackupPlan {
+        guard let db, let backupPlanManager else {
+            return .disabled
+        }
+
+        return db.read { tx in
+            backupPlanManager.backupPlan(tx: tx)
         }
     }
 
@@ -203,6 +215,7 @@ final class DebugLogs {
                                 supportFilter: supportFilter,
                                 logUrl: url,
                                 hasRecentChallenge: self.dumper.challengeReceivedRecently(),
+                                backupPlan: self.dumper.backupPlan(),
                             )
                         }
                         continuation.resume()

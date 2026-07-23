@@ -224,6 +224,7 @@ final class ContactSupportViewController: OWSTableViewController2, TextViewWithP
             supportFilter: selectedFilter.map { "iOS \($0.emailFilterString)" },
             debugLogPolicy: logPolicy,
             hasRecentChallenge: logDumper.challengeReceivedRecently(),
+            backupPlan: logDumper.backupPlan(),
         )
 
         showSpinnerOnNextButton = true
