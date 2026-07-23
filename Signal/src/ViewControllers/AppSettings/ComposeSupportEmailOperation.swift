@@ -30,6 +30,7 @@ struct SupportEmailModel {
     let iosVersion: String
     let signalAppVersion: String
     let locale: String
+    let backupPlan: BackupPlan
     let userDescription: String
     let emojiMood: EmojiMoodPickerView.Mood?
     let debugLogPolicy: LogPolicy?
@@ -43,6 +44,7 @@ struct SupportEmailModel {
         supportFilter: String?,
         debugLogPolicy: LogPolicy?,
         hasRecentChallenge: Bool,
+        backupPlan: BackupPlan,
     ) {
         self.localizedSubject = OWSLocalizedString(
             "SUPPORT_EMAIL_SUBJECT",
@@ -53,6 +55,7 @@ struct SupportEmailModel {
         self.iosVersion = AppVersionImpl.shared.iosVersionString
         self.signalAppVersion = AppVersionImpl.shared.currentAppVersion
         self.locale = Locale.current.identifier
+        self.backupPlan = backupPlan
 
         self.userDescription = userDescription ?? OWSLocalizedString(
             "SUPPORT_EMAIL_DEFAULT_DESCRIPTION",
@@ -113,21 +116,37 @@ final class ComposeSupportEmailOperation: NSObject {
     private var model: SupportEmailModel
     private var isCancelled: Bool = false
 
-    class func sendEmailWithDefaultErrorHandling(supportFilter: String, logUrl: URL, hasRecentChallenge: Bool) async {
+    class func sendEmailWithDefaultErrorHandling(
+        supportFilter: String,
+        logUrl: URL,
+        hasRecentChallenge: Bool,
+        backupPlan: BackupPlan,
+    ) async {
         do {
-            try await sendEmail(supportFilter: supportFilter, logUrl: logUrl, hasRecentChallenge: hasRecentChallenge)
+            try await sendEmail(
+                supportFilter: supportFilter,
+                logUrl: logUrl,
+                hasRecentChallenge: hasRecentChallenge,
+                backupPlan: backupPlan,
+            )
         } catch {
             OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
         }
     }
 
-    class func sendEmail(supportFilter: String, logUrl: URL?, hasRecentChallenge: Bool) async throws {
+    class func sendEmail(
+        supportFilter: String,
+        logUrl: URL?,
+        hasRecentChallenge: Bool,
+        backupPlan: BackupPlan,
+    ) async throws {
         let model = SupportEmailModel(
             userDescription: nil,
             emojiMood: nil,
             supportFilter: supportFilter,
             debugLogPolicy: logUrl.map { .link($0) },
             hasRecentChallenge: hasRecentChallenge,
+            backupPlan: backupPlan,
         )
         try await sendEmail(model: model)
     }
@@ -257,6 +276,20 @@ final class ComposeSupportEmailOperation: NSObject {
                 model.iosVersion,
             ),
             "Signal Version: \(model.signalAppVersion)",
+            {
+                let backupPlanCode: String
+                switch model.backupPlan {
+                case .disabled, .disabling:
+                    backupPlanCode = "D1"
+                case .paid, .paidExpiringSoon:
+                    backupPlanCode = "P1"
+                case .paidAsTester:
+                    backupPlanCode = "T1"
+                case .free:
+                    backupPlanCode = "U1"
+                }
+                return "Backups: \(backupPlanCode)"
+            }(),
             {
                 if let debugURLString = model.resolvedDebugString {
                     return String.nonPluralLocalizedStringWithFormat(
