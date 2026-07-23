@@ -16,11 +16,11 @@ public class SpoilerRevealStateTests: XCTestCase {
     // copying some value by reference. Can't possibly cover every case, but covers some.
     func testSpoilerRevealSnapshotMakesCopy() {
         let identifierA = InteractionSnapshotIdentifier(timestamp: 0, authorAci: Aci.randomForTesting())
-        let revealedIdA1 = 1
-        let revealedIdA2 = 2
+        let revealedIdA1 = MessageBodyRanges.MergedSingleStyle(style: .spoiler, mergedRange: NSRange(location: 1, length: 1)).id
+        let revealedIdA2 = MessageBodyRanges.MergedSingleStyle(style: .spoiler, mergedRange: NSRange(location: 2, length: 1)).id
 
         let identifierB = InteractionSnapshotIdentifier(timestamp: 1, authorAci: Aci.randomForTesting())
-        let revealedIdB1 = 3
+        let revealedIdB1 = MessageBodyRanges.MergedSingleStyle(style: .spoiler, mergedRange: NSRange(location: 3, length: 1)).id
 
         let spoilerRevealState = SpoilerRevealState()
         spoilerRevealState.setSpoilerRevealed(withID: revealedIdA1, interactionIdentifier: identifierA)

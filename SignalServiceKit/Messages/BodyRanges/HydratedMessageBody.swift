@@ -294,7 +294,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             spoilerAnimationColorOverride: ThemedColor? = nil,
             revealedSpoilerBgColor: ThemedColor? = nil,
             revealAllSpoilers: Bool = false,
-            revealedSpoilerIds: Set<StyleIdType> = Set(),
+            revealedSpoilerIds: Set<StyleId> = Set(),
             searchRanges: SearchRanges? = nil,
             useAnimatedSpoilers: Bool,
         ) {
@@ -470,14 +470,14 @@ public class HydratedMessageBody: Equatable, Hashable {
             mentions[$0.range] = $0.value.mentionAci
         }
         var flattenedStyles = [NSRangedValue<SingleStyle>]()
-        var runningStyles = [SingleStyle: (StyleIdType, NSRange)]()
+        var runningStyles = [SingleStyle: (StyleId, NSRange)]()
 
         styleAttributes.forEach { (styleAttribute: NSRangedValue<StyleAttribute>) in
             SingleStyle.allCases.forEach { style in
                 guard styleAttribute.value.style.contains(style: style), let id = styleAttribute.value.ids[style] else {
                     return
                 }
-                if let runningStyle: (StyleIdType, NSRange) = runningStyles[style] {
+                if let runningStyle: (StyleId, NSRange) = runningStyles[style] {
                     // Append to the running style.
                     if runningStyle.0 == id {
                         runningStyles[style] = (id, runningStyle.1.union(styleAttribute.range))
@@ -702,7 +702,7 @@ public class HydratedMessageBody: Equatable, Hashable {
 
         public struct UnrevealedSpoiler {
             public let range: NSRange
-            public let id: StyleIdType
+            public let id: StyleId
         }
 
         case mention(Mention)
@@ -711,7 +711,7 @@ public class HydratedMessageBody: Equatable, Hashable {
     }
 
     public func tappableItems(
-        revealedSpoilerIds: Set<Int>,
+        revealedSpoilerIds: Set<StyleId>,
         dataDetector: NSDataDetector?,
     ) -> [TappableItem] {
         return Self.tappableItems(
@@ -727,7 +727,7 @@ public class HydratedMessageBody: Equatable, Hashable {
         text: String,
         mentionAttributes: [NSRangedValue<HydratedMentionAttribute>],
         styleAttributes: [NSRangedValue<StyleAttribute>],
-        revealedSpoilerIds: Set<Int>,
+        revealedSpoilerIds: Set<StyleId>,
         dataDetector: NSDataDetector?,
     ) -> [TappableItem] {
         // We "cheat" by using NSAttributedString to deal with overlapping
@@ -867,7 +867,7 @@ public class HydratedMessageBody: Equatable, Hashable {
     // MARK: - Helpers
 
     static func flattenStylesPreservingSharedIds(_ styleAttributes: [NSRangedValue<StyleAttribute>]) -> [NSRangedValue<SingleStyle>] {
-        var styleIdToIndex = [StyleIdType: Int]()
+        var styleIdToIndex = [StyleId: Int]()
         var styles = [NSRangedValue<MessageBodyRanges.SingleStyle>]()
         for styleAttribute in styleAttributes {
             for singleStyle in styleAttribute.value.style.contents {

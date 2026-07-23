@@ -27,7 +27,7 @@ public extension HydratedMessageBody.DisplayConfiguration {
 
     static func messageBubble(
         isIncoming: Bool,
-        revealedSpoilerIds: Set<StyleIdType>,
+        revealedSpoilerIds: Set<StyleId>,
         searchRanges: SearchRanges?,
     ) -> Self {
         let textColor = isIncoming ? ConversationStyle.bubbleTextColorIncomingThemed : ConversationStyle.bubbleTextColorOutgoingThemed
@@ -81,7 +81,7 @@ public extension HydratedMessageBody.DisplayConfiguration {
     }
 
     static func longMessageView(
-        revealedSpoilerIds: Set<StyleIdType>,
+        revealedSpoilerIds: Set<StyleId>,
     ) -> Self {
         return .init(
             baseFont: .defaultBaseFont,
@@ -95,7 +95,7 @@ public extension HydratedMessageBody.DisplayConfiguration {
     }
 
     static func groupStoryReply(
-        revealedSpoilerIds: Set<StyleIdType>,
+        revealedSpoilerIds: Set<StyleId>,
     ) -> Self {
         return .init(
             baseFont: .defaultBaseFont,
@@ -136,7 +136,7 @@ public extension HydratedMessageBody.DisplayConfiguration {
 
     static func mediaCaption(
         textColor: UIColor,
-        revealedSpoilerIds: Set<StyleIdType>,
+        revealedSpoilerIds: Set<StyleId>,
     ) -> Self {
         return .init(
             baseFont: .dynamicTypeBodyClamped,
@@ -147,7 +147,7 @@ public extension HydratedMessageBody.DisplayConfiguration {
 
     static func storyCaption(
         font: UIFont,
-        revealedSpoilerIds: Set<StyleIdType>,
+        revealedSpoilerIds: Set<StyleId>,
     ) -> Self {
         return .init(
             baseFont: font,
@@ -159,7 +159,7 @@ public extension HydratedMessageBody.DisplayConfiguration {
     static func textStory(
         font: UIFont,
         textColor: UIColor,
-        revealedSpoilerIds: Set<StyleIdType>,
+        revealedSpoilerIds: Set<StyleId>,
     ) -> Self {
         return .init(
             baseFont: font,
@@ -200,7 +200,7 @@ extension HydratedMessageBody.DisplayConfiguration {
         spoilerAnimationColorOverride: ThemedColor? = nil,
         revealedSpoilerBgColor: ThemedColor? = nil,
         revealAllSpoilers: Bool = false,
-        revealedSpoilerIds: Set<StyleIdType> = Set(),
+        revealedSpoilerIds: Set<StyleId> = Set(),
         searchRanges: SearchRanges? = nil,
     ) {
         self.init(

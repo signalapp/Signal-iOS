@@ -18,7 +18,7 @@ public struct StyleDisplayConfiguration: Equatable {
     public let revealedSpoilerBgColor: ThemedColor?
 
     public let revealAllIds: Bool
-    public let revealedIds: Set<StyleIdType>
+    public let revealedIds: Set<StyleId>
 
     /// If true, unrevealed spoiler text will be invisible (clear).
     /// If false, unrevealed spoiler text will use `textColor` as its background color.
@@ -38,7 +38,7 @@ public struct StyleDisplayConfiguration: Equatable {
         spoilerAnimationColorOverride: ThemedColor? = nil,
         revealedSpoilerBgColor: ThemedColor? = nil,
         revealAllIds: Bool,
-        revealedIds: Set<StyleIdType>,
+        revealedIds: Set<StyleId>,
         useAnimatedSpoilers: Bool,
     ) {
         self.baseFont = baseFont
@@ -66,10 +66,7 @@ struct StyleAttribute: Equatable, Hashable {
     /// Externally: identifies a single style range, even if the actual attribute has been
     /// split when applied, as happens when a parallel attribute is applied to the middle
     /// of a style range.
-    ///
-    /// Really this is just the original full range of the style, hashed. But that detail is
-    /// irrelevant to everthing outside of this class.
-    let ids: [SingleStyle: StyleIdType]
+    let ids: [SingleStyle: StyleId]
     let style: Style
 
     static func fromCollapsedStyle(_ style: CollapsedStyle) -> Self {

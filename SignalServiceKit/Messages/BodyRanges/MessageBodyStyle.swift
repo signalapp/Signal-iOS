@@ -5,7 +5,13 @@
 
 import Foundation
 
-public typealias StyleIdType = Int
+public struct StyleId: Hashable {
+    private let rawValue: NSRange
+
+    fileprivate init(rawValue: NSRange) {
+        self.rawValue = rawValue
+    }
+}
 
 extension MessageBodyRanges {
 
@@ -93,12 +99,11 @@ extension MessageBodyRanges {
     public struct MergedSingleStyle: Equatable, Codable {
         public let style: SingleStyle
         public let mergedRange: NSRange
-        public let id: StyleIdType
+        public var id: StyleId { StyleId(rawValue: mergedRange) }
 
         init(style: SingleStyle, mergedRange: NSRange) {
             self.style = style
             self.mergedRange = mergedRange
-            self.id = mergedRange.hashValue
         }
 
         static func merge(

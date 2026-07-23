@@ -111,9 +111,9 @@ class MyStoryCell: UITableViewCell {
 
     private var attachmentThumbnailDividerView: UIView?
 
-    private var latestMessageRevealedSpoilerIds: Set<StyleIdType>?
+    private var latestMessageRevealedSpoilerIds: Set<StyleId>?
     private var latestMessageAttachment: StoryThumbnailView.Attachment?
-    private var secondLatestMessageRevealedSpoilerIds: Set<StyleIdType>?
+    private var secondLatestMessageRevealedSpoilerIds: Set<StyleId>?
     private var secondLatestMessageAttachment: StoryThumbnailView.Attachment?
 
     func configure(
@@ -134,10 +134,10 @@ class MyStoryCell: UITableViewCell {
             config.usePlaceholderImages()
         }
 
-        let latestMessageRevealedSpoilerIds: Set<StyleIdType> = model.latestMessageIdentifier.map(
+        let latestMessageRevealedSpoilerIds: Set<StyleId> = model.latestMessageIdentifier.map(
             spoilerState.revealState.revealedSpoilerIds(interactionIdentifier:),
         ) ?? Set()
-        let secondLatestMessageRevealedSpoilerIds: Set<StyleIdType> = model.secondLatestMessageIdentifier.map(
+        let secondLatestMessageRevealedSpoilerIds: Set<StyleId> = model.secondLatestMessageIdentifier.map(
             spoilerState.revealState.revealedSpoilerIds(interactionIdentifier:),
         ) ?? Set()
 

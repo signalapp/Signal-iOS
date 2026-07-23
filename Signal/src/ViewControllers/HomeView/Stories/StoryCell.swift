@@ -109,7 +109,7 @@ class StoryCell: UITableViewCell {
     }
 
     private var attachment: StoryThumbnailView.Attachment?
-    private var revealedSpoilerIds: Set<StyleIdType>?
+    private var revealedSpoilerIds: Set<StyleId>?
 
     func configure(with model: StoryViewModel, spoilerState: SpoilerRenderState) {
         configureSubtitle(with: model)

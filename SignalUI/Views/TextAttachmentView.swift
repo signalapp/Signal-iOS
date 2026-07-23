@@ -17,7 +17,7 @@ open class TextAttachmentView: UIView {
     private let interactionIdentifier: InteractionSnapshotIdentifier?
     private let spoilerState: SpoilerRenderState?
 
-    private var revealedSpoilerIds: Set<StyleIdType> {
+    private var revealedSpoilerIds: Set<StyleId> {
         guard let spoilerState, let interactionIdentifier else {
             return Set()
         }

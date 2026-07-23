@@ -41,18 +41,18 @@ public struct InteractionSnapshotIdentifier: Equatable, Hashable {
 
 @objc
 public class SpoilerRevealState: NSObject {
-    private var revealedSpoilerIdsByMessage = [InteractionSnapshotIdentifier: Set<StyleIdType>]()
+    private var revealedSpoilerIdsByMessage = [InteractionSnapshotIdentifier: Set<StyleId>]()
 
     /// Returns the set of IDs in the ordered list of spoiler ranges for a given message that
     /// should be revealed.
     public func revealedSpoilerIds(
         interactionIdentifier: InteractionSnapshotIdentifier,
-    ) -> Set<StyleIdType> {
+    ) -> Set<StyleId> {
         return revealedSpoilerIdsByMessage[interactionIdentifier] ?? []
     }
 
     public func setSpoilerRevealed(
-        withID id: StyleIdType,
+        withID id: StyleId,
         interactionIdentifier: InteractionSnapshotIdentifier,
     ) {
         var revealedIds = revealedSpoilerIdsByMessage[interactionIdentifier] ?? Set()
@@ -60,7 +60,7 @@ public class SpoilerRevealState: NSObject {
         revealedSpoilerIdsByMessage[interactionIdentifier] = revealedIds
     }
 
-    public typealias Snapshot = [InteractionSnapshotIdentifier: Set<StyleIdType>]
+    public typealias Snapshot = [InteractionSnapshotIdentifier: Set<StyleId>]
 
     public func snapshot() -> Snapshot {
         return revealedSpoilerIdsByMessage

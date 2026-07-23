@@ -14,7 +14,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let bodyText: CVComponentState.BodyText
         let isTextExpanded: Bool
         let searchText: String?
-        let revealedSpoilerIds: Set<Int>
+        let revealedSpoilerIds: Set<StyleId>
         let shouldUseAttributedText: Bool
         let hasPendingMessageRequest: Bool
         fileprivate let items: [CVTextLabel.Item]
@@ -60,7 +60,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         bodyTextState.searchText
     }
 
-    private var revealedSpoilerIds: Set<Int> {
+    private var revealedSpoilerIds: Set<StyleId> {
         bodyTextState.revealedSpoilerIds
     }
 
@@ -135,7 +135,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         hasPendingMessageRequest: Bool,
         shouldAllowLinkification: Bool,
         textWasTruncated: Bool,
-        revealedSpoilerIds: Set<StyleIdType>,
+        revealedSpoilerIds: Set<StyleId>,
         interactionUniqueId: String,
         interactionIdentifier: InteractionSnapshotIdentifier,
     ) -> [CVTextLabel.Item] {

@@ -700,7 +700,7 @@ public struct CVComponentState: Equatable {
         let interaction: TSInteraction
         let itemBuildingContext: CVItemBuildingContext
 
-        var revealedSpoilerIdsSnapshot: Set<StyleIdType> {
+        var revealedSpoilerIdsSnapshot: Set<StyleId> {
             return itemBuildingContext.viewStateSnapshot.spoilerReveal[.fromInteraction(interaction)] ?? Set()
         }
 
@@ -1065,7 +1065,7 @@ public struct CVComponentState: Equatable {
         text: String,
         ranges: MessageBodyRanges?,
         interaction: TSInteraction,
-        revealedSpoilerIdsSnapshot: Set<StyleIdType>,
+        revealedSpoilerIdsSnapshot: Set<StyleId>,
         transaction: DBReadTransaction,
     ) -> DisplayableText {
         return DisplayableText.displayableText(
@@ -1251,7 +1251,7 @@ private extension CVComponentState.Builder {
 
     mutating func populateAndBuild(
         message: TSMessage,
-        revealedSpoilerIdsSnapshot: Set<StyleIdType>,
+        revealedSpoilerIdsSnapshot: Set<StyleId>,
     ) throws -> CVComponentState {
 
         if message.wasRemotelyDeleted {
@@ -1672,7 +1672,7 @@ private extension CVComponentState.Builder {
     // TODO: Should we validate and throw errors?
     mutating func buildQuotedReply(
         message: TSMessage,
-        revealedSpoilerIdsSnapshot: Set<StyleIdType>,
+        revealedSpoilerIdsSnapshot: Set<StyleId>,
     ) {
         let quotedReplyModel: QuotedReplyModel? = {
             if

@@ -35,13 +35,13 @@ public class CVTextLabel: NSObject {
     // MARK: -
 
     public struct UnrevealedSpoilerItem: Equatable {
-        public let spoilerId: Int
+        public let spoilerId: StyleId
         public let interactionUniqueId: String
         public let interactionIdentifier: InteractionSnapshotIdentifier
         public let range: NSRange
 
         public init(
-            spoilerId: Int,
+            spoilerId: StyleId,
             interactionUniqueId: String,
             interactionIdentifier: InteractionSnapshotIdentifier,
             range: NSRange,
