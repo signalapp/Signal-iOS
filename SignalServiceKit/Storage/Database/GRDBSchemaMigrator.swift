@@ -347,6 +347,7 @@ public class GRDBSchemaMigrator {
         case migrateGroupKeyValueStores
         case addSenderKey
         case addLocalFileBackupTables
+        case removeInteractionThreadUniqueIdUniqueIdIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5455,6 +5456,11 @@ public class GRDBSchemaMigrator {
                 table.column("localKey", .blob).notNull()
                 table.column("unencryptedByteCount", .integer).notNull()
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.removeInteractionThreadUniqueIdUniqueIdIndex) { tx in
+            try removeInteractionThreadUniqueIdUniqueIdIndex(tx: tx)
             return .success(())
         }
 

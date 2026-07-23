@@ -69,7 +69,6 @@ private struct LazyIndexMigrator {
                 return Set(try String.fetchAll(db, sql: "SELECT name FROM sqlite_master WHERE type = 'index'"))
             }
             let lazilyRemovedIndexes = [
-                "index_interactions_on_uniqueId_and_threadUniqueId",
                 "index_interactions_on_expiresInSeconds_and_expiresAt",
                 "index_model_TSInteraction_on_uniqueThreadId_and_attachmentIds",
                 "index_interactions_on_timestamp_sourceDeviceId_and_authorUUID",
@@ -104,12 +103,6 @@ private struct LazyIndexMigrator {
 
     func run() async throws {
         // Must be idempotent.
-
-        try Task.checkCancellation()
-        await databaseStorage.awaitableWrite { tx in
-            logger.info("Removing threadUniqueId/uniqueId index.")
-            try! GRDBSchemaMigrator.removeInteractionThreadUniqueIdUniqueIdIndex(tx: tx)
-        }
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in
