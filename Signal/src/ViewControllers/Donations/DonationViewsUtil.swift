@@ -230,7 +230,7 @@ public enum DonationViewsUtil {
                 currencyCode: currencyCode,
             )
 
-            return try await DonationViewsUtil.waitForRedemption(paymentMethod: paymentType.paymentMethod) {
+            try await DonationViewsUtil.waitForRedemption(paymentMethod: paymentType.paymentMethod) {
                 try await donationSubscriptionManager.requestAndRedeemReceipt(
                     subscriberId: subscriberId,
                     subscriptionLevel: newSubscriptionLevel,
@@ -244,13 +244,8 @@ public enum DonationViewsUtil {
             rethrowError = error
         }
 
-        switch paymentType.paymentMethod {
-        case .applePay, .creditOrDebitCard, .paypal, .sepa:
-            break
-        case .ideal:
-            await db.awaitableWrite { tx in
-                idealStore.clearPendingSubscription(tx: tx)
-            }
+        await db.awaitableWrite { tx in
+            idealStore.clearPendingSubscription(tx: tx)
         }
 
         if let rethrowError {
@@ -269,7 +264,7 @@ public enum DonationViewsUtil {
     ) async throws {
         var rethrowError: Error?
         do {
-            return try await DonationViewsUtil.waitForRedemption(paymentMethod: paymentMethod) {
+            try await DonationViewsUtil.waitForRedemption(paymentMethod: paymentMethod) {
                 try await donationSubscriptionManager.requestAndRedeemReceipt(
                     boostPaymentIntentId: paymentIntentId,
                     amount: amount,
@@ -281,13 +276,8 @@ public enum DonationViewsUtil {
             rethrowError = error
         }
 
-        switch paymentMethod {
-        case .applePay, .creditOrDebitCard, .paypal, .sepa:
-            break
-        case .ideal:
-            await db.awaitableWrite { tx in
-                idealStore.clearPendingOneTimeDonation(tx: tx)
-            }
+        await db.awaitableWrite { tx in
+            idealStore.clearPendingOneTimeDonation(tx: tx)
         }
 
         if let rethrowError {
