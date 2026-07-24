@@ -390,23 +390,10 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         guard let other = object as? MessageBodyRanges else {
             return false
         }
-        guard mentions == other.mentions else {
-            return false
-        }
-        guard collapsedStyles.count == other.collapsedStyles.count else {
-            return false
-        }
-        for i in 0..<collapsedStyles.count {
-            let style = collapsedStyles[i]
-            let otherStyle = other.collapsedStyles[i]
-            guard style.value == otherStyle.value else {
-                return false
-            }
-            guard style.range == otherStyle.range else {
-                return false
-            }
-        }
-        return true
+        return (
+            mentions == other.mentions
+                && collapsedStyles == other.collapsedStyles,
+        )
     }
 
     // MARK: Proto conversion
