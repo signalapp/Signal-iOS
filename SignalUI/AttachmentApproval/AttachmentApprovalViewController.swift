@@ -734,7 +734,7 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
 
     /// Returns a new SignalAttachment that reflects changes made in the editor.
     private func prepareAttachment(attachmentApprovalItem: AttachmentApprovalItem) async throws -> PreviewableAttachment {
-        if let imageEditorModel = attachmentApprovalItem.imageEditorModel, imageEditorModel.isDirty() {
+        if let imageEditorModel = attachmentApprovalItem.imageEditorModel, imageEditorModel.isDirty {
             return try await self.prepareImageAttachment(
                 attachmentApprovalItem: attachmentApprovalItem,
                 imageEditorModel: imageEditorModel,
@@ -755,7 +755,7 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         attachmentApprovalItem: AttachmentApprovalItem,
         imageEditorModel: ImageEditorModel,
     ) async throws -> PreviewableAttachment {
-        assert(imageEditorModel.isDirty())
+        assert(imageEditorModel.isDirty)
 
         guard let dstImage = await imageEditorModel.renderOutput() else {
             throw OWSAssertionError("Could not render for output.")

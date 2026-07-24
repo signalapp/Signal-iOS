@@ -304,7 +304,7 @@ class ImageEditorViewController: OWSViewController, UIGestureRecognizerDelegate,
         self.model = model
         self.stickerSheetDelegate = stickerSheetDelegate
         self.imageEditorView = ImageEditorView(model: model, delegate: nil)
-        self.firstUndoOperationId = model.currentUndoOperationId()
+        self.firstUndoOperationId = model.currentUndoOperationId
 
         super.init()
 
@@ -463,7 +463,7 @@ class ImageEditorViewController: OWSViewController, UIGestureRecognizerDelegate,
     }
 
     private var canUndo: Bool {
-        model.canUndo() && firstUndoOperationId != model.currentUndoOperationId()
+        model.canUndo && firstUndoOperationId != model.currentUndoOperationId
     }
 
     func updateControlsVisibility() {

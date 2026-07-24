@@ -523,7 +523,7 @@ class ImageEditorCanvasView: UIView {
 
             updateImageLayer()
 
-            for item in model.items() {
+            model.items.forEach { item in
                 guard
                     let layer = ImageEditorCanvasView.layerForItem(
                         item: item,
@@ -533,7 +533,7 @@ class ImageEditorCanvasView: UIView {
                         viewSize: viewSize,
                     )
                 else {
-                    continue
+                    return
                 }
 
                 if item.itemId == hiddenItemId {
@@ -953,8 +953,7 @@ class ImageEditorCanvasView: UIView {
         model: ImageEditorModel,
         zPositionBase: CGFloat,
     ) -> CGFloat {
-        let itemIds = model.itemIds()
-        guard let itemIndex = itemIds.firstIndex(of: item.itemId) else {
+        guard let itemIndex = model.itemIds.firstIndex(of: item.itemId) else {
             owsFailDebug("Couldn't find index of item.")
             return zPositionBase
         }
@@ -1375,8 +1374,7 @@ class ImageEditorCanvasView: UIView {
         imageLayer.contentsScale = dstScale * transform.scaling
         contentView.layer.addSublayer(imageLayer)
 
-        var layers = [CALayer]()
-        for item in model.items() {
+        let layers: [CALayer] = model.items.compactMap { item in
             guard
                 let layer = layerForItem(
                     item: item,
@@ -1387,10 +1385,10 @@ class ImageEditorCanvasView: UIView {
                 )
             else {
                 owsFailDebug("Couldn't create layer for item.")
-                continue
+                return nil
             }
             layer.contentsScale = dstScale * transform.scaling * item.outputScale()
-            layers.append(layer)
+            return layer
         }
         // UIView.renderAsImage() doesn't honor zPosition of layers,
         // so sort the item layers to ensure they are added in the
@@ -1435,7 +1433,7 @@ class ImageEditorCanvasView: UIView {
         // The layer ordering in the model is authoritative.
         // Iterate over the layers in _reverse_ order of which they appear
         // in the model, so that layers "on top" are hit first.
-        return model.items()
+        return model.items
             .lazy
             .reversed()
             .filter { $0 is ImageEditorTransformable }

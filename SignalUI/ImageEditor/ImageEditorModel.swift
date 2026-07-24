@@ -89,23 +89,23 @@ class ImageEditorModel: NSObject {
         return transform
     }
 
-    func isDirty() -> Bool {
-        if itemCount() > 0 {
+    var isDirty: Bool {
+        if itemCount > 0 {
             return true
         }
         return transform != ImageEditorTransform.defaultTransform(srcImageSizePixels: srcImageSizePixels)
     }
 
-    func itemCount() -> Int {
-        return contents.itemCount()
+    var itemCount: Int {
+        contents.itemCount
     }
 
-    func items() -> [ImageEditorItem] {
-        return contents.items()
+    var items: [ImageEditorItem] {
+        contents.items
     }
 
-    func itemIds() -> [String] {
-        return contents.itemIds()
+    var itemIds: [String] {
+        contents.itemIds
     }
 
     func has(itemForId itemId: String) -> Bool {
@@ -116,15 +116,15 @@ class ImageEditorModel: NSObject {
         return contents.item(forId: itemId)
     }
 
-    func canUndo() -> Bool {
+    var canUndo: Bool {
         return !undoStack.isEmpty
     }
 
-    func canRedo() -> Bool {
+    var canRedo: Bool {
         return !redoStack.isEmpty
     }
 
-    func currentUndoOperationId() -> String? {
+    var currentUndoOperationId: String? {
         guard let operation = undoStack.last else {
             return nil
         }
@@ -200,20 +200,20 @@ class ImageEditorModel: NSObject {
     }
 
     func append(item: ImageEditorItem) {
-        performAction({ oldContents in
-            let newContents = oldContents.clone()
-            newContents.append(item: item)
-            return newContents
-        }, changedItemIds: [item.itemId])
-    }
-
-    func replace(
-        item: ImageEditorItem,
-        suppressUndo: Bool = false,
-    ) {
         performAction(
             { oldContents in
-                let newContents = oldContents.clone()
+                var newContents = oldContents
+                newContents.append(item: item)
+                return newContents
+            },
+            changedItemIds: [item.itemId],
+        )
+    }
+
+    func replace(item: ImageEditorItem, suppressUndo: Bool = false) {
+        performAction(
+            { oldContents in
+                var newContents = oldContents
                 newContents.replace(item: item)
                 return newContents
             },
@@ -223,11 +223,14 @@ class ImageEditorModel: NSObject {
     }
 
     func remove(item: ImageEditorItem) {
-        performAction({ oldContents in
-            let newContents = oldContents.clone()
-            newContents.remove(item: item)
-            return newContents
-        }, changedItemIds: [item.itemId])
+        performAction(
+            { oldContents in
+                var newContents = oldContents
+                newContents.remove(item: item)
+                return newContents
+            },
+            changedItemIds: [item.itemId],
+        )
     }
 
     func replace(transform: ImageEditorTransform) {

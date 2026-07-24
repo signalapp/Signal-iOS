@@ -38,7 +38,7 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController, ImageEdit
     }
 
     override var canSaveMedia: Bool {
-        if model.isDirty() {
+        if model.isDirty {
             return true
         }
         return super.canSaveMedia
