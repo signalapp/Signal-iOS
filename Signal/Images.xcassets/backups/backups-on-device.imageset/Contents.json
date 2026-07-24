@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "backups-on-device.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

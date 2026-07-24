@@ -95,6 +95,7 @@ public enum BuildFlags {
     public enum LocalFileBackups {
         public static let archive = build <= .dev
         public static let restore = build <= .dev
+        public static let settingsUI = build <= .dev
     }
 }
 

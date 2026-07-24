@@ -9,20 +9,27 @@ import UIKit
 
 @MainActor
 class BackupOnboardingCoordinator {
+    enum BackupType {
+        case remote
+        case local
+    }
+
     private let accountKeyStore: AccountKeyStore
     private let backupEnablingManager: BackupEnablingManager
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
+    private let backupType: BackupType
 
     private weak var onboardingNavController: UINavigationController?
 
-    convenience init() {
+    convenience init(backupType: BackupType) {
         self.init(
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             backupEnablingManager: AppEnvironment.shared.backupEnablingManager,
             backupSettingsStore: BackupSettingsStore(),
             db: DependenciesBridge.shared.db,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+            backupType: backupType,
         )
     }
 
@@ -32,6 +39,7 @@ class BackupOnboardingCoordinator {
         backupSettingsStore: BackupSettingsStore,
         db: DB,
         tsAccountManager: TSAccountManager,
+        backupType: BackupType,
     ) {
         owsPrecondition(
             db.read { tsAccountManager.registrationState(tx: $0).isPrimaryDevice == true },
@@ -42,6 +50,7 @@ class BackupOnboardingCoordinator {
         self.backupEnablingManager = backupEnablingManager
         self.backupSettingsStore = backupSettingsStore
         self.db = db
+        self.backupType = backupType
     }
 
     deinit {
@@ -53,17 +62,15 @@ class BackupOnboardingCoordinator {
     func prepareForPresentation(
         inNavController navController: UINavigationController,
         onAppearAction: BackupSettingsViewController.OnAppearAction? = nil,
+        shouldSkipOnboarding: Bool,
     ) -> UIViewController {
-        let shouldSkipOnboarding = db.read { tx in
-            if backupSettingsStore.shouldOverrideShowBackupsOnboarding(tx: tx) {
-                return false
-            }
-
-            return backupSettingsStore.haveBackupsEverBeenEnabled(tx: tx)
-        }
-
         if shouldSkipOnboarding {
-            return BackupSettingsViewController(onAppearAction: onAppearAction)
+            switch backupType {
+            case .remote:
+                return BackupSettingsViewController(onAppearAction: onAppearAction)
+            case .local:
+                return LocalFileBackupsSettingsViewController()
+            }
         } else {
             // Weakly retain the nav controller, so we can use it throughout
             // onboarding.
@@ -74,19 +81,37 @@ class BackupOnboardingCoordinator {
             // don't retain any of the view controllers retaining us, so we'll
             // be released when they are: when the user finishes or dismisses
             // onboarding.
-            let introViewController = BackupOnboardingIntroViewController(
-                onContinue: { [self] in
-                    showRecoveryKeyIntro()
-                },
-                onNotNow: { [self] in
-                    onboardingNavController?.popViewController(animated: true) { [self] in
-                        onboardingNavController?.presentToast(text: OWSLocalizedString(
-                            "BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST",
-                            comment: "A toast shown when 'Not Now' is tapped from the Backups onboarding intro.",
-                        ))
-                    }
-                },
-            )
+            let introViewController: UIViewController
+            switch backupType {
+            case .remote:
+                introViewController = BackupOnboardingIntroViewController(
+                    onContinue: { [self] in
+                        showRecoveryKeyIntro()
+                    },
+                    onNotNow: { [self] in
+                        onboardingNavController?.popViewController(animated: true) { [self] in
+                            onboardingNavController?.presentToast(
+                                text: OWSLocalizedString(
+                                    "BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST",
+                                    comment: "A toast shown when 'Not Now' is tapped from the Backups onboarding intro.",
+                                ),
+                            )
+                        }
+                    },
+                )
+            case .local:
+                introViewController = LocalFileBackupOnboardingIntroViewController(onContinue: { fromViewController in
+                    fromViewController.present(
+                        LocalFileBackupSelectFolderHeroSheetViewController(
+                            onContinue: { [self] in
+                                // TODO: choose folder
+                                showRecoveryKeyIntro()
+                            },
+                        ),
+                        animated: true,
+                    )
+                })
+            }
             return introViewController
         }
     }
@@ -138,7 +163,18 @@ class BackupOnboardingCoordinator {
         let onConfirmed: () -> Void = { [self] in
             Task {
                 do throws(SheetDisplayableError) {
-                    try await showChooseBackupPlan()
+                    switch backupType {
+                    case .remote:
+                        try await showChooseBackupPlan()
+                    case .local:
+                        onboardingNavController.setViewControllers(
+                            [
+                                onboardingNavController.viewControllers[0],
+                                LocalFileBackupsSettingsViewController(),
+                            ],
+                            animated: true,
+                        )
+                    }
                 } catch {
                     error.showSheet(from: onboardingNavController)
                 }

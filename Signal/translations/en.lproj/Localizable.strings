@@ -1027,6 +1027,30 @@
 /* Title for a sheet explaining that the user's Backups subscription was not found on this device. */
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Subscription Not Found";
 
+/* Label for the On-Device Backups option on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "On-Device Backups";
+
+/* Footer text below the On-Device Backups row on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "Save your backups to a folder on this device.";
+
+/* Section header on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "Other Ways to Backup";
+
+/* Subtitle on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Back up your message history so you never lose data when you get a new phone or reinstall Signal.";
+
+/* Button to begin setting up Signal Secure Backups on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Set Up";
+
+/* Description of Signal Secure Backups on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Automatic backups with Signal's secure, end-to-end encrypted storage service.";
+
+/* Title for the Signal Secure Backups cell on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Signal Secure Backups";
+
+/* Button to view settings for remote backups on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "View Settings";
+
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
 "BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "You can manage or upgrade your Signal Secure Backups subscription on your primary device.";
 
@@ -5371,6 +5395,30 @@
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Do not close the app.";
 
+/* Bullet point on a view introducing local file backups during onboarding flow. */
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";
+
+/* Bullet point on a view introducing local file backups during onboarding flow. */
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "Saved on your device";
+
+/* Bullet point on a view introducing local file backups during onboarding flow. */
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Turn off backups anytime";
+
+/* Subtitle for a view introducing local file backups during the onboarding flow. */
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages to a folder on your device. Your backup is end-to-end encrypted and can be restored by moving your backup folder to a new device.";
+
+/* Title for a view introducing local file backups during the onboarding flow. */
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "On-Device Backups";
+
+/* Body text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "Choose a folder in your device’s storage where your backup will be stored.";
+
+/* Button for a sheet asking the user to choose a folder to save their local backup in. */
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "Choose Folder";
+
+/* Title text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Choose a Folder";
+
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
 
@@ -8760,6 +8808,9 @@
 
 /* Footer below the 'delete app data' button, shown on a linked device's account settings. */
 "SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "This will remove all data from the Signal app on this device.";
+
+/* Title for the 'on-device backups' settings page. */
+"SETTINGS_LOCAL_FILE_BACKUPS" = "On-Device Backups";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Never";

@@ -1446,12 +1446,28 @@ extension ChatListViewController {
             internalCompletion = { profile.presentAvatarSettingsView() }
 
         case .backups(let onAppearAction):
+            let backupSettingsVC: UIViewController
+            if BuildFlags.LocalFileBackups.settingsUI {
+                backupSettingsVC = BackupSettingsLandingPageViewController()
+            } else {
+                let shouldSkipOnboarding = DependenciesBridge.shared.db.read { tx in
+                    if BackupSettingsStore().shouldOverrideShowBackupsOnboarding(tx: tx) {
+                        return false
+                    }
+                    return BackupSettingsStore().haveBackupsEverBeenEnabled(tx: tx)
+                }
+
+                backupSettingsVC = BackupOnboardingCoordinator(
+                    backupType: .remote,
+                ).prepareForPresentation(
+                    inNavController: navigationController,
+                    onAppearAction: onAppearAction,
+                    shouldSkipOnboarding: shouldSkipOnboarding,
+                )
+            }
+
             viewControllers += [
-                BackupOnboardingCoordinator()
-                    .prepareForPresentation(
-                        inNavController: navigationController,
-                        onAppearAction: onAppearAction,
-                    ),
+                backupSettingsVC,
             ]
 
         case .corruptedUsernameResolution:

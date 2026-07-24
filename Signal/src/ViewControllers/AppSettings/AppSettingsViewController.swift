@@ -256,10 +256,27 @@ class AppSettingsViewController: OWSTableViewController2 {
                         let navigationController
                     else { return }
 
-                    navigationController.pushViewController(
-                        BackupOnboardingCoordinator().prepareForPresentation(
+                    let backupsViewController: UIViewController
+                    if BuildFlags.LocalFileBackups.settingsUI {
+                        backupsViewController = BackupSettingsLandingPageViewController()
+                    } else {
+                        let shouldSkipOnboarding = DependenciesBridge.shared.db.read { tx in
+                            if BackupSettingsStore().shouldOverrideShowBackupsOnboarding(tx: tx) {
+                                return false
+                            }
+                            return BackupSettingsStore().haveBackupsEverBeenEnabled(tx: tx)
+                        }
+
+                        backupsViewController = BackupOnboardingCoordinator(
+                            backupType: .remote,
+                        ).prepareForPresentation(
                             inNavController: navigationController,
-                        ),
+                            shouldSkipOnboarding: shouldSkipOnboarding,
+                        )
+                    }
+
+                    navigationController.pushViewController(
+                        backupsViewController,
                         animated: true,
                     )
                 },
