@@ -55,50 +55,28 @@ public class VideoPlayerView: UIView {
         }
     }
 
-    var playerLayer: AVPlayerLayer {
+    private var playerLayer: AVPlayerLayer {
         return layer as! AVPlayerLayer
     }
 
-    // Override UIView property
     override public static var layerClass: AnyClass {
         return AVPlayerLayer.self
     }
 
     public var isPlaying: Bool {
-        guard let videoPlayer else {
-            return false
-        }
-        return videoPlayer.isPlaying
+        videoPlayer?.isPlaying ?? false
     }
 
     public var currentTimeSeconds: Double {
-        guard let videoPlayer else {
-            return 0
-        }
-        return videoPlayer.currentTimeSeconds
-    }
-
-    // MARK: - Initializers
-
-    public init() {
-        super.init(frame: .zero)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        videoPlayer?.currentTimeSeconds ?? 0
     }
 
     deinit {
         removeKVO(player: player)
     }
 
-    // MARK: -
-
     override public var intrinsicContentSize: CGSize {
-        guard
-            let player = self.player,
-            let playerItem = player.currentItem
-        else {
+        guard let playerItem = player?.currentItem else {
             return CGSize(square: UIView.noIntrinsicMetric)
         }
 
