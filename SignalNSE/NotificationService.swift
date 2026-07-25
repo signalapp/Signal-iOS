@@ -172,19 +172,21 @@ class NotificationService: UNNotificationServiceExtension {
 
     // Called just before the extension will be terminated by the system.
     override func serviceExtensionTimeWillExpire() {
-        Logger.warn("Canceling fetchingQueue tasks because we ran out of time.")
+        let logger: NSELogger = .uncorrelated
+
+        logger.warn("Canceling fetchingQueue tasks because we ran out of time.")
 
         self.fetchQueue.cancelAll()
 
         // We complete silently here so that nothing is presented to the user.
         // By default the OS will present whatever the raw content of the original
         // notification is to the user otherwise.
-        completeSilently(content: UNMutableNotificationContent(), logger: .uncorrelated)
+        completeSilently(content: UNMutableNotificationContent(), logger: logger)
     }
 
-    private func startProxyIfEnabled() async throws(CancellationError) {
+    private func startProxyIfEnabled(logger: NSELogger) async throws(CancellationError) {
         if SignalProxy.isEnabled {
-            Logger.info("Waiting for signal proxy to become ready for message fetch.")
+            logger.info("Waiting for signal proxy to become ready for message fetch.")
             SignalProxy.startRelayServer()
             try await Preconditions([
                 NotificationPrecondition(
@@ -198,7 +200,7 @@ class NotificationService: UNNotificationServiceExtension {
     @MainActor
     private func fetchAndProcessMessages(logger: NSELogger) async -> UNNotificationContent {
         if DependenciesBridge.shared.appExpiry.isExpired(now: Date()) {
-            Logger.warn("Not processing notifications for expired application.")
+            logger.warn("Not processing notifications for expired application.")
             return UNMutableNotificationContent()
         }
 
@@ -209,7 +211,7 @@ class NotificationService: UNNotificationServiceExtension {
         )
 
         do {
-            try await startProxyIfEnabled()
+            try await startProxyIfEnabled(logger: logger)
             defer { SignalProxy.stopRelayServer() }
 
             let backgroundMessageFetcher = DependenciesBridge.shared.backgroundMessageFetcherFactory.buildFetcher()
@@ -225,10 +227,10 @@ class NotificationService: UNNotificationServiceExtension {
             await backgroundMessageFetcher.stopAndWaitBeforeSuspending()
             try fetchResult.get()
         } catch is CancellationError {
-            Logger.warn("Message fetching & processing canceled.")
+            logger.warn("Message fetching & processing canceled.")
             return UNMutableNotificationContent()
         } catch {
-            Logger.warn("\(error)")
+            logger.warn("\(error)")
         }
 
         logger.info("Message fetching & processing completed.")
