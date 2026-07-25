@@ -1463,6 +1463,9 @@ final class CameraTopBar: MediaTopBar {
 
         super.init(frame: frame)
 
+        // Don't need extra padding below buttons - we need as much camera viewfinder tapable as we can.
+        directionalLayoutMargins.bottom = 0
+
         addSubview(closeButton)
         addSubview(recordingTimerView)
         addSubview(cameraControlsContainerView)

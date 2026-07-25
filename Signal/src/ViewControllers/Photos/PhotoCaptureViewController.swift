@@ -221,6 +221,14 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         }
     }
 
+    override func viewLayoutMarginsDidChange() {
+        super.viewLayoutMarginsDidChange()
+
+        // Make padding above top buttons same as leading/trailing margin
+        // for concentric corners look.
+        topBar.directionalLayoutMargins.top = view.directionalLayoutMargins.leading
+    }
+
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
