@@ -53,7 +53,7 @@ public class PollMessageManager {
         }
         guard
             question.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes) == nil,
-            question.count <= OWSPoll.Constants.maxCharacterLength
+            question.count <= OWSPoll.Constants.maxQuestionCharacterLength
         else {
             throw OWSAssertionError("Poll question too large")
         }
@@ -69,7 +69,7 @@ public class PollMessageManager {
         for option in pollCreate.options {
             guard
                 option.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes) == nil,
-                option.count <= OWSPoll.Constants.maxCharacterLength
+                option.count <= OWSPoll.Constants.maxOptionCharacterLength
             else {
                 throw OWSAssertionError("Poll option too large")
             }
