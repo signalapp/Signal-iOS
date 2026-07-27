@@ -64,6 +64,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let remoteConfigManager: RemoteConfigManager
     private let stickerPackArchiver: BackupArchiveStickerPackArchiver
     private let tsAccountManager: TSAccountManager
+    private let localFileBackupManager: LocalFileBackupManager
 
     init(
         accountDataArchiver: BackupArchiveAccountDataArchiver,
@@ -103,6 +104,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         remoteConfigManager: RemoteConfigManager,
         stickerPackArchiver: BackupArchiveStickerPackArchiver,
         tsAccountManager: TSAccountManager,
+        localFileBackupManager: LocalFileBackupManager,
     ) {
         self.accountDataArchiver = accountDataArchiver
         self.appVersion = appVersion
@@ -143,6 +145,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.stickerPackArchiver = stickerPackArchiver
         self.adHocCallArchiver = adHocCallArchiver
         self.tsAccountManager = tsAccountManager
+        self.localFileBackupManager = localFileBackupManager
     }
 
     // MARK: - Remote backups
@@ -1349,6 +1352,10 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 Task {
                     // Kick off attachment downloads enqueued during restore.
                     try await backupAttachmentCoordinator.restoreAttachmentsIfNeeded()
+
+                    if BuildFlags.LocalFileBackups.restore {
+                        try await localFileBackupManager.restoreLocalFileBackupAttachments()
+                    }
                 }
 
                 // We may have inserted disappearing messages, so we need to let

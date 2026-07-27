@@ -346,10 +346,11 @@ public class RegistrationNavigationController: OWSNavigationController {
         case .chooseRestoreMethod(let restorePath):
             return Controller(
                 type: RegistrationChooseRestoreMethodViewController.self,
-                make: { presenter in
+                make: { [securityScopedBookmarkAccess = coordinator.securityScopedBookmarkAccess] presenter in
                     return RegistrationChooseRestoreMethodViewController(
                         presenter: presenter,
                         restorePath: restorePath,
+                        securityScopedBookmarkAccess: securityScopedBookmarkAccess,
                     )
                 },
                 update: nil,

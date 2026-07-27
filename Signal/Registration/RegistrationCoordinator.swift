@@ -169,6 +169,8 @@ public protocol RegistrationCoordinator {
     func cancelRecoveryKeyEntry() -> Guarantee<RegistrationStep>
 
     var logger: PrefixedLogger { get }
+
+    var securityScopedBookmarkAccess: SecurityScopedBookmarkAccess { get }
 }
 
 public enum AcknowledgeReglockResult {

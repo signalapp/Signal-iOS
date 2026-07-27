@@ -28,6 +28,9 @@ public class NonceHeaderInputStreamTransform: StreamTransform, BufferedStreamTra
         case .linkNsync:
             // Link'N'Sync backups have no header; finish immediately.
             self.hasFinishedReadingHeader = true
+        case .local:
+            // Local backups have no header; finish immediately.
+            self.hasFinishedReadingHeader = true
         }
     }
 

@@ -96,6 +96,7 @@ class InternalBackupSettingsViewController: OWSTableViewController2 {
                     db: DependenciesBridge.shared.db,
                     tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                     localFileBackupManager: DependenciesBridge.shared.localFileBackupManager,
+                    securityScopedBookmarkAccess: SecurityScopedBookmarkAccessImpl(),
                 )
 
                 Task {

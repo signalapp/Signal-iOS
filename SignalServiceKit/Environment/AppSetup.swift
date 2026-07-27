@@ -674,6 +674,8 @@ extension AppSetup.GlobalsContinuation {
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
         )
 
+        let localFileBackupStore = LocalFileBackupStore()
+
         let attachmentManager = AttachmentManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentStore: attachmentStore,
@@ -684,6 +686,7 @@ extension AppSetup.GlobalsContinuation {
             orphanedBackupAttachmentScheduler: orphanedBackupAttachmentScheduler,
             remoteConfigManager: remoteConfigManager,
             stickerManager: AttachmentManagerImpl.Wrappers.StickerManager(),
+            localFileBackupStore: localFileBackupStore,
         )
         let attachmentValidationBackfillMigrator = AttachmentValidationBackfillMigratorImpl(
             attachmentStore: attachmentStore,
@@ -1505,6 +1508,10 @@ extension AppSetup.GlobalsContinuation {
             db: db,
             dateProvider: dateProvider,
             attachmentStore: attachmentStore,
+            attachmentValidator: attachmentContentValidator,
+            orphanedAttachmentCleaner: orphanedAttachmentCleaner,
+            localFileBackupStore: localFileBackupStore,
+            securityScopedBookmarkAccess: SecurityScopedBookmarkAccessImpl(),
         )
         let backupArchiveManager = BackupArchiveManagerImpl(
             accountDataArchiver: BackupArchiveAccountDataArchiver(
@@ -1636,6 +1643,7 @@ extension AppSetup.GlobalsContinuation {
                 backupStickerPackDownloadStore: backupStickerPackDownloadStore,
             ),
             tsAccountManager: tsAccountManager,
+            localFileBackupManager: localFileBackupManager,
         )
 
         let pendingIDEALDonationStore = PendingIDEALDonationStore()

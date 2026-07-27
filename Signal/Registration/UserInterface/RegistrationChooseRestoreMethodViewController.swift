@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+public import Foundation
 import SignalServiceKit
 import SignalUI
 
@@ -14,22 +14,25 @@ protocol RegistrationChooseRestoreMethodPresenter: AnyObject {
 
 public enum RegistrationRestoreMethod {
     case deviceTransfer
-    case local
+    case local(fileUrl: URL)
     case remote
     case declined
 }
 
-class RegistrationChooseRestoreMethodViewController: OWSViewController {
+class RegistrationChooseRestoreMethodViewController: OWSViewController, UIDocumentPickerDelegate {
 
     private weak var presenter: RegistrationChooseRestoreMethodPresenter?
     private let restorePath: RegistrationStep.RestorePath
+    private let securityScopedBookmarkAccess: SecurityScopedBookmarkAccess
 
     init(
         presenter: RegistrationChooseRestoreMethodPresenter,
         restorePath: RegistrationStep.RestorePath,
+        securityScopedBookmarkAccess: SecurityScopedBookmarkAccess,
     ) {
         self.presenter = presenter
         self.restorePath = restorePath
+        self.securityScopedBookmarkAccess = securityScopedBookmarkAccess
 
         super.init()
 
@@ -37,6 +40,17 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
     }
 
     // MARK: UI
+
+    private func localFileBackupRestoreButton() -> UIButton {
+        return UIButton.registrationChoiceButton(
+            title: "(DEV ONLY) Restore from local backup",
+            subtitle: "(DEV ONLY) restore from local backup",
+            iconName: "signal-backups-48",
+            primaryAction: UIAction { [weak self] _ in
+                self?.didSelectRestoreFromLocalBackup()
+            },
+        )
+    }
 
     private func prominentRestoreButton() -> UIButton {
         return UIButton.registrationChoiceButton(
@@ -170,6 +184,10 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
                 .vStretchingSpacer(),
                 bottomButton.enclosedInVerticalStackView(isFullWidthButton: false),
             ])
+
+            if BuildFlags.LocalFileBackups.restore {
+                stackView.addArrangedSubview(localFileBackupRestoreButton())
+            }
         case .unspecified:
             addDefaultTitle(to: stackView)
             stackView.addArrangedSubviews([
@@ -178,6 +196,10 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
                 prominentSkipRestoreButton(),
                 .vStretchingSpacer(),
             ])
+
+            if BuildFlags.LocalFileBackups.restore {
+                stackView.addArrangedSubview(localFileBackupRestoreButton())
+            }
         }
     }
 
@@ -307,6 +329,48 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
     private func didTapCancel() {
         presenter?.didCancelRestoreMethodSelection()
     }
+
+    // MARK: - Local File Backups
+
+    private func didSelectRestoreFromLocalBackup() {
+        promptUserToChooseFileLocation(fromViewController: self)
+    }
+
+    // MARK: - Choosing backup location
+
+    func promptUserToChooseFileLocation(fromViewController: UIViewController) {
+        let pickerController = UIDocumentPickerViewController(
+            forOpeningContentTypes: [.folder],
+            asCopy: false,
+        )
+        pickerController.delegate = self
+        fromViewController.present(pickerController, animated: true)
+    }
+
+    // MARK: - UIDocumentPickerDelegate
+
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
+        // TODO: [KC] error handle invalid file choice.
+        // TODO: [KC] add pop up screen about which file to choose
+
+        let localFileBackupManager = DependenciesBridge.shared.localFileBackupManager
+
+        // The bookmark data has to be written when we have access to the security scoped resource.
+        guard securityScopedBookmarkAccess.startAccessToSecurityScopedBookmark(url: url) else {
+            Logger.error("Failed to start security scoped access")
+            return
+        }
+
+        defer { securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: url) }
+
+        do {
+            try localFileBackupManager.saveSecurityScopedBookmark(url: url)
+            presenter?.didChooseRestoreMethod(method: .local(fileUrl: url))
+        } catch {
+            // TODO: [KC] show error screen.
+            Logger.error("Failed to save bookmark: \(error)")
+        }
+    }
 }
 
 #if DEBUG
@@ -329,6 +393,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .quickRestore(.free, .ios),
+            securityScopedBookmarkAccess: SecurityScopedBookmarkAccessMock(hasAccess: true, url: nil),
         ),
     )
 }
@@ -339,6 +404,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .quickRestore(.paid, .ios),
+            securityScopedBookmarkAccess: SecurityScopedBookmarkAccessMock(hasAccess: true, url: nil),
         ),
     )
 }
@@ -349,6 +415,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .quickRestore(nil, .ios),
+            securityScopedBookmarkAccess: SecurityScopedBookmarkAccessMock(hasAccess: true, url: nil),
         ),
     )
 }
@@ -359,6 +426,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .quickRestore(.free, .android),
+            securityScopedBookmarkAccess: SecurityScopedBookmarkAccessMock(hasAccess: true, url: nil),
         ),
     )
 }
@@ -369,6 +437,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .quickRestore(.paid, .android),
+            securityScopedBookmarkAccess: SecurityScopedBookmarkAccessMock(hasAccess: true, url: nil),
         ),
     )
 }
@@ -379,6 +448,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .quickRestore(nil, .android),
+            securityScopedBookmarkAccess: SecurityScopedBookmarkAccessMock(hasAccess: true, url: nil),
         ),
     )
 }
@@ -389,6 +459,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .manualRestore,
+            securityScopedBookmarkAccess: SecurityScopedBookmarkAccessMock(hasAccess: true, url: nil),
         ),
     )
 }
@@ -399,6 +470,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .unspecified,
+            securityScopedBookmarkAccess: SecurityScopedBookmarkAccessMock(hasAccess: true, url: nil),
         ),
     )
 }

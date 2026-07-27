@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 import GRDB
 import Testing
@@ -18,10 +19,23 @@ struct LocalFileBackupManagerTests {
     private let backupArchiveManager = BackupArchiveManagerMock()
 
     init() {
+        let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(dateProvider: { Date() }, db: db)
+        let validator = AttachmentContentValidatorImpl(
+            attachmentStore: attachmentStore,
+            audioWaveformManager: AudioWaveformManagerMock(),
+            dateProvider: { Date() },
+            db: db,
+            orphanedAttachmentCleaner: orphanedAttachmentCleaner,
+        )
+
         self.localFileBackupManager = LocalFileBackupManager(
             db: db,
             dateProvider: { Date() },
             attachmentStore: attachmentStore,
+            attachmentValidator: validator,
+            orphanedAttachmentCleaner: orphanedAttachmentCleaner,
+            localFileBackupStore: LocalFileBackupStore(),
+            securityScopedBookmarkAccess: SecurityScopedBookmarkAccessMock(hasAccess: true, url: nil),
         )
     }
 
@@ -247,5 +261,89 @@ struct LocalFileBackupManagerTests {
 
         #expect(FileManager.default.fileExists(atPath: mediaPath1.path))
         #expect(FileManager.default.fileExists(atPath: mediaPath2.path))
+    }
+
+    func writeAttachmentToFilesDir(
+        filesDir: URL,
+        plaintextData: Data,
+        localKey: AttachmentKey,
+        plaintextHash: Data,
+    ) throws {
+        let plaintextURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString)
+        try plaintextData.write(to: plaintextURL)
+        defer { try? FileManager.default.removeItem(at: plaintextURL) }
+
+        let mediaName = localFileBackupManager.mediaNameForAttachment(
+            localKey: localKey.combinedKey,
+            plaintextHash: plaintextHash,
+        )
+        let subdir = filesDir.appendingPathComponent(String(mediaName.prefix(2)))
+        try FileManager.default.createDirectory(at: subdir, withIntermediateDirectories: true)
+
+        let _ = try Cryptography.encryptAttachment(
+            at: plaintextURL,
+            output: subdir.appendingPathComponent(mediaName),
+            attachmentKey: localKey,
+        )
+    }
+
+    @Test
+    func testRestoreAttachments() async throws {
+        /* put encrypted attachments at a mock local backup location */
+
+        let localBackupURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: localBackupURL, withIntermediateDirectories: true)
+        defer {
+            try? FileManager.default.removeItem(at: localBackupURL)
+        }
+
+        let filesDir = localBackupURL.appendingPathComponent("files")
+
+        let localKey = Randomness.generateRandomBytes(64)
+        let plaintextData = Data("test".utf8)
+        var sha = SHA256()
+        sha.update(data: plaintextData)
+        let plaintextHash = Data(sha.finalize())
+
+        try writeAttachmentToFilesDir(
+            filesDir: filesDir,
+            plaintextData: plaintextData,
+            localKey: AttachmentKey(combinedKey: localKey),
+            plaintextHash: plaintextHash,
+        )
+
+        /* pre-populate as if we've done a backup restore */
+
+        let mockAttachment = Attachment.mock(plaintextHash: plaintextHash)
+        let attachmentId = db.write { tx in
+            var record = Attachment.Record(attachment: mockAttachment)
+            try! record.insert(tx.database)
+            let id = record.sqliteId!
+            try! BackupLocalFileAttachmentMetadataRecord(
+                attachmentRowId: id,
+                localKey: localKey,
+                unencryptedByteCount: UInt32(plaintextData.count),
+            ).insert(tx.database)
+            try! BackupLocalFileAttachmentImportRecord(attachmentRowId: id).insert(tx.database)
+            return id
+        }
+
+        /* restore */
+
+        try await localFileBackupManager._restoreLocalFileBackupAttachments(resolvedURL: localBackupURL)
+
+        let importRecords = try db.read { tx in
+            try BackupLocalFileAttachmentImportRecord.fetchAll(tx.database)
+        }
+        #expect(importRecords.isEmpty)
+
+        let attachment = db.read { tx in
+            attachmentStore.fetch(id: attachmentId, tx: tx)
+        }
+
+        #expect(attachment != nil)
+        #expect(attachment!.streamInfo != nil)
+        #expect(attachment!.plaintextHash == plaintextHash)
     }
 }

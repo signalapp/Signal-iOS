@@ -617,6 +617,31 @@ public struct AttachmentStore {
         }
     }
 
+    public func updateLocalFileBackupAttachmentAsTransferred(
+        attachment: Attachment,
+        streamInfo: Attachment.StreamInfo,
+        tx: DBWriteTransaction,
+    ) throws(AttachmentInsertError) {
+        // Find if there is already an attachment with the same plaintext hash.
+        if
+            let existingAttachmentId = fetchAttachmentRecord(
+                plaintextHash: streamInfo.plaintextHash,
+                tx: tx,
+            )?.sqliteId,
+            existingAttachmentId != attachment.id
+        {
+            throw AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId: existingAttachmentId)
+        }
+
+        attachment.streamInfo = streamInfo
+        attachment.plaintextHash = streamInfo.plaintextHash
+
+        let newRecord = Attachment.Record(attachment: attachment)
+        failIfThrows {
+            try newRecord.update(tx.database)
+        }
+    }
+
     public func updateAttachmentAsDownloaded(
         attachment: Attachment,
         sourceType: QueuedAttachmentDownloadRecord.SourceType,
@@ -1183,5 +1208,17 @@ public struct AttachmentStore {
         failIfThrows {
             try query.updateAll(tx.database, threadRowIdColumn.set(to: intoThreadRowId))
         }
+    }
+
+    func attachmentRecordsWithPlaintextHash(lastEnumeratedAttachmentId: Attachment.IDType?, tx: DBReadTransaction) throws -> RecordCursor<Attachment.Record> {
+        var query = Attachment.Record
+            .filter(Column(Attachment.Record.CodingKeys.plaintextHash) != nil)
+            .order(Column(Attachment.Record.CodingKeys.sqliteId))
+
+        if let lastEnumeratedAttachmentId {
+            query = query
+                .filter(Column(Attachment.Record.CodingKeys.sqliteId) > lastEnumeratedAttachmentId)
+        }
+        return try query.fetchCursor(tx.database)
     }
 }

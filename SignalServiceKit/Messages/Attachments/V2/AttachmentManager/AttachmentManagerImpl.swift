@@ -14,6 +14,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     private let orphanedBackupAttachmentScheduler: OrphanedBackupAttachmentScheduler
     private let remoteConfigManager: RemoteConfigManager
     private let stickerManager: Shims.StickerManager
+    private let localFileBackupStore: LocalFileBackupStore
 
     public init(
         attachmentDownloadManager: AttachmentDownloadManager,
@@ -25,6 +26,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         orphanedBackupAttachmentScheduler: OrphanedBackupAttachmentScheduler,
         remoteConfigManager: RemoteConfigManager,
         stickerManager: Shims.StickerManager,
+        localFileBackupStore: LocalFileBackupStore,
     ) {
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentStore = attachmentStore
@@ -35,6 +37,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         self.orphanedBackupAttachmentScheduler = orphanedBackupAttachmentScheduler
         self.remoteConfigManager = remoteConfigManager
         self.stickerManager = stickerManager
+        self.localFileBackupStore = localFileBackupStore
     }
 
     // MARK: - Public
@@ -445,6 +448,17 @@ public class AttachmentManagerImpl: AttachmentManager {
                 attachmentID: attachment.id,
                 byteCount: estimatedMediaTierSize,
             )
+
+            if proto.locatorInfo.hasLocalKey {
+                localFileBackupStore.insertImportRecord(attachmentId: attachment.id, tx: tx)
+
+                localFileBackupStore.insertNewMetadataIfNeeded(
+                    attachmentId: attachment.id,
+                    unencryptedByteCount: proto.locatorInfo.size,
+                    localKey: proto.locatorInfo.localKey,
+                    tx: tx,
+                )
+            }
 
             if let mediaName = attachmentRecord.mediaName {
                 orphanedBackupAttachmentScheduler.didCreateOrUpdateAttachment(

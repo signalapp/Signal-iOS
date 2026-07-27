@@ -4,8 +4,12 @@
 //
 
 import CryptoKit
-import GRDB
 import LibSignalClient
+
+public enum LocalFileBackupError: Error {
+    case unableToFetchOrAccessLocalFile
+    case userChoseInvalidLocalBackupLocation
+}
 
 /// Manager to handle local file backup logic, including file I/O, UIDocumentPicker logic, and security-scoped bookmark handling.
 /// Actual archiving of the backup is handled by BackupArchiveManager.
@@ -34,25 +38,30 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
     private let logger: PrefixedLogger
     private let db: DB
-    private let kvStore: NewKeyValueStore
     private let dateProvider: DateProvider
     private let attachmentStore: AttachmentStore
+    private let attachmentValidator: AttachmentContentValidator
+    private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
+    private let localFileBackupStore: LocalFileBackupStore
+    private let securityScopedBookmarkAccess: SecurityScopedBookmarkAccess
 
-    private enum StoreKeys {
-        static let bookmarkDataKey = "bookmarkData"
-        static let lastEnumeratedAttachmentIdKey = "lastEnumeratedAttachmentId"
-    }
-
-    public init(
+    init(
         db: DB,
         dateProvider: @escaping DateProvider,
         attachmentStore: AttachmentStore,
+        attachmentValidator: AttachmentContentValidator,
+        orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
+        localFileBackupStore: LocalFileBackupStore,
+        securityScopedBookmarkAccess: SecurityScopedBookmarkAccess,
     ) {
         self.db = db
         self.dateProvider = dateProvider
         self.attachmentStore = attachmentStore
+        self.attachmentValidator = attachmentValidator
+        self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.logger = PrefixedLogger(prefix: "[LocalFileBackups]")
-        self.kvStore = NewKeyValueStore(collection: "LocalFileBackups")
+        self.localFileBackupStore = localFileBackupStore
+        self.securityScopedBookmarkAccess = securityScopedBookmarkAccess
     }
 
     /*
@@ -73,6 +82,99 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
        └─ <fileName prefix>
           └─ <fileName N>
      */
+
+    // MARK: - Restoring
+
+    func restoreLocalFileBackupAttachments() async throws {
+        let resolvedURL: URL?
+        do {
+            resolvedURL = try getSavedSecurityScopedBookmark()
+        } catch {
+            throw LocalFileBackupError.unableToFetchOrAccessLocalFile
+        }
+
+        guard let resolvedURL else {
+            // No local file backup location stored.
+            return
+        }
+
+        let hasAccess = securityScopedBookmarkAccess.startAccessToSecurityScopedBookmark(url: resolvedURL)
+        guard hasAccess else {
+            throw LocalFileBackupError.unableToFetchOrAccessLocalFile
+        }
+
+        defer {
+            securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: resolvedURL)
+        }
+
+        try await _restoreLocalFileBackupAttachments(resolvedURL: resolvedURL)
+    }
+
+    private func fetchImportRecordsAndAssociatedAttachmentRecords() -> [(AttachmentWithMetadata, BackupLocalFileAttachmentImportRecord)] {
+        let attachmentBatchSize = 50
+        return db.read { tx in
+            let imports = localFileBackupStore.importRecords(batchSize: attachmentBatchSize, tx: tx)
+            let attachments = attachmentStore.fetch(ids: imports.map({ $0.attachmentRowId }), tx: tx)
+            let attachmentsByID = Dictionary(uniqueKeysWithValues: attachments.map { ($0.id, $0) })
+
+            return imports.compactMap { importRecord in
+                let attachment = attachmentsByID[importRecord.attachmentRowId].owsFailUnwrap("FOREIGN KEYs mean this must exist.")
+                guard let metadata = localFileBackupStore.metadataRecord(attachmentId: importRecord.attachmentRowId, failIfNotExists: true, tx: tx) else {
+                    return nil
+                }
+                return (AttachmentWithMetadata(attachment: attachment, metadata: metadata), importRecord)
+            }
+        }
+    }
+
+    func _restoreLocalFileBackupAttachments(resolvedURL: URL) async throws {
+        while true {
+            let attachmentsWithMetadata: [(AttachmentWithMetadata, BackupLocalFileAttachmentImportRecord)] = fetchImportRecordsAndAssociatedAttachmentRecords()
+            if attachmentsWithMetadata.isEmpty {
+                break
+            }
+
+            let attachmentsDir = resolvedURL.appendingPathComponent(FileStructure.attachmentDirectory.rawValue)
+            for (attachmentWithMetadata, localFileImport) in attachmentsWithMetadata {
+                guard let plaintextHash = attachmentWithMetadata.attachment.plaintextHash else {
+                    // TODO: Store error to present to beta user
+                    owsFailBeta("Missing plaintext hash for a local file attachment")
+                    continue
+                }
+                // The files dir is divided into subdirectories based on the first 2 characters of the media name
+                let mediaName = mediaNameForAttachment(localKey: attachmentWithMetadata.metadata.localKey, plaintextHash: plaintextHash)
+                let attachmentSubDirectory = attachmentsDir.appendingPathComponent(String(mediaName.prefix(2)))
+
+                let destination = attachmentSubDirectory.appendingPathComponent(mediaName)
+
+                let attachmentKey = try AttachmentKey(combinedKey: attachmentWithMetadata.metadata.localKey)
+
+                let pendingAttachment = try await attachmentValidator.validateDownloadedContents(
+                    ofEncryptedFileAt: destination,
+                    attachmentKey: attachmentKey,
+                    plaintextLength: attachmentWithMetadata.metadata.unencryptedByteCount,
+                    integrityCheck: .plaintextHash(plaintextHash),
+                    mimeType: attachmentWithMetadata.attachment.mimeType,
+                    renderingFlag: .default,
+                    sourceFilename: nil,
+                )
+
+                try db.write { tx in
+                    try attachmentStore.updateLocalFileBackupAttachmentAsTransferred(
+                        attachment: attachmentWithMetadata.attachment,
+                        streamInfo: Attachment.StreamInfo(pendingAttachment: pendingAttachment),
+                        tx: tx,
+                    )
+                    orphanedAttachmentCleaner.releasePendingAttachment(
+                        withId: pendingAttachment.orphanRecordId,
+                        tx: tx,
+                    )
+
+                    try localFileImport.delete(tx.database)
+                }
+            }
+        }
+    }
 
     // MARK: - Archiving
 
@@ -126,17 +228,11 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         while true {
             let (attachmentsWithMetadata, localFileExports) = db.read { tx in
                 failIfThrows {
-                    let localFileExports = try BackupLocalFileAttachmentExportRecord
-                        .limit(attachmentBatchSize)
-                        .fetchAll(tx.database)
-
+                    let localFileExports = localFileBackupStore.exportRecords(batchSize: attachmentBatchSize, tx: tx)
                     let ids = localFileExports.map({ $0.attachmentRowId })
                     let attachments = attachmentStore.fetch(ids: ids, tx: tx)
-                    let attachmentsWithMetadata: [AttachmentWithMetadata] = try attachments.compactMap {
-                        let metadata = try BackupLocalFileAttachmentMetadataRecord.filter(key: $0.id).fetchOne(tx.database)
-                        guard let metadata else {
-                            // TODO: Store error to present to beta user
-                            owsFailBeta("Local file backup attachment in the export queue is missing metadata")
+                    let attachmentsWithMetadata: [AttachmentWithMetadata] = attachments.compactMap {
+                        guard let metadata = localFileBackupStore.metadataRecord(attachmentId: $0.id, failIfNotExists: true, tx: tx) else {
                             return nil
                         }
                         return AttachmentWithMetadata(attachment: $0, metadata: metadata)
@@ -243,10 +339,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                 guard let attachmentId = localFileBackupAttachmentCollector.removeLast() else {
                     return .done(())
                 }
-                let attachmentToExport = BackupLocalFileAttachmentExportRecord(attachmentRowId: attachmentId)
-                failIfThrows {
-                    try attachmentToExport.insert(tx.database)
-                }
+                localFileBackupStore.insertExportRecord(attachmentId: attachmentId, tx: tx)
                 return .more
             },
         )
@@ -281,19 +374,14 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         await TimeGatedBatch.processAll(
             db: db,
             buildTxContext: { tx -> TxContextAttachmentMetadata in
-                let lastEnumeratedAttachmentId: Attachment.IDType? = kvStore.fetchValue(Int64.self, forKey: StoreKeys.lastEnumeratedAttachmentIdKey, tx: tx)
+                let lastEnumeratedAttachmentId: Attachment.IDType? = localFileBackupStore.fetchLastEnumeratedAttachmentRowId(tx: tx)
 
                 return TxContextAttachmentMetadata(
                     cursor: FailIfThrowsRecordCursor {
-                        var query = Attachment.Record
-                            .filter(Column(Attachment.Record.CodingKeys.plaintextHash) != nil)
-                            .order(Column(Attachment.Record.CodingKeys.sqliteId))
-
-                        if let lastEnumeratedAttachmentId {
-                            query = query
-                                .filter(Column(Attachment.Record.CodingKeys.sqliteId) > lastEnumeratedAttachmentId)
-                        }
-                        return try query.fetchCursor(tx.database)
+                        return try attachmentStore.attachmentRecordsWithPlaintextHash(
+                            lastEnumeratedAttachmentId: lastEnumeratedAttachmentId,
+                            tx: tx,
+                        )
                     },
                     lastEnumeratedAttachmentId: lastEnumeratedAttachmentId,
                     didFinish: false,
@@ -312,30 +400,22 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                     return .more
                 }
 
-                let existingMetadata = failIfThrows {
-                    try BackupLocalFileAttachmentMetadataRecord
-                        .filter(key: attachmentRecordId)
-                        .fetchOne(tx.database)
-                }
+                localFileBackupStore.insertNewMetadataIfNeeded(
+                    attachmentId: attachmentRecordId,
+                    unencryptedByteCount: unencryptedByteCount,
+                    // Create a new local key if it doesn't exist.
+                    localKey: nil,
+                    tx: tx,
+                )
 
-                if existingMetadata == nil {
-                    let metadataToInsert = BackupLocalFileAttachmentMetadataRecord(
-                        attachmentRowId: attachmentRecordId,
-                        localKey: Randomness.generateRandomBytes(64),
-                        unencryptedByteCount: unencryptedByteCount,
-                    )
-                    failIfThrows {
-                        try metadataToInsert.insert(tx.database)
-                    }
-                }
                 return .more
 
             },
             concludeTx: { tx, txContext in
                 if txContext.didFinish {
-                    kvStore.removeValue(forKey: StoreKeys.lastEnumeratedAttachmentIdKey, tx: tx)
+                    localFileBackupStore.clearLastEnumeratedAttachmentRowId(tx: tx)
                 } else if let lastEnumeratedAttachmentId = txContext.lastEnumeratedAttachmentId {
-                    kvStore.writeValue(lastEnumeratedAttachmentId, forKey: StoreKeys.lastEnumeratedAttachmentIdKey, tx: tx)
+                    localFileBackupStore.updateLastEnumeratedAttachmentRowId(lastEnumeratedAttachmentId, tx: tx)
                 }
             },
         )
@@ -410,23 +490,13 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         fromViewController.present(pickerController, animated: true)
     }
 
-    /// Security-scoped bookmarks let us access files persistently once the user chooses a location.
-    /// Before accessing a url created by resolving bookmark data, url.startAccessingSecurityScopedResource() must
-    /// be called. url.stopAccessingSecurityScopedResource() must be called once access is complete to avoid
-    /// leaking kernel resources.
-    public func getSavedSecurityScopedBookmark() throws -> URL {
-        guard let bookmarkData = db.read(block: { tx in kvStore.fetchValue(Data.self, forKey: StoreKeys.bookmarkDataKey, tx: tx) }) else {
-            throw OWSAssertionError("No bookmark data stored")
+    public func getSavedSecurityScopedBookmark() throws -> URL? {
+        guard let bookmarkData = db.read(block: { tx in localFileBackupStore.fetchBookmarkData(tx: tx) }) else {
+            return nil
         }
 
         var isStale = false
-        let resolvedURL = try URL(
-            resolvingBookmarkData: bookmarkData,
-            options: [],
-            relativeTo: nil,
-            bookmarkDataIsStale: &isStale,
-        )
-
+        let resolvedURL = try securityScopedBookmarkAccess.urlForBookmarkData(bookmarkData, isStale: &isStale)
         if isStale {
             // TODO: [KC] Prompt user to pick a new location
             throw OWSAssertionError("Unable to resolve url bookmark, location is stale")
@@ -436,13 +506,9 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
     }
 
     public func saveSecurityScopedBookmark(url: URL) throws {
-        let bookmarkData = try url.bookmarkData(
-            options: [],
-            includingResourceValuesForKeys: nil,
-            relativeTo: nil,
-        )
+        let bookmarkData = try securityScopedBookmarkAccess.bookmarkDataForURL(url)
         db.write { tx in
-            kvStore.writeValue(bookmarkData, forKey: StoreKeys.bookmarkDataKey, tx: tx)
+            localFileBackupStore.storeBookmarkData(bookmarkData: bookmarkData, tx: tx)
         }
     }
 
@@ -450,12 +516,12 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
     public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
         // The bookmark data has to be written when we have access to the security scoped resource.
-        guard url.startAccessingSecurityScopedResource() else {
+        guard securityScopedBookmarkAccess.startAccessToSecurityScopedBookmark(url: url) else {
             Logger.error("Failed to start security scoped access")
             return
         }
 
-        defer { url.stopAccessingSecurityScopedResource() }
+        defer { securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: url) }
 
         do {
             try saveSecurityScopedBookmark(url: url)

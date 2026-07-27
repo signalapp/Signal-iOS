@@ -299,13 +299,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     $0.restoreMethod = .remoteBackup
                 }
             }
-        case .local:
-            // TODO: [Backups] - When local backup support is added, the associated 'fileURL'
-            // will need to be persisted to inMemoryState
+        case .local(let fileUrl):
             inMemoryState.hasSkippedRestoreFromMessageBackup = false
             inMemoryState.needsToAskForDeviceTransfer = false
             deps.db.write { tx in
                 updatePersistedState(tx) {
+                    $0.localFileBackupURLBookmarkData = try? deps.securityScopedBookmarkAccess.bookmarkDataForURL(fileUrl)
                     $0.hasDeclinedTransfer = true
                     $0.restoreMethod = .localBackup
                 }
@@ -597,8 +596,63 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             let fileUrl: URL
             switch type {
             case .local:
-                // TODO: [Backups] This is currently unsupported, so log and return
-                throw OWSAssertionError("Local backups not supported.")
+                guard let localFileBackupBookmarkData = persistedState.localFileBackupURLBookmarkData else {
+                    throw OWSAssertionError("Backup type is local but no local file URL set")
+                }
+
+                var isStale = false
+                let localFileBackupRootURL = try deps.securityScopedBookmarkAccess.urlForBookmarkData(
+                    localFileBackupBookmarkData,
+                    isStale: &isStale,
+                )
+
+                if isStale {
+                    throw LocalFileBackupError.unableToFetchOrAccessLocalFile
+                }
+
+                let hasAccess = deps.securityScopedBookmarkAccess.startAccessToSecurityScopedBookmark(url: localFileBackupRootURL)
+                guard hasAccess else {
+                    throw LocalFileBackupError.unableToFetchOrAccessLocalFile
+                }
+
+                defer { deps.securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: localFileBackupRootURL) }
+
+                let contents = try FileManager.default.contentsOfDirectory(
+                    at: localFileBackupRootURL,
+                    includingPropertiesForKeys: [.isDirectoryKey],
+                )
+
+                let backupDirectories = contents
+                    .filter { $0.lastPathComponent.hasPrefix("signal-backups-") }
+                    .sorted { $0.lastPathComponent > $1.lastPathComponent }
+
+                guard !backupDirectories.isEmpty else {
+                    throw LocalFileBackupError.userChoseInvalidLocalBackupLocation
+                }
+
+                let chosenBackup = backupDirectories[0]
+
+                fileUrl = chosenBackup.appendingPathComponent(LocalFileBackupManager.FileStructure.backupFile.rawValue)
+
+                // The recovery key has been derived, the backup file has been sourced,
+                // so this is the last possible point before we commit to importing the backup.
+                // At this point, persist the recovery key so if the app restarts after this point
+                // we remember the key that was used during restore.
+                await self.db.awaitableWrite { tx in
+                    self.updatePersistedState(tx) {
+                        $0.backupKeyAccountEntropyPool = accountEntropyPool
+                    }
+                }
+
+                try await self.deps.backupArchiveManager.importEncryptedBackup(
+                    fileUrl: fileUrl,
+                    localIdentifiers: identity.localIdentifiers,
+                    isPrimaryDevice: true,
+                    source: .local(key: backupKey),
+                    progress: nil,
+                    logger: self.logger,
+                )
+                return
             case .remote:
                 let backupServiceAuth = try await self.fetchBackupServiceAuth(
                     accountEntropyPool: accountEntropyPool,
@@ -803,6 +857,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     public private(set) var logger: PrefixedLogger
     private let baseLogger: PrefixedLogger
+
+    public var securityScopedBookmarkAccess: SecurityScopedBookmarkAccess { deps.securityScopedBookmarkAccess }
 
     // Shortcuts for the commonly used ones.
     private var db: any DB { deps.db }
@@ -1161,6 +1217,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
 
+        /// Local file backup location, saved as a security scoped bookmark
+        /// so we can access it across app launches.
+        var localFileBackupURLBookmarkData: SecurityScopedBookmark?
+
         init() {}
 
         enum CodingKeys: String, CodingKey {
@@ -1184,6 +1244,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case restoreMode
             case deprecatedRecoveredSVRMasterKey = "recoveredSVRMasterKey"
             case backupKeyAccountEntropyPool
+            case localFileBackupURLBookmarkData
         }
     }
 
@@ -1461,24 +1522,35 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         logger.info("")
 
         do {
-            // For manual restore, fetch the backup info
-            let backupKey = try MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.aci)
-            let backupServiceAuth = try await self.fetchBackupServiceAuth(
-                accountEntropyPool: accountEntropyPool,
-                accountIdentity: accountIdentity,
-            )
-            let cdnInfo = try await self.deps.backupArchiveManager.backupCdnInfo(
-                backupKey: backupKey,
-                backupAuth: backupServiceAuth,
-                logger: logger,
-            )
-            self.inMemoryState.backupMetadataHeader = cdnInfo.metadataHeader
+            let lastBackupDate: Date
+            let lastBackupSize: UInt64
+
+            if self.persistedState.localFileBackupURLBookmarkData != nil {
+                // TODO: [KC] actual size & date for local backup.
+                lastBackupDate = Date()
+                lastBackupSize = 0
+            } else {
+                // For manual restore, fetch the backup info
+                let backupKey = try MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.aci)
+                let backupServiceAuth = try await self.fetchBackupServiceAuth(
+                    accountEntropyPool: accountEntropyPool,
+                    accountIdentity: accountIdentity,
+                )
+                let cdnInfo = try await self.deps.backupArchiveManager.backupCdnInfo(
+                    backupKey: backupKey,
+                    backupAuth: backupServiceAuth,
+                    logger: logger,
+                )
+                self.inMemoryState.backupMetadataHeader = cdnInfo.metadataHeader
+                lastBackupDate = cdnInfo.fileInfo.lastModified
+                lastBackupSize = cdnInfo.fileInfo.contentLength
+            }
             return .confirmRestoreFromBackup(
                 RegistrationRestoreFromBackupConfirmationState(
                     mode: .manual,
                     tier: .free,
-                    lastBackupDate: cdnInfo.fileInfo.lastModified,
-                    lastBackupSizeBytes: cdnInfo.fileInfo.contentLength,
+                    lastBackupDate: lastBackupDate,
+                    lastBackupSizeBytes: lastBackupSize,
                 ),
             )
         } catch {
@@ -4042,6 +4114,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         } catch {
             logger.warn("couldn't reclaim username; giving up: \(error)")
         }
+
         inMemoryState.usernameReclamationState = .reclamationAttempted
         return await nextStep()
     }

@@ -19,8 +19,10 @@ public enum BackupImportSource {
     /// This ephemeral key is combined with the ACI to derive the encryption key for the synced backup file.
     case linkNsync(ephemeralKey: BackupKey, aci: Aci)
 
-    // TODO: [Backups] add local backup case. This should just have the backup key
-    // and the backupId we pull out of the local backup metadata file, no aci.
+    /// A local file backup stored on device at a location of the user's choice.
+    /// Similar to remote backups, it uses AEP (to derive ``MessageRootBackupKey/backupKey``),
+    /// and ACI (used with backup key to derive ``MessageRootBackupKey/backupId``)
+    case local(key: MessageRootBackupKey)
 
     public enum NonceMetadataSource {
         /// We already have the forward secrecy token from Quick Restore;
@@ -67,6 +69,8 @@ extension BackupImportSource {
         case .linkNsync:
             return .deviceTransfer
         case .remote:
+            return .remoteBackup
+        case .local:
             return .remoteBackup
         }
     }
@@ -138,6 +142,13 @@ extension BackupImportSource {
             return try MessageBackupKey(
                 backupKey: ephemeralKey,
                 backupId: ephemeralKey.deriveBackupId(aci: aci),
+                forwardSecrecyToken: nil,
+            )
+
+        case let .local(key):
+            return try MessageBackupKey(
+                backupKey: key.backupKey,
+                backupId: key.backupId,
                 forwardSecrecyToken: nil,
             )
         }

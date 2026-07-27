@@ -481,20 +481,19 @@ extension ReferencedAttachment {
 
         if let localFileBackupAttachmentCollector = context.localFileBackupAttachmentCollector {
             if let streamInfo = attachment.streamInfo {
-                let existingMetadata = failIfThrows {
-                    try BackupLocalFileAttachmentMetadataRecord
-                        .filter(key: attachment.id)
-                        .fetchOne(context.tx.database)
-                }
-                if let existingMetadata {
+                if
+                    let existingMetadata = LocalFileBackupStore().metadataRecord(
+                        attachmentId: attachment.id,
+                        failIfNotExists: true,
+                        tx: context.tx,
+                    )
+                {
                     localFileBackupAttachmentCollector.append(id: attachment.id)
                     locatorInfo.localKey = existingMetadata.localKey
 
                     locatorInfo.key = attachment.encryptionKey
                     locatorInfo.size = streamInfo.unencryptedByteCount
                     locatorInfo.integrityCheck = .plaintextHash(streamInfo.plaintextHash)
-                } else {
-                    owsFailDebug("Attachment in local backup should always have metadata")
                 }
             } else {
                 // We have no stream info for an attachment we are trying to backup locally,

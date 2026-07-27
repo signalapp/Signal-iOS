@@ -28,6 +28,7 @@ public class LocalFileBackupExportJob {
     private let logger: PrefixedLogger
     private let tsAccountManager: TSAccountManager
     private let localFileBackupManager: LocalFileBackupManager
+    private let securityScopedBookmarkAccess: SecurityScopedBookmarkAccess
 
     public init(
         accountKeyStore: AccountKeyStore,
@@ -35,6 +36,7 @@ public class LocalFileBackupExportJob {
         db: DB,
         tsAccountManager: TSAccountManager,
         localFileBackupManager: LocalFileBackupManager,
+        securityScopedBookmarkAccess: SecurityScopedBookmarkAccess,
     ) {
         self.accountKeyStore = accountKeyStore
         self.backupArchiveManager = backupArchiveManager
@@ -42,6 +44,7 @@ public class LocalFileBackupExportJob {
         self.logger = PrefixedLogger(prefix: "[LocalFileBackups][ExportJob]")
         self.tsAccountManager = tsAccountManager
         self.localFileBackupManager = localFileBackupManager
+        self.securityScopedBookmarkAccess = securityScopedBookmarkAccess
     }
 
     // MARK: -
@@ -101,15 +104,17 @@ public class LocalFileBackupExportJob {
             localFileBackupAttachmentCollector: localFileBackupAttachmentCollector,
         )
 
-        let resolvedURL = try await localFileBackupManager.getSavedSecurityScopedBookmark()
+        guard let resolvedURL = try await localFileBackupManager.getSavedSecurityScopedBookmark() else {
+            throw OWSAssertionError("No local file backup location bookmark data stored")
+        }
 
-        let hasAccess = resolvedURL.startAccessingSecurityScopedResource()
+        let hasAccess = securityScopedBookmarkAccess.startAccessToSecurityScopedBookmark(url: resolvedURL)
         guard hasAccess else {
             throw OWSAssertionError("Missing access to backup directory location")
         }
 
         defer {
-            resolvedURL.stopAccessingSecurityScopedResource()
+            securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: resolvedURL)
         }
 
         let (backupsRootDirectory, currentBackupDirectoryName) = try await localFileBackupManager.copyBackupToDisk(

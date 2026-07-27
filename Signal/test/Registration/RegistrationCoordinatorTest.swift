@@ -156,6 +156,7 @@ public class RegistrationCoordinatorTest {
             registrationStateChangeManager: registrationStateChangeManagerMock,
             registrationWebSocketManager: MockRegistrationWebSocketManager(),
             remoteConfigManager: StubbableRemoteConfigManager(),
+            securityScopedBookmarkAccess: SecurityScopedBookmarkAccessMock(hasAccess: true, url: nil),
             sessionManager: sessionManager,
             signalService: mockSignalService,
             storageServiceManager: storageServiceManagerMock,
