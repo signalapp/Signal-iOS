@@ -74,9 +74,9 @@ public class CLVLoader {
 
         let visibleThreadUniqueIds: [String]
         if isViewingArchive {
-            visibleThreadUniqueIds = try threadFinder.visibleArchivedThreadIds(transaction: transaction)
+            visibleThreadUniqueIds = try threadFinder.visibleArchivedThreadUniqueIds(transaction: transaction)
         } else {
-            visibleThreadUniqueIds = try threadFinder.visibleInboxThreadIds(
+            visibleThreadUniqueIds = try threadFinder.visibleInboxThreadUniqueIds(
                 filteredBy: viewInfo.inboxFilter,
                 requiredVisibleThreadIds: viewInfo.requiredVisibleThreadIds,
                 transaction: transaction,

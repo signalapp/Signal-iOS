@@ -409,7 +409,7 @@ public class ThreadFinder {
 
     // MARK: -
 
-    public func visibleInboxThreadIds(
+    public func visibleInboxThreadUniqueIds(
         filteredBy inboxFilter: InboxFilter? = nil,
         requiredVisibleThreadIds: Set<String> = [],
         transaction: DBReadTransaction,
@@ -461,7 +461,7 @@ public class ThreadFinder {
         }
     }
 
-    public func visibleArchivedThreadIds(
+    public func visibleArchivedThreadUniqueIds(
         transaction: DBReadTransaction,
     ) throws -> [String] {
         let sql = """

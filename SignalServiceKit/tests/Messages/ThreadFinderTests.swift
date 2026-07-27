@@ -100,13 +100,13 @@ class ThreadFinderTests: XCTestCase {
         switch chatListType {
         case .inbox, .unread:
             try db.read { transaction in
-                let messages = try threadFinder.visibleInboxThreadIds(transaction: transaction)
+                let messages = try threadFinder.visibleInboxThreadUniqueIds(transaction: transaction)
                 XCTAssertEqual(messages.count, 2)
                 XCTAssertTrue(messages.first == "UUID1", "First message should be the draft")
             }
         case .archive:
             try db.read { transaction in
-                let messages = try threadFinder.visibleArchivedThreadIds(transaction: transaction)
+                let messages = try threadFinder.visibleArchivedThreadUniqueIds(transaction: transaction)
                 XCTAssertEqual(messages.count, 2)
                 XCTAssertTrue(messages.first == "UUID1", "First message should be the draft")
             }
@@ -163,13 +163,13 @@ class ThreadFinderTests: XCTestCase {
         switch chatListType {
         case .inbox, .unread:
             try db.read { transaction in
-                let threads = try threadFinder.visibleInboxThreadIds(transaction: transaction)
+                let threads = try threadFinder.visibleInboxThreadUniqueIds(transaction: transaction)
                 XCTAssertEqual(threads.count, 2)
                 XCTAssertTrue(threads.first == "UUID1", "First thread should be the draft thread, even though the draft is not the most recent activity")
             }
         case .archive:
             try db.read { transaction in
-                let threads = try threadFinder.visibleArchivedThreadIds(transaction: transaction)
+                let threads = try threadFinder.visibleArchivedThreadUniqueIds(transaction: transaction)
                 XCTAssertEqual(threads.count, 2)
                 XCTAssertTrue(threads.first == "UUID1", "First thread should be the draft thread, even though the draft is not the most recent activity")
             }
@@ -226,13 +226,13 @@ class ThreadFinderTests: XCTestCase {
         switch chatListType {
         case .inbox, .unread:
             try db.read { transaction in
-                let threads = try threadFinder.visibleInboxThreadIds(transaction: transaction)
+                let threads = try threadFinder.visibleInboxThreadUniqueIds(transaction: transaction)
                 XCTAssertEqual(threads.count, 2)
                 XCTAssertTrue(threads.first == "UUID2", "First thread should be the one with latest timestamp")
             }
         case .archive:
             try db.read { transaction in
-                let threads = try threadFinder.visibleArchivedThreadIds(transaction: transaction)
+                let threads = try threadFinder.visibleArchivedThreadUniqueIds(transaction: transaction)
                 XCTAssertEqual(threads.count, 2)
                 XCTAssertTrue(threads.first == "UUID2", "First thread should be the one with latest timestamp")
             }
@@ -289,13 +289,13 @@ class ThreadFinderTests: XCTestCase {
         switch chatListType {
         case .inbox, .unread:
             try db.read { transaction in
-                let threads = try threadFinder.visibleInboxThreadIds(transaction: transaction)
+                let threads = try threadFinder.visibleInboxThreadUniqueIds(transaction: transaction)
                 XCTAssertEqual(threads.count, 2)
                 XCTAssertTrue(threads.first == "UUID2", "First thread should be most recent thread, the non-draft")
             }
         case .archive:
             try db.read { transaction in
-                let threads = try threadFinder.visibleArchivedThreadIds(transaction: transaction)
+                let threads = try threadFinder.visibleArchivedThreadUniqueIds(transaction: transaction)
                 XCTAssertEqual(threads.count, 2)
                 XCTAssertTrue(threads.first == "UUID2", "First thread should be most recent thread, the non-draft")
             }
