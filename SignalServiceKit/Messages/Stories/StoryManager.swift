@@ -438,25 +438,6 @@ public extension StoryContext {
         }
     }
 
-    func threadUniqueId(transaction: DBReadTransaction) -> String? {
-        switch self {
-        case .groupId(let data):
-            return TSGroupThread.threadUniqueId(
-                forGroupId: data,
-                transaction: transaction,
-            )
-        case .authorAci(let authorAci):
-            return TSContactThread.getWithContactAddress(
-                SignalServiceAddress(authorAci),
-                transaction: transaction,
-            )?.uniqueId
-        case .privateStory(let uniqueId):
-            return uniqueId
-        case .none:
-            return nil
-        }
-    }
-
     func thread(transaction: DBReadTransaction) -> TSThread? {
         switch self {
         case .groupId(let data):
