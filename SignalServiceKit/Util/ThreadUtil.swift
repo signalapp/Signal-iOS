@@ -376,7 +376,7 @@ public extension ThreadUtil {
     ) {
         AssertIsOnMainThread()
         guard
-            poll.question.count <= OWSPoll.Constants.maxCharacterLength,
+            poll.question.count <= OWSPoll.Constants.maxQuestionCharacterLength,
             poll.question.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes) == nil
         else {
             owsFailDebug("Poll question too large")

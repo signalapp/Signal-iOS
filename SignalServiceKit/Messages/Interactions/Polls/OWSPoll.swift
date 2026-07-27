@@ -8,7 +8,8 @@ public import LibSignalClient
 
 public struct OWSPoll: Equatable {
     public enum Constants {
-        static let maxCharacterLength = 100
+        static let maxQuestionCharacterLength = 200
+        static let maxOptionCharacterLength = 100
     }
 
     public enum PendingVoteType {
