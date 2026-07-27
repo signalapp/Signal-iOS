@@ -479,7 +479,7 @@ private class MediaToolbar: UIView {
         image: UIImage(imageLiteralResourceName: "save"),
     ))
     lazy var addMediaButton = UIButton(configuration: Self.buttonConfiguration(
-        image: UIImage(imageLiteralResourceName: "photo-plus"),
+        image: UIImage(imageLiteralResourceName: "album-plus"),
     ))
 
     private static let iconMediaQualityHigh = UIImage(imageLiteralResourceName: "hd")
