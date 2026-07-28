@@ -1965,7 +1965,7 @@
 		C1FB9B752B16498C00D51A3B /* PendingIDEALDonationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB9B742B16498C00D51A3B /* PendingIDEALDonationStore.swift */; };
 		C1FE1F612C80CDC30031860B /* AttachmentBackupThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FE1F602C80CDC30031860B /* AttachmentBackupThumbnail.swift */; };
 		C26296B4BDCEDADBDA01DDD2 /* Pods_SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 948B2FC201146EF3BA459226 /* Pods_SignalServiceKit.framework */; };
-		CBCD7499B0A64FE64EAC82E4 /* LowDiskSpaceWarningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A780A90C5DDC028939E97635 /* LowDiskSpaceWarningManager.swift */; };
+		CBCD7499B0A64FE64EAC82E4 /* LowDiskSpaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A780A90C5DDC028939E97635 /* LowDiskSpaceManager.swift */; };
 		D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
 		D202868316DBE0FC009068E9 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */; };
@@ -2938,6 +2938,7 @@
 		D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */; };
 		D972E2FF2C542BCD001D7337 /* Backup.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = D972E2FE2C542BCD001D7337 /* Backup.pb.swift */; };
 		D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */; };
+		D97457AF3017E6DB001F44C6 /* LowDiskSpaceMonitoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97457AE3017E6D4001F44C6 /* LowDiskSpaceMonitoring.swift */; };
 		D977D2042F3DB151005FEFD8 /* OWSPercentFormatStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D977D2032F3DB151005FEFD8 /* OWSPercentFormatStyle.swift */; };
 		D978B6242F4A1EDF00ADE27C /* OWSTableViewDiffableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D978B6232F4A1EDF00ADE27C /* OWSTableViewDiffableDataSource.swift */; };
 		D9791BB92EAA84830016AA5A /* SheetDisplayableError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9791BB82EAA847E0016AA5A /* SheetDisplayableError.swift */; };
@@ -6073,7 +6074,7 @@
 		A33E43CA8A572CA70089C4CC /* Pods-SignalServiceKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.debug.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.debug.xcconfig"; sourceTree = "<group>"; };
 		A566C0C0B69138202C0367E6 /* Pods-Signal.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.app store release.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.app store release.xcconfig"; sourceTree = "<group>"; };
 		A5E7C674248C5442007C949A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = translations/en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		A780A90C5DDC028939E97635 /* LowDiskSpaceWarningManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LowDiskSpaceWarningManager.swift; sourceTree = "<group>"; };
+		A780A90C5DDC028939E97635 /* LowDiskSpaceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LowDiskSpaceManager.swift; sourceTree = "<group>"; };
 		B3F39202F831935AAE1C5F54 /* Pods_SignalUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B60EDE031A05A01700D73516 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		B634CBB31AB10D2300C49B99 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = translations/hr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -7276,6 +7277,7 @@
 		D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManagerTest.swift; sourceTree = "<group>"; };
 		D972E2FE2C542BCD001D7337 /* Backup.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Backup.pb.swift; sourceTree = "<group>"; };
 		D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupManager+GenericGroupUpdates.swift"; sourceTree = "<group>"; };
+		D97457AE3017E6D4001F44C6 /* LowDiskSpaceMonitoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LowDiskSpaceMonitoring.swift; sourceTree = "<group>"; };
 		D977D2032F3DB151005FEFD8 /* OWSPercentFormatStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPercentFormatStyle.swift; sourceTree = "<group>"; };
 		D978B6232F4A1EDF00ADE27C /* OWSTableViewDiffableDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableViewDiffableDataSource.swift; sourceTree = "<group>"; };
 		D9791BB82EAA847E0016AA5A /* SheetDisplayableError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetDisplayableError.swift; sourceTree = "<group>"; };
@@ -12189,6 +12191,7 @@
 				50E7E1CC2BACBDE000A94861 /* Expiration */,
 				50C2B5122FFC346700DEFB25 /* Groups */,
 				88BFD4712335C2A4001797D7 /* Lottie */,
+				D97457AD3017E6CB001F44C6 /* LowDiskSpace */,
 				88A505F523DBA0C70005C012 /* Megaphones */,
 				50E7E1CE2BACBF3300A94861 /* Notifications */,
 				5011D9712A0471E8000FE8E5 /* OrphanData */,
@@ -13753,12 +13756,20 @@
 			path = SyncMessages;
 			sourceTree = "<group>";
 		};
-		D974F6C42FDC9A440074CD41 /* LowDiskSpaceWarning */ = {
+		D97457AD3017E6CB001F44C6 /* LowDiskSpace */ = {
 			isa = PBXGroup;
 			children = (
-				A780A90C5DDC028939E97635 /* LowDiskSpaceWarningManager.swift */,
+				D97457AE3017E6D4001F44C6 /* LowDiskSpaceMonitoring.swift */,
 			);
-			path = LowDiskSpaceWarning;
+			path = LowDiskSpace;
+			sourceTree = "<group>";
+		};
+		D974F6C42FDC9A440074CD41 /* LowDiskSpace */ = {
+			isa = PBXGroup;
+			children = (
+				A780A90C5DDC028939E97635 /* LowDiskSpaceManager.swift */,
+			);
+			path = LowDiskSpace;
 			sourceTree = "<group>";
 		};
 		D977D2022F3DB119005FEFD8 /* FormatStyles */ = {
@@ -14798,7 +14809,7 @@
 				D9668B30291B033800665298 /* Jobs */,
 				D9D501882F2B16030068EEA5 /* KeyTransparency */,
 				D98CA2AE2DF170FE0060370E /* LocalDeviceAuth */,
-				D974F6C42FDC9A440074CD41 /* LowDiskSpaceWarning */,
+				D974F6C42FDC9A440074CD41 /* LowDiskSpace */,
 				D920487D28EB8201003F5371 /* Megaphones */,
 				F9C5C8B6289453B100548EEE /* Messages */,
 				D9E335A52993269E00825677 /* Mocks */,
@@ -18694,6 +18705,7 @@
 				88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */,
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
 				88A941992409A391000E9700 /* LottieToggleButton.swift in Sources */,
+				D97457AF3017E6DB001F44C6 /* LowDiskSpaceMonitoring.swift in Sources */,
 				5033D46929D7951F007FEADA /* MainAppContext.swift in Sources */,
 				349767E325B8744700ECE1B0 /* ManageStickersViewController.swift in Sources */,
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
@@ -19613,7 +19625,7 @@
 				D93830742A703969006CDCDE /* LocalUsernameManager.swift in Sources */,
 				7255A4D12B98E2B700E95368 /* LogFormatter.swift in Sources */,
 				668A01072C2B5FE0007B8808 /* Logger.swift in Sources */,
-				CBCD7499B0A64FE64EAC82E4 /* LowDiskSpaceWarningManager.swift in Sources */,
+				CBCD7499B0A64FE64EAC82E4 /* LowDiskSpaceManager.swift in Sources */,
 				F9C5CDF6289453B400548EEE /* LRUCache.swift in Sources */,
 				F9C5CDE3289453B400548EEE /* MailtoLink.swift in Sources */,
 				D94AEB3A2D28837F00B03D7A /* MasterKey.swift in Sources */,

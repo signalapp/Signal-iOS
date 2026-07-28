@@ -227,7 +227,8 @@ public class UserNotificationPresenter {
              .newDeviceLinked,
              .backupsEnabled,
              .backupsMediaTierQuotaConsumed,
-             .attachmentBackfill:
+             .attachmentBackfill,
+             .nse_lowDiskSpace:
             // Always show these notifications
             return true
 

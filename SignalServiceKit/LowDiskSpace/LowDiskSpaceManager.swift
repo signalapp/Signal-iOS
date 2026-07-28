@@ -5,13 +5,14 @@
 
 /// Responsible for periodically checking the device's available disk space, and
 /// taking remedial action if we're running low.
-public final class LowDiskSpaceWarningManager {
+public final class LowDiskSpaceManager {
     private enum Constants {
         /// The minimum available space required to let the app launch.
         static let minBytesAvailableToLaunch: UInt64 = 500 * .megabyte
-        /// The minimum available space required to let the running app continue
-        /// to run.
-        static let minBytesAvailableToContinueRunning: UInt64 = 400 * .megabyte
+
+        /// The minimum available space before we are "critically" low.
+        static let minBytesAvailableBeforeCriticallyLow: UInt64 = 400 * .megabyte
+
         /// The minimum availabe space required before we'll show a warning.
         static func minBytesAvailableBeforeWarning(totalBytes: UInt64) -> UInt64 {
             let percentageThreshold = UInt64(clamping: Double(totalBytes) * 0.05)
@@ -27,27 +28,11 @@ public final class LowDiskSpaceWarningManager {
         static let lastWarningDate = "lastWarningDate"
     }
 
-    private struct State {
-        var diskSpaceCheckTask: Task<Void, Never>?
-    }
-
     private static let logger: PrefixedLogger = PrefixedLogger(prefix: "[DiskSpace]")
-
-    private let db: DB
     private let kvStore: NewKeyValueStore
 
-    private let diskSpaceCheckInterval: TimeInterval
-    private let state: AtomicValue<State>
-
-    public init(
-        db: DB,
-        diskSpaceCheckInterval: TimeInterval = 5 * .second,
-    ) {
-        self.db = db
+    public init() {
         self.kvStore = NewKeyValueStore(collection: "LowDiskSpaceWarningManager")
-
-        self.diskSpaceCheckInterval = diskSpaceCheckInterval
-        self.state = AtomicValue(State(), lock: .init())
     }
 
     public static func hasEnoughDiskSpaceToLaunch() -> Bool {
@@ -57,7 +42,26 @@ public final class LowDiskSpaceWarningManager {
             return false
         }
 
-        return diskSpace.available > Constants.minBytesAvailableToLaunch
+        guard diskSpace.available > Constants.minBytesAvailableToLaunch else {
+            logger.warn("Not enough disk space to launch: \(diskSpace.logDescription)")
+            return false
+        }
+
+        return true
+    }
+
+    // MARK: -
+
+    public func isDiskSpaceCriticallyLow() -> Bool {
+        if
+            let diskSpace = Self.checkDiskSpace(),
+            diskSpace.available < Constants.minBytesAvailableBeforeCriticallyLow
+        {
+            Self.logger.warn("Disk space is dangerously low: \(diskSpace.logDescription)")
+            return true
+        }
+
+        return false
     }
 
     // MARK: -
@@ -84,54 +88,20 @@ public final class LowDiskSpaceWarningManager {
 
     // MARK: -
 
-    public func startMonitoringDiskSpace() {
-        state.update {
-            $0.diskSpaceCheckTask = $0.diskSpaceCheckTask ?? Task {
-                await continuouslyMonitorDiskSpace()
-            }
-        }
-    }
-
-    public func stopMonitoringDiskSpace() {
-        state.update {
-            $0.diskSpaceCheckTask.take()?.cancel()
-        }
-    }
-
-    // MARK: -
-
     private struct DiskSpace {
         let total: UInt64
         let available: UInt64
-    }
 
-    private func continuouslyMonitorDiskSpace() async {
-        while true {
-            if
-                let diskSpace = Self.checkDiskSpace(),
-                diskSpace.available < Constants.minBytesAvailableToContinueRunning
-            {
-                let availableHundredMBs = diskSpace.available / (100 * .megabyte)
-                let totalGBs = diskSpace.total / .gigabyte
-                owsFail(
-                    "Disk space is dangerously low: crashing. \(availableHundredMBs)00 MB / \(totalGBs) GB",
-                    logger: Self.logger,
-                )
-            }
-
-            do {
-                try await Task.sleep(nanoseconds: diskSpaceCheckInterval.clampedNanoseconds)
-            } catch {
-                return
-            }
+        /// A deliberately coarse, human-readable summary for logging.
+        var logDescription: String {
+            let availableHundredMBs = available / (100 * .megabyte)
+            let totalGBs = total / .gigabyte
+            return "\(availableHundredMBs)00 MB / \(totalGBs) GB"
         }
     }
 
     /// Fetches the device's total capacity and remaining space and logs them.
-    private static func checkDiskSpace(
-        function: String = #function,
-        line: Int = #line,
-    ) -> DiskSpace? {
+    private static func checkDiskSpace() -> DiskSpace? {
         // Check the volume that holds the database, matching the on-launch check
         // in `AppDelegate.checkEnoughDiskSpaceAvailable()`.
         let path = SDSDatabaseStorage.grdbDatabaseFileUrl
@@ -144,12 +114,7 @@ public final class LowDiskSpaceWarningManager {
                 available: availableBytes,
             )
         } catch {
-            owsFailDebug(
-                "Failed to determine disk space! \(error)",
-                logger: logger,
-                function: function,
-                line: line,
-            )
+            owsFailDebug("Failed to determine disk space! \(error)", logger: logger)
             return nil
         }
     }

@@ -40,6 +40,8 @@ public class AppEnvironment: NSObject {
     private(set) var callService: CallService!
     private(set) var experienceUpgradeManager: ExperienceUpgradeManager!
     private(set) var groupSendEndorsementExpirationJob: GroupSendEndorsementExpirationJob!
+    private(set) var lowDiskSpaceManager: LowDiskSpaceManager!
+    private var lowDiskSpaceMonitoringManager: LowDiskSpaceMonitoringManager!
     private(set) var outgoingDeviceRestorePresenter: OutgoingDeviceRestorePresenter!
     private(set) var passwordManagerManager: PasswordManagerManager!
     private(set) var provisioningManager: ProvisioningManager!
@@ -159,6 +161,12 @@ public class AppEnvironment: NSObject {
             dateProvider: Date.provider,
             db: DependenciesBridge.shared.db,
             groupSendEndorsementStore: DependenciesBridge.shared.groupSendEndorsementStore,
+        )
+
+        self.lowDiskSpaceManager = LowDiskSpaceManager()
+        self.lowDiskSpaceMonitoringManager = LowDiskSpaceMonitoringManager(
+            lowDiskSpaceManager: lowDiskSpaceManager,
+            monitoringInterval: 5 * .second,
         )
 
         self.passwordManagerManager = PasswordManagerManager()
@@ -322,6 +330,7 @@ public class AppEnvironment: NSObject {
         appReadiness.runNowOrWhenAppWillBecomeReady {
             self.badgeManager.startObservingChanges(in: DependenciesBridge.shared.databaseChangeObserver)
             self.appIconBadgeUpdater.startObserving()
+            self.lowDiskSpaceMonitoringManager.start()
         }
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {

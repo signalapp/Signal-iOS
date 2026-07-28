@@ -25,15 +25,15 @@ class NSEEnvironment {
     ///
     /// Will be invoked multiple times in the same NSE process.
     @MainActor
-    func setUp(logger: NSELogger) {
-        let debugLogger = DebugLogger.shared
-
+    func setUpLogging(logger: NSELogger) {
         if !didStartAppSetup {
+            didStartAppSetup = true
+
+            let debugLogger = DebugLogger.shared
             debugLogger.enableFileLogging(appContext: appContext, canLaunchInBackground: true)
             debugLogger.enableTTYLoggingIfNeeded()
             DebugLogger.registerLibsignal()
             DebugLogger.registerRingRTC(appContext: appContext)
-            didStartAppSetup = true
         }
 
         logger.info("pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsageString)")

@@ -171,6 +171,7 @@ public enum AppNotificationCategory: String, CaseIterable {
     case pollVoteNotification = "Signal.AppNotificationCategory.pollVoteNotification"
     case attachmentBackfill = "Signal.AppNotificationCategory.attachmentBackfill"
     case releaseNotesMessage = "Signal.AppNotificationCategory.releaseNotesMessage"
+    case nse_lowDiskSpace = "Signal.AppNotificationCategory.nse.lowDiskSpace"
 
     var shouldClearOnAppActivate: Bool {
         switch self {
@@ -192,7 +193,8 @@ public enum AppNotificationCategory: String, CaseIterable {
             .pollEndNotification,
             .pollVoteNotification,
             .attachmentBackfill,
-            .releaseNotesMessage:
+            .releaseNotesMessage,
+            .nse_lowDiskSpace:
             return true
         case
             .deregistration,
@@ -253,6 +255,8 @@ public enum AppNotificationCategory: String, CaseIterable {
             return []
         case .releaseNotesMessage:
             return [.markAsRead]
+        case .nse_lowDiskSpace:
+            return []
         }
     }
 }

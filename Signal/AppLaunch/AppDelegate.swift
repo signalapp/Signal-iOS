@@ -996,7 +996,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         appVersion: AppVersion,
         didDeviceTransferRestoreSucceed: Bool,
     ) -> LaunchPreflightError? {
-        guard LowDiskSpaceWarningManager.hasEnoughDiskSpaceToLaunch() else {
+        guard LowDiskSpaceManager.hasEnoughDiskSpaceToLaunch() else {
             return .lowStorageSpaceAvailable
         }
 

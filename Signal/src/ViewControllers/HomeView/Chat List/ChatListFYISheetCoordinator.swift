@@ -81,7 +81,7 @@ class ChatListFYISheetCoordinator {
     private let donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore
     private let donationSubscriptionManager: DonationSubscriptionManager
     private let keyTransparencyStore: KeyTransparencyStore
-    private let lowDiskSpaceWarningManager: LowDiskSpaceWarningManager
+    private let lowDiskSpaceManager: LowDiskSpaceManager
     private let networkManager: NetworkManager
     private let profileBadgeManager: ProfileBadgeManager
     private let safetyTipsManager: SafetyTipsManager
@@ -97,7 +97,7 @@ class ChatListFYISheetCoordinator {
         donationReceiptCredentialResultStore: DonationReceiptCredentialResultStore,
         donationSubscriptionManager: DonationSubscriptionManager,
         keyTransparencyStore: KeyTransparencyStore,
-        lowDiskSpaceWarningManager: LowDiskSpaceWarningManager,
+        lowDiskSpaceManager: LowDiskSpaceManager,
         networkManager: NetworkManager,
         profileBadgeManager: ProfileBadgeManager,
         profileManager: ProfileManager,
@@ -112,7 +112,7 @@ class ChatListFYISheetCoordinator {
         self.donationReceiptCredentialResultStore = donationReceiptCredentialResultStore
         self.donationSubscriptionManager = donationSubscriptionManager
         self.keyTransparencyStore = keyTransparencyStore
-        self.lowDiskSpaceWarningManager = lowDiskSpaceWarningManager
+        self.lowDiskSpaceManager = lowDiskSpaceManager
         self.networkManager = networkManager
         self.profileBadgeManager = profileBadgeManager
         self.safetyTipsManager = SafetyTipsManager()
@@ -179,7 +179,7 @@ class ChatListFYISheetCoordinator {
             return .keyTransparencySelfCheckFailed(FYISheet.KeyTransparencySelfCheckFailed())
         } else if backupArchiveErrorStore.hasError(tx: tx) {
             return .backupArchiveError(FYISheet.BackupArchiveError())
-        } else if lowDiskSpaceWarningManager.getNeedsWarning(now: now, tx: tx) {
+        } else if lowDiskSpaceManager.getNeedsWarning(now: now, tx: tx) {
             return .lowDiskSpaceWarning(FYISheet.LowDiskSpaceWarning(now: now))
         } else if localFileBackupManager.shouldPromptUserToEnableLocalBackups(tx: tx) {
             return .enableLocalBackups(FYISheet.EnableLocalBackups())
@@ -616,7 +616,7 @@ class ChatListFYISheetCoordinator {
 
         chatListViewController.present(warningSheet, animated: true) { [self] in
             db.write { tx in
-                lowDiskSpaceWarningManager.setShowedWarning(
+                lowDiskSpaceManager.setShowedWarning(
                     now: lowDiskSpaceWarning.now,
                     tx: tx,
                 )

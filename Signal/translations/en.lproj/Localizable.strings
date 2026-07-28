@@ -6247,6 +6247,9 @@
 /* Body for a notification representing a message request. */
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Message Request";
 
+/* Body for a notification shown when Signal can't fetch messages because the device is low on storage space. */
+"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "You may have new messages but your device doesn't have enough storage space for Signal to run. Tap for more info.";
+
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
 

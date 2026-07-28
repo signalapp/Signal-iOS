@@ -101,7 +101,25 @@ class NotificationService: UNNotificationServiceExtension {
 
     @MainActor
     private func _didReceive(_ request: UNNotificationRequest, logger: NSELogger) async -> UNNotificationContent {
-        globalEnvironment.setUp(logger: logger)
+        globalEnvironment.setUpLogging(logger: logger)
+
+        if LowDiskSpaceManager.hasEnoughDiskSpaceToLaunch() {
+            hasShownLowDiskSpaceWarning = false
+        } else {
+            if hasShownLowDiskSpaceWarning {
+                logger.warn("Not enough disk space; skipping fetch, already shown notification.")
+                logger.flush()
+            } else {
+                logger.warn("Not enough disk space; skipping fetch, showing notification.")
+                logger.flush()
+
+                await postLowDiskSpaceNotification()
+                hasShownLowDiskSpaceWarning = true
+            }
+
+            return UNNotificationContent()
+        }
+
         let finalContinuation: AppSetup.FinalContinuation
         do {
             finalContinuation = try await globalEnvironment.setUpDatabase(logger: logger)
@@ -243,5 +261,49 @@ class NotificationService: UNNotificationServiceExtension {
         let content = UNMutableNotificationContent()
         content.badge = NSNumber(value: badgeCount.unreadTotalCount)
         return content
+    }
+}
+
+// MARK: -
+
+@MainActor private var hasShownLowDiskSpaceWarning = false
+
+/// Posts a notification explaining that we can't fetch messages because the
+/// device is critically low on storage space.
+@MainActor
+private func postLowDiskSpaceNotification() async {
+    // Fixed identifier avoids re-posting duplicate notifications.
+    await postNotification(
+        category: .nse_lowDiskSpace,
+        body: OWSLocalizedString(
+            "NOTIFICATION_BODY_LOW_STORAGE_SPACE",
+            comment: "Body for a notification shown when Signal can't fetch messages because the device is low on storage space.",
+        ),
+        identifier: "Signal.LowDiskSpaceNotification",
+    )
+}
+
+// MARK: - Ad-hoc notifications
+
+/// Post a notification with the given inputs.
+/// - Note: circumvents `NotificationPresenter`, since we may be posting a
+/// notification before singletons are available.
+private func postNotification(
+    category: AppNotificationCategory,
+    body: String,
+    identifier: String,
+) async {
+    let content = UNMutableNotificationContent()
+    content.categoryIdentifier = category.rawValue
+    content.body = body
+    let request = UNNotificationRequest(
+        identifier: identifier,
+        content: content,
+        trigger: nil,
+    )
+    do {
+        try await UNUserNotificationCenter.current().add(request)
+    } catch {
+        owsFailDebug("Failed to post notification! \(error)")
     }
 }
