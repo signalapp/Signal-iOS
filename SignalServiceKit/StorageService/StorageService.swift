@@ -45,18 +45,16 @@ public struct StorageService {
     /// An identifier representing a given storage item.
     /// This can be used to fetch specific items from the service.
     public struct StorageIdentifier: Hashable, Codable {
-        public static let identifierLength: UInt = 16
         public let data: Data
         public let type: StorageServiceProtoManifestRecordKeyType
 
         public init(data: Data, type: StorageServiceProtoManifestRecordKeyType) {
-            if data.count != StorageIdentifier.identifierLength { owsFail("Initialized with invalid data") }
             self.data = data
             self.type = type
         }
 
         public static func generate(type: StorageServiceProtoManifestRecordKeyType) -> StorageIdentifier {
-            return .init(data: Randomness.generateRandomBytes(identifierLength), type: type)
+            return .init(data: Randomness.generateRandomBytes(16), type: type)
         }
 
         public func buildRecord() -> StorageServiceProtoManifestRecordKey {
