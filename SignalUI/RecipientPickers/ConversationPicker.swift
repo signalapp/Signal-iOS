@@ -310,7 +310,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     private nonisolated func buildConversationCollection(sectionOptions: SectionOptions) -> ConversationCollection {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            var pinnedItemsByThreadId: [String: RecentConversationItem] = [:]
+            var pinnedItemsByThreadUniqueId: [String: RecentConversationItem] = [:]
             var recentItems: [RecentConversationItem] = []
             var contactItems: [ContactConversationItem] = []
             var groupItems: [GroupConversationItem] = []
@@ -356,7 +356,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     seenAddresses.insert(contactThread.contactAddress)
                     if sectionOptions.contains(.recents), pinnedThreadUniqueIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
-                        pinnedItemsByThreadId[thread.uniqueId] = recentItem
+                        pinnedItemsByThreadUniqueId[thread.uniqueId] = recentItem
                     } else if sectionOptions.contains(.recents), recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         recentItems.append(recentItem)
@@ -376,7 +376,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
                     if sectionOptions.contains(.recents), pinnedThreadUniqueIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
-                        pinnedItemsByThreadId[thread.uniqueId] = recentItem
+                        pinnedItemsByThreadUniqueId[thread.uniqueId] = recentItem
                     } else if sectionOptions.contains(.recents), recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
                         recentItems.append(recentItem)
@@ -430,17 +430,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             }
             contactItems.sort(by: <)
 
-            let pinnedItems = pinnedItemsByThreadId.sorted { lhs, rhs in
-                guard
-                    let lhsIndex = pinnedThreadUniqueIds.firstIndex(of: lhs.key),
-                    let rhsIndex = pinnedThreadUniqueIds.firstIndex(of: rhs.key)
-                else {
-                    owsFailDebug("Unexpectedly have pinned item without pinned thread id")
-                    return false
-                }
-
-                return lhsIndex < rhsIndex
-            }.map { $0.value }
+            let pinnedItems = pinnedThreadUniqueIds.compactMap({ pinnedItemsByThreadUniqueId[$0] })
 
             let storyItems = StoryConversationItem.allItems(
                 includeImplicitGroupThreads: true,

@@ -69,13 +69,14 @@ public class CLVLoader {
         let threadFinder = ThreadFinder()
         let isViewingArchive = viewInfo.chatListMode == .archive
 
-        let pinnedThreadUniqueIds = DependenciesBridge.shared.pinnedThreadStore
-            .pinnedThreadUniqueIds(tx: transaction)
-
+        let pinnedThreadUniqueIds: [String]
         let visibleThreadUniqueIds: [String]
         if isViewingArchive {
+            pinnedThreadUniqueIds = []
             visibleThreadUniqueIds = try threadFinder.visibleArchivedThreadUniqueIds(transaction: transaction)
         } else {
+            let pinnedThreadStore = DependenciesBridge.shared.pinnedThreadStore
+            pinnedThreadUniqueIds = pinnedThreadStore.pinnedThreadUniqueIds(tx: transaction)
             visibleThreadUniqueIds = try threadFinder.visibleInboxThreadUniqueIds(
                 filteredBy: viewInfo.inboxFilter,
                 requiredVisibleThreadIds: viewInfo.requiredVisibleThreadIds,
@@ -83,23 +84,14 @@ public class CLVLoader {
             )
         }
 
-        var pinnedThreadUniqueIdsToRender = Set<String>()
-        var unpinnedThreadUniqueIdsForRender = [String]()
-        for threadUniqueId in visibleThreadUniqueIds {
-            if !isViewingArchive, pinnedThreadUniqueIds.contains(threadUniqueId) {
-                pinnedThreadUniqueIdsToRender.insert(threadUniqueId)
-            } else {
-                unpinnedThreadUniqueIdsForRender.append(threadUniqueId)
-            }
-        }
-
-        // Preserve the order from pinnedThreadUniqueIds
-        let orderedPinnedThreadUniqueIdsForRender = pinnedThreadUniqueIds.filter(pinnedThreadUniqueIdsToRender.contains(_:))
+        let pinnedThreadUniqueIdsToRender = Set(pinnedThreadUniqueIds).intersection(visibleThreadUniqueIds)
 
         return CLVRenderState(
             viewInfo: viewInfo,
-            pinnedThreadUniqueIds: orderedPinnedThreadUniqueIdsForRender,
-            unpinnedThreadUniqueIds: unpinnedThreadUniqueIdsForRender,
+            // Preserve the order from pinnedThreadUniqueIds
+            pinnedThreadUniqueIds: pinnedThreadUniqueIds.filter({ pinnedThreadUniqueIdsToRender.contains($0) }),
+            // Preserve the order from visibleThreadUniqueIds
+            unpinnedThreadUniqueIds: visibleThreadUniqueIds.filter({ !pinnedThreadUniqueIdsToRender.contains($0) }),
         )
     }
 
