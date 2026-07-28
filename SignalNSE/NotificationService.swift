@@ -30,8 +30,6 @@ import UserNotifications
 // database, logging, etc. are only ever setup once per *process*
 private let globalEnvironment = NSEEnvironment()
 
-@MainActor private var hasShownFirstUnlockError = false
-
 class NotificationService: UNNotificationServiceExtension {
     private typealias ContentHandler = (UNNotificationContent) -> Void
     private let contentHandler = AtomicOptional<ContentHandler>(nil, lock: .init())
@@ -124,26 +122,18 @@ class NotificationService: UNNotificationServiceExtension {
         do {
             finalContinuation = try await globalEnvironment.setUpDatabase(logger: logger)
         } catch KeychainError.notAllowed {
-            // Detect and handle "no GRDB file" and "no keychain access".
-            if !hasShownFirstUnlockError {
-                hasShownFirstUnlockError = true
-                logger.error("DB Keys not accessible; showing error.")
+            if hasShownDBNotAvailableWarning {
+                logger.warn("DB not available; skipping fetch, already shown notification.")
                 logger.flush()
-                let content = UNMutableNotificationContent()
-                let notificationFormat = OWSLocalizedString(
-                    "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
-                    comment: "Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone')",
-                )
-                content.body = String.nonPluralLocalizedStringWithFormat(notificationFormat, UIDevice.current.localizedModel)
-                return content
             } else {
-                // Only show a single error if we receive multiple pushes
-                // before first device unlock.
-                logger.error("DB Keys not accessible; completing silently.")
+                logger.warn("Showing DB-not-available notification.")
                 logger.flush()
-                let emptyContent = UNMutableNotificationContent()
-                return emptyContent
+
+                await postDBNotAvailableNotification()
+                hasShownDBNotAvailableWarning = true
             }
+
+            return UNNotificationContent()
         } catch {
             owsFail("Couldn't load database: \(error.grdbErrorForLogging)")
         }
@@ -280,6 +270,28 @@ private func postLowDiskSpaceNotification() async {
             comment: "Body for a notification shown when Signal can't fetch messages because the device is low on storage space.",
         ),
         identifier: "Signal.LowDiskSpaceNotification",
+    )
+}
+
+// MARK: -
+
+@MainActor private var hasShownDBNotAvailableWarning = false
+
+/// Posts a notification explaining that we can't fetch messages because the
+/// DB is not available (because the device is locked).
+@MainActor
+private func postDBNotAvailableNotification() async {
+    // Fixed identifier avoids re-posting duplicate notifications.
+    await postNotification(
+        category: .nse_dbNotAvailable,
+        body: String.nonPluralLocalizedStringWithFormat(
+            OWSLocalizedString(
+                "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
+                comment: "Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone')",
+            ),
+            UIDevice.current.localizedModel,
+        ),
+        identifier: "Signal.DBNotAvailableNotification",
     )
 }
 
