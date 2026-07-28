@@ -1108,7 +1108,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE",
                 comment: "Error description indicating that the app crashed because there was low storage space available on the device.",
             )
-            actions = []
+            actions = [
+                .submitDebugLogsAndCrash,
+            ]
         }
 
         presentLaunchFailureActionSheet(
