@@ -66,6 +66,13 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
     }
 
     private func setUp(initialLoadViewController: SAELoadViewController) async throws {
+        // If we're low on storage space, don't try and do anything; abort.
+        guard LowDiskSpaceManager.hasEnoughDiskSpaceToLaunch() else {
+            Logger.warn("Not enough disk space to share; showing error and skipping.")
+            self.showLowDiskSpaceView()
+            return
+        }
+
         let appContext = CurrentAppContext()
 
         let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
@@ -283,6 +290,20 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
         let failureMessage = OWSLocalizedString(
             "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE",
             comment: "Message indicating that the share extension cannot be used until the user has registered in the main app.",
+        )
+        showErrorView(title: failureTitle, message: failureMessage)
+    }
+
+    private func showLowDiskSpaceView() {
+        AssertIsOnMainThread()
+
+        let failureTitle = OWSLocalizedString(
+            "SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE",
+            comment: "Title for an error shown when the user tries to share to Signal but the device is too low on storage space.",
+        )
+        let failureMessage = OWSLocalizedString(
+            "SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE",
+            comment: "Message for an error shown when the user tries to share to Signal but the device is too low on storage space.",
         )
         showErrorView(title: failureTitle, message: failureMessage)
     }
