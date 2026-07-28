@@ -983,46 +983,50 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId.serialize(), transaction: transaction))
         builder.setBlocked(blockingManager.isGroupIdBlocked(groupId, transaction: transaction))
 
-        let threadUniqueId = TSGroupThread.threadUniqueId(forGroupId: groupId.serialize(), transaction: transaction)
-        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(
-            for: threadUniqueId,
-            ignoreMissing: true,
-            transaction: transaction,
-        )
-
-        builder.setArchived(threadAssociatedData.isArchived)
-        builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
-        builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
-
-        if let lastVerifiedGroupNameHash = threadAssociatedData.lastVerifiedGroupNameHash {
-            builder.setVerifiedNameHash(lastVerifiedGroupNameHash)
-        }
-
-        let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction)
-        switch groupThread?.mentionNotificationMode {
-        case .none, .default:
-            break
-        case .never:
-            builder.setDontNotifyForMentionsIfMuted(true)
-        case .always:
-            builder.setDontNotifyForMentionsIfMuted(false)
-        }
-
         if let storyContextAssociatedData = StoryFinder.getAssociatedData(forContext: .group(groupId: groupId.serialize()), transaction: transaction) {
             builder.setHideStory(storyContextAssociatedData.isHidden)
         }
 
-        if let thread = TSGroupThread.fetchGroupThreadViaCache(uniqueId: threadUniqueId, transaction: transaction) {
-            builder.setStorySendMode(thread.storyViewMode.storageServiceMode)
+        let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction)
+        if let groupThread {
+            let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(
+                for: groupThread.uniqueId,
+                ignoreMissing: true,
+                transaction: transaction,
+            )
+            builder.setArchived(threadAssociatedData.isArchived)
+            builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
+            builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
+            if let lastVerifiedGroupNameHash = threadAssociatedData.lastVerifiedGroupNameHash {
+                builder.setVerifiedNameHash(lastVerifiedGroupNameHash)
+            }
+
+            switch groupThread.mentionNotificationMode {
+            case .default:
+                break
+            case .never:
+                builder.setDontNotifyForMentionsIfMuted(true)
+            case .always:
+                builder.setDontNotifyForMentionsIfMuted(false)
+            }
+
+            builder.setStorySendMode(groupThread.storyViewMode.storageServiceMode)
         } else if
             let enqueuedRecord = groupsV2.groupRecordPendingStorageServiceRestore(
                 masterKeyData: masterKeyData,
                 transaction: transaction,
             )
         {
-            // We have a record pending restoration from storage service,
-            // preserve any of the data that we weren't able to restore
-            // yet because the thread record doesn't exist.
+            // We have a record pending restoration from storage service, preserve any
+            // of the data that we weren't able to restore yet because the thread
+            // record doesn't exist.
+            builder.setArchived(enqueuedRecord.archived)
+            builder.setMarkedUnread(enqueuedRecord.markedUnread)
+            builder.setMutedUntilTimestamp(enqueuedRecord.mutedUntilTimestamp)
+            if let verifiedNameHash = enqueuedRecord.verifiedNameHash {
+                builder.setVerifiedNameHash(verifiedNameHash)
+            }
+            builder.setDontNotifyForMentionsIfMuted(enqueuedRecord.dontNotifyForMentionsIfMuted)
             builder.setStorySendMode(enqueuedRecord.storySendMode)
         }
 
@@ -1057,27 +1061,43 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         }
         let groupId = groupContextInfo.groupId
 
-        if let localThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) {
-            let localStorySendMode = localThread.storyViewMode.storageServiceMode
+        let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction)
+        if let groupThread {
+            let localStorySendMode = groupThread.storyViewMode.storageServiceMode
             if localStorySendMode != record.storySendMode {
-                localThread.updateWithStoryViewMode(.init(storageServiceMode: record.storySendMode), transaction: transaction)
+                groupThread.updateWithStoryViewMode(.init(storageServiceMode: record.storySendMode), transaction: transaction)
             }
 
-            // If the group thread doesn't exist, we will create it and reapply this update so the
-            // setting won't be lost. Note this isn't true for contact threads, only group threads,
-            // so TSContactThread metadata needs to live on ThreadAssociatedData so it can be saved
-            // even if the thread doesn't exist. But this field only applies to group threads, so
-            // no need.
-            switch (localThread.mentionNotificationMode, record.dontNotifyForMentionsIfMuted) {
+            switch (groupThread.mentionNotificationMode, record.dontNotifyForMentionsIfMuted) {
             case (.default, false), (.never, false):
-                localThread.updateWithMentionNotificationMode(.always, wasLocallyInitiated: false, transaction: transaction)
+                groupThread.updateWithMentionNotificationMode(.always, wasLocallyInitiated: false, transaction: transaction)
             case (.default, true), (.always, true):
-                localThread.updateWithMentionNotificationMode(.never, wasLocallyInitiated: false, transaction: transaction)
+                groupThread.updateWithMentionNotificationMode(.never, wasLocallyInitiated: false, transaction: transaction)
             case (.never, true), (.always, false):
                 // No change
                 break
             }
+
+            ThreadAssociatedData.create(for: groupThread.uniqueId, transaction: transaction)
+            let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: groupThread.uniqueId, transaction: transaction)
+
+            if record.archived != localThreadAssociatedData.isArchived {
+                localThreadAssociatedData.updateWith(isArchived: record.archived, updateStorageService: false, transaction: transaction)
+            }
+
+            if record.markedUnread != localThreadAssociatedData.isMarkedUnread {
+                localThreadAssociatedData.updateWith(isMarkedUnread: record.markedUnread, updateStorageService: false, transaction: transaction)
+            }
+
+            if record.mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
+                localThreadAssociatedData.updateWith(mutedUntilTimestamp: record.mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
+            }
+
+            if let verifiedHash = record.verifiedNameHash, verifiedHash != localThreadAssociatedData.lastVerifiedGroupNameHash {
+                localThreadAssociatedData.updateWith(lastVerifiedGroupNameHash: verifiedHash, updateStorageService: false, transaction: transaction)
+            }
         } else {
+            // Save this and re-apply it after we successfully restore the group.
             groupsV2.restoreGroupFromStorageServiceIfNecessary(groupRecord: record, transaction: transaction)
         }
 
@@ -1111,22 +1131,6 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
             }
         }
 
-        let localThreadUniqueId = TSGroupThread.threadUniqueId(forGroupId: groupId.serialize(), transaction: transaction)
-        ThreadAssociatedData.create(for: localThreadUniqueId, transaction: transaction)
-        let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThreadUniqueId, transaction: transaction)
-
-        if record.archived != localThreadAssociatedData.isArchived {
-            localThreadAssociatedData.updateWith(isArchived: record.archived, updateStorageService: false, transaction: transaction)
-        }
-
-        if record.markedUnread != localThreadAssociatedData.isMarkedUnread {
-            localThreadAssociatedData.updateWith(isMarkedUnread: record.markedUnread, updateStorageService: false, transaction: transaction)
-        }
-
-        if record.mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
-            localThreadAssociatedData.updateWith(mutedUntilTimestamp: record.mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
-        }
-
         let localStoryContextAssociatedData = StoryContextAssociatedData.fetchOrDefault(
             sourceContext: .group(groupId: groupId.serialize()),
             transaction: transaction,
@@ -1137,10 +1141,6 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
 
         if mergeDefaultAvatarColor(in: record, groupId: groupId, tx: transaction) {
             needsUpdate = true
-        }
-
-        if let verifiedHash = record.verifiedNameHash, verifiedHash != localThreadAssociatedData.lastVerifiedGroupNameHash {
-            localThreadAssociatedData.updateWith(lastVerifiedGroupNameHash: verifiedHash, updateStorageService: false, transaction: transaction)
         }
 
         return .merged(needsUpdate: needsUpdate, masterKey)
