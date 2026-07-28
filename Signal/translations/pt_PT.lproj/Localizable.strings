@@ -1028,16 +1028,16 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Subscrição não encontrada";
 
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "You can manage or upgrade your Signal Secure Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "Pode gerir ou renovar a sua subscrição das cópias de segurança no seu dispositivo primário.";
 
 /* Note on the linked-device Backups screen, shown on the paid tier, explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "You can manage or cancel your Signal Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "Pode gerir ou cancelar a sua subscrição das cópias de segurança no seu dispositivo primário.";
 
 /* Body text on the linked-device Backups screen, shown when Backups aren't set up, explaining the feature and that it can be enabled on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Automatic backups with Signal's secure, end-to-end encrypted storage service. Get started on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Cópias de segurança automáticas com o serviço seguro de armazenamento encriptado de ponta a ponta do Signal. Comece no seu dispositivo principal.";
 
 /* Message on the linked-device Backups screen, shown when the user's paid subscription can't be found, prompting them to renew. */
-"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "Your subscription was not found. Renew to continue using Signal Secure Backups.";
+"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "A sua subscrição não foi encontrada. Renove para continuar a usar as Cópias de Segurança Protegidas do Signal.";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Efetuar cópia de segurança agora";
@@ -3455,7 +3455,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Partilhar recibo";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of protecting free expression and enabling secure global communication for millions around the world, through open source privacy technology. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. Signal did not provide any goods or services in consideration of this contribution.";
+"DONATION_RECEIPT_FOOTER" = "Obrigado por apoiar o Signal. A sua contribuição ajuda a apoiar a missão de proteger a liberdade de expressão e permitir comunicação global segura para milhões de pessoas em todo o mundo, através de tecnologia de privacidade de código aberto. Se for residente nos Estados Unidos, guarde este recibo para os seus registos fiscais. A Signal Technology Foundation é uma organização sem fins lucrativos isenta de impostos nos Estados Unidos sob a secção 501c3 do Internal Revenue Code. A nossa identificação fiscal federal é 82-4506840. O Signal não forneceu nenhuns bens on serviços em resposta a esta contribuição.";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Doação em nome de um amigo";
@@ -5207,7 +5207,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Falha na associação do dispositivo";
 
 /* Menu action on the phone number entry screen to link this device as a secondary device. */
-"LINK_DEVICE_MENU_ACTION" = "Link Device";
+"LINK_DEVICE_MENU_ACTION" = "Associar dispositivo";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Este dispositivo conseguirá ver os seu grupos e contactos, aceder aos seus chats e enviar mensagens em seu nome.";
@@ -5276,7 +5276,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Pré-visualização de hiperligações";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on linked devices. To add Signal connections to your phone contacts open Signal on your primary device.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "A gestão de contactos do telemóvel já não está disponível em dispositivos vinculados. Para adicionar contactos do Signal aos seus contactos do telemóvel, abra o Signal no seu dispositivo principal.";
 
 /* Bullet point on the linked devices info sheet, describing what can be linked. */
 "LINKED_DEVICE_INFO_SHEET_BULLET_1" = "Pode vincular um computador, tablet ou telemóvel adicional.";
@@ -5291,7 +5291,7 @@
 "LINKED_DEVICE_INFO_SHEET_HEADER" = "<bold>Dispositivos Vinculados</bold> permite-lhe aceder à sua conta do Signal e mensagens de forma segura em qualquer dos seus dispositivos adicionais.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on linked devices. This device will continue to sync any changes to your contact list from Signal on your primary device.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "A gestão de contactos do telemóvel já não é suportada em dispositivos vinculados. Este dispositivo continuará a sincronizar quaisquer alterações à sua lista de contactos feitas no Signal no seu dispositivo principal.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Saber mais";
@@ -6344,19 +6344,19 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Registar iPad";
 
 /* button indicating that the user will link this device */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Associar este dispositivo";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Ao tocar em \"Registar iPad\" irá criar uma novíssima conta do Signal ou mover uma conta existente para este iPad. Isto irá desativar o Signal em qualquer outro dispositivo atualmente registado com o mesmo número de telefone.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link this device” will let you connect this device to an existing Signal account.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tocar em \"Associar este dispositivo\" permite-lhe conectar este dispositivo a uma conta do Signal existente.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registar este iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Associar este dispositivo";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Ao registar este iPad irá desativar o Signal em qualquer outro dispositivo atualmente registado com este número de telefone.";
@@ -8366,22 +8366,22 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Instale o Signal no seu telemóvel";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help with these steps";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Pedir ajuda para estes passos";
 
 /* Text for a button offering to refresh the QR code to link an iPad. */
 "SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "Atualizar código";
 
 /* Third bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "Tap “Linked devices” and “Link new device”";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "Toque em \"Dispositivos associados\" e \"Associe um novo dispositivo\"";
 
 /* First bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "Open Signal on your primary device";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "Abra o Signal no seu dispositivo principal";
 
 /* Second bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Tap your profile picture to open Signal Settings";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Toque na sua foto de perfil e abra as definições do Signal";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan this code to link your account";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Leia este código para vincular a sua conta";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Inicie o Signal no seu iPad antigo para transferir a sua conta";

@@ -1028,16 +1028,16 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Передплату не знайдено";
 
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "You can manage or upgrade your Signal Secure Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "Щоб змінити передплату на надійне резервне копіювання від Signal, зайдіть в акаунт на основному пристрої.";
 
 /* Note on the linked-device Backups screen, shown on the paid tier, explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "You can manage or cancel your Signal Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "Щоб змінити або скасувати передплату на надійне резервне копіювання від Signal, зайдіть в акаунт на основному пристрої.";
 
 /* Body text on the linked-device Backups screen, shown when Backups aren't set up, explaining the feature and that it can be enabled on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Automatic backups with Signal's secure, end-to-end encrypted storage service. Get started on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Автоматичне створення резервних копій у надійному сховищі даних Signal, захищеному наскрізним шифруванням. Налаштуйте з основного пристрою.";
 
 /* Message on the linked-device Backups screen, shown when the user's paid subscription can't be found, prompting them to renew. */
-"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "Your subscription was not found. Renew to continue using Signal Secure Backups.";
+"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "Передплату не знайдено. Поновіть її, щоб знову користуватися надійним резервним копіюванням від Signal.";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Створити копію зараз";
@@ -3455,7 +3455,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Поділитися";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of protecting free expression and enabling secure global communication for millions around the world, through open source privacy technology. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. Signal did not provide any goods or services in consideration of this contribution.";
+"DONATION_RECEIPT_FOOTER" = "Дякуємо за підтримку Signal. Ваш внесок допомагає реалізувати нашу місію: захищати свободу слова і робити можливим безпечне спілкування для мільйонів людей у всьому світі за допомогою технології конфіденційного обміну повідомленнями з відкритим кодом. Якщо ви резидент Сполучених Штатів Америки, збережіть це підтвердження для звітування в податкові органи. Signal Technology Foundation — звільнена від оподаткування неприбуткова організація, створена відповідно до розділу 501c3 податкового кодексу США. Наш федеральний податковий номер: 82–4506840. За цей внесок Signal не надав ні товарів, ні послуг.";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Донат за друга";
@@ -5207,7 +5207,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Не вдалося зв'язати пристрій";
 
 /* Menu action on the phone number entry screen to link this device as a secondary device. */
-"LINK_DEVICE_MENU_ACTION" = "Link Device";
+"LINK_DEVICE_MENU_ACTION" = "Зв'язати пристрій";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Цей пристрій зможе бачити ваші групи й контакти, отримає доступ до ваших чатів, і з нього надсилатимуться повідомлення від вашого імені.";
@@ -5276,7 +5276,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Попередній вигляд вебсторінки";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on linked devices. To add Signal connections to your phone contacts open Signal on your primary device.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Керування контактами пристрою більше не доступне на iPad. Щоб додати контакти Signal до ваших телефонних контактів, відкрийте Signal на основному пристрої.";
 
 /* Bullet point on the linked devices info sheet, describing what can be linked. */
 "LINKED_DEVICE_INFO_SHEET_BULLET_1" = "Ви можете зв'язати комп'ютер, планшет або додатковий телефон.";
@@ -5291,7 +5291,7 @@
 "LINKED_DEVICE_INFO_SHEET_HEADER" = "<bold>Зв’язані пристрої</bold> дають безпечний доступ до акаунту й повідомлень Signal на будь-якому з додаткових пристроїв.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on linked devices. This device will continue to sync any changes to your contact list from Signal on your primary device.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Керування контактами пристрою більше не підтримується на зв'язаних пристроях. Цей пристрій синхронізуватиме всі зміни вашого списку контактів із Signal на вашому основному пристрої.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Докладніше";
@@ -6344,19 +6344,19 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Зареєструвати iPad";
 
 /* button indicating that the user will link this device */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Зв'язати пристрій?";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Якщо ви натиснете «Зареєструвати iPad», то зможете створити абсолютно новий акаунт Signal або перенести на цей iPad уже наявний акаунт. Після цього Signal буде деактивовано на інших пристроях, де він зареєстрований на цей номер телефону.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link this device” will let you connect this device to an existing Signal account.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Натисніть «Зв’язати цей пристрій», щоб підключити його до наявного акаунта Signal.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Зареєструвати цей iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Зв'язати пристрій?";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Якщо ви зареєструєте цей iPad, то Signal буде деактивовано на інших пристроях, де він зареєстрований на цей номер телефону.";
@@ -8366,22 +8366,22 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Установіть Signal на телефон";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help with these steps";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Мені потрібна допомога";
 
 /* Text for a button offering to refresh the QR code to link an iPad. */
 "SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "Оновити код";
 
 /* Third bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "Tap “Linked devices” and “Link new device”";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "Виберіть «Зв'язані пристрої» та «Зв'язати новий пристрій»";
 
 /* First bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "Open Signal on your primary device";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "Відкрийте Signal на основному пристрої";
 
 /* Second bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Tap your profile picture to open Signal Settings";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Торкніться фото свого профілю, щоб відкрити налаштування Signal";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan this code to link your account";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Зіскануйте цей QR-код, щоб зв'язати свій акаунт";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Запустіть Signal на старому iPad, щоб перенести свій акаунт";

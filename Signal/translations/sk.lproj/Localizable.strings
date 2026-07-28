@@ -1028,16 +1028,16 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Predplatné sa nenašlo";
 
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "You can manage or upgrade your Signal Secure Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "Predplatné Bezpečných záloh Signal môžete spravovať alebo upgradovať na svojom hlavnom zariadení.";
 
 /* Note on the linked-device Backups screen, shown on the paid tier, explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "You can manage or cancel your Signal Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "Predplatné záloh Signal môžete spravovať alebo zrušiť na svojom hlavnom zariadení.";
 
 /* Body text on the linked-device Backups screen, shown when Backups aren't set up, explaining the feature and that it can be enabled on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Automatic backups with Signal's secure, end-to-end encrypted storage service. Get started on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Automatické zálohovanie pomocou zabezpečeného úložiska Signal chráneného end-to-end šifrovaním. Začnite na svojom hlavnom zariadení.";
 
 /* Message on the linked-device Backups screen, shown when the user's paid subscription can't be found, prompting them to renew. */
-"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "Your subscription was not found. Renew to continue using Signal Secure Backups.";
+"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "Predplatné sa nenašlo. Obnovte ho, aby ste mohli bezpečné Zálohy Signal používať aj naďalej.";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Zálohovať teraz";
@@ -3455,7 +3455,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Zdieľať potvrdenku";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of protecting free expression and enabling secure global communication for millions around the world, through open source privacy technology. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. Signal did not provide any goods or services in consideration of this contribution.";
+"DONATION_RECEIPT_FOOTER" = "Ďakujeme, že podporujete Signal. Váš príspevok pomáha napĺňať naše poslanie chrániť slobodu prejavu a umožňovať bezpečnú globálnu komunikáciu pre milióny ľudí na celom svete prostredníctvom technológie ochrany súkromia s otvoreným zdrojovým kódom. Ak ste občanom Spojených štátov, uchovajte si toto potvrdenie pre svoju daňovú evidenciu. Signal Technology Foundation je nezisková organizácia oslobodená od platenia daní v Spojených štátoch, podľa sekcie 501c3 zákona Internal Revenue Code (IRC, zákon o vnútroštátnych výnosoch). Naše federálne daňové ID je 82-4506840. Signal vám za tento príspevok neposkytol žiadny tovar ani služby.";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Príspevok za priateľa";
@@ -5207,7 +5207,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Prepojenie zariadenia zlyhalo";
 
 /* Menu action on the phone number entry screen to link this device as a secondary device. */
-"LINK_DEVICE_MENU_ACTION" = "Link Device";
+"LINK_DEVICE_MENU_ACTION" = "Prepojiť zariadenie";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Toto zariadenie bude vidieť vaše skupiny a kontakty, bude mať prístup k vašim četom a bude môcť odosielať správy vo vašom mene.";
@@ -5276,7 +5276,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Náhľad stránky";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on linked devices. To add Signal connections to your phone contacts open Signal on your primary device.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Správa telefónnych kontaktov už nie je na prepojených zariadeniach dostupná. Ak chcete do kontaktov v telefóne pridať Signal spojenia, otvorte aplikáciu Signal na svojom hlavnom zariadení.";
 
 /* Bullet point on the linked devices info sheet, describing what can be linked. */
 "LINKED_DEVICE_INFO_SHEET_BULLET_1" = "Môžete prepojiť počítač, tablet alebo ďalší telefón.";
@@ -5291,7 +5291,7 @@
 "LINKED_DEVICE_INFO_SHEET_HEADER" = "<bold>Prepojené zariadenia</bold> vám umožňujú bezpečne pristupovať k vášmu účtu Signal a správam na ďalších zariadeniach.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on linked devices. This device will continue to sync any changes to your contact list from Signal on your primary device.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Správa telefónnych kontaktov už nie je na prepojených zariadeniach podporovaná. Toto zariadenie bude pokračovať v synchronizácii všetkých zmien vo vašom zozname kontaktov zo Signalu na vašom hlavnom zariadení.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Zistiť viac";
@@ -6344,19 +6344,19 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Registrovať iPad";
 
 /* button indicating that the user will link this device */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Prepojiť toto zariadenie";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Ťuknutím na „Registrovať iPad“ budete môcť vytvoriť čisto nový Signal účet alebo presunúť existujúci účet na tento iPad. Toto vypne Signal na akomkoľvek inom zariadení, ktoré je momentálne registrované prostredníctvom tohto istého telefónneho čísla.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link this device” will let you connect this device to an existing Signal account.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Ťuknutím na tlačidlo „Prepojiť toto zariadenie“ môžete toto zariadenie pripojiť k existujúcemu účtu Signal.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registrovať tento iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Prepojiť toto zariadenie";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registrácia tohto iPadu vypne Signal na akomkoľvek inom zariadení, ktoré je momentálne registrované prostredníctvom tohto istého telefónneho čísla.";
@@ -8366,22 +8366,22 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Inštalovať Signal na váš telefón";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help with these steps";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Získať pomoc s týmito krokmi";
 
 /* Text for a button offering to refresh the QR code to link an iPad. */
 "SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "Obnoviť kód";
 
 /* Third bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "Tap “Linked devices” and “Link new device”";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "Ťuknite na „Prepojené zariadenia“ a „Prepojiť nové zariadenie“";
 
 /* First bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "Open Signal on your primary device";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "Otvorte Signal na svojom hlavnom zariadení";
 
 /* Second bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Tap your profile picture to open Signal Settings";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Ťuknutím na svoju profilovú fotku otvoríte Signal nastavenia";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan this code to link your account";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Naskenujte tento kód a prepojte svoj účet";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Na prenos vášho účtu, spustite Signal na vašom starom iPade";

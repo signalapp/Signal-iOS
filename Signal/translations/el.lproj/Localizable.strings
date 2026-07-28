@@ -1028,16 +1028,16 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Η συνδρομή δεν βρέθηκε";
 
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "You can manage or upgrade your Signal Secure Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "Μπορείς να διαχειριστείς ή να αναβαθμίσεις τη συνδρομή σου στα Ασφαλή αντίγραφα Signal στην κύρια συσκευή σου.";
 
 /* Note on the linked-device Backups screen, shown on the paid tier, explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "You can manage or cancel your Signal Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "Μπορείς να διαχειριστείς ή να ακυρώσεις τη συνδρομή αντιγράφων ασφαλείας Signal στην κύρια συσκευή σου.";
 
 /* Body text on the linked-device Backups screen, shown when Backups aren't set up, explaining the feature and that it can be enabled on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Automatic backups with Signal's secure, end-to-end encrypted storage service. Get started on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Τα αυτόματα αντίγραφα ασφαλείας του Signal διασφαλίζουν υπηρεσία κρυπτογραφημένης αποθήκευσης από άκρο σε άκρο. Ξεκίνα στην κύρια συσκευή σου.";
 
 /* Message on the linked-device Backups screen, shown when the user's paid subscription can't be found, prompting them to renew. */
-"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "Your subscription was not found. Renew to continue using Signal Secure Backups.";
+"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "Η συνδρομή σου δεν βρέθηκε. Ανανέωσε για να συνεχίσεις να χρησιμοποιείς τα Ασφαλή αντίγραφα Signal.";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "Δημιουργία αντίγραφου τώρα";
@@ -3455,7 +3455,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Διαμοιρασμός απόδειξης";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of protecting free expression and enabling secure global communication for millions around the world, through open source privacy technology. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. Signal did not provide any goods or services in consideration of this contribution.";
+"DONATION_RECEIPT_FOOTER" = "Σε ευχαριστούμε που στηρίζεις το Signal. Η συνεισφορά σου βοηθά στην ανάπτυξη της τεχνολογίας απορρήτου ανοιχτού κώδικα, που προστατεύει την ελευθερία της έκφρασης και δίνει τη δυνατότητα ασφαλών διεθνών επικοινωνιών για εκατομμύρια ανθρώπους σε όλο τον κόσμο. Αν είσαι κάτοικος των Ηνωμένων Πολιτειών, παρακαλούμε κράτα αυτή την απόδειξη για τα φορολογικά σου αρχεία. Το Signal Technology Foundation είναι ένας μη κερδοσκοπικός οργανισμός στις Ηνωμένες Πολιτείες, που έχει φοροαπαλλαγή σύμφωνα με την ενότητα 501c3 του Internal Revenue Code. Το Federal Tax ID μας είναι 82-4506840. Το Signal δεν παρείχε κανένα αγαθό ή υπηρεσία ως αντάλλαγμα για αυτή τη συνεισφορά.";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Δωρεά για φίλους";
@@ -5207,7 +5207,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Αποτυχία σύνδεσης συσκευής";
 
 /* Menu action on the phone number entry screen to link this device as a secondary device. */
-"LINK_DEVICE_MENU_ACTION" = "Link Device";
+"LINK_DEVICE_MENU_ACTION" = "Σύνδεση συσκευής";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Αυτή η συσκευή θα μπορεί να βλέπει τις ομάδες και τις επαφές σου, να έχει πρόσβαση στις συνομιλίες σου και να στέλνει μηνύματα σαν να είναι εσύ.";
@@ -5276,7 +5276,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Προεπισκόπηση συνδέσμου";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on linked devices. To add Signal connections to your phone contacts open Signal on your primary device.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Η διαχείριση επαφών τηλεφώνου δεν είναι πλέον διαθέσιμη στις συνδεδεμένες συσκευές. Για να προσθέσεις επαφές Signal στις επαφές του τηλεφώνου σου, άνοιξε το Signal στην κύρια συσκευή σου.";
 
 /* Bullet point on the linked devices info sheet, describing what can be linked. */
 "LINKED_DEVICE_INFO_SHEET_BULLET_1" = "Μπορείς να συνδέσεις έναν επιτραπέζιο υπολογιστή, ένα tablet ή ένα επιπλέον κινητό τηλέφωνο.";
@@ -5291,7 +5291,7 @@
 "LINKED_DEVICE_INFO_SHEET_HEADER" = "<bold>Οι συνδεδεμένες συσκευές</bold> σού επιτρέπουν να έχεις ασφαλή πρόσβαση στον λογαριασμό και στα μηνύματά σου στο Signal από οποιαδήποτε από τις επιπλέον συσκευές σου.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on linked devices. This device will continue to sync any changes to your contact list from Signal on your primary device.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Η διαχείριση επαφών τηλεφώνου δεν υποστηρίζεται πλέον στις συνδεδεμένες συσκευές. Αυτή η συσκευή θα συνεχίσει να συγχρονίζει τυχόν αλλαγές στη λίστα επαφών σου από το Signal στην κύρια συσκευή σου.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Μάθε περισσότερα";
@@ -6344,19 +6344,19 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Εγγραφή iPad";
 
 /* button indicating that the user will link this device */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Σύνδεση αυτής της συσκευής";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Πατώντας \"Εγγραφή iPad\" θα μπορέσεις να δημιουργήσεις ένα καινούριο λογαριασμό Signal ή να μεταφέρεις ένα προϋπάρχοντα λογαριασμό σε αυτό το iPad. Αυτό θα απενεργοποιήσει το Signal σε οποιαδήποτε άλλη συσκευή εγγεγραμμένη με τον ίδιο αριθμό τηλεφώνου.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link this device” will let you connect this device to an existing Signal account.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Πατώντας «Σύνδεση αυτής της συσκευής» θα μπορείς να συνδέσεις αυτή τη συσκευή με έναν υπάρχοντα λογαριασμό στο Signal.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Εγγραφή του iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Σύνδεση αυτής της συσκευής";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Με την εγγραφή αυτού του iPad θα απενεργοποιηθεί το Signal σε οποιαδήποτε άλλη συσκευή εγγεγραμμένη με τον ίδιο αριθμό τηλεφώνου.";
@@ -8366,22 +8366,22 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Εγκατάσταση του Signal στο τηλέφωνό σου";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help with these steps";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Λάβε βοήθεια σχετικά με αυτά τα βήματα";
 
 /* Text for a button offering to refresh the QR code to link an iPad. */
 "SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "Ανανέωση κωδικού";
 
 /* Third bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "Tap “Linked devices” and “Link new device”";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "Πάτα «Συνδεδεμένες συσκευές» και «Σύνδεση νέας συσκευής»";
 
 /* First bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "Open Signal on your primary device";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "Άνοιξε το Signal στην κύρια συσκευή σου";
 
 /* Second bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Tap your profile picture to open Signal Settings";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Πάτα στη φωτογραφία προφίλ για να ανοίξεις τις Ρυθμίσεις Signal";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan this code to link your account";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Σάρωσε αυτόν τον κωδικό για να συνδέσεις τον λογαριασμό σου";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Άνοιξε το Signal στο παλιό σου iPad για να μεταφέρεις το λογαριασμό σου";

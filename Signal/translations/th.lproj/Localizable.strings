@@ -1028,16 +1028,16 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "ไม่พบการสมัครแพ็กเกจ";
 
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "You can manage or upgrade your Signal Secure Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "คุณสามารถจัดการหรืออัปเกรดการสมัครแพ็กเกจสำรองข้อมูลที่ปลอดภัยของ Signal ได้บนอุปกรณ์หลัก";
 
 /* Note on the linked-device Backups screen, shown on the paid tier, explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "You can manage or cancel your Signal Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "คุณสามารถจัดการหรือยกเลิกการสมัครแพ็กเกจสำรองข้อมูลของ Signal ได้บนอุปกรณ์หลัก";
 
 /* Body text on the linked-device Backups screen, shown when Backups aren't set up, explaining the feature and that it can be enabled on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Automatic backups with Signal's secure, end-to-end encrypted storage service. Get started on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "สำรองข้อมูลอัตโนมัติด้วยบริการจัดเก็บที่ปลอดภัยและถูกเข้ารหัสตั้งแต่ต้นทางถึงปลายทางของ Signal เริ่มต้นใช้งานบนอุปกรณ์หลักของคุณ";
 
 /* Message on the linked-device Backups screen, shown when the user's paid subscription can't be found, prompting them to renew. */
-"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "Your subscription was not found. Renew to continue using Signal Secure Backups.";
+"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "ไม่พบการสมัครแพ็กเกจของคุณ โปรดต่ออายุเพื่อการใช้งานแพ็กเกจสำรองข้อมูลที่ปลอดภัยของ Signal อย่างต่อเนื่อง";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "สำรองข้อมูลเดี๋ยวนี้";
@@ -3455,7 +3455,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "แชร์ใบเสร็จ";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of protecting free expression and enabling secure global communication for millions around the world, through open source privacy technology. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. Signal did not provide any goods or services in consideration of this contribution.";
+"DONATION_RECEIPT_FOOTER" = "ขอบคุณที่ร่วมสนับสนุน Signal การบริจาคของคุณจะช่วยเป็นพลังให้กับภารกิจในการปกป้องการแสดงออกอย่างอิสระ พร้อมมอบการสื่อสารที่ปลอดภัยและไร้พรมแดนให้แก่ผู้คนหลายล้านทั่วโลกผ่านเทคโนโลยีความเป็นส่วนตัวแบบโอเพนซอร์ส หากคุณเป็นผู้พำนักอาศัยในสหรัฐอเมริกา โปรดเก็บใบเสร็จนี้ไว้เพื่อเป็นหลักฐานในการชำระภาษี โดย Signal Technology Foundation เป็นองค์กรที่ไม่แสวงหากำไรและได้รับการยกเว้นภาษีภายใต้มาตรา 501c3 ของประมวลกฎหมายภาษีอากรของสหรัฐอเมริกา หมายเลขประจำตัวผู้เสียภาษีให้แก่รัฐบาลกลางของเราคือ 82-4506840 ทั้งนี้ Signal ไม่มีสินค้าหรือบริการเป็นการตอบแทนสำหรับการบริจาคนี้";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "การบริจาคในนามของเพื่อน";
@@ -5207,7 +5207,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "การเชื่อมโยงอุปกรณ์ไม่สำเร็จ";
 
 /* Menu action on the phone number entry screen to link this device as a secondary device. */
-"LINK_DEVICE_MENU_ACTION" = "Link Device";
+"LINK_DEVICE_MENU_ACTION" = "เชื่อมโยงอุปกรณ์";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "อุปกรณ์เครื่องนี้จะสามารถเห็นกลุ่ม รายชื่อผู้ติดต่อ เข้าถึงแชทของคุณ และส่งข้อความด้วยชื่อของคุณ";
@@ -5276,7 +5276,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "ภาพตัวอย่างลิงก์";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on linked devices. To add Signal connections to your phone contacts open Signal on your primary device.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "ไม่สามารถใช้อุปกรณ์ที่เชื่อมโยงอยู่จัดการรายชื่อผู้ติดต่อบนโทรศัพท์ได้อีกต่อไป โปรดเปิดแอป Signal บนอุปกรณ์หลักเพื่อเพิ่มเครือข่าย Signal ลงในรายชื่อผู้ติดต่อบนโทรศัพท์";
 
 /* Bullet point on the linked devices info sheet, describing what can be linked. */
 "LINKED_DEVICE_INFO_SHEET_BULLET_1" = "คุณสามารถเชื่อมโยงอุปกรณ์ที่เป็นเดสก์ท็อป แท็บเล็ต หรือโทรศัพท์อีกเครื่อง";
@@ -5291,7 +5291,7 @@
 "LINKED_DEVICE_INFO_SHEET_HEADER" = "<bold>อุปกรณ์ที่เชื่อมโยง</bold>ทำให้คุณสามารถเข้าถึงบัญชี Signal และข้อความของคุณได้อย่างปลอดภัยบนอุปกรณ์เครื่องอื่นๆ";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on linked devices. This device will continue to sync any changes to your contact list from Signal on your primary device.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "ไม่รองรับการใช้อุปกรณ์ที่เชื่อมโยงอยู่จัดการรายชื่อผู้ติดต่อบนโทรศัพท์อีกต่อไป อุปกรณ์นี้จะยังคงซิงค์การเปลี่ยนแปลงในรายชื่อผู้ติดต่อตามแอป Signal บนอุปกรณ์หลักของคุณ";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "เรียนรู้เพิ่มเติม";
@@ -6344,19 +6344,19 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "ลงทะเบียนไอแพด";
 
 /* button indicating that the user will link this device */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "เชื่อมโยงอุปกรณ์เครื่องนี้";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "แตะ \"ลงทะเบียน iPad\" ทำให้คุณสามารถสร้างบัญชี Signal ใหม่หรือย้ายบัญชีที่มีอยู่แล้วลงใน iPad เครื่องนี้ นี่จะเป็นการปิดใช้ Signal บนอุปกรณ์อื่นที่ลงทะเบียนไว้ด้วยหมายเลขโทรศัพท์เดียวกัน";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link this device” will let you connect this device to an existing Signal account.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "เมื่อแตะ “เชื่อมโยงอุปกรณ์เครื่องนี้” ระบบจะเชื่อมโยงอุปกรณ์เครื่องนี้กับบัญชี Signal ที่คุณใช้อยู่";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "ลงทะเบียนไอแพดนี้";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "เชื่อมโยงอุปกรณ์เครื่องนี้";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "การลงทะเบียน iPad เครื่องนี้จะเป็นการปิดใช้ Signal บนอุปกรณ์อื่นที่ลงทะเบียนไว้ด้วยหมายเลขโทรศัพท์เดียวกัน";
@@ -8366,22 +8366,22 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "ติดตั้ง Signal บนไอโฟนของคุณ";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help with these steps";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "ความช่วยเหลือเพิ่มเติมเกี่ยวกับขั้นตอนนี้";
 
 /* Text for a button offering to refresh the QR code to link an iPad. */
 "SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "รีเฟรชคิวอาร์โค้ด";
 
 /* Third bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "Tap “Linked devices” and “Link new device”";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "แตะ “อุปกรณ์ที่เชื่อมโยงอยู่” แล้วแตะ “เชื่อมโยงอุปกรณ์ใหม่”";
 
 /* First bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "Open Signal on your primary device";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "เปิดแอป Signal บนอุปกรณ์เครื่องหลักของคุณ";
 
 /* Second bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Tap your profile picture to open Signal Settings";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "แตะที่รูปโปรไฟล์ของคุณเพื่อเปิดการตั้งค่า Signal";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan this code to link your account";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "สแกนคิวอาร์โค้ดนี้เพื่อเชื่อมโยงบัญชีของคุณ";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "เปิด Signal ในไอแพดเครื่องเก่าของคุณเพื่อถ่ายโอนบัญชีของคุณ";

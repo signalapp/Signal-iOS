@@ -1,1 +1,1 @@
-• Now you can link another iPhone to your Signal account to send and receive messages and stay in sync with your main phone. Previously only iPads and laptops were supported as linked devices, but after this update one pocket no longer needs to be jealous of the other.
+• Korábban csak az iPadek és laptopok voltak támogatottak kapcsolt eszközként, de most egy másik iPhone-t is összekapcsolhatsz a Signal-fiókoddal, hogy üzeneteket küldhess és fogadhass, és szinkronban maradhass a fő telefonoddal.

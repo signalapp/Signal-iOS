@@ -969,7 +969,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&apos;%2$@&apos;의 연결 상태를 유지하려면 해당 기기에서 %1$d일 이내에 Signal을 여세요.</string>
+			<string>&apos;%2$@&apos;의 연동 상태를 유지하려면 해당 기기에서 %1$d일 이내에 Signal을 열어주세요.</string>
 		</dict>
 	</dict>
 	<key>LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE_%d</key>
@@ -1151,7 +1151,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>모든 Signal 커넥션 · 볼 수 있는 사람 %1$d명</string>
+			<string>모든 Signal 친구 · 볼 수 있는 사람 %1$d명</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -1165,7 +1165,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>모든 Signal 커넥션 · %1$d명 제외</string>
+			<string>모든 Signal 친구 · %1$d명 제외</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -1503,7 +1503,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>이 음성 메시지는 기기 연결 시 이전되지 않았습니다. 연결일 기준 %1$d일 이상 지난 미디어 및 파일은 동기화 대상에서 제외됩니다.</string>
+			<string>이 음성 메시지는 기기 연동 시 이전되지 않았습니다. 연동일 기준 %1$d일 이상 지난 미디어 및 파일은 동기화 대상에서 제외됩니다.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d</key>
@@ -1517,7 +1517,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>이 파일은 기기 연결 시 이전되지 않았습니다. 연결일 기준 %1$d일 이상 지난 미디어 및 파일은 동기화 대상에서 제외됩니다.</string>
+			<string>이 파일은 기기 연동 시 이전되지 않았습니다. 연동일 기준 %1$d일 이상 지난 미디어 및 파일은 동기화 대상에서 제외됩니다.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>
@@ -1531,7 +1531,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>이 메시지의 전체 텍스트는 기기 연결 시 이전되지 않았습니다. 연결일 기준 %1$d일 이상 지난 미디어 및 파일은 동기화 대상에서 제외됩니다.</string>
+			<string>이 메시지의 전체 텍스트는 기기 연동 시 이전되지 않았습니다. 연동일 기준 %1$d일 이상 지난 미디어 및 파일은 동기화 대상에서 제외됩니다.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d</key>
@@ -1545,7 +1545,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>이 스티커는 기기 연결 시 이전되지 않았습니다. 연결일 기준 %1$d일 이상 지난 미디어 및 파일은 동기화 대상에서 제외됩니다.</string>
+			<string>이 스티커는 기기 연동 시 이전되지 않았습니다. 연동일 기준 %1$d일 이상 지난 미디어 및 파일은 동기화 대상에서 제외됩니다.</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

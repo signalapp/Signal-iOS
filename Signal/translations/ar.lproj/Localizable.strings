@@ -1028,16 +1028,16 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "تعذَّر العثور على اشتراك";
 
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "You can manage or upgrade your Signal Secure Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "يمكنك إدارة اشتراكك في النسخ الاحتياطية الآمنة لسيجنال أو ترقيته من جهازك الأساسي.";
 
 /* Note on the linked-device Backups screen, shown on the paid tier, explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "You can manage or cancel your Signal Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "يمكنك إدارة اشتراكك في النسخ الاحتياطية الآمنة لسيجنال أو إلغاؤه من جهازك الأساسي.";
 
 /* Body text on the linked-device Backups screen, shown when Backups aren't set up, explaining the feature and that it can be enabled on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Automatic backups with Signal's secure, end-to-end encrypted storage service. Get started on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "نسخ احتياطية تلقائية باستخدام خدمة تخزين مُشفَّرة من طرف لطرف على سيجنال. ابدأ العملية على جهازك الأساسي.";
 
 /* Message on the linked-device Backups screen, shown when the user's paid subscription can't be found, prompting them to renew. */
-"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "Your subscription was not found. Renew to continue using Signal Secure Backups.";
+"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "تعذَّر العثور على اشتراكك. جدِّد لمتابعة استخدام النسخ الاحتياطية الآمنة لسيجنال.";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "إنشاء نسخة احتياطية الآن";
@@ -3455,7 +3455,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "مشاركة الإيصال";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of protecting free expression and enabling secure global communication for millions around the world, through open source privacy technology. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. Signal did not provide any goods or services in consideration of this contribution.";
+"DONATION_RECEIPT_FOOTER" = "شكرًا لك على دعم سيجنال. تساعدنا مساهمتكم على دعم مهمة حماية حرية التعبير وتمكين التواصل العالمي الآمن لملايين الأشخاص حول العالم، وذلك من خلال تقنية الخصوصية مفتوحة المصدر. إذا كُنتَ من المقيمين بالولايات المتحدة الأمريكية، يُرجى الاحتفاظ بهذا الإيصال لتقديمه إلى مصلحة الضرائب. مؤسسة سيجنال‬ للتكنولوجيا هي منظمة غير ربحية معفاة من الضرائب ومُسجَّلة في الولايات المتحدة ضمن البند 501c3 من قانون الإيرادات الداخلية. مُعرِّفنا الضريبي هو 4506840-82. لا يُقدِّم سيجنال أي بضائع أو خدمات مقابل هذه المساهمة.";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "التبرُّع لصديق";
@@ -5033,13 +5033,13 @@
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "أرسلتَ لـ %1$@ طلبًا لتفعيل عمليات الدفع.";
 
 /* Shown when a user reports a conversation as spam. */
-"INFO_MESSAGE_REPORTED_SPAM" = "تمَّ الإبلاغ عنها كرسالة غير مرغوب فيها";
+"INFO_MESSAGE_REPORTED_SPAM" = "تمَّ الإبلاغ عن هذا المُستخدِم كجهة اتصال غير مرغوب فيها";
 
 /* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "تمَّ إبلاغ سيجنال بأن هذا الشخص قد يكون أرسل رسائل غير مرغوب فيها. لا يُمكِن لسيجنال رؤية محتوى أي دردشات.";
 
 /* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "تمَّ الإبلاغ عنها كرسالة غير مرغوب فيها";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "تمَّ الإبلاغ عن هذا المُستخدِم كجهة اتصال غير مرغوب فيها";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "من أجل أمانك، لم يتم نقل سجل الدردشة الخاص بك إلى الأجهزة المُرتبِطة الجديدة.";
@@ -5207,7 +5207,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "فشل ربط الجهاز";
 
 /* Menu action on the phone number entry screen to link this device as a secondary device. */
-"LINK_DEVICE_MENU_ACTION" = "Link Device";
+"LINK_DEVICE_MENU_ACTION" = "ربط الجهاز";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "سيتمكن هذا الجهاز من رؤية مجموعاتك وجهات اتصالك، والوصول إلى دردشاتك، وإرسال الرسائل باسمك.";
@@ -5276,7 +5276,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "مُعاينة الرابط";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on linked devices. To add Signal connections to your phone contacts open Signal on your primary device.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "لم تعد إدارة جهات اتصال الهاتف مدعومة على الأجهزة المُرتبِطة. لإضافة جهات اتصال سيجنال إلى جهات اتصال هاتفك، افتح تطبيق سيجنال على جهازك الأساسي.";
 
 /* Bullet point on the linked devices info sheet, describing what can be linked. */
 "LINKED_DEVICE_INFO_SHEET_BULLET_1" = "يُمكنك ربط جهاز كمبيوتر، أو جهاز لوحي، أو هاتف إضافي.";
@@ -5291,7 +5291,7 @@
 "LINKED_DEVICE_INFO_SHEET_HEADER" = "تُتيح لك <bold>الأجهزة المُرتبِطة</bold> الوصول إلى حسابك على سيجنال ورسائلك بأمان على أي من أجهزتك الإضافية.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on linked devices. This device will continue to sync any changes to your contact list from Signal on your primary device.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "لم تعد إدارة جهات اتصال الهاتف مدعومة على الأجهزة المُرتبِطة. سَيستمر هذا الجهاز في مزامنة أي تغييرات طرأت على قائمة جهات اتصالك من سيجنال على جهازك الأساسي.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "اعرف المزيد";
@@ -5792,7 +5792,7 @@
 "MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "الإبلاغ";
 
 /* String indicating that spam has been reported. */
-"MESSAGE_REQUEST_SPAM_REPORTED" = "تمَّ الإبلاغ عنها كرسالة غير مرغوب فيها.";
+"MESSAGE_REQUEST_SPAM_REPORTED" = "تمَّ الإبلاغ عن هذا المُستخدِم كجهة اتصال غير مرغوب فيها";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "تمَّ الإبلاغ والحظر.";
@@ -6344,19 +6344,19 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "تسجيل الآيباد";
 
 /* button indicating that the user will link this device */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "ربط هذا الجهاز";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "سيتيح لك النقر على \"تسجيل الآي باد\" إنشاء حسابٍ جديدٍ في سيجنال أو نقل حسابٍ حاليٍ إلى هذا الآي باد. هذا سوف يلغي سيجنال في أي جهاز آخر مُسجَّل حاليًا بنفس رقم الهاتف.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link this device” will let you connect this device to an existing Signal account.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "سَتتمكن من خلال النقر على \"ربط هذا الجهاز\" من ربط هذا الجهاز بحساب سيجنال موجود.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "تسجيل هذا الآي باد";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "ربط هذا الجهاز";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "تسجيل هذا الآي باد سوف يُعطِّل سيجنال في أي جهاز آخر مُسجَّل حاليًا بنفس رقم الهاتف.";
@@ -8366,22 +8366,22 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "قُم بتثبيت سيجنال على الهاتف الخاص بك";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help with these steps";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "الحصول على مساعدة بشأن هذه الخطوات";
 
 /* Text for a button offering to refresh the QR code to link an iPad. */
 "SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "تحديث الكود";
 
 /* Third bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "Tap “Linked devices” and “Link new device”";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "انقر على \"الأجهزة المُرتبِطة\" و\"ربط جهاز جديد\"";
 
 /* First bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "Open Signal on your primary device";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "افتح سيجنال على جهازك الأساسي";
 
 /* Second bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Tap your profile picture to open Signal Settings";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "انقر على صورة حسابك الشخصي لفتح إعدادات سيجنال";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan this code to link your account";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "امسح هذا الكود ضوئيًا لربط حسابك";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "شَغِّل سيجنال على جهاز الآيباد القديم الخاص بك لكي تنقل الحساب الخاص بك.";

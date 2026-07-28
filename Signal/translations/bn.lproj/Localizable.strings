@@ -1028,16 +1028,16 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "সাবস্ক্রিপশন পাওয়া যায়নি";
 
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "You can manage or upgrade your Signal Secure Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "আপনি আপনার মূল ডিভাইসে আপনার Signal নিরাপদ ব্যাকআপ সাবস্ক্রিপশন পরিচালনা বা আপগ্রেড করতে পারেন।";
 
 /* Note on the linked-device Backups screen, shown on the paid tier, explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "You can manage or cancel your Signal Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "আপনি আপনার মূল ডিভাইসে আপনার Signal ব্যাকআপ সাবস্ক্রিপশন ম্যানেজ বা বাতিল করতে পারেন।";
 
 /* Body text on the linked-device Backups screen, shown when Backups aren't set up, explaining the feature and that it can be enabled on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Automatic backups with Signal's secure, end-to-end encrypted storage service. Get started on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Signal-এর সুরক্ষিত এন্ড-টু-এন্ড এনক্রিপ্ট করা স্টোরেজ সার্ভিস সহ স্বয়ংক্রিয় ব্যাকআপ। আপনার মূল ডিভাইসে শুরু করুন।";
 
 /* Message on the linked-device Backups screen, shown when the user's paid subscription can't be found, prompting them to renew. */
-"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "Your subscription was not found. Renew to continue using Signal Secure Backups.";
+"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "আপনার সাবস্ক্রিপশন পাওয়া যায়নি। Signal নিরাপদ ব্যাকআপ ব্যবহার চালিয়ে যেতে নবায়ন করুন।";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "এখনি ব্যাকআপ করুন";
@@ -3455,7 +3455,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "রিসিপ্ট শেয়ার করুন";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of protecting free expression and enabling secure global communication for millions around the world, through open source privacy technology. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. Signal did not provide any goods or services in consideration of this contribution.";
+"DONATION_RECEIPT_FOOTER" = "Signal-এর পাশে থাকার জন্য আপনাকে ধন্যবাদ। আপনার অবদান ওপেন সোর্স গোপনীয়তা প্রযুক্তির মাধ্যমে বিশ্বজুড়ে লক্ষ লক্ষ মানুষের জন্য স্বাধীন মত প্রকাশের সুরক্ষা এবং বিশ্বব্যাপী নিরাপদ যোগাযোগ সক্ষম করার লক্ষ্যকে আরো এগিয়ে নিয়ে যেতে সাহায্য করবে। আপনি যদি মার্কিন যুক্তরাষ্ট্রের অধিবাসী হয়ে থাকেন, তাহলে অনুগ্রহ করে আপনার ট্যাক্স রেকর্ডের জন্য এই রিসিপ্টটি সংরক্ষণ করুন। Signal টেকনোলজি ফাউন্ডেশন হলো অভ্যন্তরীণ রাজস্ব কোডের ধারা 501c3-এর অধীনে মার্কিন যুক্তরাষ্ট্রের একটি কর-মুক্ত অলাভজনক সংস্থা। আমাদের ফেডারেল ট্যাক্স আইডি হলো 82-4506840। এই অবদানের বিনিময়ে Signal কোনো পণ্য বা সার্ভিস প্রদান করেনি।";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "বন্ধুর জন্য ডোনেশন";
@@ -5207,7 +5207,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "ডিভাইস সংযুক্তি ব্যর্থ";
 
 /* Menu action on the phone number entry screen to link this device as a secondary device. */
-"LINK_DEVICE_MENU_ACTION" = "Link Device";
+"LINK_DEVICE_MENU_ACTION" = "ডিভাইস সংযুক্ত করুন";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "এই ডিভাইসটি আপনার গ্রুপ ও কন্টাক্ট দেখতে পাবে, আপনার চ্যাট অ্যাক্সেস করতে পারবে এবং আপনার নামে ম্যাসেজ পাঠাতে পারবে।";
@@ -5276,7 +5276,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "লিঙ্ক পূর্বরূপ";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on linked devices. To add Signal connections to your phone contacts open Signal on your primary device.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "এখন আর লিংককৃত ডিভাইসগুলোতে ফোনের কন্টাক্ট ম্যানেজ করা যায় না। আপনার ফোনের কন্টাক্টে Signal কানেকশন যোগ করতে আপনার মূল ডিভাইসে Signal খুলুন।";
 
 /* Bullet point on the linked devices info sheet, describing what can be linked. */
 "LINKED_DEVICE_INFO_SHEET_BULLET_1" = "আপনি একটি ডেস্কটপ, ট্যাবলেট বা আরো একটি ফোন লিংক করতে পারেন।";
@@ -5291,7 +5291,7 @@
 "LINKED_DEVICE_INFO_SHEET_HEADER" = "<bold>লিংককৃত ডিভাইস</bold> আপনাকে আপনার আরো যেকোনো ডিভাইসে নিরাপদে আপনার Signal অ্যাকাউন্ট এবং মেসেজ অ্যাক্সেস করতে দেয়।";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on linked devices. This device will continue to sync any changes to your contact list from Signal on your primary device.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "এখন আর লিংককৃত ডিভাইসগুলোতে ফোনের কন্টাক্ট ম্যানেজ করা যায় না। এই ডিভাইসটি আপনার প্রধান ডিভাইসের Signal থেকে আপনার কন্টাক্ট লিস্টের যেকোনো পরিবর্তন সিংক করতে থাকবে।";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "আরো জানুন";
@@ -6344,19 +6344,19 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad রেজিস্টার করুন";
 
 /* button indicating that the user will link this device */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "এই ডিভাইস যোগ করুন";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "\"iPad রেজিস্টার করুন\"-এ ট্যাপ করলে তা আপনাকে নতুন Signal অ্যাকাউন্ট তৈরি করতে বা একটি বিদ্যমান অ্যাকাউন্ট এই iPad-এ স্থানান্তর করতে দেবে। এটি একই ফোন নম্বর দিয়ে বর্তমানে রেজিস্টার করা অন্য যেকোনও ডিভাইসে Signal অক্ষম করবে।";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link this device” will let you connect this device to an existing Signal account.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "\"এই ডিভাইসটি লিংক করুন\" অপশনে ট্যাপ করলে আপনি এই ডিভাইসটিকে একটি বিদ্যমান Signal অ্যাকাউন্টের সাথে যোগ করতে পারবেন।";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "এই আইপ্যাড নিবন্ধন করুন";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "এই ডিভাইস যোগ করুন";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "এই iPad রেজিস্টার করা হলে তা একই ফোন নম্বরে বর্তমানে রেজিস্টার করা অন্য যেকোনও ডিভাইসে Signal অক্ষম করবে।";
@@ -8366,22 +8366,22 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "আপনার ফোনে Signal ইনস্টল করুন";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help with these steps";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "এই ধাপগুলোতে সাহায্য নিন";
 
 /* Text for a button offering to refresh the QR code to link an iPad. */
 "SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "কোড রিফ্রেশ করুন";
 
 /* Third bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "Tap “Linked devices” and “Link new device”";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "\"লিংককৃত ডিভাইস\" এবং \"নতুন ডিভাইস লিংক করুন\" অপশনে ট্যাপ করুন";
 
 /* First bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "Open Signal on your primary device";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "আপনার মূল ডিভাইসে Signal খুলুন";
 
 /* Second bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Tap your profile picture to open Signal Settings";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Signal সেটিংস খুলতে আপনার প্রোফাইল ছবিতে ট্যাপ করুন";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan this code to link your account";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "আপনার অ্যাকাউন্ট লিংক করতে এই কোডটি স্ক্যান করুন";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "আপনার অ্যাকাউন্টটি স্থানান্তর করতে আপনার পুরোনো iPad-এ Signal চালু করুন";

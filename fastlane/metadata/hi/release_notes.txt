@@ -1,1 +1,1 @@
-• Now you can link another iPhone to your Signal account to send and receive messages and stay in sync with your main phone. Previously only iPads and laptops were supported as linked devices, but after this update one pocket no longer needs to be jealous of the other.
+• मैसेज भेजने और पाने के लिए और अपने प्राइमरी फ़ोन से सिंक रहने के लिए, अब आपके पास अपने Signal अकाउंट से एक और iPhone लिंक करने का विकल्प मौजूद है। पहले प्राइमरी फ़ोन से सिर्फ़ iPad और लैपटॉप ही लिंक किए जा सकते थे, लेकिन इस अपडेट के बाद एक साथ दो स्मार्टफ़ोन इस्तेमाल किए जा सकते हैं।
