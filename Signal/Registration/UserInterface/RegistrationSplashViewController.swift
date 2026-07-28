@@ -106,6 +106,7 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
             },
         )
         tosPPButton.configuration?.baseForegroundColor = .Signal.secondaryLabel
+        tosPPButton.accessibilityTraits.insert(.link)
         tosPPButton.enableMultilineLabel()
 
         // Large buttons enclosed in a container with some extra horizontal padding.
