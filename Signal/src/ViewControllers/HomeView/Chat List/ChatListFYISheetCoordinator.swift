@@ -54,6 +54,10 @@ class ChatListFYISheetCoordinator {
             let now: Date
         }
 
+        struct EnableLocalBackups {}
+
+        struct ChooseNewLocalBackupLocation {}
+
         case smsVerificationCodeSent(SMSVerificationCodeSent)
         case badgeThanks(BadgeThanks)
         case badgeIssue(BadgeIssue)
@@ -64,6 +68,8 @@ class ChatListFYISheetCoordinator {
         case keyTransparencySelfCheckFailed(KeyTransparencySelfCheckFailed)
         case backupArchiveError(BackupArchiveError)
         case lowDiskSpaceWarning(LowDiskSpaceWarning)
+        case enableLocalBackups(EnableLocalBackups)
+        case chooseNewLocalBackupLocation(ChooseNewLocalBackupLocation)
     }
 
     private let backupArchiveErrorStore: BackupArchiveErrorStore
@@ -79,6 +85,7 @@ class ChatListFYISheetCoordinator {
     private let networkManager: NetworkManager
     private let profileBadgeManager: ProfileBadgeManager
     private let safetyTipsManager: SafetyTipsManager
+    private let localFileBackupManager: LocalFileBackupManager
 
     init(
         backupArchiveErrorStore: BackupArchiveErrorStore,
@@ -93,6 +100,8 @@ class ChatListFYISheetCoordinator {
         lowDiskSpaceWarningManager: LowDiskSpaceWarningManager,
         networkManager: NetworkManager,
         profileBadgeManager: ProfileBadgeManager,
+        profileManager: ProfileManager,
+        localFileBackupManager: LocalFileBackupManager,
     ) {
         self.backupArchiveErrorStore = backupArchiveErrorStore
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
@@ -107,6 +116,7 @@ class ChatListFYISheetCoordinator {
         self.networkManager = networkManager
         self.profileBadgeManager = profileBadgeManager
         self.safetyTipsManager = SafetyTipsManager()
+        self.localFileBackupManager = localFileBackupManager
     }
 
     func presentIfNecessary(
@@ -171,6 +181,10 @@ class ChatListFYISheetCoordinator {
             return .backupArchiveError(FYISheet.BackupArchiveError())
         } else if lowDiskSpaceWarningManager.getNeedsWarning(now: now, tx: tx) {
             return .lowDiskSpaceWarning(FYISheet.LowDiskSpaceWarning(now: now))
+        } else if localFileBackupManager.shouldPromptUserToEnableLocalBackups(tx: tx) {
+            return .enableLocalBackups(FYISheet.EnableLocalBackups())
+        } else if localFileBackupManager.shouldPromptUserToChooseNewLocalBackupLocation(tx: tx) {
+            return .chooseNewLocalBackupLocation(FYISheet.ChooseNewLocalBackupLocation())
         } else {
             return nil
         }
@@ -310,6 +324,10 @@ class ChatListFYISheetCoordinator {
             await _present(backupArchiveError: backupArchiveError, from: chatListViewController)
         case .lowDiskSpaceWarning(let lowDiskSpaceWarning):
             await _present(lowDiskSpaceWarning: lowDiskSpaceWarning, from: chatListViewController)
+        case .enableLocalBackups(let enableLocalBackups):
+            await _present(enableLocalBackups: enableLocalBackups, from: chatListViewController)
+        case .chooseNewLocalBackupLocation(let chooseNewLocalBackupLocation):
+            await _present(chooseNewLocalBackupsLocation: chooseNewLocalBackupLocation, from: chatListViewController)
         }
     }
 
@@ -605,6 +623,40 @@ class ChatListFYISheetCoordinator {
             }
         }
     }
+
+    private func _present(
+        enableLocalBackups: FYISheet.EnableLocalBackups,
+        from chatListViewController: ChatListViewController,
+    ) async {
+        let logger = PrefixedLogger(prefix: "[LocalBackups]")
+        logger.warn("Showing EnableLocalBackups FYI sheet.")
+
+        let warningSheet = EnableLocalBackupsHeroSheet()
+
+        chatListViewController.present(warningSheet, animated: true) { [self] in
+            db.write { tx in
+                localFileBackupManager.clearShouldPromptUserToEnableLocalBackups(tx: tx)
+            }
+        }
+    }
+
+    private func _present(
+        chooseNewLocalBackupsLocation: FYISheet.ChooseNewLocalBackupLocation,
+        from chatListViewController: ChatListViewController,
+    ) async {
+        let logger = PrefixedLogger(prefix: "[LocalBackups]")
+        logger.warn("Showing ChooseNewLocalBackupLocation FYI sheet.")
+
+        let warningSheet = ChooseNewLocalBackupLocationHeroSheet(onChooseNewFileLocation: { [self] in
+            localFileBackupManager.promptUserToChooseFileLocation(fromViewController: chatListViewController)
+        })
+
+        chatListViewController.present(warningSheet, animated: true) { [self] in
+            db.write { tx in
+                localFileBackupManager.clearChooseNewLocalBackupLocation(tx: tx)
+            }
+        }
+    }
 }
 
 // MARK: - ChatListViewController: BadgeIssueSheetDelegate
@@ -845,6 +897,66 @@ private final class LowDiskSpaceWarningHeroSheet: HeroSheetViewController {
                 comment: "Message for a sheet warning the user that their device is low on storage space.",
             ),
             primaryButton: .dismissing(title: CommonStrings.acknowledgeButton),
+        )
+    }
+}
+
+// MARK: -
+
+private final class EnableLocalBackupsHeroSheet: HeroSheetViewController {
+    init() {
+        super.init(
+            hero: .image(.backupsOnDevice),
+            title: OWSLocalizedString(
+                "ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE",
+                comment: "Title for a sheet asking the user if they want to enable local file backups.",
+            ),
+            body: OWSLocalizedString(
+                "ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE",
+                comment: "Message for a sheet asking the user if they want to enable local file backups.",
+            ),
+            primaryButton: Button(title: OWSLocalizedString(
+                "ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON",
+                comment: "Button for a sheet asking the user if they want to enable local file backups",
+            ), action: { heroSheet in
+                heroSheet.dismiss(animated: true)
+                // TODO: [KC] go directly to local file backups page
+                SignalApp.shared.showAppSettings(mode: .backups())
+            }),
+            secondaryButton: .dismissing(title: CommonStrings.notNowButton, style: .secondary),
+        )
+    }
+}
+
+// MARK: -
+
+private final class ChooseNewLocalBackupLocationHeroSheet: HeroSheetViewController {
+    init(
+        onChooseNewFileLocation: @escaping () -> Void,
+    ) {
+        super.init(
+            hero: .circleIcon(
+                icon: .backup,
+                iconSize: 40,
+                tintColor: .Signal.orange,
+                backgroundColor: UIColor(rgbHex: 0xF9E4B6),
+            ),
+            title: OWSLocalizedString(
+                "LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE",
+                comment: "Title for a sheet asking the user to choose a new local file backup folder.",
+            ),
+            body: OWSLocalizedString(
+                "LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE",
+                comment: "Message for a sheet asking the user to choose a new local file backup folder.",
+            ),
+            primaryButton: Button(title: OWSLocalizedString(
+                "LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON",
+                comment: "Button for a sheet asking the user to choose a new local file backup folder",
+            ), action: { heroSheet in
+                heroSheet.dismiss(animated: true)
+                onChooseNewFileLocation()
+            }),
+            secondaryButton: .dismissing(title: CommonStrings.notNowButton, style: .secondary),
         )
     }
 }

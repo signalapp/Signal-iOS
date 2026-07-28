@@ -3709,6 +3709,15 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
 
+/* Button for a sheet asking the user if they want to enable local file backups */
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "Enable on-device backups";
+
+/* Message for a sheet asking the user if they want to enable local file backups. */
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "To continue using on-device backups, you need to enable them for this account. You can do this at any time from Settings > Backups.";
+
+/* Title for a sheet asking the user if they want to enable local file backups. */
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Enable on-device backups?";
+
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Busy";
 
@@ -5394,6 +5403,15 @@
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Do not close the app.";
+
+/* Button for a sheet asking the user to choose a new local file backup folder */
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Choose Folder";
+
+/* Message for a sheet asking the user to choose a new local file backup folder. */
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Your on-device backup couldn't be completed. This may be because you moved or deleted your backup folder. Choose a folder in your device's storage where your backup will be stored.";
+
+/* Title for a sheet asking the user to choose a new local file backup folder. */
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "Couldn't Complete Backup";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
 "LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";

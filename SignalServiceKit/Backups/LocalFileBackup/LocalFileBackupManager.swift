@@ -7,8 +7,13 @@ import CryptoKit
 import LibSignalClient
 
 public enum LocalFileBackupError: Error {
-    case unableToFetchOrAccessLocalFile
-    case userChoseInvalidLocalBackupLocation
+    public enum AccessFailureReason {
+        case stale
+        case missing
+        case noAccess
+    }
+
+    case unableToAccessLocalFile(AccessFailureReason)
 }
 
 /// Manager to handle local file backup logic, including file I/O, UIDocumentPicker logic, and security-scoped bookmark handling.
@@ -42,7 +47,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
     private let attachmentStore: AttachmentStore
     private let attachmentValidator: AttachmentContentValidator
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
-    private let localFileBackupStore: LocalFileBackupStore
+    private nonisolated let localFileBackupStore: LocalFileBackupStore
     private let securityScopedBookmarkAccess: SecurityScopedBookmarkAccess
 
     init(
@@ -90,7 +95,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         do {
             resolvedURL = try getSavedSecurityScopedBookmark()
         } catch {
-            throw LocalFileBackupError.unableToFetchOrAccessLocalFile
+            throw LocalFileBackupError.unableToAccessLocalFile(.noAccess)
         }
 
         guard let resolvedURL else {
@@ -100,7 +105,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
         let hasAccess = securityScopedBookmarkAccess.startAccessToSecurityScopedBookmark(url: resolvedURL)
         guard hasAccess else {
-            throw LocalFileBackupError.unableToFetchOrAccessLocalFile
+            throw LocalFileBackupError.unableToAccessLocalFile(.noAccess)
         }
 
         defer {
@@ -495,11 +500,18 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
             return nil
         }
 
+        var resolvedURL: URL
         var isStale = false
-        let resolvedURL = try securityScopedBookmarkAccess.urlForBookmarkData(bookmarkData, isStale: &isStale)
+        do {
+            resolvedURL = try securityScopedBookmarkAccess.urlForBookmarkData(bookmarkData, isStale: &isStale)
+        } catch NSFileProviderError.noSuchItem {
+            throw LocalFileBackupError.unableToAccessLocalFile(.missing)
+        } catch {
+            throw OWSAssertionError("Unable to resolve bookmark data: \(error)")
+        }
+
         if isStale {
-            // TODO: [KC] Prompt user to pick a new location
-            throw OWSAssertionError("Unable to resolve url bookmark, location is stale")
+            throw LocalFileBackupError.unableToAccessLocalFile(.stale)
         }
 
         return resolvedURL
@@ -529,5 +541,33 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
             // TODO: [KC] show error screen.
             logger.error("Failed to save bookmark: \(error)")
         }
+    }
+
+    // MARK: - Prompt user to enable local backups, e.g. after restoring
+
+    public nonisolated func shouldPromptUserToEnableLocalBackups(tx: DBReadTransaction) -> Bool {
+        localFileBackupStore.shouldPromptUserToEnableLocalBackups(tx: tx)
+    }
+
+    public nonisolated func clearShouldPromptUserToEnableLocalBackups(tx: DBWriteTransaction) {
+        localFileBackupStore.clearShouldPromptUserToEnableLocalBackups(tx: tx)
+    }
+
+    public nonisolated func setShouldPromptUserToEnableLocalBackups(tx: DBWriteTransaction) {
+        localFileBackupStore.setShouldPromptUserToEnableLocalBackups(tx: tx)
+    }
+
+    // MARK: - Prompt user to choose new local backup location, e.g. if there was an error archiving
+
+    public nonisolated func shouldPromptUserToChooseNewLocalBackupLocation(tx: DBReadTransaction) -> Bool {
+        localFileBackupStore.shouldPromptUserToChooseNewLocalBackupLocation(tx: tx)
+    }
+
+    public nonisolated func clearChooseNewLocalBackupLocation(tx: DBWriteTransaction) {
+        localFileBackupStore.clearChooseNewLocalBackupLocation(tx: tx)
+    }
+
+    public nonisolated func setChooseNewLocalBackupLocation(tx: DBWriteTransaction) {
+        localFileBackupStore.setChooseNewLocalBackupLocation(tx: tx)
     }
 }

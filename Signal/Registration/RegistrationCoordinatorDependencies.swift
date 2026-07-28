@@ -22,6 +22,7 @@ public struct RegistrationCoordinatorDependencies {
     let deviceTransferService: any DeviceTransferServiceProtocol
     public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
     public let identityManager: RegistrationCoordinatorImpl.Shims.IdentityManager
+    public let localFileBackupManager: LocalFileBackupManager
     public let localUsernameManager: LocalUsernameManager
     public let messagePipelineSupervisor: RegistrationCoordinatorImpl.Shims.MessagePipelineSupervisor
     public let messageProcessor: RegistrationCoordinatorImpl.Shims.MessageProcessor
@@ -67,6 +68,7 @@ public struct RegistrationCoordinatorDependencies {
             deviceTransferService: AppEnvironment.shared.deviceTransferServiceRef,
             experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
             identityManager: RegistrationCoordinatorImpl.Wrappers.IdentityManager(DependenciesBridge.shared.identityManager),
+            localFileBackupManager: DependenciesBridge.shared.localFileBackupManager,
             localUsernameManager: DependenciesBridge.shared.localUsernameManager,
             messagePipelineSupervisor: RegistrationCoordinatorImpl.Wrappers.MessagePipelineSupervisor(SSKEnvironment.shared.messagePipelineSupervisorRef),
             messageProcessor: RegistrationCoordinatorImpl.Wrappers.MessageProcessor(SSKEnvironment.shared.messageProcessorRef),

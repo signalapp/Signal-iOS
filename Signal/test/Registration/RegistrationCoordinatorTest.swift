@@ -48,6 +48,7 @@ public class RegistrationCoordinatorTest {
     private var tsAccountManagerMock: MockTSAccountManager!
     private var usernameApiClientMock: RegistrationCoordinatorImpl.TestMocks.UsernameApiClient!
     private var usernameLinkManagerMock: MockUsernameLinkManager!
+    private var localFileBackupManager: LocalFileBackupManager!
 
     class RegistrationTestRun {
         private(set) var recordedSteps = [TestStep]()
@@ -125,6 +126,16 @@ public class RegistrationCoordinatorTest {
             return mockURLSession
         }
 
+        let localFileBackupManager = LocalFileBackupManager(
+            db: db,
+            dateProvider: { Date() },
+            attachmentStore: AttachmentStore(),
+            attachmentValidator: AttachmentContentValidatorMock(),
+            orphanedAttachmentCleaner: OrphanedAttachmentCleanerImpl(dateProvider: { Date() }, db: db),
+            localFileBackupStore: LocalFileBackupStore(),
+            securityScopedBookmarkAccess: SecurityScopedBookmarkAccessMock(hasAccess: true, url: nil),
+        )
+
         let dependencies = RegistrationCoordinatorDependencies(
             appExpiry: appExpiry,
             accountEntropyPoolGenerator: { Stubs.accountEntropyPoolToGenerate },
@@ -141,6 +152,7 @@ public class RegistrationCoordinatorTest {
             deviceTransferService: DeviceTransferServiceMock(),
             experienceManager: experienceManager,
             identityManager: RegistrationCoordinatorImpl.TestMocks.IdentityManager(),
+            localFileBackupManager: localFileBackupManager,
             localUsernameManager: localUsernameManagerMock,
             messagePipelineSupervisor: mockMessagePipelineSupervisor,
             messageProcessor: mockMessageProcessor,

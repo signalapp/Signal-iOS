@@ -597,22 +597,29 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             switch type {
             case .local:
                 guard let localFileBackupBookmarkData = persistedState.localFileBackupURLBookmarkData else {
-                    throw OWSAssertionError("Backup type is local but no local file URL set")
+                    throw LocalFileBackupError.unableToAccessLocalFile(.missing)
                 }
 
                 var isStale = false
-                let localFileBackupRootURL = try deps.securityScopedBookmarkAccess.urlForBookmarkData(
-                    localFileBackupBookmarkData,
-                    isStale: &isStale,
-                )
+                var localFileBackupRootURL: URL
+                do {
+                    localFileBackupRootURL = try deps.securityScopedBookmarkAccess.urlForBookmarkData(
+                        localFileBackupBookmarkData,
+                        isStale: &isStale,
+                    )
+                } catch NSFileProviderError.noSuchItem {
+                    throw LocalFileBackupError.unableToAccessLocalFile(.missing)
+                } catch {
+                    throw OWSAssertionError("Unable to resolve bookmark data: \(error)")
+                }
 
                 if isStale {
-                    throw LocalFileBackupError.unableToFetchOrAccessLocalFile
+                    throw LocalFileBackupError.unableToAccessLocalFile(.stale)
                 }
 
                 let hasAccess = deps.securityScopedBookmarkAccess.startAccessToSecurityScopedBookmark(url: localFileBackupRootURL)
                 guard hasAccess else {
-                    throw LocalFileBackupError.unableToFetchOrAccessLocalFile
+                    throw LocalFileBackupError.unableToAccessLocalFile(.noAccess)
                 }
 
                 defer { deps.securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: localFileBackupRootURL) }
@@ -627,7 +634,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     .sorted { $0.lastPathComponent > $1.lastPathComponent }
 
                 guard !backupDirectories.isEmpty else {
-                    throw LocalFileBackupError.userChoseInvalidLocalBackupLocation
+                    throw LocalFileBackupError.unableToAccessLocalFile(.missing)
                 }
 
                 let chosenBackup = backupDirectories[0]
@@ -652,6 +659,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     progress: nil,
                     logger: self.logger,
                 )
+
+                await self.db.awaitableWrite { tx in
+                    self.deps.localFileBackupManager.setShouldPromptUserToEnableLocalBackups(tx: tx)
+                }
                 return
             case .remote:
                 let backupServiceAuth = try await self.fetchBackupServiceAuth(

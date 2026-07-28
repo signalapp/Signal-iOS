@@ -110,7 +110,7 @@ public class LocalFileBackupExportJob {
 
         let hasAccess = securityScopedBookmarkAccess.startAccessToSecurityScopedBookmark(url: resolvedURL)
         guard hasAccess else {
-            throw OWSAssertionError("Missing access to backup directory location")
+            throw LocalFileBackupError.unableToAccessLocalFile(.noAccess)
         }
 
         defer {

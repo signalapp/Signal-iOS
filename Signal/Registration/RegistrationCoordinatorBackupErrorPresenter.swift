@@ -18,7 +18,7 @@ public enum RegistrationBackupRestoreError {
     case networkError
     case rateLimited
     case cancellation
-    case invalidOrMissingLocalFileBackupLocation
+    case missingLocalFileBackupLocation
 }
 
 public enum RegistrationBackupErrorNextStep {
@@ -86,8 +86,14 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
             case .incorrectRecoveryKey:
                 return .incorrectRecoveryKey
             }
-        case LocalFileBackupError.unableToFetchOrAccessLocalFile:
-            return .invalidOrMissingLocalFileBackupLocation
+        case LocalFileBackupError.unableToAccessLocalFile(let reason):
+            switch reason {
+            case .missing, .stale:
+                return .missingLocalFileBackupLocation
+            case .noAccess:
+                Logger.error("No access to local file backup location")
+                return .generic
+            }
         default:
             return .generic
         }
@@ -349,10 +355,10 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
                     )
                 }
             })
-        case .invalidOrMissingLocalFileBackupLocation:
-            // TODO: [KC] prompt user to try a new file location
+        case .missingLocalFileBackupLocation:
+            // TODO: [KC] correct copy
             title = "Local File Backup Error"
-            message = "invalidOrMissingLocalFileBackupLocation"
+            message = "Choose a new file location"
         }
 
         let actionSheet = ActionSheetController(title: title, message: message)

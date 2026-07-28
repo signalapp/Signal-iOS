@@ -10,6 +10,8 @@ public class LocalFileBackupStore {
     private enum StoreKeys {
         static let bookmarkDataKey = "bookmarkData"
         static let lastEnumeratedAttachmentIdKey = "lastEnumeratedAttachmentId"
+        static let shouldPromptUserToEnableLocalBackupsKey = "shouldPromptUserToEnableLocalBackups"
+        static let shouldPromptUserToChooseNewLocationKey = "shouldPromptUserToChooseNewLocation"
     }
 
     private let kvStore: NewKeyValueStore
@@ -108,5 +110,33 @@ public class LocalFileBackupStore {
 
     func storeBookmarkData(bookmarkData: SecurityScopedBookmark, tx: DBWriteTransaction) {
         kvStore.writeValue(bookmarkData.rawValue, forKey: StoreKeys.bookmarkDataKey, tx: tx)
+    }
+
+    // MARK: - Prompt user to enable local backups, e.g. after restoring
+
+    public func shouldPromptUserToEnableLocalBackups(tx: DBReadTransaction) -> Bool {
+        return kvStore.fetchValue(Bool.self, forKey: StoreKeys.shouldPromptUserToEnableLocalBackupsKey, tx: tx) ?? false
+    }
+
+    public func clearShouldPromptUserToEnableLocalBackups(tx: DBWriteTransaction) {
+        kvStore.removeValue(forKey: StoreKeys.shouldPromptUserToEnableLocalBackupsKey, tx: tx)
+    }
+
+    public func setShouldPromptUserToEnableLocalBackups(tx: DBWriteTransaction) {
+        kvStore.writeValue(true, forKey: StoreKeys.shouldPromptUserToEnableLocalBackupsKey, tx: tx)
+    }
+
+    // MARK: - Prompt user to choose new local backup location, e.g. if there was an error archiving
+
+    public func shouldPromptUserToChooseNewLocalBackupLocation(tx: DBReadTransaction) -> Bool {
+        return kvStore.fetchValue(Bool.self, forKey: StoreKeys.shouldPromptUserToChooseNewLocationKey, tx: tx) ?? false
+    }
+
+    public func clearChooseNewLocalBackupLocation(tx: DBWriteTransaction) {
+        kvStore.removeValue(forKey: StoreKeys.shouldPromptUserToChooseNewLocationKey, tx: tx)
+    }
+
+    public func setChooseNewLocalBackupLocation(tx: DBWriteTransaction) {
+        kvStore.writeValue(true, forKey: StoreKeys.shouldPromptUserToChooseNewLocationKey, tx: tx)
     }
 }

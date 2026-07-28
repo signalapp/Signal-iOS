@@ -99,8 +99,28 @@ class InternalBackupSettingsViewController: OWSTableViewController2 {
                     securityScopedBookmarkAccess: SecurityScopedBookmarkAccessImpl(),
                 )
 
+                let localFileBackupManager = DependenciesBridge.shared.localFileBackupManager
+
                 Task {
-                    try await localFileBackupExportJob.run(mode: .manual)
+                    do {
+                        try await localFileBackupExportJob.run(mode: .manual)
+                    } catch LocalFileBackupError.unableToAccessLocalFile(let reason) {
+                        switch reason {
+                        case .stale, .missing:
+                            self.presentToast(text: "Unable to restore local file backup attachments (\(reason))")
+                            Logger.error("Unable to restore local file backup attachments (\(reason))")
+                            await db.awaitableWrite { tx in
+                                // Prompt the user to pick a new backup location.
+                                localFileBackupManager.setChooseNewLocalBackupLocation(tx: tx)
+                            }
+                        case .noAccess:
+                            self.presentToast(text: "Unable to restore local file backup attachments (no access)")
+                            Logger.error("Unable to restore local file backup attachments (no access)")
+                        }
+                    } catch {
+                        self.presentToast(text: "Other error while archiving local file backup: \(error)")
+                        Logger.error("Other error while archiving local file backup: \(error)")
+                    }
                 }
             })
         }

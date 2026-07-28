@@ -399,6 +399,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             lowDiskSpaceWarningManager: DependenciesBridge.shared.lowDiskSpaceWarningManager,
             networkManager: SSKEnvironment.shared.networkManagerRef,
             profileBadgeManager: DependenciesBridge.shared.profileBadgeManager,
+            profileManager: SSKEnvironment.shared.profileManagerRef,
+            localFileBackupManager: DependenciesBridge.shared.localFileBackupManager,
         )
 
         Task {
