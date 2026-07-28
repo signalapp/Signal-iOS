@@ -333,7 +333,17 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         )
 
         assetReader.startReading()
-        while assetReader.status == .reading {
+        defer {
+            // We may exit the loop below before we hit the end of the file.
+            assetReader.cancelReading()
+        }
+
+        // Stop once we have all the samples we need. Only relevant for a file
+        // whose container metadata understates its sample count.
+        while
+            assetReader.status == .reading,
+            !sampler.isComplete
+        {
             // Stop reading if the operation is cancelled.
             try Task.checkCancellation()
 
@@ -374,11 +384,21 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
 
     private func sampleCount(from assetReader: AVAssetReader) -> Int {
         let samplesPerChannel = Int(assetReader.asset.duration.value)
+        let channelCount = channelCount(from: assetReader)
 
         // We will read in the samples from each channel, interleaved since
         // we only draw one waveform. This gives us an average of the channels
         // if it is, for example, a stereo audio file.
-        return samplesPerChannel * channelCount(from: assetReader)
+        //
+        // samplesPerChannel comes from the container metadata and can be
+        // misstated to be arbitrarily large, so guard the arithmetic here.
+        let (sampleCount, overflow) = samplesPerChannel.multipliedReportingOverflow(
+            by: channelCount,
+        )
+        guard !overflow else {
+            return 0
+        }
+        return sampleCount
     }
 
     private func channelCount(from assetReader: AVAssetReader) -> Int {

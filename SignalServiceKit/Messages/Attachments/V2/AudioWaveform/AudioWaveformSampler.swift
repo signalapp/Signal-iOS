@@ -52,6 +52,12 @@ class AudioWaveformSampler {
         self.overflowCounter = self.outputCount - self.segmentRemainder
     }
 
+    /// Whether every output sample has been produced. Further calls to
+    /// `update` can't change the result of `finalize`.
+    var isComplete: Bool {
+        return self.output.count >= self.outputCount
+    }
+
     func update(_ samples: UnsafeBufferPointer<Int16>) {
         let sampleCount = samples.count
         if self.buffer.count < sampleCount {
@@ -81,7 +87,14 @@ class AudioWaveformSampler {
     private func reduce(sampleCount: Int) {
         self.buffer.withUnsafeBufferPointer { bufferPtr in
             var remainingCount = sampleCount
-            while remainingCount > 0 {
+            // If a file understates its sample count in its container metadata,
+            // we'll be using a too-short segment length and consequently could
+            // take more samples than we expect. Short-circuit if we've already
+            // taken all the samples we intend to.
+            while
+                remainingCount > 0,
+                !self.isComplete
+            {
                 let chunkCount = min(remainingCount, self.currentSegmentRemainingCount)
                 assert(chunkCount > 0) // because currentSegmentRemainingCount starts > 0 and is checked on each iteration
                 var chunkAverage: Float = 0

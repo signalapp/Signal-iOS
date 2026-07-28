@@ -50,6 +50,29 @@ final class AudioWaveformSamplerTest: XCTestCase {
         sampler.update([])
         XCTAssertEqual(sampler.finalize().count, 0)
     }
+
+    /// `inputCount` comes from container metadata that may understate how many
+    /// samples will actually arrive. The output must stay bounded by
+    /// `outputCount` no matter how many samples arrive.
+    func testUnderstatedInputCountIsBounded() {
+        struct TestCase {
+            let inputCount: Int
+            let outputCount: Int
+            let actualInputSamples: Int
+        }
+
+        let testCases: [TestCase] = [
+            TestCase(inputCount: 0, outputCount: 10, actualInputSamples: 10_000),
+            TestCase(inputCount: 11, outputCount: 10, actualInputSamples: 10_000),
+            TestCase(inputCount: 100, outputCount: 10, actualInputSamples: 10_000),
+        ]
+
+        for testCase in testCases {
+            let sampler = AudioWaveformSampler(inputCount: testCase.inputCount, outputCount: testCase.outputCount)
+            sampler.update(Array(repeating: 0, count: testCase.actualInputSamples))
+            XCTAssertEqual(sampler.finalize().count, testCase.outputCount)
+        }
+    }
 }
 
 private extension AudioWaveformSampler {
