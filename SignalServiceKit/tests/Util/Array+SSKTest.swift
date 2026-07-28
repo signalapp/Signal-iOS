@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Testing
 import XCTest
 
 @testable import SignalServiceKit
@@ -68,5 +69,29 @@ class ArraySSKTests: XCTestCase {
             numChunks += 1
         }
         XCTAssertEqual(numChunks, 6)
+    }
+}
+
+struct ArrayTest {
+    @Test(arguments: [
+        ([], 1, 0),
+        ([2], 1, 0),
+        ([2], 3, 1),
+        ([2, 4], 1, 0),
+        ([2, 4], 3, 1),
+        ([2, 4], 5, 2),
+        ([2, 4, 6], 1, 0),
+        ([2, 4, 6], 3, 1),
+        ([2, 4, 6], 5, 2),
+        ([2, 4, 6], 7, 3),
+        ([2, 4, 4, 6], 4, 3),
+        ([2, 4, 4, 4, 6], 4, 4),
+    ])
+    func testInsertionIndex(testCase: (elements: [Int], target: Int, expectedOffset: Int)) {
+        // Test with a Collection where startIndex != 0.
+        let elementSlice = ([0] + testCase.elements).dropFirst()
+        #expect(elementSlice.startIndex != 0)
+        let insertionIndex = elementSlice.insertionIndex(for: testCase.target, inCollectionAlreadySortedBy: <)
+        #expect(insertionIndex == elementSlice.startIndex + testCase.expectedOffset)
     }
 }

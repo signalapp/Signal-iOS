@@ -667,6 +667,8 @@
 		5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */; };
 		5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */; };
 		5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */; };
+		50135A293014247E005F45F5 /* NSRange+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50135A283014247E005F45F5 /* NSRange+SSK.swift */; };
+		50135A2B301424DE005F45F5 /* NSRange+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50135A2A301424DE005F45F5 /* NSRange+SSKTest.swift */; };
 		501376162E69F92A009FF5D3 /* NewKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501376152E69F92A009FF5D3 /* NewKeyValueStore.swift */; };
 		50150DAC2C80E2CE0047F1CB /* CallLinkState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E42FE52C1B9EB900554BD6 /* CallLinkState.swift */; };
 		50159CDD2B4EF75600D344D4 /* LocalProfileChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50159CDC2B4EF75600D344D4 /* LocalProfileChecker.swift */; };
@@ -4977,6 +4979,8 @@
 		5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMergerTest.swift; sourceTree = "<group>"; };
 		5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkParamsMigrator.swift; sourceTree = "<group>"; };
 		501336602B2BCA1F004119F1 /* ZkParamsMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkParamsMigratorTest.swift; sourceTree = "<group>"; };
+		50135A283014247E005F45F5 /* NSRange+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSRange+SSK.swift"; sourceTree = "<group>"; };
+		50135A2A301424DE005F45F5 /* NSRange+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSRange+SSKTest.swift"; sourceTree = "<group>"; };
 		501376152E69F92A009FF5D3 /* NewKeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewKeyValueStore.swift; sourceTree = "<group>"; };
 		50159CDC2B4EF75600D344D4 /* LocalProfileChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalProfileChecker.swift; sourceTree = "<group>"; };
 		5015B8D72E958783002A156F /* Int+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+SSKTest.swift"; sourceTree = "<group>"; };
@@ -14504,6 +14508,7 @@
 				F94261FC289B1B5400460798 /* MathOWSTests.swift */,
 				04AC221C2F86B9F2006CB71A /* NSAttributedStringExtensionTests.swift */,
 				F94261E9289B1B5400460798 /* NSData+ImageTest.swift */,
+				50135A2A301424DE005F45F5 /* NSRange+SSKTest.swift */,
 				D95E149C2E3D22FA00B5B70B /* ObjectRetainerTest.swift */,
 				F96BB60629A528BD001C18DF /* OWS2FAManagerTest.swift */,
 				F94261E6289B1B5400460798 /* OWSErrorTest.swift */,
@@ -15652,6 +15657,7 @@
 				D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */,
 				F9C5CB39289453B200548EEE /* NSNotificationCenter+OWS.swift */,
 				50502C7B2EF1D2B1007A64EB /* NSObject+SSK.swift */,
+				50135A283014247E005F45F5 /* NSRange+SSK.swift */,
 				F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */,
 				72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */,
 				50D1EEAF2D96446E00ADF921 /* ObjectRetainer.swift */,
@@ -19696,6 +19702,7 @@
 				D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */,
 				F9C5CE0B289453B400548EEE /* NSNotificationCenter+OWS.swift in Sources */,
 				50502C7C2EF1D2B1007A64EB /* NSObject+SSK.swift in Sources */,
+				50135A293014247E005F45F5 /* NSRange+SSK.swift in Sources */,
 				66F2CE212A3CBE4A00519342 /* NSRangedValue.swift in Sources */,
 				F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */,
 				72976BF22BDCF00C0054FAC2 /* NSTimer+OWS.swift in Sources */,
@@ -20432,6 +20439,7 @@
 				5079F3C22DA47554008430EC /* NotificationPreconditionTest.swift in Sources */,
 				04AC221D2F86B9F8006CB71A /* NSAttributedStringExtensionTests.swift in Sources */,
 				F9426256289B1B5500460798 /* NSData+ImageTest.swift in Sources */,
+				50135A2B301424DE005F45F5 /* NSRange+SSKTest.swift in Sources */,
 				D979CC3A2AD3964E006AAC49 /* Numbers+Random.swift in Sources */,
 				D95E149D2E3D22FD00B5B70B /* ObjectRetainerTest.swift in Sources */,
 				663D02DF2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift in Sources */,

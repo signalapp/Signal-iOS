@@ -485,48 +485,23 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         }
 
         let newStyle = NSRangedValue<SingleStyle>(style, range: range)
-        let overlaps = NSRangedValue<SingleStyle>.overlaps(
-            of: newStyle,
-            in: self.body.flattenedStyles,
-            isEqual: ==,
-        )
 
-        switch overlaps {
-        case .none(let insertionIndex):
+        // Remove all the existing ranges that overlap the new range.
+        var overlappingRanges = [NSRange]()
+        self.body.flattenedStyles.removeAll(where: {
+            let overlaps = $0.value == style && $0.range.intersection(range) != nil
+            if overlaps {
+                overlappingRanges.append($0.range)
+            }
+            return overlaps
+        })
+
+        if overlappingRanges.isEmpty {
             // Easiest case; no overlaps so just insert as a new style.
-            body.flattenedStyles.insert(newStyle, at: insertionIndex)
-
-        case .withinExistingRange(let containingRangeIndex):
-            // Contained within one range, so we want to un-apply.
-            // Remove the existing range, then determine if there are any
-            // non-overlapping sections to chop off and reinsert.
-            let containingStyle = self.body.flattenedStyles[containingRangeIndex]
-            self.body.flattenedStyles.remove(at: containingRangeIndex)
-            if range.location > containingStyle.range.location {
-                // Chop off the start of the existing range and reinsert it.
-                let newStyle = NSRangedValue(
-                    style,
-                    range: NSRange(
-                        location: containingStyle.range.location,
-                        length: range.location - containingStyle.range.location,
-                    ),
-                )
-                insertStylePreservingSort(newStyle)
-            }
-            if range.upperBound < containingStyle.range.upperBound {
-                // Chop off the end of the existing range and reinsert it.
-                let newStyle = NSRangedValue(
-                    style,
-                    range: NSRange(
-                        location: range.upperBound,
-                        length: containingStyle.range.upperBound - range.upperBound,
-                    ),
-                )
-                insertStylePreservingSort(newStyle)
-            }
-
-        case .acrossExistingRanges(let overlapIndexes, let gaps):
+            insertStylePreservingSort(newStyle)
+        } else {
             let shouldUnapply: Bool
+            let gaps = NSRange.gapsBetweenNonOverlappingSortedRanges(overlappingRanges).filter({ $0.length > 0 })
             if gaps.isEmpty {
                 // If there are no gaps, we will un-apply.
                 shouldUnapply = true
@@ -537,7 +512,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                     // Styles visually apply to all gaps, so we should apply.
                     shouldUnapply = false
                 case .bold, .italic:
-                    // Ignore gaps if they're all whitespace, so its like
+                    // Ignore gaps if they're all whitespace, so it's like
                     // if we had no gaps.
                     shouldUnapply = gaps.allSatisfy({ gap in
                         return self.body.hydratedText.substring(withRange: gap).allSatisfy(\.isWhitespace)
@@ -546,48 +521,32 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             }
 
             if shouldUnapply {
-                // If unapplying, remove existing styles but be careful to keep
-                // any hanging head or tail sections.
-                var newRangesToInsert = [NSRangedValue<SingleStyle>]()
-                if let firstIndex = overlapIndexes.first {
+                // If unapplying, be careful to keep any hanging head or tail sections.
+                if let firstRange = overlappingRanges.first, firstRange.location < range.location {
                     // Chop off the start of the first overlapping range and reinsert it.
-                    let existingRange = self.body.flattenedStyles[firstIndex]
-                    let newStyle = NSRangedValue(
+                    insertStylePreservingSort(NSRangedValue(
                         style,
                         range: NSRange(
-                            location: existingRange.range.location,
-                            length: range.location - existingRange.range.location,
+                            location: firstRange.location,
+                            length: range.location - firstRange.location,
                         ),
-                    )
-                    if newStyle.range.length > 0 {
-                        newRangesToInsert.append(newStyle)
-                    }
+                    ))
                 }
-                if let lastIndex = overlapIndexes.last {
+                if let lastRange = overlappingRanges.last, lastRange.upperBound > range.upperBound {
                     // Chop off the end of the last overlapping range and reinsert it.
-                    let existingRange = self.body.flattenedStyles[lastIndex]
-                    let newStyle = NSRangedValue(
+                    insertStylePreservingSort(NSRangedValue(
                         style,
                         range: NSRange(
                             location: range.upperBound,
-                            length: existingRange.range.upperBound - range.upperBound,
+                            length: lastRange.upperBound - range.upperBound,
                         ),
-                    )
-                    if newStyle.range.length > 0 {
-                        newRangesToInsert.append(newStyle)
-                    }
+                    ))
                 }
-                // Remove the overlaps.
-                for i in overlapIndexes.reversed() {
-                    self.body.flattenedStyles.remove(at: i)
-                }
-                newRangesToInsert.forEach(insertStylePreservingSort(_:))
             } else {
                 // If applying, merge all styles into one.
                 var mergedRange = range
-                for i in overlapIndexes.reversed() {
-                    let existingRange = self.body.flattenedStyles.remove(at: i)
-                    mergedRange.formUnion(existingRange.range)
+                for overlappingRange in overlappingRanges {
+                    mergedRange.formUnion(overlappingRange)
                 }
                 insertStylePreservingSort(.init(style, range: mergedRange))
             }
@@ -612,25 +571,11 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     /// Be careful using this method; styles cannot overlap with styles of the same type and that
     /// invariant must be enforced by callers of this method.
     private func insertStylePreservingSort(_ newStyle: NSRangedValue<SingleStyle>) {
-        var low = self.body.flattenedStyles.startIndex
-        var high = self.body.flattenedStyles.endIndex
-        while low != high {
-            let mid = self.body.flattenedStyles.index(
-                low,
-                offsetBy: self.body.flattenedStyles.distance(from: low, to: high) / 2,
-            )
-            let element = self.body.flattenedStyles[mid]
-            if newStyle.range.location == element.range.location {
-                // Good insertion point; we can stop
-                self.body.flattenedStyles.insert(newStyle, at: mid)
-                return
-            } else if newStyle.range.location > element.range.location {
-                low = self.body.flattenedStyles.index(after: mid)
-            } else {
-                high = mid
-            }
-        }
-        self.body.flattenedStyles.insert(newStyle, at: low)
+        let insertionIndex = self.body.flattenedStyles.insertionIndex(
+            for: newStyle,
+            inCollectionAlreadySortedBy: { $0.range.location < $1.range.location },
+        )
+        self.body.flattenedStyles.insert(newStyle, at: insertionIndex)
     }
 
     public func replaceCharacters(in range: NSRange, withPastedMessageBody messageBody: MessageBody, txProvider: ReadTxProvider) {
