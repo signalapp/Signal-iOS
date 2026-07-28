@@ -12,7 +12,7 @@ localizable. See existing usages of this macro for examples.
 To extract the latest translatable strings and comments from our local source
 files into our English localization file:
 
-    bin/auto-genstrings
+    ./Scripts/translation/auto-genstrings
 
 At this point you should see your new strings, untranslated in only the English
 (en) localization.
