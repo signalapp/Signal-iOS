@@ -167,9 +167,6 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         orderedMentions: [NSRangedValue<Aci>],
         mergeAdjacentRangesOfSameStyle: Bool = false,
     ) -> [NSRangedValue<CollapsedStyle>] {
-        guard !styles.isEmpty else {
-            return []
-        }
         var sortedSingleStyles = styles.lazy
             .filter {
                 return $0.range.location >= 0
@@ -179,77 +176,58 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         var sortedStyles = MergedSingleStyle.merge(
             sortedOriginals: sortedSingleStyles,
             mergeAdjacentRangesOfSameStyle: mergeAdjacentRangesOfSameStyle,
-        )
+        )[...]
 
-        var indexesOfInterestSet = Set<Int>()
-        var indexesOfInterest = [Int]()
-        func insertIntoIndexesOfInterest(_ value: Int) {
-            guard !indexesOfInterestSet.contains(value) else {
-                return
-            }
-            indexesOfInterest.append(value)
-            indexesOfInterestSet.insert(value)
-        }
-
+        var changeIndicesSet = Set<Int>()
         sortedStyles.forEach {
-            insertIntoIndexesOfInterest($0.mergedRange.location)
-            insertIntoIndexesOfInterest($0.mergedRange.upperBound)
+            changeIndicesSet.insert($0.mergedRange.location)
+            changeIndicesSet.insert($0.mergedRange.upperBound)
         }
-        // This O(nlogn) operation can theoretically be flattened to O(n) via a lot
-        // of index management, but as long as we limit the number of body ranges
-        // we allow, the difference is trivial.
-        indexesOfInterest.sort()
+        let changeIndices = changeIndicesSet.sorted()
 
         // Collapse all overlaps.
         var finalStyles = [NSRangedValue<CollapsedStyle>]()
-        var collapsedStyleAtIndex: (start: Int, CollapsedStyle) = (start: 0, .empty())
+        var currentCollapsedStyle: CollapsedStyle = .empty()
+        var currentCollapsedStyleStartIndex = 0
         var endIndexToStyles = [Int: Set<SingleStyle>]()
 
-        for i in indexesOfInterest {
+        for idx in changeIndices {
             var newStylesToApply: [MergedSingleStyle] = []
 
             func startApplyingStyles(at index: Int) {
                 while let newMergedStyle = sortedStyles.first, newMergedStyle.mergedRange.location == index {
                     sortedStyles.removeFirst()
                     newStylesToApply.append(newMergedStyle)
-                    var stylesAtEnd = endIndexToStyles[newMergedStyle.mergedRange.upperBound] ?? []
-                    stylesAtEnd.insert(newMergedStyle.style)
-                    endIndexToStyles[newMergedStyle.mergedRange.upperBound] = stylesAtEnd
+                    endIndexToStyles[newMergedStyle.mergedRange.upperBound, default: Set()].insert(newMergedStyle.style)
                 }
             }
 
-            startApplyingStyles(at: i)
-            let stylesToRemove = endIndexToStyles.removeValue(forKey: i) ?? []
+            startApplyingStyles(at: idx)
+            let stylesToRemove = endIndexToStyles.removeValue(forKey: idx) ?? []
 
-            if !newStylesToApply.isEmpty || !stylesToRemove.isEmpty {
-                // We have changes. End the previous style if any, and start a new one.
-                var (startIndex, currentCollapsedStyle) = collapsedStyleAtIndex
-                if !currentCollapsedStyle.isEmpty {
-                    finalStyles.append(.init(
-                        currentCollapsedStyle,
-                        range: NSRange(location: startIndex, length: i - startIndex),
-                    ))
-                }
+            // Every element of changeIndices adds or removes at least one style, so at
+            // least one of these will always be non-empty.
+            assert(!newStylesToApply.isEmpty || !stylesToRemove.isEmpty)
 
-                stylesToRemove.forEach {
-                    currentCollapsedStyle.remove($0)
-                }
-                newStylesToApply.forEach {
-                    currentCollapsedStyle.insert($0)
-                }
-                collapsedStyleAtIndex = (start: i, currentCollapsedStyle)
+            // We have changes. End the previous style if any, and start a new one.
+            if !currentCollapsedStyle.isEmpty {
+                finalStyles.append(.init(
+                    currentCollapsedStyle,
+                    range: NSRange(location: currentCollapsedStyleStartIndex, length: idx - currentCollapsedStyleStartIndex),
+                ))
             }
+
+            stylesToRemove.forEach {
+                currentCollapsedStyle.remove($0)
+            }
+            newStylesToApply.forEach {
+                currentCollapsedStyle.insert($0)
+            }
+            currentCollapsedStyleStartIndex = idx
         }
 
-        if !collapsedStyleAtIndex.1.isEmpty {
-            finalStyles.append(.init(
-                collapsedStyleAtIndex.1,
-                range: NSRange(
-                    location: collapsedStyleAtIndex.start,
-                    length: max(0, (indexesOfInterest.last ?? 0) - collapsedStyleAtIndex.start),
-                ),
-            ))
-        }
+        // Every style is removed in the loop above; it's always empty at the end.
+        assert(currentCollapsedStyle.isEmpty)
 
         return finalStyles
     }
