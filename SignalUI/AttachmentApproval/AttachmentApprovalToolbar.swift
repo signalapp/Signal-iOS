@@ -339,19 +339,39 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
     }
 
     var buttonViewOnce: UIButton {
-        mediaCaptionToolbar.viewOnceButton
+        let viewOnceButton = mediaCaptionToolbar.viewOnceButton
+        viewOnceButton.accessibilityLabel = OWSLocalizedString(
+            "ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for the 'view one' dialog.",
+        )
+        return viewOnceButton
     }
 
     var buttonPenTool: UIButton {
-        mediaToolbar.penToolButton
+        let penToolButton = mediaToolbar.penToolButton
+        penToolButton.accessibilityLabel = OWSLocalizedString(
+            "ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for the 'pen' dialog.",
+        )
+        return penToolButton
     }
 
     var buttonCropTool: UIButton {
-        mediaToolbar.cropToolButton
+        let cropButton = mediaToolbar.cropToolButton
+        cropButton.accessibilityLabel = OWSLocalizedString(
+            "ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for the 'crop/scale image' dialog.",
+        )
+        return cropButton
     }
 
     var buttonMediaQuality: UIButton {
-        mediaToolbar.mediaQualityButton
+        let mediaQualityButton = mediaToolbar.mediaQualityButton
+        mediaQualityButton.accessibilityLabel = OWSLocalizedString(
+            "ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for the 'high/standard quality' dialog.",
+        )
+        return mediaQualityButton
     }
 
     var buttonSaveMedia: UIButton {
@@ -359,7 +379,12 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
     }
 
     var buttonAddMedia: UIButton {
-        mediaToolbar.addMediaButton
+        let mediaQualityButton = mediaToolbar.addMediaButton
+        mediaQualityButton.accessibilityLabel = OWSLocalizedString(
+            "ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for the 'add media' dialog.",
+        )
+        return mediaQualityButton
     }
 }
 
