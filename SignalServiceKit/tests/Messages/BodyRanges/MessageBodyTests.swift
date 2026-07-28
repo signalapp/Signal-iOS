@@ -400,6 +400,56 @@ final class MessageBodyTests: XCTestCase {
         )
     }
 
+    func testHydration_styleOverlappingTwoMentions() {
+        runHydrationTest(
+            input: .init(
+                text: "@@ and @@ are stylish people.",
+                ranges: .init(
+                    mentions: [
+                        NSRange(location: 0, length: 2): acis[0],
+                        NSRange(location: 7, length: 2): acis[1],
+                    ],
+                    styles: [
+                        .init(.bold, range: NSRange(location: 1, length: 7)),
+                    ],
+                ),
+            ),
+            names: [
+                acis[0]: "BoldGuy1",
+                acis[1]: "BoldGuy2",
+            ],
+            output: .init(
+                hydratedText: "@BoldGuy1 and @BoldGuy2 are stylish people.",
+                mentionAttributes: [
+                    .init(
+                        .fromOriginalRange(
+                            NSRange(location: 0, length: 2),
+                            mentionAci: acis[0],
+                            displayName: "BoldGuy1",
+                        ),
+                        range: NSRange(location: 0, length: 9),
+                    ),
+                    .init(
+                        .fromOriginalRange(
+                            NSRange(location: 7, length: 2),
+                            mentionAci: acis[1],
+                            displayName: "BoldGuy2",
+                        ),
+                        range: NSRange(location: 14, length: 9),
+                    ),
+                ],
+                styleAttributes: [
+                    .init(
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 9)),
+                        ),
+                        range: NSRange(location: 0, length: 23),
+                    ),
+                ],
+            ),
+        )
+    }
+
     func testHydration_overlappingStylesAndMentions() {
         // The styles are flattened out into this before hydration applies:
         // .init(.bold, range: NSRange(location: 0, length: 3)),

@@ -232,8 +232,9 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         return finalStyles
     }
 
-    /// If a style starts or ends in the middle of a mention range, the style should be extended
-    /// to cover the entire mention.
+    /// If a style starts or ends in the middle of a mention range, the style
+    /// should be extended to cover the entire mention.
+    ///
     /// This needs to happen _before_ we merge styles, so that two disconnected
     /// styles that partly cover the same mention end up overlapping after being
     /// extended to cover the mention, and are therefore merged.
@@ -241,17 +242,13 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         _ sortedStyles: inout [NSRangedValue<SingleStyle>],
         orderedMentions: [NSRangedValue<Aci>],
     ) {
-        let orderedMentions = orderedMentions
-        let enumeratedStyles = sortedStyles.enumerated()
+        // TODO: Make this O(n lg n) rather than O(n^2).
         for mention in orderedMentions {
-            guard mention.range.length > 0 else {
-                continue
-            }
             // Styles always apply to an entire mention. This means when we find
             // a mention we have to do two things:
             // 1) any styles that start later in the mention are treated as if they start now.
-            for (styleIndex, enumeratedStyle) in enumeratedStyles {
-                var style = enumeratedStyle
+            for idx in sortedStyles.indices {
+                var style = sortedStyles[idx]
                 if style.range.location > mention.range.location, style.range.location < mention.range.upperBound {
                     // Starts inside, move it to start at the beginning.
                     style = NSRangedValue(
@@ -263,7 +260,7 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
                     )
                     // Note this maintains sort; it can't move the location before another
                     // style because that other style would gets its location moved up, too.
-                    sortedStyles[styleIndex] = style
+                    sortedStyles[idx] = style
                 }
                 if style.range.upperBound > mention.range.location, style.range.upperBound < mention.range.upperBound {
                     // Ends inside, move it to end at the end of the mention.
@@ -274,7 +271,7 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
                             length: style.range.length + mention.range.upperBound - style.range.upperBound,
                         ),
                     )
-                    sortedStyles[styleIndex] = style
+                    sortedStyles[idx] = style
                 }
             }
         }
