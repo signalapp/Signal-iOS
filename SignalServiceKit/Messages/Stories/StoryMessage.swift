@@ -290,7 +290,8 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             groupId = nil
         }
 
-        let manifest = StoryManifest.outgoing(recipientStates: Dictionary(uniqueKeysWithValues: try proto.storyMessageRecipients.map { recipient in
+        var recipientStates: [ServiceId: StoryRecipientState] = [:]
+        for recipient in proto.storyMessageRecipients {
             guard
                 let serviceId = ServiceId.parseFrom(
                     serviceIdBinary: recipient.destinationServiceIDBinary,
@@ -300,15 +301,17 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 throw OWSAssertionError("Invalid ServiceId on story recipient")
             }
 
-            return (
-                key: serviceId,
-                value: StoryRecipientState(
-                    allowsReplies: recipient.isAllowedToReply,
-                    contexts: recipient.distributionListIds.compactMap { UUID(uuidString: $0) },
-                    sendingState: .sent, // This was sent by our linked device
-                ),
+            owsAssertDebug(
+                recipientStates[serviceId] == nil,
+                "Unexpected duplicate serviceId: \(serviceId). Overwriting.",
             )
-        }))
+            recipientStates[serviceId] = StoryRecipientState(
+                allowsReplies: recipient.isAllowedToReply,
+                contexts: recipient.distributionListIds.compactMap { UUID(uuidString: $0) },
+                sendingState: .sent, // This was sent by our linked device
+            )
+        }
+        let manifest = StoryManifest.outgoing(recipientStates: recipientStates)
 
         let caption = storyMessage.fileAttachment?.caption.map { caption in
             return StyleOnlyMessageBody(text: caption, protos: storyMessage.bodyRanges)
