@@ -236,34 +236,13 @@ final class MessageBodyRangesTests: XCTestCase {
             NSRangedValue(Aci.constantForTesting("AE9EFF5A-706F-46BE-BEA1-A4E86256B8C7"), range: NSRange(location: 5, length: 7)),
         ]
         let expectedResult = MessageBodyRanges(
-            orderedMentions: mentions.lazy
-                .sorted(by: { $0.range.location < $1.range.location }),
-            collapsedStyles: [
-                .init(.bold, mergedRange: NSRange(location: 0, length: 1)),
-                .init(.italic, mergedRange: NSRange(location: 2, length: 3), appliedRange: NSRange(location: 2, length: 1)),
-                .init(
-                    .init([
-                        .italic: NSRange(location: 2, length: 3),
-                        .monospace: NSRange(location: 3, length: 9),
-                        .strikethrough: NSRange(location: 3, length: 1),
-                    ]),
-                    range: NSRange(location: 3, length: 1),
-                ),
-                .init(
-                    .init([
-                        .italic: NSRange(location: 2, length: 3),
-                        .monospace: NSRange(location: 3, length: 9),
-                    ]),
-                    range: NSRange(location: 4, length: 1),
-                ),
-                .init(
-                    .init([
-                        .monospace: NSRange(location: 3, length: 9),
-                        .spoiler: NSRange(location: 5, length: 13),
-                    ]),
-                    range: NSRange(location: 5, length: 7),
-                ),
-                .init(.spoiler, mergedRange: NSRange(location: 5, length: 13), appliedRange: NSRange(location: 12, length: 6)),
+            mentions: mentions,
+            styles: [
+                .init(.bold, range: NSRange(location: 0, length: 1)),
+                .init(.italic, range: NSRange(location: 2, length: 3)),
+                .init(.strikethrough, range: NSRange(location: 3, length: 1)),
+                .init(.monospace, range: NSRange(location: 3, length: 9)),
+                .init(.spoiler, range: NSRange(location: 5, length: 13)),
             ],
         )
 
@@ -284,34 +263,13 @@ final class MessageBodyRangesTests: XCTestCase {
             NSRangedValue(Aci.constantForTesting("AE9EFF5A-706F-46BE-BEA1-A4E86256B8C7"), range: NSRange(location: 5, length: 7)),
         ]
         let expectedResult = MessageBodyRanges(
-            orderedMentions: mentions.lazy
-                .sorted(by: { $0.range.location < $1.range.location }),
-            collapsedStyles: [
-                .init(.bold, mergedRange: NSRange(location: 0, length: 1)),
-                .init(.italic, mergedRange: NSRange(location: 2, length: 3), appliedRange: NSRange(location: 2, length: 1)),
-                .init(
-                    .init([
-                        .italic: NSRange(location: 2, length: 3),
-                        .monospace: NSRange(location: 3, length: 9),
-                        .strikethrough: NSRange(location: 3, length: 1),
-                    ]),
-                    range: NSRange(location: 3, length: 1),
-                ),
-                .init(
-                    .init([
-                        .italic: NSRange(location: 2, length: 3),
-                        .monospace: NSRange(location: 3, length: 9),
-                    ]),
-                    range: NSRange(location: 4, length: 1),
-                ),
-                .init(
-                    .init([
-                        .monospace: NSRange(location: 3, length: 9),
-                        .spoiler: NSRange(location: 5, length: 13),
-                    ]),
-                    range: NSRange(location: 5, length: 7),
-                ),
-                .init(.spoiler, mergedRange: NSRange(location: 5, length: 13), appliedRange: NSRange(location: 12, length: 6)),
+            mentions: mentions,
+            styles: [
+                .init(.bold, range: NSRange(location: 0, length: 1)),
+                .init(.italic, range: NSRange(location: 2, length: 3)),
+                .init(.strikethrough, range: NSRange(location: 3, length: 1)),
+                .init(.monospace, range: NSRange(location: 3, length: 9)),
+                .init(.spoiler, range: NSRange(location: 5, length: 13)),
             ],
         )
 

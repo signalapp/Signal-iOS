@@ -70,7 +70,6 @@ public class StyleOnlyMessageBody: Codable, Equatable {
         return MessageBody(
             text: text,
             ranges: MessageBodyRanges(
-                orderedMentions: [],
                 collapsedStyles: collapsedStyles,
             ),
         )
@@ -135,7 +134,6 @@ public class StyleOnlyMessageBody: Codable, Equatable {
     public func toProtoBodyRanges() -> [SSKProtoBodyRange] {
         // No need to validate length; all instances of this class are validated.
         return MessageBodyRanges(
-            orderedMentions: [],
             collapsedStyles: collapsedStyles,
         ).toProtoBodyRanges()
     }

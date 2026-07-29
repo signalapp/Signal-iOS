@@ -184,18 +184,6 @@ public class LinkPreviewFetchState {
         guard body.text.range(of: "://") == nil else {
             return body
         }
-        let prefixLen = (schemePrefix as NSString).length
-
-        return MessageBody(
-            text: schemePrefix + body.text,
-            ranges: MessageBodyRanges(
-                orderedMentions: body.ranges.orderedMentions.map {
-                    return $0.offset(by: prefixLen)
-                },
-                collapsedStyles: body.ranges.collapsedStyles.map {
-                    return $0.offset(by: prefixLen)
-                },
-            ),
-        )
+        return body.prepending(schemePrefix)
     }
 }

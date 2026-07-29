@@ -22,6 +22,13 @@ extension NSRangedValue: Hashable where T: Hashable {}
 extension NSRangedValue: Codable where T: Codable {}
 
 extension NSRangedValue {
+    func intersection(_ range: NSRange) -> Self? {
+        guard let overlappingRange = self.range.intersection(range) else {
+            return nil
+        }
+        return Self(self.value, range: overlappingRange)
+    }
+
     public func offset(by offset: Int) -> Self {
         return Self(
             value,

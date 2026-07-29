@@ -4,6 +4,7 @@
 //
 
 import LibSignalClient
+import Testing
 import XCTest
 
 @testable import SignalServiceKit
@@ -134,10 +135,9 @@ final class MessageBodyTests: XCTestCase {
             names: [
                 acis[0]: "Luke",
                 acis[1]: "Leia",
-                acis[2]: "Han",
             ],
             output: .init(
-                hydratedText: "Hello @Luke and @Leia, how is @Han?",
+                hydratedText: "Hello @Luke and @Leia, how is ?",
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
@@ -154,14 +154,6 @@ final class MessageBodyTests: XCTestCase {
                             displayName: "Leia",
                         ),
                         range: NSRange(location: 16, length: 5),
-                    ),
-                    .init(
-                        .fromOriginalRange(
-                            NSRange(location: 27, length: 0),
-                            mentionAci: acis[2],
-                            displayName: "Han",
-                        ),
-                        range: NSRange(location: 30, length: 4),
                     ),
                 ],
                 styleAttributes: [],
@@ -1165,5 +1157,125 @@ final class MessageBodyTests: XCTestCase {
             file: file,
             line: line,
         )
+    }
+}
+
+struct MessageBodyTest2 {
+    static let someZalgo = "x\u{338}\u{306}\u{344}\u{31b}\u{306}\u{33f}\u{344}\u{31a}\u{305}\u{33d}\u{346}\u{35d}\u{344}\u{33f}\u{314}\u{34c}\u{319}\u{31d}\u{322}\u{348}\u{348}\u{316}\u{327}\u{333}\u{317}\u{330}"
+
+    struct TestMessageBody {
+        var text: String
+        var mentions: [Range<Int>]
+        var styles: [Range<Int>]
+
+        func asMessageBody(aci: Aci) -> MessageBody {
+            return MessageBody(
+                text: self.text,
+                ranges: MessageBodyRanges(
+                    mentions: self.mentions.map {
+                        return NSRangedValue(aci, range: NSRange(location: $0.lowerBound, length: $0.count))
+                    },
+                    styles: self.styles.map {
+                        return NSRangedValue(.bold, range: NSRange(location: $0.lowerBound, length: $0.count))
+                    },
+                ),
+            )
+        }
+    }
+
+    @Test(arguments: [
+        (
+            TestMessageBody(
+                text: "  Hello @@ and @@.  ",
+                mentions: [],
+                styles: [],
+            ),
+            TestMessageBody(
+                text: "Hello @@ and @@.",
+                mentions: [],
+                styles: [],
+            ),
+        ),
+        (
+            TestMessageBody(
+                text: "  Hey @@ and @@.  ",
+                mentions: [6..<8, 13..<15],
+                styles: [2..<5],
+            ),
+            TestMessageBody(
+                text: "Hey @@ and @@.",
+                mentions: [4..<6, 11..<13],
+                styles: [0..<3],
+            ),
+        ),
+        (
+            TestMessageBody(
+                text: "  @ and @  ",
+                mentions: [1..<3, 8..<10],
+                styles: [1..<3, 8..<10],
+            ),
+            TestMessageBody(
+                text: "@ and @",
+                mentions: [0..<1, 6..<7],
+                styles: [0..<1, 6..<7],
+            ),
+        ),
+        (
+            TestMessageBody(
+                text: "  @ and \(someZalgo) and @  ",
+                mentions: [1..<3, (13 + someZalgo.utf16.count)..<(15 + someZalgo.utf16.count)],
+                styles: [1..<3, (13 + someZalgo.utf16.count)..<(15 + someZalgo.utf16.count)],
+            ),
+            TestMessageBody(
+                text: "@ and \u{fffd} and @",
+                // TODO: Enable these expectations once we're able to properly filter them.
+                // mentions: [0..<1, (11 + someZalgo.utf16.count)..<(12 + someZalgo.utf16.count)],
+                // styles: [0..<1, (11 + someZalgo.utf16.count)..<(12 + someZalgo.utf16.count)],
+                mentions: [],
+                styles: [],
+            ),
+        ),
+    ])
+    func testFilterForDisplay(testCase: (inputValue: TestMessageBody, expectedValue: TestMessageBody)) {
+        let aci = Aci.randomForTesting()
+        let inputValue = testCase.inputValue.asMessageBody(aci: aci)
+        let outputValue = inputValue.filterStringForDisplay()
+        let expectedValue = testCase.expectedValue.asMessageBody(aci: aci)
+        #expect(outputValue.text == expectedValue.text)
+        #expect(outputValue.ranges.orderedMentions == expectedValue.ranges.orderedMentions)
+        // TODO: Filter original styles so that we can also compare the values.
+        #expect(outputValue.ranges.collapsedStyles.map(\.range) == expectedValue.ranges.collapsedStyles.map(\.range))
+    }
+
+    @Test(arguments: [
+        (
+            TestMessageBody(
+                text: "Welcome! How are you? I'm good.",
+                mentions: [17..<20],
+                styles: [17..<20],
+            ),
+            "How are you?",
+            [4..<7],
+            TestMessageBody(
+                text: "How are you?",
+                mentions: [8..<11],
+                styles: [4..<7, 8..<11],
+            ),
+        ),
+    ])
+    func testMergeStylesIntoFirstMatchOfSubstring(testCase: (inputValue: TestMessageBody, searchValue: String, newStyles: [Range<Int>], expectedValue: TestMessageBody)) {
+        let aci = Aci.randomForTesting()
+        let inputValue = testCase.inputValue.asMessageBody(aci: aci)
+        let outputValue = inputValue.mergeIntoFirstMatchOfStyledSubstring(
+            testCase.searchValue,
+            styles: testCase.newStyles.map {
+                return NSRangedValue(.bold, range: NSRange(location: $0.lowerBound, length: $0.count))
+            },
+        )
+        let expectedValue = testCase.expectedValue.asMessageBody(aci: aci)
+        #expect(outputValue.text == expectedValue.text)
+        #expect(outputValue.ranges.orderedMentions == expectedValue.ranges.orderedMentions)
+        #expect(outputValue.ranges.collapsedStyles == expectedValue.ranges.collapsedStyles)
+        #expect(outputValue == expectedValue)
     }
 }
