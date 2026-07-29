@@ -5,8 +5,6 @@
 
 import Foundation
 
-// This code is ported from Android.
-// See <https://github.com/signalapp/Signal-Android/blob/cdcb1de3d4c0a6c7ff7f80eed37b490743c311e5/libsignal/service/src/main/java/org/whispersystems/signalservice/internal/push/PushTransportDetails.java#L12-L57>.
 extension Data {
     public var paddedMessageBody: Data {
         let paddingLength: Int = {
