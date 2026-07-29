@@ -1,1 +1,1 @@
-• Now you can link another iPhone to your Signal account to send and receive messages and stay in sync with your main phone. Previously only iPads and laptops were supported as linked devices, but after this update one pocket no longer needs to be jealous of the other.
+• 이제 iPhone도 추가 기기로 연동할 수 있습니다. 기존 iPad, 노트북뿐만 아니라 서브 iPhone에서도 메인 폰과 실시간으로 동기화하며 자유롭게 메시지를 주고받아 보세요.

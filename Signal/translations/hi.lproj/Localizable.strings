@@ -490,6 +490,21 @@
 /* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
 "ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "फ़ोटो में सेव किया गया";
 
+/* Accessibility label for the 'add media' dialog. */
+"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "Add media";
+
+/* Accessibility label for the 'crop/scale image' dialog. */
+"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "Crop or scale image";
+
+/* Accessibility label for the 'high/standard quality' dialog. */
+"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Media quality";
+
+/* Accessibility label for the 'pen' dialog. */
+"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Draw or annotate media";
+
+/* Accessibility label for the 'view one' dialog. */
+"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "View once";
+
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "ऐनिमेटेड";
 
@@ -1027,17 +1042,41 @@
 /* Title for a sheet explaining that the user's Backups subscription was not found on this device. */
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "सब्सक्रिप्शन नहीं मिला";
 
+/* Label for the On-Device Backups option on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "On-Device Backups";
+
+/* Footer text below the On-Device Backups row on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "Save your backups to a folder on this device.";
+
+/* Section header on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "Other Ways to Backup";
+
+/* Subtitle on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Back up your message history so you never lose data when you get a new phone or reinstall Signal.";
+
+/* Button to begin setting up Signal Secure Backups on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Set Up";
+
+/* Description of Signal Secure Backups on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Automatic backups with Signal's secure, end-to-end encrypted storage service.";
+
+/* Title for the Signal Secure Backups cell on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Signal Secure Backups";
+
+/* Button to view settings for remote backups on the Backups settings landing page. */
+"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "View Settings";
+
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "You can manage or upgrade your Signal Secure Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "अपने प्राइमरी डिवाइस पर Signal सिक्योर बैकअप का सब्सक्रिप्शन मैनेज या अपग्रेड किया जा सकता है।";
 
 /* Note on the linked-device Backups screen, shown on the paid tier, explaining that the Backups subscription can only be managed on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "You can manage or cancel your Signal Backups subscription on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER_PAID" = "अपने प्राइमरी डिवाइस पर Signal बैकअप का सब्सक्रिप्शन मैनेज या कैंसिल किया जा सकता है।";
 
 /* Body text on the linked-device Backups screen, shown when Backups aren't set up, explaining the feature and that it can be enabled on the user's primary device. */
-"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Automatic backups with Signal's secure, end-to-end encrypted storage service. Get started on your primary device.";
+"BACKUP_SETTINGS_LINKED_DEVICE_NO_BACKUP_FOOTER" = "Signal की सिक्योर और एंड-टू-एंड एनक्रिप्टेड स्टोरेज सेवा के साथ ऑटोमैटिक बैकअप। अपने प्राइमरी डिवाइस पर शुरू करें।";
 
 /* Message on the linked-device Backups screen, shown when the user's paid subscription can't be found, prompting them to renew. */
-"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "Your subscription was not found. Renew to continue using Signal Secure Backups.";
+"BACKUP_SETTINGS_LINKED_DEVICE_SUBSCRIPTION_NOT_FOUND" = "आपका सब्सक्रिप्शन नहीं मिल सका। Signal सिक्योर बैकअप का इस्तेमाल जारी रखने के लिए रिन्यू करें।";
 
 /* Title for a button allowing users to trigger a manual backup. */
 "BACKUP_SETTINGS_MANUAL_BACKUP_BUTTON_TITLE" = "अभी बैकअप लें";
@@ -3455,7 +3494,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "रसीद शेयर करें";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of protecting free expression and enabling secure global communication for millions around the world, through open source privacy technology. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. Signal did not provide any goods or services in consideration of this contribution.";
+"DONATION_RECEIPT_FOOTER" = "Signal को सहयोग करने के लिए आपका धन्यवाद। आपका यह योगदान, ओपन सोर्स प्राइवेसी वाली टेक्नोलॉजी के ज़रिए हमारे मिशन को आगे बढ़ाने में मदद करता है। यह टेक्नोलॉजी अभिव्यक्ति की आज़ादी की रक्षा करती है और दुनिया भर के लाखों-करोड़ों लोगों को सुरक्षित तरीके से आपस में जुड़ने और बातचीत करने की सुविधा देती है। अगर आप अमेरिका से हैं, तो कृपया इस रसीद को अपने टैक्स रिकॉर्ड के लिए संभालकर रखें। Signal Technology Foundation, अमेरिका में रजिस्टर एक गैर-लाभकारी संस्था है। इसे डोनेशन देने से इंटरनल रेवेन्यू कोड की धारा 501c3 के तहत टैक्स में छूट मिलती है। हमारी फ़ेडरल टैक्स ID है: 82-4506840. Signal ने इस योगदान के बदले कोई वस्तु या सेवा प्रदान नहीं की है।";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "दोस्त के बदले डोनेशन";
@@ -3684,6 +3723,15 @@
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "किसी को इनवाइट भेजकर देखना है?";
+
+/* Button for a sheet asking the user if they want to enable local file backups */
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "Enable on-device backups";
+
+/* Message for a sheet asking the user if they want to enable local file backups. */
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "To continue using on-device backups, you need to enable them for this account. You can do this at any time from Settings > Backups.";
+
+/* Title for a sheet asking the user if they want to enable local file backups. */
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Enable on-device backups?";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "व्यस्त हैं";
@@ -5207,7 +5255,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "डिवाइस लिंक नहीं हो सका";
 
 /* Menu action on the phone number entry screen to link this device as a secondary device. */
-"LINK_DEVICE_MENU_ACTION" = "Link Device";
+"LINK_DEVICE_MENU_ACTION" = "डिवाइस लिंक करें";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "इस डिवाइस पर आपके ग्रुप और कॉन्टैक्ट दिखते रहेंगे, आपकी चैट ऐक्सेस होती रहेगी, और पहले की तरह मैसेज भी भेजे जा सकेंगे।";
@@ -5276,7 +5324,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "लिंक का प्रीव्यू";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing phone contacts is no longer available on linked devices. To add Signal connections to your phone contacts open Signal on your primary device.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "अब लिंक किए गए डिवाइसों पर फ़ोन के कॉन्टैक्ट मैनेज करने की सुविधा उपलब्ध नहीं है। अपने फ़ोन की कॉन्टैक्ट लिस्ट में Signal के कनेक्शन जोड़ने के लिए अपने प्राइमरी डिवाइस में Signal खोलें।";
 
 /* Bullet point on the linked devices info sheet, describing what can be linked. */
 "LINKED_DEVICE_INFO_SHEET_BULLET_1" = "अपने डेस्कटॉप, टैबलेट या किसी अन्य फ़ोन को आसानी से लिंक करें।";
@@ -5291,7 +5339,7 @@
 "LINKED_DEVICE_INFO_SHEET_HEADER" = "<bold>लिंक किए गए डिवाइस</bold> से आपको यह सुविधा मिलती है कि आप अपने किसी भी अन्य डिवाइस में अपना Signal अकाउंट और मैसेज सुरक्षित ढंग से खोल पाएं।";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing phone contacts is no longer supported on linked devices. This device will continue to sync any changes to your contact list from Signal on your primary device.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "अब लिंक किए गए डिवाइसों पर फ़ोन के कॉन्टैक्ट मैनेज करने की सुविधा उपलब्ध नहीं है। आपके प्राइमरी डिवाइस पर Signal ऐप की कॉन्टैक्ट लिस्ट में होने वाले सभी बदलाव इस डिवाइस पर अपने आप सिंक होते रहेंगे।";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "और जानें";
@@ -5370,6 +5418,39 @@
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "ऐप बंद न करें।";
+
+/* Button for a sheet asking the user to choose a new local file backup folder */
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Choose Folder";
+
+/* Message for a sheet asking the user to choose a new local file backup folder. */
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Your on-device backup couldn't be completed. This may be because you moved or deleted your backup folder. Choose a folder in your device's storage where your backup will be stored.";
+
+/* Title for a sheet asking the user to choose a new local file backup folder. */
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "Couldn't Complete Backup";
+
+/* Bullet point on a view introducing local file backups during onboarding flow. */
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";
+
+/* Bullet point on a view introducing local file backups during onboarding flow. */
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "Saved on your device";
+
+/* Bullet point on a view introducing local file backups during onboarding flow. */
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Turn off backups anytime";
+
+/* Subtitle for a view introducing local file backups during the onboarding flow. */
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages to a folder on your device. Your backup is end-to-end encrypted and can be restored by moving your backup folder to a new device.";
+
+/* Title for a view introducing local file backups during the onboarding flow. */
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "On-Device Backups";
+
+/* Body text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "Choose a folder in your device’s storage where your backup will be stored.";
+
+/* Button for a sheet asking the user to choose a folder to save their local backup in. */
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "Choose Folder";
+
+/* Title text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Choose a Folder";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "नाम या जगह से खोजें";
@@ -6181,6 +6262,9 @@
 /* Body for a notification representing a message request. */
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "मैसेज का अनुरोध";
 
+/* Body for a notification shown when Signal can't fetch messages because the device is low on storage space. */
+"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "You may have new messages but your device doesn't have enough storage space for Signal to run. Tap for more info.";
+
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "हो सकता है कि जब आपका %1$@ रीस्टार्ट हो रहा था, तब आपको मैसेज मिले हों।";
 
@@ -6344,19 +6428,19 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad रजिस्टर करें";
 
 /* button indicating that the user will link this device */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "इस डिवाइस को लिंक करें";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "'iPad रजिस्टर करें' पर टैप करने से आपके पास या तो नया Signal अकाउंट बनाने या फिर अपने मौजूदा अकाउंट को इस iPad पर ले जाने का विकल्प मिलता है। ऐसा करने से, इस फ़ोन नंबर से लिंक बाकी सभी डिवाइस पर Signal बंद हो जाएगा, जिन पर फ़िलहाल यह चालू है।";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link this device” will let you connect this device to an existing Signal account.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "'इस डिवाइस को लिंक करें' पर टैप करने से इस डिवाइस को किसी मौजूदा Signal अकाउंट से कनेक्ट किया जा सकता है।";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "इस iPad को रजिस्टर करें";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this device";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "इस डिवाइस को लिंक करें";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "इस iPad को रजिस्टर करने से, इस फ़ोन नंबर से लिंक बाकी सभी डिवाइस पर Signal बंद हो जाएगा, जिन पर फ़िलहाल यह चालू है।";
@@ -8366,22 +8450,22 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "अपने फ़ोन पर Signal इंस्टॉल करें";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help with these steps";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "मदद पाने के लिए इन चरणों का पालन करें";
 
 /* Text for a button offering to refresh the QR code to link an iPad. */
 "SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "कोड रीफ़्रेश करें";
 
 /* Third bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "Tap “Linked devices” and “Link new device”";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE" = "'लिंक किए गए डिवाइस' और 'नया डिवाइस लिंक करें' पर टैप करें";
 
 /* First bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "Open Signal on your primary device";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY" = "अपने प्राइमरी डिवाइस पर Signal खोलें";
 
 /* Second bullet point on the QR code screen for linking a device */
-"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Tap your profile picture to open Signal Settings";
+"SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS" = "Signal सेटिंग खोलने के लिए अपनी प्रोफ़ाइल पिक्चर पर टैप करें";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan this code to link your account";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "अपना अकाउंट लिंक करने के लिए इस कोड को स्कैन करें";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "अपना अकाउंट ट्रांसफ़र करने के लिए, पुराने iPad पर Signal खोलें";
@@ -8760,6 +8844,9 @@
 
 /* Footer below the 'delete app data' button, shown on a linked device's account settings. */
 "SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "इससे इस डिवाइस पर मौजूद Signal ऐप का सारा डेटा हट जाएगा।";
+
+/* Title for the 'on-device backups' settings page. */
+"SETTINGS_LOCAL_FILE_BACKUPS" = "On-Device Backups";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "कभी नहीं";
@@ -9486,6 +9573,12 @@
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "लोड हो रहा है…";
+
+/* Message for an error shown when the user tries to share to Signal but the device is too low on storage space. */
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "You can’t share to Signal because your device is low on storage space. Free up space by managing your storage in Settings, then try again.";
+
+/* Title for an error shown when the user tries to share to Signal but the device is too low on storage space. */
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "Storage Space Low";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "रजिस्टर करने के लिए Signal ऐप खोलें।";

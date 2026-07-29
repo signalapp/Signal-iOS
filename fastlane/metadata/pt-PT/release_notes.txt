@@ -1,1 +1,1 @@
-• Now you can link another iPhone to your Signal account to send and receive messages and stay in sync with your main phone. Previously only iPads and laptops were supported as linked devices, but after this update one pocket no longer needs to be jealous of the other.
+• Antes só iPads e portáteis eram suportados como dispositivos vinculados, mas agora também pode vincular o seu iPhone à sua conta do Signal para enviar e receber convites e sincronizar-se com o seu telemóvel principal.
