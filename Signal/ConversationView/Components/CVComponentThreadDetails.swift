@@ -156,6 +156,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let titleButton = componentView.titleButton
         titleLabelConfig.applyForRendering(button: titleButton)
+        titleButton.accessibilityLabel = titleText
         self.configureTitleAction(button: titleButton, delegate: componentDelegate)
         innerViews.append(titleButton)
 
