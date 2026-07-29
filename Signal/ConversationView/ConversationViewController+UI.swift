@@ -197,6 +197,10 @@ extension ConversationViewController {
                 actionExecuted: {},
             ),
         )
+        muteButton.accessibilityLabel = OWSLocalizedString(
+            "CONVERSATION_SETTINGS_MUTE_LABEL",
+            comment: "Accessibility label to mute the thread",
+        )
         navigationItem.rightBarButtonItem = muteButton
     }
 
