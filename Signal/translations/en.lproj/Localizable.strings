@@ -490,6 +490,21 @@
 /* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
 "ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Saved to Photos";
 
+/* Accessibility label for the 'add media' dialog. */
+"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "Add media";
+
+/* Accessibility label for the 'crop/scale image' dialog. */
+"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "Crop or scale image";
+
+/* Accessibility label for the 'high/standard quality' dialog. */
+"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Media quality";
+
+/* Accessibility label for the 'pen' dialog. */
+"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Draw or annotate media";
+
+/* Accessibility label for the 'view one' dialog. */
+"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "View once";
+
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "Animated";
 
