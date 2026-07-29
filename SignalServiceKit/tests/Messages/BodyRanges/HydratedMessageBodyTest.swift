@@ -28,7 +28,7 @@ struct HydratedMessageBodyTest {
             messageBody: MessageBody(
                 text: testCase.text,
                 ranges: MessageBodyRanges(
-                    mentions: Dictionary(uniqueKeysWithValues: testCase.mentions.map({ ($0, Aci.randomForTesting()) })),
+                    mentions: testCase.mentions.map({ NSRangedValue(Aci.randomForTesting(), range: $0) }),
                     styles: testCase.spoilers.map({ NSRangedValue(.spoiler, range: $0) }),
                 ),
             ),

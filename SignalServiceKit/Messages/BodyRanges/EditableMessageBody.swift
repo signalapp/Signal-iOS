@@ -125,11 +125,11 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
 
     struct Body: Equatable {
         var hydratedText: String
-        var mentions: [NSRange: Aci]
+        var mentions: [NSRangedValue<Aci>]
         var flattenedStyles: [NSRangedValue<SingleStyle>]
     }
 
-    private var body = Body(hydratedText: "", mentions: [:], flattenedStyles: []) {
+    private var body = Body(hydratedText: "", mentions: [], flattenedStyles: []) {
         didSet {
             cachedMessageBody = nil
         }
@@ -147,7 +147,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
 
     // Unordered
     public var mentionRanges: [NSRange] {
-        return body.mentions.keys.map({ $0 })
+        return body.mentions.map(\.range)
     }
 
     // MARK: - Making Updates
@@ -194,23 +194,31 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         }
         // If the change is within a mention, that mention is eliminated.
         // Note that the hydrated text of the mention is preserved; its just plaintext now.
-        var intersectingMentionRanges = [NSRange]()
-        body.mentions.forEach { mentionRange, mentionAci in
-            if
+        var intersectingMentions = [NSRangedValue<Aci>]()
+        var filteredMentions = [NSRangedValue<Aci>]()
+        for mention in body.mentions {
+            let intersects: Bool
+            if range.length == 0 {
                 // An insert, which can happen in the middle of a mention.
-                (range.length == 0 && mentionRange.contains(range.location) && range.location != mentionRange.location)
-                || (mentionRange.intersection(range)?.length ?? 0) > 0
-            {
-                intersectingMentionRanges.append(mentionRange)
+                intersects = mention.range.contains(range.location) && range.location != mention.range.location
+            } else {
+                intersects = (mention.range.intersection(range)?.length ?? 0) > 0
+            }
+            if intersects {
+                intersectingMentions.append(mention)
+                modifiedRange.formUnion(mention.range)
+            } else {
+                filteredMentions.append(mention)
             }
         }
         if
             string.isEmpty,
             selectedRange.length <= 1,
-            let intersectingMentionRange = intersectingMentionRanges.first,
             range.length == 1,
-            range.upperBound == intersectingMentionRange.upperBound
+            let firstIntersectingMention = intersectingMentions.first,
+            range.upperBound == firstIntersectingMention.range.upperBound
         {
+            let intersectingMentionRange = firstIntersectingMention.range
             // Backspace at the end of a mention, just clear the whole mention minus the prefix.
             self.replaceCharacters(in: intersectingMentionRange, with: Mention.prefix, selectedRange: selectedRange)
             // Put the selection after the prefix so a new mention can be typed.
@@ -222,17 +230,13 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             return
         }
 
-        body.mentions.forEach { mentionRange, mentionAci in
-            if range.upperBound <= mentionRange.location {
-                // If the change is before a mention, we have to shift the mention.
-                body.mentions[mentionRange] = nil
-                body.mentions[NSRange(location: mentionRange.location + changeInLength, length: mentionRange.length)] = mentionAci
-            }
-        }
+        body.mentions = filteredMentions
 
-        intersectingMentionRanges.forEach {
-            body.mentions.removeValue(forKey: $0)
-            modifiedRange.formUnion($0)
+        for idx in body.mentions.indices {
+            if range.upperBound <= body.mentions[idx].range.location {
+                // If the change is before a mention, we have to shift the mention.
+                body.mentions[idx].range.location += changeInLength
+            }
         }
 
         // Styles need updated ranges.
@@ -249,7 +253,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
 
         regenerateDisplayString(
             hydratedTextBeforeChange: hydratedTextBeforeChange,
-            hydrator: makeMentionHydrator(for: Array(self.body.mentions.values), txProvider: txProvider),
+            hydrator: makeMentionHydrator(for: Set(self.body.mentions.map(\.value)), txProvider: txProvider),
             modifiedRange: modifiedRange,
             selectedRangeAfterChange: nil,
         )
@@ -318,7 +322,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     }
 
     public func replaceCharacters(in range: NSRange, withMentionAci mentionAci: Aci, txProvider: ReadTxProvider) {
-        let hydrator = makeMentionHydrator(for: Array(body.mentions.values) + [mentionAci], txProvider: txProvider)
+        let hydrator = makeMentionHydrator(for: Set(body.mentions.map(\.value)).union([mentionAci]), txProvider: txProvider)
         replaceCharacters(in: range, withMentionAci: mentionAci, hydrator: hydrator, insertSpaceAfter: true)
     }
 
@@ -344,18 +348,19 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
 
         // If the change is within an existing mention, that mention is eliminated.
         // Note that the hydrated text of the mention is preserved; its just plaintext now.
-        let intersectingMentionRanges = body.mentions.keys.filter { mentionRange in
+        body.mentions.removeAll(where: { mention in
+            let intersects: Bool
             if range.length == 0 {
                 // An insert, which can happen in the middle of a mention.
-                return mentionRange.contains(range.location)
+                intersects = mention.range.contains(range.location)
             } else {
-                return (mentionRange.intersection(range)?.length ?? 0) > 0
+                intersects = (mention.range.intersection(range)?.length ?? 0) > 0
             }
-        }
-        intersectingMentionRanges.forEach {
-            body.mentions.removeValue(forKey: $0)
-            modifiedRange.formUnion($0)
-        }
+            if intersects {
+                modifiedRange.formUnion(mention.range)
+            }
+            return intersects
+        })
 
         // Add a space after the inserted mention
         let suffix = insertSpaceAfter ? " " : ""
@@ -375,20 +380,17 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         ).removingPlaceholders()
 
         // If the new mention is before the already existing mentions, we have to shift the existing mentions.
-        body.mentions.forEach { mentionRange, mentionAci in
-            if range.upperBound <= mentionRange.location {
+        for idx in body.mentions.indices {
+            if range.upperBound <= body.mentions[idx].range.location {
                 // Since the user may have already typed out part of the mention, we should remove
                 // range.length from the final location to avoid double counting those letters.
-                let newMentionLowerBound = mentionRange.location - range.length
-
-                body.mentions[mentionRange] = nil
-                body.mentions[NSRange(location: newMentionLowerBound + (finalMentionText as NSString).length, length: mentionRange.length)] = mentionAci
+                body.mentions[idx].range.location += (finalMentionText as NSString).length - range.length
             }
         }
 
         // Any space isn't included in the mention's range.
         let mentionRange = NSRange(location: range.location, length: (hydratedMention as NSString).length)
-        body.mentions[mentionRange] = mentionAci
+        body.mentions.append(NSRangedValue(mentionAci, range: mentionRange))
 
         // Put the cursor after the space, if any
         let newSelectedRange = NSRange(location: mentionRange.upperBound + (suffix as NSString).length, length: 0)
@@ -562,7 +564,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
 
         regenerateDisplayString(
             hydratedTextBeforeChange: hydratedTextBeforeChange,
-            hydrator: makeMentionHydrator(for: Array(self.body.mentions.values), txProvider: txProvider),
+            hydrator: makeMentionHydrator(for: Set(self.body.mentions.map(\.value)), txProvider: txProvider),
             modifiedRange: range,
             selectedRangeAfterChange: newSelectedRange,
         )
@@ -579,7 +581,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     }
 
     public func replaceCharacters(in range: NSRange, withPastedMessageBody messageBody: MessageBody, txProvider: ReadTxProvider) {
-        let hydrator = self.makeMentionHydrator(for: Array(messageBody.ranges.mentions.values), txProvider: txProvider)
+        let hydrator = self.makeMentionHydrator(for: Set(messageBody.ranges.orderedMentions.map(\.value)), txProvider: txProvider)
         let hydrated = messageBody.hydrating(mentionHydrator: hydrator.hydrator)
         let insertedBody = hydrated.asEditableMessageBody()
 
@@ -593,7 +595,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         )
         for mention in insertedBody.mentions {
             self.replaceCharacters(
-                in: NSRange(location: range.location + mention.key.location, length: mention.key.length),
+                in: NSRange(location: range.location + mention.range.location, length: mention.range.length),
                 withMentionAci: mention.value,
                 hydrator: hydrator,
                 insertSpaceAfter: false,
@@ -607,7 +609,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             )
         }
         let hydratedTextBeforeChange = body.hydratedText
-        let wholeBodyHydrator = makeMentionHydrator(for: Array(self.body.mentions.values), txProvider: txProvider)
+        let wholeBodyHydrator = makeMentionHydrator(for: Set(self.body.mentions.map(\.value)), txProvider: txProvider)
         // Put the range at the very end.
         let newSelectedRange = NSRange(location: range.location + (insertedBody.hydratedText as NSString).length, length: 0)
         self.regenerateDisplayString(
@@ -740,7 +742,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     public func setMessageBody(_ messageBody: MessageBody?, txProvider: ReadTxProvider) {
         let hydratedTextBeforeChange = body.hydratedText
         let messageBody = messageBody ?? MessageBody(text: "", ranges: .empty)
-        let hydrator = self.makeMentionHydrator(for: Array(messageBody.ranges.mentions.values), txProvider: txProvider)
+        let hydrator = self.makeMentionHydrator(for: Set(messageBody.ranges.orderedMentions.map(\.value)), txProvider: txProvider)
         let hydrated = messageBody.hydrating(mentionHydrator: hydrator.hydrator)
         self.body = hydrated.asEditableMessageBody()
         // While this could open a _second_ transaction, in practice it won't because
@@ -799,37 +801,34 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                 )
             }
         }
-        let orderedMentions: [NSRangedValue<Aci>] = body.mentions.lazy
-            .compactMap({ (range: NSRange, aci: Aci) -> NSRangedValue<Aci>? in
-                guard let subrange else {
-                    return .init(aci, range: range)
-                }
+        var mentions = body.mentions
+        if let subrange {
+            mentions = mentions.compactMap { mention in
                 guard
-                    let intersection = range.intersection(subrange),
+                    let intersection = mention.range.intersection(subrange),
                     // We need total overlap or we won't preserve the mention.
-                    intersection.length == range.length
+                    intersection.length == mention.range.length
                 else {
                     return nil
                 }
                 return .init(
-                    aci,
+                    mention.value,
                     range: NSRange(
                         location: intersection.location - subrange.location,
                         length: intersection.length,
                     ),
                 )
-            })
-            .sorted(by: {
-                return $0.range.location < $1.range.location
-            })
+            }
+        }
+        let orderedMentions = mentions.sorted(by: { $0.range.location < $1.range.location })
 
         let mentionPlaceholderLength = (MessageBody.mentionPlaceholder as NSString).length
-        var finalMentions = [NSRange: Aci]()
+        var finalMentions = [NSRangedValue<Aci>]()
         var mentionOffset = 0
         for mention in orderedMentions {
             let effectiveRange = NSRange(location: mention.range.location + mentionOffset, length: mention.range.length)
             text = text.replacingCharacters(in: effectiveRange, with: MessageBody.mentionPlaceholder) as NSString
-            finalMentions[NSRange(location: effectiveRange.location, length: mentionPlaceholderLength)] = mention.value
+            finalMentions.append(NSRangedValue(mention.value, range: NSRange(location: effectiveRange.location, length: mentionPlaceholderLength)))
             flattenedStyles = Self.updateFlattenedStyles(
                 flattenedStyles,
                 forReplacementOf: effectiveRange,
@@ -914,10 +913,10 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     }
 
     private func makeMentionHydratorForCurrentBody() -> CacheMentionHydrator {
-        return makeMentionHydrator(for: Array(self.body.mentions.values), txProvider: db.readTxProvider)
+        return makeMentionHydrator(for: Set(self.body.mentions.map(\.value)), txProvider: db.readTxProvider)
     }
 
-    private func makeMentionHydrator(for mentions: [Aci], txProvider: ReadTxProvider) -> CacheMentionHydrator {
+    private func makeMentionHydrator(for mentions: Set<Aci>, txProvider: ReadTxProvider) -> CacheMentionHydrator {
         var mentionCache: [Aci: String]
         if let mentionCacheKey, mentionCacheKey == editableBodyDelegate?.mentionCacheInvalidationKey() {
             mentionCache = self.mentionCache

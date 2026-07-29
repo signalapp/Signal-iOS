@@ -17,18 +17,10 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     public static let maxRangesPerMessage = 250
 
     public static var supportsSecureCoding: Bool { true }
-    public static var empty: MessageBodyRanges { MessageBodyRanges(mentions: [:], styles: []) }
-
-    // Styles are kept separate from mentions; mentions are not allowed to overlap,
-    // which is partially enforced by its structure (it enforces they at least can't have
-    // identical ranges) while styles can overlap with each other and
-    // with mentions.
-
-    /// Mentions can overlap with styles but not with each other.
-    public let mentions: [NSRange: Aci]
+    public static var empty: MessageBodyRanges { MessageBodyRanges(mentions: [], styles: []) }
 
     @objc
-    public var hasMentions: Bool { !mentions.isEmpty }
+    public var hasMentions: Bool { !orderedMentions.isEmpty }
 
     /// Sorted from lowest location to highest location
     public let orderedMentions: [NSRangedValue<Aci>]
@@ -40,32 +32,29 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     public let collapsedStyles: [NSRangedValue<CollapsedStyle>]
 
     public var hasRanges: Bool {
-        return !mentions.isEmpty || !collapsedStyles.isEmpty
+        return !orderedMentions.isEmpty || !collapsedStyles.isEmpty
     }
 
     public init(
-        mentions: [NSRange: Aci],
         orderedMentions: [NSRangedValue<Aci>],
         collapsedStyles: [NSRangedValue<CollapsedStyle>],
     ) {
-        self.mentions = mentions
         self.orderedMentions = orderedMentions
         self.collapsedStyles = collapsedStyles
 
         super.init()
     }
 
-    public convenience init(mentions: [NSRange: Aci], styles: [NSRangedValue<SingleStyle>]) {
+    public convenience init(mentions: [NSRangedValue<Aci>], styles: [NSRangedValue<SingleStyle>]) {
         let orderedMentions = mentions.lazy
-            .sorted(by: { $0.key.location < $1.key.location })
-            .map { return NSRangedValue($0.value, range: $0.key) }
+            .sorted(by: { $0.range.location < $1.range.location })
         let collapsedStyles = Self.processStylesForInitialization(styles, orderedMentions: orderedMentions)
 
-        self.init(mentions: mentions, orderedMentions: orderedMentions, collapsedStyles: collapsedStyles)
+        self.init(orderedMentions: orderedMentions, collapsedStyles: collapsedStyles)
     }
 
     public convenience init(protos: [SSKProtoBodyRange]) {
-        var mentions = [NSRange: Aci]()
+        var mentions = [NSRangedValue<Aci>]()
         var styles = [NSRangedValue<SingleStyle>]()
         for proto in protos.prefix(Self.maxRangesPerMessage) {
             guard proto.length > 0 else {
@@ -74,12 +63,12 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             }
             let range = NSRange(location: Int(proto.start), length: Int(proto.length))
             if let mentionAci = Aci.parseFrom(serviceIdBinary: proto.mentionAciBinary, serviceIdString: proto.mentionAci) {
-                mentions[range] = mentionAci
+                mentions.append(NSRangedValue(mentionAci, range: range))
             } else if
                 let protoStyle = proto.style,
                 let style = SingleStyle.from(protoStyle)
             {
-                styles.append(.init(style, range: range))
+                styles.append(NSRangedValue(style, range: range))
             }
         }
         self.init(mentions: mentions, styles: styles)
@@ -88,7 +77,7 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     public required init?(coder: NSCoder) {
         let mentionsCount = coder.decodeInteger(forKey: "mentionsCount")
 
-        var mentions = [NSRange: Aci]()
+        var mentions = [NSRangedValue<Aci>]()
         for idx in 0..<mentionsCount {
             guard let range = coder.decodeObject(of: NSValue.self, forKey: "mentions.range.\(idx)")?.rangeValue else {
                 owsFailDebug("Failed to decode mention range key of MessageBody")
@@ -98,13 +87,11 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
                 owsFailDebug("Failed to decode mention range value of MessageBody")
                 return nil
             }
-            mentions[range] = Aci(fromUUID: aciUuid)
+            mentions.append(NSRangedValue(Aci(fromUUID: aciUuid), range: range))
         }
 
-        self.mentions = mentions
         let orderedMentions = mentions.lazy
-            .sorted(by: { $0.key.location < $1.key.location })
-            .map { NSRangedValue($0.value, range: $0.key) }
+            .sorted(by: { $0.range.location < $1.range.location })
         self.orderedMentions = orderedMentions
 
         let stylesCount: Int = {
@@ -305,12 +292,12 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             )
         }
 
-        var mentions = [NSRange: Aci]()
-        for (range, aci) in self.mentions {
-            guard let newRange = intersect(range) else {
+        var mentions = [NSRangedValue<Aci>]()
+        for mention in self.orderedMentions {
+            guard let newRange = intersect(mention.range) else {
                 continue
             }
-            mentions[newRange] = aci
+            mentions.append(NSRangedValue(mention.value, range: newRange))
         }
         // Flatten out all the collapsed styles so we can re-merge from
         // scratch with the new styles being added.
@@ -327,18 +314,7 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
                 return NSRangedValue($0, range: style.range)
             }
         }
-        let orderedMentions = mentions.lazy
-            .sorted(by: { $0.key.location < $1.key.location })
-            .map { NSRangedValue($0.value, range: $0.key) }
-        let finalStyles = Self.processStylesForInitialization(
-            oldStyles + stylesInSubstring,
-            orderedMentions: orderedMentions,
-        )
-        return MessageBodyRanges(
-            mentions: mentions,
-            orderedMentions: orderedMentions,
-            collapsedStyles: finalStyles,
-        )
+        return MessageBodyRanges(mentions: mentions, styles: oldStyles + stylesInSubstring)
     }
 
     public func copy(with zone: NSZone? = nil) -> Any {
@@ -346,10 +322,10 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     }
 
     public func encode(with coder: NSCoder) {
-        coder.encode(mentions.count, forKey: "mentionsCount")
-        for (idx, (range, aci)) in mentions.enumerated() {
-            coder.encode(NSValue(range: range), forKey: "mentions.range.\(idx)")
-            coder.encode(aci.rawUUID, forKey: "mentions.uuid.\(idx)")
+        coder.encode(orderedMentions.count, forKey: "mentionsCount")
+        for (idx, mention) in orderedMentions.enumerated() {
+            coder.encode(NSValue(range: mention.range), forKey: "mentions.range.\(idx)")
+            coder.encode(mention.value.rawUUID, forKey: "mentions.uuid.\(idx)")
         }
         coder.encode(collapsedStyles.count, forKey: "stylesCount")
         for (idx, style) in collapsedStyles.enumerated() {
@@ -366,7 +342,7 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             return false
         }
         return (
-            mentions == other.mentions
+            orderedMentions == other.orderedMentions
                 && collapsedStyles == other.collapsedStyles,
         )
     }

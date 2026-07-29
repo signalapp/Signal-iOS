@@ -121,7 +121,7 @@ public extension TSMessage {
         // messages that mention a given user. We only need to save one mention
         // record per ACI, even if the same ACI is mentioned multiple times in the
         // message.
-        let uniqueMentionedAcis = Set(bodyRanges.mentions.values)
+        let uniqueMentionedAcis = Set(bodyRanges.orderedMentions.map(\.value))
         for mentionedAci in uniqueMentionedAcis {
             let mention = TSMention(uniqueMessageId: message.uniqueId, uniqueThreadId: message.uniqueThreadId, aci: mentionedAci)
             mention.anyInsert(transaction: tx)

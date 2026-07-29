@@ -647,7 +647,7 @@ public class FullTextSearcher: NSObject {
                             return NSRangedValue($0, range: style.range)
                         }
                     }
-                    mergedMessageBody = MessageBody(text: matchStyleApplied.string, ranges: .init(mentions: [:], styles: singleStyles))
+                    mergedMessageBody = MessageBody(text: matchStyleApplied.string, ranges: .init(mentions: [], styles: singleStyles))
                 }
                 return .messageBody(
                     mergedMessageBody

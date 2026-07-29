@@ -23,7 +23,7 @@ final class MessageBodyTests: XCTestCase {
             input: .init(
                 text: "Hello",
                 ranges: .init(
-                    mentions: [:],
+                    mentions: [],
                     styles: [],
                 ),
             ),
@@ -42,7 +42,7 @@ final class MessageBodyTests: XCTestCase {
                 text: "Hello @",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 6, length: 1): acis[0],
+                        NSRangedValue(acis[0], range: NSRange(location: 6, length: 1)),
                     ],
                     styles: [],
                 ),
@@ -71,9 +71,9 @@ final class MessageBodyTests: XCTestCase {
                 text: "Hello @ and @, how is @?",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 6, length: 1): acis[0],
-                        NSRange(location: 12, length: 1): acis[1],
-                        NSRange(location: 22, length: 1): acis[2],
+                        NSRangedValue(acis[0], range: NSRange(location: 6, length: 1)),
+                        NSRangedValue(acis[1], range: NSRange(location: 12, length: 1)),
+                        NSRangedValue(acis[2], range: NSRange(location: 22, length: 1)),
                     ],
                     styles: [],
                 ),
@@ -124,9 +124,9 @@ final class MessageBodyTests: XCTestCase {
                 text: "Hello @wasd and @1, how is ?",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 6, length: 5): acis[0],
-                        NSRange(location: 16, length: 2): acis[1],
-                        NSRange(location: 27, length: 0): acis[2],
+                        NSRangedValue(acis[0], range: NSRange(location: 6, length: 5)),
+                        NSRangedValue(acis[1], range: NSRange(location: 16, length: 2)),
+                        NSRangedValue(acis[2], range: NSRange(location: 27, length: 0)),
                     ],
                     styles: [],
                 ),
@@ -175,9 +175,9 @@ final class MessageBodyTests: XCTestCase {
                 text: "Hello @ and @, how is @?",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 6, length: 1): acis[0],
-                        NSRange(location: 12, length: 1): acis[1],
-                        NSRange(location: 22, length: 1): acis[2],
+                        NSRangedValue(acis[0], range: NSRange(location: 6, length: 1)),
+                        NSRangedValue(acis[1], range: NSRange(location: 12, length: 1)),
+                        NSRangedValue(acis[2], range: NSRange(location: 22, length: 1)),
                     ],
                     styles: [],
                 ),
@@ -222,7 +222,7 @@ final class MessageBodyTests: XCTestCase {
             input: .init(
                 text: "This is bold, italic, and mono",
                 ranges: .init(
-                    mentions: [:],
+                    mentions: [],
                     styles: [
                         .init(.bold, range: NSRange(location: 8, length: 4)),
                         .init(.italic, range: NSRange(location: 14, length: 6)),
@@ -264,7 +264,7 @@ final class MessageBodyTests: XCTestCase {
                 text: "This is bold, italic, and mono, @.",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 32, length: 1): acis[0],
+                        NSRangedValue(acis[0], range: NSRange(location: 32, length: 1)),
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 8, length: 4)),
@@ -316,7 +316,7 @@ final class MessageBodyTests: XCTestCase {
                 text: "@, this is bold, italic, and mono",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 1): acis[0],
+                        NSRangedValue(acis[0], range: NSRange(location: 0, length: 1)),
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 11, length: 4)),
@@ -368,7 +368,7 @@ final class MessageBodyTests: XCTestCase {
                 text: "Use the force, @",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 15, length: 1): acis[0],
+                        NSRangedValue(acis[0], range: NSRange(location: 15, length: 1)),
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 0, length: 16)),
@@ -406,8 +406,8 @@ final class MessageBodyTests: XCTestCase {
                 text: "@@ and @@ are stylish people.",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 2): acis[0],
-                        NSRange(location: 7, length: 2): acis[1],
+                        NSRangedValue(acis[0], range: NSRange(location: 0, length: 2)),
+                        NSRangedValue(acis[1], range: NSRange(location: 7, length: 2)),
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 1, length: 7)),
@@ -464,10 +464,10 @@ final class MessageBodyTests: XCTestCase {
                 text: "@, @@@, @@@@@@@@@@@@@@@ and @@@ are stylish people.",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 1): acis[0],
-                        NSRange(location: 3, length: 3): acis[1],
-                        NSRange(location: 8, length: 15): acis[2],
-                        NSRange(location: 28, length: 3): acis[3],
+                        NSRangedValue(acis[0], range: NSRange(location: 0, length: 1)),
+                        NSRangedValue(acis[1], range: NSRange(location: 3, length: 3)),
+                        NSRangedValue(acis[2], range: NSRange(location: 8, length: 15)),
+                        NSRangedValue(acis[3], range: NSRange(location: 28, length: 3)),
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 0, length: 51)),
@@ -594,10 +594,10 @@ final class MessageBodyTests: XCTestCase {
                 text: "@, @@@, @@@@@@@@@@@@@@@ and @@@ are stylish people.",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 1): acis[0],
-                        NSRange(location: 3, length: 3): acis[1],
-                        NSRange(location: 8, length: 15): acis[2],
-                        NSRange(location: 28, length: 3): acis[3],
+                        NSRangedValue(acis[0], range: NSRange(location: 0, length: 1)),
+                        NSRangedValue(acis[1], range: NSRange(location: 3, length: 3)),
+                        NSRangedValue(acis[2], range: NSRange(location: 8, length: 15)),
+                        NSRangedValue(acis[3], range: NSRange(location: 28, length: 3)),
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 0, length: 51)),
@@ -702,8 +702,8 @@ final class MessageBodyTests: XCTestCase {
                 text: "שלום @. שלום @.",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 5, length: 1): acis[0],
-                        NSRange(location: 13, length: 1): acis[1],
+                        NSRangedValue(acis[0], range: NSRange(location: 5, length: 1)),
+                        NSRangedValue(acis[1], range: NSRange(location: 13, length: 1)),
                     ],
                     styles: [],
                 ),
@@ -744,7 +744,7 @@ final class MessageBodyTests: XCTestCase {
                 text: "השתמש בכוח, @",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 12, length: 1): acis[0],
+                        NSRangedValue(acis[0], range: NSRange(location: 12, length: 1)),
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 5, length: 3)),
@@ -781,7 +781,7 @@ final class MessageBodyTests: XCTestCase {
                 text: "@, השתמש בכוח",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 1): acis[0],
+                        NSRangedValue(acis[0], range: NSRange(location: 0, length: 1)),
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 5, length: 3)),
@@ -820,7 +820,7 @@ final class MessageBodyTests: XCTestCase {
                 text: "השתמש בכוח, @",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 12, length: 1): acis[0],
+                        NSRangedValue(acis[0], range: NSRange(location: 12, length: 1)),
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 0, length: 13)),
@@ -857,7 +857,7 @@ final class MessageBodyTests: XCTestCase {
                 text: "@, השתמש בכוח",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 1): acis[0],
+                        NSRangedValue(acis[0], range: NSRange(location: 0, length: 1)),
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 0, length: 13)),
@@ -896,7 +896,7 @@ final class MessageBodyTests: XCTestCase {
                 text: "השתמש בכוח, @@@",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 12, length: 3): acis[0],
+                        NSRangedValue(acis[0], range: NSRange(location: 12, length: 3)),
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 5, length: 8)),
@@ -932,7 +932,7 @@ final class MessageBodyTests: XCTestCase {
                 text: "@@@, השתמש בכוח",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 3): acis[0],
+                        NSRangedValue(acis[0], range: NSRange(location: 0, length: 3)),
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 1, length: 8)),
@@ -971,8 +971,8 @@ final class MessageBodyTests: XCTestCase {
                 text: "@@@ engaña a @@@",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 3): acis[0],
-                        NSRange(location: 13, length: 3): acis[1],
+                        NSRangedValue(acis[0], range: NSRange(location: 0, length: 3)),
+                        NSRangedValue(acis[1], range: NSRange(location: 13, length: 3)),
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 1, length: 9)),
@@ -1059,8 +1059,8 @@ final class MessageBodyTests: XCTestCase {
                 text: firstMention + firstEmojis + middleWord + secondEmojis + secondMention,
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 3): acis[0],
-                        NSRange(location: secondMentionLocation + 1, length: 3): acis[1],
+                        NSRangedValue(acis[0], range: NSRange(location: 0, length: 3)),
+                        NSRangedValue(acis[1], range: NSRange(location: secondMentionLocation + 1, length: 3)),
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 1, length: 3 + firstEmojiLength + 5)),

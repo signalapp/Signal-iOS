@@ -70,7 +70,6 @@ public class StyleOnlyMessageBody: Codable, Equatable {
         return MessageBody(
             text: text,
             ranges: MessageBodyRanges(
-                mentions: [:],
                 orderedMentions: [],
                 collapsedStyles: collapsedStyles,
             ),
@@ -136,7 +135,6 @@ public class StyleOnlyMessageBody: Codable, Equatable {
     public func toProtoBodyRanges() -> [SSKProtoBodyRange] {
         // No need to validate length; all instances of this class are validated.
         return MessageBodyRanges(
-            mentions: [:],
             orderedMentions: [],
             collapsedStyles: collapsedStyles,
         ).toProtoBodyRanges()
@@ -222,7 +220,7 @@ public class StyleOnlyMessageBody: Codable, Equatable {
                     return NSRangedValue($0, range: style.range)
                 }
             }
-            let messageBodyRanges = MessageBodyRanges(mentions: [:], styles: singleStyles)
+            let messageBodyRanges = MessageBodyRanges(mentions: [], styles: singleStyles)
             self.collapsedStyles = messageBodyRanges.collapsedStyles
         } else {
             self.collapsedStyles = try container.decode([NSRangedValue<CollapsedStyle>].self, forKey: .collapsedStyles)

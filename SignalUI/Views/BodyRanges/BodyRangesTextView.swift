@@ -161,7 +161,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
 
         let body = MessageBody(
             text: "@",
-            ranges: MessageBodyRanges(mentions: [NSRange(location: 0, length: 1): mentionAci], styles: []),
+            ranges: MessageBodyRanges(mentions: [NSRangedValue(mentionAci, range: NSRange(location: 0, length: 1))], styles: []),
         )
         let (hydrated, possibleAcis) = DependenciesBridge.shared.db.read { tx in
             return (

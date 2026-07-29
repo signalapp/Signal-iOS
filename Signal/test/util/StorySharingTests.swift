@@ -45,7 +45,7 @@ class StorySharingTests: SignalBaseTest {
         let output = StorySharing.text(
             for: .init(
                 text: "\(MessageBody.mentionPlaceholder) Some text",
-                ranges: .init(mentions: [range: mentionAci], styles: []),
+                ranges: .init(mentions: [NSRangedValue(mentionAci, range: range)], styles: []),
             ),
             with: nil,
         )?.text

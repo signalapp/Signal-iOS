@@ -588,8 +588,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
             // Always notify if you have been @mentioned
             if
-                let mentionedAcis = incomingMessage.bodyRanges?.mentions.values,
-                mentionedAcis.contains(where: { $0 == localAci })
+                let mentions = incomingMessage.bodyRanges?.orderedMentions,
+                mentions.contains(where: { $0.value == localAci })
             {
                 return true
             }

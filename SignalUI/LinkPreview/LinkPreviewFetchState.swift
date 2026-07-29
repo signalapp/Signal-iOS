@@ -186,15 +186,9 @@ public class LinkPreviewFetchState {
         }
         let prefixLen = (schemePrefix as NSString).length
 
-        var finalMentions = [NSRange: Aci]()
-        for (range, aci) in body.ranges.mentions {
-            finalMentions[range.offset(by: prefixLen)] = aci
-        }
-
         return MessageBody(
             text: schemePrefix + body.text,
             ranges: MessageBodyRanges(
-                mentions: finalMentions,
                 orderedMentions: body.ranges.orderedMentions.map {
                     return $0.offset(by: prefixLen)
                 },

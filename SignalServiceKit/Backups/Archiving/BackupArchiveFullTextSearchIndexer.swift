@@ -172,7 +172,7 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
         FullTextSearchIndexer.insert(message, tx: tx)
 
         if let bodyRanges = message.bodyRanges {
-            let uniqueMentionedAcis = Set(bodyRanges.mentions.values)
+            let uniqueMentionedAcis = Set(bodyRanges.orderedMentions.map(\.value))
             for mentionedAci in uniqueMentionedAcis {
                 let mention = TSMention(uniqueMessageId: message.uniqueId, uniqueThreadId: message.uniqueThreadId, aci: mentionedAci)
                 failIfThrows {

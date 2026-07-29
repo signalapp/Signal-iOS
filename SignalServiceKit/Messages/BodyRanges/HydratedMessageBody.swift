@@ -440,20 +440,20 @@ public class HydratedMessageBody: Equatable, Hashable {
     public func asMessageBodyForForwarding(
         preservingAllMentions: Bool = false,
     ) -> MessageBody {
-        var mentionsDict = [NSRange: Aci]()
+        var mentions = [NSRangedValue<Aci>]()
         unhydratedMentions.forEach {
-            mentionsDict[$0.range] = $0.value.mentionAci
+            mentions.append(NSRangedValue($0.value.mentionAci, range: $0.range))
         }
         if preservingAllMentions {
             mentionAttributes.forEach {
-                mentionsDict[$0.range] = $0.value.mentionAci
+                mentions.append(NSRangedValue($0.value.mentionAci, range: $0.range))
             }
         }
 
         return MessageBody(
             text: hydratedText,
             ranges: MessageBodyRanges(
-                mentions: mentionsDict,
+                mentions: mentions,
                 styles: Self.flattenStylesPreservingSharedIds(styleAttributes),
             ),
         )
@@ -462,12 +462,12 @@ public class HydratedMessageBody: Equatable, Hashable {
     // MARK: - Editing
 
     func asEditableMessageBody() -> EditableMessageBodyTextStorage.Body {
-        var mentions = [NSRange: Aci]()
+        var mentions = [NSRangedValue<Aci>]()
         self.mentionAttributes.forEach {
-            mentions[$0.range] = $0.value.mentionAci
+            mentions.append(NSRangedValue($0.value.mentionAci, range: $0.range))
         }
         self.unhydratedMentions.forEach {
-            mentions[$0.range] = $0.value.mentionAci
+            mentions.append(NSRangedValue($0.value.mentionAci, range: $0.range))
         }
         var flattenedStyles = [NSRangedValue<SingleStyle>]()
         var runningStyles = [SingleStyle: (StyleId, NSRange)]()

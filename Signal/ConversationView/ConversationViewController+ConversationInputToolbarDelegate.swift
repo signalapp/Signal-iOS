@@ -343,8 +343,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return true
         }
 
-        let currentRanges = currentDraft?.ranges.mentions ?? [:]
-        let persistedRanges = thread.messageDraftBodyRanges?.mentions ?? [:]
+        let currentRanges = currentDraft?.ranges.orderedMentions ?? []
+        let persistedRanges = thread.messageDraftBodyRanges?.orderedMentions ?? []
         if currentRanges != persistedRanges {
             return true
         }

@@ -48,7 +48,7 @@ extension StoryMessage {
         // to turn a MessageBody into something we can display.
         return MessageBody(
             text: caption,
-            ranges: MessageBodyRanges(mentions: [:], orderedMentions: [], collapsedStyles: captionStyles),
+            ranges: MessageBodyRanges(orderedMentions: [], collapsedStyles: captionStyles),
         )
     }
 }

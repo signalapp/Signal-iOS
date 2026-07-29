@@ -93,7 +93,6 @@ public class MessageBody: NSObject, NSSecureCoding {
         let strippedPrefixLength = originalText.range(of: filteredText as String).location
         let filteredStringEntireRange = NSRange(location: 0, length: filteredText.length)
 
-        var adjustedMentions = [NSRange: Aci]()
         let orderedAdjustedMentions: [NSRangedValue<Aci>] = ranges.orderedMentions.compactMap { mention in
             guard
                 let newRange = NSRange(
@@ -104,8 +103,7 @@ public class MessageBody: NSObject, NSSecureCoding {
             else {
                 return nil
             }
-            adjustedMentions[newRange] = mention.value
-            return .init(mention.value, range: newRange)
+            return NSRangedValue(mention.value, range: newRange)
         }
         let adjustedStyles: [NSRangedValue<CollapsedStyle>] = ranges.collapsedStyles.compactMap { style in
             guard
@@ -117,15 +115,11 @@ public class MessageBody: NSObject, NSSecureCoding {
             else {
                 return nil
             }
-            return .init(
-                style.value,
-                range: newRange,
-            )
+            return NSRangedValue(style.value, range: newRange)
         }
         return MessageBody(
             text: filteredText as String,
             ranges: MessageBodyRanges(
-                mentions: adjustedMentions,
                 orderedMentions: orderedAdjustedMentions,
                 collapsedStyles: adjustedStyles,
             ),

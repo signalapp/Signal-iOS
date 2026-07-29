@@ -353,7 +353,7 @@ class LinkPreviewFetchStateTest: XCTestCase {
         await linkPreviewFetchState.update(.init(
             text: "https://signal.org",
             ranges: .init(
-                mentions: [:],
+                mentions: [],
                 styles: [.init(.bold, range: NSRange(location: 0, length: 18))],
             ),
         ))?.value
@@ -363,7 +363,7 @@ class LinkPreviewFetchStateTest: XCTestCase {
         await linkPreviewFetchState.update(.init(
             text: "https://signal.org",
             ranges: .init(
-                mentions: [:],
+                mentions: [],
                 styles: [.init(.spoiler, range: NSRange(location: 0, length: 18))],
             ),
         ))?.value
@@ -373,7 +373,7 @@ class LinkPreviewFetchStateTest: XCTestCase {
         await linkPreviewFetchState.update(.init(
             text: "https://signal.org",
             ranges: .init(
-                mentions: [:],
+                mentions: [],
                 styles: [.init(.spoiler, range: NSRange(location: 3, length: 5))],
             ),
         ))?.value
@@ -383,7 +383,7 @@ class LinkPreviewFetchStateTest: XCTestCase {
         await linkPreviewFetchState.update(.init(
             text: "signal.org",
             ranges: .init(
-                mentions: [:],
+                mentions: [],
                 styles: [.init(.spoiler, range: NSRange(location: 5, length: 5))],
             ),
         ))?.value

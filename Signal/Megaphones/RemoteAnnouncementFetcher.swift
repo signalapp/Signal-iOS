@@ -117,7 +117,7 @@ public class RemoteAnnouncementFetcher: RemoteReleaseNotesFetcher<RemoteAnnounce
                 MessageBody(
                     text: translation.title + "\n\n" + translation.body,
                     ranges: MessageBodyRanges(
-                        mentions: [:],
+                        mentions: [],
                         styles: messageBodyStyles,
                     ),
                 ),

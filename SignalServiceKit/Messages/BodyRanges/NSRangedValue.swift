@@ -6,7 +6,7 @@
 import Foundation
 
 public struct NSRangedValue<T> {
-    public let range: NSRange
+    public var range: NSRange
     public let value: T
 
     public init(_ value: T, range: NSRange) {

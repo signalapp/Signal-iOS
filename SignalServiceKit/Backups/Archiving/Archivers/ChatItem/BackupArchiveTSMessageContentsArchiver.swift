@@ -1549,7 +1549,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         oversizeTextAttachment: BackupProto_FilePointer?,
     ) -> RestoreInteractionResult<RestoredMessageBody?> {
         var partialErrors = [RestoreFrameError]()
-        var bodyMentions = [NSRange: Aci]()
+        var bodyMentions = [NSRangedValue<Aci>]()
         var bodyStyles = [NSRangedValue<MessageBodyRanges.SingleStyle>]()
         for bodyRange in bodyRangeProtos {
             let bodyRangeStart = bodyRange.start
@@ -1564,7 +1564,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                     ))
                     continue
                 }
-                bodyMentions[range] = mentionAci
+                bodyMentions.append(NSRangedValue(mentionAci, range: range))
             case .style(let protoBodyRangeStyle):
                 let swiftStyle: MessageBodyRanges.SingleStyle
                 switch protoBodyRangeStyle {
@@ -1581,7 +1581,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 case .strikethrough:
                     swiftStyle = .strikethrough
                 }
-                bodyStyles.append(.init(swiftStyle, range: range))
+                bodyStyles.append(NSRangedValue(swiftStyle, range: range))
             case nil:
                 partialErrors.append(.restoreFrameError(
                     .invalidProtoData(.invalidAci(protoClass: BackupProto_BodyRange.self)),
