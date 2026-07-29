@@ -773,7 +773,16 @@ public class GroupsV2Impl: GroupsV2 {
     ) async throws -> GroupChangesResponse {
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
 
-        let limit: UInt32? = upThroughRevision.map({ (startingAtRevision <= $0) ? ($0 - startingAtRevision + 1) : 1 })
+        let limit: UInt32? = upThroughRevision.map { upThroughRevision in
+            guard startingAtRevision <= upThroughRevision else {
+                return 1
+            }
+
+            // upThroughRevision is peer-supplied via an incoming GroupContextV2
+            // proto, so we need to guard against overflow from fuzzed values.
+            let (limit, overflowed) = (upThroughRevision - startingAtRevision).addingReportingOverflow(1)
+            return overflowed ? .max : limit
+        }
 
         let response = try await performServiceRequest(
             requestBuilder: { authCredential in
