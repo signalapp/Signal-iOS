@@ -80,6 +80,7 @@ class ProvisioningSplashViewController: ProvisioningBaseViewController {
             },
         )
         tosPPButton.configuration?.baseForegroundColor = .Signal.secondaryLabel
+        tosPPButton.accessibilityTraits.insert(.link)
         tosPPButton.enableMultilineLabel()
         tosPPButton.accessibilityIdentifier = "onboarding.splash.explanationLabel"
 
