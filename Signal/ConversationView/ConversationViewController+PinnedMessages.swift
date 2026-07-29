@@ -208,6 +208,15 @@ public extension ConversationViewController {
                 pollPrefix = pollIcon + NSAttributedString(string: locPollString)
             }
 
+            // Generic files are a special case because the caption should be the filename.
+            let fileSymbol = SignalSymbol.file.attributedString(dynamicTypeBaseSize: 15)
+            if
+                mediaSymbol(attachment: mediaAttachment) == fileSymbol,
+                let fileName = mediaAttachment?.previewText(includeFileName: true, includeEmoji: false)
+            {
+                return fileSymbol + " " + NSAttributedString(string: fileName)
+            }
+
             let hydrated = MessageBody(
                 text: bodyDescription,
                 ranges: message.bodyRanges ?? .empty,
