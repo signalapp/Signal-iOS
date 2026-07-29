@@ -128,7 +128,6 @@ public class LocalFileBackupExportJob {
             currentBackupDirectoryName: currentBackupDirectoryName,
         )
 
-        // TODO: [KC] limit local file backups to 2, delete older ones
-        // TODO: [KC] delete orphaned attachments
+        try await localFileBackupManager.cleanUpOldBackupsAndOrphanedAttachments(backupsRootDirectory: backupsRootDirectory)
     }
 }

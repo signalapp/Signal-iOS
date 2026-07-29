@@ -50,6 +50,8 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
     private nonisolated let localFileBackupStore: LocalFileBackupStore
     private let securityScopedBookmarkAccess: SecurityScopedBookmarkAccess
 
+    private static let maxAllowedNumberOfBackups: Int = 2
+
     init(
         db: DB,
         dateProvider: @escaping DateProvider,
@@ -276,6 +278,10 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                 if let _ = existingFiles[localFileBackupMediaName] {
                     // Already exists on disk, can skip copying.
                     // TODO: [KC] also check encrypted byte count is what we expect
+
+                    var fileProto = LocalBackupProto_FilesFrame()
+                    fileProto.item = .mediaName(localFileBackupMediaName)
+                    try manifestStream.write(data: fileProto.serializedData())
                     continue
                 }
 
@@ -480,6 +486,88 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                 withIntermediateDirectories: true,
                 attributes: nil,
             )
+        })
+    }
+
+    /// - Parameter backupsRootDirectory
+    /// The SignalBackups directory.
+    func cleanUpOldBackupsAndOrphanedAttachments(backupsRootDirectory: URL) async throws {
+        let fileCoordinator = NSFileCoordinator()
+
+        try fileCoordinator.coordinateThrows(writingItemAt: backupsRootDirectory, options: [.forDeleting], by: { writeURL in
+            let attachmentDirectory = writeURL.appendingPathComponent(FileStructure.attachmentDirectory.rawValue)
+
+            let contents = try FileManager.default.contentsOfDirectory(
+                at: writeURL,
+                includingPropertiesForKeys: [.isDirectoryKey],
+            )
+
+            var sortedBackupDirectories = contents
+                .filter { $0.lastPathComponent.hasPrefix("signal-backups-") }
+                .sorted { $0.lastPathComponent > $1.lastPathComponent }
+
+            var directoriesToPrune: [URL] = []
+            while sortedBackupDirectories.count > Self.maxAllowedNumberOfBackups {
+                directoriesToPrune += [sortedBackupDirectories.removeLast()]
+            }
+            for url in directoriesToPrune {
+                try FileManager.default.removeItem(at: url)
+            }
+
+            var attachmentMediaNames: Set<String> = []
+            for backupDirectory in sortedBackupDirectories {
+
+                let filesMetadataURL = backupDirectory.appendingPathComponent(FileStructure.attachmentDirectory.rawValue)
+
+                guard let rawInputStream = InputStream(url: filesMetadataURL) else {
+                    throw OWSAssertionError("Unable to open filestream")
+                }
+                rawInputStream.open()
+                defer { rawInputStream.close() }
+
+                let inputStream = TransformingInputStream(
+                    transforms: [ChunkedInputStreamTransform()],
+                    inputStream: rawInputStream,
+                )
+
+                while inputStream.hasBytesAvailable {
+                    let data = try inputStream.read(maxLength: 65_536)
+                    if data.isEmpty { break }
+                    let frame = try LocalBackupProto_FilesFrame(serializedBytes: data)
+                    switch frame.item {
+                    case .mediaName(let mediaName):
+                        attachmentMediaNames.insert(mediaName)
+                    case nil:
+                        owsFailDebug("Unexpectedly missing mediaName from local file backup attachment frame")
+                    }
+                }
+            }
+            guard
+                let enumerator = FileManager.default.enumerator(
+                    at: attachmentDirectory,
+                    includingPropertiesForKeys: [.nameKey],
+                    options: [],
+                )
+            else {
+                return
+            }
+            while let fileURL = enumerator.nextObject() as? URL {
+                let fileValues = try fileURL.resourceValues(forKeys: [.nameKey, .isDirectoryKey])
+                if let isDir = fileValues.isDirectory, isDir {
+                    continue
+                }
+                if let name = fileValues.name {
+                    if !attachmentMediaNames.contains(name) {
+                        try FileManager.default.removeItem(at: fileURL)
+                        let parentDirectory = fileURL.deletingLastPathComponent()
+                        if try FileManager.default.contentsOfDirectory(atPath: parentDirectory.path).isEmpty {
+                            try FileManager.default.removeItem(at: parentDirectory)
+                        }
+                    }
+                } else {
+                    owsFailDebug("Unexpectedly missing name from resource keys!")
+                }
+            }
         })
     }
 
