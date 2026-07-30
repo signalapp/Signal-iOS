@@ -1399,12 +1399,21 @@ public final class MessageReceiver {
 
         var storyTimestamp: UInt64?
         var storyAuthorAci: Aci?
-        if let storyContext = dataMessage.storyContext, storyContext.hasSentTimestamp, storyContext.hasAuthorAci || storyContext.hasAuthorAciBinary {
+        if
+            let storyContext = dataMessage.storyContext,
+            storyContext.hasSentTimestamp,
+            storyContext.hasAuthorAci || storyContext.hasAuthorAciBinary
+        {
+            guard SDS.fitsInInt64(storyContext.sentTimestamp) else {
+                Logger.warn("Discarding story reply with too-large storyTimestamp.")
+                return nil
+            }
+
             storyTimestamp = storyContext.sentTimestamp
             storyAuthorAci = Aci.parseFrom(serviceIdBinary: storyContext.authorAciBinary, serviceIdString: storyContext.authorAci)
             Logger.info("Processing storyContext for message w/ts \(envelope.timestamp), storyTimestamp: \(String(describing: storyTimestamp)), authorAci: \(String(describing: storyAuthorAci))")
             guard let storyAuthorAci else {
-                owsFailDebug("Discarding story reply with invalid ACI")
+                Logger.warn("Discarding story reply with invalid ACI.")
                 return nil
             }
 
