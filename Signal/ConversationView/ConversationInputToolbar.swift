@@ -90,7 +90,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         self.conversationStyle = conversationStyle
         self.spoilerState = spoilerState
         self.mediaCache = mediaCache
-        self.editTarget = editTarget
+        self._editTarget = editTarget.map { EditTarget(message: $0) }
         self.inputToolbarDelegate = inputToolbarDelegate
         self.linkPreviewFetchState = LinkPreviewFetchState(
             db: DependenciesBridge.shared.db,
@@ -950,15 +950,18 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 }
             }()
             rightEdgeControlsState = showSendButton ? .sendButton : .hiddenSendButton
-        }
-        // Text field has non-whitespace input: show Send button in active state.
-        // Note: Activating "edit message" feature would temporarily disable Send button
-        //       even if there is non-whitespace text. Editing text would re-enable Send button.
-        else if hasMessageText {
-            rightEdgeControlsState = .sendButton
-        }
-        // If there's a quoted message or we're editing a message: show inactive Send button.
-        else if isEditingMessage {
+        } else if
+            // Text field has non-whitespace input. Show Send button in active
+            // state, unless we can't actually send the message (e.g., editing
+            // but nothing has changed yet).
+            hasMessageText
+        {
+            rightEdgeControlsState = canSendTextMessage ? .sendButton : .disabledSendButton
+        } else if
+            // If we're in edit mode, even if we can't send yet, show an
+            // inactive Send button.
+            isEditingMessage
+        {
             rightEdgeControlsState = .disabledSendButton
         }
         // No input, not editing message, no quoted message: do not show Send button.
@@ -1545,19 +1548,54 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
     class var heightChangeAnimationDuration: TimeInterval { 0.25 }
 
+    /// Whether the text message currently in the toolbar can be sent.
+    var canSendTextMessage: Bool {
+        guard hasMessageText else {
+            return false
+        }
+
+        if isEditingMessage {
+            return hasUnsavedDraft
+        }
+
+        return true
+    }
+
     var hasUnsavedDraft: Bool {
         let currentDraft = messageBodyForSending ?? .empty
 
-        if let editTarget {
-            let editTargetMessage = MessageBody(
-                text: editTarget.body ?? "",
-                ranges: editTarget.bodyRanges ?? .empty,
-            )
-
-            return currentDraft != editTargetMessage
+        guard let editTarget = _editTarget else {
+            return !currentDraft.isEmpty
         }
 
-        return !currentDraft.isEmpty
+        // At this point, we have an edit: assess the "things that can change
+        // about a message being edit".
+
+        // Text can be changed.
+        if currentDraft != editTarget.body.filterStringForDisplay() {
+            return true
+        }
+
+        // Link preview can be added/removed.
+        switch linkPreviewFetchState.currentState {
+        case .none, .failed:
+            if editTarget.message.linkPreview != nil {
+                // Removing a link preview
+                return true
+            }
+        case .loading, .loaded:
+            if editTarget.message.linkPreview == nil {
+                // Adding a link preview
+                return true
+            }
+        }
+
+        // A quoted reply can be removed while editing, but not added.
+        if editTarget.message.quotedMessage != nil, quotedReplyDraft == nil {
+            return true
+        }
+
+        return false
     }
 
     var messageBodyForSending: MessageBody? { inputTextView.messageBodyForSending }
@@ -1633,41 +1671,67 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
     // MARK: Edit Message
 
-    var isEditingMessage: Bool { editTarget != nil }
+    /// The message being edited, along with its body as it was when editing began.
+    private struct EditTarget {
+        let message: TSOutgoingMessage
+
+        /// The body of `message`.
+        ///
+        /// - Mentions are unhydrated, to match `messageBodyForSending`.
+        /// - Oversize text is populated.
+        ///
+        /// - Note
+        /// Not the same as ``TSOutgoingMessage/body``, which does not contain
+        /// styles and whose oversize text is truncated.
+        let body: MessageBody
+
+        init(message: TSOutgoingMessage) {
+            self.message = message
+
+            let db = DependenciesBridge.shared.db
+            let fullText = db.read { tx -> String? in
+                if
+                    let oversizeTextAttachment = message.oversizeTextAttachment(transaction: tx),
+                    let stream = oversizeTextAttachment.asStream(),
+                    let oversizeText = try? stream.decryptedLongText()
+                {
+                    return oversizeText
+                }
+
+                return message.body
+            }
+
+            if let fullText {
+                self.body = MessageBody(
+                    text: fullText,
+                    ranges: message.bodyRanges ?? .empty,
+                )
+            } else {
+                self.body = MessageBody.empty
+            }
+        }
+    }
+
+    private var _editTarget: EditTarget?
+
+    var isEditingMessage: Bool { _editTarget != nil }
 
     var editTarget: TSOutgoingMessage? {
-        didSet {
+        get { _editTarget?.message }
+        set {
             let animateChanges = window != nil
 
             // Show the 'editing' tag
-            if let editTarget {
-
-                // Fetch the original text (including any oversized text attachments)
-                let componentState = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                    CVLoader.buildStandaloneComponentState(
-                        interaction: editTarget,
-                        spoilerState: SpoilerRenderState(),
-                        transaction: tx,
-                    )
-                }
-
-                let messageBody: MessageBody
-                let ranges = editTarget.bodyRanges ?? .empty
-                switch componentState?.bodyText?.displayableText?.fullTextValue {
-                case .attributedText(let string):
-                    messageBody = MessageBody(text: string.string, ranges: ranges)
-                case .messageBody(let body):
-                    messageBody = body.asMessageBodyForForwarding(preservingAllMentions: true)
-                case .text(let text):
-                    messageBody = MessageBody(text: text, ranges: ranges)
-                case .none:
-                    messageBody = MessageBody(text: "", ranges: .empty)
-                }
-                self.setMessageBody(messageBody, animated: true)
+            if let newValue {
+                let editTarget = EditTarget(message: newValue)
+                // Set before the message body, since setting the body updates the Send button.
+                _editTarget = editTarget
+                setMessageBody(editTarget.body, animated: true)
                 showEditMessageView(animated: animateChanges)
-            } else if oldValue != nil {
+            } else if _editTarget != nil {
+                _editTarget = nil
                 editThumbnail = nil
-                self.setMessageBody(nil, animated: true)
+                setMessageBody(nil, animated: true)
                 hideEditMessageView(animated: animateChanges)
             }
         }
@@ -1786,9 +1850,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             self.editMessageLabelView.alpha = 1
             self.editMessageViewHiddenConstraint.isActive = false
             self.editMessageViewVisibleConstraint.isActive = true
-            // We simply disable Send button until something (like user editing text) enables it back.
-            // Whether or not message text actually changes isn't tracked.
-            self.setSendButtonEnabled(false)
             self.layoutIfNeeded()
         }
         animator.startAnimation()
@@ -1815,14 +1876,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             self.layoutIfNeeded()
         }
         animator.startAnimation()
-    }
-
-    private func setSendButtonEnabled(_ enabled: Bool) {
-        if let rightEdgeControlsView = trailingEdgeControl as? RightEdgeControlsView {
-            rightEdgeControlsView.sendButton.isEnabled = enabled
-        } else if let sendButton = trailingEdgeControl as? UIButton {
-            sendButton.isEnabled = enabled
-        }
     }
 
     // MARK: Quoted Reply
@@ -2038,8 +2091,14 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         switch linkPreviewFetchState.currentState {
         case .none, .failed:
             hideLinkPreviewView(animated: animateChanges)
-        default:
+        case .loading, .loaded:
             ensureLinkPreviewView(withState: linkPreviewFetchState.currentState)
+        }
+
+        if isEditingMessage {
+            // Adding or removing a link preview is itself an edit, so the Send button may need
+            // to become enabled or disabled.
+            ensureButtonVisibility(withAnimation: animateChanges, doLayout: true)
         }
     }
 
@@ -3289,12 +3348,6 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
         updateHeightWithTextView(textView)
         ensureButtonVisibility(withAnimation: true, doLayout: true)
         updateInputLinkPreview()
-
-        if editTarget != nil {
-            // Here we could potentially compare to original (before edit)
-            // message and update Send button accordingly.
-            setSendButtonEnabled(hasMessageText)
-        }
     }
 
     func textViewDidChangeSelection(_ textView: UITextView) { }

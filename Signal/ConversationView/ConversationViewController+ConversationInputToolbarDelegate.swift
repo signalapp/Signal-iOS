@@ -39,6 +39,11 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         inputToolbar.acceptAutocorrectSuggestion()
 
+        // Guards against hardware-keyboard Return keys, which circumvent the Send button.
+        guard inputToolbar.canSendTextMessage else {
+            return
+        }
+
         guard let messageBody = inputToolbar.messageBodyForSending else {
             return
         }

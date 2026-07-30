@@ -181,6 +181,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
             editableBody.replaceCharacters(in: range, with: hydratedPlaintext, selectedRange: selectedRange)
             editableBody.endEditing()
         }
+        textViewDidChange(self)
     }
 
     public var currentlyTypingMentionText: String? {
