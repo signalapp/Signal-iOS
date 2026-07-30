@@ -123,6 +123,10 @@ public class PollMessageManager {
         threadUniqueId: String,
         transaction: DBWriteTransaction,
     ) throws -> (TSMessage, shouldNotifyAuthorOfVote: Bool)? {
+        guard SDS.fitsInInt64(pollVoteProto.targetSentTimestamp) else {
+            throw OWSAssertionError("Invalid timestamp.")
+        }
+
         guard
             let aciBinary = pollVoteProto.targetAuthorAciBinary,
             let pollAuthorAci = try? Aci.parseFrom(serviceIdBinary: aciBinary)
@@ -175,6 +179,9 @@ public class PollMessageManager {
         threadUniqueId: String,
         transaction: DBWriteTransaction,
     ) throws -> TSMessage? {
+        guard SDS.fitsInInt64(pollTerminateProto.targetSentTimestamp) else {
+            throw OWSAssertionError("Invalid timestamp.")
+        }
 
         guard let localAci = accountManager.localIdentifiers(tx: transaction)?.aci else {
             throw OWSAssertionError("User not registered")
