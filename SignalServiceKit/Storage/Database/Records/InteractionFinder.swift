@@ -227,7 +227,7 @@ public class InteractionFinder: NSObject {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
-        \(DEBUG_INDEXED_BY("Interaction_disappearingMessages_partial", or: "index_interactions_on_expiresInSeconds_and_expiresAt"))
+        \(DEBUG_INDEXED_BY("Interaction_disappearingMessages_partial"))
         WHERE \(interactionColumn: .expiresAt) > 0
         ORDER BY \(interactionColumn: .expiresAt)
         """

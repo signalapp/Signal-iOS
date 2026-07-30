@@ -69,7 +69,6 @@ private struct LazyIndexMigrator {
                 return Set(try String.fetchAll(db, sql: "SELECT name FROM sqlite_master WHERE type = 'index'"))
             }
             let lazilyRemovedIndexes = [
-                "index_interactions_on_expiresInSeconds_and_expiresAt",
                 "index_model_TSInteraction_on_uniqueThreadId_and_attachmentIds",
                 "index_interactions_on_timestamp_sourceDeviceId_and_authorUUID",
                 "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber",
@@ -84,7 +83,6 @@ private struct LazyIndexMigrator {
             }
 
             let lazilyInsertedIndexes = [
-                "Interaction_disappearingMessages_partial",
                 "Interaction_timestamp",
                 "Interaction_unendedGroupCall_partial",
                 "Interaction_groupCallEraId_partial",
@@ -103,12 +101,6 @@ private struct LazyIndexMigrator {
 
     func run() async throws {
         // Must be idempotent.
-
-        try Task.checkCancellation()
-        await databaseStorage.awaitableWrite { tx in
-            logger.info("Rebuilding disappearing messages index.")
-            try! GRDBSchemaMigrator.rebuildDisappearingMessagesIndex(tx: tx)
-        }
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in
