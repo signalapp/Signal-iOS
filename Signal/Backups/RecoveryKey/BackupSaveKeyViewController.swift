@@ -246,7 +246,12 @@ class BackupSaveKeyViewController: OWSViewController, OWSNavigationChildControll
     private func copyToClipboard() {
         UIPasteboard.general.setItems(
             [[UIPasteboard.typeAutomatic: displayableAEP.displayString]],
-            options: [.expirationDate: Date().addingTimeInterval(60)],
+            options: [
+                // Don't sync the key across devices.
+                .localOnly: true,
+                // Only keep the key on the pasteboard for a minute.
+                .expirationDate: Date().addingTimeInterval(.minute),
+            ],
         )
 
         let toast = ToastController(
