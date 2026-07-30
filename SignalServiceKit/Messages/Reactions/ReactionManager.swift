@@ -132,6 +132,10 @@ public class ReactionManager: NSObject {
         sentTranscript: OWSIncomingSentMessageTranscript?,
         transaction: DBWriteTransaction,
     ) -> ReactionProcessingResult {
+        guard SDS.fitsInInt64(reaction.timestamp) else {
+            Logger.warn("Ignoring reaction with too-large target timestamp.")
+            return .invalidReaction
+        }
         guard let emoji = reaction.emoji.strippedOrNil else {
             owsFailDebug("Received invalid emoji")
             return .invalidReaction

@@ -417,7 +417,7 @@ public class InteractionFinder: NSObject {
         author: SignalServiceAddress,
         transaction: DBReadTransaction,
     ) -> TSMessage? {
-        guard timestamp > 0 else {
+        guard timestamp > 0, SDS.fitsInInt64(timestamp) else {
             owsFailDebug("invalid timestamp: \(timestamp)")
             return nil
         }
