@@ -2040,12 +2040,20 @@ public final class MessageReceiver {
             guard envelope.localIdentity == .aci else {
                 throw OWSGenericError("Can't receive DEMs at our PNI.")
             }
+
             let errorMessage = try DecryptionErrorMessage(bytes: decryptionErrorMessage)
+
+            guard SDS.fitsInInt64(errorMessage.timestamp) else {
+                Logger.warn("Received a DecryptionError message with an invalid timestamp. Ignoring.")
+                return
+            }
+
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             guard tsAccountManager.storedDeviceId(tx: tx).equals(DeviceId(validating: errorMessage.deviceId)) else {
                 Logger.info("Received a DecryptionError message targeting a linked device. Ignoring.")
                 return
             }
+
             let protocolAddress = ProtocolAddress(sourceAci, deviceId: sourceDeviceId)
 
             let didPerformSessionReset: Bool

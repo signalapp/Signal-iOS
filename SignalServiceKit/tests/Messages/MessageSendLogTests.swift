@@ -153,6 +153,17 @@ class MessageSendLogTests: SSKBaseTest {
         }
     }
 
+    func testFetchPayloadWithTooLargeTimestamp() {
+        SSKEnvironment.shared.databaseStorageRef.write { writeTx in
+            XCTAssertNil(messageSendLog.fetchPayload(
+                recipientAci: Aci.randomForTesting(),
+                recipientDeviceId: DeviceId(validating: 1)!,
+                timestamp: UInt64.max,
+                tx: writeTx,
+            ))
+        }
+    }
+
     func testFinalDeliveryRemovesPayload() throws {
         try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             // Create and save the message payload

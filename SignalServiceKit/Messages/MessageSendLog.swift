@@ -174,6 +174,12 @@ public class MessageSendLog {
             return nil
         }
 
+        // We can't possibly have a payload for a such-huge timestamp, and we'll
+        // crash trying to query for it.
+        guard SDS.fitsInInt64(timestamp) else {
+            return nil
+        }
+
         guard timestamp > currentExpiredPayloadTimestamp() else {
             return nil
         }
