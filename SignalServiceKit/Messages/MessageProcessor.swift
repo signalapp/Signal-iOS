@@ -109,6 +109,12 @@ public class MessageProcessor {
             return
         }
 
+        guard SDS.fitsInInt64(serverDeliveryTimestamp) else {
+            owsFailDebug("Invalid serverDeliveryTimestamp, envelopeSource: \(envelopeSource).")
+            completion()
+            return
+        }
+
         let protoEnvelope: SSKProtoEnvelope
         do {
             protoEnvelope = try SSKProtoEnvelope(serializedData: envelopeData)
