@@ -60,7 +60,7 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
         transaction tx: DBReadTransaction,
     ) -> [String?] {
         return addresses.map { address -> String? in
-            guard let aci = address.aci else { return nil }
+            guard let aci = address.serviceId as? Aci else { return nil }
             return fetchUsername(forAci: aci, transaction: tx)
         }
     }
