@@ -34,7 +34,7 @@ extension BackupArchive {
         }
 
         public let threadType: ThreadType
-        public let threadRowId: Int64
+        public let threadRowId: TSThread.RowId
 
         public var tsThread: TSThread {
             switch threadType {
@@ -162,8 +162,8 @@ extension BackupArchive {
 
         private var recipientToChatMap = [RecipientId: ChatId]()
 
-        private var contactThreadMap = [ChatId: (Int64, TSContactThread)]()
-        private var groupIdMap = [ChatId: (Int64, GroupId)]()
+        private var contactThreadMap = [ChatId: (threadRowId: TSThread.RowId, thread: TSContactThread)]()
+        private var groupIdMap = [ChatId: (threadRowId: TSThread.RowId, groupId: GroupId)]()
         private var pinnedThreadIndexMap = [ThreadUniqueId: UInt32]()
 
         init(
@@ -211,10 +211,10 @@ extension BackupArchive {
             recipientId: RecipientId,
         ) {
             switch thread.threadType {
-            case .contact(let tSContactThread):
-                contactThreadMap[chatId] = (thread.threadRowId, tSContactThread)
-            case .groupV2(let tSGroupThread):
-                groupIdMap[chatId] = (thread.threadRowId, BackupArchive.GroupId(groupModel: tSGroupThread.groupModel))
+            case .contact(let contactThread):
+                contactThreadMap[chatId] = (thread.threadRowId, contactThread)
+            case .groupV2(let groupThread):
+                groupIdMap[chatId] = (thread.threadRowId, BackupArchive.GroupId(groupModel: groupThread.groupModel))
             }
             recipientToChatMap[recipientId] = chatId
         }
