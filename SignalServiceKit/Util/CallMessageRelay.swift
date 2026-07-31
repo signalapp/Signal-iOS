@@ -61,15 +61,15 @@ public class CallMessageRelay {
                 // This ensures that if we process a very old ring message, it will correctly be considered "expired".
                 // "This should never happen" in normal operation, but in practice we have seen it happen,
                 // e.g. when there's a crash processing the queued ring message.
-                let delaySecondsSinceDelivery = -(payload.enqueueTimestamp?.timeIntervalSinceNow ?? 0)
-                let adjustedDeliveryTimestamp =
-                    payload.serverDeliveryTimestamp + UInt64(1000 * max(0, delaySecondsSinceDelivery))
+                let delaySinceDelivery = max(0, -(payload.enqueueTimestamp?.timeIntervalSinceNow ?? 0))
+                let adjustedDeliveryDate = Date(millisecondsSince1970: payload.serverDeliveryTimestamp)
+                    .addingTimeInterval(delaySinceDelivery)
 
                 SSKEnvironment.shared.messageReceiverRef.processEnvelope(
                     payload.envelope,
                     plaintextData: payload.plaintextData,
                     wasReceivedByUD: payload.wasReceivedByUD,
-                    serverDeliveryTimestamp: adjustedDeliveryTimestamp,
+                    serverDeliveryTimestamp: adjustedDeliveryDate.ows_millisecondsSince1970,
                     shouldDiscardVisibleMessages: false,
                     registeredState: registeredState,
                     tx: transaction,

@@ -165,19 +165,19 @@ public struct BackupAttachmentDownloadEligibility {
             // as eligible for downloading. Elsewhere we may choose not to _enqueue_ the download,
             // but for eligibility purposes "free" is the same as paid with optimize off.
             return .ready
-        case
-            .paid(optimizeLocalStorage: false),
-            .paidExpiringSoon(optimizeLocalStorage: false),
-            .paidAsTester(optimizeLocalStorage: false):
+        case .paid(optimizeLocalStorage: false),
+             .paidExpiringSoon(optimizeLocalStorage: false),
+             .paidAsTester(optimizeLocalStorage: false):
             // Everything is eligible for download when optimize is off.
             return .ready
-        case
-            .paid(optimizeLocalStorage: true),
-            .paidExpiringSoon(optimizeLocalStorage: true),
-            .paidAsTester(optimizeLocalStorage: true):
+        case .paid(optimizeLocalStorage: true),
+             .paidExpiringSoon(optimizeLocalStorage: true),
+             .paidAsTester(optimizeLocalStorage: true):
+            let now = Date(millisecondsSince1970: currentTimestamp)
             if
                 let mostRecentReferenceTimestamp,
-                mostRecentReferenceTimestamp + Attachment.offloadingThresholdMs < currentTimestamp
+                now.timeIntervalSince(Date(millisecondsSince1970: mostRecentReferenceTimestamp))
+                > Attachment.offloadingThreshold
             {
                 // This attachment would be offloaded based on its age, so don't
                 // bother downloading it.
@@ -218,25 +218,25 @@ public struct BackupAttachmentDownloadEligibility {
         switch backupPlan {
         case .disabled, .disabling:
             return .ineligible
-        case
-            .free,
-            .paid(optimizeLocalStorage: false),
-            .paidExpiringSoon(optimizeLocalStorage: false),
-            .paidAsTester(optimizeLocalStorage: false):
+        case .free,
+             .paid(optimizeLocalStorage: false),
+             .paidExpiringSoon(optimizeLocalStorage: false),
+             .paidAsTester(optimizeLocalStorage: false):
             // free tier and optimize off dont download thumbnails by default;
             // only download if the fullsize download failed.
             if attachment.mediaTierInfo?.lastDownloadAttemptTimestamp != nil {
                 return .ready
             }
             return .ineligible
-        case
-            .paid(optimizeLocalStorage: true),
-            .paidExpiringSoon(optimizeLocalStorage: true),
-            .paidAsTester(optimizeLocalStorage: true):
+        case .paid(optimizeLocalStorage: true),
+             .paidExpiringSoon(optimizeLocalStorage: true),
+             .paidAsTester(optimizeLocalStorage: true):
 
+            let now = Date(millisecondsSince1970: currentTimestamp)
             if
                 let mostRecentReferenceTimestamp,
-                mostRecentReferenceTimestamp <= currentTimestamp - Attachment.offloadingThresholdMs
+                now.timeIntervalSince(Date(millisecondsSince1970: mostRecentReferenceTimestamp))
+                >= Attachment.offloadingThreshold
             {
                 return .ready
             } else {
@@ -264,10 +264,9 @@ public struct BackupAttachmentDownloadEligibility {
         }
 
         switch backupPlan {
-        case
-            .paid(let optimizeLocalStorage) where optimizeLocalStorage == true,
-            .paidExpiringSoon(let optimizeLocalStorage) where optimizeLocalStorage == true,
-            .paidAsTester(let optimizeLocalStorage) where optimizeLocalStorage == true:
+        case .paid(let optimizeLocalStorage) where optimizeLocalStorage == true,
+             .paidExpiringSoon(let optimizeLocalStorage) where optimizeLocalStorage == true,
+             .paidAsTester(let optimizeLocalStorage) where optimizeLocalStorage == true:
             return .ineligible
         case .disabled:
             // Linked device can link'n'sync is backups are disabled
@@ -283,11 +282,14 @@ public struct BackupAttachmentDownloadEligibility {
             // (The user could still try a manual download later).
             // First try the upload timestamp, if that doesn't pass the check
             // try the received timestamp.
-            if transitTierInfo.uploadTimestamp + remoteConfig.messageQueueTimeMs > currentTimestamp {
+            let now = Date(millisecondsSince1970: currentTimestamp)
+            let uploadDate = Date(millisecondsSince1970: transitTierInfo.uploadTimestamp)
+            if now.timeIntervalSince(uploadDate) < remoteConfig.messageQueueTime {
                 return .ready
             } else if
                 let mostRecentReferenceTimestamp,
-                mostRecentReferenceTimestamp + remoteConfig.messageQueueTimeMs > currentTimestamp
+                now.timeIntervalSince(Date(millisecondsSince1970: mostRecentReferenceTimestamp))
+                < remoteConfig.messageQueueTime
             {
                 return .ready
             } else {

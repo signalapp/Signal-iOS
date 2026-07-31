@@ -8,16 +8,16 @@ import GRDB
 extension Attachment {
     /// How long we keep attachment files locally by default when "optimize local storage"
     /// is enabled. Measured from the receive time of the most recent owning message.
-    public static var offloadingThresholdMs: UInt64 {
+    public static var offloadingThreshold: TimeInterval {
         if offloadingThresholdOverride { return 0 }
-        return .dayInMs * 30
+        return 30 * .day
     }
 
     /// How long we keep attachment files locally after viewing them when "optimize local storage"
     /// is enabled.
-    fileprivate static var offloadingViewThresholdMs: UInt64 {
+    fileprivate static var offloadingViewThreshold: TimeInterval {
         if offloadingThresholdOverride { return 0 }
-        return .dayInMs * 7
+        return 7 * .day
     }
 
     public static var offloadingThresholdOverride: Bool {
@@ -113,7 +113,9 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         startTimeMs: UInt64,
         lastAttachmentId: Attachment.IDType?,
     ) async throws -> Attachment.IDType? {
-        let viewedTimestampCutoff = startTimeMs - Attachment.offloadingViewThresholdMs
+        let viewedTimestampCutoff = Date(millisecondsSince1970: startTimeMs)
+            .addingTimeInterval(-Attachment.offloadingViewThreshold)
+            .ows_millisecondsSince1970
 
         let needsListMedia = db.read(block: listMediaManager.getNeedsQueryListMedia(tx:))
         if needsListMedia {
@@ -341,7 +343,9 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         // eligibility to offload.
         switch mostRecentReference.owner {
         case .message(let messageSource):
-            return messageSource.receivedAtTimestamp + Attachment.offloadingThresholdMs < currentTimestamp
+            let now = Date(millisecondsSince1970: currentTimestamp)
+            let receivedDate = Date(millisecondsSince1970: messageSource.receivedAtTimestamp)
+            return now.timeIntervalSince(receivedDate) > Attachment.offloadingThreshold
         case .storyMessage:
             // Story messages expire on their own; never offload
             // any attachment owned by a story message.

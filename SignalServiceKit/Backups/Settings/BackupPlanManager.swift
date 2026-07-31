@@ -321,7 +321,9 @@ class BackupPlanManagerImpl: BackupPlanManager {
         // This isn't 100% necessary; after all something 29 days old today will be
         // 30 days old tomorrow, so the queue runner will gracefully handle old
         // downloads at run-time anyway. But its more efficient to do in bulk.
-        let threshold = dateProvider().ows_millisecondsSince1970 - Attachment.offloadingThresholdMs
+        let threshold = dateProvider()
+            .addingTimeInterval(-Attachment.offloadingThreshold)
+            .ows_millisecondsSince1970
         backupAttachmentDownloadStore.markAllMediaTierFullsizeDownloadsIneligible(
             olderThan: threshold,
             tx: tx,
