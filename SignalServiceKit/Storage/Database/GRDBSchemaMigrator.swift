@@ -7273,6 +7273,18 @@ public class GRDBSchemaMigrator {
         }
     }
 
+    private static func groupModelUnarchiver<T: NSSecureCoding & NSObject>(
+        forReading groupModelType: T.Type,
+        from dataValue: Data,
+    ) throws -> NSKeyedUnarchiver {
+        let coder = try NSKeyedUnarchiver(forReadingFrom: dataValue)
+        coder.requiresSecureCoding = true
+        coder.setClass(groupModelType, forClassName: "TSGroupModel")
+        coder.setClass(groupModelType, forClassName: "TSGroupModelV2")
+        coder.setClass(groupModelType, forClassName: "SignalServiceKit.TSGroupModelV2")
+        return coder
+    }
+
     static func decodeBlockedGroupIds(dataValue: Data) throws -> [Data] {
         @objc(TSBlockedGroupModel)
         class TSBlockedGroupModel: NSObject, NSSecureCoding {
@@ -7280,10 +7292,7 @@ public class GRDBSchemaMigrator {
             required init?(coder: NSCoder) {}
             func encode(with coder: NSCoder) {}
         }
-        let coder = try NSKeyedUnarchiver(forReadingFrom: dataValue)
-        coder.requiresSecureCoding = true
-        coder.setClass(TSBlockedGroupModel.self, forClassName: "TSGroupModel")
-        coder.setClass(TSBlockedGroupModel.self, forClassName: "SignalServiceKit.TSGroupModelV2")
+        let coder = try groupModelUnarchiver(forReading: TSBlockedGroupModel.self, from: dataValue)
         let groupIdMap = try coder.decodeTopLevelObject(of: [
             NSDictionary.self,
             NSData.self,
@@ -7551,6 +7560,14 @@ public class GRDBSchemaMigrator {
         }
     }
 
+    private static func unarchiveGroupModel<T: NSSecureCoding & NSObject>(
+        ofType groupModelType: T.Type,
+        from dataValue: Data,
+    ) throws -> T? {
+        let coder = try groupModelUnarchiver(forReading: groupModelType, from: dataValue)
+        return try coder.decodeTopLevelObject(of: groupModelType, forKey: NSKeyedArchiveRootObjectKey)
+    }
+
     private static func decodeGroupIdFromGroupModelData(
         _ groupModelData: Data,
     ) throws -> Data? {
@@ -7565,15 +7582,7 @@ public class GRDBSchemaMigrator {
             func encode(with coder: NSCoder) { owsFail("Don't encode these!") }
         }
 
-        let coder = try NSKeyedUnarchiver(forReadingFrom: groupModelData)
-        coder.requiresSecureCoding = true
-        coder.setClass(TSGroupModelForMigrations.self, forClassName: "TSGroupModel")
-        coder.setClass(TSGroupModelForMigrations.self, forClassName: "SignalServiceKit.TSGroupModelV2")
-
-        let groupModel = try coder.decodeTopLevelObject(
-            of: TSGroupModelForMigrations.self,
-            forKey: NSKeyedArchiveRootObjectKey,
-        )
+        let groupModel = try unarchiveGroupModel(ofType: TSGroupModelForMigrations.self, from: groupModelData)
         return groupModel?.groupId as Data?
     }
 
