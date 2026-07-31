@@ -187,7 +187,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
             || audioPlaybackRate != nil
             || lastVerifiedGroupNameHash != nil
         else {
-            return owsFailDebug("You must set one value")
+            return
         }
 
         updateWith(updateStorageService: updateStorageService, transaction: transaction) { associatedData in
@@ -206,14 +206,6 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
             if let lastVerifiedGroupNameHash {
                 associatedData.lastVerifiedGroupNameHash = lastVerifiedGroupNameHash
             }
-        }
-    }
-
-    public func clear(isArchived clearIsArchived: Bool = false, isMarkedUnread clearIsMarkedUnread: Bool = false, updateStorageService: Bool, transaction: DBWriteTransaction) {
-        guard clearIsArchived || clearIsMarkedUnread else { return }
-        updateWith(updateStorageService: updateStorageService, transaction: transaction) { associatedData in
-            if clearIsArchived { associatedData.isArchived = false }
-            if clearIsMarkedUnread { associatedData.isMarkedUnread = false }
         }
     }
 

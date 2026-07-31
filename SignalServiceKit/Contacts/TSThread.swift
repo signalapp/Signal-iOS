@@ -484,9 +484,9 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
                 }
             }
 
-            threadAssociatedData.clear(
-                isArchived: needsToClearArchived,
-                isMarkedUnread: needsToClearIsMarkedUnread,
+            threadAssociatedData.updateWith(
+                isArchived: needsToClearArchived ? false : nil,
+                isMarkedUnread: needsToClearIsMarkedUnread ? false : nil,
                 updateStorageService: true,
                 transaction: tx,
             )
