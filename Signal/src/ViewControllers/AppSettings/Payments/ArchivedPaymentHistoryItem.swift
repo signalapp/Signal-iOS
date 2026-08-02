@@ -135,6 +135,10 @@ struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
         return archivedPayment.statusDescription(isOutgoing: isOutgoing)
     }
 
+    func statusDescriptionForAccessibility(isLongForm: Bool) -> String? {
+        return statusDescription(isLongForm: isLongForm)
+    }
+
     /// Read status is only tracked on TSPaymentModels, so there's not really anything to do here.
     func markAsRead(tx: SignalServiceKit.DBWriteTransaction) { }
 

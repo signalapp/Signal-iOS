@@ -289,6 +289,7 @@ class PaymentsDetailViewController: OWSTableViewController2, DatabaseChangeDeleg
                     comment: "Label for the transaction status in the payment details view in the app settings.",
                 ),
                 bottomText: statusMessage,
+                bottomAccessibilityText: paymentItem.statusDescriptionForAccessibility(isLongForm: true),
                 useFailedColor: paymentItem.isFailed,
             ))
         }
@@ -374,6 +375,7 @@ class PaymentsDetailViewController: OWSTableViewController2, DatabaseChangeDeleg
     private func buildStatusItem(
         topText: String,
         bottomText: String,
+        bottomAccessibilityText: String? = nil,
         useFailedColor: Bool = false,
     ) -> OWSTableItem {
         OWSTableItem(
@@ -387,6 +389,7 @@ class PaymentsDetailViewController: OWSTableViewController2, DatabaseChangeDeleg
 
                 let bottomLabel = UILabel()
                 bottomLabel.text = bottomText
+                bottomLabel.accessibilityLabel = bottomAccessibilityText
                 bottomLabel.textColor = .Signal.secondaryLabel
                 bottomLabel.font = UIFont.dynamicTypeFootnoteClamped
                 bottomLabel.numberOfLines = 0
