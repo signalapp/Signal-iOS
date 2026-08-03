@@ -228,7 +228,9 @@ open class TSGroupThread: TSThread {
 
     @objc
     public static func fetch(groupId: Data, transaction: DBReadTransaction) -> TSGroupThread? {
-        let uniqueId = threadUniqueId(forGroupId: groupId, transaction: transaction)
+        guard let uniqueId = threadUniqueId(forGroupId: groupId, tx: transaction) else {
+            return nil
+        }
         return TSGroupThread.fetchGroupThreadViaCache(uniqueId: uniqueId, transaction: transaction)
     }
 

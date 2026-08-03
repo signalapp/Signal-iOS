@@ -290,7 +290,7 @@ extension ChatListViewController {
             {
                 return TSContactThread.getWithContactAddress(address, transaction: transaction)?.uniqueId
             } else if let groupId {
-                return TSGroupThread.threadUniqueId(forGroupId: groupId, transaction: transaction)
+                return TSGroupThread.threadUniqueId(forGroupId: groupId, tx: transaction)
             } else {
                 return nil
             }

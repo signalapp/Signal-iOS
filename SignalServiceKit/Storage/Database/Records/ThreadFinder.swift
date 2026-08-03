@@ -319,30 +319,24 @@ public class ThreadFinder {
 
         if includeImplicitGroupThreads {
             // Prefetch the group thread uniqueIds that currently have stories
-            // TODO: We could potential join on the KVS for groupId -> threadId
-            // to further reduce the number of queries required here, but it
-            // may be overkill.
-
             let storyMessageGroupIdsSQL = """
                 SELECT DISTINCT \(StoryMessage.columnName(.groupId))
                 FROM \(StoryMessage.databaseTableName)
                 WHERE \(StoryMessage.columnName(.groupId)) IS NOT NULL
             """
 
-            do {
-                let groupIdCursor = try Data.fetchCursor(
+            var groupIdCursor = FailIfThrowsValueCursor {
+                return try Data.fetchCursor(
                     transaction.database,
                     sql: storyMessageGroupIdsSQL,
                 )
+            }
 
-                while let groupId = try groupIdCursor.next() {
-                    allowedDefaultThreadIds.append(TSGroupThread.threadUniqueId(
-                        forGroupId: groupId,
-                        transaction: transaction,
-                    ))
-                }
-            } catch {
-                owsFailDebug("Failed to query group thread ids \(error)")
+            while
+                let groupId = groupIdCursor.next(),
+                let threadUniqueId = TSGroupThread.threadUniqueId(forGroupId: groupId, tx: transaction)
+            {
+                allowedDefaultThreadIds.append(threadUniqueId)
             }
         }
 

@@ -24,14 +24,11 @@ extension TSGroupThread {
         groupId.hexadecimalString
     }
 
-    private static func existingThreadUniqueId(
-        forGroupId groupId: Data,
-        transaction: DBReadTransaction,
-    ) -> String? {
+    private static func existingThreadUniqueId(forGroupId groupId: Data, tx: DBReadTransaction) -> String? {
         owsAssertDebug(!groupId.isEmpty)
 
         let mappingKey = self.mappingKey(forGroupId: groupId)
-        return uniqueIdMappingStore.fetchValue(String.self, forKey: mappingKey, tx: transaction)
+        return uniqueIdMappingStore.fetchValue(String.self, forKey: mappingKey, tx: tx)
     }
 
     /// Returns the uniqueId for the ``TSGroupThread`` with the given group ID,
@@ -46,25 +43,19 @@ extension TSGroupThread {
     /// We've actually been doing a deterministic unique ID derivation for new
     /// threads for some time; we'd then also store that mapping, which is not
     /// necessary.
-    public static func threadUniqueId(
-        forGroupId groupId: Data,
-        transaction tx: DBReadTransaction,
-    ) -> String {
+    public static func threadUniqueId(forGroupId groupId: Data, tx: DBReadTransaction) -> String? {
         owsAssertDebug(!groupId.isEmpty)
 
-        if
-            let threadUniqueId = existingThreadUniqueId(
-                forGroupId: groupId,
-                transaction: tx,
-            )
-        {
-            return threadUniqueId
+        let threadUniqueId = existingThreadUniqueId(forGroupId: groupId, tx: tx) ?? defaultThreadUniqueId(forGroupId: groupId)
+
+        guard SDSCodableModelDatabaseInterface().fetchRowId(modelType: TSThread.self, uniqueId: threadUniqueId, tx: tx) != nil else {
+            return nil
         }
 
-        return defaultThreadUniqueId(forGroupId: groupId)
+        return threadUniqueId
     }
 
-    public static func defaultThreadUniqueId(forGroupId groupId: Data) -> String {
+    static func defaultThreadUniqueId(forGroupId groupId: Data) -> String {
         owsAssertDebug(!groupId.isEmpty)
 
         return groupThreadUniqueIdPrefix + groupId.base64EncodedString()
