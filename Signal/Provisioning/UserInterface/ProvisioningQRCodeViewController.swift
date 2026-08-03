@@ -84,104 +84,108 @@ private struct ProvisioningQRCodeView: View {
     @ObservedObject var model: RotatingQRCodeView.Model
     let onCancel: () -> Void
 
-    private static let contentMaxWidth: CGFloat = 440
-
     var body: some View {
         GeometryReader { overallGeometry in
-            VStack(spacing: 0) {
-                Spacer()
+            let contentWidth = min(overallGeometry.size.width - 48, 440)
 
-                Text(OWSLocalizedString(
-                    "SECONDARY_ONBOARDING_SCAN_CODE_TITLE",
-                    comment: "header text while displaying a QR code which, when scanned, will link this device.",
-                ))
-                .font(.title)
-                .fontWeight(.semibold)
-                .foregroundStyle(Color.Signal.label)
-                .multilineTextAlignment(.center)
+            ScrollableContentPinnedFooterView(centersContentVertically: true) {
+                VStack(alignment: .center, spacing: 0) {
+                    titleLabel
 
-                Spacer(minLength: 8)
-                    .frame(maxHeight: 28)
+                    Spacer()
+                        .frame(height: 24)
 
-                RotatingQRCodeView(model: self.model)
-                    .frame(maxWidth: Self.contentMaxWidth)
+                    qrCode(dimension: contentWidth)
 
-                Spacer(minLength: 8)
-                    .frame(maxHeight: 38)
+                    Spacer()
+                        .frame(height: 32)
 
-                VStack(alignment: .leading, spacing: 24) {
-                    InstructionStep(
-                        icon: .devicePhone,
-                        text: OWSLocalizedString(
-                            "SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY",
-                            comment: "First bullet point on the QR code screen for linking a device",
-                        ),
-                    )
-                    InstructionStep(
-                        icon: .personCircle,
-                        text: OWSLocalizedString(
-                            "SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS",
-                            comment: "Second bullet point on the QR code screen for linking a device",
-                        ),
-                    )
-                    InstructionStep(
-                        icon: .devices,
-                        text: OWSLocalizedString(
-                            "SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE",
-                            comment: "Third bullet point on the QR code screen for linking a device",
-                        ),
-                    )
-                }
-                .frame(maxWidth: Self.contentMaxWidth, alignment: .leading)
-                .padding(.horizontal, 24)
+                    instructionSteps
+
+                    Spacer()
+                        .frame(height: 24)
+
+                    helpLink
 
 #if TESTABLE_BUILD
-                if
-                    #available(iOS 16.0, *),
-                    let provisioningUrl = model.qrCodeViewModel.qrCodeURL
-                {
-                    // If on a physical device, this postfixing with some text
-                    // allows one to AirDrop the URL to macOS to be copied into
-                    // a simulator, instead of having macOS automatically try
-                    // and open the URL (which Signal Desktop will try, and
-                    // fail, to handle).
-                    ShareLink(item: "\(provisioningUrl) DELETETHIS") {
-                        Text(LocalizationNotNeeded(
-                            "Debug only: Share URL",
-                        ))
-                    }
-                    .simultaneousGesture(TapGesture().onEnded {
-                        // When tapped, also copy to the clipboard for easy
-                        // extraction from a simulator.
-                        UIPasteboard.general.url = provisioningUrl
-                    })
+                    if let qrCodeUrl = model.qrCodeViewModel.qrCodeURL {
+                        Spacer().frame(height: 24)
 
-                    Button(LocalizationNotNeeded("Debug only: Copy URL")) {
-                        UIPasteboard.general.url = provisioningUrl
+                        debugURLActions(qrCodeUrl: qrCodeUrl)
                     }
-                }
 #endif
-
-                Spacer(minLength: 24)
-                    .frame(maxHeight: 30)
-
-                Link(
-                    OWSLocalizedString(
-                        "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT",
-                        comment: "Link text for page with troubleshooting info shown on the QR scanning screen",
-                    ),
-                    destination: URL.Support.troubleshootingMultipleDevices,
-                )
-                .font(.subheadline.weight(.semibold))
-
-                Spacer(minLength: 40)
-
-                Button(CommonStrings.cancelButton, action: onCancel)
-                    .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
-                    .padding(.bottom, NSDirectionalEdgeInsets.buttonContainerLayoutMargins.bottom)
+                }
+                .frame(maxWidth: contentWidth)
+            } pinnedFooter: {
+                cancelButton
             }
-            .frame(width: overallGeometry.size.width, height: overallGeometry.size.height)
         }
+    }
+
+    private var titleLabel: some View {
+        Text(OWSLocalizedString(
+            "SECONDARY_ONBOARDING_SCAN_CODE_TITLE",
+            comment: "header text while displaying a QR code which, when scanned, will link this device.",
+        ))
+        .font(.title)
+        .fontWeight(.semibold)
+        .foregroundStyle(Color.Signal.label)
+        .multilineTextAlignment(.center)
+    }
+
+    private func qrCode(dimension: CGFloat) -> some View {
+        RotatingQRCodeView(model: self.model)
+            .frame(width: dimension, height: dimension)
+    }
+
+    private var instructionSteps: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            InstructionStep(
+                icon: .devicePhone,
+                text: OWSLocalizedString(
+                    "SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_PRIMARY",
+                    comment: "First bullet point on the QR code screen for linking a device",
+                ),
+            )
+            InstructionStep(
+                icon: .personCircle,
+                text: OWSLocalizedString(
+                    "SECONDARY_ONBOARDING_SCAN_CODE_STEP_OPEN_SETTINGS",
+                    comment: "Second bullet point on the QR code screen for linking a device",
+                ),
+            )
+            InstructionStep(
+                icon: .devices,
+                text: OWSLocalizedString(
+                    "SECONDARY_ONBOARDING_SCAN_CODE_STEP_LINK_DEVICE",
+                    comment: "Third bullet point on the QR code screen for linking a device",
+                ),
+            )
+        }
+    }
+
+    @ViewBuilder
+    private func debugURLActions(qrCodeUrl: URL) -> some View {
+        Button(LocalizationNotNeeded("Debug only: Copy URL")) {
+            UIPasteboard.general.url = qrCodeUrl
+        }
+    }
+
+    private var helpLink: some View {
+        Link(
+            OWSLocalizedString(
+                "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT",
+                comment: "Link text for page with troubleshooting info shown on the QR scanning screen",
+            ),
+            destination: URL.Support.troubleshootingMultipleDevices,
+        )
+        .font(.subheadline.weight(.semibold))
+    }
+
+    private var cancelButton: some View {
+        Button(CommonStrings.cancelButton, action: onCancel)
+            .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
+            .padding(.bottom, NSDirectionalEdgeInsets.buttonContainerLayoutMargins.bottom)
     }
 }
 
@@ -220,7 +224,7 @@ private struct PreviewView: View {
             ),
             onCancel: {},
         )
-        .padding(112)
+        .padding(.horizontal, 16)
     }
 }
 
