@@ -306,7 +306,7 @@ extension ChatListViewController {
         }
 
         let db = DependenciesBridge.shared.db
-        let threadSoftDeleteManager = DependenciesBridge.shared.threadSoftDeleteManager
+        let threadDeletionManager = DependenciesBridge.shared.threadDeletionManager
 
         /// We need to grab these now, since they'll be `nil`-ed out when we
         /// show the modal spinner below.
@@ -346,8 +346,8 @@ extension ChatListViewController {
                 // change as we're deleting them.
                 db.write { transaction in
                     self.performOn(indexPaths: selectedIndexPaths) { threadViewModels in
-                        threadSoftDeleteManager.softDelete(
-                            threads: threadViewModels.map { $0.threadRecord },
+                        threadDeletionManager.deleteThreads(
+                            threadViewModels.map { $0.threadRecord },
                             sendDeleteForMeSyncMessage: true,
                             updateStorageService: true,
                             tx: transaction,

@@ -89,7 +89,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
     private let bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue
     private let interactionDeleteManager: any InteractionDeleteManager
     private let recipientDatabaseTable: RecipientDatabaseTable
-    private let threadSoftDeleteManager: any ThreadSoftDeleteManager
+    private let threadDeletionManager: any ThreadDeletionManager
     private let threadStore: ThreadStore
     private let tsAccountManager: TSAccountManager
 
@@ -102,7 +102,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue,
         interactionDeleteManager: any InteractionDeleteManager,
         recipientDatabaseTable: RecipientDatabaseTable,
-        threadSoftDeleteManager: any ThreadSoftDeleteManager,
+        threadDeletionManager: any ThreadDeletionManager,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
     ) {
@@ -112,7 +112,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         self.bulkDeleteInteractionJobQueue = bulkDeleteInteractionJobQueue
         self.interactionDeleteManager = interactionDeleteManager
         self.recipientDatabaseTable = recipientDatabaseTable
-        self.threadSoftDeleteManager = threadSoftDeleteManager
+        self.threadDeletionManager = threadDeletionManager
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
     }
@@ -312,8 +312,8 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         /// happens if a non-local message shows up in the thread while we're
         /// doing asynchronous delete", since we have no "anchor" message before
         /// which we know it's safe to delete.
-        threadSoftDeleteManager.softDelete(
-            threads: [thread],
+        threadDeletionManager.deleteThreads(
+            [thread],
             sendDeleteForMeSyncMessage: false,
             updateStorageService: false,
             tx: tx,

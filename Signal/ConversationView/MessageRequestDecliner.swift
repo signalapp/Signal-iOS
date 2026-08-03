@@ -15,7 +15,7 @@ enum MessageRequestDecliner {
     ) {
         let blockingManager = SSKEnvironment.shared.blockingManagerRef
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        let deleteManager = DependenciesBridge.shared.threadSoftDeleteManager
+        let deleteManager = DependenciesBridge.shared.threadDeletionManager
         let syncManager = SSKEnvironment.shared.syncManagerRef
 
         // Leave the group if we're going to block it or delete it. (If we're only
@@ -52,8 +52,8 @@ enum MessageRequestDecliner {
                 )
             }
             if responseType.shouldDeleteThread {
-                deleteManager.softDelete(
-                    threads: [thread],
+                deleteManager.deleteThreads(
+                    [thread],
                     // We're already sending a sync message about this above!
                     sendDeleteForMeSyncMessage: false,
                     updateStorageService: true,

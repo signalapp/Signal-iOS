@@ -15,14 +15,14 @@ public final class BulkDeleteInteractionJobQueue {
         addressableMessageFinder: DeleteForMeAddressableMessageFinder,
         db: any DB,
         interactionDeleteManager: InteractionDeleteManager,
-        threadSoftDeleteManager: ThreadSoftDeleteManager,
+        threadDeletionManager: ThreadDeletionManager,
         threadStore: ThreadStore,
     ) {
         self.jobRunnerFactory = BulkDeleteInteractionJobRunnerFactory(
             addressableMessageFinder: addressableMessageFinder,
             db: db,
             interactionDeleteManager: interactionDeleteManager,
-            threadSoftDeleteManager: threadSoftDeleteManager,
+            threadDeletionManager: threadDeletionManager,
             threadStore: threadStore,
         )
         self.jobQueueRunner = JobQueueRunner(
@@ -77,7 +77,7 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
     private let addressableMessageFinder: DeleteForMeAddressableMessageFinder
     private let db: any DB
     private let interactionDeleteManager: InteractionDeleteManager
-    private let threadSoftDeleteManager: ThreadSoftDeleteManager
+    private let threadDeletionManager: ThreadDeletionManager
     private let threadStore: ThreadStore
 
     private let logger = PrefixedLogger(prefix: "[DeleteForMe]")
@@ -86,13 +86,13 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
         addressableMessageFinder: DeleteForMeAddressableMessageFinder,
         db: any DB,
         interactionDeleteManager: InteractionDeleteManager,
-        threadSoftDeleteManager: ThreadSoftDeleteManager,
+        threadDeletionManager: ThreadDeletionManager,
         threadStore: ThreadStore,
     ) {
         self.addressableMessageFinder = addressableMessageFinder
         self.db = db
         self.interactionDeleteManager = interactionDeleteManager
-        self.threadSoftDeleteManager = threadSoftDeleteManager
+        self.threadDeletionManager = threadDeletionManager
         self.threadStore = threadStore
     }
 
@@ -183,8 +183,8 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
             {
                 self.logger.warn("Not doing thread soft-delete – most recent row ID was newer than when we started delete.")
             } else {
-                self.threadSoftDeleteManager.softDelete(
-                    threads: [thread],
+                self.threadDeletionManager.deleteThreads(
+                    [thread],
                     sendDeleteForMeSyncMessage: false,
                     updateStorageService: false,
                     tx: tx,
@@ -263,20 +263,20 @@ private class BulkDeleteInteractionJobRunnerFactory: JobRunnerFactory {
     private let addressableMessageFinder: DeleteForMeAddressableMessageFinder
     private let db: any DB
     private let interactionDeleteManager: InteractionDeleteManager
-    private let threadSoftDeleteManager: ThreadSoftDeleteManager
+    private let threadDeletionManager: ThreadDeletionManager
     private let threadStore: ThreadStore
 
     init(
         addressableMessageFinder: DeleteForMeAddressableMessageFinder,
         db: any DB,
         interactionDeleteManager: InteractionDeleteManager,
-        threadSoftDeleteManager: ThreadSoftDeleteManager,
+        threadDeletionManager: ThreadDeletionManager,
         threadStore: ThreadStore,
     ) {
         self.addressableMessageFinder = addressableMessageFinder
         self.db = db
         self.interactionDeleteManager = interactionDeleteManager
-        self.threadSoftDeleteManager = threadSoftDeleteManager
+        self.threadDeletionManager = threadDeletionManager
         self.threadStore = threadStore
     }
 
@@ -285,7 +285,7 @@ private class BulkDeleteInteractionJobRunnerFactory: JobRunnerFactory {
             addressableMessageFinder: addressableMessageFinder,
             db: db,
             interactionDeleteManager: interactionDeleteManager,
-            threadSoftDeleteManager: threadSoftDeleteManager,
+            threadDeletionManager: threadDeletionManager,
             threadStore: threadStore,
         )
     }

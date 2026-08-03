@@ -207,7 +207,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     }
 
     private func clearHistoryBehindSpinner() {
-        let threadSoftDeleteManager = DependenciesBridge.shared.threadSoftDeleteManager
+        let threadDeletionManager = DependenciesBridge.shared.threadDeletionManager
 
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
@@ -217,7 +217,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             backgroundBlockQueueQos: .userInitiated,
             backgroundBlock: { modal in
                 self.clearHistoryWithSneakyTransaction(
-                    threadSoftDeleteManager: threadSoftDeleteManager,
+                    threadDeletionManager: threadDeletionManager,
                 )
 
                 DispatchQueue.main.async {
@@ -228,13 +228,13 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     }
 
     private func clearHistoryWithSneakyTransaction(
-        threadSoftDeleteManager: any ThreadSoftDeleteManager,
+        threadDeletionManager: any ThreadDeletionManager,
     ) {
         Logger.info("")
 
         DependenciesBridge.shared.db.write { tx in
-            threadSoftDeleteManager.softDelete(
-                threads: TSThread.anyFetchAll(transaction: tx),
+            threadDeletionManager.deleteThreads(
+                TSThread.anyFetchAll(transaction: tx),
                 sendDeleteForMeSyncMessage: true,
                 updateStorageService: true,
                 tx: tx,

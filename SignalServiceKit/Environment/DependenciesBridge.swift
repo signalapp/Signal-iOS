@@ -185,7 +185,7 @@ public class DependenciesBridge {
     public let threadAssociatedDataStore: ThreadAssociatedDataStore
     public let threadRemover: ThreadRemover
     public let threadReplyInfoStore: ThreadReplyInfoStore
-    public let threadSoftDeleteManager: ThreadSoftDeleteManager
+    public let threadDeletionManager: ThreadDeletionManager
     public let threadStore: ThreadStore
     public let tsAccountManager: TSAccountManager
     public let usernameApiClient: UsernameApiClient
@@ -334,7 +334,7 @@ public class DependenciesBridge {
         threadAssociatedDataStore: ThreadAssociatedDataStore,
         threadRemover: ThreadRemover,
         threadReplyInfoStore: ThreadReplyInfoStore,
-        threadSoftDeleteManager: ThreadSoftDeleteManager,
+        threadDeletionManager: ThreadDeletionManager,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
         usernameApiClient: UsernameApiClient,
@@ -483,7 +483,7 @@ public class DependenciesBridge {
         self.threadAssociatedDataStore = threadAssociatedDataStore
         self.threadRemover = threadRemover
         self.threadReplyInfoStore = threadReplyInfoStore
-        self.threadSoftDeleteManager = threadSoftDeleteManager
+        self.threadDeletionManager = threadDeletionManager
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
         self.usernameApiClient = usernameApiClient

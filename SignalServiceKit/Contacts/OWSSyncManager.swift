@@ -333,8 +333,8 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                 owsFailDebug("can't accept messages request for \(type(of: thread))")
             }
         case .delete:
-            DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
-                threads: [thread],
+            DependenciesBridge.shared.threadDeletionManager.deleteThreads(
+                [thread],
                 sendDeleteForMeSyncMessage: false,
                 updateStorageService: false,
                 tx: transaction,
@@ -342,8 +342,8 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         case .block:
             SSKEnvironment.shared.blockingManagerRef.addBlockedThread(thread, blockMode: .remote, transaction: transaction)
         case .blockAndDelete:
-            DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
-                threads: [thread],
+            DependenciesBridge.shared.threadDeletionManager.deleteThreads(
+                [thread],
                 sendDeleteForMeSyncMessage: false,
                 updateStorageService: false,
                 tx: transaction,

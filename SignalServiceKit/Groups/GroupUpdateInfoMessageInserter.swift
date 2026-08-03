@@ -285,7 +285,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
 
         // Delete intents for terminated group.
         if isTerminatedGroup {
-            DependenciesBridge.shared.threadSoftDeleteManager.removeIntentsForTerminatedGroup(threadUniqueId: groupThread.uniqueId)
+            DependenciesBridge.shared.threadDeletionManager.removeIntentsForTerminatedGroup(threadUniqueId: groupThread.uniqueId)
         }
     }
 }

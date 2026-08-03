@@ -12,7 +12,7 @@ import Foundation
 /// *gone forever*; for example, when two threads are merged.
 ///
 /// If you're looking to colloquially "delete a thread", e.g. in response to a
-/// user action, you probably want ``ThreadSoftDeleteManager``.
+/// user action, you probably want ``ThreadDeletionManager``.
 public protocol ThreadRemover {
     func remove(_ thread: TSContactThread, tx: DBWriteTransaction)
     func remove(_ thread: TSPrivateStoryThread, tx: DBWriteTransaction)
@@ -26,7 +26,7 @@ class ThreadRemoverImpl: ThreadRemover {
     private let threadAssociatedDataStore: ThreadAssociatedDataStore
     private let threadReadCache: Shims.ThreadReadCache
     private let threadReplyInfoStore: ThreadReplyInfoStore
-    private let threadSoftDeleteManager: ThreadSoftDeleteManager
+    private let threadDeletionManager: ThreadDeletionManager
     private let threadStore: ThreadStore
     private let wallpaperStore: WallpaperStore
 
@@ -38,7 +38,7 @@ class ThreadRemoverImpl: ThreadRemover {
         threadAssociatedDataStore: ThreadAssociatedDataStore,
         threadReadCache: Shims.ThreadReadCache,
         threadReplyInfoStore: ThreadReplyInfoStore,
-        threadSoftDeleteManager: ThreadSoftDeleteManager,
+        threadDeletionManager: ThreadDeletionManager,
         threadStore: ThreadStore,
         wallpaperStore: WallpaperStore,
     ) {
@@ -49,7 +49,7 @@ class ThreadRemoverImpl: ThreadRemover {
         self.threadAssociatedDataStore = threadAssociatedDataStore
         self.threadReadCache = threadReadCache
         self.threadReplyInfoStore = threadReplyInfoStore
-        self.threadSoftDeleteManager = threadSoftDeleteManager
+        self.threadDeletionManager = threadDeletionManager
         self.threadStore = threadStore
         self.wallpaperStore = wallpaperStore
     }
@@ -62,7 +62,7 @@ class ThreadRemoverImpl: ThreadRemover {
         chatColorSettingStore.setRawSetting(nil, for: thread.uniqueId, tx: tx)
         databaseStorage.updateIdMapping(thread: thread, tx: tx)
         // No sync message, since hard-delete is a local-only concept.
-        threadSoftDeleteManager.removeAllInteractions(thread: thread, sendDeleteForMeSyncMessage: false, tx: tx)
+        threadDeletionManager.removeAllInteractions(thread: thread, sendDeleteForMeSyncMessage: false, tx: tx)
         disappearingMessagesConfigurationStore.remove(for: thread, tx: tx)
         threadAssociatedDataStore.remove(for: thread.uniqueId, tx: tx)
         threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)

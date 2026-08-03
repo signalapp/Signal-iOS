@@ -467,7 +467,7 @@ extension ThreadMerger {
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadReadCache: ThreadRemover_MockThreadReadCache(),
             threadReplyInfoStore: threadReplyInfoStore,
-            threadSoftDeleteManager: MockThreadSoftDeleteManager(),
+            threadDeletionManager: MockThreadDeletionManager(),
             threadStore: threadStore,
             wallpaperStore: wallpaperStore,
         )

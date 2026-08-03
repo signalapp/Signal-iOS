@@ -931,13 +931,13 @@ extension AppSetup.GlobalsContinuation {
             threadStore: threadStore,
         )
 
-        let threadSoftDeleteManager = ThreadSoftDeleteManagerImpl(
+        let threadDeletionManager = ThreadDeletionManagerImpl(
             deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
-            intentsManager: ThreadSoftDeleteManagerImpl.Wrappers.IntentsManager(),
+            intentsManager: ThreadDeletionManagerImpl.Wrappers.IntentsManager(),
             interactionDeleteManager: interactionDeleteManager,
             pinnedThreadManager: pinnedThreadManager,
             recipientDatabaseTable: recipientDatabaseTable,
-            storyManager: ThreadSoftDeleteManagerImpl.Wrappers.StoryManager(),
+            storyManager: ThreadDeletionManagerImpl.Wrappers.StoryManager(),
             threadReplyInfoStore: threadReplyInfoStore,
             tsAccountManager: tsAccountManager,
         )
@@ -947,7 +947,7 @@ extension AppSetup.GlobalsContinuation {
             addressableMessageFinder: deleteForMeAddressableMessageFinder,
             db: db,
             interactionDeleteManager: interactionDeleteManager,
-            threadSoftDeleteManager: threadSoftDeleteManager,
+            threadDeletionManager: threadDeletionManager,
             threadStore: threadStore,
         )
         let deleteForMeIncomingSyncMessageManager = DeleteForMeIncomingSyncMessageManagerImpl(
@@ -957,7 +957,7 @@ extension AppSetup.GlobalsContinuation {
             bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
             interactionDeleteManager: interactionDeleteManager,
             recipientDatabaseTable: recipientDatabaseTable,
-            threadSoftDeleteManager: threadSoftDeleteManager,
+            threadDeletionManager: threadDeletionManager,
             threadStore: threadStore,
             tsAccountManager: tsAccountManager,
         )
@@ -970,7 +970,7 @@ extension AppSetup.GlobalsContinuation {
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadReadCache: ThreadRemoverImpl.Wrappers.ThreadReadCache(modelReadCaches.threadReadCache),
             threadReplyInfoStore: threadReplyInfoStore,
-            threadSoftDeleteManager: threadSoftDeleteManager,
+            threadDeletionManager: threadDeletionManager,
             threadStore: threadStore,
             wallpaperStore: wallpaperStore,
         )
@@ -1883,7 +1883,7 @@ extension AppSetup.GlobalsContinuation {
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadRemover: threadRemover,
             threadReplyInfoStore: threadReplyInfoStore,
-            threadSoftDeleteManager: threadSoftDeleteManager,
+            threadDeletionManager: threadDeletionManager,
             threadStore: threadStore,
             tsAccountManager: tsAccountManager,
             usernameApiClient: usernameApiClient,

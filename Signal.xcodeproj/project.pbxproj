@@ -3403,7 +3403,7 @@
 		D9F9A6392BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */; };
 		D9F9A63B2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */; };
 		D9F9A63D2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63C2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift */; };
-		D9F9A63F2C013EF100EF13EC /* ThreadSoftDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */; };
+		D9F9A63F2C013EF100EF13EC /* ThreadDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63E2C013EF100EF13EC /* ThreadDeletionManager.swift */; };
 		D9F9A6412C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6402C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift */; };
 		D9F9A6452C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6442C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift */; };
 		D9FC1C912C6FE5A50023AB87 /* BackupArchiveTSMessageEditHistoryArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FC1C902C6FE5A50023AB87 /* BackupArchiveTSMessageEditHistoryArchiver.swift */; };
@@ -7756,7 +7756,7 @@
 		D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkDeleteInteractionJobRecord.swift; sourceTree = "<group>"; };
 		D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkDeleteInteractionJobQueue.swift; sourceTree = "<group>"; };
 		D9F9A63C2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeAddressableMessageFinder.swift; sourceTree = "<group>"; };
-		D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSoftDeleteManager.swift; sourceTree = "<group>"; };
+		D9F9A63E2C013EF100EF13EC /* ThreadDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDeletionManager.swift; sourceTree = "<group>"; };
 		D9F9A6402C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageManager.swift; sourceTree = "<group>"; };
 		D9F9A6442C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessage.swift; sourceTree = "<group>"; };
 		D9FC1C902C6FE5A50023AB87 /* BackupArchiveTSMessageEditHistoryArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveTSMessageEditHistoryArchiver.swift; sourceTree = "<group>"; };
@@ -15346,8 +15346,8 @@
 			children = (
 				6671DC862CD44C9B002620EF /* LastVisibleInteractionStore.swift */,
 				D9CA614A2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift */,
+				D9F9A63E2C013EF100EF13EC /* ThreadDeletionManager.swift */,
 				502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */,
-				D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */,
 				5033D46029D638FD007FEADA /* ThreadStore.swift */,
 				661170C92ABA522200A1B16D /* TSContactThread.swift */,
 				F9C5C9EF289453B100548EEE /* TSGroupThread+OWS.swift */,
@@ -20191,6 +20191,7 @@
 				F9C5CCD8289453B300548EEE /* ThreadAssociatedData.swift in Sources */,
 				5033D46529D65099007FEADA /* ThreadAssociatedDataStore.swift in Sources */,
 				F9C5CDE2289453B400548EEE /* ThreadBacked.swift in Sources */,
+				D9F9A63F2C013EF100EF13EC /* ThreadDeletionManager.swift in Sources */,
 				F9C5CD17289453B300548EEE /* ThreadFinder.swift in Sources */,
 				668A01152C2B6077007B8808 /* Threading.m in Sources */,
 				729E0B0A2CA4AEB0002EC961 /* Threading.swift in Sources */,
@@ -20198,7 +20199,6 @@
 				502D45442A05A34B00B8BCE0 /* ThreadRemover.swift in Sources */,
 				45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */,
 				502D45482A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift in Sources */,
-				D9F9A63F2C013EF100EF13EC /* ThreadSoftDeleteManager.swift in Sources */,
 				5033D46129D638FD007FEADA /* ThreadStore.swift in Sources */,
 				725465252BA017EF00EABFD2 /* ThreadUtil.swift in Sources */,
 				50F86FC42AFEFEC20045F58B /* TimeGatedBatch.swift in Sources */,

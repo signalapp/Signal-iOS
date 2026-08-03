@@ -296,7 +296,7 @@ extension ThreadContextualActionProvider where Self: UIViewController {
     func deleteThreadWithConfirmation(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
         let db = DependenciesBridge.shared.db
-        let threadSoftDeleteManager = DependenciesBridge.shared.threadSoftDeleteManager
+        let threadDeletionManager = DependenciesBridge.shared.threadDeletionManager
 
         let alert = ActionSheetController(
             title: OWSLocalizedString(
@@ -323,8 +323,8 @@ extension ThreadContextualActionProvider where Self: UIViewController {
                 guard let self else { return }
 
                 await db.awaitableWrite { tx in
-                    threadSoftDeleteManager.softDelete(
-                        threads: [threadViewModel.threadRecord],
+                    threadDeletionManager.deleteThreads(
+                        [threadViewModel.threadRecord],
                         sendDeleteForMeSyncMessage: true,
                         updateStorageService: true,
                         tx: tx,

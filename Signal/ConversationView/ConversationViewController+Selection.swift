@@ -611,7 +611,7 @@ extension ConversationViewController {
 
     func didTapDeleteAll() {
         let db = DependenciesBridge.shared.db
-        let threadSoftDeleteManager = DependenciesBridge.shared.threadSoftDeleteManager
+        let threadDeletionManager = DependenciesBridge.shared.threadDeletionManager
 
         let thread = self.thread
         let alert = ActionSheetController(title: nil, message: OWSLocalizedString("DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY", comment: "action sheet body"))
@@ -626,7 +626,7 @@ extension ConversationViewController {
             ) { [weak self] modal in
                 guard let self else { return }
                 db.write {
-                    threadSoftDeleteManager.removeAllInteractions(
+                    threadDeletionManager.removeAllInteractions(
                         thread: thread,
                         sendDeleteForMeSyncMessage: true,
                         tx: $0,

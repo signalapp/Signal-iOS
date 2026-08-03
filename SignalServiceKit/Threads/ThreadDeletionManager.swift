@@ -19,9 +19,9 @@ import LibSignalClient
 /// If you're calling this type for a user-initiated deletion, consider using
 /// ``DeleteForMeInfoSheetCoordinator`` in the Signal target instead, which
 /// handles some one-time informational UX.
-public protocol ThreadSoftDeleteManager {
-    func softDelete(
-        threads: [TSThread],
+public protocol ThreadDeletionManager {
+    func deleteThreads(
+        _ threads: [TSThread],
         sendDeleteForMeSyncMessage: Bool,
         updateStorageService: Bool,
         tx: DBWriteTransaction,
@@ -36,7 +36,7 @@ public protocol ThreadSoftDeleteManager {
     func removeIntentsForTerminatedGroup(threadUniqueId: String)
 }
 
-final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
+final class ThreadDeletionManagerImpl: ThreadDeletionManager {
     private enum Constants {
         static let interactionDeletionBatchSize: Int = 500
     }
@@ -74,8 +74,8 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         self.tsAccountManager = tsAccountManager
     }
 
-    func softDelete(
-        threads: [TSThread],
+    func deleteThreads(
+        _ threads: [TSThread],
         sendDeleteForMeSyncMessage: Bool,
         updateStorageService: Bool,
         tx: DBWriteTransaction,
@@ -96,8 +96,8 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
                 )
             }
 
-            softDelete(
-                thread: thread,
+            deleteThread(
+                thread,
                 syncMessageContext: syncMessageContext,
                 updateStorageService: updateStorageService,
                 tx: tx,
@@ -152,8 +152,8 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         intentsManager.deleteAllIntents(withGroupIdentifier: threadUniqueId)
     }
 
-    private func softDelete(
-        thread: TSThread,
+    private func deleteThread(
+        _ thread: TSThread,
         syncMessageContext: SyncMessageContext?,
         updateStorageService: Bool,
         tx: DBWriteTransaction,
@@ -242,26 +242,26 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
 
 // MARK: - Shims
 
-extension ThreadSoftDeleteManagerImpl {
+extension ThreadDeletionManagerImpl {
     enum Shims {
-        typealias StoryManager = _ThreadSoftDeleteManagerImpl_StoryManager_Shim
-        typealias IntentsManager = _ThreadSoftDeleteManagerImpl_IntentsManager_Shim
+        typealias StoryManager = _ThreadDeletionManagerImpl_StoryManager_Shim
+        typealias IntentsManager = _ThreadDeletionManagerImpl_IntentsManager_Shim
     }
 
     enum Wrappers {
-        typealias StoryManager = _ThreadSoftDeleteManagerImpl_StoryManager_Wrapper
-        typealias IntentsManager = _ThreadSoftDeleteManagerImpl_IntentsManager_Wrapper
+        typealias StoryManager = _ThreadDeletionManagerImpl_StoryManager_Wrapper
+        typealias IntentsManager = _ThreadDeletionManagerImpl_IntentsManager_Wrapper
     }
 }
 
 // MARK: StoryManager
 
-protocol _ThreadSoftDeleteManagerImpl_StoryManager_Shim {
+protocol _ThreadDeletionManagerImpl_StoryManager_Shim {
     func deleteAllStories(contactAci: Aci, tx: DBWriteTransaction)
     func deleteAllStories(groupId: Data, tx: DBWriteTransaction)
 }
 
-final class _ThreadSoftDeleteManagerImpl_StoryManager_Wrapper: _ThreadSoftDeleteManagerImpl_StoryManager_Shim {
+final class _ThreadDeletionManagerImpl_StoryManager_Wrapper: _ThreadDeletionManagerImpl_StoryManager_Shim {
     init() {}
 
     func deleteAllStories(contactAci: Aci, tx: DBWriteTransaction) {
@@ -275,11 +275,11 @@ final class _ThreadSoftDeleteManagerImpl_StoryManager_Wrapper: _ThreadSoftDelete
 
 // MARK: Intents
 
-protocol _ThreadSoftDeleteManagerImpl_IntentsManager_Shim {
+protocol _ThreadDeletionManagerImpl_IntentsManager_Shim {
     func deleteAllIntents(withGroupIdentifier groupIdentifier: String)
 }
 
-final class _ThreadSoftDeleteManagerImpl_IntentsManager_Wrapper: _ThreadSoftDeleteManagerImpl_IntentsManager_Shim {
+final class _ThreadDeletionManagerImpl_IntentsManager_Wrapper: _ThreadDeletionManagerImpl_IntentsManager_Shim {
     init() {}
 
     func deleteAllIntents(withGroupIdentifier groupIdentifier: String) {
@@ -291,8 +291,8 @@ final class _ThreadSoftDeleteManagerImpl_IntentsManager_Wrapper: _ThreadSoftDele
 
 #if TESTABLE_BUILD
 
-open class MockThreadSoftDeleteManager: ThreadSoftDeleteManager {
-    open func softDelete(threads: [TSThread], sendDeleteForMeSyncMessage: Bool, updateStorageService: Bool, tx: DBWriteTransaction) {}
+open class MockThreadDeletionManager: ThreadDeletionManager {
+    open func deleteThreads(_ threads: [TSThread], sendDeleteForMeSyncMessage: Bool, updateStorageService: Bool, tx: DBWriteTransaction) {}
     open func removeAllInteractions(thread: TSThread, sendDeleteForMeSyncMessage: Bool, tx: DBWriteTransaction) {}
     open func removeIntentsForTerminatedGroup(threadUniqueId: String) {}
 }
