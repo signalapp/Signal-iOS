@@ -1202,10 +1202,12 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let paymentsHelper: PaymentsHelperSwift
     private let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
     private let pinnedThreadManager: PinnedThreadManager
+    private let pinnedThreadStore: PinnedThreadStore
     private let preferences: Preferences
     private let profileManager: OWSProfileManager
     private let receiptManager: OWSReceiptManager
     private let recipientDatabaseTable: RecipientDatabaseTable
+    private let recipientFetcher: RecipientFetcher
     private let registrationStateChangeManager: RegistrationStateChangeManager
     private let storageServiceManager: StorageServiceManager
     private let systemStoryManager: SystemStoryManagerProtocol
@@ -1232,10 +1234,12 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         paymentsHelper: PaymentsHelperSwift,
         phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager,
         pinnedThreadManager: PinnedThreadManager,
+        pinnedThreadStore: PinnedThreadStore,
         preferences: Preferences,
         profileManager: OWSProfileManager,
         receiptManager: OWSReceiptManager,
         recipientDatabaseTable: RecipientDatabaseTable,
+        recipientFetcher: RecipientFetcher,
         registrationStateChangeManager: RegistrationStateChangeManager,
         storageServiceManager: StorageServiceManager,
         systemStoryManager: SystemStoryManagerProtocol,
@@ -1262,10 +1266,12 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.paymentsHelper = paymentsHelper
         self.phoneNumberDiscoverabilityManager = phoneNumberDiscoverabilityManager
         self.pinnedThreadManager = pinnedThreadManager
+        self.pinnedThreadStore = pinnedThreadStore
         self.preferences = preferences
         self.profileManager = profileManager
         self.receiptManager = receiptManager
         self.recipientDatabaseTable = recipientDatabaseTable
+        self.recipientFetcher = recipientFetcher
         self.registrationStateChangeManager = registrationStateChangeManager
         self.storageServiceManager = storageServiceManager
         self.systemStoryManager = systemStoryManager
@@ -1654,12 +1660,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             )
         }
 
-        do {
-            try self.processPinnedConversationsProto(record.pinnedConversations, transaction: transaction)
-        } catch {
-            owsFailDebug("Failed to process pinned conversations \(error)")
-            needsUpdate = true
-        }
+        processPinnedConversationsProto(record.pinnedConversations, transaction: transaction)
 
         let localPrefersContactAvatars = SSKPreferences.preferContactAvatars(transaction: transaction)
         if record.preferContactAvatars != localPrefersContactAvatars {
@@ -1968,83 +1969,100 @@ extension StorageServiceAccountRecordUpdater {
 
     private func processPinnedConversationsProto(
         _ pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation],
-        transaction: DBWriteTransaction,
-    ) throws {
+        transaction tx: DBWriteTransaction,
+    ) {
         if pinnedConversations.count > PinnedThreads.maxPinnedThreads {
             Logger.warn("Received unexpected number of pinned threads (\(pinnedConversations.count))")
         }
 
-        var pinnedThreadUniqueIds = [String]()
+        var pinnedThreadIds = [PinnedThreadId]()
         for pinnedConversation in pinnedConversations {
             switch pinnedConversation.identifier {
             case .contact(let contact)?:
-                let address = SignalServiceAddress.legacyAddress(
-                    serviceId: ServiceId.parseFrom(
-                        serviceIdBinary: contact.serviceIDBinary,
-                        serviceIdString: contact.serviceID,
-                    ),
-                    phoneNumber: contact.e164,
+                let serviceId = ServiceId.parseFrom(
+                    serviceIdBinary: contact.serviceIDBinary,
+                    serviceIdString: contact.serviceID,
                 )
-                guard address.isValid else {
-                    owsFailDebug("Dropping pinned thread with invalid address \(address)")
+                let recipient: SignalRecipient
+                if let aci = serviceId as? Aci {
+                    recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+                } else if let phoneNumber = E164(contact.e164) {
+                    recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
+                } else if let pni = serviceId as? Pni {
+                    recipient = recipientFetcher.fetchOrCreate(serviceId: pni, tx: tx)
+                } else {
+                    owsFailDebug("dropping pinned recipient with invalid address")
                     continue
                 }
-                let thread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
-                pinnedThreadUniqueIds.append(thread.uniqueId)
-            case .groupMasterKey(let masterKey)?:
-                let contextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
-                let threadUniqueId = TSGroupThread.threadUniqueId(forGroupId: contextInfo.groupId.serialize(), transaction: transaction)
-                pinnedThreadUniqueIds.append(threadUniqueId)
+                _ = TSContactThread.getOrCreateThread(withContactAddress: recipient.address, transaction: tx)
+                pinnedThreadIds.append(.recipientId(recipient.id))
+            case .groupMasterKey(let masterKeyData)?:
+                guard let masterKey = try? GroupMasterKey(contents: masterKeyData) else {
+                    owsFailDebug("dropping pinned group with invalid master key")
+                    continue
+                }
+                let contextInfo = GroupV2ContextInfo.deriveFrom(masterKey: masterKey)
+                pinnedThreadIds.append(.groupId(contextInfo.groupId.serialize()))
             case .legacyGroupID(let groupId)?:
-                let threadUniqueId = TSGroupThread.threadUniqueId(
-                    forGroupId: groupId,
-                    transaction: transaction,
-                )
-                pinnedThreadUniqueIds.append(threadUniqueId)
+                pinnedThreadIds.append(.groupId(groupId))
             case .releaseNotes:
-                pinnedThreadUniqueIds.append(TSReleaseNotesThread.releaseNotesUniqueId)
+                pinnedThreadIds.append(.releaseNotes)
             case nil:
                 break
             }
         }
 
-        pinnedThreadManager.updatePinnedThreadUniqueIds(pinnedThreadUniqueIds, updateStorageService: false, tx: transaction)
+        pinnedThreadManager.setPinnedThreadIds(pinnedThreadIds, updateStorageService: false, tx: tx)
     }
 
     private func pinnedConversationProtos(
-        transaction: DBReadTransaction,
+        transaction tx: DBReadTransaction,
     ) -> [StorageServiceProtoAccountRecordPinnedConversation] {
-        let pinnedThreads = pinnedThreadManager.pinnedThreads(tx: transaction)
+        let pinnedThreads = pinnedThreadStore.fetchPinnedThreadRecords(tx: tx)
 
         var pinnedConversationProtos = [StorageServiceProtoAccountRecordPinnedConversation]()
         for pinnedThread in pinnedThreads {
             var pinnedConversationBuilder = StorageServiceProtoAccountRecordPinnedConversation.builder()
 
-            if let groupThread = pinnedThread as? TSGroupThread {
-                if let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 {
+            switch pinnedThread.threadId {
+            case .groupId(let _groupId):
+                if let groupId = try? GroupIdentifier(contents: _groupId) {
+                    let thread = threadStore.fetchGroupThread(groupId: groupId, tx: tx)
+                    guard let thread else {
+                        // TODO: Add support for maintaining not-yet-restored pinned threads.
+                        Logger.warn("skipping pinned group that hasn't been restored yet")
+                        continue
+                    }
+                    guard let groupModel = thread.groupModel as? TSGroupModelV2 else {
+                        Logger.warn("skipping pinned group that doesn't have a valid group model")
+                        continue
+                    }
                     let masterKey: GroupMasterKey
                     do {
-                        masterKey = try groupModelV2.masterKey()
+                        masterKey = try groupModel.masterKey()
                     } catch {
-                        owsFailDebug("Missing master key: \(error)")
+                        owsFailDebug("skipping pinned group with missing master key: \(error)")
                         continue
                     }
                     pinnedConversationBuilder.setIdentifier(.groupMasterKey(masterKey.serialize()))
                 } else {
-                    pinnedConversationBuilder.setIdentifier(.legacyGroupID(groupThread.groupModel.groupId))
+                    owsAssertDebug(GroupManager.isV1GroupId(_groupId))
+                    pinnedConversationBuilder.setIdentifier(.legacyGroupID(_groupId))
                 }
-
-            } else if let contactThread = pinnedThread as? TSContactThread {
+            case .recipientId(let recipientId):
+                let recipient = recipientDatabaseTable.fetchRecipient(rowId: recipientId, tx: tx)
                 var contactBuilder = StorageServiceProtoAccountRecordPinnedConversationContact.builder()
-                if let serviceId = contactThread.contactAddress.serviceId {
-                    contactBuilder.setServiceIDBinary(serviceId.serviceIdBinary)
-                } else if let e164 = contactThread.contactAddress.phoneNumber {
-                    contactBuilder.setE164(e164)
+                if let aci = recipient?.aci {
+                    contactBuilder.setServiceIDBinary(aci.serviceIdBinary)
+                } else if let phoneNumber = recipient?.phoneNumber {
+                    contactBuilder.setE164(phoneNumber.stringValue)
+                } else if let pni = recipient?.pni {
+                    contactBuilder.setServiceIDBinary(pni.serviceIdBinary)
                 } else {
-                    owsFailDebug("Missing uuid and phone number for thread")
+                    owsFailDebug("missing all identifiers for pinned recipient")
                 }
                 pinnedConversationBuilder.setIdentifier(.contact(contactBuilder.buildInfallibly()))
-            } else if pinnedThread is TSReleaseNotesThread {
+            case .releaseNotes:
                 let releaseNotesBuilder = StorageServiceProtoAccountRecordPinnedConversationReleaseNotes.builder()
                 pinnedConversationBuilder.setIdentifier(.releaseNotes(releaseNotesBuilder.buildInfallibly()))
             }

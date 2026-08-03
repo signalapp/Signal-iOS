@@ -316,7 +316,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             var groupItems: [GroupConversationItem] = []
             var seenAddresses: Set<SignalServiceAddress> = Set()
 
-            let pinnedThreadUniqueIds = DependenciesBridge.shared.pinnedThreadStore.pinnedThreadUniqueIds(tx: transaction)
+            let pinnedThreadManager = DependenciesBridge.shared.pinnedThreadManager
+            let pinnedThreadUniqueIds = pinnedThreadManager.pinnedThreads(tx: transaction).map(\.uniqueId)
 
             // We append any pinned threads at the start of the "recent"
             // section, so we decrease our maximum recent items based

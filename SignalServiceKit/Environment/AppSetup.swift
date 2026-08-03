@@ -968,6 +968,8 @@ extension AppSetup.GlobalsContinuation {
         let pinnedThreadManager = PinnedThreadManagerImpl(
             db: db,
             pinnedThreadStore: pinnedThreadStore,
+            recipientFetcher: recipientFetcher,
+            recipientStore: recipientDatabaseTable,
             storageServiceManager: storageServiceManager,
             threadStore: threadStore,
         )
@@ -1012,8 +1014,6 @@ extension AppSetup.GlobalsContinuation {
                 groupMemberUpdater: groupMemberUpdater,
                 groupMemberStore: groupMemberStore,
                 interactionStore: interactionStore,
-                pinnedThreadManager: pinnedThreadManager,
-                pinnedThreadStore: pinnedThreadStore,
                 profileManager: profileManager,
                 recipientMergeNotifier: RecipientMergeNotifier(),
                 signalServiceAddressCache: signalServiceAddressCache,
@@ -1025,6 +1025,7 @@ extension AppSetup.GlobalsContinuation {
                 wallpaperImageStore: wallpaperImageStore,
                 wallpaperStore: wallpaperStore,
             ),
+            pinnedThreadMerger: pinnedThreadManager,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             searchableNameIndexer: searchableNameIndexer,
@@ -1567,7 +1568,7 @@ extension AppSetup.GlobalsContinuation {
                 chatStyleArchiver: backupChatStyleArchiver,
                 contactRecipientArchiver: backupContactRecipientArchiver,
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
-                pinnedThreadStore: pinnedThreadStore,
+                pinnedThreadManager: pinnedThreadManager,
                 threadStore: backupThreadStore,
             ),
             chatItemArchiver: BackupArchiveChatItemArchiver(
@@ -1633,6 +1634,7 @@ extension AppSetup.GlobalsContinuation {
                 dateProvider: dateProvider,
                 interactionStore: backupInteractionStore,
                 lastVisibleInteractionStore: lastVisibleInteractionStore,
+                pinnedThreadManager: pinnedThreadManager,
                 preferences: BackupArchive.Wrappers.Preferences(preferences: preferences),
                 recipientDatabaseTable: recipientDatabaseTable,
                 sskPreferences: BackupArchive.Wrappers.SSKPreferences(),

@@ -75,8 +75,8 @@ public class CLVLoader {
             pinnedThreadUniqueIds = []
             visibleThreadUniqueIds = try threadFinder.visibleArchivedThreadUniqueIds(transaction: transaction)
         } else {
-            let pinnedThreadStore = DependenciesBridge.shared.pinnedThreadStore
-            pinnedThreadUniqueIds = pinnedThreadStore.pinnedThreadUniqueIds(tx: transaction)
+            let pinnedThreadManager = DependenciesBridge.shared.pinnedThreadManager
+            pinnedThreadUniqueIds = pinnedThreadManager.pinnedThreads(tx: transaction).map(\.uniqueId)
             visibleThreadUniqueIds = try threadFinder.visibleInboxThreadUniqueIds(
                 filteredBy: viewInfo.inboxFilter,
                 requiredVisibleThreadIds: viewInfo.requiredVisibleThreadIds,

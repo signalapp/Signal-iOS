@@ -392,7 +392,7 @@ extension ThreadContextualActionProvider where Self: UIViewController {
         do throws(TooManyPinnedThreadsError) {
             try SSKEnvironment.shared.databaseStorageRef.write { (tx) throws(TooManyPinnedThreadsError) in
                 try DependenciesBridge.shared.pinnedThreadManager.pinThread(
-                    uniqueId: threadViewModel.threadUniqueId,
+                    threadViewModel.threadRecord,
                     updateStorageService: true,
                     tx: tx,
                 )
@@ -415,7 +415,7 @@ extension ThreadContextualActionProvider where Self: UIViewController {
 
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             DependenciesBridge.shared.pinnedThreadManager.unpinThread(
-                uniqueId: threadViewModel.threadUniqueId,
+                threadViewModel.threadRecord,
                 updateStorageService: true,
                 tx: transaction,
             )

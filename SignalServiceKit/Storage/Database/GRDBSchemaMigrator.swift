@@ -349,6 +349,7 @@ public class GRDBSchemaMigrator {
         case addLocalFileBackupTables
         case removeInteractionThreadUniqueIdUniqueIdIndex
         case rebuildDisappearingMessagesIndex
+        case addPinnedThread
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -472,7 +473,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 154
+    public static let grdbSchemaVersionLatest: UInt = 155
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5470,6 +5471,13 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.addPinnedThread) { tx in
+            try addPinnedThread(tx: tx)
+            try migratePinnedThreads(tx: tx)
+            try removeOldPinnedThreads(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -6916,14 +6924,18 @@ public class GRDBSchemaMigrator {
     }
 
     private static func fetchOrCreateRecipient(_ version: RecipientVersion, address: FrozenSignalServiceAddress, tx: DBWriteTransaction) throws -> SignalRecipient.RowId? {
-        if let aci = address.serviceId as? Aci {
+        return try fetchOrCreateRecipient(.V2, serviceId: address.serviceId, phoneNumber: address.phoneNumber, tx: tx)
+    }
+
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, serviceId: ServiceId?, phoneNumber: String?, tx: DBWriteTransaction) throws -> SignalRecipient.RowId? {
+        if let aci = serviceId as? Aci {
             let aciString = aci.serviceIdUppercaseString
             return try fetchOrCreateRecipient(version, aciString: aciString, tx: tx)
         }
-        if let phoneNumber = address.phoneNumber {
+        if let phoneNumber {
             return try fetchOrCreateRecipient(version, phoneNumber: phoneNumber, tx: tx)
         }
-        if let pni = address.serviceId as? Pni {
+        if let pni = serviceId as? Pni {
             let pniString = pni.serviceIdUppercaseString
             return try fetchOrCreateRecipient(version, pniString: pniString, tx: tx)
         }
@@ -8132,6 +8144,162 @@ public class GRDBSchemaMigrator {
             }
         }
         try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection IS ?", arguments: ["arePaymentsEnabledForUserStore"])
+    }
+
+    static func addPinnedThread(tx: DBWriteTransaction) throws {
+        try tx.database.create(table: "PinnedThread") {
+            $0.column("id", .integer).primaryKey().notNull()
+            $0.column("constantId", .integer)
+                .unique()
+            $0.column("groupId", .blob)
+                .unique()
+            $0.column("recipientId", .integer)
+                .unique()
+                .references("model_SignalRecipient", column: "id", onDelete: .cascade, onUpdate: .cascade)
+            // Exactly one must be NOT NULL.
+            $0.check(sql: #"("constantId" IS NOT NULL) + ("groupId" IS NOT NULL) + ("recipientId" IS NOT NULL) IS 1"#)
+        }
+    }
+
+    static func migratePinnedThreads(tx: DBWriteTransaction) throws {
+        let collection = "PinnedConversationManager"
+        let key = "pinnedThreadIds"
+        let encodedThreadUniqueIds = try Data.fetchOne(
+            tx.database,
+            sql: "SELECT value FROM keyvalue WHERE collection IS ? AND key IS ?",
+            arguments: [collection, key],
+        )
+        guard let encodedThreadUniqueIds else {
+            return
+        }
+        // Fetch the list of pinned threads
+        let threadUniqueIds: [String]
+        do {
+            threadUniqueIds = try NSKeyedUnarchiver.unarchivedArrayOfObjects(
+                ofClass: NSString.self,
+                from: encodedThreadUniqueIds,
+            ) as [String]? ?? []
+        } catch {
+            Logger.warn("skipping pinned thread migration for malformed value: \(error)")
+            return
+        }
+        // Fetch groups pending restore (these might be pinned)
+        var masterKeysToRestore = [Data]()
+        let serializedGroupRecords = try Data.fetchAll(
+            tx.database,
+            sql: "SELECT value FROM keyvalue WHERE collection IS ?",
+            arguments: ["GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore"],
+        )
+        for serializedGroupRecord in serializedGroupRecords {
+            let groupRecord: StorageServiceProtos_GroupV2Record
+            do {
+                groupRecord = try StorageServiceProtos_GroupV2Record(serializedBytes: serializedGroupRecord)
+            } catch {
+                Logger.warn("ignoring enqueued group that can't be restored: \(error)")
+                continue
+            }
+            masterKeysToRestore.append(groupRecord.masterKey)
+        }
+        let serializedMasterKeys = try Data.fetchAll(
+            tx.database,
+            sql: "SELECT value FROM keyvalue WHERE collection IS ?",
+            arguments: ["GroupsV2Impl.groupsFromStorageService_EnqueuedForRestore"],
+        )
+        masterKeysToRestore.append(contentsOf: serializedMasterKeys)
+        // Compute group IDs for groups pending restore
+        let groupIdsToRestore = masterKeysToRestore.compactMap { masterKeyData -> GroupIdentifier? in
+            let masterKey: GroupMasterKey
+            do {
+                masterKey = try GroupMasterKey(contents: masterKeyData)
+            } catch {
+                Logger.warn("ignoring enqueued group with malformed master key: \(error)")
+                return nil
+            }
+            let groupId: GroupIdentifier
+            do {
+                groupId = try GroupSecretParams.deriveFromMasterKey(groupMasterKey: masterKey).getPublicParams().getGroupIdentifier()
+            } catch {
+                Logger.warn("ignoring enqueued group with non-derivable master key: \(error)")
+                return nil
+            }
+            return groupId
+        }
+        // We don't need to check "TSGroupThread.uniqueIdMappingStore" because
+        // newly-restored threads always use defaultThreadUniqueId, even if there's
+        // already an entry pointing somewhere else.
+        var threadUniqueIdToGroupIdToRestore = [String: GroupIdentifier]()
+        for groupId in groupIdsToRestore {
+            let threadUniqueId = TSGroupThread.defaultThreadUniqueId(forGroupId: groupId.serialize())
+            threadUniqueIdToGroupIdToRestore[threadUniqueId] = groupId
+        }
+        for (idx, uniqueId) in threadUniqueIds.enumerated() {
+            let row = try Row.fetchOne(
+                tx.database,
+                sql: "SELECT recordType, contactUUID, contactPhoneNumber, groupModel FROM model_TSThread WHERE uniqueId = ?",
+                arguments: [uniqueId],
+            )
+            let constantId: Int64?
+            let groupId: Data?
+            let recipientId: Int64?
+            if let row {
+                let recordType: Int64 = row[0]
+                switch recordType {
+                case 26:
+                    let encodedGroupModel: Data? = row[3]
+                    guard let encodedGroupModel else {
+                        Logger.warn("skipping migration for missing group model")
+                        continue
+                    }
+                    let _groupId = try? decodeGroupIdFromGroupModelData(encodedGroupModel)
+                    guard let _groupId else {
+                        Logger.warn("skipping migration for malformed group model")
+                        continue
+                    }
+                    constantId = nil
+                    groupId = _groupId
+                    recipientId = nil
+                case 27:
+                    let contactUUID: String? = row[1]
+                    let contactPhoneNumber: String? = row[2]
+                    let _recipientId = try fetchOrCreateRecipient(
+                        .V2,
+                        serviceId: contactUUID.flatMap({ try? ServiceId.parseFrom(serviceIdString: $0) }),
+                        phoneNumber: E164(contactPhoneNumber)?.stringValue,
+                        tx: tx,
+                    )
+                    guard let _recipientId else {
+                        Logger.warn("skipping migration for malformed recipient")
+                        continue
+                    }
+                    constantId = nil
+                    groupId = nil
+                    recipientId = _recipientId
+                case 80:
+                    constantId = 0
+                    groupId = nil
+                    recipientId = nil
+                default:
+                    Logger.warn("skipping migration for record type \(recordType)")
+                    continue
+                }
+            } else if let _groupId = threadUniqueIdToGroupIdToRestore[uniqueId] {
+                constantId = nil
+                groupId = _groupId.serialize()
+                recipientId = nil
+            } else {
+                Logger.warn("ignoring pinned thread that doesn't exist and won't be restored")
+                continue
+            }
+            try tx.database.execute(
+                sql: "INSERT INTO PinnedThread (id, constantId, groupId, recipientId) VALUES (?, ?, ?, ?)",
+                arguments: [idx + 1, constantId, groupId, recipientId],
+            )
+        }
+    }
+
+    static func removeOldPinnedThreads(tx: DBWriteTransaction) throws {
+        let collection = "PinnedConversationManager"
+        try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection IS ?", arguments: [collection])
     }
 
     static func dedupeSignalRecipients(tx: DBWriteTransaction) throws {

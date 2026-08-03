@@ -4,22 +4,33 @@
 //
 
 import Foundation
+import GRDB
 
-public struct PinnedThreadStore {
+struct PinnedThreadStore {
 
-    private static let pinnedThreadIdsKey = "pinnedThreadIds"
-
-    private let keyValueStore: KeyValueStore
-
-    public init() {
-        self.keyValueStore = KeyValueStore(collection: "PinnedConversationManager")
+    init() {
     }
 
-    public func pinnedThreadUniqueIds(tx: DBReadTransaction) -> [String] {
-        return keyValueStore.getStringArray(Self.pinnedThreadIdsKey, transaction: tx) ?? []
+    func fetchPinnedThreadRecords(tx: DBReadTransaction) -> [PinnedThreadRecord] {
+        return failIfThrows {
+            return try PinnedThreadRecord.orderByPrimaryKey().fetchAll(tx.database)
+        }
     }
 
-    public func updatePinnedThreadUniqueIds(_ pinnedThreadIds: [String], tx: DBWriteTransaction) {
-        keyValueStore.setStringArray(pinnedThreadIds, key: Self.pinnedThreadIdsKey, transaction: tx)
+    func fetchPinnedThreadRecord(
+        forThreadId threadId: PinnedThreadId,
+        tx: DBReadTransaction,
+    ) -> PinnedThreadRecord? {
+        var queryRequest = PinnedThreadRecord.all()
+        switch threadId {
+        case .releaseNotes:
+            let constantId = PinnedThreadRecord.ConstantId.releaseNotes
+            queryRequest = queryRequest.filter(PinnedThreadRecord.Columns.constantId == constantId.rawValue)
+        case .groupId(let value):
+            queryRequest = queryRequest.filter(PinnedThreadRecord.Columns.groupId == value)
+        case .recipientId(let value):
+            queryRequest = queryRequest.filter(PinnedThreadRecord.Columns.recipientId == value)
+        }
+        return failIfThrows { try queryRequest.fetchOne(tx.database) }
     }
 }

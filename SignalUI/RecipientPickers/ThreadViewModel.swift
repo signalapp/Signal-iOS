@@ -106,7 +106,8 @@ public class ThreadViewModel: NSObject {
         }
 
         isBlocked = SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: transaction)
-        isPinned = DependenciesBridge.shared.pinnedThreadStore.pinnedThreadUniqueIds(tx: transaction).contains(thread.uniqueId)
+        let pinnedThreadManager = DependenciesBridge.shared.pinnedThreadManager
+        isPinned = pinnedThreadManager.pinnedThreadOrder(forThread: thread, tx: transaction) != nil
 
         if let threadId = thread.grdbId?.int64Value {
             pinnedMessages = DependenciesBridge.shared.pinnedMessageManager.fetchPinnedMessagesForThread(threadId: threadId, tx: transaction)

@@ -99,6 +99,7 @@ class RecipientMergerImpl: RecipientMerger {
     private let blockedRecipientStore: BlockedRecipientStore
     private let identityManager: OWSIdentityManager
     private let observers: Observers
+    private let pinnedThreadMerger: any PinnedThreadMerger
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
     private let searchableNameIndexer: any SearchableNameIndexer
@@ -116,6 +117,7 @@ class RecipientMergerImpl: RecipientMerger {
         blockedRecipientStore: BlockedRecipientStore,
         identityManager: OWSIdentityManager,
         observers: Observers,
+        pinnedThreadMerger: any PinnedThreadMerger,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         searchableNameIndexer: any SearchableNameIndexer,
@@ -126,6 +128,7 @@ class RecipientMergerImpl: RecipientMerger {
         self.blockedRecipientStore = blockedRecipientStore
         self.identityManager = identityManager
         self.observers = observers
+        self.pinnedThreadMerger = pinnedThreadMerger
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.searchableNameIndexer = searchableNameIndexer
@@ -149,8 +152,6 @@ class RecipientMergerImpl: RecipientMerger {
         groupMemberUpdater: GroupMemberUpdater,
         groupMemberStore: GroupMemberStore,
         interactionStore: InteractionStore,
-        pinnedThreadManager: PinnedThreadManager,
-        pinnedThreadStore: PinnedThreadStore,
         profileManager: ProfileManager,
         recipientMergeNotifier: RecipientMergeNotifier,
         signalServiceAddressCache: SignalServiceAddressCache,
@@ -177,8 +178,6 @@ class RecipientMergerImpl: RecipientMerger {
                 disappearingMessagesConfigurationManager: ThreadMerger.Wrappers.DisappearingMessagesConfigurationManager(),
                 disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
                 interactionStore: interactionStore,
-                pinnedThreadManager: pinnedThreadManager,
-                pinnedThreadStore: pinnedThreadStore,
                 sdsThreadMerger: ThreadMerger.Wrappers.SDSThreadMerger(),
                 threadAssociatedDataManager: ThreadMerger.Wrappers.ThreadAssociatedDataManager(),
                 threadAssociatedDataStore: threadAssociatedDataStore,
@@ -825,6 +824,7 @@ class RecipientMergerImpl: RecipientMerger {
                 identityManager.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
                 blockedRecipientStore.mergeRecipientId(affectedRecipient.id, into: mergedRecipient.id, tx: tx)
                 failIfThrows { try storyRecipientStore.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx) }
+                pinnedThreadMerger.mergeRecipientId(affectedRecipient.id, into: mergedRecipient.id, updateStorageService: shouldUpdateStorageService, tx: tx)
                 recipientDatabaseTable.removeRecipient(affectedRecipient, transaction: tx)
             } else if oldRecipients.contains(where: { $0.uniqueId == affectedRecipient.uniqueId }) {
                 recipientDatabaseTable.updateRecipient(affectedRecipient, transaction: tx)

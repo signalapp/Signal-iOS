@@ -914,6 +914,7 @@
 		50EF8DCC2A189B3000A00935 /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DCB2A189B3000A00935 /* ConversationViewModel.swift */; };
 		50EF8DD52A1FE55D00A00935 /* SignalAccountMergeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DD42A1FE55D00A00935 /* SignalAccountMergeObserver.swift */; };
 		50F039C42C6D239500162B99 /* BlockedRecipientStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F039C32C6D239500162B99 /* BlockedRecipientStore.swift */; };
+		50F3DF633017F5E9003A5F15 /* PinnedThreadRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F3DF623017F5E9003A5F15 /* PinnedThreadRecord.swift */; };
 		50F401CC2D483BF40094CA56 /* DeviceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F401CB2D483BF40094CA56 /* DeviceId.swift */; };
 		50F54C2D2CE3FF7C005765EA /* GroupSendEndorsementStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F54C2C2CE3FF7C005765EA /* GroupSendEndorsementStore.swift */; };
 		50F54C2F2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F54C2E2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift */; };
@@ -5234,6 +5235,7 @@
 		50EF8DCD2A1BEBAE00A00935 /* BadgeManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeManagerTest.swift; sourceTree = "<group>"; };
 		50EF8DD42A1FE55D00A00935 /* SignalAccountMergeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAccountMergeObserver.swift; sourceTree = "<group>"; };
 		50F039C32C6D239500162B99 /* BlockedRecipientStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedRecipientStore.swift; sourceTree = "<group>"; };
+		50F3DF623017F5E9003A5F15 /* PinnedThreadRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadRecord.swift; sourceTree = "<group>"; };
 		50F401CB2D483BF40094CA56 /* DeviceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceId.swift; sourceTree = "<group>"; };
 		50F54C2C2CE3FF7C005765EA /* GroupSendEndorsementStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSendEndorsementStore.swift; sourceTree = "<group>"; };
 		50F54C2E2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSendEndorsementRecord.swift; sourceTree = "<group>"; };
@@ -10677,6 +10679,7 @@
 				6694BF6B2B3656D500B18764 /* MockPinnedThreadManager.swift */,
 				6694BF672B36484800B18764 /* PinnedThreadManager.swift */,
 				F9C5CB1D289453B200548EEE /* PinnedThreadManagerImpl.swift */,
+				50F3DF623017F5E9003A5F15 /* PinnedThreadRecord.swift */,
 				6694BF692B3650E400B18764 /* PinnedThreadStore.swift */,
 			);
 			path = PinnedThreadManager;
@@ -19917,6 +19920,7 @@
 				045B408C2EC67C03002D3F9A /* PinnedMessageRecord.swift in Sources */,
 				6694BF682B36484900B18764 /* PinnedThreadManager.swift in Sources */,
 				F9C5CDEF289453B400548EEE /* PinnedThreadManagerImpl.swift in Sources */,
+				50F3DF633017F5E9003A5F15 /* PinnedThreadRecord.swift in Sources */,
 				6694BF6A2B3650E400B18764 /* PinnedThreadStore.swift in Sources */,
 				F9C5CE2A289453B400548EEE /* Platform.swift in Sources */,
 				F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */,

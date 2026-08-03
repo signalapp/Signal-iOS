@@ -66,6 +66,7 @@ private class TestDependencies {
                 threadMerger: threadMerger,
                 postThreadMerger: observers,
             ),
+            pinnedThreadMerger: MockPinnedThreadMerger(),
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             searchableNameIndexer: searchableNameIndexer,

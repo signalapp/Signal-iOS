@@ -17,7 +17,6 @@ final class ThreadMergerTest: XCTestCase {
     private var disappearingMessagesConfigurationManager: ThreadMerger_MockDisappearingMessagesConfigurationManager!
     private var disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore!
     private var interactionStore: MockInteractionStore!
-    private var pinnedThreadManager: MockPinnedThreadManager!
     private var threadAssociatedDataManager: ThreadMerger_MockThreadAssociatedDataManager!
     private var threadAssociatedDataStore: MockThreadAssociatedDataStore!
     private var threadStore: MockThreadStore!
@@ -43,7 +42,6 @@ final class ThreadMergerTest: XCTestCase {
         deletedCallRecordStore = MockDeletedCallRecordStore()
         disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
         disappearingMessagesConfigurationManager = ThreadMerger_MockDisappearingMessagesConfigurationManager(disappearingMessagesConfigurationStore)
-        pinnedThreadManager = MockPinnedThreadManager()
         interactionStore = MockInteractionStore()
         threadAssociatedDataStore = MockThreadAssociatedDataStore()
         threadAssociatedDataManager = ThreadMerger_MockThreadAssociatedDataManager(threadAssociatedDataStore)
@@ -74,8 +72,6 @@ final class ThreadMergerTest: XCTestCase {
             disappearingMessagesConfigurationManager: disappearingMessagesConfigurationManager,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             interactionStore: interactionStore,
-            pinnedThreadManager: pinnedThreadManager,
-            pinnedThreadStore: pinnedThreadManager.mockStore,
             sdsThreadMerger: ThreadMerger_MockSDSThreadMerger(),
             threadAssociatedDataManager: threadAssociatedDataManager,
             threadAssociatedDataStore: threadAssociatedDataStore,
@@ -101,56 +97,6 @@ final class ThreadMergerTest: XCTestCase {
 
         XCTAssertEqual(deletedCallRecordStore.askedToMergeThread!.from, phoneNumberThread.sqliteRowId!)
         XCTAssertEqual(deletedCallRecordStore.askedToMergeThread!.into, serviceIdThread.sqliteRowId!)
-    }
-
-    // MARK: - Pinned Threads
-
-    func testPinnedThreadsNeither() {
-        let otherPinnedThreadId = "00000000-0000-4000-8000-000000000ABC"
-        threadStore.insertThreads([serviceIdThread, phoneNumberThread])
-        db.write { tx in
-            pinnedThreadManager.mockStore.updatePinnedThreadUniqueIds([otherPinnedThreadId], tx: tx)
-        }
-        performDefaultMerge()
-        db.read { tx in
-            XCTAssertEqual(pinnedThreadManager.mockStore.pinnedThreadUniqueIds(tx: tx), [otherPinnedThreadId])
-        }
-    }
-
-    func testPinnedThreadsJustServiceId() {
-        let otherPinnedThreadId = "00000000-0000-4000-8000-000000000ABC"
-        threadStore.insertThreads([serviceIdThread, phoneNumberThread])
-        db.write { tx in
-            pinnedThreadManager.mockStore.updatePinnedThreadUniqueIds([otherPinnedThreadId, serviceIdThread.uniqueId], tx: tx)
-        }
-        performDefaultMerge()
-        db.read { tx in
-            XCTAssertEqual(pinnedThreadManager.mockStore.pinnedThreadUniqueIds(tx: tx), [otherPinnedThreadId, serviceIdThread.uniqueId])
-        }
-    }
-
-    func testPinnedThreadsJustPhoneNumber() {
-        let otherPinnedThreadId = "00000000-0000-4000-8000-000000000ABC"
-        threadStore.insertThreads([serviceIdThread, phoneNumberThread])
-        db.write { tx in
-            pinnedThreadManager.mockStore.updatePinnedThreadUniqueIds([phoneNumberThread.uniqueId, otherPinnedThreadId], tx: tx)
-        }
-        performDefaultMerge()
-        db.read { tx in
-            XCTAssertEqual(pinnedThreadManager.mockStore.pinnedThreadUniqueIds(tx: tx), [serviceIdThread.uniqueId, otherPinnedThreadId])
-        }
-    }
-
-    func testPinnedThreadsBoth() {
-        let otherPinnedThreadId = "00000000-0000-4000-8000-000000000ABC"
-        threadStore.insertThreads([serviceIdThread, phoneNumberThread])
-        db.write { tx in
-            pinnedThreadManager.mockStore.updatePinnedThreadUniqueIds([phoneNumberThread.uniqueId, serviceIdThread.uniqueId, otherPinnedThreadId], tx: tx)
-        }
-        performDefaultMerge()
-        db.read { tx in
-            XCTAssertEqual(pinnedThreadManager.mockStore.pinnedThreadUniqueIds(tx: tx), [serviceIdThread.uniqueId, otherPinnedThreadId])
-        }
     }
 
     // MARK: - Disappearing Messages

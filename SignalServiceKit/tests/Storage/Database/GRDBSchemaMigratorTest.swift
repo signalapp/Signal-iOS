@@ -60,7 +60,7 @@ struct GRDBSchemaMigratorTest {
         try! NSKeyedArchiver.archivedData(withRootObject: rootObject, requiringSecureCoding: true)
     }
 
-    private func encodeGroupIdInGroupModel(groupId: Data) -> Data {
+    private func encodeGroupIdInGroupModel(groupId: Data, className: String = "SignalServiceKit.TSGroupModelV2") -> Data {
         @objc(TSGroupModelWithOnlyGroupId)
         class TSGroupModelWithOnlyGroupId: NSObject, NSSecureCoding {
             static var supportsSecureCoding: Bool { true }
@@ -72,7 +72,7 @@ struct GRDBSchemaMigratorTest {
             }
         }
         let coder = NSKeyedArchiver(requiringSecureCoding: true)
-        coder.setClassName("SignalServiceKit.TSGroupModelV2", for: TSGroupModelWithOnlyGroupId.self)
+        coder.setClassName(className, for: TSGroupModelWithOnlyGroupId.self)
         coder.encode(TSGroupModelWithOnlyGroupId(groupId: groupId), forKey: NSKeyedArchiveRootObjectKey)
         return coder.encodedData
     }
@@ -1886,6 +1886,234 @@ struct GRDBSchemaMigratorTest {
                 "/kLocalProfileUniqueId": true,
             ]
             #expect(userProfiles == expectedValues)
+        }
+    }
+
+    @Test
+    func testMigratePinnedThreads() throws {
+        let recipientAci = Aci.randomForTesting()
+        let recipientThreadUniqueId = UUID().uuidString
+
+        let group1Id = Randomness.generateRandomBytes(16)
+        let group1ThreadUniqueId = UUID().uuidString
+
+        let group2Id = try GroupSecretParams.generate().getPublicParams().getGroupIdentifier()
+        let group2ThreadUniqueId = UUID().uuidString
+
+        let group3SecretParams = try GroupSecretParams.generate()
+        let group3MasterKey = try group3SecretParams.getMasterKey()
+        let group3Id = try group3SecretParams.getPublicParams().getGroupIdentifier()
+        let group3ThreadUniqueId = "g" + group3Id.serialize().base64EncodedString()
+
+        let group4SecretParams = try GroupSecretParams.generate()
+        let group4MasterKey = try group4SecretParams.getMasterKey()
+        let group4Id = try group4SecretParams.getPublicParams().getGroupIdentifier()
+        let group4ThreadUniqueId = "g" + group4Id.serialize().base64EncodedString()
+
+        let group5SecretParams = try GroupSecretParams.generate()
+        let group5Id = try group5SecretParams.getPublicParams().getGroupIdentifier()
+        let group5ThreadUniqueId = "g" + group5Id.serialize().base64EncodedString()
+
+        // Malformed master keys
+        let group6MasterKey = Randomness.generateRandomBytes(31)
+        let group7MasterKey = Randomness.generateRandomBytes(31)
+
+        let releaseNotesThreadUniqueId = UUID().uuidString
+
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "keyvalue" (
+                "collection" TEXT NOT NULL,
+                "key" TEXT NOT NULL,
+                "value" BLOB NOT NULL,
+                PRIMARY KEY ("collection", "key")
+            );
+
+            CREATE TABLE "model_TSThread" (
+                "recordType" INTEGER NOT NULL,
+                "uniqueId" TEXT NOT NULL UNIQUE,
+                "contactUUID" TEXT,
+                "contactPhoneNumber" TEXT,
+                "groupModel" BLOB
+            );
+
+            CREATE TABLE "model_SignalRecipient" (
+                "id" INTEGER PRIMARY KEY NOT NULL,
+                "recordType" INTEGER NOT NULL,
+                "uniqueId" TEXT NOT NULL,
+                "recipientPhoneNumber" TEXT UNIQUE,
+                "recipientUUID" TEXT UNIQUE,
+                "pni" TEXT UNIQUE,
+                "devices" BLOB NOT NULL
+            );
+            """)
+
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSThread" ("recordType", "uniqueId", "groupModel") VALUES (?, ?, ?)
+                """,
+                arguments: [26, group1ThreadUniqueId, encodeGroupIdInGroupModel(groupId: group1Id, className: "TSGroupModel")],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSThread" ("recordType", "uniqueId", "groupModel") VALUES (?, ?, ?)
+                """,
+                arguments: [26, group2ThreadUniqueId, encodeGroupIdInGroupModel(groupId: group2Id.serialize())],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSThread" ("recordType", "uniqueId", "contactUUID") VALUES (?, ?, ?)
+                """,
+                arguments: [27, recipientThreadUniqueId, recipientAci.serviceIdUppercaseString],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSThread" ("recordType", "uniqueId") VALUES (?, ?)
+                """,
+                arguments: [80, releaseNotesThreadUniqueId],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore",
+                    "Arbitrary1",
+                    Data([(1 << 3) | 2, 32]) + group3MasterKey.serialize(),
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore",
+                    "Arbitrary2",
+                    Data([(1 << 3) | 2, 31]) + group6MasterKey,
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore",
+                    "Arbitrary3",
+                    Data([(1 << 3) | 2, 32]),
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "GroupsV2Impl.groupsFromStorageService_EnqueuedForRestore",
+                    "Arbitrary1",
+                    group4MasterKey.serialize(),
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "GroupsV2Impl.groupsFromStorageService_EnqueuedForRestore",
+                    "Arbitrary2",
+                    group7MasterKey,
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: ["PinnedConversationManager", "pinnedThreadIds", Self.keyedArchiverData(rootObject: [
+                    group1ThreadUniqueId,
+                    group3ThreadUniqueId,
+                    releaseNotesThreadUniqueId,
+                    group2ThreadUniqueId,
+                    group4ThreadUniqueId,
+                    group5ThreadUniqueId,
+                    recipientThreadUniqueId,
+                ] as [NSString])],
+            )
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.addPinnedThread(tx: tx)
+                try GRDBSchemaMigrator.migratePinnedThreads(tx: tx)
+                try GRDBSchemaMigrator.removeOldPinnedThreads(tx: tx)
+            }
+
+            let recipients = try Row.fetchAll(db, sql: "SELECT * FROM model_SignalRecipient")
+            try #require(recipients.count == 1)
+            try #require(recipients.startIndex == 0)
+
+            let expectedRecipientId: Int64 = 1
+            #expect(recipients[0]["id"] as Int64 == expectedRecipientId)
+            #expect(recipients[0]["recipientUUID"] as String? == recipientAci.serviceIdUppercaseString)
+            #expect(recipients[0]["recipientPhoneNumber"] as String? == nil)
+
+            var pinnedThreads = try Row.fetchAll(db, sql: "SELECT * FROM PinnedThread ORDER BY id")[...]
+            try #require(pinnedThreads.count == 6)
+
+            do {
+                let pinnedThread = pinnedThreads.removeFirst()
+                #expect(pinnedThread["id"] as Int64 == 1)
+                #expect(pinnedThread["constantId"] as Int64? == nil)
+                #expect(pinnedThread["groupId"] as Data? == group1Id)
+                #expect(pinnedThread["recipientId"] as Int64? == nil)
+            }
+
+            do {
+                let pinnedThread = pinnedThreads.removeFirst()
+                #expect(pinnedThread["id"] as Int64 == 2)
+                #expect(pinnedThread["constantId"] as Int64? == nil)
+                #expect(pinnedThread["groupId"] as Data? == group3Id.serialize())
+                #expect(pinnedThread["recipientId"] as Int64? == nil)
+            }
+
+            do {
+                let pinnedThread = pinnedThreads.removeFirst()
+                #expect(pinnedThread["id"] as Int64 == 3)
+                #expect(pinnedThread["constantId"] as Int64? == 0)
+                #expect(pinnedThread["groupId"] as Data? == nil)
+                #expect(pinnedThread["recipientId"] as Int64? == nil)
+            }
+
+            do {
+                let pinnedThread = pinnedThreads.removeFirst()
+                #expect(pinnedThread["id"] as Int64 == 4)
+                #expect(pinnedThread["constantId"] as Int64? == nil)
+                #expect(pinnedThread["groupId"] as Data? == group2Id.serialize())
+                #expect(pinnedThread["recipientId"] as Int64? == nil)
+            }
+
+            do {
+                let pinnedThread = pinnedThreads.removeFirst()
+                #expect(pinnedThread["id"] as Int64 == 5)
+                #expect(pinnedThread["constantId"] as Int64? == nil)
+                #expect(pinnedThread["groupId"] as Data? == group4Id.serialize())
+                #expect(pinnedThread["recipientId"] as Int64? == nil)
+            }
+
+            do {
+                let pinnedThread = pinnedThreads.removeFirst()
+                #expect(pinnedThread["id"] as Int64 == 7)
+                #expect(pinnedThread["constantId"] as Int64? == nil)
+                #expect(pinnedThread["groupId"] as Data? == nil)
+                #expect(pinnedThread["recipientId"] as Int64? == expectedRecipientId)
+            }
         }
     }
 }

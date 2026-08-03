@@ -16,20 +16,20 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
     private let chatStyleArchiver: BackupArchiveChatStyleArchiver
     private let contactRecipientArchiver: BackupArchiveContactRecipientArchiver
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
-    private let pinnedThreadStore: PinnedThreadStore
+    private let pinnedThreadManager: any PinnedThreadManager
     private let threadStore: BackupArchiveThreadStore
 
-    public init(
+    init(
         chatStyleArchiver: BackupArchiveChatStyleArchiver,
         contactRecipientArchiver: BackupArchiveContactRecipientArchiver,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
-        pinnedThreadStore: PinnedThreadStore,
+        pinnedThreadManager: any PinnedThreadManager,
         threadStore: BackupArchiveThreadStore,
     ) {
         self.chatStyleArchiver = chatStyleArchiver
         self.contactRecipientArchiver = contactRecipientArchiver
         self.dmConfigurationStore = dmConfigurationStore
-        self.pinnedThreadStore = pinnedThreadStore
+        self.pinnedThreadManager = pinnedThreadManager
         self.threadStore = threadStore
     }
 
@@ -232,14 +232,10 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
             tx: context.tx,
         )
 
-        let thisThreadPinnedOrder: UInt32?
-        let pinnedThreadIds = pinnedThreadStore.pinnedThreadUniqueIds(tx: context.tx)
-        if let pinnedThreadIndex: Int = pinnedThreadIds.firstIndex(of: thread.tsThread.uniqueId) {
-            // Add one so we don't start at 0.
-            thisThreadPinnedOrder = UInt32(clamping: pinnedThreadIndex + 1)
-        } else {
-            thisThreadPinnedOrder = nil
-        }
+        let pinnedThreadOrder = pinnedThreadManager.pinnedThreadOrder(
+            forThread: thread.tsThread,
+            tx: context.tx,
+        )
 
         let versionedExpireTimerToken = dmConfigurationStore.fetchOrBuildDefault(
             for: .thread(thread.tsThread),
@@ -258,8 +254,8 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
         chat.id = context.assignChatId(to: thread.tsThread).value
         chat.recipientID = recipientId.value
         chat.archived = threadAssociatedData.isArchived
-        if let thisThreadPinnedOrder {
-            chat.pinnedOrder = thisThreadPinnedOrder
+        if let pinnedThreadOrder = pinnedThreadOrder.flatMap(UInt32.init(exactly:)) {
+            chat.pinnedOrder = pinnedThreadOrder
         }
         if versionedExpireTimerToken.isEnabled {
             chat.expirationTimerMs = UInt64(versionedExpireTimerToken.durationSeconds) * 1000
@@ -401,12 +397,7 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
         }
 
         if chat.hasPinnedOrder {
-            let newPinnedThreadIds = context.pinnedThreadOrder(
-                newPinnedThreadId: BackupArchive.ThreadUniqueId(chatThread: chatThread),
-                newPinnedThreadChatId: chat.chatId,
-                newPinnedThreadIndex: chat.pinnedOrder,
-            )
-            pinnedThreadStore.updatePinnedThreadUniqueIds(newPinnedThreadIds.map(\.value), tx: context.tx)
+            context.setPinnedOrder(chat.pinnedOrder, forChatId: chat.chatId)
         }
 
         let expiresInSeconds: UInt32

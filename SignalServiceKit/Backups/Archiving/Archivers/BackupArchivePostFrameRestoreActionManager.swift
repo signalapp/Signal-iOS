@@ -15,6 +15,7 @@ public class BackupArchivePostFrameRestoreActionManager {
     private let dateProvider: DateProvider
     private let interactionStore: BackupArchiveInteractionStore
     private let lastVisibleInteractionStore: LastVisibleInteractionStore
+    private let pinnedThreadManager: any PinnedThreadManager
     private let preferences: BackupArchive.Shims.Preferences
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let sskPreferences: BackupArchive.Shims.SSKPreferences
@@ -25,6 +26,7 @@ public class BackupArchivePostFrameRestoreActionManager {
         dateProvider: @escaping DateProvider,
         interactionStore: BackupArchiveInteractionStore,
         lastVisibleInteractionStore: LastVisibleInteractionStore,
+        pinnedThreadManager: any PinnedThreadManager,
         preferences: BackupArchive.Shims.Preferences,
         recipientDatabaseTable: RecipientDatabaseTable,
         sskPreferences: BackupArchive.Shims.SSKPreferences,
@@ -34,6 +36,7 @@ public class BackupArchivePostFrameRestoreActionManager {
         self.dateProvider = dateProvider
         self.interactionStore = interactionStore
         self.lastVisibleInteractionStore = lastVisibleInteractionStore
+        self.pinnedThreadManager = pinnedThreadManager
         self.preferences = preferences
         self.recipientDatabaseTable = recipientDatabaseTable
         self.sskPreferences = sskPreferences
@@ -110,6 +113,18 @@ public class BackupArchivePostFrameRestoreActionManager {
         if wasAnyThreadVisible {
             sskPreferences.setHasSavedThread(true, tx: chatItemContext.tx)
         }
+
+        let pinnedThreads = chatActions
+            .compactMapValues(\.pinnedOrder)
+            .sorted(by: { $0.value < $1.value })
+            .compactMap({ (chatId, _) -> TSThread? in
+                guard let item = chatItemContext.chatContext[chatId] else {
+                    owsFailDebug("can't restore pinned item missing its context")
+                    return nil
+                }
+                return item.tsThread
+            })
+        pinnedThreadManager.setPinnedThreads(pinnedThreads, updateStorageService: false, tx: chatItemContext.tx)
 
         let avatarFetchTimestamp = dateProvider().ows_millisecondsSince1970
         for recipientId in chatItemContext.recipientContext.allRecipientIds() {

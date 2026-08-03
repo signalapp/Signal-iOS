@@ -164,7 +164,6 @@ extension BackupArchive {
 
         private var contactThreadMap = [ChatId: (threadRowId: TSThread.RowId, thread: TSContactThread)]()
         private var groupIdMap = [ChatId: (threadRowId: TSThread.RowId, groupId: GroupId)]()
-        private var pinnedThreadIndexMap = [ThreadUniqueId: UInt32]()
 
         init(
             customChatColorContext: CustomChatColorRestoringContext,
@@ -220,34 +219,17 @@ extension BackupArchive {
         }
 
         /// Given a newly encountered pinned thread, return all pinned thread ids encountered so far, in order.
-        func pinnedThreadOrder(
-            newPinnedThreadId: ThreadUniqueId,
-            newPinnedThreadChatId: ChatId,
-            newPinnedThreadIndex: UInt32,
-        ) -> [ThreadUniqueId] {
-            pinnedThreadIndexMap[newPinnedThreadId] = newPinnedThreadIndex
-            setChatIsPinned(chatId: newPinnedThreadChatId)
-            return pinnedThreadIndexMap
-                .keys
-                .lazy
-                .compactMap { (key: ThreadUniqueId) -> (ThreadUniqueId, UInt32)? in
-                    guard let value = self.pinnedThreadIndexMap[key] else {
-                        return nil
-                    }
-                    return (key, value)
-                }
-                .sorted(by: { lhs, rhs in
-                    let lhsSortIndex: UInt32 = lhs.1
-                    let rhsSortIndex: UInt32 = rhs.1
-                    return lhsSortIndex < rhsSortIndex
-                })
-                .map(\.0)
+        func setPinnedOrder(
+            _ pinnedOrder: UInt32,
+            forChatId chatId: ChatId,
+        ) {
+            postFrameRestoreActions[chatId, default: PostFrameRestoreActions()].pinnedOrder = pinnedOrder
         }
 
         // MARK: Post-Frame Restore
 
         public struct PostFrameRestoreActions {
-            var isPinned: Bool = false
+            var pinnedOrder: UInt32?
             var lastVisibleInteractionRowId: Int64?
             var hadAnyUnreadMessages: Bool = false
 
@@ -257,18 +239,12 @@ extension BackupArchive {
             var groupMemberLastInteractionTimestamp = [Aci: UInt64]()
 
             var shouldBeMarkedVisible: Bool {
-                isPinned || lastVisibleInteractionRowId != nil
+                pinnedOrder != nil || lastVisibleInteractionRowId != nil
             }
         }
 
         /// Represents actions that should be taken after all `Frame`s have been restored.
         private(set) var postFrameRestoreActions = [ChatId: PostFrameRestoreActions]()
-
-        func setChatIsPinned(chatId: ChatId) {
-            var actions = postFrameRestoreActions[chatId] ?? PostFrameRestoreActions()
-            actions.isPinned = true
-            postFrameRestoreActions[chatId] = actions
-        }
 
         func updateLastVisibleInteractionRowId(
             interactionRowId: Int64,

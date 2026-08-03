@@ -91,6 +91,20 @@ class BackupArchiveIntegrationTests: XCTestCase {
         "chat_item_group_change_chat_update_44",
         "chat_item_group_change_chat_update_47",
         "chat_item_group_change_chat_update_48",
+        // These tests have pinned, archived threads, which is undefined behavior.
+        "chat_01",
+        "chat_03",
+        "chat_05",
+        "chat_07",
+        "chat_09",
+        "chat_11",
+        "chat_13",
+        "chat_15",
+        "chat_17",
+        "chat_19",
+        "chat_21",
+        "chat_23",
+        "chat_25",
     ]
 
     // MARK: -
