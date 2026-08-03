@@ -9,13 +9,19 @@ public struct ScrollableContentPinnedFooterView<
     ScrollableContent: View,
     PinnedFooter: View,
 >: View {
+    private let centersContentVertically: Bool
     private let scrollableContent: ScrollableContent
     private let pinnedFooter: PinnedFooter
 
+    /// - Parameter centersContentVertically: Whether content shorter than the
+    /// scroll viewport should be centered within it, rather than sitting at the
+    /// top. Content taller than the viewport scrolls either way.
     public init(
+        centersContentVertically: Bool = false,
         @ViewBuilder scrollableContent: () -> ScrollableContent,
         @ViewBuilder pinnedFooter: () -> PinnedFooter,
     ) {
+        self.centersContentVertically = centersContentVertically
         self.scrollableContent = scrollableContent()
         self.pinnedFooter = pinnedFooter()
     }
@@ -31,7 +37,20 @@ public struct ScrollableContentPinnedFooterView<
     @available(iOS 26, *)
     private var iOS26Body: some View {
         ScrollView {
-            scrollableContent
+            ZStack {
+                if centersContentVertically {
+                    // containerRelativeFrame gives this view a frame equal to
+                    // its nearest container, thereby forcing the content to
+                    // fill everything available.
+                    //
+                    // ZStack will center the scrollable content once its frame
+                    // is set.
+                    Color.clear
+                        .containerRelativeFrame(.vertical)
+                }
+
+                scrollableContent
+            }
         }
         .safeAreaBar(edge: .bottom) {
             VStack(spacing: 0) {
@@ -45,10 +64,21 @@ public struct ScrollableContentPinnedFooterView<
 
     private var iOS18Body: some View {
         VStack(spacing: 0) {
-            ScrollView {
-                scrollableContent
+            // The footer is a sibling of the scroll view here, so wrapping the
+            // scroll view measures the viewport directly.
+            GeometryReader { scrollViewGeometry in
+                ScrollView {
+                    ZStack {
+                        if centersContentVertically {
+                            Color.clear
+                                .frame(height: scrollViewGeometry.size.height)
+                        }
+
+                        scrollableContent
+                    }
+                }
+                .scrollBounceBehaviorIfAvailable(.basedOnSize)
             }
-            .scrollBounceBehaviorIfAvailable(.basedOnSize)
 
             Spacer().frame(height: 24)
 
