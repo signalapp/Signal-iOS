@@ -31,18 +31,7 @@ extension TSGroupThread {
         return uniqueIdMappingStore.fetchValue(String.self, forKey: mappingKey, tx: tx)
     }
 
-    /// Returns the uniqueId for the ``TSGroupThread`` with the given group ID,
-    /// if one exists.
-    ///
-    /// We've historically stored a mapping of `[GroupId: ThreadUniqueId]`,
-    /// which facilitated things like V1 -> V2 migration. We'll still check the
-    /// mapping to find the correct unique ID for old threads who had an entry
-    /// there, but for new threads going forward we'll deterministically derive
-    /// a unique ID from the group ID.
-    ///
-    /// We've actually been doing a deterministic unique ID derivation for new
-    /// threads for some time; we'd then also store that mapping, which is not
-    /// necessary.
+    /// Returns the uniqueId for the ``TSGroupThread`` with the given group ID.
     public static func threadUniqueId(forGroupId groupId: Data, tx: DBReadTransaction) -> String? {
         owsAssertDebug(!groupId.isEmpty)
 
@@ -61,24 +50,20 @@ extension TSGroupThread {
         return groupThreadUniqueIdPrefix + groupId.base64EncodedString()
     }
 
-    /// Sets a `[GroupId: ThreadUniqueId]` mapping for a legacy thread.
-    ///
-    /// All newly-created threads use a deterministic mapping from group ID to
-    /// thread unique ID, so this is unnecessary except for legacy threads for
-    /// whom the mapping does not exist.
+    /// Sets a `[GroupId: ThreadUniqueId]` mapping.
     ///
     /// - SeeAlso ``threadId(forGroupId:transaction:)``
-    public static func setGroupIdMappingForLegacyThread(
-        threadUniqueId: String,
-        groupId: Data,
+    public static func setUniqueId(
+        _ threadUniqueId: String,
+        forGroupId groupId: Data,
         tx: DBWriteTransaction,
     ) {
-        setGroupIdMapping(threadUniqueId: threadUniqueId, groupId: groupId, tx: tx)
+        _setUniqueId(threadUniqueId, forGroupId: groupId, tx: tx)
 
         if GroupManager.isV1GroupId(groupId) {
             do {
                 let v2GroupId = try self.v2GroupId(forV1GroupId: groupId)
-                setGroupIdMapping(threadUniqueId: threadUniqueId, groupId: v2GroupId, tx: tx)
+                _setUniqueId(threadUniqueId, forGroupId: v2GroupId, tx: tx)
             } catch {
                 Logger.warn("Couldn't set GV2 mapping for legacy thread")
             }
@@ -99,9 +84,9 @@ extension TSGroupThread {
         return contextInfo.groupId.serialize()
     }
 
-    private static func setGroupIdMapping(
-        threadUniqueId: String,
-        groupId: Data,
+    private static func _setUniqueId(
+        _ threadUniqueId: String,
+        forGroupId groupId: Data,
         tx: DBWriteTransaction,
     ) {
         let mappingKey = mappingKey(forGroupId: groupId)

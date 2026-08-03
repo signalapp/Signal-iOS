@@ -89,7 +89,7 @@ open class TSGroupThread: TSThread {
     }
 
     public init(
-        uniqueId: String,
+        uniqueId: String = UUID().uuidString,
         groupModel: TSGroupModelV2,
     ) {
         owsAssertDebug(!groupModel.groupId.isEmpty)
@@ -99,13 +99,6 @@ open class TSGroupThread: TSThread {
 
         self.groupModel = groupModel
         super.init(uniqueId: uniqueId)
-    }
-
-    public convenience init(groupModel: TSGroupModelV2) {
-        self.init(
-            uniqueId: Self.defaultThreadUniqueId(forGroupId: groupModel.groupId),
-            groupModel: groupModel,
-        )
     }
 
     override func deepCopy() -> TSThread {
@@ -358,10 +351,9 @@ open class TSGroupThread: TSThread {
         secretParamsData: Data = Data(count: 1),
         groupMembers: [SignalServiceAddress] = [],
     ) -> TSGroupThread {
-        let groupThreadId = TSGroupThread.defaultThreadUniqueId(forGroupId: groupId)
         let groupThread = TSGroupThread(
             id: 1,
-            uniqueId: groupThreadId,
+            uniqueId: UUID().uuidString,
             creationDate: nil,
             editTargetTimestamp: nil,
             isArchivedObsolete: false,

@@ -801,7 +801,8 @@ public class GroupManager: NSObject {
             owsFail("Inserting existing group thread: \(groupThread.logString).")
         }
 
-        let groupThread = DependenciesBridge.shared.threadStore.createGroupThread(
+        let threadStore = DependenciesBridge.shared.threadStore
+        let groupThread = threadStore.insertGroupThread(
             groupModel: groupModel,
             tx: transaction,
         )

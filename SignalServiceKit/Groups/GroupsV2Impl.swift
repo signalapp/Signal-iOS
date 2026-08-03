@@ -1961,7 +1961,8 @@ public class GroupsV2Impl: GroupsV2 {
                 builder.groupMembership = membershipBuilder.build()
 
                 let groupModel = try builder.buildAsV2()
-                let groupThread = DependenciesBridge.shared.threadStore.createGroupThread(
+                let threadStore = DependenciesBridge.shared.threadStore
+                let groupThread = threadStore.insertGroupThread(
                     groupModel: groupModel,
                     tx: transaction,
                 )

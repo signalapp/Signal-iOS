@@ -145,9 +145,9 @@ class StoryManagerTest: SSKBaseTest {
             var recipient = recipientFetcher.fetchOrCreate(serviceId: author, tx: $0)
             profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: $0)
 
-            TSGroupThread.forUnitTest(
-                masterKey: groupMasterKey,
-            ).anyInsert(transaction: $0)
+            let thread = TSGroupThread.forUnitTest(masterKey: groupMasterKey)
+            thread.anyInsert(transaction: $0)
+            TSGroupThread.setUniqueId(thread.uniqueId, forGroupId: groupId, tx: $0)
             SSKEnvironment.shared.blockingManagerRef.addBlockedGroupId(
                 groupId,
                 blockMode: .local,
@@ -444,6 +444,7 @@ class StoryManagerTest: SSKBaseTest {
 
         let thread = TSGroupThread(groupModel: groupModel)
         thread.anyInsert(transaction: transaction)
+        TSGroupThread.setUniqueId(thread.uniqueId, forGroupId: groupModel.groupId, tx: transaction)
     }
 
     static func makeGroupContext() -> SSKProtoGroupContextV2 {

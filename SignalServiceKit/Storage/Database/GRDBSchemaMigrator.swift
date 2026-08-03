@@ -5532,9 +5532,9 @@ public class GRDBSchemaMigrator {
                 guard let groupThread = thread as? TSGroupThread else {
                     return
                 }
-                TSGroupThread.setGroupIdMappingForLegacyThread(
-                    threadUniqueId: groupThread.uniqueId,
-                    groupId: groupThread.groupId,
+                TSGroupThread.setUniqueId(
+                    groupThread.uniqueId,
+                    forGroupId: groupThread.groupId,
                     tx: transaction,
                 )
             }

@@ -123,9 +123,11 @@ class BlockingManagerTests: SSKBaseTest {
                 blockMode: .local,
                 transaction: tx,
             )
-            TSGroupThread.forUnitTest(
-                masterKey: try noLongerBlockedGroupParams.getMasterKey(),
-            ).anyInsert(transaction: tx)
+            do {
+                let thread = TSGroupThread.forUnitTest(masterKey: try noLongerBlockedGroupParams.getMasterKey())
+                thread.anyInsert(transaction: tx)
+                TSGroupThread.setUniqueId(thread.uniqueId, forGroupId: thread.groupId, tx: tx)
+            }
             blockingManager.addBlockedGroupId(
                 try noLongerBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(),
                 blockMode: .local,
@@ -142,9 +144,11 @@ class BlockingManagerTests: SSKBaseTest {
                 blockMode: .local,
                 transaction: tx,
             )
-            TSGroupThread.forUnitTest(
-                masterKey: try stillBlockedGroupParams.getMasterKey(),
-            ).anyInsert(transaction: tx)
+            do {
+                let thread = TSGroupThread.forUnitTest(masterKey: try stillBlockedGroupParams.getMasterKey())
+                thread.anyInsert(transaction: tx)
+                TSGroupThread.setUniqueId(thread.uniqueId, forGroupId: thread.groupId, tx: tx)
+            }
             blockingManager.addBlockedGroupId(
                 try stillBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(),
                 blockMode: .local,

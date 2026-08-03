@@ -69,7 +69,7 @@ public final class BackupArchiveThreadStore {
         return thread
     }
 
-    func createGroupThread(
+    func insertGroupThread(
         groupModel: TSGroupModelV2,
         isStorySendEnabled: Bool?,
         context: BackupArchive.RestoringContext,
@@ -84,6 +84,7 @@ public final class BackupArchiveThreadStore {
             groupThread.storyViewMode = .default
         }
         try groupThread.insert(context.tx.database)
+        TSGroupThread.setUniqueId(groupThread.uniqueId, forGroupId: groupThread.groupId, tx: context.tx)
         return groupThread
     }
 

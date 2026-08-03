@@ -370,7 +370,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
 
         let groupThread: TSGroupThread
         do {
-            groupThread = try threadStore.createGroupThread(
+            groupThread = try threadStore.insertGroupThread(
                 groupModel: groupModel,
                 isStorySendEnabled: isStorySendEnabled,
                 context: context,
