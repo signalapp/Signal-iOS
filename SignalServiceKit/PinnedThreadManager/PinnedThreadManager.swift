@@ -53,8 +53,6 @@ public protocol PinnedThreadManager {
         updateStorageService: Bool,
         tx: DBWriteTransaction,
     )
-
-    func handleUpdatedThread(_ thread: TSThread, tx: DBWriteTransaction)
 }
 
 protocol PinnedThreadMerger {

@@ -103,7 +103,7 @@ final class TSMessageStorageTest: SSKBaseTest {
             }
 
             DependenciesBridge.shared.threadSoftDeleteManager
-                .softDelete(threads: [thread], sendDeleteForMeSyncMessage: false, tx: tx)
+                .softDelete(threads: [thread], sendDeleteForMeSyncMessage: false, updateStorageService: false, tx: tx)
 
             for message in messages {
                 XCTAssertNil(TSIncomingMessage.fetchIncomingMessageViaCache(
@@ -158,7 +158,7 @@ final class TSMessageStorageTest: SSKBaseTest {
             }
 
             DependenciesBridge.shared.threadSoftDeleteManager
-                .softDelete(threads: [groupThread], sendDeleteForMeSyncMessage: false, tx: tx)
+                .softDelete(threads: [groupThread], sendDeleteForMeSyncMessage: false, updateStorageService: false, tx: tx)
 
             for message in messages {
                 XCTAssertNil(TSIncomingMessage.fetchIncomingMessageViaCache(

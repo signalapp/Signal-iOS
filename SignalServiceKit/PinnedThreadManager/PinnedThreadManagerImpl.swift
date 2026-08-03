@@ -117,7 +117,8 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
         let associatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
         // Ignore deleted or archived pinned threads. These shouldn't exist, but
         // it's possible they are incorrectly received from linked devices.
-        return canPin(thread, with: associatedData)
+        owsAssertDebug(thread.uniqueId == associatedData.threadUniqueId)
+        return thread.shouldThreadBeVisible && !associatedData.isArchived
     }
 
     public func pinnedThreads(tx: DBReadTransaction) -> [TSThread] {
@@ -225,6 +226,20 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
             _unpinThread(pinnedThreads[firstMissingThreadIndex], tx: tx)
         }
 
+        // Pinning a thread should unarchive it and make it visible if it was not already so.
+        let associatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
+        if associatedData.isArchived {
+            threadStore.updateAssociatedData(
+                associatedData,
+                isArchived: false,
+                updateStorageService: updateStorageService,
+                tx: tx,
+            )
+        }
+        if !thread.shouldThreadBeVisible {
+            threadStore.update(thread, withShouldThreadBeVisible: true, tx: tx)
+        }
+
         _pinThread(threadId: threadId, updateStorageService: updateStorageService, tx: tx)
 
         didUpdatePinnedThreads(updateStorageService: updateStorageService, tx: tx)
@@ -242,20 +257,6 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
     ) {
         guard let thread = _pinnedThread(forThreadId: threadId, tx: tx) else {
             return
-        }
-
-        // Pinning a thread should unarchive it and make it visible if it was not already so.
-        let associatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
-        if associatedData.isArchived {
-            threadStore.updateAssociatedData(
-                associatedData,
-                isArchived: false,
-                updateStorageService: updateStorageService,
-                tx: tx,
-            )
-        }
-        if !thread.shouldThreadBeVisible {
-            threadStore.update(thread, withShouldThreadBeVisible: true, tx: tx)
         }
 
         self.db.touch(thread: thread, shouldReindex: false, shouldUpdateChatListUi: true, tx: tx)
@@ -289,27 +290,6 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
         }
 
         self.db.touch(thread: thread, shouldReindex: false, shouldUpdateChatListUi: true, tx: tx)
-    }
-
-    public func handleUpdatedThread(_ thread: TSThread, tx: DBWriteTransaction) {
-        guard
-            let threadId = fetchPinnedThreadId(forThread: thread, tx: tx),
-            let pinnedThread = pinnedThreadStore.fetchPinnedThreadRecord(forThreadId: threadId, tx: tx)
-        else {
-            return
-        }
-        let associatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
-        if canPin(thread, with: associatedData) {
-            return
-        }
-        // If we now can't pin a thread, we should unpin it.
-        _unpinThread(pinnedThread, tx: tx)
-        didUpdatePinnedThreads(updateStorageService: true, tx: tx)
-    }
-
-    private func canPin(_ thread: TSThread, with associatedData: ThreadAssociatedData) -> Bool {
-        owsAssertDebug(thread.uniqueId == associatedData.threadUniqueId)
-        return thread.shouldThreadBeVisible && !associatedData.isArchived
     }
 
     private func didUpdatePinnedThreads(updateStorageService: Bool, tx: DBWriteTransaction) {

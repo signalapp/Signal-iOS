@@ -23,6 +23,7 @@ public protocol ThreadSoftDeleteManager {
     func softDelete(
         threads: [TSThread],
         sendDeleteForMeSyncMessage: Bool,
+        updateStorageService: Bool,
         tx: DBWriteTransaction,
     )
 
@@ -45,6 +46,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
     private let deleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManager
     private let intentsManager: Shims.IntentsManager
     private let interactionDeleteManager: InteractionDeleteManager
+    private let pinnedThreadManager: any PinnedThreadManager
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let storyManager: Shims.StoryManager
     private let threadReplyInfoStore: ThreadReplyInfoStore
@@ -56,6 +58,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         deleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManager,
         intentsManager: Shims.IntentsManager,
         interactionDeleteManager: InteractionDeleteManager,
+        pinnedThreadManager: any PinnedThreadManager,
         recipientDatabaseTable: RecipientDatabaseTable,
         storyManager: Shims.StoryManager,
         threadReplyInfoStore: ThreadReplyInfoStore,
@@ -64,6 +67,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         self.deleteForMeOutgoingSyncMessageManager = deleteForMeOutgoingSyncMessageManager
         self.intentsManager = intentsManager
         self.interactionDeleteManager = interactionDeleteManager
+        self.pinnedThreadManager = pinnedThreadManager
         self.recipientDatabaseTable = recipientDatabaseTable
         self.storyManager = storyManager
         self.threadReplyInfoStore = threadReplyInfoStore
@@ -73,6 +77,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
     func softDelete(
         threads: [TSThread],
         sendDeleteForMeSyncMessage: Bool,
+        updateStorageService: Bool,
         tx: DBWriteTransaction,
     ) {
         var syncMessageContexts = [SyncMessageContext]()
@@ -94,6 +99,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
             softDelete(
                 thread: thread,
                 syncMessageContext: syncMessageContext,
+                updateStorageService: updateStorageService,
                 tx: tx,
             )
 
@@ -149,6 +155,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
     private func softDelete(
         thread: TSThread,
         syncMessageContext: SyncMessageContext?,
+        updateStorageService: Bool,
         tx: DBWriteTransaction,
     ) {
         logger.info("Deleting thread with ID \(thread.logString).")
@@ -158,6 +165,8 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
             syncMessageContext: syncMessageContext,
             tx: tx,
         )
+
+        pinnedThreadManager.unpinThread(thread, updateStorageService: updateStorageService, tx: tx)
 
         thread.anyUpdate(transaction: tx) { thread in
             thread.messageDraft = nil
@@ -283,7 +292,7 @@ final class _ThreadSoftDeleteManagerImpl_IntentsManager_Wrapper: _ThreadSoftDele
 #if TESTABLE_BUILD
 
 open class MockThreadSoftDeleteManager: ThreadSoftDeleteManager {
-    open func softDelete(threads: [TSThread], sendDeleteForMeSyncMessage: Bool, tx: DBWriteTransaction) {}
+    open func softDelete(threads: [TSThread], sendDeleteForMeSyncMessage: Bool, updateStorageService: Bool, tx: DBWriteTransaction) {}
     open func removeAllInteractions(thread: TSThread, sendDeleteForMeSyncMessage: Bool, tx: DBWriteTransaction) {}
     open func removeIntentsForTerminatedGroup(threadUniqueId: String) {}
 }

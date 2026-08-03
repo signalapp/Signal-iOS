@@ -315,6 +315,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         threadSoftDeleteManager.softDelete(
             threads: [thread],
             sendDeleteForMeSyncMessage: false,
+            updateStorageService: false,
             tx: tx,
         )
     }

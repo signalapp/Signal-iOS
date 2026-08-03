@@ -84,9 +84,12 @@ public extension ChatListViewController {
 
         Logger.info("")
 
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let pinnedThreadManager = DependenciesBridge.shared.pinnedThreadManager
+
         guard let selectedThread = conversationSplitViewController?.selectedThread else { return }
 
-        let threadAssociatedData = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+        let threadAssociatedData = databaseStorage.read { transaction in
             ThreadAssociatedData.fetchOrDefault(for: selectedThread, transaction: transaction)
         }
 
@@ -94,7 +97,8 @@ public extension ChatListViewController {
 
         conversationSplitViewController?.closeSelectedConversation(animated: true)
 
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+        databaseStorage.write { transaction in
+            pinnedThreadManager.unpinThread(selectedThread, updateStorageService: true, tx: transaction)
             threadAssociatedData.updateWith(isArchived: true, updateStorageService: true, transaction: transaction)
         }
 
@@ -106,9 +110,11 @@ public extension ChatListViewController {
 
         Logger.info("")
 
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
         guard let selectedThread = conversationSplitViewController?.selectedThread else { return }
 
-        let threadAssociatedData = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+        let threadAssociatedData = databaseStorage.read { transaction in
             ThreadAssociatedData.fetchOrDefault(for: selectedThread, transaction: transaction)
         }
 
@@ -116,7 +122,7 @@ public extension ChatListViewController {
 
         conversationSplitViewController?.closeSelectedConversation(animated: true)
 
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+        databaseStorage.write { transaction in
             threadAssociatedData.updateWith(isArchived: false, updateStorageService: true, transaction: transaction)
         }
 

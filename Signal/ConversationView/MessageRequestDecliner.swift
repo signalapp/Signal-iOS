@@ -56,6 +56,7 @@ enum MessageRequestDecliner {
                     threads: [thread],
                     // We're already sending a sync message about this above!
                     sendDeleteForMeSyncMessage: false,
+                    updateStorageService: true,
                     tx: tx,
                 )
             }

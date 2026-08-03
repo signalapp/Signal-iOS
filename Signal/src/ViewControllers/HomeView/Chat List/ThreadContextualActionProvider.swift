@@ -268,11 +268,23 @@ extension ThreadContextualActionProvider where Self: UIViewController {
     func toggleThreadIsArchived(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let pinnedThreadManager = DependenciesBridge.shared.pinnedThreadManager
+
         threadContextualActionShouldCloseThreadIfActive(threadViewModel: threadViewModel)
 
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+        let isArchived = !threadViewModel.isArchived
+
+        databaseStorage.write { transaction in
+            if isArchived {
+                pinnedThreadManager.unpinThread(
+                    threadViewModel.threadRecord,
+                    updateStorageService: true,
+                    tx: transaction,
+                )
+            }
             threadViewModel.associatedData.updateWith(
-                isArchived: !threadViewModel.isArchived,
+                isArchived: isArchived,
                 updateStorageService: true,
                 transaction: transaction,
             )
@@ -314,6 +326,7 @@ extension ThreadContextualActionProvider where Self: UIViewController {
                     threadSoftDeleteManager.softDelete(
                         threads: [threadViewModel.threadRecord],
                         sendDeleteForMeSyncMessage: true,
+                        updateStorageService: true,
                         tx: tx,
                     )
                 }

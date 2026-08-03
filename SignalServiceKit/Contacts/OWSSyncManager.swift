@@ -336,6 +336,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
                 threads: [thread],
                 sendDeleteForMeSyncMessage: false,
+                updateStorageService: false,
                 tx: transaction,
             )
         case .block:
@@ -344,6 +345,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
                 threads: [thread],
                 sendDeleteForMeSyncMessage: false,
+                updateStorageService: false,
                 tx: transaction,
             )
             SSKEnvironment.shared.blockingManagerRef.addBlockedThread(thread, blockMode: .remote, transaction: transaction)

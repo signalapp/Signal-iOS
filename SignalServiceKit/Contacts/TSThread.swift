@@ -288,8 +288,6 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         }
 
         SSKEnvironment.shared.modelReadCachesRef.threadReadCache.didInsertOrUpdate(thread: self, transaction: transaction)
-
-        DependenciesBridge.shared.pinnedThreadManager.handleUpdatedThread(self, tx: transaction)
     }
 
     public func anyWillRemove(transaction: DBWriteTransaction) {

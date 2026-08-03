@@ -186,6 +186,7 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
                 self.threadSoftDeleteManager.softDelete(
                     threads: [thread],
                     sendDeleteForMeSyncMessage: false,
+                    updateStorageService: false,
                     tx: tx,
                 )
             }

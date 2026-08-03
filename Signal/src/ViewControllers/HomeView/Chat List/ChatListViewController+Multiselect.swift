@@ -349,6 +349,7 @@ extension ChatListViewController {
                         threadSoftDeleteManager.softDelete(
                             threads: threadViewModels.map { $0.threadRecord },
                             sendDeleteForMeSyncMessage: true,
+                            updateStorageService: true,
                             tx: transaction,
                         )
                     }

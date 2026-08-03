@@ -921,10 +921,21 @@ extension AppSetup.GlobalsContinuation {
             missedCallManager: callRecordMissedCallManager,
         )
 
+        let pinnedThreadStore = PinnedThreadStore()
+        let pinnedThreadManager = PinnedThreadManagerImpl(
+            db: db,
+            pinnedThreadStore: pinnedThreadStore,
+            recipientFetcher: recipientFetcher,
+            recipientStore: recipientDatabaseTable,
+            storageServiceManager: storageServiceManager,
+            threadStore: threadStore,
+        )
+
         let threadSoftDeleteManager = ThreadSoftDeleteManagerImpl(
             deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
             intentsManager: ThreadSoftDeleteManagerImpl.Wrappers.IntentsManager(),
             interactionDeleteManager: interactionDeleteManager,
+            pinnedThreadManager: pinnedThreadManager,
             recipientDatabaseTable: recipientDatabaseTable,
             storyManager: ThreadSoftDeleteManagerImpl.Wrappers.StoryManager(),
             threadReplyInfoStore: threadReplyInfoStore,
@@ -962,16 +973,6 @@ extension AppSetup.GlobalsContinuation {
             threadSoftDeleteManager: threadSoftDeleteManager,
             threadStore: threadStore,
             wallpaperStore: wallpaperStore,
-        )
-
-        let pinnedThreadStore = PinnedThreadStore()
-        let pinnedThreadManager = PinnedThreadManagerImpl(
-            db: db,
-            pinnedThreadStore: pinnedThreadStore,
-            recipientFetcher: recipientFetcher,
-            recipientStore: recipientDatabaseTable,
-            storageServiceManager: storageServiceManager,
-            threadStore: threadStore,
         )
 
         let pinnedMessageExpirationJob = PinnedMessageExpirationJob(

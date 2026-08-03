@@ -1660,7 +1660,18 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             )
         }
 
-        processPinnedConversationsProto(record.pinnedConversations, transaction: transaction)
+        let releaseNotesThread: TSReleaseNotesThread
+        if let _releaseNotesThread = threadStore.fetchThread(uniqueId: TSReleaseNotesThread.releaseNotesUniqueId, tx: transaction) as? TSReleaseNotesThread {
+            releaseNotesThread = _releaseNotesThread
+        } else {
+            releaseNotesThread = TSReleaseNotesThread.createReleaseNotes(transaction: transaction)
+        }
+
+        processPinnedConversationsProto(
+            record.pinnedConversations,
+            releaseNotesThread: releaseNotesThread,
+            transaction: transaction,
+        )
 
         let localPrefersContactAvatars = SSKPreferences.preferContactAvatars(transaction: transaction)
         if record.preferContactAvatars != localPrefersContactAvatars {
@@ -1810,13 +1821,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let localAdminDeleteEducationRead = adminDeleteManager.adminDeleteEducationReadStatus(tx: transaction)
         if !localAdminDeleteEducationRead, record.seenAdminDeleteEducationDialog {
             adminDeleteManager.setAdminDeleteEducationRead(tx: transaction, updateStorageService: false)
-        }
-
-        let releaseNotesThread: TSReleaseNotesThread
-        if let _releaseNotesThread = threadStore.fetchThread(uniqueId: TSReleaseNotesThread.releaseNotesUniqueId, tx: transaction) as? TSReleaseNotesThread {
-            releaseNotesThread = _releaseNotesThread
-        } else {
-            releaseNotesThread = TSReleaseNotesThread.createReleaseNotes(transaction: transaction)
         }
 
         let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: releaseNotesThread, transaction: transaction)
@@ -1969,6 +1973,7 @@ extension StorageServiceAccountRecordUpdater {
 
     private func processPinnedConversationsProto(
         _ pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation],
+        releaseNotesThread: TSReleaseNotesThread,
         transaction tx: DBWriteTransaction,
     ) {
         if pinnedConversations.count > PinnedThreads.maxPinnedThreads {
@@ -1977,6 +1982,7 @@ extension StorageServiceAccountRecordUpdater {
 
         var pinnedThreadIds = [PinnedThreadId]()
         for pinnedConversation in pinnedConversations {
+            let thread: TSThread?
             switch pinnedConversation.identifier {
             case .contact(let contact)?:
                 let serviceId = ServiceId.parseFrom(
@@ -1994,22 +2000,28 @@ extension StorageServiceAccountRecordUpdater {
                     owsFailDebug("dropping pinned recipient with invalid address")
                     continue
                 }
-                _ = TSContactThread.getOrCreateThread(withContactAddress: recipient.address, transaction: tx)
                 pinnedThreadIds.append(.recipientId(recipient.id))
+                thread = TSContactThread.getOrCreateThread(withContactAddress: recipient.address, transaction: tx)
             case .groupMasterKey(let masterKeyData)?:
                 guard let masterKey = try? GroupMasterKey(contents: masterKeyData) else {
                     owsFailDebug("dropping pinned group with invalid master key")
                     continue
                 }
                 let contextInfo = GroupV2ContextInfo.deriveFrom(masterKey: masterKey)
-                pinnedThreadIds.append(.groupId(contextInfo.groupId.serialize()))
+                let groupId = contextInfo.groupId.serialize()
+                thread = threadStore.fetchGroupThread(groupId: groupId, tx: tx)
+                pinnedThreadIds.append(.groupId(groupId))
             case .legacyGroupID(let groupId)?:
+                thread = threadStore.fetchGroupThread(groupId: groupId, tx: tx)
                 pinnedThreadIds.append(.groupId(groupId))
             case .releaseNotes:
+                thread = releaseNotesThread
                 pinnedThreadIds.append(.releaseNotes)
             case nil:
-                break
+                continue
             }
+            // If the thread exists, make sure it's visible.
+            thread?.updateWithShouldThreadBeVisible(true, transaction: tx)
         }
 
         pinnedThreadManager.setPinnedThreadIds(pinnedThreadIds, updateStorageService: false, tx: tx)

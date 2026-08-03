@@ -236,6 +236,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             threadSoftDeleteManager.softDelete(
                 threads: TSThread.anyFetchAll(transaction: tx),
                 sendDeleteForMeSyncMessage: true,
+                updateStorageService: true,
                 tx: tx,
             )
 
