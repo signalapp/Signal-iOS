@@ -4,7 +4,7 @@
 //
 
 import CryptoKit
-import LibSignalClient
+public import LibSignalClient
 
 /// Old values were encoded in a redundant {"masterKey": ...} structure.
 public struct DeprecatedMasterKey: Codable {
@@ -75,6 +75,11 @@ private func deriveKey(info: String, baseKey: Data) -> Data {
 
 /// A key used to hash values used for logging.
 public struct LoggingKey {
+    private enum Constants {
+        /// How many characters of a hashed value's hex string to include in logs.
+        static let hashCharCount = 3
+    }
+
     public let rawData: Data
 
     private init(rawData: Data) {
@@ -83,6 +88,42 @@ public struct LoggingKey {
 
     static func deriveFrom(masterKey: MasterKey) -> Self {
         return Self(rawData: deriveKey(info: "Logging Key", baseKey: masterKey.rawData))
+    }
+
+    /// Produced a hashed log-safe token for `value`.
+    ///
+    /// This is `HMAC-SHA256(loggingKey, value)`, truncated and hex-encoded. The
+    /// same input always produces the same token (for a given logging key),
+    /// which lets us correlate a hashed identifier across log lines. It's
+    /// prefixed with "…" to indicate that it's a truncated value.
+    public func hashForLogging(_ data: Data) -> String {
+        let hash = HMAC<SHA256>.authenticationCode(
+            for: data,
+            using: SymmetricKey(data: rawData),
+        )
+        let hashHex = Data(hash).hexadecimalString
+        let hashHexSuffix = hashHex.suffix(Constants.hashCharCount)
+        return "…\(hashHexSuffix)"
+    }
+
+    public func hashForLogging(string: String) -> String {
+        return hashForLogging(Data(string.utf8))
+    }
+
+    public func hashForLogging(aci: Aci) -> String {
+        return hashForLogging(uuid: aci.rawUUID)
+    }
+
+    public func hashForLogging(pni: Pni) -> String {
+        return hashForLogging(uuid: pni.rawUUID)
+    }
+
+    public func hashForLogging(e164: E164) -> String {
+        return hashForLogging(string: e164.stringValue)
+    }
+
+    public func hashForLogging(uuid: UUID) -> String {
+        return hashForLogging(uuid.data)
     }
 }
 

@@ -60,8 +60,24 @@ private final class DebugLogFileManager: DDLogFileManagerDefault {
 
 public final class DebugLogger {
 
-    private init() {}
     public static var shared = DebugLogger()
+
+    private init() {}
+
+    // MARK: - Logging key
+
+    private let _loggingKey = AtomicValue<LoggingKey?>(nil, lock: .init())
+
+    /// A key used to hash sensitive identifiers in logs.
+    public var loggingKey: LoggingKey? {
+        _loggingKey.get()
+    }
+
+    public func setLoggingKey(_ loggingKey: LoggingKey?) {
+        _loggingKey.set(loggingKey)
+    }
+
+    // MARK: -
 
     public static let mainAppDebugLogsDirPath = {
         let dirPath = OWSFileSystem.cachesDirectoryPath().appendingPathComponent("Logs")
@@ -134,7 +150,9 @@ public final class DebugLogger {
         let fileLogger = DDFileLogger(logFileManager: logFileManager)
         fileLogger.rollingFrequency = .day
         fileLogger.maximumFileSize = 12_000_000
-        fileLogger.logFormatter = ScrubbingLogFormatter()
+        fileLogger.logFormatter = ScrubbingLogFormatter(loggingKey: { [weak self] in
+            return self?.loggingKey
+        })
 
         self.fileLogger = fileLogger
         DDLog.add(fileLogger)

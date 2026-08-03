@@ -2175,6 +2175,17 @@ extension AppSetup.FinalContinuation {
         // NSE, or they are used but behave properly even if they're not reloaded.
         self.sskEnvironment.warmCaches(appReadiness: self.appReadiness, dependenciesBridge: self.dependenciesBridge)
 
+        // Reconfigure our logging key, in case it's changed. Important to do
+        // here so the NSE picks up changes made in the main app.
+        self.sskEnvironment.databaseStorageRef.read { tx in
+            DebugLogger.shared.setLoggingKey(
+                self.dependenciesBridge.accountKeyStore
+                    .getAccountEntropyPool(tx: tx)?
+                    .getMasterKey()
+                    .deriveLoggingKey(),
+            )
+        }
+
         self.appReadiness.runNowOrWhenAppWillBecomeReady {
             self.dependenciesBridge.chatConnectionManager.updateCanOpenWebSocket()
         }

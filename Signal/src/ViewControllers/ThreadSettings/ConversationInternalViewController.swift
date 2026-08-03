@@ -66,6 +66,21 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                     value: signalRecipient?.pni?.serviceIdString,
                 ))
 
+                if let loggingKey = DebugLogger.shared.loggingKey, let signalRecipient {
+                    section.add(.copyableItem(
+                        label: "ACI Log Hash",
+                        value: signalRecipient.aci.map { loggingKey.hashForLogging(aci: $0) },
+                    ))
+                    section.add(.copyableItem(
+                        label: "Phone Number Log Hash",
+                        value: signalRecipient.phoneNumber.map { loggingKey.hashForLogging(string: $0.stringValue) },
+                    ))
+                    section.add(.copyableItem(
+                        label: "PNI Log Hash",
+                        value: signalRecipient.pni.map { loggingKey.hashForLogging(pni: $0) },
+                    ))
+                }
+
                 section.add(.copyableItem(
                     label: "Discoverable Phone Number?",
                     value: signalRecipient?.phoneNumber?.isDiscoverable == true ? "Yes" : "No",

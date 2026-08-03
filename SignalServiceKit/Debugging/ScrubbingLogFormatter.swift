@@ -8,13 +8,26 @@ import Foundation
 
 public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
     private struct Replacement {
+        enum Kind {
+            /// Replace matches using an `NSRegularExpression` template.
+            case template(String)
+
+            /// Replace matches by running the given `hashBlock` over them,
+            /// which should apply any transformations to the match before
+            /// hashing using the given `LoggingKey`.
+            ///
+            /// Useful for sensitive values we want to correlate within/across
+            /// logs but not expose, such as user identifiers.
+            case loggingKeyHash(hashBlock: (LoggingKey, String) -> String)
+        }
+
         let regex: NSRegularExpression
-        let replacementTemplate: String
+        let kind: Kind
 
         init(
             pattern: String,
             options: NSRegularExpression.Options = [],
-            replacementTemplate: String,
+            kind: Kind,
         ) {
             do {
                 self.regex = try .init(pattern: pattern, options: options)
@@ -22,7 +35,7 @@ public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
                 owsFail("Could not compile regular expression: \(error)")
             }
 
-            self.replacementTemplate = replacementTemplate
+            self.kind = kind
         }
 
         static func base64(prefix: String, length: Int) -> Replacement {
@@ -47,30 +60,36 @@ public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
 
             return Replacement(
                 pattern: "(^|[^\(base64Leading)])\(prefix)[\(base64Character)]{\(redactedLength)}([\(base64Character)]{\(unredactedLength)}\(paddingCharacter){\(base64Padding)})",
-                replacementTemplate: "$1\(prefix)…$2",
+                kind: .template("$1\(prefix)…$2"),
             )
         }
 
         static let callLink: Replacement = Replacement(
             pattern: #"([bcdfghkmnpqrstxz]{4})(-[bcdfghkmnpqrstxz]{4}){7}"#,
-            replacementTemplate: "$1-…-xxxx",
+            kind: .template("$1-…-xxxx"),
         )
 
         static let phoneNumber: Replacement = Replacement(
-            pattern: #"\+\d{7,12}(\d{3})"#,
-            replacementTemplate: "+x…$1",
+            pattern: #"\+\d{7,12}\d{3}"#,
+            kind: .loggingKeyHash(hashBlock: { loggingKey, match in
+                loggingKey.hashForLogging(string: match)
+            }),
         )
 
         static let uuid: Replacement = Replacement(
-            pattern: #"[\da-f]{8}\-[\da-f]{4}\-[\da-f]{4}\-[\da-f]{4}\-[\da-f]{9}([\da-f]{3})"#,
+            pattern: #"[\da-f]{8}\-[\da-f]{4}\-[\da-f]{4}\-[\da-f]{4}\-[\da-f]{12}"#,
             options: .caseInsensitive,
-            replacementTemplate: "xxxx-xx-xx-xxx$1",
+            kind: .loggingKeyHash(hashBlock: { loggingKey, match in
+                let uuid = UUID(uuidString: match)
+                    .owsFailUnwrap("Failed to construct UUID from replacement string!")
+                return loggingKey.hashForLogging(uuid: uuid)
+            }),
         )
 
         static let data: Replacement = Replacement(
             pattern: #"<([\da-f]{2})[\da-f]{0,6}( [\da-f]{2,8})*>"#,
             options: .caseInsensitive,
-            replacementTemplate: "<$1…>",
+            kind: .template("<$1…>"),
         )
 
         /// On iOS 13, when built with the 13 SDK, NSData's description has changed and needs to be
@@ -80,7 +99,7 @@ public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
         static let iOS13Data: Replacement = Replacement(
             pattern: #"\{length = \d+, bytes = 0x([\da-f]{2})[\.\da-f ]*\}"#,
             options: .caseInsensitive,
-            replacementTemplate: "<$1…>",
+            kind: .template("<$1…>"),
         )
 
         /// IPv6 addresses are _hard_.
@@ -102,18 +121,18 @@ public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
                 + "::([fF]{4}(:0{1,4}){0,1}:){0,1}([0-9]{1,3}\\.){3,3}[0-9]{1,3}|"
                 + ":((:[0-9a-fA-F]{1,4}){1,7}|:)"
             ,
-            replacementTemplate: "[IPV6]",
+            kind: .template("[IPV6]"),
         )
 
         static let ipv4Address: Replacement = Replacement(
             pattern: "\\d+\\.\\d+\\.\\d+\\.(\\d+)",
-            replacementTemplate: "x.x.x.$1",
+            kind: .template("x.x.x.$1"),
         )
 
         static let hex: Replacement = Replacement(
             pattern: "[\\da-f]{11,}([\\da-f]{3})",
             options: .caseInsensitive,
-            replacementTemplate: "…$1",
+            kind: .template("…$1"),
         )
     }
 
@@ -134,21 +153,76 @@ public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
         .base64(prefix: "", length: 16),
     ]
 
+    /// The `LoggingKey` to use for `loggingKeyHash` replacements, if a key is
+    /// available.
+    private let loggingKey: () -> LoggingKey?
+
+    public init(loggingKey: @escaping () -> LoggingKey?) {
+        self.loggingKey = loggingKey
+        super.init()
+    }
+
     public func format(message logMessage: DDLogMessage) -> String? {
         return LogFormatter.formatLogMessage(logMessage, modifiedMessage: redactMessage(logMessage.message))
     }
 
     public func redactMessage(_ logString: String) -> String {
+        let loggingKey = self.loggingKey()
         var logString = logString
 
         for replacement in replacements {
-            logString = replacement.regex.stringByReplacingMatches(
-                in: logString,
-                range: logString.entireRange,
-                withTemplate: replacement.replacementTemplate,
-            )
+            switch replacement.kind {
+            case .template(let template):
+                logString = replacement.regex.stringByReplacingMatches(
+                    in: logString,
+                    range: logString.entireRange,
+                    withTemplate: template,
+                )
+            case .loggingKeyHash(let hashBlock):
+                if let loggingKey {
+                    logString = Self.redactMatchesByHashing(
+                        regex: replacement.regex,
+                        in: logString,
+                        loggingKey: loggingKey,
+                        hashBlock: hashBlock,
+                    )
+                } else {
+                    // If the logging key is missing, fully redact instead.
+                    logString = replacement.regex.stringByReplacingMatches(
+                        in: logString,
+                        range: logString.entireRange,
+                        withTemplate: "[redacted]",
+                    )
+                }
+            }
         }
 
         return logString
+    }
+
+    private static func redactMatchesByHashing(
+        regex: NSRegularExpression,
+        in string: String,
+        loggingKey: LoggingKey,
+        hashBlock: (LoggingKey, String) -> String,
+    ) -> String {
+        let matches = regex.matches(in: string, range: string.entireRange)
+        guard !matches.isEmpty else {
+            return string
+        }
+
+        let result = NSMutableString(string: string)
+        // Replace back-to-front so that earlier match ranges remain valid as we
+        // mutate the string.
+        for match in matches.reversed() {
+            let range = match.range
+            guard range.location != NSNotFound else {
+                continue
+            }
+            let matchedValue = result.substring(with: range)
+            let replacement = hashBlock(loggingKey, matchedValue)
+            result.replaceCharacters(in: range, with: replacement)
+        }
+        return result as String
     }
 }

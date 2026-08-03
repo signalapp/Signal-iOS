@@ -112,6 +112,13 @@ public class AccountKeyStore {
         backupSettingsStore.setHaveSetBackupID(haveSetBackupID: false, tx: tx)
 
         aepKvStore.setString(accountEntropyPool.rawString, key: Keys.aepKeyName, transaction: tx)
+
+        // When we rotate the AEP, our LoggingKey (downstream of the Master Key)
+        // also rotates and we need to keep that in sync.
+        let loggingKey = accountEntropyPool.getMasterKey().deriveLoggingKey()
+        tx.addSyncCompletion {
+            DebugLogger.shared.setLoggingKey(loggingKey)
+        }
     }
 
     // MARK: -
