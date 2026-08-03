@@ -1310,13 +1310,18 @@ extension AppSetup.GlobalsContinuation {
         ))
 
         let keyTransparencyManager = KeyTransparencyManager(
-            chatConnectionManager: chatConnectionManager,
+            apiClient: KeyTransparencyApiClientImpl(
+                chatConnectionManager: chatConnectionManager,
+                db: db,
+                keyTransparencyStore: keyTransparencyStore,
+            ),
             dateProvider: dateProvider,
             db: db,
             identityManager: identityManager,
+            isConservativeSelfCheck: BuildFlags.KeyTransparency.conservativeSelfCheck,
             keyTransparencyStore: keyTransparencyStore,
             localUsernameManager: localUsernameManager,
-            messageProcessor: messageProcessor,
+            messageProcessor: KeyTransparencyManager.Wrappers.MessageProcessor(messageProcessor),
             recipientDatabaseTable: recipientDatabaseTable,
             storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager,

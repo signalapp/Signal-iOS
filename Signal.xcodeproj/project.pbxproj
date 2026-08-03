@@ -3274,6 +3274,8 @@
 		D9CFB0142F20466300DFB14A /* ArcView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CFB0132F20466100DFB14A /* ArcView.swift */; };
 		D9D1A6EB2DD69D0800050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A6EA2DD69CFE00050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift */; };
 		D9D3216A2A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D321692A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift */; };
+		D9AA10022F80000100AA1001 /* KeyTransparencyApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA10012F80000100AA1001 /* KeyTransparencyApiClient.swift */; };
+		D9AA10042F80000100AA1001 /* KeyTransparencyManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA10032F80000100AA1001 /* KeyTransparencyManagerTest.swift */; };
 		D9D5018A2F2B16820068EEA5 /* KeyTransparencyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D501892F2B16820068EEA5 /* KeyTransparencyManager.swift */; };
 		D9DB37EF2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DB37EE2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift */; };
 		D9DB37F32B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DB37F22B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift */; };
@@ -7626,6 +7628,8 @@
 		D9D321812A8FEA9C004FC110 /* SignalService.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = SignalService.proto; sourceTree = "<group>"; };
 		D9D321822A8FEA9C004FC110 /* Provisioning.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = Provisioning.proto; sourceTree = "<group>"; };
 		D9D321842A8FEA9D004FC110 /* svr2.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = svr2.proto; sourceTree = "<group>"; };
+		D9AA10012F80000100AA1001 /* KeyTransparencyApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTransparencyApiClient.swift; sourceTree = "<group>"; };
+		D9AA10032F80000100AA1001 /* KeyTransparencyManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTransparencyManagerTest.swift; sourceTree = "<group>"; };
 		D9D501892F2B16820068EEA5 /* KeyTransparencyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTransparencyManager.swift; sourceTree = "<group>"; };
 		D9DB37EE2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordAssociatedInteraction.swift; sourceTree = "<group>"; };
 		D9DB37F22B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallLogEventSyncMessage.swift; sourceTree = "<group>"; };
@@ -14147,9 +14151,18 @@
 			path = Specifications;
 			sourceTree = "<group>";
 		};
+		D9AA10052F80000100AA1001 /* KeyTransparency */ = {
+			isa = PBXGroup;
+			children = (
+				D9AA10032F80000100AA1001 /* KeyTransparencyManagerTest.swift */,
+			);
+			path = KeyTransparency;
+			sourceTree = "<group>";
+		};
 		D9D501882F2B16030068EEA5 /* KeyTransparency */ = {
 			isa = PBXGroup;
 			children = (
+				D9AA10012F80000100AA1001 /* KeyTransparencyApiClient.swift */,
 				D9D501892F2B16820068EEA5 /* KeyTransparencyManager.swift */,
 			);
 			path = KeyTransparency;
@@ -14869,6 +14882,7 @@
 				5075C21529CA1ED500A260D2 /* GroupMembers */,
 				F94261E2289B1B5400460798 /* Groups */,
 				5000CA2F2B1F97DC00BB8EFF /* Jobs */,
+				D9AA10052F80000100AA1001 /* KeyTransparency */,
 				D9C964152BE56DE20058F143 /* MessageBackup */,
 				F942621C289B1B5500460798 /* Messages */,
 				F94261CF289B1B5400460798 /* Network */,
@@ -19593,6 +19607,7 @@
 				D9B8541229137C150058F97B /* JobRecord.swift in Sources */,
 				F9C5CDEB289453B400548EEE /* JobRecordFinder.swift in Sources */,
 				505C2BC22E85D72B0009237F /* KeyedConcurrentTaskQueue.swift in Sources */,
+				D9AA10022F80000100AA1001 /* KeyTransparencyApiClient.swift in Sources */,
 				D9D5018A2F2B16820068EEA5 /* KeyTransparencyManager.swift in Sources */,
 				F9C5CD2A289453B300548EEE /* KeyValueStore.swift in Sources */,
 				507AA5FA2FDDC3F10067C25E /* KeyValueStoreRenamer.swift in Sources */,
@@ -20425,6 +20440,7 @@
 				F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */,
 				5000CA312B1F97EE00BB8EFF /* JobQueueRunnerTest.swift in Sources */,
 				D9B95A9629E6830B00D7CB95 /* JobRecordTest.swift in Sources */,
+				D9AA10042F80000100AA1001 /* KeyTransparencyManagerTest.swift in Sources */,
 				507AA5FD2FDDC4BA0067C25E /* KeyValueStoreRenamerTest.swift in Sources */,
 				C167F1E52A7162D700D4A9AF /* KyberPreKeyStoreImplTest.swift in Sources */,
 				50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */,

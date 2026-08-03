@@ -10,13 +10,14 @@ public final class KeyTransparencyManager {
     private static let logger = PrefixedLogger(prefix: "[KT]")
     private var logger: PrefixedLogger { Self.logger }
 
-    private let chatConnectionManager: ChatConnectionManager
+    private let apiClient: KeyTransparencyApiClient
     private let dateProvider: DateProvider
     private let db: DB
     private let identityManager: OWSIdentityManager
+    private let isConservativeSelfCheck: Bool
     private let keyTransparencyStore: KeyTransparencyStore
     private let localUsernameManager: LocalUsernameManager
-    private let messageProcessor: MessageProcessor
+    private let messageProcessor: Shims.MessageProcessor
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
@@ -25,22 +26,24 @@ public final class KeyTransparencyManager {
     private let taskQueue: KeyedConcurrentTaskQueue<Aci>
 
     init(
-        chatConnectionManager: ChatConnectionManager,
+        apiClient: KeyTransparencyApiClient,
         dateProvider: @escaping DateProvider,
         db: DB,
         identityManager: OWSIdentityManager,
+        isConservativeSelfCheck: Bool,
         keyTransparencyStore: KeyTransparencyStore,
         localUsernameManager: LocalUsernameManager,
-        messageProcessor: MessageProcessor,
+        messageProcessor: Shims.MessageProcessor,
         recipientDatabaseTable: RecipientDatabaseTable,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
     ) {
-        self.chatConnectionManager = chatConnectionManager
+        self.apiClient = apiClient
         self.dateProvider = dateProvider
         self.db = db
         self.identityManager = identityManager
+        self.isConservativeSelfCheck = isConservativeSelfCheck
         self.keyTransparencyStore = keyTransparencyStore
         self.localUsernameManager = localUsernameManager
         self.messageProcessor = messageProcessor
@@ -201,23 +204,16 @@ public final class KeyTransparencyManager {
         params: CheckParams,
         logger: PrefixedLogger,
     ) async throws {
-        let ktClient = try await chatConnectionManager.keyTransparencyClient()
-        let libSignalStore = KeyTransparencyStoreForLibSignal(
-            db: db,
-            keyTransparencyStore: keyTransparencyStore,
-        )
-
         if params.isLocalUser {
             let isDiscoverable = db.read { tx in
                 return tsAccountManager.phoneNumberDiscoverability(tx: tx).orDefault.isDiscoverable
             }
             logger.info("Checking for self.")
-            try await ktClient.check(
+            try await apiClient.check(
                 for: .self(isE164Discoverable: isDiscoverable),
-                account: params.aciInfo,
-                e164: params.e164Info,
+                aciInfo: params.aciInfo,
+                e164Info: params.e164Info,
                 usernameHash: params.username?.hash,
-                store: libSignalStore,
             )
         } else {
             let selfCheckState = db.read { tx in
@@ -235,11 +231,11 @@ public final class KeyTransparencyManager {
             }
 
             logger.info("Checking for other.")
-            try await ktClient.check(
+            try await apiClient.check(
                 for: .contact,
-                account: params.aciInfo,
-                e164: params.e164Info,
-                store: libSignalStore,
+                aciInfo: params.aciInfo,
+                e164Info: params.e164Info,
+                usernameHash: nil,
             )
         }
     }
@@ -465,7 +461,7 @@ public final class KeyTransparencyManager {
 
         case .failedRepeatedlyAndWarned:
             logger.warn("Self-check continued failure, already warned.")
-            newSelfCheckState = if BuildFlags.KeyTransparency.conservativeSelfCheck {
+            newSelfCheckState = if isConservativeSelfCheck {
                 // Wipe the fact that we've already warned about these
                 // continued failures, so we warn again.
                 .failedRepeatedly
@@ -540,10 +536,22 @@ public struct KeyTransparencyStore {
 
     private let cronStore: CronStore
     private let kvStore: NewKeyValueStore
+    private let selfCheckCronInterval: TimeInterval
 
     public init() {
+        let selfCheckCronInterval: TimeInterval = if BuildFlags.KeyTransparency.conservativeSelfCheck {
+            .day
+        } else {
+            .week
+        }
+
+        self.init(selfCheckCronInterval: selfCheckCronInterval)
+    }
+
+    init(selfCheckCronInterval: TimeInterval) {
         self.cronStore = CronStore(uniqueKey: .keyTransparencySelfCheck)
         self.kvStore = NewKeyValueStore(collection: "KeyTransparency")
+        self.selfCheckCronInterval = selfCheckCronInterval
     }
 
     // MARK: - Opt-out
@@ -597,14 +605,14 @@ public struct KeyTransparencyStore {
 
     // MARK: - SelfCheckState
 
-    fileprivate enum SelfCheckState: Int64 {
+    enum SelfCheckState: Int64 {
         case succeeded = 1
         case failedOnce = 2
         case failedRepeatedly = 3
         case failedRepeatedlyAndWarned = 4
     }
 
-    fileprivate func selfCheckState(tx: DBReadTransaction) -> SelfCheckState? {
+    func selfCheckState(tx: DBReadTransaction) -> SelfCheckState? {
         return kvStore.fetchValue(
             Int64.self,
             forKey: KVStoreKeys.selfCheckState,
@@ -650,13 +658,7 @@ public struct KeyTransparencyStore {
 
     // MARK: - Self-check and Cron
 
-    private let selfCheckCronInterval: TimeInterval = if BuildFlags.KeyTransparency.conservativeSelfCheck {
-        .day
-    } else {
-        .week
-    }
-
-    fileprivate func getIsTimeForSelfCheckCronJob(
+    func getIsTimeForSelfCheckCronJob(
         now: Date,
         tx: DBReadTransaction,
     ) -> Bool {
@@ -731,7 +733,7 @@ public struct KeyTransparencyStore {
 
 /// An instance type conforming to `LibSignalClient.KeyTransparency.Store`, used
 /// exclusively when calling LibSignal's KT APIs.
-private struct KeyTransparencyStoreForLibSignal: KeyTransparency.Store {
+struct KeyTransparencyStoreForLibSignal: KeyTransparency.Store {
     let db: DB
     let keyTransparencyStore: KeyTransparencyStore
 
@@ -787,5 +789,35 @@ private struct KeyTransparencyRecord: Codable, FetchableRecord, PersistableRecor
     enum CodingKeys: String, CodingKey {
         case aci
         case libsignalBlob
+    }
+}
+
+// MARK: - Shims
+
+extension KeyTransparencyManager {
+    enum Shims {
+        typealias MessageProcessor = _KeyTransparencyManager_MessageProcessor_Shim
+    }
+
+    enum Wrappers {
+        typealias MessageProcessor = _KeyTransparencyManager_MessageProcessor_Wrapper
+    }
+}
+
+// MARK: MessageProcessor
+
+protocol _KeyTransparencyManager_MessageProcessor_Shim {
+    func waitForFetchingAndProcessing() async throws(CancellationError)
+}
+
+class _KeyTransparencyManager_MessageProcessor_Wrapper: _KeyTransparencyManager_MessageProcessor_Shim {
+    private let messageProcessor: MessageProcessor
+
+    init(_ messageProcessor: MessageProcessor) {
+        self.messageProcessor = messageProcessor
+    }
+
+    func waitForFetchingAndProcessing() async throws(CancellationError) {
+        try await messageProcessor.waitForFetchingAndProcessing()
     }
 }

@@ -459,8 +459,10 @@ public class OWSMockUDManager: OWSUDManager {
     public func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, for aci: LibSignalClient.Aci, tx: DBWriteTransaction) {
     }
 
+    public var udAccessKeyMock: (LibSignalClient.Aci) -> SMKUDAccessKey? = { _ in nil }
+
     public func udAccessKey(for aci: LibSignalClient.Aci, tx: DBReadTransaction) -> SMKUDAccessKey? {
-        return nil
+        return udAccessKeyMock(aci)
     }
 
     public func udAccess(for aci: LibSignalClient.Aci, tx: DBReadTransaction) -> OWSUDAccess? {
