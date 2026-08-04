@@ -252,9 +252,7 @@ public class OutgoingStoryMessage: TransientOutgoingMessage {
         var perRecipientIdBuilders = [SignalRecipient.RowId: OutgoingMessageBuilder]()
         for thread in threads {
             let builderForCurrentThread = OutgoingMessageBuilder(thread: thread)
-            let storyRecipientIds = failIfThrows {
-                return try storyRecipientStore.fetchRecipientIds(forStoryThreadId: thread.sqliteRowId!, tx: tx)
-            }
+            let storyRecipientIds = storyRecipientStore.fetchRecipientIds(forStoryThreadId: thread.sqliteRowId!, tx: tx)
             for recipientId in storyRecipientIds {
                 // We only want to send one message per recipient,
                 // and it should be the thread with the most privileges.

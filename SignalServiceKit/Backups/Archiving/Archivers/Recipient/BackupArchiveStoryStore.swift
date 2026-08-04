@@ -31,8 +31,8 @@ public final class BackupArchiveStoryStore {
         return storyStore.getOrCreateStoryContextAssociatedData(forGroupThread: groupThread, tx: context.tx)
     }
 
-    func fetchRecipientIds(for storyThread: TSPrivateStoryThread, context: BackupArchive.RecipientArchivingContext) throws -> [SignalRecipient.RowId] {
-        return try storyRecipientStore.fetchRecipientIds(forStoryThreadId: storyThread.sqliteRowId!, tx: context.tx)
+    func fetchRecipientIds(for storyThread: TSPrivateStoryThread, context: BackupArchive.RecipientArchivingContext) -> [SignalRecipient.RowId] {
+        return storyRecipientStore.fetchRecipientIds(forStoryThreadId: storyThread.sqliteRowId!, tx: context.tx)
     }
 
     // MARK: - Restoring
@@ -70,8 +70,8 @@ public final class BackupArchiveStoryStore {
         _ recipientId: SignalRecipient.RowId,
         forStoryThreadId storyThreadId: TSPrivateStoryThread.RowId,
         context: BackupArchive.RecipientRestoringContext,
-    ) throws {
-        try storyRecipientStore.insertRecipientId(recipientId, forStoryThreadId: storyThreadId, tx: context.tx)
+    ) {
+        storyRecipientStore.insertRecipientId(recipientId, forStoryThreadId: storyThreadId, tx: context.tx)
     }
 
     func insert(

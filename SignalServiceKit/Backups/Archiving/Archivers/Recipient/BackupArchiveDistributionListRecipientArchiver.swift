@@ -93,13 +93,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
 
         let distributionListAppId: RecipientAppId = .distributionList(distributionId)
 
-        let recipientDbRowIds: [SignalRecipient.RowId]
-        do {
-            recipientDbRowIds = try storyStore.fetchRecipientIds(for: storyThread, context: context)
-        } catch {
-            errors.append(.archiveFrameError(.unableToFetchDistributionListRecipients))
-            return
-        }
+        let recipientDbRowIds = storyStore.fetchRecipientIds(for: storyThread, context: context)
 
         let memberRecipientIds: [UInt64] = recipientDbRowIds.compactMap { recipientDbRowId -> UInt64? in
             guard let recipientId = context.recipientId(forRecipientDbRowId: recipientDbRowId) else {
@@ -370,11 +364,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
         }
 
         for recipientDbRowId in recipientDbRowIds {
-            do {
-                try storyStore.insertRecipientId(recipientDbRowId, forStoryThreadId: storyThread.sqliteRowId!, context: context)
-            } catch let error {
-                return .failure([.restoreFrameError(.databaseInsertionFailed(error))])
-            }
+            storyStore.insertRecipientId(recipientDbRowId, forStoryThreadId: storyThread.sqliteRowId!, context: context)
         }
 
         return .success

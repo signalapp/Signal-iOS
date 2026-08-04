@@ -494,13 +494,7 @@ extension StoryConversationItem: ConversationItem {
                 owsFailDebug("Unexpected thread type")
                 return ""
             }
-            let recipientIds: [SignalRecipient.RowId]
-            do {
-                recipientIds = try storyRecipientStore.fetchRecipientIds(forStoryThreadId: thread.sqliteRowId!, tx: transaction)
-            } catch {
-                owsFailDebug("Couldn't fetch recipientIds: \(error)")
-                return ""
-            }
+            let recipientIds = storyRecipientStore.fetchRecipientIds(forStoryThreadId: thread.sqliteRowId!, tx: transaction)
             if item.isMyStory {
                 guard StoryManager.hasSetMyStoriesPrivacy(transaction: transaction) else {
                     return OWSLocalizedString(

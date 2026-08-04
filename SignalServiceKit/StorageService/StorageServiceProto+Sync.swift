@@ -2148,7 +2148,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             )
         {
             builder.setName(story.name)
-            let recipients = (try? storyRecipientManager.fetchRecipients(forStoryThread: story, tx: transaction)) ?? []
+            let recipients = storyRecipientManager.fetchRecipients(forStoryThread: story, tx: transaction)
             let serviceIds = recipients.compactMap { $0.aci ?? $0.pni }
             builder.setRecipientServiceIdsBinary(serviceIds.map(\.serviceIdBinary))
             builder.setAllowsReplies(story.allowsReplies)
@@ -2231,7 +2231,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
 
             let hasChanged: Bool = (
                 (story.storyViewMode == .blockList) != record.isBlockList
-                    || Set(remoteRecipientIds) != (try? storyRecipientStore.fetchRecipientIds(forStoryThreadId: story.sqliteRowId!, tx: transaction)).map(Set.init(_:)),
+                    || Set(remoteRecipientIds) != Set(storyRecipientStore.fetchRecipientIds(forStoryThreadId: story.sqliteRowId!, tx: transaction)),
             )
 
             if hasChanged {
@@ -2255,14 +2255,12 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             )
             newStory.anyInsert(transaction: transaction)
 
-            failIfThrows {
-                try storyRecipientManager.setRecipientIds(
-                    remoteRecipientIds,
-                    for: newStory,
-                    shouldUpdateStorageService: false,
-                    tx: transaction,
-                )
-            }
+            storyRecipientManager.setRecipientIds(
+                remoteRecipientIds,
+                for: newStory,
+                shouldUpdateStorageService: false,
+                tx: transaction,
+            )
         }
 
         return .merged(needsUpdate: needsUpdate, identifier)

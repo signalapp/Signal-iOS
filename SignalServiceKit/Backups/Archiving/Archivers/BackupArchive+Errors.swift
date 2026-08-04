@@ -126,8 +126,6 @@ extension BackupArchive {
 
             /// A distribution list had no distributionId; the distribution id assigned in the error should be ignored.
             case distributionListMissingDistributionId
-            /// The recipients for a distribution list couldn't be fetched.
-            case unableToFetchDistributionListRecipients
             /// A distribution list had ``TSThreadStoryViewMode/default``.
             case distributionListHasDefaultViewMode
             /// A custom (non-MyStory) distribution list had a ``TSThreadStoryViewMode/blocklist``.
@@ -312,7 +310,6 @@ extension BackupArchive {
                 .themedCustomChatColor,
                 .unableToFetchRecipientIdentity,
                 .distributionListMissingDistributionId,
-                .unableToFetchDistributionListRecipients,
                 .distributionListHasDefaultViewMode,
                 .customDistributionListBlocklistViewMode,
                 .distributionListMissingDeletionTimestamp,
@@ -392,7 +389,6 @@ extension BackupArchive {
                 .groupMasterKeyError,
                 .themedCustomChatColor,
                 .distributionListMissingDistributionId,
-                .unableToFetchDistributionListRecipients,
                 .distributionListHasDefaultViewMode,
                 .customDistributionListBlocklistViewMode,
                 .distributionListMissingDeletionTimestamp,

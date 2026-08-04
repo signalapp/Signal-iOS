@@ -165,22 +165,18 @@ public final class TSPrivateStoryThread: TSThread {
 
     override public func recipientAddresses(with tx: DBReadTransaction) -> [SignalServiceAddress] {
         let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
-        do {
-            switch storyViewMode {
-            case .default:
-                throw OWSAssertionError("Unexpectedly have private story with no view mode")
-            case .explicit, .disabled:
-                return try storyRecipientManager.fetchRecipients(forStoryThread: self, tx: tx).map { $0.address }
-            case .blockList:
-                let blockedAddresses = try storyRecipientManager.fetchRecipients(forStoryThread: self, tx: tx).map { $0.address }
-                let profileManager = SSKEnvironment.shared.profileManagerRef
-                return profileManager.allWhitelistedRegisteredAddresses(tx: tx).filter {
-                    return !blockedAddresses.contains($0) && !$0.isLocalAddress
-                }
-            }
-        } catch {
-            Logger.warn("Couldn't fetch addresses; returning []: \(error)")
+        switch storyViewMode {
+        case .default:
+            owsFailDebug("can't have private story with no view mode")
             return []
+        case .explicit, .disabled:
+            return storyRecipientManager.fetchRecipients(forStoryThread: self, tx: tx).map { $0.address }
+        case .blockList:
+            let blockedAddresses = storyRecipientManager.fetchRecipients(forStoryThread: self, tx: tx).map { $0.address }
+            let profileManager = SSKEnvironment.shared.profileManagerRef
+            return profileManager.allWhitelistedRegisteredAddresses(tx: tx).filter {
+                return !blockedAddresses.contains($0) && !$0.isLocalAddress
+            }
         }
     }
 
@@ -253,14 +249,12 @@ public final class TSPrivateStoryThread: TSThread {
             break
         case .setTo(let storyRecipientIds):
             let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
-            failIfThrows {
-                try storyRecipientManager.setRecipientIds(
-                    storyRecipientIds,
-                    for: self,
-                    shouldUpdateStorageService: false, // handled below
-                    tx: tx,
-                )
-            }
+            storyRecipientManager.setRecipientIds(
+                storyRecipientIds,
+                for: self,
+                shouldUpdateStorageService: false, // handled below
+                tx: tx,
+            )
         }
 
         if updateStorageService, let distributionListIdentifier {

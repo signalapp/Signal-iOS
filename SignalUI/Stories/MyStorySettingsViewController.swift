@@ -86,9 +86,7 @@ private class MyStorySettingsDataSource: NSObject {
             return (
                 StoryManager.hasSetMyStoriesPrivacy(transaction: transaction),
                 myStoryThread,
-                failIfThrows {
-                    return try storyRecipientStore.fetchRecipientIds(forStoryThreadId: myStoryThread.sqliteRowId!, tx: transaction)
-                },
+                storyRecipientStore.fetchRecipientIds(forStoryThreadId: myStoryThread.sqliteRowId!, tx: transaction),
             )
         }
 

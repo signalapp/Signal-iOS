@@ -22,9 +22,7 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
 
         self.sortedAddresses = databaseStorage.read { tx in
             return contactManager.sortSignalServiceAddresses(
-                failIfThrows {
-                    try storyRecipientManager.fetchRecipients(forStoryThread: thread, tx: tx)
-                }.map { $0.address },
+                storyRecipientManager.fetchRecipients(forStoryThread: thread, tx: tx).map { $0.address },
                 transaction: tx,
             )
         }
@@ -317,14 +315,12 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
                     return
                 }
                 let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
-                failIfThrows {
-                    try storyRecipientManager.removeRecipientIds(
-                        [recipientId],
-                        for: storyThread,
-                        shouldUpdateStorageService: true,
-                        tx: transaction,
-                    )
-                }
+                storyRecipientManager.removeRecipientIds(
+                    [recipientId],
+                    for: storyThread,
+                    shouldUpdateStorageService: true,
+                    tx: transaction,
+                )
             }
             self.updateSortedAddresses()
             self.updateTableContents()

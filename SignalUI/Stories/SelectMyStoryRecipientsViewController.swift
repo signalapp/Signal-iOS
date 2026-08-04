@@ -25,9 +25,7 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
         let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
         return SelectMyStoryRecipientsViewController(
             thread: thread,
-            recipientAddresses: failIfThrows {
-                try storyRecipientManager.fetchRecipients(forStoryThread: thread, tx: tx)
-            }.map { $0.address },
+            recipientAddresses: storyRecipientManager.fetchRecipients(forStoryThread: thread, tx: tx).map { $0.address },
             mode: mode,
             completionBlock: completionBlock,
         )

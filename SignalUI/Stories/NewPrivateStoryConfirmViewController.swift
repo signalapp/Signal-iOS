@@ -181,14 +181,12 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
                 let recipientIds = serviceIds.map { recipientFetcher.fetchOrCreate(serviceId: $0, tx: tx).id }
 
                 let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
-                failIfThrows {
-                    try storyRecipientManager.setRecipientIds(
-                        recipientIds,
-                        for: newStory,
-                        shouldUpdateStorageService: true,
-                        tx: tx,
-                    )
-                }
+                storyRecipientManager.setRecipientIds(
+                    recipientIds,
+                    for: newStory,
+                    shouldUpdateStorageService: true,
+                    tx: tx,
+                )
 
                 return newStory.uniqueId
             }

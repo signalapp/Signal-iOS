@@ -58,9 +58,7 @@ public class PrivateStoryAddRecipientsSettingsViewController: BaseMemberViewCont
                 let recipientFetcher = DependenciesBridge.shared.recipientFetcher
                 let recipientIds = newValues.map { recipientFetcher.fetchOrCreate(serviceId: $0, tx: tx).id }
                 let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
-                failIfThrows {
-                    try storyRecipientManager.insertRecipientIds(recipientIds, for: storyThread, shouldUpdateStorageService: true, tx: tx)
-                }
+                storyRecipientManager.insertRecipientIds(recipientIds, for: storyThread, shouldUpdateStorageService: true, tx: tx)
             } completion: {
                 self.navigationController?.popViewController(animated: true) { modal.dismiss(animated: false) }
             }
@@ -101,12 +99,7 @@ extension PrivateStoryAddRecipientsSettingsViewController: MemberViewDelegate {
             return false
         }
         let storyRecipientStore = DependenciesBridge.shared.storyRecipientStore
-        do {
-            return try storyRecipientStore.doesStoryThreadId(thread.sqliteRowId!, containRecipientId: recipient.id, tx: transaction)
-        } catch {
-            Logger.warn("Couldn't check if member is already in story thread: \(error)")
-            return false
-        }
+        return storyRecipientStore.doesStoryThreadId(thread.sqliteRowId!, containRecipientId: recipient.id, tx: transaction)
     }
 
     public func memberViewCustomIndicatorForPickedMember(_ recipient: PickedRecipient) -> UIView? { nil }
