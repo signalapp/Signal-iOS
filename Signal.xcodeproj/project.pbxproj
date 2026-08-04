@@ -3212,6 +3212,8 @@
 		D9A81C712BAB443600C07D2B /* MockCallRecordQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A81C702BAB443600C07D2B /* MockCallRecordQuerier.swift */; };
 		D9A85DC22BE1719C003F7045 /* BackupArchiveGroupCallArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A85DC12BE1719C003F7045 /* BackupArchiveGroupCallArchiver.swift */; };
 		D9A952462E0A1C4200C3D1F7 /* BackupAttachmentUploadTrackerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A952452E0A1C3C00C3D1F7 /* BackupAttachmentUploadTrackerTest.swift */; };
+		D9AA10022F80000100AA1001 /* KeyTransparencyApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA10012F80000100AA1001 /* KeyTransparencyApiClient.swift */; };
+		D9AA10042F80000100AA1001 /* KeyTransparencyManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA10032F80000100AA1001 /* KeyTransparencyManagerTest.swift */; };
 		D9AA37A02A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA379F2A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift */; };
 		D9AA37A42A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA37A32A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift */; };
 		D9AA7D6E2D11F08A0014137C /* OutgoingDeviceNameChangeSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA7D6D2D11F0750014137C /* OutgoingDeviceNameChangeSyncMessage.swift */; };
@@ -3275,8 +3277,6 @@
 		D9CFB0142F20466300DFB14A /* ArcView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CFB0132F20466100DFB14A /* ArcView.swift */; };
 		D9D1A6EB2DD69D0800050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A6EA2DD69CFE00050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift */; };
 		D9D3216A2A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D321692A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift */; };
-		D9AA10022F80000100AA1001 /* KeyTransparencyApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA10012F80000100AA1001 /* KeyTransparencyApiClient.swift */; };
-		D9AA10042F80000100AA1001 /* KeyTransparencyManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA10032F80000100AA1001 /* KeyTransparencyManagerTest.swift */; };
 		D9D5018A2F2B16820068EEA5 /* KeyTransparencyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D501892F2B16820068EEA5 /* KeyTransparencyManager.swift */; };
 		D9DB37EF2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DB37EE2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift */; };
 		D9DB37F32B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DB37F22B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift */; };
@@ -7557,6 +7557,8 @@
 		D9A81C702BAB443600C07D2B /* MockCallRecordQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallRecordQuerier.swift; sourceTree = "<group>"; };
 		D9A85DC12BE1719C003F7045 /* BackupArchiveGroupCallArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveGroupCallArchiver.swift; sourceTree = "<group>"; };
 		D9A952452E0A1C3C00C3D1F7 /* BackupAttachmentUploadTrackerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadTrackerTest.swift; sourceTree = "<group>"; };
+		D9AA10012F80000100AA1001 /* KeyTransparencyApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTransparencyApiClient.swift; sourceTree = "<group>"; };
+		D9AA10032F80000100AA1001 /* KeyTransparencyManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTransparencyManagerTest.swift; sourceTree = "<group>"; };
 		D9AA379F2A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessageTest.swift; sourceTree = "<group>"; };
 		D9AA37A32A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingGroupCallUpdateMessage.swift; sourceTree = "<group>"; };
 		D9AA7D6D2D11F0750014137C /* OutgoingDeviceNameChangeSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceNameChangeSyncMessage.swift; sourceTree = "<group>"; };
@@ -7630,8 +7632,6 @@
 		D9D321812A8FEA9C004FC110 /* SignalService.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = SignalService.proto; sourceTree = "<group>"; };
 		D9D321822A8FEA9C004FC110 /* Provisioning.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = Provisioning.proto; sourceTree = "<group>"; };
 		D9D321842A8FEA9D004FC110 /* svr2.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = svr2.proto; sourceTree = "<group>"; };
-		D9AA10012F80000100AA1001 /* KeyTransparencyApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTransparencyApiClient.swift; sourceTree = "<group>"; };
-		D9AA10032F80000100AA1001 /* KeyTransparencyManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTransparencyManagerTest.swift; sourceTree = "<group>"; };
 		D9D501892F2B16820068EEA5 /* KeyTransparencyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTransparencyManager.swift; sourceTree = "<group>"; };
 		D9DB37EE2B7180DD007B16C8 /* CallRecordAssociatedInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordAssociatedInteraction.swift; sourceTree = "<group>"; };
 		D9DB37F22B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallLogEventSyncMessage.swift; sourceTree = "<group>"; };
@@ -14030,6 +14030,14 @@
 			path = Backups;
 			sourceTree = "<group>";
 		};
+		D9AA10052F80000100AA1001 /* KeyTransparency */ = {
+			isa = PBXGroup;
+			children = (
+				D9AA10032F80000100AA1001 /* KeyTransparencyManagerTest.swift */,
+			);
+			path = KeyTransparency;
+			sourceTree = "<group>";
+		};
 		D9AA379D2A86C9660088EFFB /* Group */ = {
 			isa = PBXGroup;
 			children = (
@@ -14152,14 +14160,6 @@
 				D9D321842A8FEA9D004FC110 /* svr2.proto */,
 			);
 			path = Specifications;
-			sourceTree = "<group>";
-		};
-		D9AA10052F80000100AA1001 /* KeyTransparency */ = {
-			isa = PBXGroup;
-			children = (
-				D9AA10032F80000100AA1001 /* KeyTransparencyManagerTest.swift */,
-			);
-			path = KeyTransparency;
 			sourceTree = "<group>";
 		};
 		D9D501882F2B16030068EEA5 /* KeyTransparency */ = {
