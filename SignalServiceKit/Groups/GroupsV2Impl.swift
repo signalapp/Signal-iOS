@@ -1255,11 +1255,10 @@ public class GroupsV2Impl: GroupsV2 {
             case 423:
                 switch behavior423 {
                 case .ignore:
-                    break
+                    throw GroupsV2Error.terminatedGroup
                 case .reportTerminatedGroupLink:
                     throw GroupsV2Error.terminatedGroupInviteLink
                 }
-                fallthrough
             default:
                 // Unexpected status code.
                 throw error
