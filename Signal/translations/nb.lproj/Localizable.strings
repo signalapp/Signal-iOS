@@ -491,19 +491,19 @@
 "ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Lagret i Bilder";
 
 /* Accessibility label for the 'add media' dialog. */
-"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "Add media";
+"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "Legg til mediefil";
 
 /* Accessibility label for the 'crop/scale image' dialog. */
-"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "Crop or scale image";
+"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "Beskjær eller skaler bildet";
 
 /* Accessibility label for the 'high/standard quality' dialog. */
-"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Media quality";
+"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Mediekvalitet";
 
 /* Accessibility label for the 'pen' dialog. */
-"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Draw or annotate media";
+"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Tegn eller skriv noe";
 
 /* Accessibility label for the 'view one' dialog. */
-"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "View once";
+"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "Flyktig melding";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "Animert";
@@ -1043,28 +1043,28 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Fant ikke abonnementet";
 
 /* Label for the On-Device Backups option on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "On-Device Backups";
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "På enheten";
 
 /* Footer text below the On-Device Backups row on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "Save your backups to a folder on this device.";
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "Lagre sikkerhetskopiene i en mappe på enheten.";
 
 /* Section header on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "Other Ways to Backup";
+"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "Andre muligheter for sikkerhetskopiering";
 
 /* Subtitle on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Back up your message history so you never lose data when you get a new phone or reinstall Signal.";
+"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Ta en sikkerhetskopi av meldingsloggen din, slik at du ikke mister dataene dine når du bytter telefon eller installerer Signal på nytt.";
 
 /* Button to begin setting up Signal Secure Backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Set Up";
+"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Velg brukernavn";
 
 /* Description of Signal Secure Backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Automatic backups with Signal's secure, end-to-end encrypted storage service.";
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Automatisk sikkerhetskopiering med Signals sikre, ende-til-ende-krypterte lagringstjeneste.";
 
 /* Title for the Signal Secure Backups cell on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Signal Secure Backups";
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Sikre sikkerhetskopier";
 
 /* Button to view settings for remote backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "View Settings";
+"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "Se innstillinger";
 
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
 "BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "Du kan administrere eller fornye abonnementet ditt på sikre sikkerhetskopier på Signal på hovedenheten din.";
@@ -3725,13 +3725,13 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Hva med å invitere noen?";
 
 /* Button for a sheet asking the user if they want to enable local file backups */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "Enable on-device backups";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "Aktiver sikkerhetskopiering på enheten";
 
 /* Message for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "To continue using on-device backups, you need to enable them for this account. You can do this at any time from Settings > Backups.";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "For å fortsette å sikkerhetskopiere på enheten må du aktivere dette for denne kontoen. Du kan gjøre det når som helst ved å gå til Innstillinger > Sikkerhetskopiering.";
 
 /* Title for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Enable on-device backups?";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Vil du aktivere sikkerhetskopiering på enheten?";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Opptatt";
@@ -5420,37 +5420,37 @@
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Ikke lukk Signal.";
 
 /* Button for a sheet asking the user to choose a new local file backup folder */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Choose Folder";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Velg mappe";
 
 /* Message for a sheet asking the user to choose a new local file backup folder. */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Your on-device backup couldn't be completed. This may be because you moved or deleted your backup folder. Choose a folder in your device's storage where your backup will be stored.";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Sikkerhetskopiering på enheten kunne ikke gjennomføres. Dette kan skyldes at sikkerhetskopieringsmappen er flyttet eller slettet. Velg en mappe på enheten der sikkerhetskopier skal lagres.";
 
 /* Title for a sheet asking the user to choose a new local file backup folder. */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "Couldn't Complete Backup";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "Sikkerhetskopiering kunne ikke fullføres";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "Ende-til-ende-kryptert";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "Saved on your device";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "Lagret på enheten";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Turn off backups anytime";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Du kan når som helst deaktivere sikkerhetskopieringen";
 
 /* Subtitle for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages to a folder on your device. Your backup is end-to-end encrypted and can be restored by moving your backup folder to a new device.";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Sikkerhetskopier meldingene til en mappe på enheten din. Sikkerhetskopiene blir ende-til-ende-kryptert og kan gjenopprettes ved å flytte mappen til en ny enhet.";
 
 /* Title for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "On-Device Backups";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "På enheten";
 
 /* Body text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "Choose a folder in your device’s storage where your backup will be stored.";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "Velg en annen mappe der sikkerhetskopier skal lagres.";
 
 /* Button for a sheet asking the user to choose a folder to save their local backup in. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "Choose Folder";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "Velg mappe";
 
 /* Title text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Choose a Folder";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Velg en mappe";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Søk etter navn eller adresse";
@@ -6263,7 +6263,7 @@
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Meldingsforespørsel";
 
 /* Body for a notification shown when Signal can't fetch messages because the device is low on storage space. */
-"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "You may have new messages but your device doesn't have enough storage space for Signal to run. Tap for more info.";
+"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "Du kan ha fått nye meldinger, men enheten din har ikke nok lagringsplass til å kjøre Signal. Trykk for å finne ut mer.";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Det kan hende du mottok meldinger mens din %1$@ restartet.";
@@ -8846,7 +8846,7 @@
 "SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "Dette fjerner alle dataene fra Signal-appen på denne enheten.";
 
 /* Title for the 'on-device backups' settings page. */
-"SETTINGS_LOCAL_FILE_BACKUPS" = "On-Device Backups";
+"SETTINGS_LOCAL_FILE_BACKUPS" = "På enheten";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Aldri";
@@ -9575,10 +9575,10 @@
 "SHARE_EXTENSION_LOADING" = "Laster…";
 
 /* Message for an error shown when the user tries to share to Signal but the device is too low on storage space. */
-"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "You can’t share to Signal because your device is low on storage space. Free up space by managing your storage in Settings, then try again.";
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "Du kan ikke dele i Signal fordi enheten har lite lagringsplass. Frigjør plass ved å administrere lagringsplassen i innstillingene, og prøv på nytt.";
 
 /* Title for an error shown when the user tries to share to Signal but the device is too low on storage space. */
-"SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "Storage Space Low";
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "Lite lagringsplass";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Åpne Signal-appen for å registrere.";

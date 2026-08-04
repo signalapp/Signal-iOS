@@ -491,19 +491,19 @@
 "ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Salvo no app Fotos";
 
 /* Accessibility label for the 'add media' dialog. */
-"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "Add media";
+"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "Adicionar mídia";
 
 /* Accessibility label for the 'crop/scale image' dialog. */
-"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "Crop or scale image";
+"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "Recortar ou redimensionar imagem";
 
 /* Accessibility label for the 'high/standard quality' dialog. */
-"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Media quality";
+"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Qualidade das fotos";
 
 /* Accessibility label for the 'pen' dialog. */
-"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Draw or annotate media";
+"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Desenhar ou anotar mídia";
 
 /* Accessibility label for the 'view one' dialog. */
-"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "View once";
+"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "Mensagem temporária";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "Animado";
@@ -1043,28 +1043,28 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Assinatura não encontrada";
 
 /* Label for the On-Device Backups option on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "On-Device Backups";
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "Backups no dispositivo";
 
 /* Footer text below the On-Device Backups row on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "Save your backups to a folder on this device.";
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "Salve seus backups em uma pasta neste dispositivo.";
 
 /* Section header on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "Other Ways to Backup";
+"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "Outras formas de fazer backup";
 
 /* Subtitle on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Back up your message history so you never lose data when you get a new phone or reinstall Signal.";
+"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Faça backup do seu histórico de mensagens para nunca perder dados ao comprar um novo telefone ou reinstalar o Signal.";
 
 /* Button to begin setting up Signal Secure Backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Set Up";
+"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Configurar";
 
 /* Description of Signal Secure Backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Automatic backups with Signal's secure, end-to-end encrypted storage service.";
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Backups automáticos com o serviço de armazenamento seguro do Signal com criptografia de ponta a ponta.";
 
 /* Title for the Signal Secure Backups cell on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Signal Secure Backups";
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Backups seguros do Signal";
 
 /* Button to view settings for remote backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "View Settings";
+"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "Mostrar configurações";
 
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
 "BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "Você pode gerenciar ou fazer upgrade da sua assinatura dos Backups seguros do Signal no dispositivo principal. ";
@@ -3725,13 +3725,13 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Por que você não convida alguém?";
 
 /* Button for a sheet asking the user if they want to enable local file backups */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "Enable on-device backups";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "Ativar backups no dispositivo";
 
 /* Message for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "To continue using on-device backups, you need to enable them for this account. You can do this at any time from Settings > Backups.";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "Para continuar usando os backups no dispositivo, você precisa ativar esse recurso para esta conta. Você pode fazer isso a qualquer momento em Configurações > Backups.";
 
 /* Title for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Enable on-device backups?";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Ativar backups no dispositivo?";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Ocupado";
@@ -5420,37 +5420,37 @@
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Não feche o aplicativo.";
 
 /* Button for a sheet asking the user to choose a new local file backup folder */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Choose Folder";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Escolher pasta";
 
 /* Message for a sheet asking the user to choose a new local file backup folder. */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Your on-device backup couldn't be completed. This may be because you moved or deleted your backup folder. Choose a folder in your device's storage where your backup will be stored.";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Não foi possível concluir o backup no dispositivo. Isso pode ter acontecido porque a pasta de backup foi movida ou excluída. Escolha uma pasta no armazenamento do dispositivo onde o backup será armazenado. ";
 
 /* Title for a sheet asking the user to choose a new local file backup folder. */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "Couldn't Complete Backup";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "Não foi possível concluir o backup";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "Criptografado de ponta a ponta";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "Saved on your device";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "Salvos no seu dispositivo";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Turn off backups anytime";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Desativar backups a qualquer momento";
 
 /* Subtitle for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages to a folder on your device. Your backup is end-to-end encrypted and can be restored by moving your backup folder to a new device.";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Faça o backup das suas mensagens em uma pasta do seu dispositivo. Seu backup é protegido por criptografia de ponta a ponta e pode ser restaurado transferindo a pasta de backup para um novo dispositivo. ";
 
 /* Title for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "On-Device Backups";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "Backups no dispositivo";
 
 /* Body text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "Choose a folder in your device’s storage where your backup will be stored.";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "Escolha uma pasta no armazenamento do seu dispositivo para armazenar seu backup.";
 
 /* Button for a sheet asking the user to choose a folder to save their local backup in. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "Choose Folder";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "Escolher pasta";
 
 /* Title text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Choose a Folder";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Escolha uma pasta";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Buscar por nome ou endereço";
@@ -6263,7 +6263,7 @@
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Solicitação de mensagem";
 
 /* Body for a notification shown when Signal can't fetch messages because the device is low on storage space. */
-"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "You may have new messages but your device doesn't have enough storage space for Signal to run. Tap for more info.";
+"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "Talvez você tenha novas mensagens, mas seu dispositivo não tem espaço de armazenamento suficiente para executar o Signal. Toque para ver mais informações.";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Pode ser que você tenha recebido mensagens enquanto seu %1$@ reiniciava.";
@@ -8846,7 +8846,7 @@
 "SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "Esta ação removerá todos os dados do Signal deste dispositivo. ";
 
 /* Title for the 'on-device backups' settings page. */
-"SETTINGS_LOCAL_FILE_BACKUPS" = "On-Device Backups";
+"SETTINGS_LOCAL_FILE_BACKUPS" = "Backups no dispositivo";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Nunca";
@@ -9575,10 +9575,10 @@
 "SHARE_EXTENSION_LOADING" = "Carregando…";
 
 /* Message for an error shown when the user tries to share to Signal but the device is too low on storage space. */
-"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "You can’t share to Signal because your device is low on storage space. Free up space by managing your storage in Settings, then try again.";
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "Você não pode compartilhar no Signal porque seu dispositivo tem pouco espaço de armazenamento. Libere espaço gerenciando seu armazenamento nas Configurações, depois tente novamente.";
 
 /* Title for an error shown when the user tries to share to Signal but the device is too low on storage space. */
-"SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "Storage Space Low";
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "Pouco espaço de armazenamento";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Abrir a app Signal para registrar.";

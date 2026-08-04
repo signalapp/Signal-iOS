@@ -368,13 +368,13 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "미디어 품질";
 
 /* Notification body shown when media sync to a linked device is complete. */
-"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "연결된 기기에서 Signal 동기화를 완료했습니다.";
+"ATTACHMENT_BACKFILL_FINISHED_NOTIFICATION" = "연동 기기에서 Signal 동기화를 완료했습니다.";
 
 /* Notification body shown when media sync to a linked device was interrupted. */
-"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "연결된 기기와 동기화를 계속하려면 Signal 앱을 열어주세요.";
+"ATTACHMENT_BACKFILL_INTERRUPTED_NOTIFICATION" = "연동 기기와 동기화를 계속하려면 Signal 앱을 열어주세요.";
 
 /* Notification body shown while syncing media to a linked device. */
-"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "연결된 기기에서 Signal 동기화 중";
+"ATTACHMENT_BACKFILL_SYNCING_NOTIFICATION" = "연동 기기에서 Signal 동기화 중";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "첨부 파일";
@@ -491,19 +491,19 @@
 "ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "사진에 저장함";
 
 /* Accessibility label for the 'add media' dialog. */
-"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "Add media";
+"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "미디어 추가";
 
 /* Accessibility label for the 'crop/scale image' dialog. */
-"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "Crop or scale image";
+"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "이미지 자르기 또는 크기 조절";
 
 /* Accessibility label for the 'high/standard quality' dialog. */
-"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Media quality";
+"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "미디어 품질";
 
 /* Accessibility label for the 'pen' dialog. */
-"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Draw or annotate media";
+"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "미디어에 그리기 또는 주석 달기";
 
 /* Accessibility label for the 'view one' dialog. */
-"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "View once";
+"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "한 번만 보기";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "애니메이션";
@@ -1043,28 +1043,28 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "구독을 찾을 수 없음";
 
 /* Label for the On-Device Backups option on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "On-Device Backups";
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "기기 내 백업";
 
 /* Footer text below the On-Device Backups row on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "Save your backups to a folder on this device.";
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "백업을 이 기기의 폴더에 저장합니다.";
 
 /* Section header on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "Other Ways to Backup";
+"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "다른 백업 방법";
 
 /* Subtitle on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Back up your message history so you never lose data when you get a new phone or reinstall Signal.";
+"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "새 휴대폰을 사용하거나 Signal을 다시 설치할 때 데이터를 잃지 않도록 메시지 기록을 백업하세요.";
 
 /* Button to begin setting up Signal Secure Backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Set Up";
+"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "설정";
 
 /* Description of Signal Secure Backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Automatic backups with Signal's secure, end-to-end encrypted storage service.";
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Signal의 안전한 종단간 암호화 저장 공간 서비스를 이용한 자동 백업.";
 
 /* Title for the Signal Secure Backups cell on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Signal Secure Backups";
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Signal 안전 백업";
 
 /* Button to view settings for remote backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "View Settings";
+"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "설정 보기";
 
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
 "BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "기본 기기에서 Signal 안전 백업 구독을 관리하거나 갱신할 수 있습니다.";
@@ -1559,7 +1559,7 @@
 "CALL_LINK_CREATING_MODAL" = "생성 중…";
 
 /* Description of sheet presented when call link creation fails. */
-"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "통화 링크를 만들 수 없습니다. 인터넷 연결을 확인하고 다시 시도하세요.";
+"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "통화 링크를 생성하지 못했습니다. 인터넷 연결을 확인하고 다시 진행해 주세요.";
 
 /* Title of sheet presented when call link creation or update fails. */
 "CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "네트워크 오류";
@@ -1625,10 +1625,10 @@
 "CALL_LINK_SHARE_VIA_SYSTEM" = "링크 공유";
 
 /* An error alert that's shown when deleting multiple calls and some of them couldn't be deleted. */
-"CALL_LINK_SOME_NOT_DELETED" = "모든 통화 링크를 삭제하지 못했습니다. 연결을 확인하고 다시 시도하세요.";
+"CALL_LINK_SOME_NOT_DELETED" = "일부 통화 링크를 삭제하지 못했습니다. 연결을 확인하고 다시 진행해 주세요.";
 
 /* Description of sheet presented when call link update fails. */
-"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "통화 링크를 업데이트할 수 없습니다. 인터넷 연결을 확인하고 다시 시도하세요.";
+"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "통화 링크를 업데이트하지 못했습니다. 인터넷 연결을 확인하고 다시 진행해 주세요.";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "손 내리기";
@@ -2264,7 +2264,7 @@
 "CONFIRM_DELETE_DATA_TITLE" = "정말 모든 데이터를 삭제하시겠어요?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "이 기기에서 모든 메시지를 삭제하여 애플리케이션을 초기화합니다. 언제든 휴대전화를 다시 연결할 수 있으나 삭제한 메시지는 복원할 수 없습니다. 프로세스가 완료되면 앱이 자동으로 종료됩니다.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "이 기기에서 모든 메시지가 삭제되며 앱이 초기화됩니다. 언제든지 휴대폰과 다시 연동할 수 있지만, 삭제된 메시지는 복구되지 않습니다. 완료 후 앱이 종료됩니다.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "정말 모든 데이터를 삭제하시겠어요?";
@@ -3089,7 +3089,7 @@
 "DEVICE_LAST_ACTIVE_PAST_TWO_DAYS" = "마지막 활동: 2일 이내";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "연결 %1$@";
+"DEVICE_LINKED_AT_LABEL" = "%1$@에 연동됨";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "기기 목록을 업데이트하지 못했습니다.";
@@ -3725,13 +3725,13 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "다른 사람들을 초대해보세요.";
 
 /* Button for a sheet asking the user if they want to enable local file backups */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "Enable on-device backups";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "기기 내 백업 활성화하기";
 
 /* Message for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "To continue using on-device backups, you need to enable them for this account. You can do this at any time from Settings > Backups.";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "기기 내 백업을 계속 사용하려면 이 계정에서 백업을 활성화해야 합니다. 설정 > 백업에서 언제든지 이 작업을 수행하실 수 있습니다.";
 
 /* Title for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Enable on-device backups?";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "기기 내 백업을 활성화할까요?";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "통화 중";
@@ -5240,7 +5240,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "이전 안 함";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "연결 완료";
+"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "연동 완료하기";
 
 /* Subtitle for choosing to send message history when linking a new device, if you have the paid tier enabled. */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_PAID_PLAN_SUBTITLE" = "텍스트 메시지 및 모든 미디어 이전";
@@ -5267,7 +5267,7 @@
 "LINK_DEVICE_RESTART" = "재시도";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "이 기기를 사용하여 연결하려는 기기에 표시된 QR 코드를 스캔하세요.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "연동하려는 기기에 표시된 QR 코드를 이 기기로 스캔해 주세요.";
 
 /* Title for QR Scanning screen instructions sheet */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "QR 코드 스캔";
@@ -5276,16 +5276,16 @@
 "LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "계속을 탭하고 휴대폰 잠금을 풀어 확인하세요. Signal PIN을 입력하지 마세요.";
 
 /* Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "연결 전 본인 확인";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "연동 전 본인 확인을 진행할게요";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking. */
-"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "기기를 연결하려면 인증하세요.";
+"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "기기를 연동하려면 인증하세요.";
 
 /* Body text for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "다른 기기에서 Signal 연결을 완료하세요.";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "다른 기기에서 Signal 연동을 완료해 주세요.";
 
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "다른 기기에서 연결 완료";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "다른 기기에서 연동 완료하기";
 
 /* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
 "LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "%1$@/%2$@ 다운로드 중(%3$@)…";
@@ -5318,7 +5318,7 @@
 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "준비 중…";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "새 기기 연결";
+"LINK_NEW_DEVICE_TITLE" = "새 기기 연동";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "링크 미리보기";
@@ -5345,34 +5345,34 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "자세히 알아보기";
 
 /* Body for system notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_BODY" = "%1$@에 새 기기를 계정에 연결했습니다. 탭하여 확인하세요.";
+"LINKED_DEVICE_NOTIFICATION_BODY" = "%1$@에 새 기기를 계정에 연동했습니다. 탭하여 확인하세요.";
 
 /* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "%1$@에 새 기기를 계정에 연결했습니다.";
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "%1$@에 새 기기를 계정에 연동했습니다.";
 
 /* Title for system notification when a new device is linked. */
-"LINKED_DEVICE_NOTIFICATION_TITLE" = "새 기기를 연결함";
+"LINKED_DEVICE_NOTIFICATION_TITLE" = "새 기기를 연동했어요";
 
 /* Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL. */
-"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "이 Signal 계정에 데스크톱이나 iPad를 연결하려면 연결된 기기로 이동하여 '새 기기 연결'을 탭한 다음 QR 코드를 다시 스캔하세요. Signal에서 직접 제공한 QR 코드만 스캔하세요.";
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "이 Signal 계정에 데스크톱이나 iPad를 연동하려면 '연동 기기'로 이동하여 '새 기기 연동'을 탭한 다음 QR 코드를 다시 스캔하세요. Signal에서 직접 제공한 QR 코드만 스캔하세요.";
 
 /* Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera. */
-"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "Signal 기기를 연결하려는 것 같네요. 계속을 탭한 다음 '새 기기 연결'을 탭하고 QR 코드를 다시 스캔하세요.";
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "Signal 기기를 연동하려고 하시는 것 같네요. 계속을 탭한 다음 '새 기기 연동'을 탭하고 QR 코드를 다시 스캔하세요.";
 
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
 "LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "다른 기기에서 %1$@ 링크를 방문하여 iPad 앱을 설치하거나, %2$@ 링크를 통해 데스크톱 앱을 설치하세요.";
 
 /* Bullet point about message sync on the linked devices education sheet */
-"LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "휴대폰의 Signal과 연결하면 Signal 메시지가 동기화됩니다.";
+"LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "기기가 연동되면 휴대폰의 Signal 메시지와 자동으로 동기화됩니다.";
 
 /* Bullet point about privacy on the linked devices education sheet */
-"LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "연결된 기기의 모든 메시지는 비공개입니다.";
+"LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "연동 기기에서 주고받는 모든 메시지는 안전하게 보호됩니다.";
 
 /* Title for the linked device education sheet */
 "LINKED_DEVICES_EDUCATION_TITLE" = "데스크톱 또는 iPad의 Signal";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
-"LINKED_DEVICES_EMPTY_STATE" = "연결된 기기 없음";
+"LINKED_DEVICES_EMPTY_STATE" = "연동된 기기 없음";
 
 /* Description for header of the linked devices list */
 "LINKED_DEVICES_HEADER_DESCRIPTION" = "데스크톱 또는 iPad에서 Signal을 이용하세요.";
@@ -5381,7 +5381,7 @@
 "LINKED_DEVICES_LIST_FOOTER" = "메시지와 대화 정보는 모든 기기에서 종단간 암호화로 보호됩니다.";
 
 /* Title above the list of currently-linked devices */
-"LINKED_DEVICES_LIST_TITLE" = "연결된 기기";
+"LINKED_DEVICES_LIST_TITLE" = "연동 기기";
 
 /* Button title for renaming a linked device */
 "LINKED_DEVICES_RENAME_BUTTON" = "이름 변경";
@@ -5396,7 +5396,7 @@
 "LINKED_DEVICES_RENAME_TITLE" = "장치 이름 수정";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "연결된 기기";
+"LINKED_DEVICES_TITLE" = "연동 기기";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "기기 연동 실패";
@@ -5420,37 +5420,37 @@
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Signal을 닫지 마세요.";
 
 /* Button for a sheet asking the user to choose a new local file backup folder */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Choose Folder";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "폴더 선택";
 
 /* Message for a sheet asking the user to choose a new local file backup folder. */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Your on-device backup couldn't be completed. This may be because you moved or deleted your backup folder. Choose a folder in your device's storage where your backup will be stored.";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "기기 내 백업을 완료하지 못했습니다. 백업 폴더가 이동되었거나 삭제되었을 수 있습니다. 기기의 저장 공간에서 백업 파일을 저장할 폴더를 선택해 주세요.";
 
 /* Title for a sheet asking the user to choose a new local file backup folder. */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "Couldn't Complete Backup";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "백업을 완료할 수 없음";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "종단간 암호화";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "Saved on your device";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "기기에 안전하게 저장";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Turn off backups anytime";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "언제든지 백업 중단 가능";
 
 /* Subtitle for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages to a folder on your device. Your backup is end-to-end encrypted and can be restored by moving your backup folder to a new device.";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "메시지를 내 기기의 폴더에 백업합니다. 백업은 종단간 암호화로 보호되며, 백업 폴더에서 새 기기로 이동하여 복원할 수 있습니다.";
 
 /* Title for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "On-Device Backups";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "기기 내 백업";
 
 /* Body text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "Choose a folder in your device’s storage where your backup will be stored.";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "기기의 저장 공간에서 백업 파일을 저장할 폴더를 선택해 주세요.";
 
 /* Button for a sheet asking the user to choose a folder to save their local backup in. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "Choose Folder";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "폴더 선택";
 
 /* Title text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Choose a Folder";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "폴더 선택";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "이름 또는 주소로 검색";
@@ -6041,7 +6041,7 @@
 "MODAL_UPDATING" = "업데이트 중…";
 
 /* An error shown as the title of an alert when try to link a new device & the user is already at the limit. */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "더 이상 기기를 연결할 수 없습니다.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "더 이상 기기를 연동할 수 없습니다.";
 
 /* A recovery suggestion shown as the body of an alert when try to link a new device & the user is already at the limit. */
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "계정과 연동할 수 있는 최대 기기 수에 도달했습니다. 기존 기기를 제거하고 다시 시도해 주세요.";
@@ -6245,10 +6245,10 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "공통된 다른 그룹이 없습니다.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. The embedded value is 'Re-link' (translated via NOT_LINKED_BOTTOM_RELINK), and it will be formatted as a tappable link. */
-"NOT_LINKED_BOTTOM" = "이 기기는 연결이 해제되었습니다. 이 기기에서 Signal을 계속 사용하려면 %1$@하세요.";
+"NOT_LINKED_BOTTOM" = "이 기기는 연동이 해제되었습니다. 이 기기에서 Signal을 계속 사용하려면 %1$@하세요.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. This value is a tappable link embedded in a larger sentence. */
-"NOT_LINKED_BOTTOM_RELINK" = "다시 연결";
+"NOT_LINKED_BOTTOM_RELINK" = "다시 연동";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. The embedded value is 'Re-register' (translated via NOT_REGISTERED_BOTTOM_REREGISTER), and it will be formatted as a tappable link. */
 "NOT_REGISTERED_BOTTOM" = "이 기기는 등록이 해제되었습니다. Signal을 계속 사용하려면 %1$@하세요.";
@@ -6263,7 +6263,7 @@
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "메시지 요청";
 
 /* Body for a notification shown when Signal can't fetch messages because the device is low on storage space. */
-"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "You may have new messages but your device doesn't have enough storage space for Signal to run. Tap for more info.";
+"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "새 메시지가 도착했을 수 있으나, 기기의 저장 공간이 부족하여 Signal을 실행할 수 없습니다. 탭하여 자세한 내용을 알아보세요.";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "%1$@가 다시 시작했을 때 메시지를 받았을 수 있습니다.";
@@ -8111,7 +8111,7 @@
 "RESET" = "초기화";
 
 /* Body for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_BODY" = "미디어 복구를 완료하지 못했습니다. 취소할 경우 기기를 다시 연결하여 복구할 수 있습니다.";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_BODY" = "미디어 복구가 아직 완료되지 않았습니다. 취소하더라도 이 기기를 다시 연동하면 언제든지 복구할 수 있습니다.";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
 "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_PRIMARY_BUTTON" = "복구 계속하기";
@@ -8123,7 +8123,7 @@
 "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_TITLE" = "미디어를 복구하는 중";
 
 /* Message for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_MESSAGE" = "미디어 복구를 완료하지 못했습니다. 취소할 경우 기기를 다시 연결하여 복구할 수 있습니다.";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_MESSAGE" = "미디어 복구가 아직 완료되지 않았습니다. 취소하더라도 이 기기를 다시 연동하면 언제든지 복구할 수 있습니다.";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
 "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_PRIMARY_BUTTON" = "복구 계속하기";
@@ -8393,7 +8393,7 @@
 "SEARCH_SECTION_MESSAGES" = "메시지";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "이 장치를 다른 계정에 연결하려면 먼저 장치를 재설정해야 합니다. 모든 기록(메시지, 첨부 파일, 통화 등)을 삭제하시겠어요? 이 작업은 되돌릴 수 없습니다.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "이 기기를 다른 계정에 연동하려면 먼저 기기를 초기화해야 합니다. 메시지, 첨부 파일, 통화 등 모든 기록을 삭제하시겠어요? 이 작업은 되돌릴 수 없습니다.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "모두 삭제";
@@ -8846,7 +8846,7 @@
 "SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "기기에 저장된 Signal 앱의 모든 데이터가 삭제됩니다.";
 
 /* Title for the 'on-device backups' settings page. */
-"SETTINGS_LOCAL_FILE_BACKUPS" = "On-Device Backups";
+"SETTINGS_LOCAL_FILE_BACKUPS" = "기기 내 백업";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "없음";
@@ -8966,10 +8966,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "결제 비활성화";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "결제를 비활성화하기 전에 다른 지갑 주소로 자금을 이체하는 것이 좋습니다. 지금 이체하지 않더라도, 나중에 결제 기능을 다시 활성화하면 Signal에 연결된 지갑 내 잔액을 그대로 이용하실 수 있습니다.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "결제를 비활성화하기 전에 다른 지갑 주소로 자금을 이체하는 것이 좋습니다. 지금 이체하지 않더라도, 나중에 결제 기능을 다시 활성화하면 Signal에 연동된 지갑 내 잔액을 그대로 이용하실 수 있습니다.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "결제를 다시 활성화하기로 선택할 경우 잔액이 Signal에 연결된 지갑에 남아 있게 됩니다.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "결제를 다시 활성화하기로 선택할 경우 잔액이 Signal에 연동된 지갑에 남아 있게 됩니다.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "이체하지 않고 비활성화하시겠어요?";
@@ -9485,7 +9485,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "등록 잠금을 켜시겠어요?";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "재연결";
+"SETTINGS_RELINK_BUTTON" = "다시 연동";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "재등록";
@@ -9575,10 +9575,10 @@
 "SHARE_EXTENSION_LOADING" = "불러오는 중…";
 
 /* Message for an error shown when the user tries to share to Signal but the device is too low on storage space. */
-"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "You can’t share to Signal because your device is low on storage space. Free up space by managing your storage in Settings, then try again.";
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "기기의 저장 공간이 부족하여 Signal에 공유할 수 없습니다. 설정에서 저장 공간을 정리하여 공간을 확보한 후 다시 시도해 주세요.";
 
 /* Title for an error shown when the user tries to share to Signal but the device is too low on storage space. */
-"SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "Storage Space Low";
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "저장 공간 부족";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Signal 앱을 실행하여 등록하세요.";
@@ -9848,7 +9848,7 @@
 "STORY_COMPOSER_CAMERA" = "카메라";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "링크를 로드할 수 없습니다. 연결을 확인하고 다시 시도하세요.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "링크를 로드하지 못했습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
 "STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "내 스토리를 볼 수 있는 사람과 링크 공유";
@@ -10151,7 +10151,7 @@
 "THREAD_DETAILS_NO_MEMBERS" = "아직 다른 그룹 멤버가 없습니다";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "이 대화에는 나를 위한 메모를 남길 수 있습니다. 내 계정에 연결된 기기가 있다면 새 메모가 같이 동기화됩니다.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "이 대화에는 나를 위한 메모를 남길 수 있습니다. 내 계정에 연동된 기기가 있다면 새 메모가 같이 동기화됩니다.";
 
 /* Label for a group with one member (not counting yourself), displaying their name */
 "THREAD_DETAILS_ONE_MEMBER" = "%1$@";
@@ -10307,19 +10307,19 @@
 "UNKNOWN_VALUE" = "알 수 없음";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "연결 해제";
+"UNLINK_ACTION" = "연동 해제";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "기기가 연결 해제되면 더 이상 메시지를 보내거나 받을 수 없게 됩니다.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "연동을 해제하면 이 기기에서는 더 이상 메시지를 주고받을 수 없습니다.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "'%1$@' 기기를 연동 해제할까요?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "이 기기는 연결이 해제되었습니다. 메시지를 계속 이용하려면 Signal에 휴대폰을 다시 연결하세요.";
+"UNLINKED_WARNING" = "이 기기는 연동이 해제되었습니다. 메시지를 계속 이용하려면 Signal에 휴대폰을 다시 연동하세요.";
 
 /* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
-"UNLINKED_WARNING_ACTION_TITLE" = "기기 다시 연결";
+"UNLINKED_WARNING_ACTION_TITLE" = "기기 다시 연동";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal에서 기기를 연동 해제할 수 없습니다.";
@@ -10397,7 +10397,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "QR 코드와 링크는 신뢰하는 사람에게만 공유하세요. QR 코드와 링크를 공유하면 다른 사용자가 나의 사용자 이름을 보고 대화를 시작할 수 있습니다.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
-"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR 코드와 링크를 설정하지 않았습니다. 네트워크 연결을 확인하고 다시 시도하세요.";
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR 코드와 링크를 설정하지 않았습니다. 네트워크 연결을 확인하고 다시 시도해 주세요.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "초기화";

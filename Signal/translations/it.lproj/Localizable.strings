@@ -479,7 +479,7 @@
 "ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Salva e non mostrare di nuovo";
 
 /* Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "Questo media verrà salvato sull'app Foto del tuo telefono. A seconda delle autorizzazioni concesse sul tuo dispositivo, altre app potrebbero accedere a questo elemento.";
+"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "Questo contenuto multimediale verrà salvato sull'app Foto del tuo telefono. A seconda delle autorizzazioni concesse sul tuo dispositivo, altre app potrebbero accedere a questo elemento.";
 
 /* Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
 "ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Salvare in Foto?";
@@ -491,19 +491,19 @@
 "ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Salvato in Foto";
 
 /* Accessibility label for the 'add media' dialog. */
-"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "Add media";
+"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "Aggiungi contenuto multimediale";
 
 /* Accessibility label for the 'crop/scale image' dialog. */
-"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "Crop or scale image";
+"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "Ritaglia o ridimensiona immagine";
 
 /* Accessibility label for the 'high/standard quality' dialog. */
-"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Media quality";
+"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Qualità contenuto multimediale";
 
 /* Accessibility label for the 'pen' dialog. */
-"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Draw or annotate media";
+"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Disegna o scrivi sul contenuto";
 
 /* Accessibility label for the 'view one' dialog. */
-"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "View once";
+"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "Visibile solo una volta";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "Contenuto animato";
@@ -1043,28 +1043,28 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Abbonamento non trovato";
 
 /* Label for the On-Device Backups option on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "On-Device Backups";
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "Backup su dispositivo";
 
 /* Footer text below the On-Device Backups row on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "Save your backups to a folder on this device.";
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "Salva i tuoi backup in una cartella su questo dispositivo.";
 
 /* Section header on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "Other Ways to Backup";
+"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "Altre modalità di backup";
 
 /* Subtitle on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Back up your message history so you never lose data when you get a new phone or reinstall Signal.";
+"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Salva la cronologia dei tuoi messaggi con un backup per non perdere neanche una virgola quando cambi telefono o reinstalli Signal.";
 
 /* Button to begin setting up Signal Secure Backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Set Up";
+"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Imposta";
 
 /* Description of Signal Secure Backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Automatic backups with Signal's secure, end-to-end encrypted storage service.";
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Backup automatici e sicuri con il servizio di archiviazione crittografato end-to-end di Signal.";
 
 /* Title for the Signal Secure Backups cell on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Signal Secure Backups";
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Backup sicuri di Signal";
 
 /* Button to view settings for remote backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "View Settings";
+"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "Visualizza impostazioni";
 
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
 "BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "Puoi gestire o effettuare un upgrade del tuo abbonamento ai Backup sicuri di Signal dal tuo dispositivo primario.";
@@ -1904,10 +1904,10 @@
 "CAMERA_VO_CAMERA_ALBUM_MODE" = "Modalità album";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "Non attivo";
+"CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "Off";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "Attivo";
+"CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "On";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
 "CAMERA_VO_CAMERA_BACK_FACING" = "Fotocamera posteriore";
@@ -1934,10 +1934,10 @@
 "CAMERA_VO_FLASH_BUTTON" = "Flash";
 
 /* VoiceOver description of current flash setting. */
-"CAMERA_VO_FLASH_OFF" = "Non attivo";
+"CAMERA_VO_FLASH_OFF" = "Off";
 
 /* VoiceOver description of current flash setting. */
-"CAMERA_VO_FLASH_ON" = "Attivo";
+"CAMERA_VO_FLASH_ON" = "On";
 
 /* VoiceOver label for button to choose existing photo/video in in-app camera */
 "CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Scegli foto e video già esistenti";
@@ -3008,7 +3008,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Eliminazione account…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Nessuna connessione internet. Assicurati che il Wi-Fi o i dati mobili siano attivi, quindi riprova.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Nessuna connessione Internet. Assicurati che il Wi-Fi o i dati mobili siano attivi, quindi riprova.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Numero di telefono";
@@ -3725,13 +3725,13 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Perché non inviti qualcuno?";
 
 /* Button for a sheet asking the user if they want to enable local file backups */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "Enable on-device backups";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "Attiva i backup su dispositivo";
 
 /* Message for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "To continue using on-device backups, you need to enable them for this account. You can do this at any time from Settings > Backups.";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "Per continuare a usare i backup su dispositivo, devi attivarli per questo account. Puoi farlo in qualsiasi momento dalle Impostazioni > Backup.";
 
 /* Title for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Enable on-device backups?";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Vuoi attivare i backup su dispositivo?";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Occupato";
@@ -3749,7 +3749,7 @@
 "END_GROUP_BOTTOM_PANEL_LABEL" = "Non puoi inviare messaggi perché il gruppo è stato chiuso.";
 
 /* End group confirmation description */
-"END_GROUP_DESCRIPTION" = "Gli utenti facenti parte del gruppo non potranno più inviare messaggi o avviare delle chiamate all'interno del gruppo. Verranno avvisati quando sceglierai di chiudere il gruppo. Tuttavia, potranno continuare ad accedere alla cronologia dei messaggi in chat.";
+"END_GROUP_DESCRIPTION" = "Gli utenti che fanno parte del gruppo non potranno più inviare messaggi o avviare delle chiamate all'interno del gruppo. Verranno avvisati quando sceglierai di chiudere il gruppo. Tuttavia, potranno continuare ad accedere alla cronologia dei messaggi in chat.";
 
 /* Description for final confirmation screen when user tries to end a group */
 "END_GROUP_DESCRIPTION_FINAL_CONFIRMATION" = "Quest'azione chiuderà il gruppo in modo definitivo. Confermi di voler procedere?";
@@ -3809,7 +3809,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Risposta del servizio non valida.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Errore del server. Si prega di riprovare.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Errore del server. Riprova.";
 
 /* Description for errors returned from the server due to suspected spam. */
 "ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Il server richiede la verifica dell'utente prima di inviare il messaggio.";
@@ -3995,7 +3995,7 @@
 "GET_STARTED_CARD_NEW_GROUP" = "Nuovo gruppo";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Errore nel recuperare la GIF richiesta. Si prega di verificare la connessione.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Errore nel recuperare la GIF richiesta. Verifica la connessione.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Si è verificato un errore sconosciuto.";
@@ -4496,16 +4496,16 @@
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Il tuo invito al gruppo è stato revocato.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%1$@ ti ha invitato.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%1$@ ti ha mandato un invito.";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Sei stato invitato al gruppo.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Hai ricevuto un invito al gruppo.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Ti sei unito al gruppo.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Ora fai parte del gruppo.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Ti sei unito al gruppo tramite il link del gruppo.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Ora partecipi al gruppo tramite il link del gruppo.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ti ha rimosso.";
@@ -4643,7 +4643,7 @@
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Hai invitato %1$@ ad entrare nel gruppo.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%1$@ si è unito al gruppo.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%1$@ ora fa parte del gruppo.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%1$@ si è unito al gruppo tramite il link del gruppo.";
@@ -5420,37 +5420,37 @@
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Non chiudere Signal.";
 
 /* Button for a sheet asking the user to choose a new local file backup folder */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Choose Folder";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Scegli la cartella";
 
 /* Message for a sheet asking the user to choose a new local file backup folder. */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Your on-device backup couldn't be completed. This may be because you moved or deleted your backup folder. Choose a folder in your device's storage where your backup will be stored.";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Il tuo backup su dispositivo non può essere completato. Probabilmente perché hai spostato o rimosso la cartella del backup. Scegli una cartella nello spazio di archiviazione del tuo dispositivo in cui vuoi salvare il backup.";
 
 /* Title for a sheet asking the user to choose a new local file backup folder. */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "Couldn't Complete Backup";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "Impossibile completare il backup";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "Crittografia end-to-end";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "Saved on your device";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "Salvati sul tuo dispositivo";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Turn off backups anytime";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Disattiva i backup quando vuoi";
 
 /* Subtitle for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages to a folder on your device. Your backup is end-to-end encrypted and can be restored by moving your backup folder to a new device.";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Salva i tuoi messaggi tramite backup in una cartella dedicata sul tuo dispositivo. Il tuo backup viene crittografato end-to-end e puoi ripristinarlo spostando la cartella del backup su un nuovo dispositivo.";
 
 /* Title for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "On-Device Backups";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "Backup su dispositivo";
 
 /* Body text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "Choose a folder in your device’s storage where your backup will be stored.";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "Scegli una cartella nello spazio di archiviazione del tuo dispositivo in cui vuoi salvare il backup.";
 
 /* Button for a sheet asking the user to choose a folder to save their local backup in. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "Choose Folder";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "Scegli la cartella";
 
 /* Title text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Choose a Folder";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Scegli una cartella";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Cerca per nome o indirizzo";
@@ -5909,7 +5909,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT" = "Consenti a questa persona di inviarti messaggi e ci autorizzi a condividere il tuo nome e la tua foto con questa persona? Non saprà che hai visto il suo messaggio finché non accetti.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Unirsi a questo gruppo e condividere il tuo nome e la tua foto con i suoi membri? Non sapranno che hai visto i loro messaggi finché non accetti.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Vuoi unirti a questo gruppo e condividere il tuo nome e la tua foto con i suoi membri? Non sapranno che hai visto i loro messaggi finché non accetti.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Vuoi unirti a questo gruppo? Non sapranno che hai visto i loro messaggi finché non accetti.";
@@ -6263,7 +6263,7 @@
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Richiesta di messaggio";
 
 /* Body for a notification shown when Signal can't fetch messages because the device is low on storage space. */
-"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "You may have new messages but your device doesn't have enough storage space for Signal to run. Tap for more info.";
+"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "Potresti aver ricevuto dei nuovi messaggi ma il tuo dispositivo non ha spazio di archiviazione sufficiente per far funzionare Signal. Tocca qui per maggiori info.";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Puoi aver ricevuto messaggi mentre il tuo %1$@ si riavviava.";
@@ -6980,7 +6980,7 @@
 "PAYMENTS_UNKNOWN_PAYMENT" = "Pagamento non valido";
 
 /* The alert message if user tries to exit a task without saving changes. */
-"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Vuoi scartare questi cambiamenti?";
+"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Vuoi ignorare queste modifiche?";
 
 /* The alert title if user tries to exit a task without saving changes. */
 "PENDING_CHANGES_ACTION_SHEET_TITLE" = "Modifiche non salvate";
@@ -8240,7 +8240,7 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Crittografia in fase di verifica…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Per le chat avviate tramite numero di telefono, Signal verifica automaticamente la sicurezza della connessione tramite il sistema \"key transparency\". Per maggiore sicurezza, puoi comunque verificare manualmente le connessioni usando un codice QR o confrontando i numeri di sicurezza.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Per le chat avviate usando il numero di telefono, Signal conferma automaticamente che la conversazione sia sicura tramite la \"trasparenza delle chiavi\". Per maggiore sicurezza, puoi comunque effettuare una verifica manuale scansionando un codice QR o confrontando i numeri di sicurezza.";
 
 /* Title for a sheet introducing Key Transparency. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Da ora Signal può verificare in automatico la crittografia";
@@ -8846,7 +8846,7 @@
 "SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "Quest'azione rimuoverà tutti i dati nell'app di Signal su questo dispositivo.";
 
 /* Title for the 'on-device backups' settings page. */
-"SETTINGS_LOCAL_FILE_BACKUPS" = "On-Device Backups";
+"SETTINGS_LOCAL_FILE_BACKUPS" = "Backup su dispositivo";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Mai";
@@ -9575,10 +9575,10 @@
 "SHARE_EXTENSION_LOADING" = "Caricamento in corso…";
 
 /* Message for an error shown when the user tries to share to Signal but the device is too low on storage space. */
-"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "You can’t share to Signal because your device is low on storage space. Free up space by managing your storage in Settings, then try again.";
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "Non puoi condividere contenuti su Signal perché il tuo dispositivo ha poco spazio di archiviazione libero. Libera lo spazio di archiviazione nelle Impostazioni, quindi riprova.";
 
 /* Title for an error shown when the user tries to share to Signal but the device is too low on storage space. */
-"SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "Storage Space Low";
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "Spazio di archiviazione insufficiente";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Apri l'app Signal per la registrazione.";
@@ -10097,7 +10097,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Aggiornare contributo?";
 
 /* Label for 'off' state of a switch control. */
-"SWITCH_OFF" = "No";
+"SWITCH_OFF" = "Off";
 
 /* Label for 'on' state of a switch control. */
 "SWITCH_ON" = "On";
@@ -10262,7 +10262,7 @@
 "UNARCHIVE_ACTION" = "Estrai dall'archivio";
 
 /* Toast shown when tapping older media that can no longer be downloaded */
-"UNAVAILABLE_MEDIA_TAP_TOAST" = "Questo media non è più disponibile";
+"UNAVAILABLE_MEDIA_TAP_TOAST" = "Questo contenuto multimediale non è più disponibile";
 
 /* Action sheet title when confirming you want to unblock release notes. */
 "UNBLOCK_LIST_BLOCK_RELEASE_NOTES_TITLE" = "Sbloccare Signal?";
