@@ -426,7 +426,10 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             }
             do {
                 sendUpdatePromises.append(contentsOf: try await leavePromise.awaitable())
-            } catch GroupsV2Error.groupBlocked, GroupsV2Error.localUserNotInGroup {
+            } catch GroupsV2Error.groupBlocked,
+                GroupsV2Error.localUserNotInGroup,
+                GroupsV2Error.terminatedGroup
+            {
                 // Can't do anything about these groups; ignore the errors.
             }
         }
