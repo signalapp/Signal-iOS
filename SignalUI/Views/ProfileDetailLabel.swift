@@ -88,7 +88,9 @@ public class ProfileDetailLabel: UIStackView {
                 attributes: [.foregroundColor: UIColor.Signal.secondaryLabel],
             )
             if shouldLineWrap {
-                // Add the chevron at the end of the last line of text
+                // Add the chevron at the end of the last line of text, preventing line break
+                let wordJoiner = "\u{2060}"
+                titleString.append(wordJoiner)
                 titleString.append(attachmentString)
             } else {
                 // Add the chevron at the end of the truncated line
