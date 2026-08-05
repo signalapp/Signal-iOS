@@ -52,6 +52,8 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
     private static let maxAllowedNumberOfBackups: Int = 2
 
+    private var folderPickerCompletion: (() -> Void)?
+
     init(
         db: DB,
         dateProvider: @escaping DateProvider,
@@ -573,12 +575,13 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
     // MARK: - Choosing backup location
 
-    public func promptUserToChooseFileLocation(fromViewController: UIViewController) {
+    public func promptUserToChooseFileLocation(fromViewController: UIViewController, completion: (() -> Void)?) {
         let pickerController = UIDocumentPickerViewController(
             forOpeningContentTypes: [.folder],
             asCopy: false,
         )
         pickerController.delegate = self
+        folderPickerCompletion = completion
 
         fromViewController.present(pickerController, animated: true)
     }
@@ -629,6 +632,10 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
             // TODO: [KC] show error screen.
             logger.error("Failed to save bookmark: \(error)")
         }
+
+        let completion = folderPickerCompletion
+        folderPickerCompletion = nil
+        completion?()
     }
 
     // MARK: - Prompt user to enable local backups, e.g. after restoring

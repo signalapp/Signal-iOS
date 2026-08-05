@@ -9,20 +9,24 @@ import UIKit
 
 class BackupSettingsLandingPageViewController: OWSTableViewController2 {
     private let backupSettingsStore: BackupSettingsStore
+    private let localFileBackupsStore: LocalFileBackupStore
     private let db: DB
 
     override convenience init() {
         self.init(
             backupSettingsStore: BackupSettingsStore(),
+            localFileBackupsStore: LocalFileBackupStore(),
             db: DependenciesBridge.shared.db,
         )
     }
 
     init(
         backupSettingsStore: BackupSettingsStore,
+        localFileBackupsStore: LocalFileBackupStore,
         db: DB,
     ) {
         self.backupSettingsStore = backupSettingsStore
+        self.localFileBackupsStore = localFileBackupsStore
         self.db = db
     }
 
@@ -198,6 +202,14 @@ class BackupSettingsLandingPageViewController: OWSTableViewController2 {
     }
 
     private func buildOnDeviceBackupsItem() -> OWSTableItem {
+        let shouldSkipLocalBackupsOnboarding = db.read { tx in
+            if localFileBackupsStore.shouldOverrideShowLocalBackupsOnboarding(tx: tx) {
+                return false
+            }
+
+            return localFileBackupsStore.haveLocalBackupsEverBeenEnabled(tx: tx)
+        }
+
         return OWSTableItem(
             customCellBlock: {
                 OWSTableItem.buildImageCell(
@@ -216,7 +228,7 @@ class BackupSettingsLandingPageViewController: OWSTableViewController2 {
                         backupType: .local,
                     ).prepareForPresentation(
                         inNavController: navigationController,
-                        shouldSkipOnboarding: false,
+                        shouldSkipOnboarding: shouldSkipLocalBackupsOnboarding,
                     ),
                     animated: true,
                 )

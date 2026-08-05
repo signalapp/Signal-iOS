@@ -6,17 +6,26 @@
 import Foundation
 import GRDB
 
-public class LocalFileBackupStore {
+extension NSNotification.Name {
+    public static let lastLocalBackupDetailsDidChange = Notification.Name("LocalFileBackupStore.lastLocalBackupDetailsDidChange")
+}
+
+public struct LocalFileBackupStore {
     private enum StoreKeys {
         static let bookmarkDataKey = "bookmarkData"
         static let lastEnumeratedAttachmentIdKey = "lastEnumeratedAttachmentId"
         static let shouldPromptUserToEnableLocalBackupsKey = "shouldPromptUserToEnableLocalBackups"
         static let shouldPromptUserToChooseNewLocationKey = "shouldPromptUserToChooseNewLocation"
+        static let haveEverBeenEnabled = "haveEverBeenEnabledKey"
+        static let isEnabled = "isEnabledKey"
+        static let shouldOverrideShowBackupsOnboarding = "shouldOverrideShowBackupsOnboardingKey"
+        static let lastBackupDate = "lastBackupDateKey"
+        static let lastBackupSizeBytes = "lastBackupSizeBytesKey"
     }
 
     private let kvStore: NewKeyValueStore
 
-    init() {
+    public init() {
         self.kvStore = NewKeyValueStore(collection: "LocalFileBackups")
     }
 
@@ -138,5 +147,88 @@ public class LocalFileBackupStore {
 
     public func setChooseNewLocalBackupLocation(tx: DBWriteTransaction) {
         kvStore.writeValue(true, forKey: StoreKeys.shouldPromptUserToChooseNewLocationKey, tx: tx)
+    }
+
+    // MARK: - EverBeenEnabled
+
+    /// Whether Local Backups have ever been enabled, regardless of whether they are
+    /// enabled currently.
+    public func haveLocalBackupsEverBeenEnabled(tx: DBReadTransaction) -> Bool {
+        return kvStore.fetchValue(Bool.self, forKey: StoreKeys.haveEverBeenEnabled, tx: tx) ?? false
+    }
+
+    // MARK: - IsEnabled
+
+    /// Whether Local Backups is currently enabled.
+    public func localBackupsEnabled(tx: DBReadTransaction) -> Bool {
+        return kvStore.fetchValue(Bool.self, forKey: StoreKeys.isEnabled, tx: tx) ?? false
+    }
+
+    public func setLocalBackupsEnabled(value: Bool, tx: DBWriteTransaction) {
+        kvStore.writeValue(value, forKey: StoreKeys.isEnabled, tx: tx)
+        if value {
+            kvStore.writeValue(true, forKey: StoreKeys.haveEverBeenEnabled, tx: tx)
+        }
+    }
+
+    // MARK: - Internal: Show Local Backups Onboarding
+
+    /// Whether to force showing Local Backups onboarding.
+    ///
+    /// Not intended for production use.
+    public func shouldOverrideShowLocalBackupsOnboarding(tx: DBReadTransaction) -> Bool {
+        return kvStore.fetchValue(Bool.self, forKey: StoreKeys.shouldOverrideShowBackupsOnboarding, tx: tx) ?? false
+    }
+
+    /// Set an override to show Local Backups onboarding.
+    ///
+    /// Not intended for production use.
+    public func setShouldOverrideShowLocalBackupsOnboarding(_ value: Bool, tx: DBWriteTransaction) {
+        kvStore.writeValue(value, forKey: StoreKeys.shouldOverrideShowBackupsOnboarding, tx: tx)
+    }
+
+    // MARK: - Last backup details
+
+    public struct LastBackupDetails {
+        /// The date of our last backup.
+        public let date: Date
+        /// The total size of our most recent backup, including the Backup proto
+        /// file and all backed-up media.
+        public let backupTotalSizeBytes: UInt64
+
+        public init(
+            date: Date,
+            backupTotalSizeBytes: UInt64,
+        ) {
+            self.date = date
+            self.backupTotalSizeBytes = backupTotalSizeBytes
+        }
+    }
+
+    public func lastBackupDetails(tx: DBReadTransaction) -> LastBackupDetails? {
+        guard
+            let lastBackupDate = kvStore.fetchValue(Date.self, forKey: StoreKeys.lastBackupDate, tx: tx),
+            let backupTotalSizeBytes = kvStore.fetchValue(UInt64.self, forKey: StoreKeys.lastBackupSizeBytes, tx: tx)
+        else {
+            return nil
+        }
+
+        return LastBackupDetails(
+            date: lastBackupDate,
+            backupTotalSizeBytes: backupTotalSizeBytes,
+        )
+    }
+
+    public func setLastBackupDetails(
+        date: Date,
+        backupSizeBytes: UInt64,
+        tx: DBWriteTransaction,
+    ) {
+        kvStore.writeValue(date, forKey: StoreKeys.lastBackupDate, tx: tx)
+        kvStore.writeValue(backupSizeBytes, forKey: StoreKeys.lastBackupSizeBytes, tx: tx)
+
+        tx.addSyncCompletion {
+            NotificationCenter.default.postOnMainThread(name: .lastLocalBackupDetailsDidChange, object: nil)
+        }
     }
 }

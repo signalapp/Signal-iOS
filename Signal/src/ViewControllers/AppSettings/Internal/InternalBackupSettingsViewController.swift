@@ -41,6 +41,16 @@ class InternalBackupSettingsViewController: OWSTableViewController2 {
 
             self?.presentToast(text: "Backups onboarding enabled!")
         })
+        section.add(.actionItem(withText: "Enable Local Backups onboarding flow") { [weak self] in
+            let localFileBackupStore = LocalFileBackupStore()
+            let db = DependenciesBridge.shared.db
+
+            db.write { tx in
+                localFileBackupStore.setShouldOverrideShowLocalBackupsOnboarding(true, tx: tx)
+            }
+
+            self?.presentToast(text: "Local backups onboarding enabled!")
+        })
         section.add(.actionItem(withText: #"Show "Backup Key Reminder" flow"#) { [weak self] in
             guard let self else { return }
 
@@ -86,7 +96,7 @@ class InternalBackupSettingsViewController: OWSTableViewController2 {
 
         if BuildFlags.LocalFileBackups.archive {
             section.add(.actionItem(withText: "Choose local file backup destination") {
-                DependenciesBridge.shared.localFileBackupManager.promptUserToChooseFileLocation(fromViewController: self)
+                DependenciesBridge.shared.localFileBackupManager.promptUserToChooseFileLocation(fromViewController: self, completion: nil)
             })
 
             section.add(.actionItem(withText: "Save Local File Backup") {

@@ -17,6 +17,8 @@ class BackupOnboardingCoordinator {
     private let accountKeyStore: AccountKeyStore
     private let backupEnablingManager: BackupEnablingManager
     private let backupSettingsStore: BackupSettingsStore
+    private let localFileBackupStore: LocalFileBackupStore
+    private let localFileBackupManager: LocalFileBackupManager
     private let db: DB
     private let backupType: BackupType
 
@@ -27,6 +29,8 @@ class BackupOnboardingCoordinator {
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             backupEnablingManager: AppEnvironment.shared.backupEnablingManager,
             backupSettingsStore: BackupSettingsStore(),
+            localFileBackupStore: LocalFileBackupStore(),
+            localFileBackupManager: DependenciesBridge.shared.localFileBackupManager,
             db: DependenciesBridge.shared.db,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             backupType: backupType,
@@ -37,6 +41,8 @@ class BackupOnboardingCoordinator {
         accountKeyStore: AccountKeyStore,
         backupEnablingManager: BackupEnablingManager,
         backupSettingsStore: BackupSettingsStore,
+        localFileBackupStore: LocalFileBackupStore,
+        localFileBackupManager: LocalFileBackupManager,
         db: DB,
         tsAccountManager: TSAccountManager,
         backupType: BackupType,
@@ -49,6 +55,8 @@ class BackupOnboardingCoordinator {
         self.accountKeyStore = accountKeyStore
         self.backupEnablingManager = backupEnablingManager
         self.backupSettingsStore = backupSettingsStore
+        self.localFileBackupStore = localFileBackupStore
+        self.localFileBackupManager = localFileBackupManager
         self.db = db
         self.backupType = backupType
     }
@@ -69,7 +77,12 @@ class BackupOnboardingCoordinator {
             case .remote:
                 return BackupSettingsViewController(onAppearAction: onAppearAction)
             case .local:
-                return LocalFileBackupsSettingsViewController()
+                return LocalFileBackupsSettingsViewController(
+                    localFileBackupStore: localFileBackupStore,
+                    db: db,
+                    accountKeyStore: accountKeyStore,
+                    localFileBackupManager: localFileBackupManager,
+                )
             }
         } else {
             // Weakly retain the nav controller, so we can use it throughout
@@ -104,8 +117,9 @@ class BackupOnboardingCoordinator {
                     fromViewController.present(
                         LocalFileBackupSelectFolderHeroSheetViewController(
                             onContinue: { [self] in
-                                // TODO: choose folder
-                                showRecoveryKeyIntro()
+                                localFileBackupManager.promptUserToChooseFileLocation(fromViewController: fromViewController, completion: { [self] in
+                                    showRecoveryKeyIntro()
+                                })
                             },
                         ),
                         animated: true,
@@ -167,10 +181,19 @@ class BackupOnboardingCoordinator {
                     case .remote:
                         try await showChooseBackupPlan()
                     case .local:
+                        db.write { tx in
+                            localFileBackupStore.setLocalBackupsEnabled(value: true, tx: tx)
+                            localFileBackupStore.setShouldOverrideShowLocalBackupsOnboarding(false, tx: tx)
+                        }
                         onboardingNavController.setViewControllers(
                             [
                                 onboardingNavController.viewControllers[0],
-                                LocalFileBackupsSettingsViewController(),
+                                LocalFileBackupsSettingsViewController(
+                                    localFileBackupStore: localFileBackupStore,
+                                    db: db,
+                                    accountKeyStore: accountKeyStore,
+                                    localFileBackupManager: localFileBackupManager,
+                                ),
                             ],
                             animated: true,
                         )
