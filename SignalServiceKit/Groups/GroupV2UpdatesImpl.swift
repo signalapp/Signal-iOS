@@ -983,7 +983,6 @@ extension GroupsV2Error: IsRetryableProvider {
             .cantApplyChangesToPlaceholder,
             .expiredGroupInviteLink,
             .terminatedGroup,
-            .terminatedGroupInviteLink,
             .groupBlocked,
             .localUserBlockedFromJoining,
             .groupChangeProtoForIncompatibleRevision,

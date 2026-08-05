@@ -73,7 +73,7 @@ public class GroupViewUtils {
             )
         } else {
             switch error {
-            case GroupsV2Error.terminatedGroupInviteLink:
+            case GroupsV2Error.terminatedGroup:
                 OWSActionSheets.showActionSheet(
                     title: nil,
                     message: OWSLocalizedString(

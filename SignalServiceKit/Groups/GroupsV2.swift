@@ -17,7 +17,6 @@ public enum GroupsV2Error: Error {
     case cantApplyChangesToPlaceholder
     case expiredGroupInviteLink
     case terminatedGroup
-    case terminatedGroupInviteLink
     case groupBlocked
     case localUserBlockedFromJoining
 

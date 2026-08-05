@@ -301,7 +301,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                 }
             } catch GroupsV2Error.expiredGroupInviteLink {
                 self?.applyLinkPreviewLoadResult(.expiredLink)
-            } catch GroupsV2Error.terminatedGroupInviteLink {
+            } catch GroupsV2Error.terminatedGroup {
                 self?.applyLinkPreviewLoadResult(.terminatedLink)
             } catch GroupsV2Error.localUserBlockedFromJoining {
                 Logger.warn("User blocked")
@@ -484,7 +484,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                                         "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE",
                                         comment: "Subtitle indicating that the local user has been blocked from joining the group",
                                     )
-                                case GroupsV2Error.terminatedGroupInviteLink:
+                                case GroupsV2Error.terminatedGroup:
                                     return OWSLocalizedString(
                                         "GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE",
                                         comment: "Error message the attempt to request to join the group failed due to the group being ended.",
