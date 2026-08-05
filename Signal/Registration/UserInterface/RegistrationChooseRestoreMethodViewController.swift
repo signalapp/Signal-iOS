@@ -333,7 +333,11 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController, UIDocume
     // MARK: - Local File Backups
 
     private func didSelectRestoreFromLocalBackup() {
-        promptUserToChooseFileLocation(fromViewController: self)
+        let heroSheet = LocalFileBackupSelectHeroSheet(onChooseBackup: { [weak self] in
+            guard let self else { return }
+            promptUserToChooseFileLocation(fromViewController: self)
+        })
+        present(heroSheet, animated: true)
     }
 
     // MARK: - Choosing backup location
@@ -350,9 +354,6 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController, UIDocume
     // MARK: - UIDocumentPickerDelegate
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
-        // TODO: [KC] error handle invalid file choice.
-        // TODO: [KC] add pop up screen about which file to choose
-
         let localFileBackupManager = DependenciesBridge.shared.localFileBackupManager
 
         // The bookmark data has to be written when we have access to the security scoped resource.
@@ -361,15 +362,82 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController, UIDocume
             return
         }
 
-        defer { securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: url) }
+        var contents: [URL] = []
+        var signalBackupsURL = url
+        do {
+            // First, if the user picked the directory above SignalBackups,
+            // thats fine, just find it and update the url.
+            if url.lastPathComponent != "SignalBackups" {
+                contents = try FileManager.default.contentsOfDirectory(
+                    at: url,
+                    includingPropertiesForKeys: [.isDirectoryKey],
+                )
+
+                let signalBackupsDir = contents
+                    .filter { $0.lastPathComponent == "SignalBackups" }
+
+                guard !signalBackupsDir.isEmpty else {
+                    // Its not SignalBackups, and its not the directory above SignalBackups, show an error.
+                    presentNoLocalBackupFoundActionSheet()
+                    return
+                }
+                signalBackupsURL = signalBackupsDir.first!
+            }
+
+            // Now that we are inside of SignalBackups, we expect a files/ dir
+            // and a signal-backups-*/ dir. If either is missing, show an error.
+            contents = try FileManager.default.contentsOfDirectory(
+                at: signalBackupsURL,
+                includingPropertiesForKeys: [.isDirectoryKey],
+            )
+        } catch {
+            Logger.error("Failed to read contents of local backup directory")
+            return
+        }
+        let backupDirectories = contents
+            .filter { $0.lastPathComponent.hasPrefix("signal-backups-") }
+
+        let files = contents
+            .filter { $0.lastPathComponent == "files" }
+
+        guard !backupDirectories.isEmpty, !files.isEmpty else {
+            presentNoLocalBackupFoundActionSheet()
+            return
+        }
+
+        defer { securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: signalBackupsURL) }
 
         do {
-            try localFileBackupManager.saveSecurityScopedBookmark(url: url)
-            presenter?.didChooseRestoreMethod(method: .local(fileUrl: url))
+            try localFileBackupManager.saveSecurityScopedBookmark(url: signalBackupsURL)
+            presenter?.didChooseRestoreMethod(method: .local(fileUrl: signalBackupsURL))
         } catch {
             // TODO: [KC] show error screen.
             Logger.error("Failed to save bookmark: \(error)")
         }
+    }
+
+    func presentNoLocalBackupFoundActionSheet() {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE",
+                comment: "Title for an error sheet shown when the user's folder choice does not contain a backup file.",
+            ),
+            message: OWSLocalizedString(
+                "LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY",
+                comment: "Body for an error sheet shown when the user's folder choice does not contain a backup file.",
+            ),
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER",
+                comment: "Title for a button that lets the user select a new folder.",
+            ),
+            handler: { [self] _ in
+                promptUserToChooseFileLocation(fromViewController: self)
+            },
+        ))
+        actionSheet.addAction(.cancel)
+        present(actionSheet, animated: true)
     }
 }
 

@@ -5419,6 +5419,30 @@
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Do not close the app.";
 
+/* Body for an error sheet shown when the user's folder choice does not contain a backup file. */
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "No Signal backup was found in the selected folder. Please try a different folder.";
+
+/* Title for an error sheet shown when the user's folder choice does not contain a backup file. */
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "No Backup Found";
+
+/* Title for a button that lets the user select a new folder. */
+"LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "Try a different folder";
+
+/* Body text for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "After tapping “Continue,” here’s how to access your backup:";
+
+/* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "Select the top-level folder where your backup is stored";
+
+/* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "Tap “Open”";
+
+/* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_3" = "Do not select individual files";
+
+/* Title for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Select Your Backup Folder";
+
 /* Button for a sheet asking the user to choose a new local file backup folder */
 "LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Choose Folder";
 

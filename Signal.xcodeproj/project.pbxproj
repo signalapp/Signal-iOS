@@ -117,6 +117,7 @@
 		04AB61C82E5E399700405699 /* PollOptionRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB61C72E5E399400405699 /* PollOptionRecord.swift */; };
 		04AB61CA2E5E449100405699 /* PollManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB61C92E5E448A00405699 /* PollManagerTest.swift */; };
 		04AC221D2F86B9F8006CB71A /* NSAttributedStringExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AC221C2F86B9F2006CB71A /* NSAttributedStringExtensionTests.swift */; };
+		04B28509302398A000BCF018 /* LocalFileBackupSelectHeroSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B285083023989100BCF018 /* LocalFileBackupSelectHeroSheet.swift */; };
 		04BBBE902E259A6900E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BBBE8F2E259A5F00E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift */; };
 		04BBBE922E26C92D00E914B1 /* InactivePrimaryDeviceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BBBE912E26C92300E914B1 /* InactivePrimaryDeviceStore.swift */; };
 		04BBBE942E26F00900E914B1 /* InactivePrimaryDeviceStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BBBE932E26F00000E914B1 /* InactivePrimaryDeviceStoreTest.swift */; };
@@ -4319,6 +4320,7 @@
 		04AB61C72E5E399400405699 /* PollOptionRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollOptionRecord.swift; sourceTree = "<group>"; };
 		04AB61C92E5E448A00405699 /* PollManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollManagerTest.swift; sourceTree = "<group>"; };
 		04AC221C2F86B9F2006CB71A /* NSAttributedStringExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSAttributedStringExtensionTests.swift; sourceTree = "<group>"; };
+		04B285083023989100BCF018 /* LocalFileBackupSelectHeroSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileBackupSelectHeroSheet.swift; sourceTree = "<group>"; };
 		04B975452E43A4AA00E20364 /* BackupRefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRefreshManager.swift; sourceTree = "<group>"; };
 		04B975472E43BFE000E20364 /* BackupRefreshManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRefreshManagerTest.swift; sourceTree = "<group>"; };
 		04BBBE8F2E259A5F00E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactivePrimaryDeviceReminderMegaphone.swift; sourceTree = "<group>"; };
@@ -13693,6 +13695,7 @@
 				D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */,
 				D9680CF22DBB0B28005DD5BE /* ChooseBackupPlanViewController.swift */,
 				B99FFDF430003EDC00EC4E45 /* LinkedDeviceBackupSettingsViewController.swift */,
+				04B285083023989100BCF018 /* LocalFileBackupSelectHeroSheet.swift */,
 				0441ECBE3007F9C3005673AC /* LocalFileBackupsSettingsViewController.swift */,
 			);
 			path = Backups;
@@ -18717,6 +18720,7 @@
 				4C25768A23AD510800E0398D /* LoadMoreMessagesView.swift in Sources */,
 				0441ECB73007D0B8005673AC /* LocalFileBackupOnboardingIntroViewController.swift in Sources */,
 				0441ECBD3007F113005673AC /* LocalFileBackupSelectFolderHeroSheetViewController.swift in Sources */,
+				04B28509302398A000BCF018 /* LocalFileBackupSelectHeroSheet.swift in Sources */,
 				0441ECBF3007F9CD005673AC /* LocalFileBackupsSettingsViewController.swift in Sources */,
 				D9E43C082CC194140001536E /* LocalVideoView.swift in Sources */,
 				88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */,
