@@ -233,6 +233,9 @@ public class BlockingManager {
     }
 
     public func addBlockedGroupId(_ groupId: Data, blockMode: BlockMode, transaction: DBWriteTransaction) {
+        let interactionStore = DependenciesBridge.shared.interactionStore
+        let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
+
         guard GroupManager.isValidGroupIdOfAnyKind(groupId) else {
             owsFailDebug("Can't block invalid groupId: \(groupId.toHex())")
             return
@@ -246,22 +249,25 @@ public class BlockingManager {
 
         Logger.info("Added blocked groupId: \(groupId.toHex())")
 
-        let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction)
-        owsAssertDebug(groupThread != nil, "Must have TSGroupThread in order to block it.")
-
-        if blockMode.isLocallyInitiated, let masterKey = try? (groupThread?.groupModel as? TSGroupModelV2)?.masterKey() {
-            SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedGroupV2MasterKeys: [masterKey])
+        if blockMode.isLocallyInitiated, let groupId = try? GroupIdentifier(contents: groupId) {
+            let masterKey = GroupStore().fetchGroup(forGroupId: groupId, tx: transaction)?.masterKey
+            owsAssertDebug(masterKey != nil, "Must have GroupRecord.masterKey in order to block v2 group.")
+            if let masterKey {
+                storageServiceManager.recordPendingUpdates(updatedGroupV2MasterKeys: [masterKey])
+            }
         }
 
-        if let groupThread {
-            switch blockMode {
-            case .restoreFromBackup:
-                // If we're restoring from a Backup, avoid the side effect of
-                // inserting a message. One either existed in the backup or not.
-                break
-            case .remote, .local:
+        switch blockMode {
+        case .restoreFromBackup:
+            // If we're restoring from a Backup, avoid the side effect of
+            // inserting a message. One either existed in the backup or not.
+            break
+        case .remote, .local:
+            let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction)
+            owsAssertDebug(groupThread != nil, "Must have TSGroupThread in order to insert an event.")
+            if let groupThread {
                 // Insert an info message that we blocked this group.
-                DependenciesBridge.shared.interactionStore.insertInteraction(
+                interactionStore.insertInteraction(
                     TSInfoMessage(thread: groupThread, messageType: .blockedGroup),
                     tx: transaction,
                 )
