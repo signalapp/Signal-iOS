@@ -3405,7 +3405,6 @@
 		D9F6554229D67708002A330A /* SDSCodableModel+SDSSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */; };
 		D9F6554429D798CC002A330A /* InheritableRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554329D798CC002A330A /* InheritableRecord.swift */; };
 		D9F6554829DA4277002A330A /* InheritableRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554629DA4233002A330A /* InheritableRecordTest.swift */; };
-		D9F96EDC2D824E9000466C6A /* AvatarDefaultColorStorageServiceMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F96ED92D8249EE00466C6A /* AvatarDefaultColorStorageServiceMigrator.swift */; };
 		D9F96EDE2D83BEFF00466C6A /* Database+Execute.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F96EDD2D83BEFB00466C6A /* Database+Execute.swift */; };
 		D9F9A6392BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */; };
 		D9F9A63B2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */; };
@@ -7765,7 +7764,6 @@
 		D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+SDSSerialization.swift"; sourceTree = "<group>"; };
 		D9F6554329D798CC002A330A /* InheritableRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InheritableRecord.swift; sourceTree = "<group>"; };
 		D9F6554629DA4233002A330A /* InheritableRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InheritableRecordTest.swift; sourceTree = "<group>"; };
-		D9F96ED92D8249EE00466C6A /* AvatarDefaultColorStorageServiceMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarDefaultColorStorageServiceMigrator.swift; sourceTree = "<group>"; };
 		D9F96EDD2D83BEFB00466C6A /* Database+Execute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Database+Execute.swift"; sourceTree = "<group>"; };
 		D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkDeleteInteractionJobRecord.swift; sourceTree = "<group>"; };
 		D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkDeleteInteractionJobQueue.swift; sourceTree = "<group>"; };
@@ -14377,7 +14375,6 @@
 		D9F96EDB2D824E6900466C6A /* Avatars */ = {
 			isa = PBXGroup;
 			children = (
-				D9F96ED92D8249EE00466C6A /* AvatarDefaultColorStorageServiceMigrator.swift */,
 				8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */,
 			);
 			path = Avatars;
@@ -18306,7 +18303,6 @@
 				D9E43C132CC194140001536E /* AudioSource.swift in Sources */,
 				8813F6E12330082900ADEC6A /* AudioWaveformProgressView.swift in Sources */,
 				50B6BCB12AEC4F4D0010FB3B /* AuthorMergeHelperBuilder.swift in Sources */,
-				D9F96EDC2D824E9000466C6A /* AvatarDefaultColorStorageServiceMigrator.swift in Sources */,
 				8847E6F226A0EFBD0063E319 /* AvatarEditViewController.swift in Sources */,
 				8847E6F026A078200063E319 /* AvatarHistoryManager.swift in Sources */,
 				883A7FC3269F4C0000841DF9 /* AvatarSettingsViewController.swift in Sources */,

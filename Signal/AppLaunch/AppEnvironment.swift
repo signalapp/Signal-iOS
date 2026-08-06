@@ -346,18 +346,10 @@ public class AppEnvironment: NSObject {
             let groupCallPeekClient = SSKEnvironment.shared.groupCallManagerRef.groupCallPeekClient
             let interactionStore = DependenciesBridge.shared.interactionStore
             let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
-            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-            let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
             let threadStore = DependenciesBridge.shared.threadStore
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             let storageServiceRecordIkmMigrator = DependenciesBridge.shared.storageServiceRecordIkmMigrator
 
-            let avatarDefaultColorStorageServiceMigrator = AvatarDefaultColorStorageServiceMigrator(
-                db: db,
-                recipientDatabaseTable: recipientDatabaseTable,
-                storageServiceManager: storageServiceManager,
-                threadStore: threadStore,
-            )
             let groupCallRecordRingingCleanupManager = GroupCallRecordRingingCleanupManager(
                 callRecordStore: callRecordStore,
                 callRecordQuerier: callRecordQuerier,
@@ -374,10 +366,6 @@ public class AppEnvironment: NSObject {
 
             // Things that should run on either the primary or linked devices.
             if let registeredState, registeredState.isPrimary {
-                Task {
-                    await avatarDefaultColorStorageServiceMigrator.performMigrationIfNecessary()
-                }
-
                 Task {
                     await storageServiceRecordIkmMigrator.migrateToManifestRecordIkmIfNecessary()
                 }
