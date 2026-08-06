@@ -3,14 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
+
 struct MPCDeviceTransferConnectionFactory: DeviceTransferConnectionFactory {
     @MainActor
-    func buildOutgoingConnection() -> any DeviceTransferOutgoingConnection {
-        MPCDeviceTransferBrowser()
+    func buildOutgoingConnection(tsAccountManager: TSAccountManager) -> any DeviceTransferOutgoingConnection {
+        MPCDeviceTransferBrowser(tsAccountManager: tsAccountManager)
     }
 
     @MainActor
-    func buildIncomingConnection() -> any DeviceTransferIncomingConnection {
-        MPCDeviceTransferAdvertiser()
+    func buildIncomingConnection(tsAccountManager: TSAccountManager) -> any DeviceTransferIncomingConnection {
+        MPCDeviceTransferAdvertiser(tsAccountManager: tsAccountManager)
     }
 }

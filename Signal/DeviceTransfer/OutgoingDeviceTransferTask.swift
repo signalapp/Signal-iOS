@@ -14,13 +14,11 @@ class OutgoingDeviceTransferTask {
     let db: DB
     let registrationStateChangeManager: RegistrationStateChangeManager
     let deviceSleepManager: DeviceSleepManager?
-    let tsAccountManager: TSAccountManager
 
     let transferredFileIds = AtomicValue<[String]>([], lock: .init())
     var throughputMonitor: ThroughputMonitor?
     var session: DeviceTransferSession?
     var transferInProgress = false
-    var expectedCertificateHash: Data?
 
     private let sleepBlockObject = DeviceSleepBlockObject(blockReason: "device transfer")
 
@@ -37,15 +35,15 @@ class OutgoingDeviceTransferTask {
         self.db = db
         self.registrationStateChangeManager = registrationStateChangeManager
         self.deviceSleepManager = deviceSleepManager
-        self.tsAccountManager = tsAccountManager
-        self.newDeviceServiceBrowser = deviceTransferConnectionFactory.buildOutgoingConnection()
+        self.newDeviceServiceBrowser = deviceTransferConnectionFactory.buildOutgoingConnection(
+            tsAccountManager: tsAccountManager,
+        )
     }
 
-    func connectToNewDevice(with peerId: any DeviceTransferPeerID, certificateHash: Data) async throws {
+    func connectToNewDevice(deviceTransferUrl: URL) async throws {
         cancelTransferToNewDevice()
         deviceSleepManager?.addBlock(blockObject: sleepBlockObject)
-        expectedCertificateHash = certificateHash
-        self.session = try await newDeviceServiceBrowser.start()
+        self.session = try await newDeviceServiceBrowser.connect(deviceTransferUrl: deviceTransferUrl)
     }
 
     private var sendTask: Task<Void, Error>?
@@ -101,8 +99,6 @@ class OutgoingDeviceTransferTask {
 
         sendTask = Task {
             do {
-                // Here we should wait for data message, or keep sending files
-                // But before sending any files, we should ensure that the certificate has been validated
                 try await withThrowingTaskGroup(of: Void.self) { taskGroup in
                     taskGroup.addTask { @MainActor in
                         try await self.sendManifest(manifest: manifest, session: session)
@@ -112,8 +108,6 @@ class OutgoingDeviceTransferTask {
                     taskGroup.addTask { @MainActor in
                         for try await message in session.messages {
                             switch message {
-                            case .certificate(let certificate, let handler):
-                                self.session(session, didReceiveCertificate: certificate, certificateHandler: handler)
                             case .message(let message):
                                 try self.processMessage(message: message, session: session)
                             case .startResource, .finishResource:
@@ -138,18 +132,6 @@ class OutgoingDeviceTransferTask {
 
     func stop() {
         newDeviceServiceBrowser.stop()
-    }
-
-    // MARK: - Utility
-
-    func parseTransferURL(
-        _ url: URL,
-        tsAccountManager: TSAccountManager,
-    ) throws -> (
-        peerId: any DeviceTransferPeerID,
-        certificateHash: Data,
-    ) {
-        return try newDeviceServiceBrowser.parseTransferURL(url, tsAccountManager: tsAccountManager)
     }
 
     // MARK: - Sending
@@ -393,52 +375,6 @@ class OutgoingDeviceTransferTask {
             SignalApp.shared.resetAppData(keyFetcher: SSKEnvironment.shared.databaseStorageRef.keyFetcher)
             SignalApp.shared.showTransferCompleteAndExit()
         }
-    }
-
-    func session(
-        _ session: DeviceTransferSession,
-        didStartReceivingResourceWithName resourceName: String,
-        with fileProgress: Progress,
-    ) {
-        owsFailDebug("Unexpectedly received a file on old device \(resourceName)")
-    }
-
-    func session(
-        _ session: DeviceTransferSession,
-        didFinishReceivingResourceWithName resourceName: String,
-        at localURL: URL?,
-        withError error: Swift.Error?,
-    ) {
-        owsFailDebug("Unexpectedly received a file on old device \(resourceName)")
-    }
-
-    func session(
-        _ session: DeviceTransferSession,
-        didReceiveCertificate certificate: Data,
-        certificateHandler: @escaping (Bool) -> Void,
-    ) {
-        var certificateIsTrusted = false
-
-        defer {
-            certificateHandler(certificateIsTrusted)
-            if !certificateIsTrusted {
-                self.failTransfer(DeviceTransfer.Error.certificateMismatch, "the received certificate did not match the expected certificate")
-            }
-        }
-
-        // Verify the received certificate matches the expected certificate.
-        // Reject any connections where we can't compute the certificate hash
-        let certificateHash = Data(SHA256.hash(data: certificate))
-
-        // Reject any connections where the certificate doesn't match the expected certificate
-        guard
-            let expectedCertificateHash,
-            expectedCertificateHash.ows_constantTimeIsEqual(to: certificateHash)
-        else {
-            return owsFailDebug("connection from known peer \(session.remotePeerId) using unexpected certificate")
-        }
-        Logger.info("Successfully verified new device certificate \(session.remotePeerId)")
-        certificateIsTrusted = true
     }
 
     // MANIFEST

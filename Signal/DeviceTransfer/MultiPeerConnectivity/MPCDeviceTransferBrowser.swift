@@ -12,6 +12,11 @@ class MPCDeviceTransferBrowser:
     DeviceTransferOutgoingConnection,
     MCNearbyServiceBrowserDelegate
 {
+    private struct ConnectionData {
+        let peerId: MPCDeviceTransferPeerId
+        let certificateHash: Data
+    }
+
     let identity: SecIdentity?
     let browser: MCNearbyServiceBrowser
     let peerId: MPCDeviceTransferPeerId
@@ -21,8 +26,12 @@ class MPCDeviceTransferBrowser:
     private var inviteContinuation: CheckedContinuation<DeviceTransferSession, Error>?
     private var browseTask: Task<DeviceTransferSession, Error>?
 
+    private var expectedConnectionData: ConnectionData?
+    let tsAccountManager: TSAccountManager
+
     @MainActor
-    override init() {
+    init(tsAccountManager: TSAccountManager) {
+        self.tsAccountManager = tsAccountManager
         self.peerId = MPCDeviceTransferPeerId(displayName: UUID().uuidString)
         self.identity = try? SelfSignedIdentity.create(name: "OutgoingDeviceTransfer", validForDays: 1)
         browser = MCNearbyServiceBrowser(
@@ -34,10 +43,17 @@ class MPCDeviceTransferBrowser:
     }
 
     @MainActor
-    func start() async throws -> DeviceTransferSession {
+    func connect(
+        deviceTransferUrl: URL,
+    ) async throws -> DeviceTransferSession {
         if let session {
             return session
         }
+        self.expectedConnectionData = try parseTransferURL(
+            deviceTransferUrl,
+            tsAccountManager: tsAccountManager,
+        )
+        browser.startBrowsingForPeers()
         let task = lock.withLock {
             if let browseTask {
                 return browseTask
@@ -67,13 +83,11 @@ class MPCDeviceTransferBrowser:
         }
     }
 
-    func parseTransferURL(
+    @MainActor
+    private func parseTransferURL(
         _ url: URL,
         tsAccountManager: TSAccountManager,
-    ) throws -> (
-        peerId: any DeviceTransferPeerID,
-        certificateHash: Data,
-    ) {
+    ) throws -> ConnectionData {
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false), let queryItems = components.queryItems else {
             throw OWSAssertionError("Invalid url")
         }
@@ -117,7 +131,7 @@ class MPCDeviceTransferBrowser:
             throw OWSAssertionError("failed to decode MCPeerId")
         }
 
-        return (peerId, certificateHash)
+        return ConnectionData(peerId: peerId, certificateHash: certificateHash)
     }
 
     @MainActor
@@ -130,10 +144,18 @@ class MPCDeviceTransferBrowser:
             }
             return
         }
+
+        guard let expectedConnectionData else {
+            inviteContinuation.take()?.resume(throwing: OWSAssertionError("Missing connection data"))
+            return
+        }
+
         let session = MPCDeviceTransferSession(
             identity: identity,
             peerID: peerId.mcPeerID,
             remoteDevicePeerID: newDevicePeerID,
+            expectedCertificateHash: expectedConnectionData.certificateHash,
+            tsAccountManager: tsAccountManager,
         )
         browser.invitePeer(
             newDevicePeerID,

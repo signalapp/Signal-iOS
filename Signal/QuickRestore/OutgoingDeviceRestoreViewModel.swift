@@ -16,8 +16,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
 
     struct RestoreMethodData {
         struct PeerConnectionData {
-            var peerId: any DeviceTransferPeerID
-            var certificateHash: Data
+            let deviceTransferUrl: URL
         }
 
         let restoreMethod: QuickRestoreManager.RestoreMethodType
@@ -89,22 +88,10 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
             throw DeviceRestoreError.invalidRestoreData
         }
 
-        do {
-            let (peerId, certificateHash) = try await outgoingDeviceTransferTask.parseTransferURL(
-                transferURL,
-                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-            )
-            return RestoreMethodData(
-                restoreMethod: restoreMethod,
-                peerConnectionData: RestoreMethodData.PeerConnectionData(
-                    peerId: peerId,
-                    certificateHash: certificateHash,
-                ),
-            )
-        } catch {
-            Logger.error("Failed to parse transfer URL: \(error)")
-            throw DeviceRestoreError.invalidRestoreData
-        }
+        return RestoreMethodData(
+            restoreMethod: restoreMethod,
+            peerConnectionData: RestoreMethodData.PeerConnectionData(deviceTransferUrl: transferURL),
+        )
     }
 
     /// Take the `PeerConnectionData` returned by `waitForConnectionData` and
@@ -116,10 +103,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
         }
 
         transferStatusViewModel.state = .starting
-        try await outgoingDeviceTransferTask.connectToNewDevice(
-            with: peerConnectionData.peerId,
-            certificateHash: peerConnectionData.certificateHash,
-        )
+        try await outgoingDeviceTransferTask.connectToNewDevice(deviceTransferUrl: peerConnectionData.deviceTransferUrl)
     }
 
     /// Once connected to the device described in `PeerConnectionData`

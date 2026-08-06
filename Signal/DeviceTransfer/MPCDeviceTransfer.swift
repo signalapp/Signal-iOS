@@ -10,9 +10,9 @@ import SignalServiceKit
 @MainActor
 protocol DeviceTransferConnectionFactory {
     @MainActor
-    func buildOutgoingConnection() -> DeviceTransferOutgoingConnection
+    func buildOutgoingConnection(tsAccountManager: TSAccountManager) -> DeviceTransferOutgoingConnection
     @MainActor
-    func buildIncomingConnection() -> DeviceTransferIncomingConnection
+    func buildIncomingConnection(tsAccountManager: TSAccountManager) -> DeviceTransferIncomingConnection
 }
 
 extension DeviceTransfer {
@@ -48,16 +48,9 @@ protocol DeviceTransferSession {
 
 protocol DeviceTransferOutgoingConnection {
     @MainActor
-    func parseTransferURL(
-        _ url: URL,
-        tsAccountManager: TSAccountManager,
-    ) throws -> (
-        peerId: any DeviceTransferPeerID,
-        certificateHash: Data,
-    )
-
-    @MainActor
-    func start() async throws -> DeviceTransferSession
+    func connect(
+        deviceTransferUrl: URL,
+    ) async throws -> DeviceTransferSession
 
     @MainActor
     func stop()
@@ -110,6 +103,5 @@ extension DeviceTransfer {
         case message(DeviceTransfer.Message)
         case startResource(String, Progress)
         case finishResource(String, URL)
-        case certificate(Data, (Bool) -> Void)
     }
 }

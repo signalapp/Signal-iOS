@@ -14,6 +14,7 @@ class MPCDeviceTransferAdvertiser:
 {
     let peerId: MPCDeviceTransferPeerId
     let advertiser: MCNearbyServiceAdvertiser
+    let tsAccountManager: TSAccountManager
 
     // Create an identity to use for our TLS sessions, the old device
     // will verify this identity via the QR code
@@ -27,7 +28,8 @@ class MPCDeviceTransferAdvertiser:
     private var waitTask: Task<DeviceTransferSession, Error>?
 
     @MainActor
-    override init() {
+    init(tsAccountManager: TSAccountManager) {
+        self.tsAccountManager = tsAccountManager
         self.peerId = MPCDeviceTransferPeerId(displayName: UUID().uuidString)
         self.identity = try? SelfSignedIdentity.create(name: "IncomingDeviceTransfer", validForDays: 1)
         advertiser = MCNearbyServiceAdvertiser(
@@ -123,7 +125,13 @@ class MPCDeviceTransferAdvertiser:
         Logger.info("Accepting invitation from old device \(peerId)")
         lock.withLock {
             if let connectionContinuation = connectionContinuation.take() {
-                let session = MPCDeviceTransferSession(identity: identity, peerID: self.peerId.mcPeerID, remoteDevicePeerID: peerId)
+                let session = MPCDeviceTransferSession(
+                    identity: identity,
+                    peerID: self.peerId.mcPeerID,
+                    remoteDevicePeerID: peerId,
+                    expectedCertificateHash: nil,
+                    tsAccountManager: tsAccountManager,
+                )
                 self.session = session
                 invitationHandler(true, session.session)
                 connectionContinuation.resume(returning: session)

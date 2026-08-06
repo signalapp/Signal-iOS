@@ -25,7 +25,6 @@ class IncomingDeviceTransferTask {
     private let deviceTransferRestore: DeviceTransferRestore
     private let registrationStateChangeManager: RegistrationStateChangeManager
     private let deviceSleepManager: DeviceSleepManager?
-    private let tsAccountManager: TSAccountManager
 
     private let newDeviceServiceAdvertiser: DeviceTransferIncomingConnection
     private var notificationObservers: [NotificationCenter.Observer] = []
@@ -41,9 +40,10 @@ class IncomingDeviceTransferTask {
         self.db = db
         self.deviceSleepManager = deviceSleepManager
         self.registrationStateChangeManager = registrationStateChangeManager
-        self.tsAccountManager = tsAccountManager
         self.deviceTransferRestore = deviceTransferRestore
-        self.newDeviceServiceAdvertiser = deviceTransferConnectionFactory.buildIncomingConnection()
+        self.newDeviceServiceAdvertiser = deviceTransferConnectionFactory.buildIncomingConnection(
+            tsAccountManager: tsAccountManager,
+        )
     }
 
     func start(mode: DeviceTransfer.Mode) async throws -> URL {
@@ -75,8 +75,6 @@ class IncomingDeviceTransferTask {
 
         for try await message in session.messages {
             switch message {
-            case .certificate(let certificate, let handler):
-                self.session(session, didReceiveCertificate: certificate, certificateHandler: handler)
             case .message(let message):
                 try processMessage(message: message, session: session)
             case .startResource(let fileName, let progress):
@@ -377,21 +375,6 @@ class IncomingDeviceTransferTask {
 
         Logger.info("Received file: \(file.identifier)")
         receivedFileIds.update { $0.append(file.identifier) }
-    }
-
-    func session(
-        _ session: DeviceTransferSession,
-        didReceiveCertificate certificate: Data,
-        certificateHandler: @escaping (Bool) -> Void,
-    ) {
-        let isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
-        certificateHandler(!isRegistered)
-        if isRegistered {
-            failTransfer(
-                DeviceTransfer.Error.assertion,
-                "Cannot receive transfer on registered device",
-            )
-        }
     }
 
     func verifyTransferCompletedSuccessfully(

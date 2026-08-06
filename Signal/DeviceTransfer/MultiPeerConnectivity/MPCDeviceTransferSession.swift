@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 import MultipeerConnectivity
 import SignalServiceKit
@@ -28,10 +29,15 @@ class MPCDeviceTransferSession:
     private var waitTask: Task<Void, Error>?
     private var activeSends: [URL: CheckedContinuation<Void, any Error>] = [:]
 
+    private let expectedCertificateHash: Data?
+    private let tsAccountManager: TSAccountManager
+
     init(
         identity: SecIdentity,
         peerID: MCPeerID,
         remoteDevicePeerID: MCPeerID,
+        expectedCertificateHash: Data?,
+        tsAccountManager: TSAccountManager,
     ) {
         self.identity = identity
         self._remotePeerId = MPCDeviceTransferPeerId(mcPeerID: remoteDevicePeerID)
@@ -39,6 +45,9 @@ class MPCDeviceTransferSession:
         self.session = session
 
         (self.messages, self.messageSink) = AsyncThrowingStream.makeStream()
+        self.expectedCertificateHash = expectedCertificateHash
+        self.tsAccountManager = tsAccountManager
+
         super.init()
         session.delegate = self
     }
@@ -73,6 +82,7 @@ class MPCDeviceTransferSession:
         }
         self.session.disconnect()
         messageSink.finish()
+        connected = false
     }
 
     @MainActor
@@ -206,6 +216,28 @@ class MPCDeviceTransferSession:
             return
         }
         let certificateData = SecCertificateCopyData(certificate as! SecCertificate) as Data
-        messageSink.yield(.certificate(certificateData, certificateHandler))
+
+        var certificateIsTrusted = false
+        defer {
+            certificateHandler(certificateIsTrusted)
+            if !certificateIsTrusted {
+                messageSink.finish(throwing: OWSAssertionError("Connection from known peer \(peerId) using untrusted certificate"))
+            }
+        }
+
+        if let expectedCertificateHash {
+            // Verify the received certificate matches the expected certificate.
+            // Reject any connections where we can't compute the certificate hash
+            let certificateHash = Data(SHA256.hash(data: certificateData))
+
+            // Reject any connections where the certificate doesn't match the expected certificate
+            certificateIsTrusted = expectedCertificateHash.ows_constantTimeIsEqual(to: certificateHash)
+
+            Logger.info("Successfully verified new device certificate \(peerId)")
+        } else {
+            // Registered devices can only ever perform outgoing transfers.
+            // Accept all connections if we're doing an incoming transfer AND we aren't yet registered.
+            certificateIsTrusted = !tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+        }
     }
 }
