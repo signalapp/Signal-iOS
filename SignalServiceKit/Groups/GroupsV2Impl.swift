@@ -1861,9 +1861,6 @@ public class GroupsV2Impl: GroupsV2 {
         downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?,
         revisionForPlaceholderModel revision: UInt32,
     ) async throws {
-        let groupId = try secretParams.getPublicParams().getGroupIdentifier()
-        let masterKey = try secretParams.getMasterKey()
-
         let avatarUrlPath = inviteLinkPreview.avatarUrlPath
         let avatarData: Data?
         if let avatarUrlPath {
@@ -1881,7 +1878,12 @@ public class GroupsV2Impl: GroupsV2 {
         // We might be creating a placeholder for a revision that we just
         // created or for one we learned about from a GroupInviteLinkPreview.
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction throws -> Void in
-            if let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) {
+            var groupRecord = GroupStore().fetchGroupOrInsert(secretParams: secretParams, tx: transaction)
+            if let threadId = groupRecord.threadId {
+                let thread = ThreadFinder().fetch(rowId: threadId, tx: transaction)
+                guard let groupThread = thread as? TSGroupThread else {
+                    throw OWSAssertionError("missing TSGroupThread")
+                }
                 // The group already existing in the database; make sure
                 // that we are a requesting member.
                 guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
@@ -1939,8 +1941,8 @@ public class GroupsV2Impl: GroupsV2 {
                 builder.groupMembership = membershipBuilder.build()
 
                 let groupModel = try builder.buildAsV2()
-                let (groupThread, _) = ThreadStoreImpl.insertGroupThread(
-                    masterKey: masterKey,
+                let groupThread = ThreadStoreImpl.insertGroupThread(
+                    groupRecord: &groupRecord,
                     groupModel: groupModel,
                     tx: transaction,
                 )

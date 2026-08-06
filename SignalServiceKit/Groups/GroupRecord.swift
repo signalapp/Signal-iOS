@@ -21,7 +21,7 @@ public struct GroupRecord: Codable, FetchableRecord, PersistableRecord {
 
     /// Might not exist. Perhaps the group hasn't been restored yet or the
     /// thread has been deleted.
-    let threadId: ThreadId?
+    private(set) var threadId: ThreadId?
 
     /// Missing for GV1 groups; potentially missing for GV2 groups you've left.
     let masterKey: GroupMasterKey?
@@ -87,5 +87,10 @@ public struct GroupRecord: Codable, FetchableRecord, PersistableRecord {
                 return try GroupSecretParams.deriveFromMasterKey(groupMasterKey: $0)
             }
         }
+    }
+
+    mutating func setThreadId(_ threadId: ThreadId, tx: DBWriteTransaction) {
+        self.threadId = threadId
+        failIfThrows { try self.update(tx.database) }
     }
 }

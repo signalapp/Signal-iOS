@@ -809,13 +809,15 @@ public class GroupManager: NSObject {
     ) -> (TSGroupThread, GroupRecord) {
         let threadAssociatedDataStore = DependenciesBridge.shared.threadAssociatedDataStore
 
+        var groupRecord = GroupStore().fetchGroupOrInsert(secretParams: secretParams, tx: transaction)
+
         let groupId = failIfThrows { try secretParams.getPublicParams().getGroupIdentifier() }
-        if let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) {
-            owsFail("Inserting existing group thread: \(groupThread.logString).")
+        if groupRecord.threadId != nil {
+            owsFail("Inserting existing group thread: \(groupId)")
         }
 
-        let (groupThread, groupRecord) = ThreadStoreImpl.insertGroupThread(
-            masterKey: failIfThrows { try secretParams.getMasterKey() },
+        let groupThread = ThreadStoreImpl.insertGroupThread(
+            groupRecord: &groupRecord,
             groupModel: groupModel,
             tx: transaction,
         )

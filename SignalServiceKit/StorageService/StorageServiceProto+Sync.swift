@@ -1061,6 +1061,9 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         }
         let groupId = groupContextInfo.groupId
 
+        // Insert the GroupRecord immediately, even before we've restored the group.
+        _ = GroupStore().fetchGroupOrInsert(secretParams: groupContextInfo.groupSecretParams, tx: transaction)
+
         let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction)
         if let groupThread {
             let localStorySendMode = groupThread.storyViewMode.storageServiceMode

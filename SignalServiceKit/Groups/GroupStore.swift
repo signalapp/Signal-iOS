@@ -14,6 +14,20 @@ struct GroupStore {
         return failIfThrows { try fetchRequest.fetchOne(tx.database) }
     }
 
+    func fetchGroupOrInsert(secretParams: GroupSecretParams, tx: DBWriteTransaction) -> GroupRecord {
+        let groupId = failIfThrows { try secretParams.getPublicParams().getGroupIdentifier() }
+        if let existingRecord = fetchGroup(forGroupId: groupId, tx: tx) {
+            return existingRecord
+        }
+        let masterKey = failIfThrows { try secretParams.getMasterKey() }
+        return GroupRecord.insertRecord(
+            groupId: groupId.serialize(),
+            threadId: nil, // set later
+            masterKey: masterKey,
+            tx: tx,
+        )
+    }
+
     func fetchRowId(forGroupId groupId: GroupIdentifier, tx: DBReadTransaction) -> GroupRecord.RowId? {
         let fetchRequest = GroupRecord
             .select(GroupRecord.Columns.rowId, as: GroupRecord.RowId.self)

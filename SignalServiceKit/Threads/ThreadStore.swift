@@ -197,19 +197,17 @@ public class ThreadStoreImpl: ThreadStore {
     }
 
     public static func insertGroupThread(
-        masterKey: GroupMasterKey,
+        groupRecord: inout GroupRecord,
         groupModel: TSGroupModelV2,
         tx: DBWriteTransaction,
-    ) -> (TSGroupThread, GroupRecord) {
+    ) -> TSGroupThread {
         let groupThread = TSGroupThread(groupModel: groupModel)
         groupThread.anyInsert(transaction: tx)
-        let groupRecord = GroupRecord.insertRecord(
-            groupId: groupModel.groupId,
-            threadId: groupThread.sqliteRowId.owsFailUnwrap("must exist"),
-            masterKey: masterKey,
+        groupRecord.setThreadId(
+            groupThread.sqliteRowId.owsFailUnwrap("must exist"),
             tx: tx,
         )
-        return (groupThread, groupRecord)
+        return groupThread
     }
 
     public func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {
