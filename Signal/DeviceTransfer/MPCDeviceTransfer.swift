@@ -128,20 +128,6 @@ private extension MCSessionState {
     }
 }
 
-enum TransferSessionDirection {
-    case incoming
-    case outgoing
-}
-
-private extension TransferSessionDirection {
-    var identityName: String {
-        switch self {
-        case .incoming: "IncomingDeviceTransfer"
-        case .outgoing: "OutgoingDeviceTransfer"
-        }
-    }
-}
-
 private extension TransferSessionSendDataMode {
     var asMCSessionSendDataMode: MCSessionSendDataMode {
         switch self {
@@ -159,12 +145,14 @@ enum MPCDeviceTransfer {
 
     class Browser: NSObject, DeviceTransferServiceBrowser, MCNearbyServiceBrowserDelegate {
 
+        let identity: SecIdentity?
         let browser: MCNearbyServiceBrowser
         weak var delegate: DeviceTransferServiceBrowserDelegate?
         let peerId: DeviceTransferPeerID
         var session: DeviceTransferSession?
 
         init(peerId: DeviceTransferPeerID) {
+            self.identity = try? SelfSignedIdentity.create(name: "OutgoingDeviceTransfer", validForDays: 1)
             browser = MCNearbyServiceBrowser(
                 peer: peerId.mcPeerID,
                 serviceType: DeviceTransfer.Constants.newDeviceServiceIdentifier,
@@ -175,7 +163,10 @@ enum MPCDeviceTransfer {
         }
 
         func invitePeer(_ peer: DeviceTransferPeerID) throws -> DeviceTransferSession {
-            let session = try Session(direction: .outgoing, peerID: self.peerId.mcPeerID)
+            guard let identity else {
+                throw OWSAssertionError("Could not create identity for browser")
+            }
+            let session = Session(identity: identity, peerID: self.peerId.mcPeerID)
             browser.invitePeer(
                 peer.mcPeerID,
                 to: session.session,
@@ -222,7 +213,14 @@ enum MPCDeviceTransfer {
         var session: Session!
         let advertiser: MCNearbyServiceAdvertiser
 
+        // Create an identity to use for our TLS sessions, the old device
+        // will verify this identity via the QR code
+        // We don't actually need to generate an identity for the old device, the new device
+        // doesn't verify this information. We do it anyway, for consistency.
+        let identity: SecIdentity?
+
         init(peerId: DeviceTransferPeerID) {
+            self.identity = try? SelfSignedIdentity.create(name: "IncomingDeviceTransfer", validForDays: 1)
             self.peerId = peerId
             advertiser = MCNearbyServiceAdvertiser(
                 peer: peerId.mcPeerID,
@@ -234,7 +232,10 @@ enum MPCDeviceTransfer {
         }
 
         func startAdvertising() throws -> DeviceTransferSession {
-            self.session = try Session(direction: .incoming, peerID: peerId.mcPeerID)
+            guard let identity else {
+                throw OWSAssertionError("Could not create identity for advertiser")
+            }
+            self.session = Session(identity: identity, peerID: peerId.mcPeerID)
             advertiser.startAdvertisingPeer()
             return session
         }
@@ -300,8 +301,11 @@ enum MPCDeviceTransfer {
         fileprivate let session: MCSession
         weak var delegate: DeviceTransferSessionDelegate?
 
-        fileprivate init(direction: TransferSessionDirection, peerID: MCPeerID) throws {
-            self.identity = try SelfSignedIdentity.create(name: direction.identityName, validForDays: 1)
+        fileprivate init(
+            identity: SecIdentity,
+            peerID: MCPeerID,
+        ) {
+            self.identity = identity
             let session = MCSession(peer: peerID, securityIdentity: [identity], encryptionPreference: .required)
             self.session = session
             super.init()
