@@ -90,6 +90,7 @@ public class DeviceTransferCoordinator: Equatable {
             db: db,
             deviceSleepManager: deviceSleepManager,
             deviceTransferRestore: deviceTransferRestore,
+            deviceTransferConnectionFactory: DeviceTransfer.defaultFactory,
             registrationStateChangeManager: registrationStateChangeManager,
             tsAccountManager: tsAccountManager,
         )

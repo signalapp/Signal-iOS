@@ -24,9 +24,12 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
 
     private let sleepBlockObject = DeviceSleepBlockObject(blockReason: "device transfer")
 
+    private let newDeviceServiceBrowser: DeviceTransferOutgoingConnection
+
     init(
         db: DB,
         deviceSleepManager: DeviceSleepManager?,
+        deviceTransferConnectionFactory: DeviceTransferConnectionFactory,
         registrationStateChangeManager: RegistrationStateChangeManager,
         tsAccountManager: TSAccountManager,
     ) {
@@ -34,6 +37,7 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
         self.registrationStateChangeManager = registrationStateChangeManager
         self.deviceSleepManager = deviceSleepManager
         self.tsAccountManager = tsAccountManager
+        self.newDeviceServiceBrowser = deviceTransferConnectionFactory.buildOutgoingConnection()
 
         NotificationCenter.default.addObserver(
             self,
@@ -43,11 +47,7 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
         )
     }
 
-    private lazy var newDeviceServiceBrowser = {
-        MPCDeviceTransferBrowser(peerId: DeviceTransferPeerID(displayName: UUID().uuidString))
-    }()
-
-    func connectToNewDevice(with peerId: DeviceTransferPeerID, certificateHash: Data) async throws {
+    func connectToNewDevice(with peerId: any DeviceTransferPeerID, certificateHash: Data) async throws {
         cancelTransferToNewDevice()
         deviceSleepManager?.addBlock(blockObject: sleepBlockObject)
         expectedCertificateHash = certificateHash
@@ -114,6 +114,18 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
 
     func stopListening() {
         newDeviceServiceBrowser.stop()
+    }
+
+    // MARK: - Utility
+
+    func parseTransferURL(
+        _ url: URL,
+        tsAccountManager: TSAccountManager,
+    ) throws -> (
+        peerId: any DeviceTransferPeerID,
+        certificateHash: Data,
+    ) {
+        return try newDeviceServiceBrowser.parseTransferURL(url, tsAccountManager: tsAccountManager)
     }
 
     // MARK: - Sending
@@ -337,55 +349,6 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
     func failTransfer(_ error: DeviceTransfer.Error, _ reason: String) {
         Logger.error("Failed transfer \(reason)")
         stopTransfer()
-    }
-
-    // MARK: - Utility
-
-    func parseTransferURL(_ url: URL) throws -> (peerId: DeviceTransferPeerID, certificateHash: Data) {
-        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false), let queryItems = components.queryItems else {
-            throw OWSAssertionError("Invalid url")
-        }
-
-        let queryItemsDictionary = [String: String](uniqueKeysWithValues: queryItems.compactMap { item in
-            guard let value = item.value else { return nil }
-            return (item.name, value)
-        })
-
-        guard
-            let version = queryItemsDictionary[DeviceTransfer.UrlConstants.versionKey],
-            Int(version) == DeviceTransfer.UrlConstants.currentTransferVersion
-        else {
-            throw DeviceTransfer.Error.unsupportedVersion
-        }
-
-        let currentMode: DeviceTransfer.Mode = tsAccountManager
-            .registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true ? .primary : .linked
-
-        guard
-            let rawMode = queryItemsDictionary[DeviceTransfer.UrlConstants.transferModeKey],
-            rawMode == currentMode.rawValue
-        else {
-            throw DeviceTransfer.Error.modeMismatch
-        }
-
-        guard
-            let base64CertificateHash = queryItemsDictionary[DeviceTransfer.UrlConstants.certificateHashKey],
-            let uriDecodedHash = base64CertificateHash.removingPercentEncoding,
-            let certificateHash = Data(base64Encoded: uriDecodedHash)
-        else {
-            throw OWSAssertionError("failed to decode certificate hash")
-        }
-
-        guard
-            let base64PeerId = queryItemsDictionary[DeviceTransfer.UrlConstants.peerIdKey],
-            let uriDecodedPeerId = base64PeerId.removingPercentEncoding,
-            let peerIdData = Data(base64Encoded: uriDecodedPeerId),
-            let peerId = DeviceTransferPeerID(with: peerIdData)
-        else {
-            throw OWSAssertionError("failed to decode MCPeerId")
-        }
-
-        return (peerId, certificateHash)
     }
 
     // Delegate

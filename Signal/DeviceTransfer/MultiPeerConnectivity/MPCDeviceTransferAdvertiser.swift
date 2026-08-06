@@ -12,7 +12,7 @@ class MPCDeviceTransferAdvertiser:
     DeviceTransferIncomingConnection,
     MCNearbyServiceAdvertiserDelegate
 {
-    let peerId: DeviceTransferPeerID
+    let peerId: MPCDeviceTransferPeerId
     let advertiser: MCNearbyServiceAdvertiser
 
     // Create an identity to use for our TLS sessions, the old device
@@ -26,9 +26,10 @@ class MPCDeviceTransferAdvertiser:
     private var connectionContinuation: CheckedContinuation<DeviceTransferSession, Error>?
     private var waitTask: Task<DeviceTransferSession, Error>?
 
-    init(peerId: DeviceTransferPeerID) {
+    @MainActor
+    override init() {
+        self.peerId = MPCDeviceTransferPeerId(displayName: UUID().uuidString)
         self.identity = try? SelfSignedIdentity.create(name: "IncomingDeviceTransfer", validForDays: 1)
-        self.peerId = peerId
         advertiser = MCNearbyServiceAdvertiser(
             peer: peerId.mcPeerID,
             discoveryInfo: nil,
@@ -78,9 +79,10 @@ class MPCDeviceTransferAdvertiser:
         }
     }
 
+    @MainActor
     static func urlForTransfer(
         identity: SecIdentity,
-        localPeerId: DeviceTransferPeerID,
+        localPeerId: MPCDeviceTransferPeerId,
         mode: DeviceTransfer.Mode,
     ) throws -> URL {
         var components = URLComponents()
@@ -103,7 +105,6 @@ class MPCDeviceTransferAdvertiser:
         ]
 
         components.queryItems = queryItems.map { URLQueryItem(name: $0.key, value: $0.value) }
-
         return components.url!
     }
 

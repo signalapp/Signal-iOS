@@ -13,8 +13,9 @@ class MPCDeviceTransferSession:
     MCSessionDelegate
 {
     let identity: SecIdentity
-    var localPeerId: DeviceTransferPeerID { DeviceTransferPeerID(mcPeerID: session.myPeerID) }
-    let remotePeerId: DeviceTransferPeerID
+    var localPeerId: any DeviceTransferPeerID { MPCDeviceTransferPeerId(mcPeerID: session.myPeerID) }
+    let _remotePeerId: MPCDeviceTransferPeerId
+    var remotePeerId: any DeviceTransferPeerID { _remotePeerId }
 
     let session: MCSession
     var delegate: Weak<DeviceTransferSessionDelegate>?
@@ -31,8 +32,7 @@ class MPCDeviceTransferSession:
         remoteDevicePeerID: MCPeerID,
     ) {
         self.identity = identity
-        self.remotePeerId = DeviceTransferPeerID(mcPeerID: remoteDevicePeerID)
-
+        self._remotePeerId = MPCDeviceTransferPeerId(mcPeerID: remoteDevicePeerID)
         let session = MCSession(peer: peerID, securityIdentity: [identity], encryptionPreference: .required)
         self.session = session
         super.init()
@@ -78,7 +78,7 @@ class MPCDeviceTransferSession:
         }
         try session.send(
             message.data,
-            toPeers: [remotePeerId.mcPeerID],
+            toPeers: [_remotePeerId.mcPeerID],
             with: mode,
         )
     }
@@ -99,7 +99,7 @@ class MPCDeviceTransferSession:
             let progress = session.sendResource(
                 at: url,
                 withName: name,
-                toPeer: remotePeerId.mcPeerID,
+                toPeer: _remotePeerId.mcPeerID,
             ) { error in
                 guard let savedContinuation = self.lock.withLock({ self.activeSends.removeValue(forKey: url) }) else {
                     return

@@ -29,10 +29,13 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
     private let deviceSleepManager: DeviceSleepManager?
     private let tsAccountManager: TSAccountManager
 
+    private let newDeviceServiceAdvertiser: DeviceTransferIncomingConnection
+
     init(
         db: DB,
         deviceSleepManager: DeviceSleepManager?,
         deviceTransferRestore: DeviceTransferRestore,
+        deviceTransferConnectionFactory: DeviceTransferConnectionFactory,
         registrationStateChangeManager: RegistrationStateChangeManager,
         tsAccountManager: TSAccountManager,
     ) {
@@ -40,8 +43,8 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
         self.deviceSleepManager = deviceSleepManager
         self.registrationStateChangeManager = registrationStateChangeManager
         self.tsAccountManager = tsAccountManager
-
         self.deviceTransferRestore = deviceTransferRestore
+        self.newDeviceServiceAdvertiser = deviceTransferConnectionFactory.buildIncomingConnection()
 
         NotificationCenter.default.addObserver(
             self,
@@ -51,11 +54,6 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
         )
     }
 
-    private lazy var newDeviceServiceAdvertiser = {
-        MPCDeviceTransferAdvertiser(peerId: DeviceTransferPeerID(displayName: UUID().uuidString))
-    }()
-
-    @MainActor
     func start(mode: DeviceTransfer.Mode) async throws -> URL {
         deviceSleepManager?.addBlock(blockObject: sleepBlockObject)
         return try newDeviceServiceAdvertiser.start(mode: mode)
@@ -114,7 +112,7 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
         stopTransfer(error: error)
     }
 
-    private func handleReceivedManifest(at localURL: URL, fromPeer peerId: DeviceTransferPeerID) {
+    private func handleReceivedManifest(at localURL: URL) {
         guard !transferInProgress else {
             stopTransfer()
             return owsFailDebug("Received manifest in unexpected state")
@@ -324,7 +322,7 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
             if let error {
                 owsFailDebug("Failed to receive manifest \(error)")
             } else if let localURL {
-                handleReceivedManifest(at: localURL, fromPeer: session.remotePeerId)
+                handleReceivedManifest(at: localURL)
             } else {
                 owsFailDebug("Unexpectedly completed transfer of resource with no URL or error")
             }

@@ -16,7 +16,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
 
     struct RestoreMethodData {
         struct PeerConnectionData {
-            var peerId: DeviceTransferPeerID
+            var peerId: any DeviceTransferPeerID
             var certificateHash: Data
         }
 
@@ -48,6 +48,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
         self.outgoingDeviceTransferTask = OutgoingDeviceTransferTask(
             db: db,
             deviceSleepManager: deviceSleepManager,
+            deviceTransferConnectionFactory: DeviceTransfer.defaultFactory,
             registrationStateChangeManager: registrationStateChangeManager,
             tsAccountManager: tsAccountManager,
         )
@@ -89,7 +90,10 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
         }
 
         do {
-            let (peerId, certificateHash) = try await outgoingDeviceTransferTask.parseTransferURL(transferURL)
+            let (peerId, certificateHash) = try await outgoingDeviceTransferTask.parseTransferURL(
+                transferURL,
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+            )
             return RestoreMethodData(
                 restoreMethod: restoreMethod,
                 peerConnectionData: RestoreMethodData.PeerConnectionData(

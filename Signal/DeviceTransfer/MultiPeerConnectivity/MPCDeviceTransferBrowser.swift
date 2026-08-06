@@ -14,20 +14,21 @@ class MPCDeviceTransferBrowser:
 {
     let identity: SecIdentity?
     let browser: MCNearbyServiceBrowser
-    let peerId: DeviceTransferPeerID
+    let peerId: MPCDeviceTransferPeerId
 
     private let lock = UnfairLock()
     private var session: DeviceTransferSession?
     private var inviteContinuation: CheckedContinuation<DeviceTransferSession, Error>?
     private var browseTask: Task<DeviceTransferSession, Error>?
 
-    init(peerId: DeviceTransferPeerID) {
+    @MainActor
+    override init() {
+        self.peerId = MPCDeviceTransferPeerId(displayName: UUID().uuidString)
         self.identity = try? SelfSignedIdentity.create(name: "OutgoingDeviceTransfer", validForDays: 1)
         browser = MCNearbyServiceBrowser(
             peer: peerId.mcPeerID,
             serviceType: DeviceTransfer.Constants.newDeviceServiceIdentifier,
         )
-        self.peerId = peerId
         super.init()
         browser.delegate = self
     }
@@ -64,6 +65,59 @@ class MPCDeviceTransferBrowser:
             session = nil
             inviteContinuation.take()?.resume(throwing: CancellationError())
         }
+    }
+
+    func parseTransferURL(
+        _ url: URL,
+        tsAccountManager: TSAccountManager,
+    ) throws -> (
+        peerId: any DeviceTransferPeerID,
+        certificateHash: Data,
+    ) {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false), let queryItems = components.queryItems else {
+            throw OWSAssertionError("Invalid url")
+        }
+
+        let queryItemsDictionary = [String: String](uniqueKeysWithValues: queryItems.compactMap { item in
+            guard let value = item.value else { return nil }
+            return (item.name, value)
+        })
+
+        guard
+            let version = queryItemsDictionary[DeviceTransfer.UrlConstants.versionKey],
+            Int(version) == DeviceTransfer.UrlConstants.currentTransferVersion
+        else {
+            throw DeviceTransfer.Error.unsupportedVersion
+        }
+
+        let currentMode: DeviceTransfer.Mode = tsAccountManager
+            .registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true ? .primary : .linked
+
+        guard
+            let rawMode = queryItemsDictionary[DeviceTransfer.UrlConstants.transferModeKey],
+            rawMode == currentMode.rawValue
+        else {
+            throw DeviceTransfer.Error.modeMismatch
+        }
+
+        guard
+            let base64CertificateHash = queryItemsDictionary[DeviceTransfer.UrlConstants.certificateHashKey],
+            let uriDecodedHash = base64CertificateHash.removingPercentEncoding,
+            let certificateHash = Data(base64Encoded: uriDecodedHash)
+        else {
+            throw OWSAssertionError("failed to decode certificate hash")
+        }
+
+        guard
+            let base64PeerId = queryItemsDictionary[DeviceTransfer.UrlConstants.peerIdKey],
+            let uriDecodedPeerId = base64PeerId.removingPercentEncoding,
+            let peerIdData = Data(base64Encoded: uriDecodedPeerId),
+            let peerId = MPCDeviceTransferPeerId(with: peerIdData)
+        else {
+            throw OWSAssertionError("failed to decode MCPeerId")
+        }
+
+        return (peerId, certificateHash)
     }
 
     @MainActor

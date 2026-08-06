@@ -6,10 +6,8 @@
 import Foundation
 import MultipeerConnectivity
 
-struct DeviceTransferPeerID: Equatable {
-
+struct MPCDeviceTransferPeerId: DeviceTransferPeerID {
     let mcPeerID: MCPeerID
-
     init(mcPeerID: MCPeerID) {
         self.mcPeerID = mcPeerID
     }
@@ -27,5 +25,9 @@ struct DeviceTransferPeerID: Equatable {
 
     func encoded() throws -> Data {
         return try NSKeyedArchiver.archivedData(withRootObject: mcPeerID, requiringSecureCoding: true)
+    }
+
+    static func ==(lhs: Self, rhs: Self) -> Bool {
+        lhs.mcPeerID == rhs.mcPeerID
     }
 }

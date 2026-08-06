@@ -8,12 +8,28 @@ import Foundation
 import MultipeerConnectivity
 import SignalServiceKit
 
+@MainActor
+protocol DeviceTransferConnectionFactory {
+    @MainActor
+    func buildOutgoingConnection() -> DeviceTransferOutgoingConnection
+    @MainActor
+    func buildIncomingConnection() -> DeviceTransferIncomingConnection
+}
+
+extension DeviceTransfer {
+    static let defaultFactory: DeviceTransferConnectionFactory = MPCDeviceTransferConnectionFactory()
+}
+
+@MainActor
+protocol DeviceTransferPeerID: Equatable { }
+
+@MainActor
 protocol DeviceTransferSession {
     var identity: SecIdentity { get }
     var delegate: Weak<DeviceTransferSessionDelegate>? { get set }
 
-    var localPeerId: DeviceTransferPeerID { get }
-    var remotePeerId: DeviceTransferPeerID { get }
+    var localPeerId: any DeviceTransferPeerID { get }
+    var remotePeerId: any DeviceTransferPeerID { get }
 
     @MainActor
     func waitForConnection() async throws
@@ -33,7 +49,17 @@ protocol DeviceTransferSession {
 
 protocol DeviceTransferOutgoingConnection {
     @MainActor
+    func parseTransferURL(
+        _ url: URL,
+        tsAccountManager: TSAccountManager,
+    ) throws -> (
+        peerId: any DeviceTransferPeerID,
+        certificateHash: Data,
+    )
+
+    @MainActor
     func start() async throws -> DeviceTransferSession
+
     @MainActor
     func stop()
 }

@@ -1887,6 +1887,7 @@
 		C14FB7E02EF3389300850EC5 /* MPCDeviceTransferAdvertiser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14FB7DF2EF3389300850EC5 /* MPCDeviceTransferAdvertiser.swift */; };
 		C14FB7E42EF3390100850EC5 /* MPCDeviceTransferSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14FB7E32EF3390100850EC5 /* MPCDeviceTransferSession.swift */; };
 		C14FB7E62EF33A3200850EC5 /* MPCDeviceTransferPeerId.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14FB7E52EF33A3200850EC5 /* MPCDeviceTransferPeerId.swift */; };
+		C14FB7E82EF33BEB00850EC5 /* MPCDeviceTransferConnectionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14FB7E72EF33BEB00850EC5 /* MPCDeviceTransferConnectionFactory.swift */; };
 		C150D6452D70AD9400DA119B /* LinkingProvisioningMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C150D6442D70AD9400DA119B /* LinkingProvisioningMessage.swift */; };
 		C154CB942E0C6607009F878C /* RegistrationCoordinatorBackupErrorPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C154CB932E0C6607009F878C /* RegistrationCoordinatorBackupErrorPresenter.swift */; };
 		C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15837EE29A592BA00176927 /* UsernameValidationManager.swift */; };
@@ -6227,6 +6228,7 @@
 		C14FB7DF2EF3389300850EC5 /* MPCDeviceTransferAdvertiser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPCDeviceTransferAdvertiser.swift; sourceTree = "<group>"; };
 		C14FB7E32EF3390100850EC5 /* MPCDeviceTransferSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPCDeviceTransferSession.swift; sourceTree = "<group>"; };
 		C14FB7E52EF33A3200850EC5 /* MPCDeviceTransferPeerId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPCDeviceTransferPeerId.swift; sourceTree = "<group>"; };
+		C14FB7E72EF33BEB00850EC5 /* MPCDeviceTransferConnectionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPCDeviceTransferConnectionFactory.swift; sourceTree = "<group>"; };
 		C150D6442D70AD9400DA119B /* LinkingProvisioningMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkingProvisioningMessage.swift; sourceTree = "<group>"; };
 		C154CB932E0C6607009F878C /* RegistrationCoordinatorBackupErrorPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorBackupErrorPresenter.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
@@ -12001,6 +12003,7 @@
 			children = (
 				C14FB7DF2EF3389300850EC5 /* MPCDeviceTransferAdvertiser.swift */,
 				C14FB7DD2EF3388200850EC5 /* MPCDeviceTransferBrowser.swift */,
+				C14FB7E72EF33BEB00850EC5 /* MPCDeviceTransferConnectionFactory.swift */,
 				C14FB7E52EF33A3200850EC5 /* MPCDeviceTransferPeerId.swift */,
 				C14FB7E32EF3390100850EC5 /* MPCDeviceTransferSession.swift */,
 			);
@@ -18797,6 +18800,7 @@
 				C12056692FE9B4FE005D3E82 /* MPCDeviceTransfer.swift in Sources */,
 				C14FB7E02EF3389300850EC5 /* MPCDeviceTransferAdvertiser.swift in Sources */,
 				C14FB7DE2EF3388200850EC5 /* MPCDeviceTransferBrowser.swift in Sources */,
+				C14FB7E82EF33BEB00850EC5 /* MPCDeviceTransferConnectionFactory.swift in Sources */,
 				C14FB7E62EF33A3200850EC5 /* MPCDeviceTransferPeerId.swift in Sources */,
 				C14FB7E42EF3390100850EC5 /* MPCDeviceTransferSession.swift in Sources */,
 				8840B6E2283F16650036BA4C /* MyStoriesViewController.swift in Sources */,
