@@ -52,7 +52,7 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
     }
 
     private lazy var newDeviceServiceAdvertiser = {
-        MPCDeviceTransfer.Advertiser(peerId: DeviceTransferPeerID(displayName: UUID().uuidString))
+        MPCDeviceTransferAdvertiser(peerId: DeviceTransferPeerID(displayName: UUID().uuidString))
     }()
 
     @MainActor

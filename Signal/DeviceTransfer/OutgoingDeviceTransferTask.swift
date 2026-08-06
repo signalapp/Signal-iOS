@@ -44,7 +44,7 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
     }
 
     private lazy var newDeviceServiceBrowser = {
-        MPCDeviceTransfer.Browser(peerId: DeviceTransferPeerID(displayName: UUID().uuidString))
+        MPCDeviceTransferBrowser(peerId: DeviceTransferPeerID(displayName: UUID().uuidString))
     }()
 
     func connectToNewDevice(with peerId: DeviceTransferPeerID, certificateHash: Data) async throws {
