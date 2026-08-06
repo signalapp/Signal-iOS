@@ -350,6 +350,7 @@ public class GRDBSchemaMigrator {
         case rebuildDisappearingMessagesIndex
         case addPinnedThread
         case addGroup
+        case removeInteractionAttachmentIdsIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5480,6 +5481,11 @@ public class GRDBSchemaMigrator {
             try addGroup(tx: tx)
             let rowIds = try migrateGroupMasterKeys(tx: tx)
             try migrateGroupSendEndorsements(keepingRowIds: rowIds, tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.removeInteractionAttachmentIdsIndex) { tx in
+            try removeInteractionAttachmentIdsIndex(tx: tx)
             return .success(())
         }
 
