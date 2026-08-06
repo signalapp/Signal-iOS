@@ -473,45 +473,6 @@ struct GRDBSchemaMigratorTest {
     }
 
     @Test
-    func testRemoveDeadEndGroupThreadIdMappings() throws {
-        let collection = "TSGroupThread.uniqueIdMappingStore"
-        let databaseQueue = DatabaseQueue()
-        try databaseQueue.write { db in
-            try db.execute(sql: """
-            CREATE TABLE "model_TSThread" (uniqueId TEXT NOT NULL);
-            CREATE TABLE "keyvalue" (
-                collection TEXT NOT NULL,
-                key TEXT NOT NULL,
-                value BLOB NOT NULL
-            );
-            INSERT INTO "model_TSThread" VALUES ('A'), ('B');
-            """)
-            let uniqueIdMappings: [(Data, String)] = [
-                (Data(repeating: 0, count: 16), "A"),
-                (Data(repeating: 1, count: 32), "B"),
-                (Data(repeating: 2, count: 16), "C"),
-                (Data(repeating: 3, count: 32), "C"),
-            ]
-            for (groupId, uniqueId) in uniqueIdMappings {
-                try db.execute(
-                    sql: "INSERT INTO keyvalue VALUES (?, ?, ?)",
-                    arguments: [collection, groupId.hexadecimalString, Self.keyedArchiverData(rootObject: uniqueId)],
-                )
-            }
-            let tx = DBWriteTransaction(database: db)
-            defer { tx.finalizeTransaction() }
-            try GRDBSchemaMigrator.removeDeadEndGroupThreadIdMappings(tx: tx)
-        }
-        let groupIdKeys = try databaseQueue.read { db in
-            return try String.fetchAll(db, sql: "SELECT key FROM keyvalue")
-        }
-        #expect(Set(groupIdKeys) == [
-            Data(repeating: 0, count: 16).hexadecimalString,
-            Data(repeating: 1, count: 32).hexadecimalString,
-        ])
-    }
-
-    @Test
     func testMigrateBlockedRecipients() throws {
         // Set up the database with sample data that may have existed.
         let blockedAciStrings = [
@@ -2114,6 +2075,301 @@ struct GRDBSchemaMigratorTest {
                 #expect(pinnedThread["groupId"] as Data? == nil)
                 #expect(pinnedThread["recipientId"] as Int64? == expectedRecipientId)
             }
+        }
+    }
+
+    private func encodeGroupModel(
+        groupId: Data,
+        secretParams: GroupSecretParams?,
+        className: String = "SignalServiceKit.TSGroupModelV2",
+    ) -> Data {
+        @objc(TSEncodableMasterKeyMigrationGroupModel)
+        class TSEncodableMasterKeyMigrationGroupModel: NSObject, NSSecureCoding {
+            static var supportsSecureCoding: Bool { true }
+            let groupId: Data
+            let secretParamsData: Data?
+            init(groupId: Data, secretParamsData: Data?) {
+                self.groupId = groupId
+                self.secretParamsData = secretParamsData
+            }
+
+            required init?(coder: NSCoder) {
+                owsFail("can't decode")
+            }
+
+            func encode(with coder: NSCoder) {
+                coder.encode(groupId as NSData, forKey: "groupId")
+                if let secretParamsData {
+                    coder.encode(secretParamsData as NSData, forKey: "secretParamsData")
+                }
+            }
+        }
+        let coder = NSKeyedArchiver(requiringSecureCoding: true)
+        coder.setClassName(className, for: TSEncodableMasterKeyMigrationGroupModel.self)
+        coder.encode(TSEncodableMasterKeyMigrationGroupModel(
+            groupId: groupId,
+            secretParamsData: secretParams?.serialize(),
+        ), forKey: NSKeyedArchiveRootObjectKey)
+        return coder.encodedData
+    }
+
+    @Test
+    func testMigrateGroupMasterKeys() throws {
+        let group1Id = Randomness.generateRandomBytes(16)
+        let group1ThreadUniqueId = UUID().uuidString
+
+        let group2Id = Randomness.generateRandomBytes(16)
+        let group2ThreadUniqueId = "g" + group2Id.base64EncodedString()
+
+        let group3SecretParams = try GroupSecretParams.generate()
+        let group3MasterKey = try group3SecretParams.getMasterKey()
+        let group3Id = try group3SecretParams.getPublicParams().getGroupIdentifier()
+        let group3ThreadUniqueId = UUID().uuidString
+
+        let group4SecretParams = try GroupSecretParams.generate()
+        let group4MasterKey = try group4SecretParams.getMasterKey()
+        let group4Id = try group4SecretParams.getPublicParams().getGroupIdentifier()
+        let group4ThreadUniqueId = "g" + group4Id.serialize().base64EncodedString()
+
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "keyvalue" (
+                "collection" TEXT NOT NULL,
+                "key" TEXT NOT NULL,
+                "value" BLOB NOT NULL,
+                PRIMARY KEY ("collection", "key")
+            );
+
+            CREATE TABLE "model_TSThread" (
+                "id" INTEGER PRIMARY KEY,
+                "recordType" INTEGER NOT NULL,
+                "uniqueId" TEXT NOT NULL UNIQUE,
+                "groupModel" BLOB
+            );
+            """)
+
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSThread" ("recordType", "uniqueId", "groupModel") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    26,
+                    group1ThreadUniqueId,
+                    encodeGroupModel(groupId: group1Id, secretParams: nil, className: "TSGroupModel"),
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSThread" ("recordType", "uniqueId", "groupModel") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    26,
+                    group2ThreadUniqueId,
+                    encodeGroupModel(groupId: group2Id, secretParams: nil, className: "TSGroupModel"),
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSThread" ("recordType", "uniqueId", "groupModel") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    26,
+                    UUID().uuidString, // non-canonical
+                    encodeGroupModel(groupId: group3Id.serialize(), secretParams: group3SecretParams),
+                ],
+            )
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSThread" ("recordType", "uniqueId", "groupModel") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    26,
+                    group3ThreadUniqueId,
+                    encodeGroupModel(groupId: group3Id.serialize(), secretParams: group3SecretParams),
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSThread" ("recordType", "uniqueId", "groupModel") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    26,
+                    group4ThreadUniqueId,
+                    encodeGroupModel(groupId: group4Id.serialize(), secretParams: group4SecretParams),
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "TSGroupThread.uniqueIdMappingStore",
+                    group1Id.hexadecimalString,
+                    group1ThreadUniqueId,
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "TSGroupThread.uniqueIdMappingStore",
+                    group3Id.serialize().hexadecimalString,
+                    group3ThreadUniqueId,
+                ],
+            )
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.addGroup(tx: tx)
+                let rowIds = try GRDBSchemaMigrator.migrateGroupMasterKeys(tx: tx)
+                #expect(rowIds == [1, 2, 4, 5])
+            }
+
+            var groupRecords = try Row.fetchAll(db, sql: "SELECT * FROM GroupRecord ORDER BY rowId")[...]
+
+            do {
+                let groupRecord = groupRecords.removeFirst()
+                #expect(groupRecord["rowId"] as Int64 == 1)
+                #expect(groupRecord["groupId"] as Data? == group1Id)
+                #expect(groupRecord["threadId"] as Int64? == 1)
+                #expect(groupRecord["masterKey"] as Data? == nil)
+            }
+            do {
+                let groupRecord = groupRecords.removeFirst()
+                #expect(groupRecord["rowId"] as Int64 == 2)
+                #expect(groupRecord["groupId"] as Data? == group2Id)
+                #expect(groupRecord["threadId"] as Int64? == 2)
+                #expect(groupRecord["masterKey"] as Data? == nil)
+            }
+            do {
+                let groupRecord = groupRecords.removeFirst()
+                #expect(groupRecord["rowId"] as Int64 == 4)
+                #expect(groupRecord["groupId"] as Data? == group3Id.serialize())
+                #expect(groupRecord["threadId"] as Int64? == 4)
+                #expect(groupRecord["masterKey"] as Data? == group3MasterKey.serialize())
+            }
+            do {
+                let groupRecord = groupRecords.removeFirst()
+                #expect(groupRecord["rowId"] as Int64 == 5)
+                #expect(groupRecord["groupId"] as Data? == group4Id.serialize())
+                #expect(groupRecord["threadId"] as Int64? == 5)
+                #expect(groupRecord["masterKey"] as Data? == group4MasterKey.serialize())
+            }
+            #expect(groupRecords.isEmpty)
+        }
+    }
+
+    @Test
+    func testMigrateGroupSendEndorsements() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "model_TSThread" (
+                "id" INTEGER PRIMARY KEY
+            );
+            INSERT INTO "model_TSThread" ("id") VALUES (1), (2), (3);
+
+            CREATE TABLE "GroupRecord" (
+                "rowId" INTEGER PRIMARY KEY
+            );
+            INSERT INTO "GroupRecord" ("rowId") VALUES (1), (3);
+
+            CREATE TABLE "model_SignalRecipient" (
+                "id" INTEGER PRIMARY KEY
+            );
+            INSERT INTO "model_SignalRecipient" ("id") VALUES (2), (4);
+
+            CREATE TABLE "CombinedGroupSendEndorsement" (
+              "threadId" INTEGER PRIMARY KEY REFERENCES "model_TSThread" (
+                "id"
+              ) ON DELETE CASCADE ON UPDATE CASCADE,
+              "endorsement" BLOB NOT NULL,
+              "expiration" INTEGER NOT NULL
+            );
+            INSERT INTO "CombinedGroupSendEndorsement" (
+                "threadId", "endorsement", "expiration"
+            ) VALUES (
+                1, X'', 1234
+            ), (
+                2, X'', 2345
+            ), (
+                3, X'', 3456
+            );
+
+            CREATE TABLE "IndividualGroupSendEndorsement" (
+              "threadId" INTEGER NOT NULL REFERENCES "CombinedGroupSendEndorsement" (
+                "threadId"
+              ) ON DELETE CASCADE ON UPDATE CASCADE,
+              "recipientId" INTEGER NOT NULL REFERENCES "model_SignalRecipient" (
+                "id"
+              ) ON DELETE CASCADE ON UPDATE CASCADE,
+              "endorsement" BLOB NOT NULL,
+              PRIMARY KEY (
+                "threadId",
+                "recipientId"
+              )
+            );
+            CREATE INDEX "IndividualGroupSendEndorsement_recipientId" ON "IndividualGroupSendEndorsement" (
+              "recipientId"
+            );
+            INSERT INTO "IndividualGroupSendEndorsement" (
+                "threadId", "recipientId", "endorsement"
+            ) VALUES (
+                1, 2, X''
+            ), (
+                2, 4, X''
+            ), (
+                3, 2, X''
+            ), (
+                3, 4, X''
+            );
+            """)
+        }
+
+        var migrator = DatabaseMigrator()
+        migrator.registerMigration("masterKeyMigration", foreignKeyChecks: .deferred, migrate: { db in
+            let tx = DBWriteTransaction(database: db)
+            defer { tx.finalizeTransaction() }
+            try GRDBSchemaMigrator.migrateGroupSendEndorsements(keepingRowIds: [1, 3], tx: tx)
+        })
+        try migrator.migrate(databaseQueue)
+
+        try databaseQueue.read { db in
+            var combinedRecords = try Row.fetchAll(db, sql: "SELECT * FROM CombinedGroupSendEndorsement ORDER BY groupRowId")[...]
+            do {
+                let record = combinedRecords.removeFirst()
+                #expect(record["groupRowId"] as Int64 == 1)
+            }
+            do {
+                let record = combinedRecords.removeFirst()
+                #expect(record["groupRowId"] as Int64 == 3)
+            }
+            #expect(combinedRecords.isEmpty)
+            var individualRecords = try Row.fetchAll(db, sql: "SELECT * FROM IndividualGroupSendEndorsement ORDER BY groupRowId, recipientId")[...]
+            do {
+                let record = individualRecords.removeFirst()
+                #expect(record["groupRowId"] as Int64 == 1)
+                #expect(record["recipientId"] as Int64 == 2)
+            }
+            do {
+                let record = individualRecords.removeFirst()
+                #expect(record["groupRowId"] as Int64 == 3)
+                #expect(record["recipientId"] as Int64 == 2)
+            }
+            do {
+                let record = individualRecords.removeFirst()
+                #expect(record["groupRowId"] as Int64 == 3)
+                #expect(record["recipientId"] as Int64 == 4)
+            }
+            #expect(individualRecords.isEmpty)
         }
     }
 }

@@ -126,7 +126,12 @@ class BlockingManagerTests: SSKBaseTest {
             do {
                 let thread = TSGroupThread.forUnitTest(masterKey: try noLongerBlockedGroupParams.getMasterKey())
                 thread.anyInsert(transaction: tx)
-                TSGroupThread.setUniqueId(thread.uniqueId, forGroupId: thread.groupId, tx: tx)
+                _ = GroupRecord.insertRecord(
+                    groupId: thread.groupId,
+                    threadId: thread.sqliteRowId!,
+                    masterKey: try noLongerBlockedGroupParams.getMasterKey(),
+                    tx: tx,
+                )
             }
             blockingManager.addBlockedGroupId(
                 try noLongerBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(),
@@ -147,7 +152,12 @@ class BlockingManagerTests: SSKBaseTest {
             do {
                 let thread = TSGroupThread.forUnitTest(masterKey: try stillBlockedGroupParams.getMasterKey())
                 thread.anyInsert(transaction: tx)
-                TSGroupThread.setUniqueId(thread.uniqueId, forGroupId: thread.groupId, tx: tx)
+                _ = GroupRecord.insertRecord(
+                    groupId: thread.groupId,
+                    threadId: thread.sqliteRowId!,
+                    masterKey: try stillBlockedGroupParams.getMasterKey(),
+                    tx: tx,
+                )
             }
             blockingManager.addBlockedGroupId(
                 try stillBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(),

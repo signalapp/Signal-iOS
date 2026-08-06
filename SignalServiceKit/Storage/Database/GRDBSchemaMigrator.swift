@@ -234,7 +234,6 @@ public class GRDBSchemaMigrator {
         case attachmentAddCdnUnencryptedByteCounts
         case addArchivedPaymentInfoColumn
         case createArchivedPaymentTable
-        case removeDeadEndGroupThreadIdMappings
         case addTSAttachmentMigrationTable
         case indexMessageAttachmentReferenceByReceivedAtTimestamp
         case addBackupAttachmentDownloadQueue
@@ -350,6 +349,7 @@ public class GRDBSchemaMigrator {
         case removeInteractionThreadUniqueIdUniqueIdIndex
         case rebuildDisappearingMessagesIndex
         case addPinnedThread
+        case addGroup
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -378,7 +378,6 @@ public class GRDBSchemaMigrator {
         case dataMigration_resetStorageServiceData
         case dataMigration_markAllInteractionsAsNotDeleted
         case dataMigration_turnScreenSecurityOnForExistingUsers
-        case dataMigration_groupIdMapping
         case dataMigration_disableSharingSuggestionsForExistingUsers
         case dataMigration_removeOversizedGroupAvatars
         case dataMigration_populateGroupMember
@@ -469,11 +468,15 @@ public class GRDBSchemaMigrator {
         case threadWallpaperTSAttachmentMigration3
         case migrateStoryMessageTSAttachments1
         case migrateStoryMessageTSAttachments2
+
+        // Obsoleted by addGroup.
+        case dataMigration_groupIdMapping
+        case removeDeadEndGroupThreadIdMappings
 #endif
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 155
+    public static let grdbSchemaVersionLatest: UInt = 156
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -3705,11 +3708,6 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
-        migrator.registerMigration(.removeDeadEndGroupThreadIdMappings) { tx in
-            try removeDeadEndGroupThreadIdMappings(tx: tx)
-            return .success(())
-        }
-
         migrator.registerMigration(.addTSAttachmentMigrationTable) { tx in
             try tx.database.create(table: "TSAttachmentMigration") { table in
                 table.column("tsAttachmentUniqueId", .text).notNull()
@@ -5478,6 +5476,13 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.addGroup, foreignKeyChecks: .deferred) { tx in
+            try addGroup(tx: tx)
+            let rowIds = try migrateGroupMasterKeys(tx: tx)
+            try migrateGroupSendEndorsements(keepingRowIds: rowIds, tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -5524,20 +5529,6 @@ public class GRDBSchemaMigrator {
             }
 
             preferencesKeyValueStore.setBool(true, key: screenSecurityKey, transaction: transaction)
-            return .success(())
-        }
-
-        migrator.registerMigration(.dataMigration_groupIdMapping) { transaction in
-            TSThread.anyEnumerate(transaction: transaction) { thread, _ in
-                guard let groupThread = thread as? TSGroupThread else {
-                    return
-                }
-                TSGroupThread.setUniqueId(
-                    groupThread.uniqueId,
-                    forGroupId: groupThread.groupId,
-                    tx: transaction,
-                )
-            }
             return .success(())
         }
 
@@ -6678,96 +6669,6 @@ public class GRDBSchemaMigrator {
         return .success(())
     }
 
-    /// Historically, we persisted a map of `[GroupId: ThreadUniqueId]` for
-    /// all group threads. For V1 groups that were migrated to V2 groups
-    /// this map would hold entries for both the V1 and V2 group ID to the
-    /// same group thread; this allowed us to find the same logical group
-    /// thread if we encountered either ID.
-    ///
-    /// However, it's possible that we could have persisted an entry for a
-    /// given group ID without having actually created a `TSGroupThread`,
-    /// since both the V2 group ID and the eventual `TSGroupThread/uniqueId`
-    /// were derivable from the V1 group ID. For example, code that was
-    /// removed in `72345f1` would have created a mapping when restoring a
-    /// record of a V1 group from Storage Service, but not actually have
-    /// created the `TSGroupThread`. A user who had run this code, but who
-    /// never had reason to create the `TSGroupThread` (e.g., because the
-    /// migrated group was inactive), would have a "dead-end" mapping of a
-    /// V1 group ID and its derived V2 group ID to a `uniqueId` that did not
-    /// actually belong to a `TSGroupThread`.
-    ///
-    /// Later, `f1f4e69` stopped checking for mappings when instantiating a
-    /// new `TSGroupThread` for a V2 group. However, other sites such as (at
-    /// the time of writing) `GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage`
-    /// would consult the mapping to get a `uniqueId` for a given group ID,
-    /// then check if a `TSGroupThread` exists for that `uniqueId`, and if
-    /// not create a new one. This is problematic, since that new
-    /// `TSGroupThread` will give itself a `uniqueId` derived from its V2
-    /// group ID, rather than using the `uniqueId` persisted in the mapping
-    /// that's based on the original V1 group ID. Phew.
-    ///
-    /// This in turn means that every time `GroupManager.tryToUpsert...` is
-    /// called it will fail to find the `TSGroupThread` that was previously
-    /// created, and will instead attempt to create a new `TSGroupThread`
-    /// each time (with the same derived `uniqueId`), which we believe is at
-    /// the root of an issue reported in the wild.
-    ///
-    /// This migration iterates through our persisted mappings and deletes
-    /// any of these "dead-end" mappings, since V1 group IDs are no longer
-    /// used anywhere and those mappings are therefore now useless.
-    static func removeDeadEndGroupThreadIdMappings(tx: DBWriteTransaction) throws {
-        let mappingStoreCollection = "TSGroupThread.uniqueIdMappingStore"
-
-        let rows = try Row.fetchAll(
-            tx.database,
-            sql: "SELECT * FROM keyvalue WHERE collection = ?",
-            arguments: [mappingStoreCollection],
-        )
-
-        /// Group IDs that have a mapping to a thread ID, but for which the
-        /// thread ID has no actual thread.
-        var deadEndGroupIds = [String]()
-
-        for row in rows {
-            guard
-                let groupIdKey = row["key"] as? String,
-                let targetThreadIdData = row["value"] as? Data,
-                let targetThreadId = (try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSString.self, from: targetThreadIdData)) as String?
-            else {
-                continue
-            }
-
-            if
-                try Bool.fetchOne(
-                    tx.database,
-                    sql: """
-                        SELECT EXISTS(
-                            SELECT 1
-                            FROM model_TSThread
-                            WHERE uniqueId = ?
-                            LIMIT 1
-                        )
-                    """,
-                    arguments: [targetThreadId],
-                ) != true
-            {
-                deadEndGroupIds.append(groupIdKey)
-            }
-        }
-
-        for deadEndGroupId in deadEndGroupIds {
-            try tx.database.execute(
-                sql: """
-                    DELETE FROM keyvalue
-                    WHERE collection = ? AND key = ?
-                """,
-                arguments: [mappingStoreCollection, deadEndGroupId],
-            )
-
-            Logger.warn("Deleting dead-end group ID mapping: \(deadEndGroupId)")
-        }
-    }
-
     static func migrateBlockedRecipients(tx: DBWriteTransaction) throws {
         try tx.database.create(table: "BlockedRecipient") { table in
             table.column("recipientId", .integer)
@@ -7575,9 +7476,13 @@ public class GRDBSchemaMigrator {
     private static func unarchiveGroupModel<T: NSSecureCoding & NSObject>(
         ofType groupModelType: T.Type,
         from dataValue: Data,
-    ) throws -> T? {
+    ) throws -> T {
         let coder = try groupModelUnarchiver(forReading: groupModelType, from: dataValue)
-        return try coder.decodeTopLevelObject(of: groupModelType, forKey: NSKeyedArchiveRootObjectKey)
+        let result = try coder.decodeTopLevelObject(of: groupModelType, forKey: NSKeyedArchiveRootObjectKey)
+        guard let result else {
+            throw OWSGenericError("no root object")
+        }
+        return result
     }
 
     private static func decodeGroupIdFromGroupModelData(
@@ -7595,7 +7500,7 @@ public class GRDBSchemaMigrator {
         }
 
         let groupModel = try unarchiveGroupModel(ofType: TSGroupModelForMigrations.self, from: groupModelData)
-        return groupModel?.groupId as Data?
+        return groupModel.groupId as Data?
     }
 
     static func createStoryRecipients(tx: DBWriteTransaction) throws {
@@ -8300,6 +8205,168 @@ public class GRDBSchemaMigrator {
     static func removeOldPinnedThreads(tx: DBWriteTransaction) throws {
         let collection = "PinnedConversationManager"
         try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection IS ?", arguments: [collection])
+    }
+
+    static func addGroup(tx: DBWriteTransaction) throws {
+        try tx.database.create(table: "GroupRecord") {
+            $0.column("rowId", .integer).notNull().primaryKey()
+            $0.column("groupId", .blob).notNull().unique()
+            $0.column("threadId", .blob).unique()
+                .references("model_TSThread", column: "id", onDelete: .setNull, onUpdate: .cascade)
+            $0.column("masterKey", .blob)
+        }
+    }
+
+    static func migrateGroupMasterKeys(tx: DBWriteTransaction) throws -> Set<Int64> {
+        @objc(TSMasterKeyMigrationGroupModel)
+        class TSMasterKeyMigrationGroupModel: NSObject, NSSecureCoding {
+            static var supportsSecureCoding: Bool { true }
+            let groupId: Data?
+            let secretParamsData: Data?
+            required init?(coder: NSCoder) {
+                self.groupId = coder.decodeObject(of: NSData.self, forKey: "groupId") as Data?
+                self.secretParamsData = coder.decodeObject(of: NSData.self, forKey: "secretParamsData") as Data?
+            }
+
+            func encode(with coder: NSCoder) {
+                owsFail("can't encode")
+            }
+        }
+
+        // Read (and delete) the soon-to-be-obsolete mapping store
+        var groupIdToThreadUniqueId = [String: String]()
+        let mappingCursor = try Row.fetchCursor(
+            tx.database,
+            sql: "SELECT key, value FROM keyvalue WHERE collection = ?",
+            arguments: ["TSGroupThread.uniqueIdMappingStore"],
+        )
+        while let row = try mappingCursor.next() {
+            let key: String = row[0]
+            let value: String = row[1]
+            groupIdToThreadUniqueId[key] = value
+        }
+        try tx.database.execute(
+            sql: "DELETE FROM keyvalue WHERE collection = ?",
+            arguments: ["TSGroupThread.uniqueIdMappingStore"],
+        )
+
+        // Read all the group threads and insert GroupRecords
+        let threadCursor = try Row.fetchCursor(
+            tx.database,
+            sql: "SELECT id, uniqueId, groupModel FROM model_TSThread WHERE recordType = 26",
+        )
+        var rowIds = Set<Int64>()
+        while let row = try threadCursor.next() {
+            let threadId: Int64 = row[0]
+            let uniqueId: String = row[1]
+            let encodedGroupModel: Data? = row[2]
+            guard let encodedGroupModel else {
+                Logger.warn("no group model for thread \(threadId)")
+                continue
+            }
+            let groupModel: TSMasterKeyMigrationGroupModel
+            do {
+                groupModel = try unarchiveGroupModel(ofType: TSMasterKeyMigrationGroupModel.self, from: encodedGroupModel)
+            } catch {
+                Logger.warn("couldn't decode group model: \(error)")
+                continue
+            }
+            guard let groupId = groupModel.groupId else {
+                Logger.warn("missing group id for thread \(threadId)")
+                continue
+            }
+            // There might be duplicate TSThreads with the same group ID, but there's
+            // only one that's returned from the mapping store. Prefer that one to
+            // maintain the current behavior.
+            let canonicalUniqueId = groupIdToThreadUniqueId[groupId.hexadecimalString] ?? TSGroupThread.defaultThreadUniqueId(forGroupId: groupId)
+            guard uniqueId == canonicalUniqueId else {
+                Logger.warn("skipping duplicate thread \(uniqueId) that's not canonical \(canonicalUniqueId)")
+                continue
+            }
+            let secretParams: GroupSecretParams?
+            do {
+                secretParams = try groupModel.secretParamsData.map(GroupSecretParams.init(contents:))
+            } catch {
+                Logger.warn("couldn't decode secret params for group \(groupId.hexadecimalString)")
+                // Continue by excluding them -- this matches the existing behavior.
+                secretParams = nil
+            }
+            let masterKey = failIfThrows { try secretParams?.getMasterKey() }
+            // If we have the secretParams, check if they match the groupId (to help
+            // with debugging if anything goes wrong).
+            if let secretParams {
+                let computedGroupId = failIfThrows { try secretParams.getPublicParams().getGroupIdentifier() }
+                owsAssertDebug(groupId == computedGroupId.serialize())
+            }
+            // Reuse the existing rowId of the TSThread to reduce the migration cost.
+            // TODO: Remove this after a few months when all non-migrated GSEs have expired.
+            let rowId = threadId
+            try tx.database.execute(
+                sql: "INSERT INTO GroupRecord (rowId, groupId, threadId, masterKey) VALUES (?, ?, ?, ?)",
+                arguments: [rowId, groupId, threadId, masterKey?.serialize()],
+            )
+            rowIds.insert(rowId)
+        }
+        return rowIds
+    }
+
+    static func migrateGroupSendEndorsements(keepingRowIds: Set<Int64>, tx: DBWriteTransaction) throws {
+        // Delete any that won't be migrated.
+        let existingRowIds = try Int64.fetchAll(
+            tx.database,
+            sql: "SELECT threadId FROM CombinedGroupSendEndorsement",
+        )
+        for existingRowId in existingRowIds {
+            if keepingRowIds.contains(existingRowId) {
+                continue
+            }
+            Logger.warn("dropping GSEs from redundant thread \(existingRowId)")
+            try tx.database.execute(
+                sql: "DELETE FROM IndividualGroupSendEndorsement WHERE threadId = ?",
+                arguments: [existingRowId],
+            )
+            try tx.database.execute(
+                sql: "DELETE FROM CombinedGroupSendEndorsement WHERE threadId = ?",
+                arguments: [existingRowId],
+            )
+        }
+        // Rename the columns on the existing tables.
+        try tx.database.alter(table: "IndividualGroupSendEndorsement") {
+            $0.rename(column: "threadId", to: "groupRowId")
+        }
+        // Even though we're rebuilding this table, we rename the column first to
+        // avoid needing to rebuild the (much larger) IndividualGSE table as well.
+        try tx.database.alter(table: "CombinedGroupSendEndorsement") {
+            $0.rename(column: "threadId", to: "groupRowId")
+        }
+        // Build a new table targeting GroupRecord.
+        try tx.database.create(table: "CombinedGroupSendEndorsement_new") { table in
+            table.column("groupRowId", .integer).primaryKey()
+                .references("GroupRecord", column: "rowId", onDelete: .cascade, onUpdate: .cascade)
+            table.column("endorsement", .blob).notNull()
+            table.column("expiration", .integer).notNull()
+        }
+        // Migrate the data to the new table.
+        try tx.database.execute(
+            sql: """
+            INSERT INTO "CombinedGroupSendEndorsement_new" (
+                "groupRowId",
+                "endorsement",
+                "expiration"
+            ) SELECT
+                "groupRowId",
+                "endorsement",
+                "expiration"
+            FROM "CombinedGroupSendEndorsement"
+            """,
+        )
+        try tx.database.drop(table: "CombinedGroupSendEndorsement")
+        try tx.database.rename(table: "CombinedGroupSendEndorsement_new", to: "CombinedGroupSendEndorsement")
+        try tx.database.create(
+            index: "CombinedGroupSendEndorsement_expiration",
+            on: "CombinedGroupSendEndorsement",
+            columns: ["expiration"],
+        )
     }
 
     static func dedupeSignalRecipients(tx: DBWriteTransaction) throws {

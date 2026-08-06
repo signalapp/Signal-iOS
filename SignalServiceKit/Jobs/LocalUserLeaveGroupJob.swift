@@ -52,7 +52,9 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
             try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout()
         }
 
-        let groupThread = SSKEnvironment.shared.databaseStorageRef.read { tx in
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
+        let groupThread = databaseStorage.read { tx in
             return TSGroupThread.fetchGroupThreadViaCache(uniqueId: jobRecord.threadId, transaction: tx)
         }
 
@@ -68,7 +70,7 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
         }
 
         do {
-            try await GroupManager.refreshGroupSendEndorsementsIfNeeded(threadId: groupThread.sqliteRowId!, groupModel: groupModel)
+            try await GroupManager.refreshGroupSendEndorsementsIfNeeded(groupModel: groupModel)
         } catch where !error.isNetworkFailureOrTimeout {
             Logger.warn("Tried and failed to refresh credentials; continuing anyways because credentials aren't required; error: \(error)")
         }

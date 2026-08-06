@@ -769,8 +769,7 @@ public class MessageSenderImpl: MessageSender, DeviceMessageBuilder {
             let endorsements: GroupSendEndorsements?
             do {
                 if let secretParams = try? ((thread as? TSGroupThread)?.groupModel as? TSGroupModelV2)?.secretParams() {
-                    let threadId = thread.sqliteRowId!
-                    endorsements = try fetchEndorsements(forThreadId: threadId, secretParams: secretParams, tx: tx)
+                    endorsements = try fetchEndorsements(secretParams: secretParams, tx: tx)
                     if
                         recoveryState.canRefreshExpiringGroupSendEndorsements,
                         GroupSendEndorsements.willExpireSoon(expirationDate: endorsements?.expiration)
@@ -1007,15 +1006,19 @@ public class MessageSenderImpl: MessageSender, DeviceMessageBuilder {
         return result
     }
 
-    private func fetchEndorsements(forThreadId threadId: Int64, secretParams: GroupSecretParams, tx: DBReadTransaction) throws -> GroupSendEndorsements? {
-        let combinedRecord = groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: threadId, tx: tx)
+    private func fetchEndorsements(secretParams: GroupSecretParams, tx: DBReadTransaction) throws -> GroupSendEndorsements? {
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier()
+        guard let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: tx) else {
+            return nil
+        }
+        let combinedRecord = groupSendEndorsementStore.fetchCombinedEndorsement(groupRowId: groupRowId, tx: tx)
         guard let combinedRecord else {
             return nil
         }
         let combinedEndorsement = try GroupSendEndorsement(contents: combinedRecord.endorsement)
 
         var individualEndorsements = [ServiceId: GroupSendEndorsement]()
-        for record in groupSendEndorsementStore.fetchIndividualEndorsements(groupThreadId: threadId, tx: tx) {
+        for record in groupSendEndorsementStore.fetchIndividualEndorsements(groupRowId: groupRowId, tx: tx) {
             let endorsement = try GroupSendEndorsement(contents: record.endorsement)
             let recipient = DependenciesBridge.shared.recipientDatabaseTable.fetchRecipient(rowId: record.recipientId, tx: tx)
             guard let recipient else {

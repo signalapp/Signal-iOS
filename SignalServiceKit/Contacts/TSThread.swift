@@ -31,6 +31,7 @@ public enum TSThreadType: UInt {
 open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
     public static let databaseTableName: String = "model_TSThread"
     public class var recordType: TSThreadType { .thread }
+    public typealias UniqueId = String
 
     static func concreteType(forRecordType recordType: UInt) -> (any InheritableRecord.Type)? {
         switch TSThreadType(rawValue: recordType) {
@@ -47,7 +48,7 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
     public var sqliteRowId: Int64? { self.id }
 
     @objc
-    public let uniqueId: String
+    public let uniqueId: UniqueId
 
     public let creationDate: Date?
     public let isArchivedObsolete: Bool

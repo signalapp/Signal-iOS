@@ -231,6 +231,9 @@ open class TSGroupThread: TSThread {
 
     @objc
     func clearGroupSendEndorsementsIfNeeded(oldGroupMembers: [SignalServiceAddress], tx: DBWriteTransaction) {
+        guard let groupId = try? self.groupIdentifier else {
+            return
+        }
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
         var oldGroupMembers = Set(oldGroupMembers.compactMap(\.serviceId))
@@ -240,11 +243,15 @@ open class TSGroupThread: TSThread {
             oldGroupMembers.remove(localIdentifiers.aci)
             newGroupMembers.remove(localIdentifiers.aci)
         }
-        if oldGroupMembers != newGroupMembers {
-            let groupSendEndorsementStore = DependenciesBridge.shared.groupSendEndorsementStore
-            Logger.info("Clearing GSEs in \(self.logString) due to membership change.")
-            groupSendEndorsementStore.deleteEndorsements(groupThreadId: self.sqliteRowId!, tx: tx)
+        if oldGroupMembers == newGroupMembers {
+            return
         }
+        guard let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: tx) else {
+            return
+        }
+        let groupSendEndorsementStore = DependenciesBridge.shared.groupSendEndorsementStore
+        Logger.info("Clearing GSEs in \(self.logString) due to membership change.")
+        groupSendEndorsementStore.deleteEndorsements(groupRowId: groupRowId, tx: tx)
     }
 
     // MARK: -

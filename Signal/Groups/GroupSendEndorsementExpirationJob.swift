@@ -31,6 +31,6 @@ class GroupSendEndorsementExpirationJob: ExpirationJob<CombinedGroupSendEndorsem
     }
 
     override func deleteExpiredElement(_ element: CombinedGroupSendEndorsementRecord, tx: DBWriteTransaction) {
-        groupSendEndorsementStore.deleteEndorsements(groupThreadId: element.threadId, tx: tx)
+        groupSendEndorsementStore.deleteEndorsements(groupRowId: element.groupRowId, tx: tx)
     }
 }

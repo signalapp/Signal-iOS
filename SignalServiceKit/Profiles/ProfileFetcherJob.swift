@@ -300,13 +300,13 @@ public class ProfileFetcherJob {
         guard let aci = serviceId as? Aci else {
             return nil
         }
-        guard let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx) else {
-            throw OWSAssertionError("Can't find group that should exist.")
+        guard let groupRecord = GroupStore().fetchGroup(forGroupId: groupId, tx: tx) else {
+            throw OWSGenericError("missing group")
         }
-        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-            throw OWSAssertionError("Can't access v2 model for group with v2 identifier.")
+        guard let secretParams = groupRecord.deriveSecretParams() else {
+            throw OWSGenericError("missing secret params")
         }
-        let combinedEndorsement = groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: groupThread.sqliteRowId!, tx: tx)
+        let combinedEndorsement = groupSendEndorsementStore.fetchCombinedEndorsement(groupRowId: groupRecord.rowId, tx: tx)
         guard let combinedEndorsement else {
             // Perhaps we haven't fetched it or it expired.
             return nil
@@ -314,7 +314,7 @@ public class ProfileFetcherJob {
         guard
             let recipient = recipientDatabaseTable.fetchRecipient(serviceId: aci, transaction: tx),
             let individualEndorsement = groupSendEndorsementStore.fetchIndividualEndorsement(
-                groupThreadId: groupThread.sqliteRowId!,
+                groupRowId: groupRecord.rowId,
                 recipientId: recipient.id,
                 tx: tx,
             )
@@ -322,7 +322,7 @@ public class ProfileFetcherJob {
             throw OWSAssertionError("Can't find GSE for group member that should have one.")
         }
         return GroupSendFullTokenBuilder(
-            secretParams: try groupModel.secretParams(),
+            secretParams: secretParams,
             expiration: combinedEndorsement.expiration,
             endorsement: try GroupSendEndorsement(contents: individualEndorsement.endorsement),
         )

@@ -254,8 +254,10 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
         // MARK: Assemble the group model
 
         let groupContextInfo: GroupV2ContextInfo
+        let groupMasterKey: GroupMasterKey
         do {
             groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupProto.masterKey)
+            groupMasterKey = try groupContextInfo.groupSecretParams.getMasterKey()
         } catch {
             return restoreFrameError(.invalidProtoData(.invalidGV2MasterKey))
         }
@@ -371,6 +373,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
         let groupThread: TSGroupThread
         do {
             groupThread = try threadStore.insertGroupThread(
+                masterKey: groupMasterKey,
                 groupModel: groupModel,
                 isStorySendEnabled: isStorySendEnabled,
                 context: context,

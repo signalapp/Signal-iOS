@@ -134,6 +134,9 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
         guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) else {
             throw OWSAssertionError("Missing groupThread.")
         }
+        guard let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: transaction) else {
+            throw OWSAssertionError("missing GroupRecord")
+        }
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction) else {
             throw OWSAssertionError("Never registered.")
@@ -183,7 +186,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
         if let groupSendEndorsementsResponse {
             SSKEnvironment.shared.groupsV2Ref.handleGroupSendEndorsementsResponse(
                 groupSendEndorsementsResponse,
-                groupThreadId: groupThread.sqliteRowId!,
+                groupRowId: groupRowId,
                 secretParams: try changedGroupModel.newGroupModel.secretParams(),
                 membership: groupThread.groupMembership,
                 localAci: localIdentifiers.aci,
@@ -506,6 +509,9 @@ public extension GroupV2UpdatesImpl {
                     transaction: transaction,
                 )
             }
+            guard let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: transaction) else {
+                throw OWSAssertionError("missing GroupRecord")
+            }
 
             var profileKeysByAci = [Aci: Data]()
             var authoritativeProfileKeysByAci = [Aci: Data]()
@@ -586,7 +592,7 @@ public extension GroupV2UpdatesImpl {
             if let groupSendEndorsementsResponse {
                 SSKEnvironment.shared.groupsV2Ref.handleGroupSendEndorsementsResponse(
                     groupSendEndorsementsResponse,
-                    groupThreadId: groupThread.sqliteRowId!,
+                    groupRowId: groupRowId,
                     secretParams: secretParams,
                     membership: groupThread.groupMembership,
                     localAci: localIdentifiers.aci,
@@ -647,6 +653,7 @@ public extension GroupV2UpdatesImpl {
         )
 
         let groupThread = GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+            secretParams: groupV2Params.groupSecretParams,
             newGroupModel: newGroupModel,
             newDisappearingMessageToken: newDisappearingMessageToken,
             newlyLearnedPniToAciAssociations: [:],
@@ -837,7 +844,8 @@ public extension GroupV2UpdatesImpl {
             // groupUpdateSource is unknown because we don't know the
             // author(s) of changes reflected in the snapshot.
             let groupUpdateSource: GroupUpdateSource = .unknown
-            let groupThread = GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+            _ = GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+                secretParams: secretParams,
                 newGroupModel: newGroupModel,
                 newDisappearingMessageToken: newDisappearingMessageToken,
                 newlyLearnedPniToAciAssociations: [:], // Not available from snapshots
@@ -850,6 +858,9 @@ public extension GroupV2UpdatesImpl {
                 updatedLastVerifiedGroupNameHash: nil,
                 transaction: transaction,
             )
+            guard let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: transaction) else {
+                throw OWSAssertionError("missing GroupRecord")
+            }
 
             GroupManager.storeProfileKeysFromGroupProtos(
                 allProfileKeysByAci: groupV2Snapshot.profileKeys,
@@ -866,7 +877,7 @@ public extension GroupV2UpdatesImpl {
             if let groupSendEndorsementsResponse = snapshotResponse.groupSendEndorsementsResponse {
                 groupsV2.handleGroupSendEndorsementsResponse(
                     groupSendEndorsementsResponse,
-                    groupThreadId: groupThread.sqliteRowId!,
+                    groupRowId: groupRowId,
                     secretParams: secretParams,
                     membership: groupV2Snapshot.groupMembership,
                     localAci: localAci,

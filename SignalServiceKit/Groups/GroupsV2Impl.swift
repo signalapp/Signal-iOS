@@ -641,14 +641,13 @@ public class GroupsV2Impl: GroupsV2 {
     /// and rejoined.
     public func fetchRevisionZeroGroupChangeAction(secretParams: GroupSecretParams) async throws -> GroupV2Change {
         let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
-        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize()
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
         let gseExpiration: UInt64
 
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         gseExpiration = databaseStorage.read { tx in
-            let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx)
-            let groupThreadId = groupThread?.sqliteRowId!
-            let endorsementRecord = groupThreadId.flatMap({ groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: $0, tx: tx) })
+            let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: tx)
+            let endorsementRecord = groupRowId.flatMap({ groupSendEndorsementStore.fetchCombinedEndorsement(groupRowId: $0, tx: tx) })
             return endorsementRecord?.expirationTimestamp ?? 0
         }
 
@@ -672,16 +671,16 @@ public class GroupsV2Impl: GroupsV2 {
         source: GroupChangeActionFetchSource,
     ) async throws -> GroupChangesResponse {
         let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
-        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize()
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
 
         let groupModel: TSGroupModelV2?
         let gseExpiration: UInt64
 
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         (groupModel, gseExpiration) = databaseStorage.read { tx in
-            let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx)
-            let groupThreadId = groupThread?.sqliteRowId!
-            let endorsementRecord = groupThreadId.flatMap({ groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: $0, tx: tx) })
+            let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx)
+            let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: tx)
+            let endorsementRecord = groupRowId.flatMap({ groupSendEndorsementStore.fetchCombinedEndorsement(groupRowId: $0, tx: tx) })
             return (
                 groupThread?.groupModel as? TSGroupModelV2,
                 endorsementRecord?.expirationTimestamp ?? 0,
@@ -1317,7 +1316,7 @@ public class GroupsV2Impl: GroupsV2 {
 
     public func handleGroupSendEndorsementsResponse(
         _ groupSendEndorsementsResponse: GroupSendEndorsementsResponse,
-        groupThreadId: Int64,
+        groupRowId: GroupRecord.RowId,
         secretParams: GroupSecretParams,
         membership: GroupMembership,
         localAci: Aci,
@@ -1344,7 +1343,7 @@ public class GroupsV2Impl: GroupsV2 {
             Logger.info("Received GSEs that expire at \(groupSendEndorsementsResponse.expiration) for \(groupId)")
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             groupSendEndorsementStore.saveEndorsements(
-                groupThreadId: groupThreadId,
+                groupRowId: groupRowId,
                 expiration: groupSendEndorsementsResponse.expiration,
                 combinedEndorsement: combinedEndorsement,
                 individualEndorsements: individualEndorsements.map { serviceId, endorsement in
@@ -1863,6 +1862,7 @@ public class GroupsV2Impl: GroupsV2 {
         revisionForPlaceholderModel revision: UInt32,
     ) async throws {
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
+        let masterKey = try secretParams.getMasterKey()
 
         let avatarUrlPath = inviteLinkPreview.avatarUrlPath
         let avatarData: Data?
@@ -1939,8 +1939,8 @@ public class GroupsV2Impl: GroupsV2 {
                 builder.groupMembership = membershipBuilder.build()
 
                 let groupModel = try builder.buildAsV2()
-                let threadStore = DependenciesBridge.shared.threadStore
-                let groupThread = threadStore.insertGroupThread(
+                let (groupThread, _) = ThreadStoreImpl.insertGroupThread(
+                    masterKey: masterKey,
                     groupModel: groupModel,
                     tx: transaction,
                 )

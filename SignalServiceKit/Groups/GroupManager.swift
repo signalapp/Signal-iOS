@@ -154,7 +154,8 @@ public class GroupManager: NSObject {
 
             let groupModel = try builder.buildAsV2()
 
-            let thread = self.insertGroupThreadInDatabaseAndCreateInfoMessage(
+            let (thread, groupRecord) = self.insertGroupThreadInDatabaseAndCreateInfoMessage(
+                secretParams: seed.groupSecretParams,
                 groupModel: groupModel,
                 disappearingMessageToken: disappearingMessageToken,
                 groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
@@ -172,7 +173,7 @@ public class GroupManager: NSObject {
             if let groupSendEndorsementsResponse = snapshotResponse.groupSendEndorsementsResponse {
                 SSKEnvironment.shared.groupsV2Ref.handleGroupSendEndorsementsResponse(
                     groupSendEndorsementsResponse,
-                    groupThreadId: thread.sqliteRowId!,
+                    groupRowId: groupRecord.rowId,
                     secretParams: snapshotResponse.groupSnapshot.groupSecretParams,
                     membership: snapshotResponse.groupSnapshot.groupMembership,
                     localAci: localIdentifiers.aci,
@@ -244,6 +245,7 @@ public class GroupManager: NSObject {
         transaction: DBWriteTransaction,
     ) -> TSGroupThread {
         return self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+            secretParams: try! groupModel.secretParams(),
             newGroupModel: groupModel,
             newDisappearingMessageToken: disappearingMessageToken,
             newlyLearnedPniToAciAssociations: [:],
@@ -565,15 +567,14 @@ public class GroupManager: NSObject {
 
     // MARK: - Group Terminate
 
-    public static func terminateGroup(groupModel: TSGroupModelV2, threadId: TSThread.RowId) async throws {
-        try await refreshGroupSendEndorsementsIfNeeded(threadId: threadId, groupModel: groupModel)
+    public static func terminateGroup(groupModel: TSGroupModelV2) async throws {
+        try await refreshGroupSendEndorsementsIfNeeded(groupModel: groupModel)
         try await updateGroupV2(secretParams: groupModel.secretParams(), description: "Terminate group") { groupChangeSet in
             groupChangeSet.setShouldTerminateGroup()
         }
     }
 
     static func refreshGroupSendEndorsementsIfNeeded(
-        threadId: TSGroupThread.RowId,
         groupModel: TSGroupModelV2,
     ) async throws {
         // If we're not a full member, we can't fetch credentials.
@@ -584,16 +585,24 @@ public class GroupManager: NSObject {
             return
         }
 
-        let groupSendEndorsementStore = DependenciesBridge.shared.groupSendEndorsementStore
-        let combinedEndorsement = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: threadId, tx: tx)
-        }
-        // If we have recent-ish credentials, we don't need to refresh.
-        guard GroupSendEndorsements.willExpireSoon(expirationDate: combinedEndorsement?.expiration) else {
-            return
-        }
         let secretParams = try groupModel.secretParams()
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
+
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let groupSendEndorsementStore = DependenciesBridge.shared.groupSendEndorsementStore
+
+        let shouldRefresh = databaseStorage.read { tx in
+            let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: tx)
+            guard let groupRowId else {
+                return false
+            }
+            let combinedEndorsement = groupSendEndorsementStore.fetchCombinedEndorsement(groupRowId: groupRowId, tx: tx)
+            // If we have recent-ish credentials, we don't need to refresh.
+            return GroupSendEndorsements.willExpireSoon(expirationDate: combinedEndorsement?.expiration)
+        }
+        guard shouldRefresh else {
+            return
+        }
         Logger.info("Refreshing GSEs before leaving \(groupId)")
         // Otherwise, try to refresh the credentials to use them when leaving.
         try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(secretParams: secretParams)
@@ -786,6 +795,7 @@ public class GroupManager: NSObject {
 
     // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
     private static func insertGroupThreadInDatabaseAndCreateInfoMessage(
+        secretParams: GroupSecretParams,
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken?,
         groupUpdateSource: GroupUpdateSource,
@@ -794,15 +804,15 @@ public class GroupManager: NSObject {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         lastVerifiedGroupNameHash: Data?,
         transaction: DBWriteTransaction,
-    ) -> TSGroupThread {
+    ) -> (TSGroupThread, GroupRecord) {
         let threadAssociatedDataStore = DependenciesBridge.shared.threadAssociatedDataStore
 
         if let groupThread = TSGroupThread.fetch(groupId: groupModel.groupId, transaction: transaction) {
             owsFail("Inserting existing group thread: \(groupThread.logString).")
         }
 
-        let threadStore = DependenciesBridge.shared.threadStore
-        let groupThread = threadStore.insertGroupThread(
+        let (groupThread, groupRecord) = ThreadStoreImpl.insertGroupThread(
+            masterKey: failIfThrows { try secretParams.getMasterKey() },
             groupModel: groupModel,
             tx: transaction,
         )
@@ -850,7 +860,7 @@ public class GroupManager: NSObject {
             transaction: transaction,
         )
 
-        return groupThread
+        return (groupThread, groupRecord)
     }
 
     /// Update persisted group-related state for the provided models, or insert
@@ -862,6 +872,7 @@ public class GroupManager: NSObject {
     /// Associations between PNIs and ACIs that were learned as a result of this
     /// group update.
     public static func tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+        secretParams: GroupSecretParams,
         newGroupModel: TSGroupModelV2,
         newDisappearingMessageToken: DisappearingMessageToken?,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
@@ -921,7 +932,8 @@ public class GroupManager: NSObject {
                 tx: transaction,
             )
 
-            return insertGroupThreadInDatabaseAndCreateInfoMessage(
+            let (groupThread, _) = insertGroupThreadInDatabaseAndCreateInfoMessage(
+                secretParams: secretParams,
                 groupModel: newGroupModel,
                 disappearingMessageToken: newDisappearingMessageToken,
                 groupUpdateSource: shouldAttributeAuthor ? groupUpdateSource : .unknown,
@@ -931,6 +943,7 @@ public class GroupManager: NSObject {
                 lastVerifiedGroupNameHash: updatedLastVerifiedGroupNameHash,
                 transaction: transaction,
             )
+            return groupThread
         }
     }
 

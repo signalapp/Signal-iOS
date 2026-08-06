@@ -147,7 +147,12 @@ class StoryManagerTest: SSKBaseTest {
 
             let thread = TSGroupThread.forUnitTest(masterKey: groupMasterKey)
             thread.anyInsert(transaction: $0)
-            TSGroupThread.setUniqueId(thread.uniqueId, forGroupId: groupId, tx: $0)
+            _ = GroupRecord.insertRecord(
+                groupId: groupId,
+                threadId: thread.sqliteRowId!,
+                masterKey: groupMasterKey,
+                tx: $0,
+            )
             SSKEnvironment.shared.blockingManagerRef.addBlockedGroupId(
                 groupId,
                 blockMode: .local,
@@ -444,7 +449,12 @@ class StoryManagerTest: SSKBaseTest {
 
         let thread = TSGroupThread(groupModel: groupModel)
         thread.anyInsert(transaction: transaction)
-        TSGroupThread.setUniqueId(thread.uniqueId, forGroupId: groupModel.groupId, tx: transaction)
+        _ = GroupRecord.insertRecord(
+            groupId: groupModel.groupId,
+            threadId: thread.sqliteRowId!,
+            masterKey: try secretParams.getMasterKey(),
+            tx: transaction,
+        )
     }
 
     static func makeGroupContext() -> SSKProtoGroupContextV2 {

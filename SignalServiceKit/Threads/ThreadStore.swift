@@ -40,7 +40,6 @@ public protocol ThreadStore {
 
     func getOrCreateLocalThread(tx: DBWriteTransaction) -> TSContactThread?
     func getOrCreateContactThread(with address: SignalServiceAddress, tx: DBWriteTransaction) -> TSContactThread
-    func insertGroupThread(groupModel: TSGroupModelV2, tx: DBWriteTransaction) -> TSGroupThread
 
     func removeThread(_ thread: TSThread, tx: DBWriteTransaction)
     func updateThread(_ thread: TSThread, tx: DBWriteTransaction)
@@ -197,11 +196,20 @@ public class ThreadStoreImpl: ThreadStore {
         return TSContactThread.getOrCreateThread(withContactAddress: address, transaction: tx)
     }
 
-    public func insertGroupThread(groupModel: TSGroupModelV2, tx: DBWriteTransaction) -> TSGroupThread {
-        let newGroupThread = TSGroupThread(groupModel: groupModel)
-        newGroupThread.anyInsert(transaction: tx)
-        TSGroupThread.setUniqueId(newGroupThread.uniqueId, forGroupId: newGroupThread.groupId, tx: tx)
-        return newGroupThread
+    public static func insertGroupThread(
+        masterKey: GroupMasterKey,
+        groupModel: TSGroupModelV2,
+        tx: DBWriteTransaction,
+    ) -> (TSGroupThread, GroupRecord) {
+        let groupThread = TSGroupThread(groupModel: groupModel)
+        groupThread.anyInsert(transaction: tx)
+        let groupRecord = GroupRecord.insertRecord(
+            groupId: groupModel.groupId,
+            threadId: groupThread.sqliteRowId.owsFailUnwrap("must exist"),
+            masterKey: masterKey,
+            tx: tx,
+        )
+        return (groupThread, groupRecord)
     }
 
     public func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {
@@ -385,10 +393,6 @@ public class MockThreadStore: ThreadStore {
             return thread
         }
         return contactThread
-    }
-
-    public func insertGroupThread(groupModel: TSGroupModelV2, tx: DBWriteTransaction) -> TSGroupThread {
-        return TSGroupThread(groupModel: groupModel)
     }
 
     public func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {

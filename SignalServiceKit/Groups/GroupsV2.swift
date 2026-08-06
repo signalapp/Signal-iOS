@@ -149,7 +149,7 @@ public protocol GroupsV2 {
 
     func handleGroupSendEndorsementsResponse(
         _ groupSendEndorsementsResponse: GroupSendEndorsementsResponse,
-        groupThreadId: Int64,
+        groupRowId: GroupRecord.RowId,
         secretParams: GroupSecretParams,
         membership: GroupMembership,
         localAci: Aci,
@@ -566,7 +566,7 @@ public class MockGroupsV2: GroupsV2 {
 
     public func handleGroupSendEndorsementsResponse(
         _ groupSendEndorsementsResponse: GroupSendEndorsementsResponse,
-        groupThreadId: Int64,
+        groupRowId: GroupRecord.RowId,
         secretParams: GroupSecretParams,
         membership: GroupMembership,
         localAci: Aci,

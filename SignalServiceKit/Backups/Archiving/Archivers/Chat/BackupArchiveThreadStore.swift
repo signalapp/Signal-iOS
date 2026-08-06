@@ -70,6 +70,7 @@ public final class BackupArchiveThreadStore {
     }
 
     func insertGroupThread(
+        masterKey: GroupMasterKey,
         groupModel: TSGroupModelV2,
         isStorySendEnabled: Bool?,
         context: BackupArchive.RestoringContext,
@@ -84,7 +85,12 @@ public final class BackupArchiveThreadStore {
             groupThread.storyViewMode = .default
         }
         try groupThread.insert(context.tx.database)
-        TSGroupThread.setUniqueId(groupThread.uniqueId, forGroupId: groupThread.groupId, tx: context.tx)
+        _ = GroupRecord.insertRecord(
+            groupId: groupModel.groupId,
+            threadId: groupThread.sqliteRowId.owsFailUnwrap("must exist"),
+            masterKey: masterKey,
+            tx: context.tx,
+        )
         return groupThread
     }
 
