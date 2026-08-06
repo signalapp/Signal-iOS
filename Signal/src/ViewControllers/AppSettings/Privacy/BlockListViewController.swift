@@ -64,7 +64,10 @@ class BlockListViewController: OWSTableViewController2 {
             let groups: [(groupId: Data, groupName: String, groupModel: TSGroupModel?, groupAvatarImage: UIImage?)]
             groups = blockingManager.blockedGroupIds(transaction: transaction).map { groupId in
                 let groupModel = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction)?.groupModel
-                let groupName = groupModel?.groupNameOrDefault ?? TSGroupThread.defaultGroupName
+                let groupName = groupModel?.groupName ?? OWSLocalizedString(
+                    "UNKNOWN_GROUP",
+                    comment: "Title shown for a group when it's name isn't known. Visible for blocked groups whose name isn't known.",
+                )
                 let groupAvatarImage: UIImage? = {
                     if let avatarData = groupModel?.avatarDataState.dataIfPresent {
                         return UIImage(data: avatarData)
