@@ -78,6 +78,7 @@ protocol DeleteForMeIncomingSyncMessageManager {
     /// non-addressable (local-only) messages.
     func handleLocalOnlyConversationDelete(
         conversationIdentifier: ConversationIdentifier,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction,
     )
 }
@@ -91,7 +92,6 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let threadDeletionManager: any ThreadDeletionManager
     private let threadStore: ThreadStore
-    private let tsAccountManager: TSAccountManager
 
     private let logger = PrefixedLogger(prefix: "[DeleteForMe]")
 
@@ -104,7 +104,6 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         recipientDatabaseTable: RecipientDatabaseTable,
         threadDeletionManager: any ThreadDeletionManager,
         threadStore: ThreadStore,
-        tsAccountManager: TSAccountManager,
     ) {
         self.addressableMessageFinder = addressableMessageFinder
         self.attachmentManager = attachmentManager
@@ -114,7 +113,6 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         self.recipientDatabaseTable = recipientDatabaseTable
         self.threadDeletionManager = threadDeletionManager
         self.threadStore = threadStore
-        self.tsAccountManager = tsAccountManager
     }
 
     // MARK: -
@@ -287,6 +285,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
 
     func handleLocalOnlyConversationDelete(
         conversationIdentifier: ConversationIdentifier,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction,
     ) {
         guard let thread = resolveThread(conversationIdentifier: conversationIdentifier, tx: tx) else {
@@ -316,6 +315,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
             [thread],
             sendDeleteForMeSyncMessage: false,
             updateStorageService: false,
+            localIdentifiers: localIdentifiers,
             tx: tx,
         )
     }

@@ -939,7 +939,6 @@ extension AppSetup.GlobalsContinuation {
             recipientDatabaseTable: recipientDatabaseTable,
             storyManager: ThreadDeletionManagerImpl.Wrappers.StoryManager(),
             threadReplyInfoStore: threadReplyInfoStore,
-            tsAccountManager: tsAccountManager,
         )
 
         let deleteForMeAddressableMessageFinder = DeleteForMeAddressableMessageFinderImpl()
@@ -949,6 +948,7 @@ extension AppSetup.GlobalsContinuation {
             interactionDeleteManager: interactionDeleteManager,
             threadDeletionManager: threadDeletionManager,
             threadStore: threadStore,
+            tsAccountManager: tsAccountManager,
         )
         let deleteForMeIncomingSyncMessageManager = DeleteForMeIncomingSyncMessageManagerImpl(
             addressableMessageFinder: deleteForMeAddressableMessageFinder,
@@ -959,7 +959,6 @@ extension AppSetup.GlobalsContinuation {
             recipientDatabaseTable: recipientDatabaseTable,
             threadDeletionManager: threadDeletionManager,
             threadStore: threadStore,
-            tsAccountManager: tsAccountManager,
         )
 
         let threadRemover = ThreadRemoverImpl(

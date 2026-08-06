@@ -297,6 +297,7 @@ extension ThreadContextualActionProvider where Self: UIViewController {
         AssertIsOnMainThread()
         let db = DependenciesBridge.shared.db
         let threadDeletionManager = DependenciesBridge.shared.threadDeletionManager
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         let alert = ActionSheetController(
             title: OWSLocalizedString(
@@ -323,10 +324,12 @@ extension ThreadContextualActionProvider where Self: UIViewController {
                 guard let self else { return }
 
                 await db.awaitableWrite { tx in
+                    let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx).owsFailUnwrap("never registered")
                     threadDeletionManager.deleteThreads(
                         [threadViewModel.threadRecord],
                         sendDeleteForMeSyncMessage: true,
                         updateStorageService: true,
+                        localIdentifiers: localIdentifiers,
                         tx: tx,
                     )
                 }

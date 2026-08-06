@@ -307,6 +307,7 @@ extension ChatListViewController {
 
         let db = DependenciesBridge.shared.db
         let threadDeletionManager = DependenciesBridge.shared.threadDeletionManager
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         /// We need to grab these now, since they'll be `nil`-ed out when we
         /// show the modal spinner below.
@@ -344,13 +345,15 @@ extension ChatListViewController {
                 // We want to protect this whole operation with a single write
                 // transaction, to ensure the contents of the threads don't
                 // change as we're deleting them.
-                db.write { transaction in
+                db.write { tx in
+                    let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx).owsFailUnwrap("never registered")
                     self.performOn(indexPaths: selectedIndexPaths) { threadViewModels in
                         threadDeletionManager.deleteThreads(
                             threadViewModels.map { $0.threadRecord },
                             sendDeleteForMeSyncMessage: true,
                             updateStorageService: true,
-                            tx: transaction,
+                            localIdentifiers: localIdentifiers,
+                            tx: tx,
                         )
                     }
                 }

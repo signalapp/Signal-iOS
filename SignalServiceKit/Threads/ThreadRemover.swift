@@ -62,7 +62,7 @@ class ThreadRemoverImpl: ThreadRemover {
         chatColorSettingStore.setRawSetting(nil, for: thread.uniqueId, tx: tx)
         databaseStorage.updateIdMapping(thread: thread, tx: tx)
         // No sync message, since hard-delete is a local-only concept.
-        threadDeletionManager.removeAllInteractions(thread: thread, sendDeleteForMeSyncMessage: false, tx: tx)
+        threadDeletionManager.removeAllInteractions(thread: thread, deleteForMeSyncMessagePolicy: nil, tx: tx)
         disappearingMessagesConfigurationStore.remove(for: thread, tx: tx)
         threadAssociatedDataStore.remove(for: thread.uniqueId, tx: tx)
         threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)

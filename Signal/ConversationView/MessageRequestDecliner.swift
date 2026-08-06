@@ -17,12 +17,15 @@ enum MessageRequestDecliner {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let deleteManager = DependenciesBridge.shared.threadDeletionManager
         let syncManager = SSKEnvironment.shared.syncManagerRef
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         // Leave the group if we're going to block it or delete it. (If we're only
         // reporting spam without blocking it, we remain a member of the group.)
         let shouldLeaveGroup = responseType.shouldBlockThread || responseType.shouldDeleteThread
 
         databaseStorage.write { tx in
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx).owsFailUnwrap("never registered")
+
             syncManager.sendMessageRequestResponseSyncMessage(
                 thread: thread,
                 responseType: responseType,
@@ -57,6 +60,7 @@ enum MessageRequestDecliner {
                     // We're already sending a sync message about this above!
                     sendDeleteForMeSyncMessage: false,
                     updateStorageService: true,
+                    localIdentifiers: localIdentifiers,
                     tx: tx,
                 )
             }

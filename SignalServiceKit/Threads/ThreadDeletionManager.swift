@@ -24,16 +24,21 @@ public protocol ThreadDeletionManager {
         _ threads: [TSThread],
         sendDeleteForMeSyncMessage: Bool,
         updateStorageService: Bool,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction,
     )
 
     func removeAllInteractions(
         thread: TSThread,
-        sendDeleteForMeSyncMessage: Bool,
+        deleteForMeSyncMessagePolicy: DeleteForMeSyncMessagePolicy?,
         tx: DBWriteTransaction,
     )
 
     func removeIntentsForTerminatedGroup(threadUniqueId: String)
+}
+
+public enum DeleteForMeSyncMessagePolicy {
+    case send(LocalIdentifiers)
 }
 
 final class ThreadDeletionManagerImpl: ThreadDeletionManager {
@@ -50,7 +55,6 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let storyManager: Shims.StoryManager
     private let threadReplyInfoStore: ThreadReplyInfoStore
-    private let tsAccountManager: TSAccountManager
 
     private let logger = PrefixedLogger(prefix: "[ThreadDeleteMgr]")
 
@@ -62,7 +66,6 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
         recipientDatabaseTable: RecipientDatabaseTable,
         storyManager: Shims.StoryManager,
         threadReplyInfoStore: ThreadReplyInfoStore,
-        tsAccountManager: TSAccountManager,
     ) {
         self.deleteForMeOutgoingSyncMessageManager = deleteForMeOutgoingSyncMessageManager
         self.intentsManager = intentsManager
@@ -71,23 +74,20 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
         self.recipientDatabaseTable = recipientDatabaseTable
         self.storyManager = storyManager
         self.threadReplyInfoStore = threadReplyInfoStore
-        self.tsAccountManager = tsAccountManager
     }
 
     func deleteThreads(
         _ threads: [TSThread],
         sendDeleteForMeSyncMessage: Bool,
         updateStorageService: Bool,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction,
     ) {
         var syncMessageContexts = [SyncMessageContext]()
 
         for thread in threads {
             var syncMessageContext: SyncMessageContext?
-            if
-                sendDeleteForMeSyncMessage,
-                let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
-            {
+            if sendDeleteForMeSyncMessage {
                 syncMessageContext = deleteForMeOutgoingSyncMessageManager.makeThreadDeletionContext(
                     thread: thread,
                     isFullDelete: true,
@@ -100,6 +100,7 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
                 thread,
                 syncMessageContext: syncMessageContext,
                 updateStorageService: updateStorageService,
+                localIdentifiers: localIdentifiers,
                 tx: tx,
             )
 
@@ -118,20 +119,20 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
 
     func removeAllInteractions(
         thread: TSThread,
-        sendDeleteForMeSyncMessage: Bool,
+        deleteForMeSyncMessagePolicy: DeleteForMeSyncMessagePolicy?,
         tx: DBWriteTransaction,
     ) {
         var syncMessageContext: SyncMessageContext?
-        if
-            sendDeleteForMeSyncMessage,
-            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
-        {
+        switch deleteForMeSyncMessagePolicy {
+        case .send(let localIdentifiers):
             syncMessageContext = deleteForMeOutgoingSyncMessageManager.makeThreadDeletionContext(
                 thread: thread,
                 isFullDelete: false,
                 localIdentifiers: localIdentifiers,
                 tx: tx,
             )
+        case nil:
+            break
         }
 
         removeAllInteractions(
@@ -156,6 +157,7 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
         _ thread: TSThread,
         syncMessageContext: SyncMessageContext?,
         updateStorageService: Bool,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction,
     ) {
         logger.info("Deleting thread with ID \(thread.logString).")
@@ -178,7 +180,6 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
             let contactThread = thread as? TSContactThread,
             let contactAci = recipientDatabaseTable.fetchServiceId(contactThread: contactThread, tx: tx)
                 .flatMap({ $0 as? Aci }),
-            let localIdentifiers = self.tsAccountManager.localIdentifiers(tx: tx),
             !localIdentifiers.contains(serviceId: contactAci)
         {
             storyManager.deleteAllStories(contactAci: contactAci, tx: tx)
@@ -292,8 +293,8 @@ final class _ThreadDeletionManagerImpl_IntentsManager_Wrapper: _ThreadDeletionMa
 #if TESTABLE_BUILD
 
 open class MockThreadDeletionManager: ThreadDeletionManager {
-    open func deleteThreads(_ threads: [TSThread], sendDeleteForMeSyncMessage: Bool, updateStorageService: Bool, tx: DBWriteTransaction) {}
-    open func removeAllInteractions(thread: TSThread, sendDeleteForMeSyncMessage: Bool, tx: DBWriteTransaction) {}
+    open func deleteThreads(_ threads: [TSThread], sendDeleteForMeSyncMessage: Bool, updateStorageService: Bool, localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {}
+    open func removeAllInteractions(thread: TSThread, deleteForMeSyncMessagePolicy: DeleteForMeSyncMessagePolicy?, tx: DBWriteTransaction) {}
     open func removeIntentsForTerminatedGroup(threadUniqueId: String) {}
 }
 

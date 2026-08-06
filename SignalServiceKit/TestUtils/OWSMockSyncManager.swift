@@ -70,7 +70,11 @@ public class OWSMockSyncManager: SyncManagerProtocol {
         Logger.info("")
     }
 
-    public func processIncomingMessageRequestResponseSyncMessage(_ syncMessage: SSKProtoSyncMessageMessageRequestResponse, transaction: DBWriteTransaction) {
+    public func processIncomingMessageRequestResponseSyncMessage(
+        _ syncMessage: SSKProtoSyncMessageMessageRequestResponse,
+        localIdentifiers: LocalIdentifiers,
+        transaction: DBWriteTransaction,
+    ) {
         Logger.info("")
     }
 

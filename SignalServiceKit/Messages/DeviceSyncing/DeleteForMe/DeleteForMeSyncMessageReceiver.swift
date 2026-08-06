@@ -3,9 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 protocol DeleteForMeSyncMessageReceiver {
     func handleDeleteForMeProto(
         deleteForMeProto: SSKProtoSyncMessageDeleteForMe,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction,
     )
 }
@@ -29,6 +32,7 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
 
     func handleDeleteForMeProto(
         deleteForMeProto: SSKProtoSyncMessageDeleteForMe,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction,
     ) {
         for messageDeletes in deleteForMeProto.messageDeletes {
@@ -132,6 +136,7 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
 
             deleteForMeIncomingSyncMessageManager.handleLocalOnlyConversationDelete(
                 conversationIdentifier: conversationIdentifier,
+                localIdentifiers: localIdentifiers,
                 tx: tx,
             )
         }

@@ -760,7 +760,11 @@ public final class MessageReceiver {
         } else if let keys = syncMessage.keys {
             SSKEnvironment.shared.syncManagerRef.processIncomingKeysSyncMessage(keys, transaction: tx)
         } else if let messageRequestResponse = syncMessage.messageRequestResponse {
-            SSKEnvironment.shared.syncManagerRef.processIncomingMessageRequestResponseSyncMessage(messageRequestResponse, transaction: tx)
+            SSKEnvironment.shared.syncManagerRef.processIncomingMessageRequestResponseSyncMessage(
+                messageRequestResponse,
+                localIdentifiers: registeredState.localIdentifiers,
+                transaction: tx,
+            )
         } else if let outgoingPayment = syncMessage.outgoingPayment {
             // An "incoming" sync message notifies us of an "outgoing" payment.
             SSKEnvironment.shared.paymentsHelperRef.processIncomingPaymentSyncMessage(
@@ -831,6 +835,7 @@ public final class MessageReceiver {
         } else if let deleteForMe = syncMessage.deleteForMe {
             deleteForMeSyncMessageReceiver.handleDeleteForMeProto(
                 deleteForMeProto: deleteForMe,
+                localIdentifiers: registeredState.localIdentifiers,
                 tx: tx,
             )
         } else if syncMessage.deviceNameChange != nil {

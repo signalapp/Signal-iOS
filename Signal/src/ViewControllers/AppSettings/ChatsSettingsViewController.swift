@@ -231,12 +231,17 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         threadDeletionManager: any ThreadDeletionManager,
     ) {
         Logger.info("")
+        let db = DependenciesBridge.shared.db
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        DependenciesBridge.shared.db.write { tx in
+        db.write { tx in
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx).owsFailUnwrap("never registered")
+
             threadDeletionManager.deleteThreads(
                 TSThread.anyFetchAll(transaction: tx),
                 sendDeleteForMeSyncMessage: true,
                 updateStorageService: true,
+                localIdentifiers: localIdentifiers,
                 tx: tx,
             )
 

@@ -102,8 +102,13 @@ final class TSMessageStorageTest: SSKBaseTest {
                 XCTAssertEqual(thread.uniqueId, fetchedMessage.uniqueThreadId)
             }
 
-            DependenciesBridge.shared.threadDeletionManager
-                .deleteThreads([thread], sendDeleteForMeSyncMessage: false, updateStorageService: false, tx: tx)
+            DependenciesBridge.shared.threadDeletionManager.deleteThreads(
+                [thread],
+                sendDeleteForMeSyncMessage: false,
+                updateStorageService: false,
+                localIdentifiers: .forUnitTests,
+                tx: tx,
+            )
 
             for message in messages {
                 XCTAssertNil(TSIncomingMessage.fetchIncomingMessageViaCache(
@@ -157,8 +162,13 @@ final class TSMessageStorageTest: SSKBaseTest {
                 XCTAssertEqual(groupThread.uniqueId, fetchedMessage.uniqueThreadId)
             }
 
-            DependenciesBridge.shared.threadDeletionManager
-                .deleteThreads([groupThread], sendDeleteForMeSyncMessage: false, updateStorageService: false, tx: tx)
+            DependenciesBridge.shared.threadDeletionManager.deleteThreads(
+                [groupThread],
+                sendDeleteForMeSyncMessage: false,
+                updateStorageService: false,
+                localIdentifiers: .forUnitTests,
+                tx: tx,
+            )
 
             for message in messages {
                 XCTAssertNil(TSIncomingMessage.fetchIncomingMessageViaCache(

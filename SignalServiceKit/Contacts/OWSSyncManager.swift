@@ -281,6 +281,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
     public func processIncomingMessageRequestResponseSyncMessage(
         _ syncMessage: SSKProtoSyncMessageMessageRequestResponse,
+        localIdentifiers: LocalIdentifiers,
         transaction: DBWriteTransaction,
     ) {
         guard
@@ -340,6 +341,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                 [thread],
                 sendDeleteForMeSyncMessage: false,
                 updateStorageService: false,
+                localIdentifiers: localIdentifiers,
                 tx: transaction,
             )
         case .block:
@@ -349,6 +351,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                 [thread],
                 sendDeleteForMeSyncMessage: false,
                 updateStorageService: false,
+                localIdentifiers: localIdentifiers,
                 tx: transaction,
             )
             SSKEnvironment.shared.blockingManagerRef.addBlockedThread(thread, blockMode: .remote, transaction: transaction)

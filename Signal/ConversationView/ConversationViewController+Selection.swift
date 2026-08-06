@@ -612,6 +612,7 @@ extension ConversationViewController {
     func didTapDeleteAll() {
         let db = DependenciesBridge.shared.db
         let threadDeletionManager = DependenciesBridge.shared.threadDeletionManager
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         let thread = self.thread
         let alert = ActionSheetController(title: nil, message: OWSLocalizedString("DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY", comment: "action sheet body"))
@@ -625,11 +626,12 @@ extension ConversationViewController {
                 canCancel: false,
             ) { [weak self] modal in
                 guard let self else { return }
-                db.write {
+                db.write { tx in
+                    let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx).owsFailUnwrap("never registered")
                     threadDeletionManager.removeAllInteractions(
                         thread: thread,
-                        sendDeleteForMeSyncMessage: true,
-                        tx: $0,
+                        deleteForMeSyncMessagePolicy: .send(localIdentifiers),
+                        tx: tx,
                     )
                 }
                 DispatchQueue.main.async {
