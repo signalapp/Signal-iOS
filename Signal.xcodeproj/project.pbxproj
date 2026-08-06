@@ -1445,7 +1445,6 @@
 		725465562BA0282D00EABFD2 /* GroupsV2OutgoingChangesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5923C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift */; };
 		725465572BA0282D00EABFD2 /* GroupsV2IncomingChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */; };
 		725465582BA0283B00EABFD2 /* StorageServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2622F269E900966CC2 /* StorageServiceManager.swift */; };
-		725465592BA0283B00EABFD2 /* StorageServiceUnknownFieldMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6619A1CC2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift */; };
 		7254655A2BA0283B00EABFD2 /* StorageServiceProto+Sync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */; };
 		7254655B2BA028C400EABFD2 /* OWSSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885C354F2370DFD50004BA35 /* OWSSyncManager.swift */; };
 		7254655C2BA0293900EABFD2 /* ContactSyncAttachmentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */; };
@@ -5333,7 +5332,6 @@
 		6619A1C42B2BA05C004B38FE /* SentMessageTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentMessageTranscript.swift; sourceTree = "<group>"; };
 		6619A1C62B2BA21F004B38FE /* OWSIncomingSentMessageTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSIncomingSentMessageTranscript.swift; sourceTree = "<group>"; };
 		6619A1CA2B2D176E004B38FE /* BackupArchive+ContactAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupArchive+ContactAddress.swift"; sourceTree = "<group>"; };
-		6619A1CC2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceUnknownFieldMigrator.swift; sourceTree = "<group>"; };
 		661AEE472C2088FD0046B1D8 /* AttachmentDownloadRetryRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadRetryRunner.swift; sourceTree = "<group>"; };
 		661BFDFF2C07C5F30065435B /* AttachmentContentValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentContentValidator.swift; sourceTree = "<group>"; };
 		661BFE012C07C6670065435B /* AttachmentContentValidatorImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentContentValidatorImpl.swift; sourceTree = "<group>"; };
@@ -11788,7 +11786,6 @@
 				88E34F2622F269E900966CC2 /* StorageServiceManager.swift */,
 				88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */,
 				D927372C2CD2DD0D00E15D95 /* StorageServiceRecordIkmMigrator.swift */,
-				6619A1CC2B33B7F6004B38FE /* StorageServiceUnknownFieldMigrator.swift */,
 			);
 			path = StorageService;
 			sourceTree = "<group>";
@@ -20169,7 +20166,6 @@
 				7254655A2BA0283B00EABFD2 /* StorageServiceProto+Sync.swift in Sources */,
 				F9C5CC92289453B300548EEE /* StorageServiceProto.swift in Sources */,
 				D927372D2CD2DD1800E15D95 /* StorageServiceRecordIkmMigrator.swift in Sources */,
-				725465592BA0283B00EABFD2 /* StorageServiceUnknownFieldMigrator.swift in Sources */,
 				04A23EBF2FDB43D300C42B42 /* StoredReleaseNote.swift in Sources */,
 				667EDE6628FA0372001FB487 /* StoryBadgeCountManager.swift in Sources */,
 				66D709E928E3999400B5013A /* StoryContextAssociatedData.swift in Sources */,

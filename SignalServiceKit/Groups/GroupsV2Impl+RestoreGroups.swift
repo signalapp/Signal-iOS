@@ -171,15 +171,7 @@ public extension GroupsV2Impl {
 
                 // Now that the thread exists, re-apply the pending group record from
                 // storage service.
-                if var groupRecord {
-                    // First apply any migrations
-                    if StorageServiceUnknownFieldMigrator.shouldInterceptRemoteManifestBeforeMerging(tx: tx) {
-                        groupRecord = StorageServiceUnknownFieldMigrator.interceptRemoteManifestBeforeMerging(
-                            record: groupRecord,
-                            tx: tx,
-                        )
-                    }
-
+                if let groupRecord {
                     let recordUpdater = StorageServiceGroupV2RecordUpdater(
                         authedAccount: .implicit(),
                         isPrimaryDevice: isPrimaryDevice,

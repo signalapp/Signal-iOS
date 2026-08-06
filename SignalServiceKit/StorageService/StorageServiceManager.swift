@@ -960,7 +960,6 @@ class StorageServiceOperation {
             localId: StateUpdater.IdType,
             changeState: State.ChangeState,
             stateUpdater: StateUpdater,
-            needsInterceptForMigration: Bool,
             transaction: DBReadTransaction,
         ) {
             let recordUpdater = stateUpdater.recordUpdater
@@ -999,15 +998,8 @@ class StorageServiceOperation {
             stateUpdater.setRecordWithUnknownFields(nil, for: localId, in: &state)
 
             // We've deleted the old record. If we don't have a `newRecord`, stop.
-            guard var newRecord else {
+            guard let newRecord else {
                 return
-            }
-
-            if needsInterceptForMigration {
-                newRecord = StorageServiceUnknownFieldMigrator.interceptLocalManifestBeforeUploading(
-                    record: newRecord,
-                    tx: transaction,
-                )
             }
 
             if recordUpdater.unknownFields(for: newRecord) != nil {
@@ -1022,7 +1014,6 @@ class StorageServiceOperation {
         func updateRecords<StateUpdater: StorageServiceStateUpdater>(
             state: inout State,
             stateUpdater: StateUpdater,
-            needsInterceptForMigration: Bool,
             transaction: DBReadTransaction,
         ) {
             stateUpdater.resetAndEnumerateChangeStates(in: &state) { mutableState, localId, changeState in
@@ -1031,7 +1022,6 @@ class StorageServiceOperation {
                     localId: localId,
                     changeState: changeState,
                     stateUpdater: stateUpdater,
-                    needsInterceptForMigration: needsInterceptForMigration,
                     transaction: transaction,
                 )
             }
@@ -1042,43 +1032,34 @@ class StorageServiceOperation {
 
             normalizePendingMutations(in: &state, transaction: transaction)
 
-            let needsInterceptForMigration =
-                StorageServiceUnknownFieldMigrator.shouldInterceptLocalManifestBeforeUploading(tx: transaction)
-
             updateRecords(
                 state: &state,
                 stateUpdater: buildAccountUpdater(),
-                needsInterceptForMigration: needsInterceptForMigration,
                 transaction: transaction,
             )
             updateRecords(
                 state: &state,
                 stateUpdater: buildContactUpdater(),
-                needsInterceptForMigration: needsInterceptForMigration,
                 transaction: transaction,
             )
             updateRecords(
                 state: &state,
                 stateUpdater: buildGroupV1Updater(),
-                needsInterceptForMigration: needsInterceptForMigration,
                 transaction: transaction,
             )
             updateRecords(
                 state: &state,
                 stateUpdater: buildGroupV2Updater(),
-                needsInterceptForMigration: needsInterceptForMigration,
                 transaction: transaction,
             )
             updateRecords(
                 state: &state,
                 stateUpdater: buildStoryDistributionListUpdater(),
-                needsInterceptForMigration: needsInterceptForMigration,
                 transaction: transaction,
             )
             updateRecords(
                 state: &state,
                 stateUpdater: buildCallLinkUpdater(),
-                needsInterceptForMigration: needsInterceptForMigration,
                 transaction: transaction,
             )
 
@@ -1150,7 +1131,6 @@ class StorageServiceOperation {
         // Successfully updated, store our changes.
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             state.save(clearConsecutiveConflicts: true, transaction: transaction)
-            StorageServiceUnknownFieldMigrator.didWriteToStorageService(tx: transaction)
         }
 
         // Notify our other devices that the storage manifest has changed.
@@ -1300,9 +1280,6 @@ class StorageServiceOperation {
             /// using this newly- generated value.
             state.manifestRecordIkm = StorageService.ManifestRecordIkm.generateForNewManifest()
 
-            let shouldInterceptForMigration =
-                StorageServiceUnknownFieldMigrator.shouldInterceptLocalManifestBeforeUploading(tx: transaction)
-
             func createRecord<StateUpdater: StorageServiceStateUpdater>(
                 localId: StateUpdater.IdType,
                 stateUpdater: StateUpdater,
@@ -1314,16 +1291,9 @@ class StorageServiceOperation {
                     unknownFields: nil,
                     transaction: transaction,
                 )
-                guard var newRecord else {
+                guard let newRecord else {
                     return
                 }
-                if shouldInterceptForMigration {
-                    newRecord = StorageServiceUnknownFieldMigrator.interceptLocalManifestBeforeUploading(
-                        record: newRecord,
-                        tx: transaction,
-                    )
-                }
-
                 let storageItem = recordUpdater.buildStorageItem(for: newRecord)
                 stateUpdater.setStorageIdentifier(storageItem.identifier, for: localId, in: &state)
                 allItems.append(storageItem)
@@ -1469,7 +1439,6 @@ class StorageServiceOperation {
             /// Store our changes.
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                 state.save(clearConsecutiveConflicts: true, transaction: transaction)
-                StorageServiceUnknownFieldMigrator.didWriteToStorageService(tx: transaction)
             }
 
             return nil
@@ -1960,33 +1929,10 @@ class StorageServiceOperation {
     }
 
     private func cleanUpRecordsWithUnknownFields(in state: inout State) async {
-        var shouldCleanUpRecordsWithUnknownFields =
-            state.unknownFieldLastCheckedAppVersion != AppVersionImpl.shared.currentAppVersion
-#if DEBUG
-        // Debug builds don't have proper version numbers but we do want to run
-        // these migrations on them.
-        if !shouldCleanUpRecordsWithUnknownFields {
-            if SSKEnvironment.shared.databaseStorageRef.read(block: { StorageServiceUnknownFieldMigrator.needsAnyUnknownFieldsMigrations(tx: $0) }) {
-                shouldCleanUpRecordsWithUnknownFields = true
-            }
-        }
-#endif
-        guard shouldCleanUpRecordsWithUnknownFields else {
+        if state.unknownFieldLastCheckedAppVersion == AppVersionImpl.shared.currentAppVersion {
             return
         }
         state.unknownFieldLastCheckedAppVersion = AppVersionImpl.shared.currentAppVersion
-
-        func fetchRecordsWithUnknownFields(
-            stateUpdater: some StorageServiceStateUpdater,
-            tx: DBWriteTransaction,
-        ) -> [any MigrateableStorageServiceRecordType] {
-            return stateUpdater.recordsWithUnknownFields(in: state)
-                .lazy
-                .map(\.1)
-                .compactMap {
-                    $0 as? (any MigrateableStorageServiceRecordType)
-                }
-        }
 
         // For any cached records with unknown fields, optimistically try to merge
         // with our local data to see if we now understand those fields. Note: It's
@@ -2030,33 +1976,6 @@ class StorageServiceOperation {
                 buildStoryDistributionListUpdater(),
                 buildCallLinkUpdater(),
             ]
-
-            if StorageServiceUnknownFieldMigrator.needsAnyUnknownFieldsMigrations(tx: tx) {
-                // First accumulate records to run one-time migrations on.
-                var records: [any MigrateableStorageServiceRecordType] = []
-
-                for stateUpdater in stateUpdaters {
-                    records.append(
-                        contentsOf: fetchRecordsWithUnknownFields(
-                            stateUpdater: stateUpdater,
-                            tx: tx,
-                        ),
-                    )
-                }
-
-                // Note: we run even if there are no records with "unknown fields".
-                // This is because fields with default values (e.g. a bool with false set)
-                // don't show up in the serialized proto at all. Therefore, if there is an
-                // unknown field sent to us with a default value, we won't even know its
-                // there and it won't show up in "records with unknown fields".
-                // But we should still run migrations, which should assume the default
-                // value was set for any records not passed in.
-                StorageServiceUnknownFieldMigrator.runMigrationsForRecordsWithUnknownFields(
-                    records: records,
-                    tx: tx,
-                )
-            }
-
             stateUpdaters.forEach { mergeRecordsWithUnknownFields(stateUpdater: $0, tx: tx) }
             Logger.info("Resolved unknown fields using manifest version \(state.manifestVersion)")
             state.save(transaction: tx)
@@ -2119,15 +2038,6 @@ class StorageServiceOperation {
         stateUpdater: StateUpdater,
         transaction: DBWriteTransaction,
     ) {
-        var record = record
-        // First apply any migrations
-        if StorageServiceUnknownFieldMigrator.shouldInterceptRemoteManifestBeforeMerging(tx: transaction) {
-            record = StorageServiceUnknownFieldMigrator.interceptRemoteManifestBeforeMerging(
-                record: record,
-                tx: transaction,
-            )
-        }
-
         let mergeResult = stateUpdater.recordUpdater.mergeRecord(
             record,
             transaction: transaction,
