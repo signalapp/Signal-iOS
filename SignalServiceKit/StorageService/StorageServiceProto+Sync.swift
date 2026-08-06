@@ -2042,23 +2042,12 @@ extension StorageServiceAccountRecordUpdater {
             switch pinnedThread.threadId {
             case .groupId(let _groupId):
                 if let groupId = try? GroupIdentifier(contents: _groupId) {
-                    let thread = threadStore.fetchThread(forGroupId: groupId, tx: tx)
-                    guard let thread else {
-                        // TODO: Add support for maintaining not-yet-restored pinned threads.
-                        Logger.warn("skipping pinned group that hasn't been restored yet")
+                    let groupRecord = GroupStore().fetchGroup(forGroupId: groupId, tx: tx)
+                    guard let groupRecord, let secretParams = groupRecord.deriveSecretParams() else {
+                        Logger.warn("skipping pinned group without secret params")
                         continue
                     }
-                    guard let groupModel = thread.groupModel as? TSGroupModelV2 else {
-                        Logger.warn("skipping pinned group that doesn't have a valid group model")
-                        continue
-                    }
-                    let masterKey: GroupMasterKey
-                    do {
-                        masterKey = try groupModel.masterKey()
-                    } catch {
-                        owsFailDebug("skipping pinned group with missing master key: \(error)")
-                        continue
-                    }
+                    let masterKey = failIfThrows { try secretParams.getPublicParams() }
                     pinnedConversationBuilder.setIdentifier(.groupMasterKey(masterKey.serialize()))
                 } else {
                     owsAssertDebug(GroupManager.isV1GroupId(_groupId))
