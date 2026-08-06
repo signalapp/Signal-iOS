@@ -8,11 +8,11 @@ import SignalServiceKit
 
 /// DeviceTransferCoordinator manages high-level orchestration of the device transfer flow,
 /// using a TransferStatusViewModel passed to the UI that drives progress and success/cancel behavior.
-public class DeviceTransferCoordinator: DeviceTransferServiceObserver, Equatable {
+public class DeviceTransferCoordinator: Equatable {
 
     let transferStatusViewModel = TransferStatusViewModel()
 
-    private let deviceTransferService: any DeviceTransferServiceProtocol
+    private let incomingDeviceTransferTask: IncomingDeviceTransferTask
     private let quickRestoreManager: QuickRestoreManager
     private let restoreMethodToken: String
     private let restoreMode: DeviceTransfer.Mode
@@ -35,14 +35,16 @@ public class DeviceTransferCoordinator: DeviceTransferServiceObserver, Equatable
     }
 
     private func _onCancelTransfer() {
-        stopAcceptingTransfers()
-        cancelTransfer()
+        Task {
+            stopAcceptingTransfers()
+            await cancelTransfer()
+        }
     }
 
-    public var onSuccess: () -> Void {
+    public var onSuccess: @MainActor () -> Void {
         get { transferStatusViewModel.onSuccess }
         set {
-            transferStatusViewModel.onSuccess = { [weak self] in
+            transferStatusViewModel.onSuccess = { @MainActor [weak self] in
                 self?._onSuccess()
                 newValue()
             }
@@ -67,66 +69,75 @@ public class DeviceTransferCoordinator: DeviceTransferServiceObserver, Equatable
     }
 
     init(
-        deviceTransferService: DeviceTransferServiceProtocol,
+        db: DB,
+        deviceSleepManager: DeviceSleepManager?,
+        deviceTransferRestore: DeviceTransferRestore,
         quickRestoreManager: QuickRestoreManager,
+        registrationStateChangeManager: RegistrationStateChangeManager,
         restoreMethodToken: String,
         restoreMode: DeviceTransfer.Mode,
+        tsAccountManager: TSAccountManager,
     ) {
-        self.deviceTransferService = deviceTransferService
         self.quickRestoreManager = quickRestoreManager
         self.restoreMethodToken = restoreMethodToken
         self.restoreMode = restoreMode
+
+        self.incomingDeviceTransferTask = IncomingDeviceTransferTask(
+            db: db,
+            deviceSleepManager: deviceSleepManager,
+            deviceTransferRestore: deviceTransferRestore,
+            registrationStateChangeManager: registrationStateChangeManager,
+            tsAccountManager: tsAccountManager,
+        )
 
         self.cancelTransferBlock = _onCancelTransfer
         self.onSuccess = _onSuccess
         self.onFailure = _onFailure
     }
 
+    @MainActor
     public func start() async throws {
         transferStatusViewModel.state = .starting
-        deviceTransferService.addObserver(self)
-        let url = try deviceTransferService.startAcceptingTransfersFromOldDevices(mode: restoreMode)
+
+        let url = try await incomingDeviceTransferTask.start(mode: restoreMode)
         let transferData = url.absoluteString.data(using: .utf8)!.base64EncodedStringWithoutPadding()
 
         try await quickRestoreManager.reportRestoreMethodChoice(
             method: .deviceTransfer(transferData),
             restoreMethodToken: restoreMethodToken,
         )
-    }
 
-    private func cancelTransfer() {
-        deviceTransferService.cancelTransferFromOldDevice()
-    }
+        do {
+            try await incomingDeviceTransferTask.waitForTransferFromOldDevice { [weak self] progress in
+                self?.initializeProgressTracking(progress: progress)
+            }
 
-    public func stopAcceptingTransfers() {
-        deviceTransferService.removeObserver(self)
-        deviceTransferService.stopAcceptingTransfersFromOldDevices()
-    }
-
-    func deviceTransferServiceDiscoveredNewDevice(peerId: DeviceTransferPeerID, discoveryInfo: [String: String]?) {
-        transferStatusViewModel.state = .connecting
+            transferStatusViewModel.state = .done
+            transferStatusViewModel.onSuccess()
+        } catch {
+            transferStatusViewModel.state = .error(error)
+        }
     }
 
     private var progressObserver: NSKeyValueObservation?
-    func deviceTransferServiceDidStartTransfer(progress: Progress) {
+    private func initializeProgressTracking(progress: Progress) {
         self.progressObserver = progress.observe(\.fractionCompleted, options: [.new]) { [weak self] _, change in
-            DispatchQueue.main.async {
-                let newValue = change.newValue ?? 0
-                self?.transferStatusViewModel.state = .transferring(newValue)
-            }
+            let newValue = change.newValue ?? 0
+            self?.updateStatus(value: newValue)
         }
     }
 
-    func deviceTransferServiceDidEndTransfer(error: DeviceTransfer.Error?) {
-        if let error {
-            transferStatusViewModel.state = .error(error)
-        } else {
-            transferStatusViewModel.state = .done
-        }
+    private func updateStatus(value: Double) {
+        transferStatusViewModel.state = .transferring(value)
     }
 
-    func deviceTransferServiceDidRequestAppRelaunch() {
-        transferStatusViewModel.onSuccess()
+    @MainActor
+    private func cancelTransfer() async {
+        incomingDeviceTransferTask.cancelTransferFromOldDevice()
+    }
+
+    public func stopAcceptingTransfers() {
+        incomingDeviceTransferTask.stopAcceptingTransfersFromOldDevices()
     }
 
     public static func ==(lhs: DeviceTransferCoordinator, rhs: DeviceTransferCoordinator) -> Bool {

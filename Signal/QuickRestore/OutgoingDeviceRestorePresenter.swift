@@ -25,8 +25,10 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
     private let dateProvider: DateProvider
     private let db: DB
     private let backupSettingsStore: BackupSettingsStore
-    private let deviceTransferService: DeviceTransferService
+    private let deviceSleepManager: DeviceSleepManager?
     private let quickRestoreManager: QuickRestoreManager
+    private let registrationStateChangeManager: RegistrationStateChangeManager
+    private let tsAccountManager: TSAccountManager
 
     private var viewModel: OutgoingDeviceRestoreViewModel?
     private var presentingViewController: UIViewController?
@@ -35,14 +37,18 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
         dateProvider: @escaping DateProvider,
         db: DB,
         backupSettingsStore: BackupSettingsStore,
-        deviceTransferService: DeviceTransferService,
+        deviceSleepManager: DeviceSleepManager?,
         quickRestoreManager: QuickRestoreManager,
+        registrationStateChangeManager: RegistrationStateChangeManager,
+        tsAccountManager: TSAccountManager,
     ) {
         self.dateProvider = dateProvider
         self.db = db
         self.backupSettingsStore = backupSettingsStore
-        self.deviceTransferService = deviceTransferService
+        self.deviceSleepManager = deviceSleepManager
         self.quickRestoreManager = quickRestoreManager
+        self.registrationStateChangeManager = registrationStateChangeManager
+        self.tsAccountManager = tsAccountManager
     }
 
     func present(
@@ -51,9 +57,12 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
         animated: Bool,
     ) {
         self.viewModel = OutgoingDeviceRestoreViewModel(
-            deviceTransferService: deviceTransferService,
-            quickRestoreManager: quickRestoreManager,
+            db: db,
             deviceProvisioningURL: provisioningURL,
+            deviceSleepManager: deviceSleepManager,
+            quickRestoreManager: quickRestoreManager,
+            registrationStateChangeManager: registrationStateChangeManager,
+            tsAccountManager: tsAccountManager,
         )
 
         internalNavigationController.setViewControllers(
@@ -250,30 +259,16 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                     presentingViewController: presentingViewController,
                 )
 
-                await viewModel.waitForDeviceConnection(peerConnectionData: peerConnectionData)
-                Task { @MainActor [weak self] in
-                    // TODO: [Backups] - DeviceTransferService does a db.write
-                    // internally, and this should be updated to an actor/async aware
-                    // in a followup piece of work (and possibly once the old device transfer
-                    // flow is removed)
-                    do {
-                        try viewModel.startTransfer(peerConnectionData: peerConnectionData)
-                    } catch {
-                        Logger.warn("Device transfer failed: \(error)")
-                        await self?.handleError(
-                            DeviceRestoreError.unknownError,
-                            presentingViewController: presentingViewController,
-                        )
-                    }
-                }
-                let success = await viewModel.waitForTransferCompletion()
-                if !success {
+                do {
+                    try await viewModel.waitForDeviceConnection(peerConnectionData: peerConnectionData)
+                    try await viewModel.startTransfer()
+                    await displayTransferComplete(presentingViewController: presentingViewController)
+                } catch {
+                    Logger.warn("Device transfer failed: \(error)")
                     await handleError(
                         DeviceRestoreError.restoreCancelled,
                         presentingViewController: presentingViewController,
                     )
-                } else {
-                    await displayTransferComplete(presentingViewController: presentingViewController)
                 }
             }
         } catch {

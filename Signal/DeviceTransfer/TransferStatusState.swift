@@ -108,7 +108,7 @@ class TransferStatusViewModel: ObservableObject {
 
     var confirmCancellation: (() async -> Bool) = { return true }
     var cancelTransferBlock: (() -> Void) = {}
-    var onSuccess: (() -> Void) = {}
+    var onSuccess: (@MainActor () -> Void) = {}
     var onFailure: ((Error) -> Void) = { _ in }
 
     @MainActor

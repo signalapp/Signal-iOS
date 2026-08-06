@@ -271,10 +271,14 @@ class ProvisioningController: NSObject {
             }
 
             let transferState = DeviceTransferCoordinator(
-                deviceTransferService: AppEnvironment.shared.deviceTransferServiceRef,
+                db: DependenciesBridge.shared.db,
+                deviceSleepManager: DependenciesBridge.shared.deviceSleepManager,
+                deviceTransferRestore: AppEnvironment.shared.deviceTransferRestore,
                 quickRestoreManager: AppEnvironment.shared.quickRestoreManager,
+                registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
                 restoreMethodToken: restoreToken,
                 restoreMode: .linked,
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             )
 
             transferState.cancelTransferBlock = { [weak self] in

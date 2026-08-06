@@ -159,17 +159,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let deviceSleepManager = DeviceSleepManagerImpl()
         let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
-        let deviceTransferRestore = DeviceTransferRestoreImpl(appReadiness: appReadiness, keychainStorage: keychainStorage)
-        let deviceTransferService = DeviceTransferService(
+        let deviceTransferRestore = DeviceTransferRestoreImpl(
             appReadiness: appReadiness,
-            deviceSleepManager: deviceSleepManager,
-            deviceTransferRestore: deviceTransferRestore,
             keychainStorage: keychainStorage,
         )
 
         AppEnvironment.setSharedEnvironment(AppEnvironment(
             appReadiness: appReadiness,
-            deviceTransferService: deviceTransferService,
+            deviceTransferRestore: deviceTransferRestore,
         ))
 
         // This *must* happen before we try and access or verify the database,

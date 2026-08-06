@@ -12,7 +12,7 @@ enum DeviceRestoreError: Error {
     case unknownError
 }
 
-class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObserver {
+class OutgoingDeviceRestoreViewModel: ObservableObject {
 
     struct RestoreMethodData {
         struct PeerConnectionData {
@@ -30,27 +30,26 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
     }
 
     private(set) var transferStatusViewModel = TransferStatusViewModel()
-    private let deviceTransferService: DeviceTransferService
     private let quickRestoreManager: QuickRestoreManager
     private let provisioningURL: DeviceProvisioningURL
-
-    private var deviceConnectedContinuation: AtomicValue<(
-        continuation: CheckedContinuation<Void, Never>,
-        peerConnectionData: RestoreMethodData.PeerConnectionData
-    )?> = AtomicValue(nil, lock: .init())
-
-    private var finishTransferContinuation: AtomicValue<
-        CheckedContinuation<Bool, Never>?,
-    > = AtomicValue(nil, lock: .init())
+    private let outgoingDeviceTransferTask: OutgoingDeviceTransferTask
 
     init(
-        deviceTransferService: DeviceTransferService,
-        quickRestoreManager: QuickRestoreManager,
+        db: DB,
         deviceProvisioningURL: DeviceProvisioningURL,
+        deviceSleepManager: DeviceSleepManager?,
+        quickRestoreManager: QuickRestoreManager,
+        registrationStateChangeManager: RegistrationStateChangeManager,
+        tsAccountManager: TSAccountManager,
     ) {
-        self.deviceTransferService = deviceTransferService
         self.quickRestoreManager = quickRestoreManager
         self.provisioningURL = deviceProvisioningURL
+        self.outgoingDeviceTransferTask = OutgoingDeviceTransferTask(
+            db: db,
+            deviceSleepManager: deviceSleepManager,
+            registrationStateChangeManager: registrationStateChangeManager,
+            tsAccountManager: tsAccountManager,
+        )
 
         transferStatusViewModel.cancelTransferBlock = { [weak self] in
             self?.cancelTransfer()
@@ -89,7 +88,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
         }
 
         do {
-            let (peerId, certificateHash) = try deviceTransferService.parseTransferURL(transferURL)
+            let (peerId, certificateHash) = try outgoingDeviceTransferTask.parseTransferURL(transferURL)
             return RestoreMethodData(
                 restoreMethod: restoreMethod,
                 peerConnectionData: RestoreMethodData.PeerConnectionData(
@@ -105,89 +104,47 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
 
     /// Take the `PeerConnectionData` returned by `waitForConnectionData` and
     /// begin listening for the connection described in `PeerConnectionData`.
-    func waitForDeviceConnection(peerConnectionData: RestoreMethodData.PeerConnectionData) async {
+    func waitForDeviceConnection(peerConnectionData: RestoreMethodData.PeerConnectionData) async throws {
         // If in any state but .idle, return
         guard case .idle = transferStatusViewModel.state else {
             return
         }
-        return await withCheckedContinuation { continuation in
-            // Update with "Waiting to connect to new iPhone" message
-            deviceConnectedContinuation.update { existingContinuation in
-                transferStatusViewModel.state = .starting
-                existingContinuation = (continuation, peerConnectionData)
-            }
 
-            deviceTransferService.startListeningForNewDevices()
-            deviceTransferService.addObserver(self)
-        }
+        transferStatusViewModel.state = .starting
+        try await outgoingDeviceTransferTask.connectToNewDevice(
+            with: peerConnectionData.peerId,
+            certificateHash: peerConnectionData.certificateHash,
+        )
     }
 
     /// Once connected to the device described in `PeerConnectionData`
     /// begin a device transfer.
-    func startTransfer(peerConnectionData: RestoreMethodData.PeerConnectionData) throws {
+    func startTransfer() async throws {
         do {
-            try deviceTransferService.transferAccountToNewDevice(
-                with: peerConnectionData.peerId,
-                certificateHash: peerConnectionData.certificateHash,
-            )
+            try await outgoingDeviceTransferTask.transferAccountToNewDevice { [weak self] progress in
+                self?.updateProgress(progress: progress)
+            }
+            transferStatusViewModel.state = .done
         } catch {
             stopListeningForTransfer()
             Logger.error("Failed transfer to new device")
+            transferStatusViewModel.state = .error(error)
             throw error
-        }
-    }
-
-    func waitForTransferCompletion() async -> Bool {
-        return await withCheckedContinuation { continuation in
-            self.finishTransferContinuation.update {
-                switch transferStatusViewModel.state {
-                case .done:
-                    // If the transfer is finished, just return
-                    continuation.resume(returning: true)
-                    return
-                case .cancelled:
-                    continuation.resume(returning: false)
-                    return
-                case .error(let error):
-                    Logger.warn("Transfer failed: \(error)")
-                    continuation.resume(returning: false)
-                case .connecting, .idle, .starting, .transferring:
-                    break
-                }
-                $0 = continuation
-            }
         }
     }
 
     private func cancelTransfer() {
         stopListeningForTransfer()
         transferStatusViewModel.state = .cancelled
-        deviceTransferService.cancelTransferFromOldDevice()
-        deviceTransferService.stopTransfer()
-        let continuation = finishTransferContinuation.swap(nil)
-        continuation?.resume(returning: false)
+        outgoingDeviceTransferTask.cancelTransferToNewDevice()
     }
 
     private func stopListeningForTransfer() {
-        deviceTransferService.removeObserver(self)
-        deviceTransferService.stopListeningForNewDevices()
-    }
-
-    func deviceTransferServiceDiscoveredNewDevice(peerId: DeviceTransferPeerID, discoveryInfo: [String: String]?) {
-        deviceConnectedContinuation.update { existingContinuation in
-            guard peerId == existingContinuation?.peerConnectionData.peerId else {
-                // Don't resume the continuation if we got a notification for a different peerId
-                return
-            }
-            transferStatusViewModel.state = .connecting
-            existingContinuation?.continuation.resume()
-            // Successfully discovered the expected peer, clear the continuation
-            existingContinuation = nil
-        }
+        outgoingDeviceTransferTask.stopListening()
     }
 
     private var progressObserver: NSKeyValueObservation?
-    func deviceTransferServiceDidStartTransfer(progress: Progress) {
+    private func updateProgress(progress: Progress) {
         self.progressObserver = progress.observe(\.fractionCompleted, options: [.new]) { [weak self] _, change in
             Task { @MainActor in
                 let newValue = change.newValue ?? 0
@@ -195,20 +152,4 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
             }
         }
     }
-
-    func deviceTransferServiceDidEndTransfer(error: DeviceTransfer.Error?) {
-        stopListeningForTransfer()
-        finishTransferContinuation.update { continuation in
-            if let error {
-                transferStatusViewModel.state = .error(error)
-                continuation?.resume(returning: false)
-            } else {
-                transferStatusViewModel.state = .done
-                continuation?.resume(returning: true)
-            }
-            continuation = nil
-        }
-    }
-
-    func deviceTransferServiceDidRequestAppRelaunch() { }
 }

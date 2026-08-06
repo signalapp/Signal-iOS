@@ -290,3 +290,13 @@ class DeviceTransferRestoreImpl: DeviceTransferRestore {
         }
     }
 }
+
+#if TESTABLE_BUILD
+
+class DeviceTransferRestoreMock: DeviceTransferRestore {
+    func launchCleanup() -> Bool { return false }
+    func restoreTransferredData() throws { }
+    func markPendingRestore() { }
+}
+
+#endif

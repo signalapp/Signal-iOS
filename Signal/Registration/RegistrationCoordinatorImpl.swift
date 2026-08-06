@@ -1857,10 +1857,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .deviceTransfer:
             if let restoreToken = registrationMessage.restoreMethodToken {
                 let deviceTransferCoordinator = DeviceTransferCoordinator(
-                    deviceTransferService: deps.deviceTransferService,
+                    db: deps.db,
+                    deviceSleepManager: deps.deviceSleepManager,
+                    deviceTransferRestore: deps.deviceTransferRestore,
                     quickRestoreManager: deps.quickRestoreManager,
+                    registrationStateChangeManager: deps.registrationStateChangeManager,
                     restoreMethodToken: restoreToken,
                     restoreMode: .primary,
+                    tsAccountManager: deps.tsAccountManager,
                 )
                 return .deviceTransfer(deviceTransferCoordinator)
             } else {

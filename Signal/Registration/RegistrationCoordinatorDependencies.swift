@@ -19,7 +19,8 @@ public struct RegistrationCoordinatorDependencies {
     public let contactsStore: RegistrationCoordinatorImpl.Shims.ContactsStore
     public let dateProvider: DateProvider
     public let db: any DB
-    let deviceTransferService: any DeviceTransferServiceProtocol
+    let deviceSleepManager: (any DeviceSleepManager)?
+    let deviceTransferRestore: any DeviceTransferRestore
     public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
     public let identityManager: RegistrationCoordinatorImpl.Shims.IdentityManager
     public let localFileBackupManager: LocalFileBackupManager
@@ -65,7 +66,8 @@ public struct RegistrationCoordinatorDependencies {
             contactsStore: RegistrationCoordinatorImpl.Wrappers.ContactsStore(),
             dateProvider: { Date() },
             db: DependenciesBridge.shared.db,
-            deviceTransferService: AppEnvironment.shared.deviceTransferServiceRef,
+            deviceSleepManager: DependenciesBridge.shared.deviceSleepManager,
+            deviceTransferRestore: AppEnvironment.shared.deviceTransferRestore,
             experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
             identityManager: RegistrationCoordinatorImpl.Wrappers.IdentityManager(DependenciesBridge.shared.identityManager),
             localFileBackupManager: DependenciesBridge.shared.localFileBackupManager,

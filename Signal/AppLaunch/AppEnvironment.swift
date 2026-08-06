@@ -23,7 +23,7 @@ public class AppEnvironment: NSObject {
     var ownedObjects = [AnyObject]()
 
     let cvAudioPlayerRef: CVAudioPlayer
-    let deviceTransferServiceRef: DeviceTransferService
+    let deviceTransferRestore: DeviceTransferRestore
     let pushRegistrationManagerRef: PushRegistrationManager
     let screenLockUI: ScreenLockUI
     let speechManagerRef: SpeechManager
@@ -48,9 +48,9 @@ public class AppEnvironment: NSObject {
     private(set) var quickRestoreManager: QuickRestoreManager!
     private var registrationIdMismatchManager: RegistrationIdMismatchManager!
 
-    init(appReadiness: AppReadiness, deviceTransferService: DeviceTransferService) {
+    init(appReadiness: AppReadiness, deviceTransferRestore: DeviceTransferRestore) {
         self.cvAudioPlayerRef = CVAudioPlayer()
-        self.deviceTransferServiceRef = deviceTransferService
+        self.deviceTransferRestore = deviceTransferRestore
         self.screenLockUI = ScreenLockUI(appReadiness: appReadiness)
         self.pushRegistrationManagerRef = PushRegistrationManager(appReadiness: appReadiness)
         self.speechManagerRef = SpeechManager()
@@ -198,8 +198,10 @@ public class AppEnvironment: NSObject {
             dateProvider: Date.provider,
             db: DependenciesBridge.shared.db,
             backupSettingsStore: BackupSettingsStore(),
-            deviceTransferService: deviceTransferServiceRef,
+            deviceSleepManager: DependenciesBridge.shared.deviceSleepManager,
             quickRestoreManager: quickRestoreManager,
+            registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
 
         self.registrationIdMismatchManager = RegistrationIdMismatchManagerImpl(

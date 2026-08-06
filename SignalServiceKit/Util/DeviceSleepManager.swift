@@ -51,3 +51,12 @@ extension DeviceSleepManager {
         }
     }
 }
+
+#if TESTABLE_BUILD
+
+class DeviceSleepManagerMock: DeviceSleepManager {
+    func addBlock(blockObject: DeviceSleepBlockObject) {}
+    func removeBlock(blockObject: DeviceSleepBlockObject) {}
+}
+
+#endif
