@@ -6290,7 +6290,6 @@
 		C1CF83D52B9A20FA00CDC9C4 /* EncryptingStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptingStreamTransform.swift; sourceTree = "<group>"; };
 		C1D51D892E746FB300685A0C /* BackupFailureStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupFailureStateManager.swift; sourceTree = "<group>"; };
 		C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+IDEAL.swift"; sourceTree = "<group>"; };
-		C1D615E52FC887560069089E /* MPCDeviceTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPCDeviceTransfer.swift; sourceTree = "<group>"; };
 		C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingUIUtils.swift; sourceTree = "<group>"; };
 		C1D9B1542B7FA28200D94595 /* SafetyTipsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyTipsViewController.swift; sourceTree = "<group>"; };
 		C1DAA7572C13C1E00078AE84 /* ArchivedPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivedPayment.swift; sourceTree = "<group>"; };
@@ -11750,7 +11749,6 @@
 				887CD47E247307D900FDD265 /* DeviceTransferRestore.swift */,
 				C147C1712D9C58D60026952D /* DeviceTransferStatusViewController.swift */,
 				C14FB7D02EECE2E800850EC5 /* IncomingDeviceTransferTask.swift */,
-				C1D615E52FC887560069089E /* MPCDeviceTransfer.swift */,
 				C14FB7D22EECE31000850EC5 /* OutgoingDeviceTransferTask.swift */,
 				88C659AF24688335002AC115 /* SelfSignedIdentity.swift */,
 				C109A8432FDB62790065225E /* ThroughputMonitor.swift */,

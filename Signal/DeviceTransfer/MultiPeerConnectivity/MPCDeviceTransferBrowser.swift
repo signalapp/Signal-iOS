@@ -9,7 +9,7 @@ import SignalServiceKit
 
 class MPCDeviceTransferBrowser:
     NSObject,
-    DeviceTransferOutgoingConnection,
+    DeviceTransfer.OutgoingConnection,
     MCNearbyServiceBrowserDelegate
 {
     private struct ConnectionData {
@@ -22,9 +22,9 @@ class MPCDeviceTransferBrowser:
     let peerId: MPCDeviceTransferPeerId
 
     private let lock = UnfairLock()
-    private var session: DeviceTransferSession?
-    private var inviteContinuation: CheckedContinuation<DeviceTransferSession, Error>?
-    private var browseTask: Task<DeviceTransferSession, Error>?
+    private var session: DeviceTransfer.Session?
+    private var inviteContinuation: CheckedContinuation<DeviceTransfer.Session, Error>?
+    private var browseTask: Task<DeviceTransfer.Session, Error>?
 
     private var expectedConnectionData: ConnectionData?
     let tsAccountManager: TSAccountManager
@@ -45,7 +45,7 @@ class MPCDeviceTransferBrowser:
     @MainActor
     func connect(
         deviceTransferUrl: URL,
-    ) async throws -> DeviceTransferSession {
+    ) async throws -> DeviceTransfer.Session {
         if let session {
             return session
         }

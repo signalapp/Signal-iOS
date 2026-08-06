@@ -9,7 +9,7 @@ import SignalServiceKit
 
 class MPCDeviceTransferAdvertiser:
     NSObject,
-    DeviceTransferIncomingConnection,
+    DeviceTransfer.IncomingConnection,
     MCNearbyServiceAdvertiserDelegate
 {
     let peerId: MPCDeviceTransferPeerId
@@ -24,8 +24,8 @@ class MPCDeviceTransferAdvertiser:
 
     private let lock = UnfairLock()
     private var session: MPCDeviceTransferSession?
-    private var connectionContinuation: CheckedContinuation<DeviceTransferSession, Error>?
-    private var waitTask: Task<DeviceTransferSession, Error>?
+    private var connectionContinuation: CheckedContinuation<DeviceTransfer.Session, Error>?
+    private var waitTask: Task<DeviceTransfer.Session, Error>?
 
     @MainActor
     init(tsAccountManager: TSAccountManager) {
@@ -51,7 +51,7 @@ class MPCDeviceTransferAdvertiser:
     }
 
     @MainActor
-    func waitForConnection() async throws -> DeviceTransferSession {
+    func waitForConnection() async throws -> DeviceTransfer.Session {
         if let session {
             return session
         }

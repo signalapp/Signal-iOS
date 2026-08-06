@@ -17,18 +17,18 @@ class OutgoingDeviceTransferTask {
 
     let transferredFileIds = AtomicValue<[String]>([], lock: .init())
     var throughputMonitor: ThroughputMonitor?
-    var session: DeviceTransferSession?
+    var session: DeviceTransfer.Session?
     var transferInProgress = false
 
     private let sleepBlockObject = DeviceSleepBlockObject(blockReason: "device transfer")
 
-    private let newDeviceServiceBrowser: DeviceTransferOutgoingConnection
+    private let newDeviceServiceBrowser: DeviceTransfer.OutgoingConnection
     private var notificationObservers: [NotificationCenter.Observer] = []
 
     init(
         db: DB,
         deviceSleepManager: DeviceSleepManager?,
-        deviceTransferConnectionFactory: DeviceTransferConnectionFactory,
+        deviceTransferConnectionFactory: DeviceTransfer.ConnectionFactory,
         registrationStateChangeManager: RegistrationStateChangeManager,
         tsAccountManager: TSAccountManager,
     ) {
@@ -138,7 +138,7 @@ class OutgoingDeviceTransferTask {
 
     private func sendAllFiles(
         manifest: DeviceTransferProtoManifest,
-        session: DeviceTransferSession,
+        session: DeviceTransfer.Session,
     ) async throws {
         guard let database = manifest.database else {
             throw OWSAssertionError("Manifest unexpectedly missing database")
@@ -261,7 +261,7 @@ class OutgoingDeviceTransferTask {
         return protoBuilder.buildInfallibly()
     }
 
-    private func send(session: DeviceTransferSession, file: DeviceTransferProtoFile) async throws {
+    private func send(session: DeviceTransfer.Session, file: DeviceTransferProtoFile) async throws {
         try Task.checkCancellation()
         if transferredFileIds.get().contains(file.identifier) {
             Logger.info("File was already transferred, skipping")
@@ -356,9 +356,7 @@ class OutgoingDeviceTransferTask {
         stopTransfer()
     }
 
-    // MARK: - Utility
-
-    private func processMessage(message: DeviceTransfer.Message, session: DeviceTransferSession) throws {
+    private func processMessage(message: DeviceTransfer.Message, session: DeviceTransfer.Session) throws {
         switch message {
         case DeviceTransfer.Message.backgroundApp:
             return failTransfer(DeviceTransfer.Error.backgroundedDevice, "Received terminate message")
@@ -516,7 +514,7 @@ class OutgoingDeviceTransferTask {
     }
 
     @MainActor
-    private func sendManifest(manifest: DeviceTransferProtoManifest, session: DeviceTransferSession) async throws {
+    func sendManifest(manifest: DeviceTransferProtoManifest, session: DeviceTransfer.Session) async throws {
         Logger.info("Sending manifest to new device.")
 
         DeviceTransfer.Utils.resetTransferDirectory(createNewTransferDirectory: true)

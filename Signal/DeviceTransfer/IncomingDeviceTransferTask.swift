@@ -14,7 +14,7 @@ class IncomingDeviceTransferTask {
     let receivedFileIds = AtomicValue<[String]>([], lock: .init())
     let skippedFileIds = AtomicValue<[String]>([], lock: .init())
 
-    var session: DeviceTransferSession?
+    var session: DeviceTransfer.Session?
     var throughputMonitor: ThroughputMonitor?
     private var initializeProgressBlock: ((Progress) -> Void)?
 
@@ -26,14 +26,14 @@ class IncomingDeviceTransferTask {
     private let registrationStateChangeManager: RegistrationStateChangeManager
     private let deviceSleepManager: DeviceSleepManager?
 
-    private let newDeviceServiceAdvertiser: DeviceTransferIncomingConnection
+    private let newDeviceServiceAdvertiser: DeviceTransfer.IncomingConnection
     private var notificationObservers: [NotificationCenter.Observer] = []
 
     init(
         db: DB,
         deviceSleepManager: DeviceSleepManager?,
         deviceTransferRestore: DeviceTransferRestore,
-        deviceTransferConnectionFactory: DeviceTransferConnectionFactory,
+        deviceTransferConnectionFactory: DeviceTransfer.ConnectionFactory,
         registrationStateChangeManager: RegistrationStateChangeManager,
         tsAccountManager: TSAccountManager,
     ) {
@@ -212,7 +212,7 @@ class IncomingDeviceTransferTask {
         stopTransfer(error: CancellationError())
     }
 
-    func processMessage(message: DeviceTransfer.Message, session: DeviceTransferSession) throws {
+    func processMessage(message: DeviceTransfer.Message, session: DeviceTransfer.Session) throws {
         switch message {
         case DeviceTransfer.Message.backgroundApp:
             return failTransfer(DeviceTransfer.Error.backgroundedDevice, "Received backgrounded message")
@@ -261,7 +261,7 @@ class IncomingDeviceTransferTask {
         Logger.info("Transfer complete")
     }
 
-    func startReceiving(fileName: String, session: DeviceTransferSession, progress: Progress) throws {
+    func startReceiving(fileName: String, session: DeviceTransfer.Session, progress: Progress) throws {
         guard transferInProgress else { return }
         guard let manifest else {
             return owsFailDebug("Received file while not expecting one")

@@ -10,13 +10,13 @@ import SignalServiceKit
 
 class MPCDeviceTransferSession:
     NSObject,
-    DeviceTransferSession,
+    DeviceTransfer.Session,
     MCSessionDelegate
 {
     let identity: SecIdentity
-    var localPeerId: any DeviceTransferPeerID { MPCDeviceTransferPeerId(mcPeerID: session.myPeerID) }
+    var localPeerId: any DeviceTransfer.PeerID { MPCDeviceTransferPeerId(mcPeerID: session.myPeerID) }
     let _remotePeerId: MPCDeviceTransferPeerId
-    var remotePeerId: any DeviceTransferPeerID { _remotePeerId }
+    var remotePeerId: any DeviceTransfer.PeerID { _remotePeerId }
 
     let session: MCSession
 
