@@ -491,19 +491,19 @@
 "ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Đã lưu vào Ảnh";
 
 /* Accessibility label for the 'add media' dialog. */
-"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "Add media";
+"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "Thêm tập tin đa phương tiện";
 
 /* Accessibility label for the 'crop/scale image' dialog. */
-"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "Crop or scale image";
+"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "Cắt hoặc thu phóng hình ảnh";
 
 /* Accessibility label for the 'high/standard quality' dialog. */
-"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Media quality";
+"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Chất lượng tập tin đa phương tiện";
 
 /* Accessibility label for the 'pen' dialog. */
-"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Draw or annotate media";
+"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Vẽ hoặc chú thích tập tin đa phương tiện";
 
 /* Accessibility label for the 'view one' dialog. */
-"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "View once";
+"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "Xem một lần";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "Hình động";
@@ -1043,28 +1043,28 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "Không tìm thấy gói đăng ký";
 
 /* Label for the On-Device Backups option on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "On-Device Backups";
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "Bản sao lưu trên thiết bị";
 
 /* Footer text below the On-Device Backups row on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "Save your backups to a folder on this device.";
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "Lưu bản sao lưu của bạn trong một thư mục trên thiết bị này.";
 
 /* Section header on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "Other Ways to Backup";
+"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "Cách sao lưu khác";
 
 /* Subtitle on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Back up your message history so you never lose data when you get a new phone or reinstall Signal.";
+"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Sao lưu lịch sử tin nhắn để không bao giờ mất dữ liệu khi bạn có điện thoại mới hoặc cài lại Signal.";
 
 /* Button to begin setting up Signal Secure Backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Set Up";
+"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Thiết Lập";
 
 /* Description of Signal Secure Backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Automatic backups with Signal's secure, end-to-end encrypted storage service.";
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Sao lưu tự động với dịch vụ lưu trữ bảo mật, được mã hóa đầu cuối của Signal.";
 
 /* Title for the Signal Secure Backups cell on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Signal Secure Backups";
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Sao lưu bảo mật Signal";
 
 /* Button to view settings for remote backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "View Settings";
+"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "Hiển thị các cài đặt";
 
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
 "BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "Bạn có thể quản lý hoặc nâng cấp gói đăng ký Sao lưu bảo mật Signal trên thiết bị chính của mình.";
@@ -1826,7 +1826,7 @@
 "CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Xoá";
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Clear All";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Thao tác này sẽ xóa vĩnh viễn tất cả lịch sử cuộc gọi.";
@@ -3725,13 +3725,13 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Tại sao bạn không thử mời ai đó nhỉ?";
 
 /* Button for a sheet asking the user if they want to enable local file backups */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "Enable on-device backups";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "Bật sao lưu trên thiết bị";
 
 /* Message for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "To continue using on-device backups, you need to enable them for this account. You can do this at any time from Settings > Backups.";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "Để tiếp tục sử dụng tính năng sao lưu trên thiết bị, bạn cần bật tính năng này cho tài khoản. Bạn có thể làm điều này bất cứ lúc nào trong Cài đặt > Sao lưu.";
 
 /* Title for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Enable on-device backups?";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Bật sao lưu trên thiết bị?";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Bận";
@@ -5419,38 +5419,62 @@
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Không đóng Signal.";
 
+/* Body for an error sheet shown when the user's folder choice does not contain a backup file. */
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "No Signal backup was found in the selected folder. Please try a different folder.";
+
+/* Title for an error sheet shown when the user's folder choice does not contain a backup file. */
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "No Backup Found";
+
+/* Title for a button that lets the user select a new folder. */
+"LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "Try a different folder";
+
+/* Body text for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "After tapping “Continue,” here’s how to access your backup:";
+
+/* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "Select the top-level folder where your backup is stored";
+
+/* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "Tap “Open”";
+
+/* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_3" = "Do not select individual files";
+
+/* Title for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Select Your Backup Folder";
+
 /* Button for a sheet asking the user to choose a new local file backup folder */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Choose Folder";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Chọn thư mục";
 
 /* Message for a sheet asking the user to choose a new local file backup folder. */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Your on-device backup couldn't be completed. This may be because you moved or deleted your backup folder. Choose a folder in your device's storage where your backup will be stored.";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Không thể hoàn tất quá trình sao lưu trên thiết bị của bạn. Nguyên nhân có thể là do bạn đã di chuyển hoặc xóa thư mục sao lưu. Chọn một thư mục trong bộ nhớ thiết bị để lưu trữ bản sao lưu của bạn.";
 
 /* Title for a sheet asking the user to choose a new local file backup folder. */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "Couldn't Complete Backup";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "Không thể hoàn tất sao lưu";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "Mã hóa đầu cuối";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "Saved on your device";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "Đã lưu trên thiết bị của bạn";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Turn off backups anytime";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Tắt sao lưu bất cứ lúc nào";
 
 /* Subtitle for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages to a folder on your device. Your backup is end-to-end encrypted and can be restored by moving your backup folder to a new device.";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Sao lưu tin nhắn của bạn vào một thư mục trên thiết bị. Bản sao lưu của bạn được mã hóa đầu cuối và có thể được khôi phục bằng cách di chuyển thư mục sao lưu sang thiết bị mới.";
 
 /* Title for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "On-Device Backups";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "Bản sao lưu trên thiết bị";
 
 /* Body text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "Choose a folder in your device’s storage where your backup will be stored.";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "Chọn một thư mục trong bộ nhớ thiết bị để lưu trữ bản sao lưu của bạn.";
 
 /* Button for a sheet asking the user to choose a folder to save their local backup in. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "Choose Folder";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "Chọn thư mục";
 
 /* Title text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Choose a Folder";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Chọn thư mục";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Tìm theo tên hoặc địa chỉ";
@@ -6263,7 +6287,7 @@
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Yêu cầu gửi Tin nhắn";
 
 /* Body for a notification shown when Signal can't fetch messages because the device is low on storage space. */
-"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "You may have new messages but your device doesn't have enough storage space for Signal to run. Tap for more info.";
+"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "Bạn có thể nhận được tin nhắn mới nhưng thiết bị của bạn không đủ dung lượng lưu trữ để Signal hoạt động. Nhấn để xem thêm thông tin.";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Bạn có thể đã nhận tin nhắn này khi %1$@ đang khởi động nguồn trở lại.";
@@ -8845,8 +8869,35 @@
 /* Footer below the 'delete app data' button, shown on a linked device's account settings. */
 "SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "Thao tác này sẽ xóa toàn bộ dữ liệu khỏi ứng dụng Signal trên thiết bị này.";
 
+/* Text for a toast confirming the user changed their local file backup location. */
+"SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED" = "Backup folder updated";
+
 /* Title for the 'on-device backups' settings page. */
-"SETTINGS_LOCAL_FILE_BACKUPS" = "On-Device Backups";
+"SETTINGS_LOCAL_FILE_BACKUPS" = "Bản sao lưu trên thiết bị";
+
+/* Label for the button that starts a manual on-device backup. */
+"SETTINGS_LOCAL_FILE_BACKUPS_BACK_UP_NOW" = "Back Up Now";
+
+/* Label for the row that lets the user choose the folder for on-device backups. */
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_FOLDER" = "Backup Folder";
+
+/* Label for the row showing the size of the on-device backup. */
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_SIZE" = "Backup Size";
+
+/* Description shown at the top of the on-device backups settings page. */
+"SETTINGS_LOCAL_FILE_BACKUPS_HEADER_DESCRIPTION" = "Backups are end-to-end encrypted and stored on your device.";
+
+/* Label for the row showing when the last on-device backup occurred. */
+"SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "Last Backup";
+
+/* Footer text on the on-device backups settings page explaining how to restore a backup. */
+"SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "To restore a backup, install a new copy of Signal. Open the app, tap “Restore or Transfer” and select “On-Device Backup”.";
+
+/* Label for the button that turns off on-device backups. */
+"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Turn Off Backups";
+
+/* Label for the row that shows the on-device backup recovery key. */
+"SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "View Recovery Key";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Không bao giờ";
@@ -9575,10 +9626,10 @@
 "SHARE_EXTENSION_LOADING" = "Đang tải…";
 
 /* Message for an error shown when the user tries to share to Signal but the device is too low on storage space. */
-"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "You can’t share to Signal because your device is low on storage space. Free up space by managing your storage in Settings, then try again.";
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "Bạn không thể chia sẻ lên Signal vì thiết bị của bạn sắp hết dung lượng lưu trữ. Giải phóng dung lượng bằng cách quản lý dung lượng lưu trữ trong Cài đặt, sau đó thử lại.";
 
 /* Title for an error shown when the user tries to share to Signal but the device is too low on storage space. */
-"SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "Storage Space Low";
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "Dung lượng lưu trữ thấp";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Mở ứng dụng Signal để đăng ký.";

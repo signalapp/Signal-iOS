@@ -491,19 +491,19 @@
 "ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "फोटोंमध्ये जतन केले";
 
 /* Accessibility label for the 'add media' dialog. */
-"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "Add media";
+"ATTACHMENT_TOOL_BUTTON_ADD_MEDIA_ACCESSIBILITY_LABEL" = "मीडिया समाविष्ट करा";
 
 /* Accessibility label for the 'crop/scale image' dialog. */
-"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "Crop or scale image";
+"ATTACHMENT_TOOL_BUTTON_CROP_SCALE_ACCESSIBILITY_LABEL" = "प्रतिमा क्रॉप करा किंवा स्केल करा";
 
 /* Accessibility label for the 'high/standard quality' dialog. */
-"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Media quality";
+"ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "मिडिया दर्जा";
 
 /* Accessibility label for the 'pen' dialog. */
-"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Draw or annotate media";
+"ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "मीडिया काढा किंवा रेखाटा";
 
 /* Accessibility label for the 'view one' dialog. */
-"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "View once";
+"ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "एकदा पाहा";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "अ‍ॅनिमिटेड";
@@ -1043,28 +1043,28 @@
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_TITLE" = "सदस्यत्व सापडले नाही";
 
 /* Label for the On-Device Backups option on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "On-Device Backups";
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS" = "डिव्हाइसवर बॅकअप";
 
 /* Footer text below the On-Device Backups row on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "Save your backups to a folder on this device.";
+"BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS_FOOTER" = "या डिव्हाईसवरील एका फोल्डरमध्ये तुमचे बॅकअप जतन करा.";
 
 /* Section header on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "Other Ways to Backup";
+"BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "बॅकअप घेण्याचे इतर मार्ग";
 
 /* Subtitle on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Back up your message history so you never lose data when you get a new phone or reinstall Signal.";
+"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "आपल्या संदेश इतिहास चा बॅकअप घ्या ज्यामुळे आपण जेव्हा नवीन फोन घ्याल किंवा Signal पुन्हा इन्स्टॉल कराल तेव्हा आपण कधीही आपला डेटा गमावणार नाही.";
 
 /* Button to begin setting up Signal Secure Backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Set Up";
+"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "सेट अप";
 
 /* Description of Signal Secure Backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Automatic backups with Signal's secure, end-to-end encrypted storage service.";
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "ऑटोमॅटिक बॅकअप्स, Signal च्या संरक्षित, एण्ड-टू-एण्ड कूटबद्ध केलेल्या साठवण सेवेसह.";
 
 /* Title for the Signal Secure Backups cell on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Signal Secure Backups";
+"BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_TITLE" = "Signal सुरक्षित बॅकअप्स";
 
 /* Button to view settings for remote backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "View Settings";
+"BACKUP_SETTINGS_LANDING_VIEW_SETTINGS_BUTTON" = "सेटिंग्ज दाखवा";
 
 /* Note on the linked-device Backups screen explaining that the Backups subscription can only be managed on the user's primary device. */
 "BACKUP_SETTINGS_LINKED_DEVICE_MANAGE_ON_PRIMARY_FOOTER" = "तुम्ही तुमच्या मुख्य डिव्हाईसवरून तुमचे Signal सिक्युअर बॅकअप्स सदस्यत्व व्यवस्थापित करू शकता किंवा अपग्रेड करू शकता.";
@@ -1826,7 +1826,7 @@
 "CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "साफ करा";
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Clear All";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "हे कायमस्वरूपी सर्व कॉल इतिहास हटवेल.";
@@ -3725,13 +3725,13 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "आपण कुणाला आमंत्रित का करत नाही?";
 
 /* Button for a sheet asking the user if they want to enable local file backups */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "Enable on-device backups";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "डिव्हाईसवरील बॅकअप्स चालू करा";
 
 /* Message for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "To continue using on-device backups, you need to enable them for this account. You can do this at any time from Settings > Backups.";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "डिव्हाईसवरील बॅकअप्स वापरत राहण्यासाठी, तुम्ही ते या खात्यासाठी चालू करणे आवश्यक आहे. तुम्ही सेटिंग्ज > बॅकअप्समध्ये जाऊन हे कधीही करू शकता.";
 
 /* Title for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Enable on-device backups?";
+"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "डिव्हाईसवरील बॅकअप्स चालू करायचे?";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "व्यस्त";
@@ -5419,38 +5419,62 @@
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Signal बंद करू नका.";
 
+/* Body for an error sheet shown when the user's folder choice does not contain a backup file. */
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "No Signal backup was found in the selected folder. Please try a different folder.";
+
+/* Title for an error sheet shown when the user's folder choice does not contain a backup file. */
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "No Backup Found";
+
+/* Title for a button that lets the user select a new folder. */
+"LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "Try a different folder";
+
+/* Body text for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "After tapping “Continue,” here’s how to access your backup:";
+
+/* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "Select the top-level folder where your backup is stored";
+
+/* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "Tap “Open”";
+
+/* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_3" = "Do not select individual files";
+
+/* Title for a sheet asking the user to select their backup to restore from during registration. */
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Select Your Backup Folder";
+
 /* Button for a sheet asking the user to choose a new local file backup folder */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Choose Folder";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "फोल्डर निवडा";
 
 /* Message for a sheet asking the user to choose a new local file backup folder. */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Your on-device backup couldn't be completed. This may be because you moved or deleted your backup folder. Choose a folder in your device's storage where your backup will be stored.";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "तुमचा डिव्हाईसवरील बॅकअप पूर्ण होऊ शकला नाही. याचे कारण तुम्ही तुमचा बॅकअप फोल्डर हलवलेला किंवा हटवलेला असू शकतो. तुमचा बॅकअप साठवण्यासाठी तुमच्या डिव्हाईसच्या साठवणीत एक फोल्डर निवडा.";
 
 /* Title for a sheet asking the user to choose a new local file backup folder. */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "Couldn't Complete Backup";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "बॅकअप पूर्ण करू शकत नाही";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "End-to-end encrypted";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_1" = "एंड-टू-एंड कूटबद्ध केलेले";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "Saved on your device";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_2" = "तुमच्या डिव्हाईसवर जतन केलेले";
 
 /* Bullet point on a view introducing local file backups during onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Turn off backups anytime";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "कोणत्याही वेळी बॅकअप्स बंद करा";
 
 /* Subtitle for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages to a folder on your device. Your backup is end-to-end encrypted and can be restored by moving your backup folder to a new device.";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "तुमचे संदेश तुमच्या डिव्हाईसवरील एका फोल्डरमध्ये बॅकअप करून ठेवा. तुमचा बॅकअप एंड-टू-एंड कूटबद्ध केलेला आहे आणि तुमचा बॅकअप फोल्डर एका नव्या डिव्हाईसमध्ये हलवून परत मिळवता येतो.";
 
 /* Title for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "On-Device Backups";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "डिव्हाइसवर बॅकअप";
 
 /* Body text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "Choose a folder in your device’s storage where your backup will be stored.";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BODY" = "तुमचा बॅकअप साठवण्यासाठी तुमच्या डिव्हाईसच्या साठवणीत एक फोल्डर निवडा.";
 
 /* Button for a sheet asking the user to choose a folder to save their local backup in. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "Choose Folder";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "फोल्डर निवडा";
 
 /* Title text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Choose a Folder";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "एक फोल्डर निवडा";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "नाव किंवा पत्त्याद्वारे शोधा";
@@ -6263,7 +6287,7 @@
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "संदेश विनंती";
 
 /* Body for a notification shown when Signal can't fetch messages because the device is low on storage space. */
-"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "You may have new messages but your device doesn't have enough storage space for Signal to run. Tap for more info.";
+"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "तुम्हाला नवे संदेश आले असतील पण तुमच्या डिव्हाईसमध्ये Signal चालण्यासाठी पुरेशी साठवणीची जागा शिल्लक नाही. अधिक माहितीसाठी टॅप करा.";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "आपला %1$@ पुन्हा चालू होत असताना आपल्याला संदेश प्राप्त झाले असू शकतात.";
@@ -8845,8 +8869,35 @@
 /* Footer below the 'delete app data' button, shown on a linked device's account settings. */
 "SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "हे केल्याने या डिव्हाईसवरील Signal ॲप मधून सगळा डेटा हटवला जाईल.";
 
+/* Text for a toast confirming the user changed their local file backup location. */
+"SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED" = "Backup folder updated";
+
 /* Title for the 'on-device backups' settings page. */
-"SETTINGS_LOCAL_FILE_BACKUPS" = "On-Device Backups";
+"SETTINGS_LOCAL_FILE_BACKUPS" = "डिव्हाइसवर बॅकअप";
+
+/* Label for the button that starts a manual on-device backup. */
+"SETTINGS_LOCAL_FILE_BACKUPS_BACK_UP_NOW" = "Back Up Now";
+
+/* Label for the row that lets the user choose the folder for on-device backups. */
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_FOLDER" = "Backup Folder";
+
+/* Label for the row showing the size of the on-device backup. */
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_SIZE" = "Backup Size";
+
+/* Description shown at the top of the on-device backups settings page. */
+"SETTINGS_LOCAL_FILE_BACKUPS_HEADER_DESCRIPTION" = "Backups are end-to-end encrypted and stored on your device.";
+
+/* Label for the row showing when the last on-device backup occurred. */
+"SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "Last Backup";
+
+/* Footer text on the on-device backups settings page explaining how to restore a backup. */
+"SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "To restore a backup, install a new copy of Signal. Open the app, tap “Restore or Transfer” and select “On-Device Backup”.";
+
+/* Label for the button that turns off on-device backups. */
+"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Turn Off Backups";
+
+/* Label for the row that shows the on-device backup recovery key. */
+"SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "View Recovery Key";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "कधीही नाही";
@@ -9575,10 +9626,10 @@
 "SHARE_EXTENSION_LOADING" = "लोड होत आहे…";
 
 /* Message for an error shown when the user tries to share to Signal but the device is too low on storage space. */
-"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "You can’t share to Signal because your device is low on storage space. Free up space by managing your storage in Settings, then try again.";
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "तुम्ही Signal वर शेअर करू शकत नाही कारण तुमच्या डिव्हाईसवर साठवणीची पुरेशी जागा नाही. सेटिंग्जमध्ये तुमच्या साठवणीचे व्यवस्थापन करून जागा मोकळी करा, मग पुन्हा प्रयत्न करा.";
 
 /* Title for an error shown when the user tries to share to Signal but the device is too low on storage space. */
-"SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "Storage Space Low";
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "संग्रहण जागा कमी";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "नोंदणी करण्यासाठी Signal अॅप लाँच करा.";
