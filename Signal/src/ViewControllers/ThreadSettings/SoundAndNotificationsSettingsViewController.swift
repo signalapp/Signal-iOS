@@ -153,7 +153,9 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
                             "CONVERSATION_SETTINGS_MENTIONS_LABEL",
                             comment: "label for 'mentions' cell in conversation settings",
                         ),
-                        accessoryText: self.nameForMentionMode(self.threadViewModel.threadRecord.mentionNotificationMode),
+                        accessoryText: self.nameForShouldNotifyForMentionsWhenMuted(
+                            self.threadViewModel.threadRecord.shouldNotifyForMentionsWhenMuted,
+                        ),
                         accessoryType: .disclosureIndicator,
                     )
 
@@ -187,13 +189,10 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
             ),
         )
 
-        for mode: TSThreadMentionNotificationMode in [.always, .never] {
-            let action =
-                ActionSheetAction(
-                    title: nameForMentionMode(mode),
-                ) { [weak self] _ in
-                    self?.setMentionNotificationMode(mode)
-                }
+        for shouldNotify in [true, false] {
+            let action = ActionSheetAction(title: nameForShouldNotifyForMentionsWhenMuted(shouldNotify)) { [weak self] _ in
+                self?.setShouldNotifyForMentionsWhenMuted(shouldNotify)
+            }
             actionSheet.addAction(action)
         }
 
@@ -201,22 +200,21 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
         presentActionSheet(actionSheet)
     }
 
-    private func setMentionNotificationMode(_ value: TSThreadMentionNotificationMode) {
+    private func setShouldNotifyForMentionsWhenMuted(_ value: Bool) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            self.threadViewModel.threadRecord.updateWithMentionNotificationMode(value, wasLocallyInitiated: true, transaction: transaction)
+            self.threadViewModel.threadRecord.updateWithShouldNotifyForMentionsWhenMuted(value, wasLocallyInitiated: true, transaction: transaction)
         }
 
         updateTableContents()
     }
 
-    func nameForMentionMode(_ mode: TSThreadMentionNotificationMode) -> String {
-        switch mode {
-        case .default, .always:
+    func nameForShouldNotifyForMentionsWhenMuted(_ shouldNotifyForMentionsWhenMuted: Bool) -> String {
+        if shouldNotifyForMentionsWhenMuted {
             return OWSLocalizedString(
                 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS",
                 comment: "label for 'always' option for mention notifications in conversation settings",
             )
-        case .never:
+        } else {
             return OWSLocalizedString(
                 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER",
                 comment: "label for 'never' option for mention notifications in conversation settings",

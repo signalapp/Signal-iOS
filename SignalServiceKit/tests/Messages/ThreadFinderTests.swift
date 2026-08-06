@@ -36,7 +36,7 @@ class ThreadFinderTests: XCTestCase {
             lastDraftUpdateTimestamp: lastDraftUpdateTimestamp,
             lastInteractionRowId: lastInteractionRowID,
             lastSentStoryTimestamp: nil,
-            mentionNotificationMode: .default,
+            shouldNotifyForMentionsWhenMuted: true,
             messageDraft: draft,
             messageDraftBodyRanges: nil,
             mutedUntilTimestampObsolete: 0,

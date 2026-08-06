@@ -1000,16 +1000,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
             if let lastVerifiedGroupNameHash = threadAssociatedData.lastVerifiedGroupNameHash {
                 builder.setVerifiedNameHash(lastVerifiedGroupNameHash)
             }
-
-            switch groupThread.mentionNotificationMode {
-            case .default:
-                break
-            case .never:
-                builder.setDontNotifyForMentionsIfMuted(true)
-            case .always:
-                builder.setDontNotifyForMentionsIfMuted(false)
-            }
-
+            builder.setDontNotifyForMentionsIfMuted(!groupThread.shouldNotifyForMentionsWhenMuted)
             builder.setStorySendMode(groupThread.storyViewMode.storageServiceMode)
         } else if
             let enqueuedRecord = groupsV2.groupRecordPendingStorageServiceRestore(
@@ -1071,14 +1062,14 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
                 groupThread.updateWithStoryViewMode(.init(storageServiceMode: record.storySendMode), transaction: transaction)
             }
 
-            switch (groupThread.mentionNotificationMode, record.dontNotifyForMentionsIfMuted) {
-            case (.default, false), (.never, false):
-                groupThread.updateWithMentionNotificationMode(.always, wasLocallyInitiated: false, transaction: transaction)
-            case (.default, true), (.always, true):
-                groupThread.updateWithMentionNotificationMode(.never, wasLocallyInitiated: false, transaction: transaction)
-            case (.never, true), (.always, false):
-                // No change
-                break
+            let localShouldNotifyForMentionsWhenMuted = groupThread.shouldNotifyForMentionsWhenMuted
+            let remoteShouldNotifyForMentionsWhenMuted = !record.dontNotifyForMentionsIfMuted
+            if localShouldNotifyForMentionsWhenMuted != remoteShouldNotifyForMentionsWhenMuted {
+                groupThread.updateWithShouldNotifyForMentionsWhenMuted(
+                    remoteShouldNotifyForMentionsWhenMuted,
+                    wasLocallyInitiated: false,
+                    transaction: transaction,
+                )
             }
 
             ThreadAssociatedData.create(for: groupThread.uniqueId, transaction: transaction)

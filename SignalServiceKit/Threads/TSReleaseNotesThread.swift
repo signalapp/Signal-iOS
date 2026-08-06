@@ -41,7 +41,7 @@ public final class TSReleaseNotesThread: TSThread {
             lastDraftUpdateTimestamp: self.lastDraftUpdateTimestamp,
             lastInteractionRowId: self.lastInteractionRowId,
             lastSentStoryTimestamp: self.lastSentStoryTimestamp,
-            mentionNotificationMode: self.mentionNotificationMode,
+            shouldNotifyForMentionsWhenMuted: self.shouldNotifyForMentionsWhenMuted,
             messageDraft: self.messageDraft,
             messageDraftBodyRanges: self.messageDraftBodyRanges,
             mutedUntilTimestampObsolete: self.mutedUntilTimestampObsolete,

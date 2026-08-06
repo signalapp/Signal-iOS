@@ -6,12 +6,6 @@
 public import GRDB
 public import LibSignalClient
 
-public enum TSThreadMentionNotificationMode: UInt {
-    case `default` = 0
-    case always = 1
-    case never = 2
-}
-
 public enum TSThreadStoryViewMode: UInt {
     case `default` = 0
     case explicit = 1
@@ -59,7 +53,7 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
     public internal(set) var shouldThreadBeVisible: Bool
     public let isMarkedUnreadObsolete: Bool
     public private(set) var messageDraftBodyRanges: MessageBodyRanges?
-    public private(set) var mentionNotificationMode: TSThreadMentionNotificationMode
+    public private(set) var shouldNotifyForMentionsWhenMuted: Bool
     public let mutedUntilTimestampObsolete: UInt64
     public private(set) var lastSentStoryTimestamp: UInt64?
     public internal(set) var storyViewMode: TSThreadStoryViewMode
@@ -97,6 +91,23 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         case storyViewMode
     }
 
+    enum MentionNotificationMode: Int64, Codable {
+        case notifyWhenMuted = 1
+        case doNotNotifyWhenMuted = 2
+
+        init(from decoder: any Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            self = Self(rawValue: try container.decode(Int64.self)) ?? .notifyWhenMuted
+        }
+
+        var shouldNotifyForMentionsWhenMuted: Bool {
+            switch self {
+            case .notifyWhenMuted: true
+            case .doNotNotifyWhenMuted: false
+            }
+        }
+    }
+
     public required init(inheritableDecoder decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decodeIfPresent(Int64.self, forKey: .id)
@@ -109,7 +120,7 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         self.lastDraftUpdateTimestamp = try container.decode(UInt64.self, forKey: .lastDraftUpdateTimestamp)
         self.lastInteractionRowId = try container.decode(UInt64.self, forKey: .lastInteractionRowId)
         self.lastSentStoryTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .lastSentStoryTimestamp)
-        self.mentionNotificationMode = TSThreadMentionNotificationMode(rawValue: try container.decode(UInt.self, forKey: .mentionNotificationMode)) ?? .default
+        self.shouldNotifyForMentionsWhenMuted = try container.decode(MentionNotificationMode.self, forKey: .mentionNotificationMode).shouldNotifyForMentionsWhenMuted
         self.messageDraft = try container.decodeIfPresent(String.self, forKey: .messageDraft)
         self.messageDraftBodyRanges = try container.decodeIfPresent(Data.self, forKey: .messageDraftBodyRanges).map({ try LegacySDSSerializer().deserializeLegacySDSData($0, ofClass: MessageBodyRanges.self) })
         self.mutedUntilTimestampObsolete = try container.decode(UInt64.self, forKey: .mutedUntilTimestampObsolete)
@@ -132,7 +143,9 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         try container.encode(self.lastSentStoryTimestamp, forKey: .lastSentStoryTimestamp)
         try container.encode(0 as UInt64, forKey: .lastVisibleSortIdObsolete)
         try container.encode(0 as Double, forKey: .lastVisibleSortIdOnScreenPercentageObsolete)
-        try container.encode(self.mentionNotificationMode.rawValue, forKey: .mentionNotificationMode)
+        let mentionNotificationMode: MentionNotificationMode
+        mentionNotificationMode = self.shouldNotifyForMentionsWhenMuted ? .notifyWhenMuted : .doNotNotifyWhenMuted
+        try container.encode(mentionNotificationMode, forKey: .mentionNotificationMode)
         try container.encode(self.messageDraft, forKey: .messageDraft)
         let messageDraftBodyRangesData = self.messageDraftBodyRanges.map(LegacySDSSerializer().serializeAsLegacySDSData(_:))
         try container.encode(messageDraftBodyRangesData, forKey: .messageDraftBodyRanges)
@@ -153,7 +166,7 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         lastDraftUpdateTimestamp: UInt64,
         lastInteractionRowId: UInt64,
         lastSentStoryTimestamp: UInt64?,
-        mentionNotificationMode: TSThreadMentionNotificationMode,
+        shouldNotifyForMentionsWhenMuted: Bool,
         messageDraft: String?,
         messageDraftBodyRanges: MessageBodyRanges?,
         mutedUntilTimestampObsolete: UInt64,
@@ -170,7 +183,7 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         self.lastDraftUpdateTimestamp = lastDraftUpdateTimestamp
         self.lastInteractionRowId = lastInteractionRowId
         self.lastSentStoryTimestamp = lastSentStoryTimestamp
-        self.mentionNotificationMode = mentionNotificationMode
+        self.shouldNotifyForMentionsWhenMuted = shouldNotifyForMentionsWhenMuted
         self.messageDraft = messageDraft
         self.messageDraftBodyRanges = messageDraftBodyRanges
         self.mutedUntilTimestampObsolete = mutedUntilTimestampObsolete
@@ -184,7 +197,7 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         self.lastDraftInteractionRowId = 0
         self.lastDraftUpdateTimestamp = 0
         self.lastInteractionRowId = 0
-        self.mentionNotificationMode = .default
+        self.shouldNotifyForMentionsWhenMuted = true
         self.messageDraft = nil
         self.mutedUntilTimestampObsolete = 0
         self.shouldThreadBeVisible = false
@@ -206,7 +219,7 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
             lastDraftUpdateTimestamp: self.lastDraftUpdateTimestamp,
             lastInteractionRowId: self.lastInteractionRowId,
             lastSentStoryTimestamp: self.lastSentStoryTimestamp,
-            mentionNotificationMode: self.mentionNotificationMode,
+            shouldNotifyForMentionsWhenMuted: self.shouldNotifyForMentionsWhenMuted,
             messageDraft: self.messageDraft,
             messageDraftBodyRanges: self.messageDraftBodyRanges,
             mutedUntilTimestampObsolete: self.mutedUntilTimestampObsolete,
@@ -227,7 +240,7 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         hasher.combine(self.lastDraftUpdateTimestamp)
         hasher.combine(self.lastInteractionRowId)
         hasher.combine(self.lastSentStoryTimestamp)
-        hasher.combine(self.mentionNotificationMode)
+        hasher.combine(self.shouldNotifyForMentionsWhenMuted)
         hasher.combine(self.messageDraft)
         hasher.combine(self.messageDraftBodyRanges)
         hasher.combine(self.mutedUntilTimestampObsolete)
@@ -248,7 +261,7 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         guard self.lastDraftUpdateTimestamp == object.lastDraftUpdateTimestamp else { return false }
         guard self.lastInteractionRowId == object.lastInteractionRowId else { return false }
         guard self.lastSentStoryTimestamp == object.lastSentStoryTimestamp else { return false }
-        guard self.mentionNotificationMode == object.mentionNotificationMode else { return false }
+        guard self.shouldNotifyForMentionsWhenMuted == object.shouldNotifyForMentionsWhenMuted else { return false }
         guard self.messageDraft == object.messageDraft else { return false }
         guard self.messageDraftBodyRanges == object.messageDraftBodyRanges else { return false }
         guard self.mutedUntilTimestampObsolete == object.mutedUntilTimestampObsolete else { return false }
@@ -389,13 +402,13 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         }
     }
 
-    public func updateWithMentionNotificationMode(
-        _ mentionNotificationMode: TSThreadMentionNotificationMode,
+    public func updateWithShouldNotifyForMentionsWhenMuted(
+        _ shouldNotifyForMentionsWhenMuted: Bool,
         wasLocallyInitiated: Bool,
         transaction tx: DBWriteTransaction,
     ) {
         anyUpdate(transaction: tx) { thread in
-            thread.mentionNotificationMode = mentionNotificationMode
+            thread.shouldNotifyForMentionsWhenMuted = shouldNotifyForMentionsWhenMuted
         }
 
         if

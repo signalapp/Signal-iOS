@@ -135,7 +135,7 @@ public final class BackupArchiveThreadStore {
             WHERE
                 \(threadColumn: .id) = ?;
             """,
-            arguments: [TSThreadMentionNotificationMode.never.rawValue, thread.threadRowId],
+            arguments: [TSThread.MentionNotificationMode.doNotNotifyWhenMuted.rawValue, thread.threadRowId],
         )
     }
 

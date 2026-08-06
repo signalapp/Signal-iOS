@@ -567,12 +567,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 return false
             }
 
-            switch thread.mentionNotificationMode {
-            case .default, .always:
-                return true
-            case .never:
-                return false
-            }
+            return thread.shouldNotifyForMentionsWhenMuted
         } else if incomingMessage.isGroupStoryReply {
             guard
                 let storyTimestamp = incomingMessage.storyTimestamp?.uint64Value,
