@@ -6,9 +6,8 @@
 import Foundation
 import SignalServiceKit
 
-// Transfer task for the new device side, receiving the transfer from the old device
 @MainActor
-class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
+class IncomingDeviceTransferTask {
 
     // Incoming Device state
     var manifest: DeviceTransferProtoManifest?
@@ -18,7 +17,6 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
     var session: DeviceTransferSession?
     var throughputMonitor: ThroughputMonitor?
     private var initializeProgressBlock: ((Progress) -> Void)?
-    private var completionContinuation: CheckedContinuation<Void, Error>?
 
     var transferInProgress = false
 
@@ -30,6 +28,7 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
     private let tsAccountManager: TSAccountManager
 
     private let newDeviceServiceAdvertiser: DeviceTransferIncomingConnection
+    private var notificationObservers: [NotificationCenter.Observer] = []
 
     init(
         db: DB,
@@ -45,13 +44,6 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
         self.tsAccountManager = tsAccountManager
         self.deviceTransferRestore = deviceTransferRestore
         self.newDeviceServiceAdvertiser = deviceTransferConnectionFactory.buildIncomingConnection()
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didEnterBackground),
-            name: .OWSApplicationDidEnterBackground,
-            object: nil,
-        )
     }
 
     func start(mode: DeviceTransfer.Mode) async throws -> URL {
@@ -64,12 +56,34 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
     }
 
     func waitForTransferFromOldDevice(initializeProgressBlock: ((Progress) -> Void)? = nil) async throws {
-        self.session = try await newDeviceServiceAdvertiser.waitForConnection()
-        self.session?.delegate = Weak(value: self)
+        let session = try await newDeviceServiceAdvertiser.waitForConnection()
+        self.session = session
         self.initializeProgressBlock = initializeProgressBlock
 
-        try await withCheckedThrowingContinuation { continuation in
-            self.completionContinuation = continuation
+        notificationObservers.append(
+            NotificationCenter.default.addObserver(
+                name: .OWSApplicationDidEnterBackground,
+                block: didEnterBackground(_:),
+            ),
+        )
+        defer {
+            notificationObservers.forEach {
+                NotificationCenter.default.removeObserver($0)
+            }
+            notificationObservers.removeAll()
+        }
+
+        for try await message in session.messages {
+            switch message {
+            case .certificate(let certificate, let handler):
+                self.session(session, didReceiveCertificate: certificate, certificateHandler: handler)
+            case .message(let message):
+                try processMessage(message: message, session: session)
+            case .startResource(let fileName, let progress):
+                try startReceiving(fileName: fileName, session: session, progress: progress)
+            case .finishResource(let fileName, let localUrl):
+                try finishReceiving(fileName: fileName, localUrl: localUrl)
+            }
         }
     }
 
@@ -80,7 +94,6 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
 
     private func stopTransfer(error: Error? = nil, notifyRegState: Bool = true) {
         newDeviceServiceAdvertiser.stop()
-
         throughputMonitor?.stop()
         deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
 
@@ -96,14 +109,7 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
                     tx: tx,
                 )
             }
-        }
-
-        transferInProgress = false
-
-        if let error {
-            completionContinuation.take()?.resume(throwing: error)
-        } else {
-            completionContinuation.take()?.resume()
+            transferInProgress = false
         }
     }
 
@@ -200,8 +206,7 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
 
     // MARK: -
 
-    @objc
-    private func didEnterBackground() {
+    private func didEnterBackground(_ notification: Notification) {
         // MCSession automatically disconnects when the app is backgrounded.
         // Send an explicit message to the peer (if connected) telling them
         // that's what happened.
@@ -209,17 +214,12 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
         stopTransfer(error: CancellationError())
     }
 
-    func session(
-        _ session: DeviceTransferSession,
-        didReceive data: Data,
-    ) {
-        switch data {
-        case DeviceTransfer.Message.backgroundApp.data:
+    func processMessage(message: DeviceTransfer.Message, session: DeviceTransferSession) throws {
+        switch message {
+        case DeviceTransfer.Message.backgroundApp:
             return failTransfer(DeviceTransfer.Error.backgroundedDevice, "Received backgrounded message")
-        case DeviceTransfer.Message.done.data:
+        case DeviceTransfer.Message.done:
             break
-        default:
-            return failTransfer(DeviceTransfer.Error.assertion, "Received unexpected data")
         }
 
         // When the new device receives the done message from the old device,
@@ -249,8 +249,6 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
             owsFailDebug("Failed to send done message to old device \(error)")
         }
 
-        completionContinuation.take()?.resume()
-
         // Try and restore the received data. If for some reason the app exits
         // or crashes at this point, we will retry the restore when the app next
         // launches.
@@ -265,20 +263,16 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
         Logger.info("Transfer complete")
     }
 
-    func session(
-        _ session: DeviceTransferSession,
-        didStartReceivingResourceWithName resourceName: String,
-        with fileProgress: Progress,
-    ) {
-        if resourceName == "manifest" { return }
+    func startReceiving(fileName: String, session: DeviceTransferSession, progress: Progress) throws {
+        guard transferInProgress else { return }
         guard let manifest else {
             return owsFailDebug("Received file while not expecting one")
         }
 
-        let nameComponents = resourceName.components(separatedBy: " ")
+        let nameComponents = fileName.components(separatedBy: " ")
 
         guard let fileIdentifier = nameComponents.first, nameComponents.count == 2 else {
-            return owsFailDebug("Received incorrectly formatted resourceName: \(resourceName)")
+            return owsFailDebug("Received incorrectly formatted resourceName: \(fileName)")
         }
 
         guard !receivedFileIds.get().contains(fileIdentifier) else {
@@ -305,28 +299,16 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
         }
 
         Logger.info("Receiving file: \(file.identifier), estimatedSize: \(file.estimatedSize)")
-        throughputMonitor?.progress.addChild(fileProgress, withPendingUnitCount: Int64(file.estimatedSize))
+        throughputMonitor?.progress.addChild(progress, withPendingUnitCount: Int64(file.estimatedSize))
     }
 
-    func session(
-        _ session: DeviceTransferSession,
-        didFinishReceivingResourceWithName resourceName: String,
-        at localURL: URL?,
-        withError error: Swift.Error?,
-    ) {
+    func finishReceiving(fileName: String, localUrl: URL) throws {
         if !transferInProgress {
-            guard resourceName == DeviceTransfer.Constants.manifestIdentifier else {
-                return Logger.info("Ignoring unexpected incoming file \(resourceName)")
+            guard fileName == DeviceTransfer.Constants.manifestIdentifier else {
+                return Logger.info("Ignoring unexpected incoming file \(fileName)")
             }
 
-            if let error {
-                owsFailDebug("Failed to receive manifest \(error)")
-            } else if let localURL {
-                handleReceivedManifest(at: localURL)
-            } else {
-                owsFailDebug("Unexpectedly completed transfer of resource with no URL or error")
-            }
-
+            handleReceivedManifest(at: localUrl)
             transferInProgress = true
             return
         }
@@ -335,10 +317,10 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
             return owsFailDebug("Received file while not expecting one")
         }
 
-        let nameComponents = resourceName.components(separatedBy: " ")
+        let nameComponents = fileName.components(separatedBy: " ")
 
         guard let fileIdentifier = nameComponents.first, let fileHash = nameComponents.last, nameComponents.count == 2 else {
-            return owsFailDebug("Received incorrectly formatted resourceName: \(resourceName)")
+            return owsFailDebug("Received incorrectly formatted resourceName: \(fileName)")
         }
 
         guard !receivedFileIds.get().contains(fileIdentifier) else {
@@ -364,52 +346,37 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
             return owsFailDebug("Received unexpected file on new device: \(fileIdentifier)")
         }
 
-        if let error {
-            failTransfer(DeviceTransfer.Error.assertion, "Failed to receive file \(file.identifier) \(error)")
-        } else if let localURL {
-            OWSFileSystem.ensureDirectoryExists(DeviceTransfer.Constants.pendingTransferFilesDirectory.path)
+        OWSFileSystem.ensureDirectoryExists(DeviceTransfer.Constants.pendingTransferFilesDirectory.path)
 
-            guard let computedHash = try? Cryptography.computeSHA256DigestOfFile(at: localURL) else {
-                return failTransfer(
-                    DeviceTransfer.Error.assertion,
-                    "Failed to compute hash for \(file.identifier)",
-                )
-            }
-
-            guard computedHash.hexadecimalString == fileHash else {
-                return failTransfer(
-                    DeviceTransfer.Error.assertion,
-                    "Received file with incorrect hash \(file.identifier)",
-                )
-            }
-
-            guard computedHash != DeviceTransfer.Constants.missingFileHash else {
-                Logger.warn("Received notification of missing file: \(file.identifier), skipping.")
-                skippedFileIds.update { $0.append(file.identifier) }
-                return
-            }
-
-            do {
-                try OWSFileSystem.moveFilePath(
-                    localURL.path,
-                    toFilePath: URL(
-                        fileURLWithPath: file.identifier,
-                        relativeTo: DeviceTransfer.Constants.pendingTransferFilesDirectory,
-                    ).path,
-                )
-            } catch {
-                Logger.warn("Couldn't move file: \(error.shortDescription)")
-                return failTransfer(
-                    DeviceTransfer.Error.assertion,
-                    "Failed to move file into place \(file.identifier)",
-                )
-            }
-
-            Logger.info("Received file: \(file.identifier)")
-            receivedFileIds.update { $0.append(file.identifier) }
-        } else {
-            owsFailDebug("Unexpectedly completed transfer of resource with no URL or error")
+        guard let computedHash = try? Cryptography.computeSHA256DigestOfFile(at: localUrl) else {
+            return failTransfer(DeviceTransfer.Error.assertion, "Failed to compute hash for \(file.identifier)")
         }
+
+        guard computedHash.hexadecimalString == fileHash else {
+            return failTransfer(DeviceTransfer.Error.assertion, "Received file with incorrect hash \(file.identifier)")
+        }
+
+        guard computedHash != DeviceTransfer.Constants.missingFileHash else {
+            Logger.warn("Received notification of missing file: \(file.identifier), skipping.")
+            skippedFileIds.update { $0.append(file.identifier) }
+            return
+        }
+
+        do {
+            try OWSFileSystem.moveFilePath(
+                localUrl.path,
+                toFilePath: URL(
+                    fileURLWithPath: file.identifier,
+                    relativeTo: DeviceTransfer.Constants.pendingTransferFilesDirectory,
+                ).path,
+            )
+        } catch {
+            Logger.warn("Couldn't move file: \(error.shortDescription)")
+            return failTransfer(DeviceTransfer.Error.assertion, "Failed to move file into place \(file.identifier)")
+        }
+
+        Logger.info("Received file: \(file.identifier)")
+        receivedFileIds.update { $0.append(file.identifier) }
     }
 
     func session(

@@ -18,7 +18,9 @@ class MPCDeviceTransferSession:
     var remotePeerId: any DeviceTransferPeerID { _remotePeerId }
 
     let session: MCSession
-    var delegate: Weak<DeviceTransferSessionDelegate>?
+
+    private let messageSink: AsyncThrowingStream<DeviceTransfer.SessionMessage, Error>.Continuation
+    let messages: AsyncThrowingStream<DeviceTransfer.SessionMessage, Error>
 
     private var lock = UnfairLock()
     private var connectionContinuation: CheckedContinuation<Void, Error>?
@@ -35,6 +37,8 @@ class MPCDeviceTransferSession:
         self._remotePeerId = MPCDeviceTransferPeerId(mcPeerID: remoteDevicePeerID)
         let session = MCSession(peer: peerID, securityIdentity: [identity], encryptionPreference: .required)
         self.session = session
+
+        (self.messages, self.messageSink) = AsyncThrowingStream.makeStream()
         super.init()
         session.delegate = self
     }
@@ -68,6 +72,7 @@ class MPCDeviceTransferSession:
             self.connectionContinuation.take()?.resume(throwing: CancellationError())
         }
         self.session.disconnect()
+        messageSink.finish()
     }
 
     @MainActor
@@ -144,8 +149,15 @@ class MPCDeviceTransferSession:
         didReceive data: Data,
         fromPeer peerId: MCPeerID,
     ) {
-        Task { @MainActor in
-            delegate?.value?.session(self, didReceive: data)
+        switch data {
+        case DeviceTransfer.Message.backgroundApp.data:
+            messageSink.yield(.message(.backgroundApp))
+            messageSink.finish()
+        case DeviceTransfer.Message.done.data:
+            messageSink.yield(.message(.done))
+            messageSink.finish()
+        default:
+            messageSink.finish(throwing: OWSAssertionError("Received unexpected message"))
         }
     }
 
@@ -162,13 +174,7 @@ class MPCDeviceTransferSession:
         fromPeer peerId: MCPeerID,
         with fileProgress: Progress,
     ) {
-        Task { @MainActor in
-            delegate?.value?.session(
-                self,
-                didStartReceivingResourceWithName: resourceName,
-                with: fileProgress,
-            )
-        }
+        messageSink.yield(.startResource(resourceName, fileProgress))
     }
 
     func session(
@@ -178,14 +184,15 @@ class MPCDeviceTransferSession:
         at localURL: URL?,
         withError error: Swift.Error?,
     ) {
-        Task { @MainActor in
-            delegate?.value?.session(
-                self,
-                didFinishReceivingResourceWithName: resourceName,
-                at: localURL,
-                withError: error,
-            )
+        if let error {
+            messageSink.finish(throwing: error)
+            return
         }
+        guard let localURL else {
+            messageSink.finish(throwing: OWSAssertionError("No error, but missing url"))
+            return
+        }
+        messageSink.yield(.finishResource(resourceName, localURL))
     }
 
     func session(
@@ -194,16 +201,11 @@ class MPCDeviceTransferSession:
         fromPeer peerId: MCPeerID,
         certificateHandler: @escaping (Bool) -> Void,
     ) {
-        Task { @MainActor in
-            guard let certificate = certificates?.first else {
-                return owsFailDebug("new connection did not provide any certificate")
-            }
-            let certificateData = SecCertificateCopyData(certificate as! SecCertificate) as Data
-            delegate?.value?.session(
-                self,
-                didReceiveCertificate: certificateData,
-                certificateHandler: certificateHandler,
-            )
+        guard let certificate = certificates?.first else {
+            messageSink.finish(throwing: OWSAssertionError("new connection did not provide any certificate"))
+            return
         }
+        let certificateData = SecCertificateCopyData(certificate as! SecCertificate) as Data
+        messageSink.yield(.certificate(certificateData, certificateHandler))
     }
 }

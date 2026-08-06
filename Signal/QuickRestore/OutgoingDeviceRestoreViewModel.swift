@@ -145,12 +145,11 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
     private func cancelTransfer() {
         stopListeningForTransfer()
         transferStatusViewModel.state = .cancelled
-        outgoingDeviceTransferTask.cancelTransferToNewDevice()
     }
 
     @MainActor
     private func stopListeningForTransfer() {
-        outgoingDeviceTransferTask.stopListening()
+        outgoingDeviceTransferTask.stop()
     }
 
     private var progressObserver: NSKeyValueObservation?

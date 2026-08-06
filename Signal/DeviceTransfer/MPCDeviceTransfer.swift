@@ -5,7 +5,6 @@
 
 import CryptoKit
 import Foundation
-import MultipeerConnectivity
 import SignalServiceKit
 
 @MainActor
@@ -26,8 +25,6 @@ protocol DeviceTransferPeerID: Equatable { }
 @MainActor
 protocol DeviceTransferSession {
     var identity: SecIdentity { get }
-    var delegate: Weak<DeviceTransferSessionDelegate>? { get set }
-
     var localPeerId: any DeviceTransferPeerID { get }
     var remotePeerId: any DeviceTransferPeerID { get }
 
@@ -35,6 +32,8 @@ protocol DeviceTransferSession {
     func waitForConnection() async throws
     @MainActor
     func disconnect()
+
+    var messages: AsyncThrowingStream<DeviceTransfer.SessionMessage, Error> { get }
 
     @MainActor
     func send(message: DeviceTransfer.Message) throws
@@ -106,16 +105,11 @@ protocol DeviceTransferSessionDelegate {
     )
 }
 
-private extension MCSessionState {
-    var asTransferSessionState: TransferSessionState {
-        switch self {
-        case .notConnected: .notConnected
-        case .connecting: .connecting
-        case .connected: .connected
-        @unknown default: .notConnected
-        }
+extension DeviceTransfer {
+    enum SessionMessage {
+        case message(DeviceTransfer.Message)
+        case startResource(String, Progress)
+        case finishResource(String, URL)
+        case certificate(Data, (Bool) -> Void)
     }
-}
-
-public enum MPCDeviceTransfer {
 }

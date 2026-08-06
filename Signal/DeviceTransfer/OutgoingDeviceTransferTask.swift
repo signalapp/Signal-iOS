@@ -9,7 +9,7 @@ import GRDB
 import SignalServiceKit
 
 @MainActor
-class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
+class OutgoingDeviceTransferTask {
 
     let db: DB
     let registrationStateChangeManager: RegistrationStateChangeManager
@@ -25,6 +25,7 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
     private let sleepBlockObject = DeviceSleepBlockObject(blockReason: "device transfer")
 
     private let newDeviceServiceBrowser: DeviceTransferOutgoingConnection
+    private var notificationObservers: [NotificationCenter.Observer] = []
 
     init(
         db: DB,
@@ -38,13 +39,6 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
         self.deviceSleepManager = deviceSleepManager
         self.tsAccountManager = tsAccountManager
         self.newDeviceServiceBrowser = deviceTransferConnectionFactory.buildOutgoingConnection()
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didEnterBackground),
-            name: .OWSApplicationDidEnterBackground,
-            object: nil,
-        )
     }
 
     func connectToNewDevice(with peerId: any DeviceTransferPeerID, certificateHash: Data) async throws {
@@ -52,7 +46,6 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
         deviceSleepManager?.addBlock(blockObject: sleepBlockObject)
         expectedCertificateHash = certificateHash
         self.session = try await newDeviceServiceBrowser.start()
-        self.session?.delegate = Weak(value: self)
     }
 
     private var sendTask: Task<Void, Error>?
@@ -61,6 +54,13 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
         guard let session else {
             throw OWSAssertionError("Not connected")
         }
+
+        notificationObservers.append(
+            NotificationCenter.default.addObserver(
+                name: .OWSApplicationDidEnterBackground,
+                block: didEnterBackground(_:),
+            ),
+        )
 
         try await session.waitForConnection()
 
@@ -84,6 +84,10 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
                 }
             }
             transferInProgress = false
+            notificationObservers.forEach {
+                NotificationCenter.default.removeObserver($0)
+            }
+            notificationObservers.removeAll()
         }
 
         let manifest = try buildManifest()
@@ -97,8 +101,28 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
 
         sendTask = Task {
             do {
-                try await self.sendManifest(manifest: manifest, session: session)
-                try await self.sendAllFiles(manifest: manifest, session: session)
+                // Here we should wait for data message, or keep sending files
+                // But before sending any files, we should ensure that the certificate has been validated
+                try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+                    taskGroup.addTask { @MainActor in
+                        try await self.sendManifest(manifest: manifest, session: session)
+                        try await self.sendAllFiles(manifest: manifest, session: session)
+                    }
+
+                    taskGroup.addTask { @MainActor in
+                        for try await message in session.messages {
+                            switch message {
+                            case .certificate(let certificate, let handler):
+                                self.session(session, didReceiveCertificate: certificate, certificateHandler: handler)
+                            case .message(let message):
+                                try self.processMessage(message: message, session: session)
+                            case .startResource, .finishResource:
+                                throw OWSAssertionError("Unexpectedly received a file on old device")
+                            }
+                        }
+                    }
+                    try await taskGroup.waitForAll()
+                }
             } catch where error is CancellationError {
                 throw error
             } catch {
@@ -112,7 +136,7 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
         stopTransfer()
     }
 
-    func stopListening() {
+    func stop() {
         newDeviceServiceBrowser.stop()
     }
 
@@ -315,8 +339,7 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
         transferredFileIds.update { $0.append(file.identifier) }
     }
 
-    @objc
-    private func didEnterBackground() {
+    private func didEnterBackground(_ notification: Notification) {
         // MCSession automatically disconnects when the app is backgrounded.
         // Send an explicit message to the peer (if connected) telling them
         // that's what happened.
@@ -351,19 +374,14 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
         stopTransfer()
     }
 
-    // Delegate
+    // MARK: - Utility
 
-    func session(
-        _ session: DeviceTransferSession,
-        didReceive data: Data,
-    ) {
-        switch data {
-        case DeviceTransfer.Message.backgroundApp.data:
+    private func processMessage(message: DeviceTransfer.Message, session: DeviceTransferSession) throws {
+        switch message {
+        case DeviceTransfer.Message.backgroundApp:
             return failTransfer(DeviceTransfer.Error.backgroundedDevice, "Received terminate message")
-        case DeviceTransfer.Message.done.data:
+        case DeviceTransfer.Message.done:
             break
-        default:
-            return failTransfer(DeviceTransfer.Error.assertion, "Received unexpected data")
         }
 
         stopTransfer()
