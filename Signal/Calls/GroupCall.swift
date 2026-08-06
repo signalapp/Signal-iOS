@@ -24,6 +24,7 @@ protocol GroupCallObserver: AnyObject {
     func groupCallEnded(_ call: GroupCall, reason: CallEndReason)
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction])
     func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId])
+    func groupCallReceivedSpeakingNotification(_ call: GroupCall, event: SpeechEvent)
     func groupCallReceivedRemoteMute(_ call: GroupCall, muteSource: Aci)
     func groupCallObservedRemoteMute(_ call: GroupCall, muteSource: Aci, muteTarget: Aci)
 
@@ -39,6 +40,7 @@ extension GroupCallObserver {
     func groupCallEnded(_ call: GroupCall, reason: CallEndReason) {}
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction]) {}
     func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {}
+    func groupCallReceivedSpeakingNotification(_ call: GroupCall, event: SpeechEvent) {}
     func groupCallReceivedRemoteMute(_ call: GroupCall, muteSource: Aci) {}
     func groupCallObservedRemoteMute(_ call: GroupCall, muteSource: Aci, muteTarget: Aci) {}
     func handleUntrustedIdentityError(_ call: GroupCall) {}
@@ -247,7 +249,7 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
 
     @MainActor
     func groupCall(onSpeakingNotification groupCall: SignalRingRTC.GroupCall, event: SpeechEvent) {
-        // TODO: Implement speaking notification handling for group calls.
+        observers.elements.forEach { $0.groupCallReceivedSpeakingNotification(self, event: event) }
     }
 
     @MainActor

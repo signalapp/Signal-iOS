@@ -57,6 +57,7 @@ class RaisedHandsToast: UIView {
     }
 
     private var isCollapsed = false
+    private var isSuggestingLowerHand = false
 
     private var collapsedText: String = ""
     private var expandedText: String = ""
@@ -166,12 +167,27 @@ class RaisedHandsToast: UIView {
     /// `isCollapsed` to `false` so it is expanded for its next presentation.
     func wasHidden() {
         self.isCollapsed = false
+        self.isSuggestingLowerHand = false
         self.updateExpansionState(animated: false)
+    }
+
+    func suggestLowerHand() {
+        guard self.yourHandIsRaised else { return }
+
+        self.isSuggestingLowerHand = true
+        self.isCollapsed = false
+        self.refreshTexts()
+        self.updateExpansionState(animated: true)
+        self.queueCollapse()
     }
 
     @objc
     private func toggleExpanded() {
         self.isCollapsed.toggle()
+        if self.isCollapsed {
+            self.isSuggestingLowerHand = false
+            self.refreshTexts()
+        }
         self.updateExpansionState(animated: true)
 
         guard !self.isCollapsed else { return }
@@ -180,9 +196,12 @@ class RaisedHandsToast: UIView {
 
     private func queueCollapse() {
         self.autoCollapseTimer?.invalidate()
-        self.autoCollapseTimer = Timer.scheduledTimer(withTimeInterval: 4, repeats: false) { [weak self] _ in
+        let autoCollapseDelay: TimeInterval = self.isSuggestingLowerHand ? 10 : 4
+        self.autoCollapseTimer = Timer.scheduledTimer(withTimeInterval: autoCollapseDelay, repeats: false) { [weak self] _ in
             guard let self else { return }
             self.isCollapsed = true
+            self.isSuggestingLowerHand = false
+            self.refreshTexts()
             self.updateExpansionState(animated: true)
             self.autoCollapseTimer = nil
         }
@@ -231,10 +250,38 @@ class RaisedHandsToast: UIView {
     private func updateRaisedHands(_ raisedHands: [DemuxId], oldValue: [DemuxId]) {
         guard raisedHands != oldValue else { return }
 
-        guard let firstRaisedHandDemuxID = raisedHands.first else {
+        guard raisedHands.first != nil else {
             // Parent handles hiding. Don't update state.
             // Prevent auto collapse while it's disappearing.
             self.autoCollapseTimer?.invalidate()
+            self.isSuggestingLowerHand = false
+            return
+        }
+
+        if !self.yourHandIsRaised {
+            self.isSuggestingLowerHand = false
+        }
+
+        self.refreshTexts()
+
+        var youJustRaisedYourHand: Bool {
+            self.call.ringRtcCall.localDeviceState.demuxId.map({ yourDemuxID in
+                raisedHands.contains(yourDemuxID) && !oldValue.contains(yourDemuxID)
+            }) ?? false
+        }
+
+        if oldValue.isEmpty || youJustRaisedYourHand {
+            self.isCollapsed = false
+        }
+
+        self.updateExpansionState(animated: !oldValue.isEmpty)
+        self.queueCollapse()
+    }
+
+    private func refreshTexts() {
+        guard let firstRaisedHandDemuxID = raisedHands.first else {
+            self.collapsedText = ""
+            self.expandedText = ""
             return
         }
 
@@ -253,6 +300,10 @@ class RaisedHandsToast: UIView {
         }
 
         self.expandedText = {
+            if self.isSuggestingLowerHand, self.yourHandIsRaised {
+                return CallStrings.lowerHandSuggestion
+            }
+
             if self.yourHandIsRaised, raisedHands.count == 1 {
                 return OWSLocalizedString(
                     "RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE",
@@ -293,19 +344,6 @@ class RaisedHandsToast: UIView {
                 firstRaisedHandMemberName,
             )
         }()
-
-        var youJustRaisedYourHand: Bool {
-            self.call.ringRtcCall.localDeviceState.demuxId.map({ yourDemuxID in
-                raisedHands.contains(yourDemuxID) && !oldValue.contains(yourDemuxID)
-            }) ?? false
-        }
-
-        if oldValue.isEmpty || youJustRaisedYourHand {
-            self.isCollapsed = false
-        }
-
-        self.updateExpansionState(animated: !oldValue.isEmpty)
-        self.queueCollapse()
     }
 
 }

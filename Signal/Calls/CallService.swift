@@ -607,6 +607,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     // MARK: -
 
+    private static let audioLevelsIntervalMillis: UInt64 = 200
+
     func buildAndConnectGroupCall(for groupId: GroupIdentifier, isVideoMuted: Bool) -> (SignalCall, GroupThreadCall)? {
         return _buildAndConnectGroupCall(isOutgoingVideoMuted: isVideoMuted) { () -> (SignalCall, GroupThreadCall)? in
             let videoCaptureController = VideoCaptureController()
@@ -615,7 +617,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 groupId: groupId.serialize(),
                 sfuUrl: sfuUrl,
                 hkdfExtraInfo: Data(),
-                audioLevelsIntervalMillis: nil,
+                audioLevelsIntervalMillis: Self.audioLevelsIntervalMillis,
                 dredDuration: RemoteConfig.current.ringrtcDredDuration,
                 videoCaptureController: videoCaptureController,
             )
@@ -678,7 +680,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 linkRootKey: callLink.rootKey,
                 adminPasskey: adminPasskey,
                 hkdfExtraInfo: Data(),
-                audioLevelsIntervalMillis: nil,
+                audioLevelsIntervalMillis: Self.audioLevelsIntervalMillis,
                 dredDuration: RemoteConfig.current.ringrtcDredDuration,
                 videoCaptureController: videoCaptureController,
             )

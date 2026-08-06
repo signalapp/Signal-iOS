@@ -1925,6 +1925,21 @@ extension GroupCallViewController: GroupCallObserver {
         self.updateCallUI(shouldAnimateViewFrames: true)
     }
 
+    func groupCallReceivedSpeakingNotification(_ call: GroupCall, event: SpeechEvent) {
+        AssertIsOnMainThread()
+        owsPrecondition(self.groupCall === call)
+        guard self.isReadyToHandleObserver else {
+            return
+        }
+        switch event {
+        case .LowerHandSuggestion:
+            self.raisedHandsToast.suggestLowerHand()
+            self.updateCallUI(shouldAnimateViewFrames: true)
+        case .StoppedSpeaking:
+            break
+        }
+    }
+
     func groupCallReceivedRemoteMute(_ call: GroupCall, muteSource: Aci) {
         AssertIsOnMainThread()
         owsPrecondition(self.groupCall === call)

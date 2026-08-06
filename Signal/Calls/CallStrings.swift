@@ -42,6 +42,13 @@ extension CallStrings {
         )
     }
 
+    static var lowerHandSuggestion: String {
+        return OWSLocalizedString(
+            "RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION",
+            comment: "A message appearing on the call view's raised hands toast suggesting the local user lower their hand because they have been speaking with it raised.",
+        )
+    }
+
     static var joinGroupCall: String {
         return OWSLocalizedString(
             "GROUP_CALL_JOIN_BUTTON",
