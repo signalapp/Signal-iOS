@@ -72,10 +72,10 @@ class MPCDeviceTransferAdvertiser:
     }
 
     @MainActor
-    func stop() {
+    func stop(error: Error?) {
         advertiser.stopAdvertisingPeer()
         lock.withLock {
-            session?.disconnect()
+            session?.disconnect(error: error)
             session = nil
             connectionContinuation.take()?.resume(throwing: CancellationError())
         }

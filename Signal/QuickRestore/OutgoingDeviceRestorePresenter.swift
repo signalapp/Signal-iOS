@@ -261,25 +261,14 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                     presentingViewController: presentingViewController,
                 )
 
-                do {
-                    try await viewModel.waitForDeviceConnection(peerConnectionData: peerConnectionData)
-                    try await viewModel.startTransfer()
-                    await displayTransferComplete(presentingViewController: presentingViewController)
-                } catch {
-                    Logger.warn("Device transfer failed: \(error)")
-                    await handleError(
-                        DeviceRestoreError.restoreCancelled,
-                        presentingViewController: presentingViewController,
-                    )
-                }
+                try await viewModel.waitForDeviceConnection(peerConnectionData: peerConnectionData)
+                try await viewModel.startTransfer()
+                await displayTransferComplete(presentingViewController: presentingViewController)
             }
+        } catch let restoreError as DeviceRestoreError {
+            await handleError(restoreError, presentingViewController: presentingViewController)
         } catch {
-            switch error {
-            case let restoreError as DeviceRestoreError:
-                await handleError(restoreError, presentingViewController: presentingViewController)
-            default:
-                Logger.error("Unexpected device transfer error: \(error)")
-            }
+            Logger.error("Unexpected device transfer error: \(error)")
         }
     }
 

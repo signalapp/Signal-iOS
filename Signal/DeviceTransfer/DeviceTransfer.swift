@@ -139,7 +139,7 @@ enum DeviceTransfer {
 
     enum SessionMessage {
         case message(DeviceTransfer.Message)
-        case startResource(String, Progress)
+        case startResource(String, UInt64?, Progress?)
         case finishResource(String, URL)
     }
 
@@ -147,22 +147,13 @@ enum DeviceTransfer {
 
     @MainActor
     protocol Session {
-        var identity: SecIdentity { get }
-        var localPeerId: any PeerID { get }
-        var remotePeerId: any PeerID { get }
-
         func waitForConnection() async throws
-        func disconnect()
+        func disconnect(error: Swift.Error?)
 
         var messages: AsyncThrowingStream<SessionMessage, Swift.Error> { get }
 
         func send(message: Message) throws
-
-        func sendResource(
-            url: URL,
-            name: String,
-            progressBlock: ((Progress?) -> Void),
-        ) async throws
+        func sendFile(url: URL, name: String, size: UInt64) async throws
     }
 
     protocol ConnectionFactory {
@@ -175,40 +166,14 @@ enum DeviceTransfer {
     @MainActor
     protocol OutgoingConnection {
         func connect(deviceTransferUrl: URL) async throws -> Session
-        func stop()
+        func stop(error: Swift.Error?)
     }
 
     @MainActor
     protocol IncomingConnection {
         func start(mode: DeviceTransfer.Mode) throws -> URL
         func waitForConnection() async throws -> Session
-        func stop()
-    }
-
-    protocol SessionDelegate: AnyObject {
-        func session(
-            _ session: Session,
-            didReceive data: Data,
-        )
-
-        func session(
-            _ session: Session,
-            didStartReceivingResourceWithName resourceName: String,
-            with fileProgress: Progress,
-        )
-
-        func session(
-            _ session: Session,
-            didFinishReceivingResourceWithName resourceName: String,
-            at localURL: URL?,
-            withError error: Swift.Error?,
-        )
-
-        func session(
-            _ session: Session,
-            didReceiveCertificate certificate: Data,
-            certificateHandler: @escaping (Bool) -> Void,
-        )
+        func stop(error: Swift.Error?)
     }
 
     static let defaultFactory: DeviceTransfer.ConnectionFactory = MPCDeviceTransferConnectionFactory()

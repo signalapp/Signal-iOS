@@ -74,12 +74,12 @@ class MPCDeviceTransferBrowser:
     }
 
     @MainActor
-    func stop() {
+    func stop(error: Error?) {
         browser.stopBrowsingForPeers()
         lock.withLock {
-            session?.disconnect()
+            session?.disconnect(error: error)
             session = nil
-            inviteContinuation.take()?.resume(throwing: CancellationError())
+            inviteContinuation.take()?.resume(throwing: error ?? CancellationError())
         }
     }
 
@@ -174,9 +174,9 @@ class MPCDeviceTransferBrowser:
         Logger.warn("Connection error: \(error)")
         lock.withLock {
             if let continuation = inviteContinuation.take() {
-                continuation.resume(throwing: CancellationError())
+                continuation.resume(throwing: error)
             } else if let session {
-                session.disconnect()
+                session.disconnect(error: error)
             }
         }
     }

@@ -11,19 +11,21 @@ import SignalServiceKit
 @MainActor
 class OutgoingDeviceTransferTask {
 
-    let db: DB
-    let registrationStateChangeManager: RegistrationStateChangeManager
-    let deviceSleepManager: DeviceSleepManager?
+    private let db: DB
+    private let registrationStateChangeManager: RegistrationStateChangeManager
+    private let deviceSleepManager: DeviceSleepManager?
 
-    let transferredFileIds = AtomicValue<[String]>([], lock: .init())
-    var throughputMonitor: ThroughputMonitor?
-    var session: DeviceTransfer.Session?
-    var transferInProgress = false
+    private let transferredFileIds = AtomicValue<[String]>([], lock: .init())
+    private var throughputMonitor: ThroughputMonitor?
+    private var session: DeviceTransfer.Session?
+    private var transferInProgress = false
 
     private let sleepBlockObject = DeviceSleepBlockObject(blockReason: "device transfer")
 
     private let newDeviceServiceBrowser: DeviceTransfer.OutgoingConnection
     private var notificationObservers: [NotificationCenter.Observer] = []
+    private var messagesReceiverTask: Task<Void, Never>?
+    private var transferFinishedContinuation: CheckedContinuation<Void, Error>?
 
     init(
         db: DB,
@@ -41,7 +43,7 @@ class OutgoingDeviceTransferTask {
     }
 
     func connectToNewDevice(deviceTransferUrl: URL) async throws {
-        cancelTransferToNewDevice()
+        stop(error: nil)
         deviceSleepManager?.addBlock(blockObject: sleepBlockObject)
         self.session = try await newDeviceServiceBrowser.connect(deviceTransferUrl: deviceTransferUrl)
     }
@@ -61,6 +63,28 @@ class OutgoingDeviceTransferTask {
         )
 
         try await session.waitForConnection()
+
+        messagesReceiverTask = Task {
+            do {
+                for try await message in session.messages {
+                    switch message {
+                    case .message(let message):
+                        try processMessage(message: message, session: session)
+                    case .startResource(let file, let size, let progress):
+                        guard let progress, let size else { return }
+                        Logger.info("Sending file: \(file) [\(size)]")
+                        self.throughputMonitor?.progress.addChild(
+                            progress,
+                            withPendingUnitCount: Int64(clamping: size),
+                        )
+                    case .finishResource(let file, _):
+                        Logger.info("Finished sending file: \(file)")
+                    }
+                }
+            } catch {
+                self.transferFinishedContinuation.take()?.resume(throwing: error)
+            }
+        }
 
         // We've successfully connected - now mark the transfer as in progress.
         // Marking the transfer as "in progress" does a few things, most notably it:
@@ -99,24 +123,8 @@ class OutgoingDeviceTransferTask {
 
         sendTask = Task {
             do {
-                try await withThrowingTaskGroup(of: Void.self) { taskGroup in
-                    taskGroup.addTask { @MainActor in
-                        try await self.sendManifest(manifest: manifest, session: session)
-                        try await self.sendAllFiles(manifest: manifest, session: session)
-                    }
-
-                    taskGroup.addTask { @MainActor in
-                        for try await message in session.messages {
-                            switch message {
-                            case .message(let message):
-                                try self.processMessage(message: message, session: session)
-                            case .startResource, .finishResource:
-                                throw OWSAssertionError("Unexpectedly received a file on old device")
-                            }
-                        }
-                    }
-                    try await taskGroup.waitForAll()
-                }
+                try await sendManifest(manifest: manifest, session: session)
+                try await sendAllFiles(manifest: manifest, session: session)
             } catch where error is CancellationError {
                 throw error
             } catch {
@@ -124,14 +132,23 @@ class OutgoingDeviceTransferTask {
             }
         }
         try await sendTask?.value
+
+        // wait for message back from caller
+        try await withCheckedThrowingContinuation { continuation in
+            self.transferFinishedContinuation = continuation
+        }
     }
 
-    func cancelTransferToNewDevice() {
-        stopTransfer()
+    func stop(error: Error?) {
+        stopTransfer(error: error)
     }
 
-    func stop() {
-        newDeviceServiceBrowser.stop()
+    private func didEnterBackground(_ notification: Notification) {
+        // MCSession automatically disconnects when the app is backgrounded.
+        // Send an explicit message to the peer (if connected) telling them
+        // that's what happened.
+        try? session?.send(message: .backgroundApp)
+        stopTransfer(error: CancellationError())
     }
 
     // MARK: - Sending
@@ -208,59 +225,6 @@ class OutgoingDeviceTransferTask {
         try session.send(message: .done)
     }
 
-    private static let dbCopyFilename = "db_copy_for_transfer"
-    private static let walCopyFilename = "wal_copy_for_transfer"
-
-    private static func urlForCopy(
-        databaseFile: DeviceTransferProtoFile,
-    ) throws -> URL {
-        let newFileName: String
-        let newFileExtension: String
-        if databaseFile.identifier == DeviceTransfer.Constants.databaseIdentifier {
-            newFileName = Self.dbCopyFilename
-            newFileExtension = ".sqlite"
-        } else if databaseFile.identifier == DeviceTransfer.Constants.databaseWALIdentifier {
-            newFileName = Self.walCopyFilename
-            newFileExtension = ".sqlite-wal"
-        } else {
-            throw OWSAssertionError("Unknown db file being copied")
-        }
-        owsAssertDebug(databaseFile.relativePath.hasSuffix(newFileExtension))
-        return OWSFileSystem.temporaryFileUrl(
-            fileName: newFileName,
-            fileExtension: newFileExtension,
-            isAvailableWhileDeviceLocked: false,
-        )
-    }
-
-    private static func makeLocalCopy(
-        databaseFile: DeviceTransferProtoFile,
-    ) throws -> DeviceTransferProtoFile {
-        let url = URL(
-            fileURLWithPath: databaseFile.relativePath,
-            relativeTo: DeviceTransfer.Constants.appSharedDataDirectory,
-        )
-
-        if !OWSFileSystem.fileOrFolderExists(url: url) {
-            throw OWSAssertionError("Mandatory database file is missing for transfer")
-        }
-
-        let copyUrl = try Self.urlForCopy(databaseFile: databaseFile)
-
-        if OWSFileSystem.fileOrFolderExists(url: copyUrl) {
-            // We might have partially copied before. Delete it.
-            try OWSFileSystem.deleteFile(url: copyUrl)
-        }
-        try OWSFileSystem.copyFile(from: url, to: copyUrl)
-
-        // Note that the receiver doesn't care about the relative path
-        // for database files (it does care for other files!) because it
-        // forces the path to be that to its own local database.
-        var protoBuilder = databaseFile.asBuilder()
-        protoBuilder.setRelativePath(copyUrl.relativePath)
-        return protoBuilder.buildInfallibly()
-    }
-
     private func send(session: DeviceTransfer.Session, file: DeviceTransferProtoFile) async throws {
         try Task.checkCancellation()
         if transferredFileIds.get().contains(file.identifier) {
@@ -302,16 +266,11 @@ class OutgoingDeviceTransferTask {
         }
 
         do {
-            try await session.sendResource(
+            try await session.sendFile(
                 url: url,
                 name: file.identifier + " " + sha256Digest.hexadecimalString,
-            ) { fileProgress in
-                guard let fileProgress else { return }
-                self.throughputMonitor?.progress.addChild(
-                    fileProgress,
-                    withPendingUnitCount: Int64(file.estimatedSize),
-                )
-            }
+                size: file.estimatedSize,
+            )
         } catch where error is CancellationError {
             throw error
         } catch {
@@ -321,17 +280,9 @@ class OutgoingDeviceTransferTask {
         transferredFileIds.update { $0.append(file.identifier) }
     }
 
-    private func didEnterBackground(_ notification: Notification) {
-        // MCSession automatically disconnects when the app is backgrounded.
-        // Send an explicit message to the peer (if connected) telling them
-        // that's what happened.
-        try? session?.send(message: .backgroundApp)
-        stopTransfer()
-    }
-
-    func stopTransfer(notifyRegState: Bool = true) {
+    private func stopTransfer(error: Error? = nil, notifyRegState: Bool = true) {
         sendTask?.cancel()
-        newDeviceServiceBrowser.stop()
+        newDeviceServiceBrowser.stop(error: error)
         throughputMonitor?.stop()
         deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
 
@@ -351,9 +302,9 @@ class OutgoingDeviceTransferTask {
         transferInProgress = false
     }
 
-    func failTransfer(_ error: DeviceTransfer.Error, _ reason: String) {
+    private func failTransfer(_ error: DeviceTransfer.Error, _ reason: String) {
         Logger.error("Failed transfer \(reason)")
-        stopTransfer()
+        stopTransfer(error: error)
     }
 
     private func processMessage(message: DeviceTransfer.Message, session: DeviceTransfer.Session) throws {
@@ -373,11 +324,13 @@ class OutgoingDeviceTransferTask {
             SignalApp.shared.resetAppData(keyFetcher: SSKEnvironment.shared.databaseStorageRef.keyFetcher)
             SignalApp.shared.showTransferCompleteAndExit()
         }
+
+        transferFinishedContinuation.take()?.resume()
     }
 
     // MANIFEST
 
-    func buildManifest() throws -> DeviceTransferProtoManifest {
+    private func buildManifest() throws -> DeviceTransferProtoManifest {
         var manifestBuilder = DeviceTransferProtoManifest.builder(grdbSchemaVersion: UInt64(GRDBSchemaMigrator.grdbSchemaVersionLatest))
         var estimatedTotalSize: UInt64 = 0
 
@@ -487,7 +440,7 @@ class OutgoingDeviceTransferTask {
         return manifestBuilder.buildInfallibly()
     }
 
-    func pathRelativeToAppSharedDirectory(_ path: String) throws -> String {
+    private func pathRelativeToAppSharedDirectory(_ path: String) throws -> String {
         guard !path.contains("*") else {
             throw OWSAssertionError("path contains invalid character: *")
         }
@@ -514,7 +467,7 @@ class OutgoingDeviceTransferTask {
     }
 
     @MainActor
-    func sendManifest(manifest: DeviceTransferProtoManifest, session: DeviceTransfer.Session) async throws {
+    private func sendManifest(manifest: DeviceTransferProtoManifest, session: DeviceTransfer.Session) async throws {
         Logger.info("Sending manifest to new device.")
 
         DeviceTransfer.Utils.resetTransferDirectory(createNewTransferDirectory: true)
@@ -532,10 +485,10 @@ class OutgoingDeviceTransferTask {
             OWSFileSystem.deleteFileIfExists(manifestFileURL.path)
         }
 
-        try await session.sendResource(
+        try await session.sendFile(
             url: manifestFileURL,
             name: DeviceTransfer.Constants.manifestIdentifier,
-            progressBlock: { _ in },
+            size: UInt64(clamping: manifestData.count),
         )
 
         Logger.info("Successfully sent manifest to new device.")
@@ -544,5 +497,60 @@ class OutgoingDeviceTransferTask {
             $0.append(DeviceTransfer.Constants.manifestIdentifier)
         }
         throughputMonitor?.start()
+    }
+
+    // MARK: - Utilities
+
+    private static let dbCopyFilename = "db_copy_for_transfer"
+    private static let walCopyFilename = "wal_copy_for_transfer"
+
+    private static func urlForCopy(
+        databaseFile: DeviceTransferProtoFile,
+    ) throws -> URL {
+        let newFileName: String
+        let newFileExtension: String
+        if databaseFile.identifier == DeviceTransfer.Constants.databaseIdentifier {
+            newFileName = Self.dbCopyFilename
+            newFileExtension = ".sqlite"
+        } else if databaseFile.identifier == DeviceTransfer.Constants.databaseWALIdentifier {
+            newFileName = Self.walCopyFilename
+            newFileExtension = ".sqlite-wal"
+        } else {
+            throw OWSAssertionError("Unknown db file being copied")
+        }
+        owsAssertDebug(databaseFile.relativePath.hasSuffix(newFileExtension))
+        return OWSFileSystem.temporaryFileUrl(
+            fileName: newFileName,
+            fileExtension: newFileExtension,
+            isAvailableWhileDeviceLocked: false,
+        )
+    }
+
+    private static func makeLocalCopy(
+        databaseFile: DeviceTransferProtoFile,
+    ) throws -> DeviceTransferProtoFile {
+        let url = URL(
+            fileURLWithPath: databaseFile.relativePath,
+            relativeTo: DeviceTransfer.Constants.appSharedDataDirectory,
+        )
+
+        if !OWSFileSystem.fileOrFolderExists(url: url) {
+            throw OWSAssertionError("Mandatory database file is missing for transfer")
+        }
+
+        let copyUrl = try Self.urlForCopy(databaseFile: databaseFile)
+
+        if OWSFileSystem.fileOrFolderExists(url: copyUrl) {
+            // We might have partially copied before. Delete it.
+            try OWSFileSystem.deleteFile(url: copyUrl)
+        }
+        try OWSFileSystem.copyFile(from: url, to: copyUrl)
+
+        // Note that the receiver doesn't care about the relative path
+        // for database files (it does care for other files!) because it
+        // forces the path to be that to its own local database.
+        var protoBuilder = databaseFile.asBuilder()
+        protoBuilder.setRelativePath(copyUrl.relativePath)
+        return protoBuilder.buildInfallibly()
     }
 }

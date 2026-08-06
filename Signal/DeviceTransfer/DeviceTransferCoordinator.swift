@@ -36,7 +36,6 @@ public class DeviceTransferCoordinator: Equatable {
 
     private func _onCancelTransfer() {
         Task {
-            await stopAcceptingTransfers()
             await cancelTransfer()
         }
     }
@@ -121,6 +120,7 @@ public class DeviceTransferCoordinator: Equatable {
             transferStatusViewModel.onSuccess()
         } catch {
             transferStatusViewModel.state = .error(error)
+            throw error
         }
     }
 

@@ -110,15 +110,18 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
     /// begin a device transfer.
     @MainActor
     func startTransfer() async throws {
+        defer {
+            stopListeningForTransfer(error: nil)
+        }
         do {
             try await outgoingDeviceTransferTask.transferAccountToNewDevice { [weak self] progress in
                 self?.updateProgress(progress: progress)
             }
             transferStatusViewModel.state = .done
+            transferStatusViewModel.onSuccess()
         } catch where error is CancellationError {
             throw error
         } catch {
-            stopListeningForTransfer()
             Logger.error("Failed transfer to new device")
             transferStatusViewModel.state = .error(error)
             throw error
@@ -127,13 +130,13 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
 
     @MainActor
     private func cancelTransfer() {
-        stopListeningForTransfer()
+        stopListeningForTransfer(error: CancellationError())
         transferStatusViewModel.state = .cancelled
     }
 
     @MainActor
-    private func stopListeningForTransfer() {
-        outgoingDeviceTransferTask.stop()
+    private func stopListeningForTransfer(error: Error?) {
+        outgoingDeviceTransferTask.stop(error: error)
     }
 
     private var progressObserver: NSKeyValueObservation?

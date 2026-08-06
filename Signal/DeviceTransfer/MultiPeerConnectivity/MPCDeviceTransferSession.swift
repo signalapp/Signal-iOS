@@ -73,7 +73,7 @@ class MPCDeviceTransferSession:
     }
 
     @MainActor
-    func disconnect() {
+    func disconnect(error: Error?) {
         lock.withLock {
             self.connected = false
             self.activeSends.values.forEach { $0.resume(throwing: CancellationError()) }
@@ -81,7 +81,7 @@ class MPCDeviceTransferSession:
             self.connectionContinuation.take()?.resume(throwing: CancellationError())
         }
         self.session.disconnect()
-        messageSink.finish()
+        messageSink.finish(throwing: error)
         connected = false
     }
 
@@ -99,14 +99,11 @@ class MPCDeviceTransferSession:
     }
 
     @MainActor
-    func sendResource(
+    func sendFile(
         url: URL,
         name: String,
-        progressBlock: ((Progress?) -> Void),
+        size: UInt64,
     ) async throws {
-        guard connected else {
-            throw OWSAssertionError("Not connected")
-        }
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
             lock.withLock {
                 activeSends[url] = continuation
@@ -125,8 +122,9 @@ class MPCDeviceTransferSession:
                     savedContinuation.resume()
                 }
             }
-            progressBlock(progress)
+            messageSink.yield(.startResource(name, size, progress))
         }
+        messageSink.yield(.finishResource(name, url))
     }
 
     // MARK: - MCSessionDelegate
@@ -184,7 +182,7 @@ class MPCDeviceTransferSession:
         fromPeer peerId: MCPeerID,
         with fileProgress: Progress,
     ) {
-        messageSink.yield(.startResource(resourceName, fileProgress))
+        messageSink.yield(.startResource(resourceName, nil, fileProgress))
     }
 
     func session(

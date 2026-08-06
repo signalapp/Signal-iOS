@@ -10,15 +10,15 @@ import SignalServiceKit
 class IncomingDeviceTransferTask {
 
     // Incoming Device state
-    var manifest: DeviceTransferProtoManifest?
-    let receivedFileIds = AtomicValue<[String]>([], lock: .init())
-    let skippedFileIds = AtomicValue<[String]>([], lock: .init())
+    private var manifest: DeviceTransferProtoManifest?
+    private let receivedFileIds = AtomicValue<[String]>([], lock: .init())
+    private let skippedFileIds = AtomicValue<[String]>([], lock: .init())
 
-    var session: DeviceTransfer.Session?
-    var throughputMonitor: ThroughputMonitor?
+    private var session: DeviceTransfer.Session?
+    private var throughputMonitor: ThroughputMonitor?
     private var initializeProgressBlock: ((Progress) -> Void)?
 
-    var transferInProgress = false
+    private var transferInProgress = false
 
     private let sleepBlockObject = DeviceSleepBlockObject(blockReason: "device transfer")
     private let db: DB
@@ -28,6 +28,9 @@ class IncomingDeviceTransferTask {
 
     private let newDeviceServiceAdvertiser: DeviceTransfer.IncomingConnection
     private var notificationObservers: [NotificationCenter.Observer] = []
+
+    private var messagesReceiverTask: Task<Void, Error>?
+    private var transferFinishedContinuation: CheckedContinuation<Void, Error>?
 
     init(
         db: DB,
@@ -46,13 +49,15 @@ class IncomingDeviceTransferTask {
         )
     }
 
+    // MARK: - Public methods
+
     func start(mode: DeviceTransfer.Mode) async throws -> URL {
         deviceSleepManager?.addBlock(blockObject: sleepBlockObject)
         return try newDeviceServiceAdvertiser.start(mode: mode)
     }
 
     func stopAcceptingTransfersFromOldDevices() {
-        newDeviceServiceAdvertiser.stop()
+        newDeviceServiceAdvertiser.stop(error: nil)
     }
 
     func waitForTransferFromOldDevice(initializeProgressBlock: ((Progress) -> Void)? = nil) async throws {
@@ -66,6 +71,7 @@ class IncomingDeviceTransferTask {
                 block: didEnterBackground(_:),
             ),
         )
+
         defer {
             notificationObservers.forEach {
                 NotificationCenter.default.removeObserver($0)
@@ -73,15 +79,30 @@ class IncomingDeviceTransferTask {
             notificationObservers.removeAll()
         }
 
-        for try await message in session.messages {
-            switch message {
-            case .message(let message):
-                try processMessage(message: message, session: session)
-            case .startResource(let fileName, let progress):
-                try startReceiving(fileName: fileName, session: session, progress: progress)
-            case .finishResource(let fileName, let localUrl):
-                try finishReceiving(fileName: fileName, localUrl: localUrl)
+        messagesReceiverTask = Task {
+            do {
+                for try await message in session.messages {
+                    switch message {
+                    case .message(let message):
+                        try processMessage(message: message, session: session)
+                    case .startResource(let fileName, _, let progress):
+                        try startReceiving(fileName: fileName, session: session, progress: progress)
+                    case .finishResource(let fileName, let localUrl):
+                        try finishReceiving(fileName: fileName, localUrl: localUrl)
+                    }
+                }
+            } catch {
+                if let transferFinishedContinuation {
+                    transferFinishedContinuation.resume(throwing: error)
+                    self.transferFinishedContinuation = nil
+                } else {
+                    throw error
+                }
             }
+        }
+
+        try await withCheckedThrowingContinuation { continuation in
+            self.transferFinishedContinuation = continuation
         }
     }
 
@@ -90,10 +111,13 @@ class IncomingDeviceTransferTask {
         stopTransfer(error: CancellationError())
     }
 
+    // MARK: - Private methods
+
     private func stopTransfer(error: Error? = nil, notifyRegState: Bool = true) {
-        newDeviceServiceAdvertiser.stop()
+        newDeviceServiceAdvertiser.stop(error: error)
         throughputMonitor?.stop()
         deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
+        messagesReceiverTask.take()?.cancel()
 
         // It is possible that we get here because the app was backgrounded
         // after a failed launch. In that case, `tsAccountManager` will not be
@@ -118,30 +142,30 @@ class IncomingDeviceTransferTask {
 
     private func handleReceivedManifest(at localURL: URL) {
         guard !transferInProgress else {
-            stopTransfer()
-            return owsFailDebug("Received manifest in unexpected state")
+            stopTransfer(error: OWSAssertionError("Received manifest in unexpected state"))
+            return
         }
         guard let fileSize = (try? OWSFileSystem.fileSize(of: localURL)) else {
-            stopTransfer()
-            return owsFailDebug("Missing manifest file.")
+            stopTransfer(error: OWSAssertionError("Missing manifest file."))
+            return
         }
         // Not sure why this limit exists in the first place, but 1Gb should be
         // plenty high for file descriptors.
         guard fileSize < 1024 * 1024 * 1024 else {
-            stopTransfer()
-            return owsFailDebug("Unexpectedly received a very large manifest \(fileSize)")
+            stopTransfer(error: OWSAssertionError("Unexpectedly received a very large manifest \(fileSize)"))
+            return
         }
         guard let data = try? Data(contentsOf: localURL) else {
-            stopTransfer()
-            return owsFailDebug("Failed to read manifest data")
+            stopTransfer(error: OWSAssertionError("Failed to read manifest data"))
+            return
         }
         guard let manifest = try? DeviceTransferProtoManifest(serializedData: data) else {
-            stopTransfer()
-            return owsFailDebug("Failed to parse manifest proto")
+            stopTransfer(error: OWSAssertionError("Failed to parse manifest proto"))
+            return
         }
         guard !DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            stopTransfer()
-            return owsFailDebug("Ignoring incoming transfer to a registered device")
+            stopTransfer(error: OWSAssertionError("Ignoring incoming transfer to a registered device"))
+            return
         }
 
         DeviceTransfer.Utils.resetTransferDirectory(createNewTransferDirectory: true)
@@ -155,7 +179,7 @@ class IncomingDeviceTransferTask {
                 ).path,
             )
         } catch {
-            owsFailDebug("Failed to move manifest into place: \(error.shortDescription)")
+            stopTransfer(error: error)
             return
         }
 
@@ -212,7 +236,7 @@ class IncomingDeviceTransferTask {
         stopTransfer(error: CancellationError())
     }
 
-    func processMessage(message: DeviceTransfer.Message, session: DeviceTransfer.Session) throws {
+    private func processMessage(message: DeviceTransfer.Message, session: DeviceTransfer.Session) throws {
         switch message {
         case DeviceTransfer.Message.backgroundApp:
             return failTransfer(DeviceTransfer.Error.backgroundedDevice, "Received backgrounded message")
@@ -259,9 +283,11 @@ class IncomingDeviceTransferTask {
         stopTransfer(notifyRegState: false)
 
         Logger.info("Transfer complete")
+
+        transferFinishedContinuation.take()?.resume()
     }
 
-    func startReceiving(fileName: String, session: DeviceTransfer.Session, progress: Progress) throws {
+    private func startReceiving(fileName: String, session: DeviceTransfer.Session, progress: Progress?) throws {
         guard transferInProgress else { return }
         guard let manifest else {
             return owsFailDebug("Received file while not expecting one")
@@ -297,10 +323,12 @@ class IncomingDeviceTransferTask {
         }
 
         Logger.info("Receiving file: \(file.identifier), estimatedSize: \(file.estimatedSize)")
-        throughputMonitor?.progress.addChild(progress, withPendingUnitCount: Int64(file.estimatedSize))
+        if let progress {
+            throughputMonitor?.progress.addChild(progress, withPendingUnitCount: Int64(file.estimatedSize))
+        }
     }
 
-    func finishReceiving(fileName: String, localUrl: URL) throws {
+    private func finishReceiving(fileName: String, localUrl: URL) throws {
         if !transferInProgress {
             guard fileName == DeviceTransfer.Constants.manifestIdentifier else {
                 return Logger.info("Ignoring unexpected incoming file \(fileName)")
@@ -377,7 +405,7 @@ class IncomingDeviceTransferTask {
         receivedFileIds.update { $0.append(file.identifier) }
     }
 
-    func verifyTransferCompletedSuccessfully(
+    private func verifyTransferCompletedSuccessfully(
         receivedFileIds: AtomicValue<[String]>,
         skippedFileIds: AtomicValue<[String]>,
     ) -> Bool {
