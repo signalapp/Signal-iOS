@@ -4,6 +4,7 @@
 //
 
 import GRDB
+import LibSignalClient
 
 public class ThreadFinder {
     public init() {}
@@ -333,8 +334,9 @@ public class ThreadFinder {
             }
 
             while
-                let groupId = groupIdCursor.next(),
-                let threadUniqueId = TSGroupThread.threadUniqueId(forGroupIdData: groupId, tx: transaction)
+                let groupIdData = groupIdCursor.next(),
+                let groupId = try? GroupIdentifier(contents: groupIdData),
+                let threadUniqueId = TSGroupThread.threadUniqueId(forGroupIdData: groupId.serialize(), tx: transaction)
             {
                 allowedDefaultThreadIds.append(threadUniqueId)
             }

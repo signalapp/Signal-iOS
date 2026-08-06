@@ -19,7 +19,7 @@ public protocol GroupCallRecordRingUpdateDelegate: AnyObject {
     /// "canceled" this will be ourselves, as the cancellation will have come
     /// from another of our own devices.
     func didReceiveRingUpdate(
-        groupId: Data,
+        groupId: GroupIdentifier,
         ringId: Int64,
         ringUpdate: RingUpdate,
         ringUpdateSender: Aci,
@@ -52,7 +52,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
     }
 
     public func didReceiveRingUpdate(
-        groupId: Data,
+        groupId: GroupIdentifier,
         ringId: Int64,
         ringUpdate: RingUpdate,
         ringUpdateSender: Aci,
@@ -64,7 +64,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
         let callEventTimestamp = Date().ows_millisecondsSince1970
 
         guard
-            let groupThread = threadStore.fetchThread(forGroupIdData: groupId, tx: tx),
+            let groupThread = threadStore.fetchThread(forGroupId: groupId, tx: tx),
             let groupThreadRowId = groupThread.sqliteRowId
         else {
             logger.error("Received ring update, but missing group thread!")

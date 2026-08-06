@@ -1081,8 +1081,8 @@ public class GroupsV2Impl: GroupsV2 {
         profileKeyUpdater.processProfileKeyUpdates()
     }
 
-    public func updateLocalProfileKeyInGroup(groupId: Data, transaction: DBWriteTransaction) {
-        profileKeyUpdater.updateLocalProfileKeyInGroup(groupId: groupId, transaction: transaction)
+    public func updateLocalProfileKeyInGroup(groupId: GroupIdentifier, tx: DBWriteTransaction) {
+        profileKeyUpdater.updateLocalProfileKeyInGroup(groupId: groupId, tx: tx)
     }
 
     // MARK: - Perform Request
@@ -2011,6 +2011,7 @@ public class GroupsV2Impl: GroupsV2 {
 
     public func cancelRequestToJoin(groupModel: TSGroupModelV2) async throws {
         let groupV2Params = try groupModel.groupV2Params()
+        let groupId = failIfThrows { try groupV2Params.groupPublicParams.getGroupIdentifier() }
 
         var newRevision: UInt32?
         do {
@@ -2026,18 +2027,18 @@ public class GroupsV2Impl: GroupsV2 {
             }
         }
 
-        try await updateGroupRemovingMemberRequest(groupId: groupModel.groupId, newRevision: newRevision)
+        try await updateGroupRemovingMemberRequest(groupId: groupId, newRevision: newRevision)
     }
 
     private func updateGroupRemovingMemberRequest(
-        groupId: Data,
+        groupId: GroupIdentifier,
         newRevision proposedRevision: UInt32?,
     ) async throws {
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction -> Void in
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
-            guard let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) else {
                 throw OWSAssertionError("Missing groupThread.")
             }
             // The group already existing in the database; make sure

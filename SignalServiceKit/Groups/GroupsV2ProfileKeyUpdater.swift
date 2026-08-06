@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 // Whenever we rotate our profile key, we need to update all
 // v2 groups of which we are a non-pending member.
@@ -63,14 +64,14 @@ class GroupsV2ProfileKeyUpdater {
         return groupId.hexadecimalString
     }
 
-    func updateLocalProfileKeyInGroup(groupId: Data, transaction: DBWriteTransaction) {
-        guard let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) else {
+    func updateLocalProfileKeyInGroup(groupId: GroupIdentifier, tx: DBWriteTransaction) {
+        guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) else {
             owsFailDebug("Missing groupThread.")
             return
         }
-        self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread, transaction: transaction)
+        self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread, transaction: tx)
 
-        transaction.addSyncCompletion {
+        tx.addSyncCompletion {
             self.setNeedsUpdate()
         }
     }
@@ -193,11 +194,12 @@ class GroupsV2ProfileKeyUpdater {
 
     private func _tryToUpdateNext(groupIdKey: String) async throws {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        guard let groupId = databaseStorage.read(block: { tx in keyValueStore.fetchValue(Data.self, forKey: groupIdKey, tx: tx) }) else {
+        guard let groupIdData = databaseStorage.read(block: { tx in keyValueStore.fetchValue(Data.self, forKey: groupIdKey, tx: tx) }) else {
             return
         }
         let sendPromises: [Promise<Void>]
         do {
+            let groupId = try GroupIdentifier(contents: groupIdData)
             sendPromises = try await self.tryToUpdate(groupId: groupId)
         } catch {
             Logger.warn("\(error)")
@@ -249,7 +251,7 @@ class GroupsV2ProfileKeyUpdater {
 
     /// - Returns: A list of Promises for sending the group update message(s).
     /// Each Promise represents sending a message to one or more recipients.
-    private func tryToUpdate(groupId: Data) async throws -> [Promise<Void>] {
+    private func tryToUpdate(groupId: GroupIdentifier) async throws -> [Promise<Void>] {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard let localAci = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             throw OWSGenericError("missing local address")
@@ -258,7 +260,7 @@ class GroupsV2ProfileKeyUpdater {
         try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
 
         let groupModel = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return TSGroupThread.fetchThread(forGroupIdData: groupId, tx: tx)?.groupModel as? TSGroupModelV2
+            return TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)?.groupModel as? TSGroupModelV2
         }
         guard let groupModel, let secretParams = try? groupModel.secretParams() else {
             throw OWSGenericError("missing secret params")

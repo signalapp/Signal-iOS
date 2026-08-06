@@ -584,8 +584,8 @@ public extension GroupV2UpdatesImpl {
                 // this step if we are planning to leave the group via the block
                 // above, as it's redundant.
                 SSKEnvironment.shared.groupsV2Ref.updateLocalProfileKeyInGroup(
-                    groupId: groupId.serialize(),
-                    transaction: transaction,
+                    groupId: groupId,
+                    tx: transaction,
                 )
             }
 
@@ -871,7 +871,7 @@ public extension GroupV2UpdatesImpl {
             // If the group state includes a stale profile key for the
             // local user, schedule an update to fix that.
             if let localProfileKey, let profileKey = groupV2Snapshot.profileKeys[localAci], profileKey != localProfileKey.keyData {
-                groupsV2.updateLocalProfileKeyInGroup(groupId: newGroupModel.groupId, transaction: transaction)
+                groupsV2.updateLocalProfileKeyInGroup(groupId: groupId, tx: transaction)
             }
 
             if let groupSendEndorsementsResponse = snapshotResponse.groupSendEndorsementsResponse {

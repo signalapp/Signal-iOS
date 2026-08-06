@@ -285,8 +285,11 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
     ) {
         guard
             let thread = { () -> TSThread? in
-                if let groupId = syncMessage.groupID {
-                    return TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction)
+                if
+                    let groupIdData = syncMessage.groupID,
+                    let groupId = try? GroupIdentifier(contents: groupIdData)
+                {
+                    return TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction)
                 }
                 if
                     let threadAci = Aci.parseFrom(

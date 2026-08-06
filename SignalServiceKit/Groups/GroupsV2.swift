@@ -56,7 +56,7 @@ public protocol GroupsV2 {
 
     func processProfileKeyUpdates()
 
-    func updateLocalProfileKeyInGroup(groupId: Data, transaction: DBWriteTransaction)
+    func updateLocalProfileKeyInGroup(groupId: GroupIdentifier, tx: DBWriteTransaction)
 
     func isGroupKnownToStorageService(
         groupModel: TSGroupModelV2,
@@ -467,7 +467,7 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func updateLocalProfileKeyInGroup(groupId: Data, transaction: DBWriteTransaction) {
+    public func updateLocalProfileKeyInGroup(groupId: GroupIdentifier, tx: DBWriteTransaction) {
         owsFail("Not implemented.")
     }
 

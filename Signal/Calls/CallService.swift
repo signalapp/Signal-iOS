@@ -1273,7 +1273,10 @@ extension CallService: CallManagerDelegate {
     ) async {
         do {
             let sendPromise = try await self.databaseStorage.awaitableWrite { transaction in
-                guard let thread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) else {
+                guard
+                    let groupId = try? GroupIdentifier(contents: groupId),
+                    let thread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction)
+                else {
                     throw OWSAssertionError("tried to send call message to unknown group")
                 }
                 let callMessage = OutgoingCallMessage(
@@ -1537,15 +1540,19 @@ extension CallService: CallManagerDelegate {
      */
     func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
-        didUpdateRingForGroup groupId: Data,
+        didUpdateRingForGroup groupIdData: Data,
         ringId: Int64,
         sender: UUID,
         update: RingUpdate,
     ) {
         let senderAci = Aci(fromUUID: sender)
+        let groupId = try? GroupIdentifier(contents: groupIdData)
 
         /// Let our ``CallRecord`` delegate know we got a ring update.
         databaseStorage.asyncWrite { tx in
+            guard let groupId else {
+                return
+            }
             self.groupCallRecordRingUpdateDelegate.didReceiveRingUpdate(
                 groupId: groupId,
                 ringId: ringId,
@@ -1604,7 +1611,7 @@ extension CallService: CallManagerDelegate {
         }
 
         let action: RingAction = databaseStorage.read { transaction in
-            guard let groupId = try? GroupIdentifier(contents: groupId) else {
+            guard let groupId else {
                 owsFailDebug("discarding group ring \(ringId) from \(senderAci) for invalid group")
                 return .cancel
             }
@@ -1644,7 +1651,7 @@ extension CallService: CallManagerDelegate {
         switch action {
         case .cancel:
             do {
-                try callManager.cancelGroupRing(groupId: groupId, ringId: ringId, reason: nil)
+                try callManager.cancelGroupRing(groupId: groupIdData, ringId: ringId, reason: nil)
             } catch {
                 owsFailDebug("RingRTC failed to cancel group ring \(ringId): \(error)")
             }

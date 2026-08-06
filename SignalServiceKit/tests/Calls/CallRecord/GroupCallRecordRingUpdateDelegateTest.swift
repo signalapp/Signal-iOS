@@ -155,7 +155,7 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
 
             mockDB.write { tx in
                 ringUpdateHandler.didReceiveRingUpdate(
-                    groupId: groupThread.groupId,
+                    groupId: try! GroupIdentifier(contents: groupThread.groupId),
                     ringId: ringId,
                     ringUpdate: premise.ringUpdate,
                     ringUpdateSender: .randomForTesting(),
@@ -192,7 +192,7 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
 
         mockDB.write { tx in
             ringUpdateHandler.didReceiveRingUpdate(
-                groupId: groupThread.groupId,
+                groupId: try! GroupIdentifier(contents: groupThread.groupId),
                 ringId: ringId,
                 ringUpdate: .expiredRing,
                 ringUpdateSender: .randomForTesting(),
@@ -242,7 +242,7 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
 
             mockDB.write { tx in
                 ringUpdateHandler.didReceiveRingUpdate(
-                    groupId: groupThread.groupId,
+                    groupId: try! GroupIdentifier(contents: groupThread.groupId),
                     ringId: .maxRandom,
                     ringUpdate: ringUpdate,
                     ringUpdateSender: .randomForTesting(),
@@ -268,7 +268,7 @@ final class GroupCallRecordRingUpdateDelegateTest: XCTestCase {
 
         mockDB.write { tx in
             ringUpdateHandler.didReceiveRingUpdate(
-                groupId: groupThread.groupId,
+                groupId: try! GroupIdentifier(contents: groupThread.groupId),
                 ringId: .maxRandom,
                 ringUpdate: .expiredRing,
                 ringUpdateSender: .randomForTesting(),

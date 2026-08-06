@@ -809,7 +809,8 @@ public class GroupManager: NSObject {
     ) -> (TSGroupThread, GroupRecord) {
         let threadAssociatedDataStore = DependenciesBridge.shared.threadAssociatedDataStore
 
-        if let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupModel.groupId, tx: transaction) {
+        let groupId = failIfThrows { try secretParams.getPublicParams().getGroupIdentifier() }
+        if let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) {
             owsFail("Inserting existing group thread: \(groupThread.logString).")
         }
 
@@ -892,7 +893,8 @@ public class GroupManager: NSObject {
             Logger.info("Upserting thread for \(groupId as Optional); didAddLocalUser? \(didAddLocalUserToV2Group); groupUpdateSource: \(groupUpdateSource)")
         }
 
-        if let groupThread = TSGroupThread.fetchThread(forGroupIdData: newGroupModel.groupId, tx: transaction) {
+        let groupId = failIfThrows { try secretParams.getPublicParams().getGroupIdentifier() }
+        if let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) {
             updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 groupThread: groupThread,
                 newGroupModel: newGroupModel,
@@ -924,8 +926,7 @@ public class GroupManager: NSObject {
             }()
 
             if DebugFlags.internalLogging {
-                let groupId = try? newGroupModel.secretParams().getPublicParams().getGroupIdentifier()
-                Logger.info("Inserting thread for \(groupId as Optional); shouldAttributeAuthor? \(shouldAttributeAuthor)")
+                Logger.info("Inserting thread for \(groupId); shouldAttributeAuthor? \(shouldAttributeAuthor)")
             }
 
             insertRecipients(
