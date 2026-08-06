@@ -209,7 +209,7 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
         // Send an explicit message to the peer (if connected) telling them
         // that's what happened.
         try? session?.send(message: .backgroundApp)
-        stopTransfer()
+        stopTransfer(error: CancellationError())
     }
 
     func session(

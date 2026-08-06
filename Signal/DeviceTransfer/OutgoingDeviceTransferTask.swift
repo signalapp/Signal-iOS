@@ -53,6 +53,7 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
         self.session?.delegate = self
     }
 
+    private var sendTask: Task<Void, Error>?
     @MainActor
     func transferAccountToNewDevice(initializeProgressBlock: ((Progress) -> Void)? = nil) async throws {
         guard let session else {
@@ -92,14 +93,17 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
         // Only send the files if we haven't yet sent the manifest.
         guard !transferredFileIds.get().contains(DeviceTransfer.Constants.manifestIdentifier) else { return }
 
-        do {
-            try await self.sendManifest(manifest: manifest, session: session)
-            try await self.sendAllFiles(manifest: manifest, session: session)
-        } catch is CancellationError {
-            // Nothing to do.
-        } catch {
-            self.failTransfer(.assertion, "Failed to send manifest to new device \(error)")
+        sendTask = Task {
+            do {
+                try await self.sendManifest(manifest: manifest, session: session)
+                try await self.sendAllFiles(manifest: manifest, session: session)
+            } catch where error is CancellationError {
+                throw error
+            } catch {
+                self.failTransfer(.assertion, "Failed to send manifest to new device \(error)")
+            }
         }
+        try await sendTask?.value
     }
 
     func cancelTransferToNewDevice() {
@@ -239,6 +243,7 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
     }
 
     private func send(session: DeviceTransferSession, file: DeviceTransferProtoFile) async throws {
+        try Task.checkCancellation()
         if transferredFileIds.get().contains(file.identifier) {
             Logger.info("File was already transferred, skipping")
             return
@@ -288,11 +293,11 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
                     withPendingUnitCount: Int64(file.estimatedSize),
                 )
             }
+        } catch where error is CancellationError {
+            throw error
         } catch {
             throw OWSGenericError("Transferring file \(file.identifier) failed \(error)")
         }
-        try Task.checkCancellation()
-
         Logger.info("Transferring file \(file.identifier) complete")
         transferredFileIds.update { $0.append(file.identifier) }
     }
@@ -307,6 +312,7 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
     }
 
     func stopTransfer(notifyRegState: Bool = true) {
+        sendTask?.cancel()
         newDeviceServiceBrowser.stop()
 
         Task { @MainActor in

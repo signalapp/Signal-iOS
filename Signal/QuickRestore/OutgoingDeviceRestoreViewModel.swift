@@ -125,6 +125,8 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
                 self?.updateProgress(progress: progress)
             }
             transferStatusViewModel.state = .done
+        } catch where error is CancellationError {
+            throw error
         } catch {
             stopListeningForTransfer()
             Logger.error("Failed transfer to new device")

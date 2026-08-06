@@ -214,7 +214,11 @@ enum MPCDeviceTransfer {
 
         func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerId: MCPeerID) {
             lock.withLock {
-                inviteContinuation.take()?.resume(throwing: OWSAssertionError("Lost Peer \(peerId)"))
+                if let continuation = inviteContinuation.take() {
+                    continuation.resume(throwing: CancellationError())
+                } else if let session {
+                    session.disconnect()
+                }
             }
         }
     }
@@ -362,6 +366,7 @@ enum MPCDeviceTransfer {
         private var connectionContinuation: CheckedContinuation<Void, Error>?
         private var connected: Bool = false
         private var waitTask: Task<Void, Error>?
+        private var activeSends: [URL: CheckedContinuation<Void, any Error>] = [:]
 
         fileprivate init(
             identity: SecIdentity,
@@ -399,6 +404,8 @@ enum MPCDeviceTransfer {
         func disconnect() {
             lock.withLock {
                 self.connected = false
+                self.activeSends.values.forEach { $0.resume(throwing: CancellationError()) }
+                self.activeSends.removeAll()
                 self.connectionContinuation.take()?.resume(throwing: CancellationError())
             }
             self.session.disconnect()
@@ -425,15 +432,21 @@ enum MPCDeviceTransfer {
                 throw OWSAssertionError("Not connected")
             }
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+                lock.withLock {
+                    activeSends[url] = continuation
+                }
                 let progress = session.sendResource(
                     at: url,
                     withName: name,
                     toPeer: remotePeerId.mcPeerID,
                 ) { error in
+                    guard let savedContinuation = self.lock.withLock({ self.activeSends.removeValue(forKey: url) }) else {
+                        return
+                    }
                     if let error {
-                        continuation.resume(throwing: error)
+                        savedContinuation.resume(throwing: error)
                     } else {
-                        continuation.resume()
+                        savedContinuation.resume()
                     }
                 }
                 progressBlock(progress)
