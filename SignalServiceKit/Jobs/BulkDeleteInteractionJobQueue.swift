@@ -150,7 +150,7 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
         do throws(CancellationError) {
             try await Preconditions([
                 NotificationPrecondition(notificationName: .registrationStateDidChange, isSatisfied: { [tsAccountManager] in
-                    return tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+                    return tsAccountManager.localIdentifiersWithMaybeSneakyTransaction != nil
                 }),
             ]).waitUntilSatisfied()
         } catch {
