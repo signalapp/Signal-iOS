@@ -35,16 +35,20 @@ struct DeviceTransferPeerID: Equatable {
 protocol DeviceTransferSession {
 
     var identity: SecIdentity { get }
-    var delegate: DeviceTransferSessionDelegate? { get set }
+    var delegate: Weak<DeviceTransferSessionDelegate>? { get set }
 
     var localPeerId: DeviceTransferPeerID { get }
     var remotePeerId: DeviceTransferPeerID { get }
 
+    @MainActor
     func waitForConnection() async throws
+    @MainActor
     func disconnect()
 
+    @MainActor
     func send(message: DeviceTransfer.Message) throws
 
+    @MainActor
     func sendResource(
         url: URL,
         name: String,
@@ -53,18 +57,18 @@ protocol DeviceTransferSession {
 }
 
 protocol DeviceTransferOutgoingConnection {
-
+    @MainActor
     func start() async throws -> DeviceTransferSession
-
+    @MainActor
     func stop()
 }
 
 protocol DeviceTransferIncomingConnection {
-
+    @MainActor
     func start(mode: DeviceTransfer.Mode) throws -> URL
-
+    @MainActor
     func waitForConnection() async throws -> DeviceTransferSession
-
+    @MainActor
     func stop()
 }
 
@@ -74,7 +78,8 @@ enum TransferSessionState: String {
     case connected
 }
 
-protocol DeviceTransferSessionDelegate: AnyObject {
+@MainActor
+protocol DeviceTransferSessionDelegate {
     func session(
         _ session: DeviceTransferSession,
         didReceive data: Data,
@@ -138,6 +143,7 @@ enum MPCDeviceTransfer {
             browser.delegate = self
         }
 
+        @MainActor
         func start() async throws -> DeviceTransferSession {
             if let session {
                 return session
@@ -161,6 +167,7 @@ enum MPCDeviceTransfer {
             return try await task.value
         }
 
+        @MainActor
         func stop() {
             browser.stopBrowsingForPeers()
             lock.withLock {
@@ -170,13 +177,8 @@ enum MPCDeviceTransfer {
             }
         }
 
-        // MARK: - MCNearbyServiceBrowserDelegate
-
-        func browser(
-            _ browser: MCNearbyServiceBrowser,
-            foundPeer newDevicePeerID: MCPeerID,
-            withDiscoveryInfo info: [String: String]?,
-        ) {
+        @MainActor
+        func invitePeer(peerID newDevicePeerID: MCPeerID) {
             guard let identity else {
                 lock.withLock {
                     inviteContinuation.take()?.resume(
@@ -202,23 +204,42 @@ enum MPCDeviceTransfer {
             }
         }
 
-        func browser(
-            _ browser: MCNearbyServiceBrowser,
-            didNotStartBrowsingForPeers error: Swift.Error,
-        ) {
-            Logger.warn("Failed to start browsing for peers \(error)")
-            lock.withLock {
-                inviteContinuation.take()?.resume(throwing: error)
-            }
-        }
-
-        func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerId: MCPeerID) {
+        @MainActor
+        private func connectionError(_ error: Error) {
+            Logger.warn("Connection error: \(error)")
             lock.withLock {
                 if let continuation = inviteContinuation.take() {
                     continuation.resume(throwing: CancellationError())
                 } else if let session {
                     session.disconnect()
                 }
+            }
+        }
+
+        // MARK: - MCNearbyServiceBrowserDelegate
+
+        func browser(
+            _ browser: MCNearbyServiceBrowser,
+            foundPeer newDevicePeerID: MCPeerID,
+            withDiscoveryInfo info: [String: String]?,
+        ) {
+            Task { @MainActor in
+                self.invitePeer(peerID: newDevicePeerID)
+            }
+        }
+
+        func browser(
+            _ browser: MCNearbyServiceBrowser,
+            didNotStartBrowsingForPeers error: Swift.Error,
+        ) {
+            Task { @MainActor in
+                self.connectionError(error)
+            }
+        }
+
+        func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerId: MCPeerID) {
+            Task { @MainActor in
+                self.connectionError(CancellationError())
             }
         }
     }
@@ -254,6 +275,7 @@ enum MPCDeviceTransfer {
             advertiser.delegate = self
         }
 
+        @MainActor
         func start(mode: DeviceTransfer.Mode) throws -> URL {
             guard let identity else {
                 throw OWSAssertionError("Could not create identity for advertiser")
@@ -262,6 +284,7 @@ enum MPCDeviceTransfer {
             return try Self.urlForTransfer(identity: identity, localPeerId: peerId, mode: mode)
         }
 
+        @MainActor
         func waitForConnection() async throws -> DeviceTransferSession {
             if let session {
                 return session
@@ -282,6 +305,7 @@ enum MPCDeviceTransfer {
             return try await task.value
         }
 
+        @MainActor
         func stop() {
             advertiser.stopAdvertisingPeer()
             lock.withLock {
@@ -320,10 +344,9 @@ enum MPCDeviceTransfer {
             return components.url!
         }
 
-        func advertiser(
-            _ advertiser: MCNearbyServiceAdvertiser,
-            didReceiveInvitationFromPeer peerId: MCPeerID,
-            withContext context: Data?,
+        @MainActor
+        private func didReceiveInvite(
+            peerId: MCPeerID,
             invitationHandler: @escaping (Bool, MCSession?) -> Void,
         ) {
             guard let identity else {
@@ -346,21 +369,46 @@ enum MPCDeviceTransfer {
             }
         }
 
-        func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Swift.Error) {
-            Logger.warn("Failed to start advertising for peers \(error)")
+        @MainActor
+        private func connectionError(error: Error) {
+            Logger.warn("Connection error: \(error)")
             lock.withLock {
                 connectionContinuation.take()?.resume(throwing: error)
             }
         }
+
+        func advertiser(
+            _ advertiser: MCNearbyServiceAdvertiser,
+            didReceiveInvitationFromPeer peerId: MCPeerID,
+            withContext context: Data?,
+            invitationHandler: @escaping (Bool, MCSession?) -> Void,
+        ) {
+            Task { @MainActor in
+                self.didReceiveInvite(
+                    peerId: peerId,
+                    invitationHandler: invitationHandler,
+                )
+            }
+        }
+
+        func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Swift.Error) {
+            Task { @MainActor in
+                self.connectionError(error: error)
+            }
+        }
     }
 
-    class Session: NSObject, DeviceTransferSession, MCSessionDelegate {
+    class Session:
+        NSObject,
+        DeviceTransferSession,
+        MCSessionDelegate
+    {
         let identity: SecIdentity
         var localPeerId: DeviceTransferPeerID { DeviceTransferPeerID(mcPeerID: session.myPeerID) }
         let remotePeerId: DeviceTransferPeerID
 
         fileprivate let session: MCSession
-        weak var delegate: DeviceTransferSessionDelegate?
+        var delegate: Weak<DeviceTransferSessionDelegate>?
 
         private var lock = UnfairLock()
         private var connectionContinuation: CheckedContinuation<Void, Error>?
@@ -382,6 +430,7 @@ enum MPCDeviceTransfer {
             session.delegate = self
         }
 
+        @MainActor
         func waitForConnection() async throws {
             guard !connected else { return }
             let task = lock.withLock {
@@ -401,6 +450,7 @@ enum MPCDeviceTransfer {
             try await task.value
         }
 
+        @MainActor
         func disconnect() {
             lock.withLock {
                 self.connected = false
@@ -411,6 +461,7 @@ enum MPCDeviceTransfer {
             self.session.disconnect()
         }
 
+        @MainActor
         func send(message: DeviceTransfer.Message) throws {
             let mode: MCSessionSendDataMode = switch message {
             case .backgroundApp: .unreliable
@@ -423,6 +474,7 @@ enum MPCDeviceTransfer {
             )
         }
 
+        @MainActor
         func sendResource(
             url: URL,
             name: String,
@@ -483,7 +535,9 @@ enum MPCDeviceTransfer {
             didReceive data: Data,
             fromPeer peerId: MCPeerID,
         ) {
-            delegate?.session(self, didReceive: data)
+            Task { @MainActor in
+                delegate?.value?.session(self, didReceive: data)
+            }
         }
 
         func session(
@@ -499,11 +553,13 @@ enum MPCDeviceTransfer {
             fromPeer peerId: MCPeerID,
             with fileProgress: Progress,
         ) {
-            delegate?.session(
-                self,
-                didStartReceivingResourceWithName: resourceName,
-                with: fileProgress,
-            )
+            Task { @MainActor in
+                delegate?.value?.session(
+                    self,
+                    didStartReceivingResourceWithName: resourceName,
+                    with: fileProgress,
+                )
+            }
         }
 
         func session(
@@ -513,12 +569,14 @@ enum MPCDeviceTransfer {
             at localURL: URL?,
             withError error: Swift.Error?,
         ) {
-            delegate?.session(
-                self,
-                didFinishReceivingResourceWithName: resourceName,
-                at: localURL,
-                withError: error,
-            )
+            Task { @MainActor in
+                delegate?.value?.session(
+                    self,
+                    didFinishReceivingResourceWithName: resourceName,
+                    at: localURL,
+                    withError: error,
+                )
+            }
         }
 
         func session(
@@ -527,11 +585,13 @@ enum MPCDeviceTransfer {
             fromPeer peerId: MCPeerID,
             certificateHandler: @escaping (Bool) -> Void,
         ) {
-            delegate?.session(
-                self,
-                didReceiveCertificates: certificates,
-                certificateHandler: certificateHandler,
-            )
+            Task { @MainActor in
+                delegate?.value?.session(
+                    self,
+                    didReceiveCertificates: certificates,
+                    certificateHandler: certificateHandler,
+                )
+            }
         }
     }
 }

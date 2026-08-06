@@ -34,6 +34,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
     private let provisioningURL: DeviceProvisioningURL
     private let outgoingDeviceTransferTask: OutgoingDeviceTransferTask
 
+    @MainActor
     init(
         db: DB,
         deviceProvisioningURL: DeviceProvisioningURL,
@@ -88,7 +89,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
         }
 
         do {
-            let (peerId, certificateHash) = try outgoingDeviceTransferTask.parseTransferURL(transferURL)
+            let (peerId, certificateHash) = try await outgoingDeviceTransferTask.parseTransferURL(transferURL)
             return RestoreMethodData(
                 restoreMethod: restoreMethod,
                 peerConnectionData: RestoreMethodData.PeerConnectionData(
@@ -119,6 +120,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
 
     /// Once connected to the device described in `PeerConnectionData`
     /// begin a device transfer.
+    @MainActor
     func startTransfer() async throws {
         do {
             try await outgoingDeviceTransferTask.transferAccountToNewDevice { [weak self] progress in
@@ -135,12 +137,14 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
         }
     }
 
+    @MainActor
     private func cancelTransfer() {
         stopListeningForTransfer()
         transferStatusViewModel.state = .cancelled
         outgoingDeviceTransferTask.cancelTransferToNewDevice()
     }
 
+    @MainActor
     private func stopListeningForTransfer() {
         outgoingDeviceTransferTask.stopListening()
     }

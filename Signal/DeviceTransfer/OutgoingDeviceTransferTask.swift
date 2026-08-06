@@ -8,6 +8,7 @@ import Foundation
 import GRDB
 import SignalServiceKit
 
+@MainActor
 class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
 
     let db: DB
@@ -48,9 +49,10 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
 
     func connectToNewDevice(with peerId: DeviceTransferPeerID, certificateHash: Data) async throws {
         cancelTransferToNewDevice()
+        deviceSleepManager?.addBlock(blockObject: sleepBlockObject)
         expectedCertificateHash = certificateHash
         self.session = try await newDeviceServiceBrowser.start()
-        self.session?.delegate = self
+        self.session?.delegate = Weak(value: self)
     }
 
     private var sendTask: Task<Void, Error>?
@@ -116,7 +118,6 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
 
     // MARK: - Sending
 
-    @MainActor
     private func sendAllFiles(
         manifest: DeviceTransferProtoManifest,
         session: DeviceTransferSession,
@@ -131,7 +132,7 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
         }
 
         try await withThrowingTaskGroup(of: Void.self) { taskGroup in
-            taskGroup.addTask {
+            taskGroup.addTask { @MainActor in
                 // Make a copy of the database files within a write transaction so we can be confident
                 // they aren't mutated during the copy. We then transfer these copies.
                 let dbCopy = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
@@ -314,11 +315,8 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
     func stopTransfer(notifyRegState: Bool = true) {
         sendTask?.cancel()
         newDeviceServiceBrowser.stop()
-
-        Task { @MainActor in
-            throughputMonitor?.stop()
-            deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
-        }
+        throughputMonitor?.stop()
+        deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
 
         // It is possible that we get here because the app was backgrounded
         // after a failed launch. In that case, `tsAccountManager` will not be

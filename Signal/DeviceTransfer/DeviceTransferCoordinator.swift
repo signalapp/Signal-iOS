@@ -36,7 +36,7 @@ public class DeviceTransferCoordinator: Equatable {
 
     private func _onCancelTransfer() {
         Task {
-            stopAcceptingTransfers()
+            await stopAcceptingTransfers()
             await cancelTransfer()
         }
     }
@@ -51,11 +51,13 @@ public class DeviceTransferCoordinator: Equatable {
         }
     }
 
+    @MainActor
     private func _onSuccess() {
         stopAcceptingTransfers()
     }
 
-    public var onFailure: (Error) -> Void {
+    @MainActor
+    public var onFailure: @MainActor (Error) -> Void {
         get { transferStatusViewModel.onFailure }
         set { transferStatusViewModel.onFailure = { [weak self] error in
             self?._onFailure(error)
@@ -64,10 +66,12 @@ public class DeviceTransferCoordinator: Equatable {
         }
     }
 
+    @MainActor
     private func _onFailure(_ error: Error) {
         stopAcceptingTransfers()
     }
 
+    @MainActor
     init(
         db: DB,
         deviceSleepManager: DeviceSleepManager?,
@@ -123,7 +127,9 @@ public class DeviceTransferCoordinator: Equatable {
     private func initializeProgressTracking(progress: Progress) {
         self.progressObserver = progress.observe(\.fractionCompleted, options: [.new]) { [weak self] _, change in
             let newValue = change.newValue ?? 0
-            self?.updateStatus(value: newValue)
+            Task { @MainActor in
+                self?.updateStatus(value: newValue)
+            }
         }
     }
 
@@ -136,6 +142,7 @@ public class DeviceTransferCoordinator: Equatable {
         incomingDeviceTransferTask.cancelTransferFromOldDevice()
     }
 
+    @MainActor
     public func stopAcceptingTransfers() {
         incomingDeviceTransferTask.stopAcceptingTransfersFromOldDevices()
     }

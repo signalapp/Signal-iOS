@@ -7,6 +7,7 @@ import Foundation
 import SignalServiceKit
 
 // Transfer task for the new device side, receiving the transfer from the old device
+@MainActor
 class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
 
     // Incoming Device state
@@ -66,7 +67,7 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
 
     func waitForTransferFromOldDevice(initializeProgressBlock: ((Progress) -> Void)? = nil) async throws {
         self.session = try await newDeviceServiceAdvertiser.waitForConnection()
-        self.session?.delegate = self
+        self.session?.delegate = Weak(value: self)
         self.initializeProgressBlock = initializeProgressBlock
 
         try await withCheckedThrowingContinuation { continuation in
@@ -81,10 +82,9 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
 
     private func stopTransfer(error: Error? = nil, notifyRegState: Bool = true) {
         newDeviceServiceAdvertiser.stop()
-        Task { @MainActor in
-            throughputMonitor?.stop()
-            deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
-        }
+
+        throughputMonitor?.stop()
+        deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
 
         // It is possible that we get here because the app was backgrounded
         // after a failed launch. In that case, `tsAccountManager` will not be
@@ -194,10 +194,9 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
 
         transferInProgress = true
         let progress = Progress(totalUnitCount: Int64(manifest.estimatedTotalSize))
-        Task { @MainActor in
-            throughputMonitor = ThroughputMonitor(progress: progress)
-            throughputMonitor?.start()
-        }
+        throughputMonitor = ThroughputMonitor(progress: progress)
+        throughputMonitor?.start()
+
         initializeProgressBlock?(progress)
     }
 
@@ -223,10 +222,6 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
             break
         default:
             return failTransfer(DeviceTransfer.Error.assertion, "Received unexpected data")
-        }
-
-        Task { @MainActor in
-            throughputMonitor?.stop()
         }
 
         // When the new device receives the done message from the old device,

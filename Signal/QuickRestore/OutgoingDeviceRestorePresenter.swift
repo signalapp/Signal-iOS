@@ -51,6 +51,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
         self.tsAccountManager = tsAccountManager
     }
 
+    @MainActor
     func present(
         provisioningURL: DeviceProvisioningURL,
         presentingViewController: UIViewController,
@@ -199,6 +200,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
         await internalNavigationController.awaitablePresent(sheet, animated: true)
     }
 
+    @MainActor
     func didTapTransfer() async {
         NotificationCenter.default.post(name: .outgoingDeviceTransferDidStart, object: self)
         defer {
@@ -220,7 +222,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             }
 
             if await pushBackupPropmtViewController(presentingViewController: presentingViewController) {
-                await internalNavigationController.dismiss(animated: true)
+                internalNavigationController.dismiss(animated: true)
                 Task { @MainActor in
                     SignalApp.shared.showAppSettings(
                         mode: .backups(
@@ -239,7 +241,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             }
 
             // Show a sheet while fetching the transfer data
-            await presentSheet()
+            presentSheet()
             let restoreMethodData = try await viewModel.waitForRestoreMethodResponse()
 
             switch restoreMethodData.restoreMethod {
