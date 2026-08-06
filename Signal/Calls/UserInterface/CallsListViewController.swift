@@ -174,7 +174,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     func updateBarButtonItems() {
         if tableView.isEditing {
             navigationItem.leftBarButtonItem = cancelMultiselectButton()
-            navigationItem.rightBarButtonItem = deleteAllCallsButton()
+            navigationItem.rightBarButtonItem = deleteAllCallsButton
+            updateMultiselectButtons()
         } else {
             navigationItem.leftBarButtonItem = profileBarButtonItem()
             navigationItem.rightBarButtonItem = newCallButton()
@@ -271,7 +272,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     [.flexibleSpace(), self.toolbarDeleteButton],
                     animated: false,
                 )
-                self.updateMultiselectToolbarButtons()
+                self.updateMultiselectButtons()
             }
             UIView.animate(withDuration: 0.25) {
                 toolbarContainer.alpha = 1
@@ -279,10 +280,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
     }
 
-    private func updateMultiselectToolbarButtons() {
+    private func updateMultiselectButtons() {
         let selectedRows = tableView.indexPathsForSelectedRows ?? []
         let hasSelectedEntries = !selectedRows.isEmpty
         toolbarDeleteButton.isEnabled = hasSelectedEntries
+        deleteAllCallsButton.isEnabled = !hasSelectedEntries
     }
 
     @objc
@@ -380,14 +382,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     // MARK: Delete All button
 
-    private func deleteAllCallsButton() -> UIBarButtonItem {
-        return UIBarButtonItem(
-            title: Strings.deleteAllCallsButtonTitle,
-            style: .plain,
-            target: self,
-            action: #selector(promptAboutDeletingAllCalls),
-        )
-    }
+    private lazy var deleteAllCallsButton = UIBarButtonItem(
+        title: Strings.deleteAllCallsButtonTitle,
+        style: .plain,
+        target: self,
+        action: #selector(promptAboutDeletingAllCalls),
+    )
 
     @objc
     private func promptAboutDeletingAllCalls() {
@@ -515,7 +515,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     private func filterChanged() {
         reinitializeLoadedViewModels(debounceInterval: 0, animated: true)
-        updateMultiselectToolbarButtons()
+        updateMultiselectButtons()
     }
 
     private var currentFilterMode: FilterMode {
@@ -1776,7 +1776,7 @@ extension CallsListViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if tableView.isEditing {
-            updateMultiselectToolbarButtons()
+            updateMultiselectButtons()
             return
         }
 
@@ -1795,7 +1795,7 @@ extension CallsListViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         if tableView.isEditing {
-            updateMultiselectToolbarButtons()
+            updateMultiselectButtons()
         }
     }
 
