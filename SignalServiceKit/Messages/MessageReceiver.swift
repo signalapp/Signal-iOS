@@ -1063,7 +1063,7 @@ public final class MessageReceiver {
             owsFailDebug("Invalid group context.")
             return nil
         }
-        guard let groupThread = TSGroupThread.fetch(forGroupId: groupContextInfo.groupId, tx: tx) else {
+        guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupContextInfo.groupId, tx: tx) else {
             owsFailDebug("Unknown v2 group.")
             return nil
         }
@@ -1888,7 +1888,7 @@ public final class MessageReceiver {
                 Logger.warn("Ignoring blocked message from \(envelope.sourceAci) in \(groupId)")
                 return
             }
-            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) else {
                 // This isn't necessarily an error. We might not yet know about the thread,
                 // in which case we don't need to display the typing indicators.
                 Logger.warn("Ignoring typingMessage for non-existent thread")

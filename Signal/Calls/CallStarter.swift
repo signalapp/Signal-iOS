@@ -87,7 +87,7 @@ struct CallStarter {
             isVideoCall = withVideo
         case .groupThread(let groupId):
             callTarget = .groupThread(groupId)
-            callThread = context.databaseStorage.read { tx in TSGroupThread.fetch(forGroupId: groupId, tx: tx)! }
+            callThread = context.databaseStorage.read { tx in TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)! }
             isVideoCall = true
         case .callLink(let rootKey):
             callTarget = .callLink(CallLink(rootKey: rootKey))

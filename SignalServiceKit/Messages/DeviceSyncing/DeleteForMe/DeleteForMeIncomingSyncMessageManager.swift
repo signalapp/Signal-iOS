@@ -350,7 +350,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
             }
             return contactThread
         case .groupIdentifier(let groupIdentifier):
-            return threadStore.fetchGroupThread(groupId: groupIdentifier, tx: tx)
+            return threadStore.fetchThread(forGroupId: groupIdentifier, tx: tx)
         }
     }
 }

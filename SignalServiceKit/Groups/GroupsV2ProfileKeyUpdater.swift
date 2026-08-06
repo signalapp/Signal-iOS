@@ -64,7 +64,7 @@ class GroupsV2ProfileKeyUpdater {
     }
 
     func updateLocalProfileKeyInGroup(groupId: Data, transaction: DBWriteTransaction) {
-        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+        guard let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) else {
             owsFailDebug("Missing groupThread.")
             return
         }
@@ -258,7 +258,7 @@ class GroupsV2ProfileKeyUpdater {
         try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
 
         let groupModel = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return TSGroupThread.fetch(groupId: groupId, transaction: tx)?.groupModel as? TSGroupModelV2
+            return TSGroupThread.fetchThread(forGroupIdData: groupId, tx: tx)?.groupModel as? TSGroupModelV2
         }
         guard let groupModel, let secretParams = try? groupModel.secretParams() else {
             throw OWSGenericError("missing secret params")

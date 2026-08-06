@@ -66,7 +66,7 @@ public class StoryManager {
             }
 
             guard
-                let groupThread = TSGroupThread.fetch(groupId: contextInfo.groupId.serialize(), transaction: transaction),
+                let groupThread = TSGroupThread.fetchThread(forGroupId: contextInfo.groupId, tx: transaction),
                 groupThread.groupMembership.isFullMember(author)
             else {
                 throw OWSGenericError("not in group [timestamp \(timestamp), author \(author)]")
@@ -441,7 +441,7 @@ public extension StoryContext {
     func thread(transaction: DBReadTransaction) -> TSThread? {
         switch self {
         case .groupId(let data):
-            return TSGroupThread.fetch(groupId: data, transaction: transaction)
+            return TSGroupThread.fetchThread(forGroupIdData: data, tx: transaction)
         case .authorAci(let authorAci):
             return TSContactThread.getWithContactAddress(
                 SignalServiceAddress(authorAci),

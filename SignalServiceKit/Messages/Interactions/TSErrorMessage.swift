@@ -45,7 +45,7 @@ extension TSErrorMessage {
     ) -> TSErrorMessage? {
         if
             let groupId,
-            let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx),
+            let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: tx),
             groupThread.groupMembership.isFullMember(sender)
         {
             return .failedDecryption(

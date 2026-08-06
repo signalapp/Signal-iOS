@@ -187,7 +187,7 @@ public class OWSProfileManager: ProfileManagerProtocol {
     }
 
     private func groupIdWhitelistWasUpdated(_ groupId: Data, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+        if let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) {
             SSKEnvironment.shared.databaseStorageRef.touch(thread: groupThread, shouldReindex: false, tx: transaction)
         }
 
@@ -207,7 +207,7 @@ public class OWSProfileManager: ProfileManagerProtocol {
     private func recordPendingUpdatesForStorageService(groupId: Data) {
         owsAssertDebug(!groupId.isEmpty)
         SSKEnvironment.shared.databaseStorageRef.asyncRead { transaction in
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) else {
                 owsFailDebug("Missing groupThread.")
                 return
             }

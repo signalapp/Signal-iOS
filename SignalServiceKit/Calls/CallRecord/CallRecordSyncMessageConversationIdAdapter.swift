@@ -65,7 +65,7 @@ class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConve
         }
         if
             let groupId = try? GroupIdentifier(contents: conversationId),
-            let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx)
+            let groupThread = threadStore.fetchThread(forGroupId: groupId, tx: tx)
         {
             return .thread(threadRowId: groupThread.sqliteRowId!)
         }

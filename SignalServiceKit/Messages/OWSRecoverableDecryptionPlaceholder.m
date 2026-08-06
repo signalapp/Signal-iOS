@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
     SignalServiceAddress *sender = [[SignalServiceAddress alloc] initWithServiceIdObjC:sourceAci];
     TSThread *thread;
     if (untrustedGroupId.length > 0) {
-        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:untrustedGroupId transaction:writeTx];
+        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchThreadForGroupIdData:untrustedGroupId tx:writeTx];
         // If we aren't sure that the sender is a member of the reported groupId, we should fall back
         // to inserting the placeholder in the contact thread.
         if ([groupThread.groupMembership isFullMember:sender]) {

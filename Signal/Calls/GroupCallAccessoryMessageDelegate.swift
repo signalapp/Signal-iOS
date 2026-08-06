@@ -129,7 +129,7 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
         logger.info("Sending join messages for call.")
 
         databaseStorage.asyncWrite { tx in
-            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) else {
                 owsFailDebug("Missing thread for group call.")
                 return
             }
@@ -167,7 +167,7 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
         logger.info("Sending leave message for call.")
 
         databaseStorage.asyncWrite { tx in
-            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) else {
                 owsFailDebug("Missing thread for group call.")
                 return
             }
@@ -193,7 +193,7 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
         AssertIsOnMainThread()
 
         databaseStorage.asyncWrite { tx in
-            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) else {
                 owsFailDebug("Missing thread for group call.")
                 return
             }

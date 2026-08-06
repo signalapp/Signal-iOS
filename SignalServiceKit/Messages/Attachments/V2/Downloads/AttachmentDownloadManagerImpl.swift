@@ -1577,7 +1577,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     break
                 }
                 if let groupId = storyMessage.groupId {
-                    thread = threadStore.fetchGroupThread(groupId: groupId, tx: tx)
+                    thread = threadStore.fetchThread(forGroupIdData: groupId, tx: tx)
                 } else {
                     thread = threadStore.fetchContactThreads(serviceId: storyMessage.authorAci, tx: tx).first
                 }

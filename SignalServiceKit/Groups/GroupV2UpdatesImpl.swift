@@ -131,7 +131,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
         transaction: DBWriteTransaction,
     ) throws -> TSGroupThread {
 
-        guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) else {
+        guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) else {
             throw OWSAssertionError("Missing groupThread.")
         }
         guard let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: transaction) else {
@@ -471,8 +471,8 @@ public extension GroupV2UpdatesImpl {
         let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
         let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
 
-        let threadExists = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            TSGroupThread.fetch(forGroupId: groupId, tx: transaction) != nil
+        let threadExists = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) != nil
         }
 
         var lastVerifiedGroupNameHash: Data?
@@ -493,7 +493,7 @@ public extension GroupV2UpdatesImpl {
 
             var localUserWasAddedBy: GroupUpdateSource?
             let groupThread: TSGroupThread
-            if let existingThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) {
+            if let existingThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) {
                 groupThread = existingThread
                 localUserWasAddedBy = nil
             } else {
@@ -621,7 +621,7 @@ public extension GroupV2UpdatesImpl {
         lastVerifiedGroupNameHash: Data?,
         transaction: DBWriteTransaction,
     ) throws -> (TSGroupThread, addedToNewThreadBy: GroupUpdateSource?) {
-        if TSGroupThread.fetch(forGroupId: groupId, tx: transaction) != nil {
+        if TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) != nil {
             throw OWSAssertionError("Can't insert group thread that already exists.")
         }
 
@@ -828,7 +828,7 @@ public extension GroupV2UpdatesImpl {
 
             let groupId = try secretParams.getPublicParams().getGroupIdentifier()
             if
-                let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction),
+                let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction),
                 let oldGroupModel = groupThread.groupModel as? TSGroupModelV2,
                 oldGroupModel.revision == builder.groupV2Revision
             {

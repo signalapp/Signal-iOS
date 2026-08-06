@@ -205,7 +205,7 @@ class CallHeader: UIView {
     private func fetchGroupSizeAndMemberNamesWithSneakyTransaction(groupThreadCall: GroupThreadCall) -> (Int, [String]) {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             // FIXME: Register for notifications so we can update if someone leaves the group while the screen is up?
-            guard let groupThread = TSGroupThread.fetch(forGroupId: groupThreadCall.groupId, tx: transaction) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupThreadCall.groupId, tx: transaction) else {
                 owsFailDebug("Couldn't fetch thread for active call.")
                 return (0, [] as [String])
             }
@@ -467,7 +467,7 @@ class CallHeader: UIView {
             let databaseStorage = SSKEnvironment.shared.databaseStorageRef
             return databaseStorage.read { tx in
                 let contactManager = SSKEnvironment.shared.contactManagerRef
-                guard let groupThread = TSGroupThread.fetch(forGroupId: groupThreadCall.groupId, tx: tx) else {
+                guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupThreadCall.groupId, tx: tx) else {
                     return TSGroupThread.defaultGroupName
                 }
                 return contactManager.displayName(for: groupThread, transaction: tx)

@@ -34,7 +34,7 @@ final class GroupThreadCall: Signal.GroupCall {
 
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let groupThread = databaseStorage.read { tx in
-            return TSGroupThread.fetch(forGroupId: groupId, tx: tx)
+            return TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)
         }
         guard let groupThread else {
             owsFailDebug("Missing thread for active call.")
@@ -120,7 +120,7 @@ final class GroupThreadCall: Signal.GroupCall {
         }
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let groupThread = databaseStorage.read { tx in
-            return TSGroupThread.fetch(forGroupId: groupId, tx: tx)
+            return TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)
         }
         guard let groupThread else {
             owsFailDebug("Missing group thread for active call.")

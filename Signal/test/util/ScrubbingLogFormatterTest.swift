@@ -172,7 +172,7 @@ struct ScrubbingLogFormatterTest {
             let groupIdCount = isGV1 ? kGroupIdLengthV1 : kGroupIdLengthV2
             let paddingCount = isGV1 ? 2 : 1
             let groupId = Randomness.generateRandomBytes(groupIdCount)
-            let groupIdString = TSGroupThread.defaultThreadUniqueId(forGroupId: groupId)
+            let groupIdString = TSGroupThread.defaultThreadUniqueId(forGroupIdData: groupId)
 
             let expectedOutput = "Hello g…\(groupIdString.suffix(3 + paddingCount))!"
             let actualOutput = format("Hello \(groupIdString)!")
@@ -186,7 +186,7 @@ struct ScrubbingLogFormatterTest {
         for _ in 1...1024 {
             let fakeGroupIdCount = UInt.random(in: 1...(kGroupIdLengthV2 * 2))
             let fakeGroupId = Randomness.generateRandomBytes(fakeGroupIdCount)
-            let fakeGroupIdString = TSGroupThread.defaultThreadUniqueId(forGroupId: fakeGroupId)
+            let fakeGroupIdString = TSGroupThread.defaultThreadUniqueId(forGroupIdData: fakeGroupId)
             let input = "Hello \(fakeGroupIdString)!"
 
             let result = format(input)

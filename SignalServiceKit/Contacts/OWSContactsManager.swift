@@ -472,12 +472,8 @@ extension OWSContactsManager: ContactManager {
     }
 
     public func shouldBlurGroupAvatar(groupId: Data, tx: DBReadTransaction) -> Bool {
-        guard
-            let groupThread = TSGroupThread.fetch(
-                groupId: groupId,
-                transaction: tx,
-            )
-        else {
+        let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: tx)
+        guard let groupThread else {
             return false
         }
 
@@ -615,10 +611,7 @@ extension OWSContactsManager: ContactManager {
             ] as? Data
         {
             let groupThread: TSGroupThread? = db.read { tx in
-                let groupThread = TSGroupThread.fetch(
-                    groupId: groupId,
-                    transaction: tx,
-                )
+                let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: tx)
                 guard
                     let groupThread,
                     !self.shouldBlockAvatarDownload(

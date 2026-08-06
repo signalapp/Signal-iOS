@@ -63,7 +63,7 @@ class BlockListViewController: OWSTableViewController2 {
             )
             let groups: [(groupId: Data, groupName: String, groupModel: TSGroupModel?, groupAvatarImage: UIImage?)]
             groups = blockingManager.blockedGroupIds(transaction: transaction).map { groupId in
-                let groupModel = TSGroupThread.fetch(groupId: groupId, transaction: transaction)?.groupModel
+                let groupModel = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction)?.groupModel
                 let groupName = groupModel?.groupNameOrDefault ?? TSGroupThread.defaultGroupName
                 let groupAvatarImage: UIImage? = {
                     if let avatarData = groupModel?.avatarDataState.dataIfPresent {

@@ -156,7 +156,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             }
             let databaseStorage = SSKEnvironment.shared.databaseStorageRef
             self.dataSource = databaseStorage.read { tx in
-                return TSGroupThread.fetch(groupId: groupId, transaction: tx)
+                return TSGroupThread.fetchThread(forGroupIdData: groupId, tx: tx)
             }.map {
                 return .thread($0)
             }

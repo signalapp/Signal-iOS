@@ -19,10 +19,10 @@ extension TSGroupThread {
     static let groupThreadUniqueIdPrefix = "g"
 
     /// Returns the uniqueId for the ``TSGroupThread`` with the given group ID.
-    public static func threadUniqueId(forGroupId groupId: Data, tx: DBReadTransaction) -> String? {
-        owsAssertDebug(!groupId.isEmpty)
+    public static func threadUniqueId(forGroupIdData groupIdData: Data, tx: DBReadTransaction) -> String? {
+        owsAssertDebug(!groupIdData.isEmpty)
 
-        let threadId = GroupStore().fetchThreadId(forGroupId: groupId, tx: tx)
+        let threadId = GroupStore().fetchThreadId(forGroupIdData: groupIdData, tx: tx)
         guard let threadId else {
             return nil
         }
@@ -34,9 +34,9 @@ extension TSGroupThread {
         return failIfThrows { try fetchQuery.fetchOne(tx.database) }
     }
 
-    static func defaultThreadUniqueId(forGroupId groupId: Data) -> String {
-        owsAssertDebug(!groupId.isEmpty)
-        return groupThreadUniqueIdPrefix + groupId.base64EncodedString()
+    static func defaultThreadUniqueId(forGroupIdData groupIdData: Data) -> String {
+        owsAssertDebug(!groupIdData.isEmpty)
+        return groupThreadUniqueIdPrefix + groupIdData.base64EncodedString()
     }
 
     // MARK: -

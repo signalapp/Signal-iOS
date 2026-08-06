@@ -100,7 +100,7 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
         case .releaseNotes:
             return threadStore.fetchThread(uniqueId: TSReleaseNotesThread.releaseNotesUniqueId, tx: tx)
         case .groupId(let groupId):
-            return threadStore.fetchGroupThread(groupId: groupId, tx: tx)
+            return threadStore.fetchThread(forGroupIdData: groupId, tx: tx)
         case .recipientId(let recipientId):
             guard let recipient = recipientStore.fetchRecipient(rowId: recipientId, tx: tx) else {
                 owsFailDebug("missing recipient specified via foreign key")

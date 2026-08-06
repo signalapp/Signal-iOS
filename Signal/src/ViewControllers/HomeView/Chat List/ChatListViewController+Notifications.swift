@@ -283,14 +283,14 @@ extension ChatListViewController {
         let address: SignalServiceAddress? = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress
         let groupId: Data? = notification.userInfo?[UserProfileNotifications.profileGroupIdKey] as? Data
 
-        let changedThreadUniqueId: String? = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+        let changedThreadUniqueId = SSKEnvironment.shared.databaseStorageRef.read { transaction -> String? in
             if
                 let address,
                 address.isValid
             {
                 return TSContactThread.getWithContactAddress(address, transaction: transaction)?.uniqueId
             } else if let groupId {
-                return TSGroupThread.threadUniqueId(forGroupId: groupId, tx: transaction)
+                return TSGroupThread.threadUniqueId(forGroupIdData: groupId, tx: transaction)
             } else {
                 return nil
             }

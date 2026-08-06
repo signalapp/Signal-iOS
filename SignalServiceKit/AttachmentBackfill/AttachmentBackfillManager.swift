@@ -602,7 +602,7 @@ public class AttachmentBackfillManager {
 
             thread = contactThread
         case .groupIdentifier(let groupIdentifier):
-            guard let groupThread = threadStore.fetchGroupThread(groupId: groupIdentifier, tx: tx) else {
+            guard let groupThread = threadStore.fetchThread(forGroupId: groupIdentifier, tx: tx) else {
                 return nil
             }
 

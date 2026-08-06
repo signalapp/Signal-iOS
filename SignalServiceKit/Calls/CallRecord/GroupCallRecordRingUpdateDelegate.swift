@@ -64,7 +64,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
         let callEventTimestamp = Date().ows_millisecondsSince1970
 
         guard
-            let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx),
+            let groupThread = threadStore.fetchThread(forGroupIdData: groupId, tx: tx),
             let groupThreadRowId = groupThread.sqliteRowId
         else {
             logger.error("Received ring update, but missing group thread!")

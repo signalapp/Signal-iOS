@@ -987,7 +987,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
             builder.setHideStory(storyContextAssociatedData.isHidden)
         }
 
-        let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction)
+        let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction)
         if let groupThread {
             let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(
                 for: groupThread.uniqueId,
@@ -1061,7 +1061,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         }
         let groupId = groupContextInfo.groupId
 
-        let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction)
+        let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction)
         if let groupThread {
             let localStorySendMode = groupThread.storyViewMode.storageServiceMode
             if localStorySendMode != record.storySendMode {
@@ -2008,11 +2008,11 @@ extension StorageServiceAccountRecordUpdater {
                     continue
                 }
                 let contextInfo = GroupV2ContextInfo.deriveFrom(masterKey: masterKey)
-                let groupId = contextInfo.groupId.serialize()
-                thread = threadStore.fetchGroupThread(groupId: groupId, tx: tx)
-                pinnedThreadIds.append(.groupId(groupId))
+                let groupId = contextInfo.groupId
+                thread = threadStore.fetchThread(forGroupId: groupId, tx: tx)
+                pinnedThreadIds.append(.groupId(groupId.serialize()))
             case .legacyGroupID(let groupId)?:
-                thread = threadStore.fetchGroupThread(groupId: groupId, tx: tx)
+                thread = threadStore.fetchThread(forGroupIdData: groupId, tx: tx)
                 pinnedThreadIds.append(.groupId(groupId))
             case .releaseNotes:
                 thread = releaseNotesThread
@@ -2039,7 +2039,7 @@ extension StorageServiceAccountRecordUpdater {
             switch pinnedThread.threadId {
             case .groupId(let _groupId):
                 if let groupId = try? GroupIdentifier(contents: _groupId) {
-                    let thread = threadStore.fetchGroupThread(groupId: groupId, tx: tx)
+                    let thread = threadStore.fetchThread(forGroupId: groupId, tx: tx)
                     guard let thread else {
                         // TODO: Add support for maintaining not-yet-restored pinned threads.
                         Logger.warn("skipping pinned group that hasn't been restored yet")

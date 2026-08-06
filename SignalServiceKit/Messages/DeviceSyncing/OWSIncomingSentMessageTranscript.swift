@@ -78,7 +78,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         if sentProto.isRecipientUpdate, !isEdit {
             guard
                 let groupId,
-                let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx)
+                let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)
             else {
                 owsFailDebug("We should never receive a 'recipient update' for messages in contact threads.")
                 return nil
@@ -347,7 +347,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         tx: DBWriteTransaction,
     ) -> SentMessageTranscriptTarget? {
         if let groupId {
-            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) else {
                 owsFailDebug("Missing thread for group.")
                 return nil
             }

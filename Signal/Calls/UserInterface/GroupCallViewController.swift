@@ -1576,7 +1576,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
                 ringRtcCall.localDeviceState.joinState == .notJoined
             {
                 // If we haven't joined the call yet, we want to alert for all members of the group
-                let groupThread = TSGroupThread.fetch(forGroupId: groupThreadCall.groupId, tx: transaction)
+                let groupThread = TSGroupThread.fetchThread(forGroupId: groupThreadCall.groupId, tx: transaction)
                 addressesToCheck = groupThread!.recipientAddresses(with: transaction)
             } else {
                 // If we are in the call, we only care about safety numbers for the active call participants
@@ -1625,7 +1625,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             case .groupThread(let call):
                 let databaseStorage = SSKEnvironment.shared.databaseStorageRef
                 let groupThread = databaseStorage.read { tx in
-                    return TSGroupThread.fetch(forGroupId: call.groupId, tx: tx)
+                    return TSGroupThread.fetchThread(forGroupId: call.groupId, tx: tx)
                 }
                 guard let groupThread else {
                     owsFail("Missing thread for active call.")

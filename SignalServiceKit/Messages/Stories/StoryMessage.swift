@@ -685,7 +685,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                             firstFailedThread = context.thread(transaction: transaction)
                         } else if let groupId {
                             // Group recipient.
-                            firstFailedThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+                            firstFailedThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction)
                         }
                     }
 
@@ -713,7 +713,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                             firstFailedThread = context.thread(transaction: transaction)
                         } else if let groupId {
                             // Group recipient.
-                            firstFailedThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+                            firstFailedThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction)
                         }
                     }
 
@@ -754,7 +754,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     public func threads(transaction: DBReadTransaction) -> [TSThread] {
         switch manifest {
         case .incoming:
-            if let groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+            if let groupId, let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) {
                 return [groupThread]
             } else if let contactThread = TSContactThread.getWithContactAddress(SignalServiceAddress(authorAci), transaction: transaction) {
                 return [contactThread]
@@ -763,7 +763,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 return []
             }
         case .outgoing(let recipientStates):
-            if let groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+            if let groupId, let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) {
                 return [groupThread]
             }
             return Set(recipientStates.values.flatMap({ $0.contexts })).compactMap { context in
@@ -909,7 +909,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         Logger.info("Resending story message \(timestamp)")
 
         let messages: [OutgoingStoryMessage]
-        if let groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+        if let groupId, let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) {
             messages = [
                 OutgoingStoryMessage(
                     thread: groupThread,

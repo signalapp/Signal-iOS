@@ -284,7 +284,7 @@ private extension Notification {
         }
 
         if let groupId = userInfo?[UserProfileNotifications.profileGroupIdKey] as? Data {
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) else {
                 return nil
             }
             return groupThread

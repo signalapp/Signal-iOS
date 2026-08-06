@@ -278,7 +278,7 @@ extension StoryContextMenuGenerator {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction -> String? in
             switch context {
             case .groupId(let groupId):
-                return TSGroupThread.fetch(groupId: groupId, transaction: transaction)?.groupNameOrDefault
+                return TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction)?.groupNameOrDefault
             case .authorAci(let authorAci):
                 if authorAci == StoryMessage.systemStoryAuthor {
                     return OWSLocalizedString(

@@ -82,7 +82,7 @@ public class GroupCallManager {
             return
         }
 
-        let groupThread = databaseStorage.read { tx in TSGroupThread.fetch(forGroupId: groupId, tx: tx) }
+        let groupThread = databaseStorage.read { tx in TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) }
         guard let groupThread else {
             logger.warn("Ignoring peek request for non-existent thread!")
             return
@@ -182,7 +182,7 @@ public class GroupCallManager {
     ) {
         let currentCallId: CallId? = peekInfo.callId
 
-        guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
+        guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) else {
             owsFailDebug("Can't update call with missing thread.")
             return
         }
@@ -421,7 +421,7 @@ public class GroupCallManager {
         groupId: GroupIdentifier,
     ) async {
         await databaseStorage.awaitableWrite { tx in
-            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) else {
                 owsFailDebug("Can't find TSGroupThread that must exist.")
                 return
             }

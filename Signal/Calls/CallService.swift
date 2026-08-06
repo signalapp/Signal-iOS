@@ -1081,7 +1081,7 @@ extension CallService: GroupThreadCallDelegate {
         Task { [groupCallManager] in
             let databaseStorage = SSKEnvironment.shared.databaseStorageRef
             let groupThread = databaseStorage.read { tx in
-                return TSGroupThread.fetch(forGroupId: call.groupId, tx: tx)
+                return TSGroupThread.fetchThread(forGroupId: call.groupId, tx: tx)
             }
             guard let groupModel = groupThread?.groupModel as? TSGroupModelV2 else {
                 owsFailDebug("Missing v2 model for group call.")
@@ -1091,11 +1091,7 @@ extension CallService: GroupThreadCallDelegate {
                 let proof = try await groupCallManager.groupCallPeekClient.fetchGroupMembershipProof(secretParams: try groupModel.secretParams())
                 groupCall.updateMembershipProof(proof: proof)
             } catch {
-                if error.isNetworkFailureOrTimeout {
-                    Logger.warn("Failed to fetch group call credentials \(error)")
-                } else {
-                    owsFailDebug("Failed to fetch group call credentials \(error)")
-                }
+                owsFailDebugUnlessNetworkFailure(error)
             }
         }
     }
@@ -1277,7 +1273,7 @@ extension CallService: CallManagerDelegate {
     ) async {
         do {
             let sendPromise = try await self.databaseStorage.awaitableWrite { transaction in
-                guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                guard let thread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) else {
                     throw OWSAssertionError("tried to send call message to unknown group")
                 }
                 let callMessage = OutgoingCallMessage(
@@ -1613,7 +1609,7 @@ extension CallService: CallManagerDelegate {
                 return .cancel
             }
 
-            guard let thread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) else {
+            guard let thread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) else {
                 owsFailDebug("discarding group ring \(ringId) from \(senderAci) for unknown group")
                 return .cancel
             }

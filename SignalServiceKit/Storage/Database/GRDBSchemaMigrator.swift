@@ -8134,7 +8134,7 @@ public class GRDBSchemaMigrator {
         // already an entry pointing somewhere else.
         var threadUniqueIdToGroupIdToRestore = [String: GroupIdentifier]()
         for groupId in groupIdsToRestore {
-            let threadUniqueId = TSGroupThread.defaultThreadUniqueId(forGroupId: groupId.serialize())
+            let threadUniqueId = TSGroupThread.defaultThreadUniqueId(forGroupIdData: groupId.serialize())
             threadUniqueIdToGroupIdToRestore[threadUniqueId] = groupId
         }
         for (idx, uniqueId) in threadUniqueIds.enumerated() {
@@ -8278,7 +8278,7 @@ public class GRDBSchemaMigrator {
             // There might be duplicate TSThreads with the same group ID, but there's
             // only one that's returned from the mapping store. Prefer that one to
             // maintain the current behavior.
-            let canonicalUniqueId = groupIdToThreadUniqueId[groupId.hexadecimalString] ?? TSGroupThread.defaultThreadUniqueId(forGroupId: groupId)
+            let canonicalUniqueId = groupIdToThreadUniqueId[groupId.hexadecimalString] ?? TSGroupThread.defaultThreadUniqueId(forGroupIdData: groupId)
             guard uniqueId == canonicalUniqueId else {
                 Logger.warn("skipping duplicate thread \(uniqueId) that's not canonical \(canonicalUniqueId)")
                 continue

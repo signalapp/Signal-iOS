@@ -710,7 +710,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         case .individual(let call):
             conversationId = .thread(threadRowId: call.thread.sqliteRowId!)
         case .groupThread(let call):
-            let rowId = deps.db.read { tx in deps.threadStore.fetchGroupThread(groupId: call.groupId, tx: tx)?.sqliteRowId }
+            let rowId = deps.db.read { tx in deps.threadStore.fetchThread(forGroupId: call.groupId, tx: tx)?.sqliteRowId }
             guard let rowId else {
                 owsFailDebug("Can't reload call with non-existent group thread.")
                 return
@@ -2189,7 +2189,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         case .individual(type: _, let thread):
             showCallInfo(forThread: thread, callRecords: viewModel.callRecords, callExpirations: viewModel.callExpirations)
         case .groupThread(let groupId):
-            let thread = deps.db.read { tx in deps.threadStore.fetchGroupThread(groupId: groupId, tx: tx)! }
+            let thread = deps.db.read { tx in deps.threadStore.fetchThread(forGroupIdData: groupId, tx: tx)! }
             showCallInfo(forThread: thread, callRecords: viewModel.callRecords, callExpirations: viewModel.callExpirations)
         case .callLink(let rootKey):
             showCallInfo(forRootKey: rootKey, callRecords: viewModel.callRecords)
@@ -2248,7 +2248,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             return { thread }
         case .groupThread(let groupId):
             return { [deps] in
-                return deps.db.read { tx in deps.threadStore.fetchGroupThread(groupId: groupId, tx: tx) }
+                return deps.db.read { tx in deps.threadStore.fetchThread(forGroupIdData: groupId, tx: tx) }
             }
         case .callLink:
             return nil
@@ -2575,8 +2575,9 @@ private extension CallsListViewController {
             switch viewModel.recipientType {
             case .groupThread(groupId: let groupId):
                 guard
-                    let groupThread: TSGroupThread = db.read(block: { tx in
-                        return try? TSGroupThread.fetch(forGroupId: GroupIdentifier(contents: groupId), tx: tx)
+                    let groupId = try? GroupIdentifier(contents: groupId),
+                    let groupThread = db.read(block: { tx in
+                        return TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)
                     })
                 else {
                     owsFailDebug("unable to fetch groupThread")

@@ -168,7 +168,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
 
         case let .groupThread(groupId):
             guard
-                let groupThread = fetchThread(groupId: groupId, tx: tx),
+                let groupThread = fetchThread(forGroupIdData: groupId, tx: tx),
                 let groupThreadRowId = groupThread.sqliteRowId
             else {
                 logger.error("Missing group thread for incoming call event sync message!")
@@ -594,8 +594,8 @@ private extension IncomingCallEventSyncMessageManagerImpl {
         return contactThread
     }
 
-    func fetchThread(groupId: Data, tx: DBReadTransaction) -> TSGroupThread? {
-        return threadStore.fetchGroupThread(groupId: groupId, tx: tx)
+    func fetchThread(forGroupIdData groupIdData: Data, tx: DBReadTransaction) -> TSGroupThread? {
+        return threadStore.fetchThread(forGroupIdData: groupIdData, tx: tx)
     }
 }
 

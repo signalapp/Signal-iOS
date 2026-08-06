@@ -286,7 +286,7 @@ public class GroupsV2Impl: GroupsV2 {
         let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
 
         let (groupThread, dmToken) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) else {
                 throw OWSAssertionError("Thread does not exist.")
             }
 
@@ -678,7 +678,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         (groupModel, gseExpiration) = databaseStorage.read { tx in
-            let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx)
+            let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)
             let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: tx)
             let endorsementRecord = groupRowId.flatMap({ groupSendEndorsementStore.fetchCombinedEndorsement(groupRowId: $0, tx: tx) })
             return (
@@ -913,12 +913,12 @@ public class GroupsV2Impl: GroupsV2 {
             downloadedAvatars.merge(justUploadedAvatars)
         }
 
-        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize()
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
 
         // First step - try to skip downloading the current group avatar.
         if
             let groupThread = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+                return TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction)
             }),
             let groupModel = groupThread.groupModel as? TSGroupModelV2
         {
@@ -950,7 +950,7 @@ public class GroupsV2Impl: GroupsV2 {
         }
 
         let avatarBlurRequirement: AvatarBlurRequirement = try DependenciesBridge.shared.db.read { tx in
-            let groupThread = TSGroupThread.fetch(
+            let groupThread = TSGroupThread.fetchThread(
                 forGroupId: try groupV2Params.groupPublicParams.getGroupIdentifier(),
                 tx: tx,
             )
@@ -1303,7 +1303,7 @@ public class GroupsV2Impl: GroupsV2 {
     private func tryToUpdateGroupToLatest(groupId: GroupIdentifier) {
         guard
             let groupThread = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                TSGroupThread.fetch(forGroupId: groupId, tx: transaction)
+                TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction)
             })
         else {
             owsFailDebug("Missing group thread.")
@@ -1597,7 +1597,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         let avatarUrlPath: String? = db.read { tx in
             guard
-                let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx),
+                let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx),
                 let groupModel = groupThread.groupModel as? TSGroupModelV2,
                 case .missing = groupModel.avatarDataState
             else { return nil }
@@ -1619,7 +1619,7 @@ public class GroupsV2Impl: GroupsV2 {
         // Re-fetch the current thread state and save the new avatar
         try await db.awaitableWrite { tx in
             guard
-                let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx),
+                let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx),
                 let groupModel = groupThread.groupModel as? TSGroupModelV2
             else { return }
 
@@ -1737,7 +1737,7 @@ public class GroupsV2Impl: GroupsV2 {
         try await refreshGroupWithTimeout(secretParams: secretParams, isLeavingGroup: false)
 
         let groupThread = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return TSGroupThread.fetch(forGroupId: groupId, tx: tx)
+            return TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)
         }
         guard let groupModelV2 = groupThread?.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
@@ -1881,7 +1881,7 @@ public class GroupsV2Impl: GroupsV2 {
         // We might be creating a placeholder for a revision that we just
         // created or for one we learned about from a GroupInviteLinkPreview.
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction throws -> Void in
-            if let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) {
+            if let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) {
                 // The group already existing in the database; make sure
                 // that we are a requesting member.
                 guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
@@ -2037,7 +2037,7 @@ public class GroupsV2Impl: GroupsV2 {
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) else {
                 throw OWSAssertionError("Missing groupThread.")
             }
             // The group already existing in the database; make sure
@@ -2151,7 +2151,7 @@ public class GroupsV2Impl: GroupsV2 {
                 guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
                     throw OWSAssertionError("Missing localIdentifiers.")
                 }
-                guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) else {
+                guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) else {
                     // Thread not yet in database.
                     return
                 }

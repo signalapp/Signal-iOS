@@ -25,16 +25,16 @@ struct GroupStore {
         forGroupId groupId: GroupIdentifier,
         tx: DBReadTransaction,
     ) -> TSThread.RowId? {
-        return fetchThreadId(forGroupId: groupId.serialize(), tx: tx)
+        return fetchThreadId(forGroupIdData: groupId.serialize(), tx: tx)
     }
 
     func fetchThreadId(
-        forGroupId groupId: Data,
+        forGroupIdData groupIdData: Data,
         tx: DBReadTransaction,
     ) -> TSThread.RowId? {
         let fetchRequest = GroupRecord
             .select(GroupRecord.Columns.threadId, as: GroupRecord.ThreadId.self)
-            .filter(GroupRecord.Columns.groupId == groupId)
+            .filter(GroupRecord.Columns.groupId == groupIdData)
         return failIfThrows { try fetchRequest.fetchOne(tx.database) }
     }
 }

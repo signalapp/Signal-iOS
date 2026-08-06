@@ -130,7 +130,7 @@ class GroupCallRecordRingingCleanupManager {
 
         await self.db.awaitableWrite { tx in
             // Reload the group thread, since it may have changed.
-            guard let groupThread = self.threadStore.fetchGroupThread(groupId: groupId, tx: tx) else {
+            guard let groupThread = self.threadStore.fetchThread(forGroupId: groupId, tx: tx) else {
                 owsFail("Where did the thread go?")
             }
 

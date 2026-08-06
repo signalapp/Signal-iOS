@@ -246,7 +246,7 @@ public class BlockingManager {
 
         Logger.info("Added blocked groupId: \(groupId.toHex())")
 
-        let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+        let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction)
         owsAssertDebug(groupThread != nil, "Must have TSGroupThread in order to block it.")
 
         if blockMode.isLocallyInitiated, let masterKey = try? (groupThread?.groupModel as? TSGroupModelV2)?.masterKey() {
@@ -280,7 +280,7 @@ public class BlockingManager {
 
         Logger.info("Removed blocked groupId: \(groupId.toHex())")
 
-        let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+        let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction)
 
         if wasLocallyInitiated {
             let masterKey = { () -> GroupMasterKey? in

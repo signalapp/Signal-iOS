@@ -160,7 +160,7 @@ public class GroupLinkViewController: OWSTableViewController2 {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let groupId = failIfThrows { try secretParams.getPublicParams().getGroupIdentifier() }
         let groupThread = databaseStorage.read { tx in
-            return TSGroupThread.fetch(forGroupId: groupId, tx: tx)
+            return TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)
         }
         return groupThread?.groupModel as? TSGroupModelV2
     }

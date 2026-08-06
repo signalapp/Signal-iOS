@@ -215,16 +215,16 @@ open class TSGroupThread: TSThread {
         }
     }
 
-    public static func fetch(forGroupId groupId: GroupIdentifier, tx: DBReadTransaction) -> TSGroupThread? {
-        return fetch(groupId: groupId.serialize(), transaction: tx)
+    public static func fetchThread(forGroupId groupId: GroupIdentifier, tx: DBReadTransaction) -> TSGroupThread? {
+        return fetchThread(forGroupIdData: groupId.serialize(), tx: tx)
     }
 
     @objc
-    public static func fetch(groupId: Data, transaction: DBReadTransaction) -> TSGroupThread? {
-        guard let uniqueId = threadUniqueId(forGroupId: groupId, tx: transaction) else {
+    public static func fetchThread(forGroupIdData groupIdData: Data, tx: DBReadTransaction) -> TSGroupThread? {
+        guard let uniqueId = threadUniqueId(forGroupIdData: groupIdData, tx: tx) else {
             return nil
         }
-        return TSGroupThread.fetchGroupThreadViaCache(uniqueId: uniqueId, transaction: transaction)
+        return TSGroupThread.fetchGroupThreadViaCache(uniqueId: uniqueId, transaction: tx)
     }
 
     // MARK: -

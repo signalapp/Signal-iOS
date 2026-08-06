@@ -198,8 +198,8 @@ public class StorageServiceUnknownFieldMigrator {
                 // until we've had the chance to write ourselves.
                 if isPrimaryDevice {
                     guard
-                        let groupId = (try? GroupV2ContextInfo.deriveFrom(masterKeyData: record.masterKey))?.groupId.serialize(),
-                        let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx)
+                        let groupId = (try? GroupV2ContextInfo.deriveFrom(masterKeyData: record.masterKey))?.groupId,
+                        let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)
                     else {
                         return
                     }

@@ -179,7 +179,7 @@ public class OutgoingStorySentMessageTranscript: OutgoingSyncMessage {
         do {
             if
                 let groupId = storyMessage.groupId,
-                let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction),
+                let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction),
                 let groupModel = groupThread.groupModel as? TSGroupModelV2
             {
                 builder.setGroup(try GroupsV2Protos.buildGroupContextProto(groupModel: groupModel, groupChangeProtoData: nil))

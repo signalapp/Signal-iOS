@@ -614,7 +614,9 @@ public class GroupManager: NSObject {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
 
         do {
-            let groupThread = databaseStorage.read { tx in TSGroupThread.fetch(forGroupId: groupId, tx: tx) }
+            let groupThread = databaseStorage.read { tx in
+                return TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)
+            }
             guard let groupThread else {
                 // We may be be trying to restore a group from storage service
                 // that we are no longer a member of.
@@ -661,7 +663,7 @@ public class GroupManager: NSObject {
                 owsFailDebug("Missing localDeviceId.")
                 return
             }
-            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) else {
                 owsFailDebug("Couldn't fetch thread that's guaranteed to exist.")
                 return
             }
@@ -726,7 +728,7 @@ public class GroupManager: NSObject {
         return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction -> Promise<Void> in
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
 
-            guard let thread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) else {
+            guard let thread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) else {
                 return Promise(error: OWSAssertionError("couldn't send group update message to missing thread"))
             }
 
@@ -807,7 +809,7 @@ public class GroupManager: NSObject {
     ) -> (TSGroupThread, GroupRecord) {
         let threadAssociatedDataStore = DependenciesBridge.shared.threadAssociatedDataStore
 
-        if let groupThread = TSGroupThread.fetch(groupId: groupModel.groupId, transaction: transaction) {
+        if let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupModel.groupId, tx: transaction) {
             owsFail("Inserting existing group thread: \(groupThread.logString).")
         }
 
@@ -890,7 +892,7 @@ public class GroupManager: NSObject {
             Logger.info("Upserting thread for \(groupId as Optional); didAddLocalUser? \(didAddLocalUserToV2Group); groupUpdateSource: \(groupUpdateSource)")
         }
 
-        if let groupThread = TSGroupThread.fetch(groupId: newGroupModel.groupId, transaction: transaction) {
+        if let groupThread = TSGroupThread.fetchThread(forGroupIdData: newGroupModel.groupId, tx: transaction) {
             updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 groupThread: groupThread,
                 newGroupModel: newGroupModel,

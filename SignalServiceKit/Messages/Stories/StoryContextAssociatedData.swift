@@ -181,7 +181,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
         if updateStorageService, didTouchStorageServiceProperty {
             switch sourceContext {
             case .group(let groupId):
-                guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                guard let thread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) else {
                     return owsFailDebug("Unexpectedly missing thread for storage service update.")
                 }
                 SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: thread.groupModel)
@@ -193,7 +193,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
         if !self.isHidden, isHidden == true, let groupId = self.groupId {
             // When hiding a group, disable sends for the group as well.
             if
-                let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction),
+                let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction),
                 groupThread.storyViewMode != .disabled
             {
                 groupThread.updateWithStorySendEnabled(false, transaction: transaction, updateStorageService: updateStorageService)

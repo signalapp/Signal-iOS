@@ -415,7 +415,7 @@ class SpecificGroupMessageProcessor {
 
         // TODO: Move this to the other method to avoid duplicate fetches.
         let groupThread = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return TSGroupThread.fetch(forGroupId: groupId, tx: tx)
+            return TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)
         }
         guard
             let groupThread,
@@ -712,7 +712,7 @@ public class GroupMessageProcessorManager {
         groupContextInfo: GroupV2ContextInfo,
         tx: DBReadTransaction,
     ) -> Bool {
-        guard let groupThread = TSGroupThread.fetch(forGroupId: groupContextInfo.groupId, tx: tx) else {
+        guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupContextInfo.groupId, tx: tx) else {
             return false
         }
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
@@ -806,7 +806,7 @@ public class GroupMessageProcessorManager {
                 owsFailDebug("Missing localAddress.")
                 return .discard
             }
-            guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
+            guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) else {
                 // The user might have just deleted the thread
                 // but this race should be extremely rare.
                 // Usually this should indicate a bug.

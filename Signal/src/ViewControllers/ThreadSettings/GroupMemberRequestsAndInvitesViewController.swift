@@ -423,9 +423,9 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             let newModel = { () -> TSGroupModel? in
                 return SSKEnvironment.shared.databaseStorageRef.read { transaction -> TSGroupModel? in
                     guard
-                        let groupThread = TSGroupThread.fetch(
-                            groupId: self.groupModel.groupId,
-                            transaction: transaction,
+                        let groupThread = TSGroupThread.fetchThread(
+                            forGroupIdData: self.groupModel.groupId,
+                            tx: transaction,
                         )
                     else {
                         owsFailDebug("Missing group thread.")

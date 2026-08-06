@@ -24,7 +24,7 @@ public enum StoryUtil {
         }
         if let groupId = storyMessage.groupId {
             let groupName: String = {
-                guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                guard let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) else {
                     owsFailDebug("Missing group thread for group story")
                     return TSGroupThread.defaultGroupName
                 }
@@ -67,7 +67,7 @@ public enum StoryUtil {
         guard let groupId = storyMessage.groupId else {
             return try authorAvatarDataSource(for: storyMessage, transaction: transaction)
         }
-        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+        guard let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) else {
             throw OWSAssertionError("Missing group thread for group story")
         }
         return .thread(groupThread)

@@ -34,7 +34,7 @@ public protocol ThreadStore {
     func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread?
     func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread]
     func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread]
-    func fetchGroupThread(groupId: Data, tx: DBReadTransaction) -> TSGroupThread?
+    func fetchThread(forGroupIdData groupIdData: Data, tx: DBReadTransaction) -> TSGroupThread?
 
     func hasPendingMessageRequest(thread: TSThread, tx: DBReadTransaction) -> Bool
 
@@ -86,8 +86,8 @@ public protocol ThreadStore {
 }
 
 extension ThreadStore {
-    public func fetchGroupThread(groupId: GroupIdentifier, tx: DBReadTransaction) -> TSGroupThread? {
-        return fetchGroupThread(groupId: groupId.serialize(), tx: tx)
+    public func fetchThread(forGroupId groupId: GroupIdentifier, tx: DBReadTransaction) -> TSGroupThread? {
+        return fetchThread(forGroupIdData: groupId.serialize(), tx: tx)
     }
 
     public func fetchGroupThread(uniqueId: String, tx: DBReadTransaction) -> TSGroupThread? {
@@ -180,8 +180,8 @@ public class ThreadStoreImpl: ThreadStore {
         ContactThreadFinder().contactThreads(for: phoneNumber, tx: tx)
     }
 
-    public func fetchGroupThread(groupId: Data, tx: DBReadTransaction) -> TSGroupThread? {
-        TSGroupThread.fetch(groupId: groupId, transaction: tx)
+    public func fetchThread(forGroupIdData groupIdData: Data, tx: DBReadTransaction) -> TSGroupThread? {
+        return TSGroupThread.fetchThread(forGroupIdData: groupIdData, tx: tx)
     }
 
     public func hasPendingMessageRequest(thread: TSThread, tx: DBReadTransaction) -> Bool {
@@ -367,9 +367,9 @@ public class MockThreadStore: ThreadStore {
         threads.lazy.compactMap { $0 as? TSContactThread }.filter { $0.contactPhoneNumber == phoneNumber }
     }
 
-    public func fetchGroupThread(groupId: Data, tx: DBReadTransaction) -> TSGroupThread? {
+    public func fetchThread(forGroupIdData groupIdData: Data, tx: DBReadTransaction) -> TSGroupThread? {
         threads
-            .first { $0.groupModelIfGroupThread?.groupId == groupId }
+            .first { $0.groupModelIfGroupThread?.groupId == groupIdData }
             .map { $0 as! TSGroupThread }
     }
 
