@@ -196,9 +196,13 @@ extension MPCDeviceTransfer {
             certificateHandler: @escaping (Bool) -> Void,
         ) {
             Task { @MainActor in
+                guard let certificate = certificates?.first else {
+                    return owsFailDebug("new connection did not provide any certificate")
+                }
+                let certificateData = SecCertificateCopyData(certificate as! SecCertificate) as Data
                 delegate?.value?.session(
                     self,
-                    didReceiveCertificates: certificates,
+                    didReceiveCertificate: certificateData,
                     certificateHandler: certificateHandler,
                 )
             }

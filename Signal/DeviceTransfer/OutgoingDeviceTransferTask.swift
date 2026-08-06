@@ -433,7 +433,7 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
 
     func session(
         _ session: DeviceTransferSession,
-        didReceiveCertificates certificates: [Any]?,
+        didReceiveCertificate certificate: Data,
         certificateHandler: @escaping (Bool) -> Void,
     ) {
         var certificateIsTrusted = false
@@ -446,16 +446,8 @@ class OutgoingDeviceTransferTask: DeviceTransferSessionDelegate {
         }
 
         // Verify the received certificate matches the expected certificate.
-        guard let certificate = certificates?.first else {
-            owsFailDebug("new connection did not provide any certificate")
-            return
-        }
-
-        let certificateData = SecCertificateCopyData(certificate as! SecCertificate) as Data
-
-        // Verify the received certificate matches the expected certificate.
         // Reject any connections where we can't compute the certificate hash
-        let certificateHash = Data(SHA256.hash(data: certificateData))
+        let certificateHash = Data(SHA256.hash(data: certificate))
 
         // Reject any connections where the certificate doesn't match the expected certificate
         guard

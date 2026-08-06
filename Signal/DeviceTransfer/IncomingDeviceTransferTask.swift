@@ -416,7 +416,7 @@ class IncomingDeviceTransferTask: DeviceTransferSessionDelegate {
 
     func session(
         _ session: DeviceTransferSession,
-        didReceiveCertificates certificates: [Any]?,
+        didReceiveCertificate certificate: Data,
         certificateHandler: @escaping (Bool) -> Void,
     ) {
         let isRegistered = tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered

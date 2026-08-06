@@ -75,7 +75,7 @@ protocol DeviceTransferSessionDelegate {
 
     func session(
         _ session: DeviceTransferSession,
-        didReceiveCertificates certificates: [Any]?,
+        didReceiveCertificate certificate: Data,
         certificateHandler: @escaping (Bool) -> Void,
     )
 }
