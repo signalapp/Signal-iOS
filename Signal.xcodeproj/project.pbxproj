@@ -1862,6 +1862,7 @@
 		C113994D2CA1B3E200D4D90C /* QueuedBackupStickerPackDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C113994C2CA1B3DA00D4D90C /* QueuedBackupStickerPackDownload.swift */; };
 		C116A1D42C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C116A1D32C8F961000E6BDE3 /* ContactAccessLimitedReminderView.swift */; };
 		C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */; };
+		C12056692FE9B4FE005D3E82 /* MPCDeviceTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D615E52FC887560069089E /* MPCDeviceTransfer.swift */; };
 		C12DB5E72DD39051005039FE /* DeviceTransferCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12DB5E62DD39051005039FE /* DeviceTransferCoordinator.swift */; };
 		C13341122C221DAD00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */; };
 		C13341132C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13341112C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift */; };
@@ -1882,6 +1883,10 @@
 		C14FB7D12EECE2E900850EC5 /* IncomingDeviceTransferTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14FB7D02EECE2E800850EC5 /* IncomingDeviceTransferTask.swift */; };
 		C14FB7D32EECE31000850EC5 /* OutgoingDeviceTransferTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14FB7D22EECE31000850EC5 /* OutgoingDeviceTransferTask.swift */; };
 		C14FB7D62EF21DDE00850EC5 /* DeviceTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14FB7D52EF21DDE00850EC5 /* DeviceTransfer.swift */; };
+		C14FB7DE2EF3388200850EC5 /* MPCDeviceTransferBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14FB7DD2EF3388200850EC5 /* MPCDeviceTransferBrowser.swift */; };
+		C14FB7E02EF3389300850EC5 /* MPCDeviceTransferAdvertiser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14FB7DF2EF3389300850EC5 /* MPCDeviceTransferAdvertiser.swift */; };
+		C14FB7E42EF3390100850EC5 /* MPCDeviceTransferSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14FB7E32EF3390100850EC5 /* MPCDeviceTransferSession.swift */; };
+		C14FB7E62EF33A3200850EC5 /* MPCDeviceTransferPeerId.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14FB7E52EF33A3200850EC5 /* MPCDeviceTransferPeerId.swift */; };
 		C150D6452D70AD9400DA119B /* LinkingProvisioningMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C150D6442D70AD9400DA119B /* LinkingProvisioningMessage.swift */; };
 		C154CB942E0C6607009F878C /* RegistrationCoordinatorBackupErrorPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C154CB932E0C6607009F878C /* RegistrationCoordinatorBackupErrorPresenter.swift */; };
 		C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15837EE29A592BA00176927 /* UsernameValidationManager.swift */; };
@@ -1941,7 +1946,6 @@
 		C1CF83D42B9A207800CDC9C4 /* TransformingOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CF83D32B9A207800CDC9C4 /* TransformingOutputStream.swift */; };
 		C1CF83D62B9A20FA00CDC9C4 /* EncryptingStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CF83D52B9A20FA00CDC9C4 /* EncryptingStreamTransform.swift */; };
 		C1D51D8A2E746FB300685A0C /* BackupFailureStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D51D892E746FB300685A0C /* BackupFailureStateManager.swift */; };
-		C1D615E62FC887560069089E /* MPCDeviceTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D615E52FC887560069089E /* MPCDeviceTransfer.swift */; };
 		C1D9B1552B7FA28200D94595 /* SafetyTipsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D9B1542B7FA28200D94595 /* SafetyTipsViewController.swift */; };
 		C1DAA7582C13C1E00078AE84 /* ArchivedPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DAA7572C13C1E00078AE84 /* ArchivedPayment.swift */; };
 		C1DAA75A2C1742680078AE84 /* ArchivedPaymentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DAA7592C1742680078AE84 /* ArchivedPaymentStore.swift */; };
@@ -6218,6 +6222,11 @@
 		C14FB7D02EECE2E800850EC5 /* IncomingDeviceTransferTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingDeviceTransferTask.swift; sourceTree = "<group>"; };
 		C14FB7D22EECE31000850EC5 /* OutgoingDeviceTransferTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceTransferTask.swift; sourceTree = "<group>"; };
 		C14FB7D52EF21DDE00850EC5 /* DeviceTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransfer.swift; sourceTree = "<group>"; };
+		C14FB7D82EF21E8B00850EC5 /* MPCDeviceTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPCDeviceTransfer.swift; sourceTree = "<group>"; };
+		C14FB7DD2EF3388200850EC5 /* MPCDeviceTransferBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPCDeviceTransferBrowser.swift; sourceTree = "<group>"; };
+		C14FB7DF2EF3389300850EC5 /* MPCDeviceTransferAdvertiser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPCDeviceTransferAdvertiser.swift; sourceTree = "<group>"; };
+		C14FB7E32EF3390100850EC5 /* MPCDeviceTransferSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPCDeviceTransferSession.swift; sourceTree = "<group>"; };
+		C14FB7E52EF33A3200850EC5 /* MPCDeviceTransferPeerId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPCDeviceTransferPeerId.swift; sourceTree = "<group>"; };
 		C150D6442D70AD9400DA119B /* LinkingProvisioningMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkingProvisioningMessage.swift; sourceTree = "<group>"; };
 		C154CB932E0C6607009F878C /* RegistrationCoordinatorBackupErrorPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorBackupErrorPresenter.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
@@ -11733,10 +11742,10 @@
 		88C4E38124671F9D009C9B97 /* DeviceTransfer */ = {
 			isa = PBXGroup;
 			children = (
+				C14FB7DA2EF3381900850EC5 /* MultiPeerConnectivity */,
 				C14FB7D52EF21DDE00850EC5 /* DeviceTransfer.swift */,
 				C12DB5E62DD39051005039FE /* DeviceTransferCoordinator.swift */,
 				887CD47E247307D900FDD265 /* DeviceTransferRestore.swift */,
-				88C4E37F24635337009C9B97 /* DeviceTransferService.swift */,
 				C147C1712D9C58D60026952D /* DeviceTransferStatusViewController.swift */,
 				C14FB7D02EECE2E800850EC5 /* IncomingDeviceTransferTask.swift */,
 				C1D615E52FC887560069089E /* MPCDeviceTransfer.swift */,
@@ -11985,6 +11994,17 @@
 				B99287FF2CF124AC000D62C4 /* Text+Links.swift */,
 			);
 			path = SwiftUIExtensions;
+			sourceTree = "<group>";
+		};
+		C14FB7DA2EF3381900850EC5 /* MultiPeerConnectivity */ = {
+			isa = PBXGroup;
+			children = (
+				C14FB7DF2EF3389300850EC5 /* MPCDeviceTransferAdvertiser.swift */,
+				C14FB7DD2EF3388200850EC5 /* MPCDeviceTransferBrowser.swift */,
+				C14FB7E52EF33A3200850EC5 /* MPCDeviceTransferPeerId.swift */,
+				C14FB7E32EF3390100850EC5 /* MPCDeviceTransferSession.swift */,
+			);
+			path = MultiPeerConnectivity;
 			sourceTree = "<group>";
 		};
 		C182C4BC29E45D64007F7A7C /* Edit */ = {
@@ -18584,7 +18604,6 @@
 				C14FB7D62EF21DDE00850EC5 /* DeviceTransfer.swift in Sources */,
 				C12DB5E72DD39051005039FE /* DeviceTransferCoordinator.swift in Sources */,
 				887CD47F247307D900FDD265 /* DeviceTransferRestore.swift in Sources */,
-				88C4E38024635337009C9B97 /* DeviceTransferService.swift in Sources */,
 				C147C1722D9C58D60026952D /* DeviceTransferStatusViewController.swift in Sources */,
 				D900E6FF2DE143F9004D01A1 /* DisappearingMessagesCustomTimePickerViewController.swift in Sources */,
 				D900E6F82DE10499004D01A1 /* DisappearingMessagesTimerSettingsViewController.swift in Sources */,
@@ -18775,7 +18794,11 @@
 				34EB0E722629DC2B00B62DC3 /* MessageSelectionView.swift in Sources */,
 				34EB0CEB26289D8800B62DC3 /* MessageTimerView.swift in Sources */,
 				8829883C25B9FD9E00DEE1E3 /* MockConversationView.swift in Sources */,
-				C1D615E62FC887560069089E /* MPCDeviceTransfer.swift in Sources */,
+				C12056692FE9B4FE005D3E82 /* MPCDeviceTransfer.swift in Sources */,
+				C14FB7E02EF3389300850EC5 /* MPCDeviceTransferAdvertiser.swift in Sources */,
+				C14FB7DE2EF3388200850EC5 /* MPCDeviceTransferBrowser.swift in Sources */,
+				C14FB7E62EF33A3200850EC5 /* MPCDeviceTransferPeerId.swift in Sources */,
+				C14FB7E42EF3390100850EC5 /* MPCDeviceTransferSession.swift in Sources */,
 				8840B6E2283F16650036BA4C /* MyStoriesViewController.swift in Sources */,
 				886292122835606D00AA0C3B /* MyStoryCell.swift in Sources */,
 				8862921028355B8000AA0C3B /* MyStoryViewModel.swift in Sources */,
