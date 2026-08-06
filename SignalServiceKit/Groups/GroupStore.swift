@@ -51,4 +51,16 @@ struct GroupStore {
             .filter(GroupRecord.Columns.groupId == groupIdData)
         return failIfThrows { try fetchRequest.fetchOne(tx.database) }
     }
+
+    func enumerateGroups<E: Error>(
+        tx: DBReadTransaction,
+        block: (GroupRecord) throws(E) -> Void,
+    ) throws(E) {
+        var cursor = FailIfThrowsRecordCursor {
+            return try GroupRecord.fetchCursor(tx.database)
+        }
+        while let record = cursor.next() {
+            try block(record)
+        }
+    }
 }

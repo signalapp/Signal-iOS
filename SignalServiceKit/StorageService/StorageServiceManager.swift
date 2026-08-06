@@ -1317,27 +1317,21 @@ class StorageServiceOperation {
             }
 
             let groupV2Updater = buildGroupV2Updater()
-            let storyDistributionListUpdater = buildStoryDistributionListUpdater()
-            TSThread.anyEnumerate(transaction: transaction) { thread, _ in
-                if
-                    let groupThread = thread as? TSGroupThread,
-                    let groupModel = groupThread.groupModel as? TSGroupModelV2
-                {
-                    let masterKey: GroupMasterKey
-                    do {
-                        masterKey = try groupModel.masterKey()
-                    } catch {
-                        owsFailDebug("Invalid group model \(error).")
-                        return
-                    }
-                    createRecord(localId: masterKey.serialize(), stateUpdater: groupV2Updater)
-                } else if let storyThread = thread as? TSPrivateStoryThread {
-                    guard let distributionListId = storyThread.distributionListIdentifier else {
-                        owsFailDebug("Missing distribution list id for story thread \(thread.logString)")
-                        return
-                    }
-                    createRecord(localId: distributionListId, stateUpdater: storyDistributionListUpdater)
+            GroupStore().enumerateGroups(tx: transaction) { groupRecord in
+                guard let masterKey = groupRecord.masterKey else {
+                    return
                 }
+                createRecord(localId: masterKey.serialize(), stateUpdater: groupV2Updater)
+            }
+
+            let storyDistributionListUpdater = buildStoryDistributionListUpdater()
+            ThreadFinder().enumerateStoryThreads(tx: transaction) { storyThread in
+                if let distributionListId = storyThread.distributionListIdentifier {
+                    createRecord(localId: distributionListId, stateUpdater: storyDistributionListUpdater)
+                } else {
+                    owsFailDebug("Missing distribution list id for story thread \(storyThread.logString)")
+                }
+                return true
             }
 
             // Deleted Private Stories
