@@ -230,7 +230,8 @@ enum MessageActionBuilder {
     }
 }
 
-class MessageActions: NSObject {
+class MessageActions {
+
     private class func canLocalUserEditGroupAttributes(itemViewModel: CVItemViewModelImpl) -> Bool {
         guard let groupModel = itemViewModel.thread.groupModelIfGroupThread as? TSGroupModelV2 else {
             return true

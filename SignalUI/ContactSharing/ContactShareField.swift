@@ -72,7 +72,7 @@ class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
 }
 
 // Stub class so that avatars conform to OWSContactField.
-class OWSContactAvatar: NSObject, OWSContactField {
+class OWSContactAvatar: OWSContactField {
 
     let avatarImage: UIImage
     let avatarData: Data
@@ -82,8 +82,6 @@ class OWSContactAvatar: NSObject, OWSContactField {
         self.avatarImage = avatarImage
         self.avatarData = avatarData
         self.existingAttachment = existingAttachment
-
-        super.init()
     }
 
     var isValid: Bool { true }

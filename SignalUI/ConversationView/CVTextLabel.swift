@@ -6,7 +6,7 @@
 public import LibSignalClient
 public import SignalServiceKit
 
-public class CVTextLabel: NSObject {
+public class CVTextLabel {
 
     // MARK: -
 
@@ -164,11 +164,9 @@ public class CVTextLabel: NSObject {
 
     public var view: UIView { label }
 
-    override public init() {
+    public init() {
         label.backgroundColor = .clear
         label.isOpaque = false
-
-        super.init()
     }
 
     public func configureForRendering(config: Config, spoilerAnimationManager: SpoilerAnimationManager) {

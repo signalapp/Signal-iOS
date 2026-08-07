@@ -6,7 +6,7 @@
 import Foundation
 public import SignalServiceKit
 
-public class ThreadViewModel: NSObject {
+public class ThreadViewModel: Equatable {
     public let hasUnreadMessages: Bool
     public let isGroupThread: Bool
     public let threadRecord: TSThread
@@ -117,12 +117,8 @@ public class ThreadViewModel: NSObject {
         }
     }
 
-    override public func isEqual(_ object: Any?) -> Bool {
-        guard let otherThread = object as? ThreadViewModel else {
-            return super.isEqual(object)
-        }
-
-        return threadRecord.isEqual(otherThread.threadRecord)
+    public static func ==(lhs: ThreadViewModel, rhs: ThreadViewModel) -> Bool {
+        lhs.threadRecord.isEqual(rhs.threadRecord)
     }
 }
 

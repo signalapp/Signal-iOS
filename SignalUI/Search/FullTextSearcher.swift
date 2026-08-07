@@ -15,8 +15,6 @@ public struct ConversationSortKey: Comparable {
     let creationDate: Date?
     let lastInteractionRowId: UInt64
 
-    // MARK: Comparable
-
     public static func <(lhs: ConversationSortKey, rhs: ConversationSortKey) -> Bool {
         // always show matching contact results first
         if lhs.isContactThread != rhs.isContactThread {
@@ -53,26 +51,19 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
         self.snippet = snippet
     }
 
-    // MARK: Comparable
-
     public static func <(lhs: ConversationSearchResult, rhs: ConversationSearchResult) -> Bool {
-        return lhs.sortKey < rhs.sortKey
+        lhs.sortKey < rhs.sortKey
     }
 
-    // MARK: Equatable
-
     public static func ==(lhs: ConversationSearchResult, rhs: ConversationSearchResult) -> Bool {
-        return
-            lhs.threadViewModel.threadRecord.uniqueId == rhs.threadViewModel.threadRecord.uniqueId
-                && lhs.messageId == rhs.messageId
-
+        lhs.threadViewModel.threadRecord.uniqueId == rhs.threadViewModel.threadRecord.uniqueId &&
+            lhs.messageId == rhs.messageId
     }
 }
 
 // MARK: -
 
-public class ContactSearchResult: Comparable {
-
+public struct ContactSearchResult: Comparable {
     public let recipientAddress: SignalServiceAddress
     private let comparableName: ComparableDisplayName
     private let lastInteractionRowID: UInt64?
@@ -88,98 +79,77 @@ public class ContactSearchResult: Comparable {
         lastInteractionRowID = thread?.lastInteractionRowId
     }
 
-    // MARK: Comparable
-
     public static func <(lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
         // Sort contacts by most recent chat, falling back to alphabetical
         switch (lhs.lastInteractionRowID, rhs.lastInteractionRowID) {
         case (.some, .none):
-            return true
+            true
         case (.none, .some):
-            return false
+            false
         case let (.some(lhsRowID), .some(rhsRowID)):
-            return lhsRowID > rhsRowID
+            lhsRowID > rhsRowID
         case (.none, .none):
-            return lhs.comparableName < rhs.comparableName
+            lhs.comparableName < rhs.comparableName
         }
     }
 
-    // MARK: Equatable
-
     public static func ==(lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
-        return lhs.recipientAddress == rhs.recipientAddress
+        lhs.recipientAddress == rhs.recipientAddress
     }
 }
 
 // MARK: -
 
 /// Can represent either a group thread with stories, or a private story thread.
-public class StorySearchResult: Comparable {
-
+public struct StorySearchResult: Comparable {
     public let thread: TSThread
-
-    private let sortKey: ConversationSortKey
-
-    init(thread: TSThread, sortKey: ConversationSortKey) {
-        self.thread = thread
-        self.sortKey = sortKey
-    }
-
-    // MARK: Comparable
+    public let sortKey: ConversationSortKey
 
     public static func <(lhs: StorySearchResult, rhs: StorySearchResult) -> Bool {
-        return lhs.sortKey < rhs.sortKey
+        lhs.sortKey < rhs.sortKey
     }
 
-    // MARK: Equatable
-
     public static func ==(lhs: StorySearchResult, rhs: StorySearchResult) -> Bool {
-        return lhs.thread.uniqueId == rhs.thread.uniqueId
+        lhs.thread.uniqueId == rhs.thread.uniqueId
     }
 }
 
 // MARK: -
 
-public class HomeScreenSearchResultSet: NSObject {
+public struct HomeScreenSearchResultSet {
     public let searchText: String
     public let contactThreadResults: [ConversationSearchResult<ConversationSortKey>]
     public let groupThreadResults: [GroupSearchResult]
     public let contactResults: [ContactSearchResult]
     public let messageResults: [ConversationSearchResult<MessageSortKey>]
 
-    public init(
-        searchText: String,
-        contactThreadResults: [ConversationSearchResult<ConversationSortKey>],
-        groupThreadResults: [GroupSearchResult],
-        contactResults: [ContactSearchResult],
-        messageResults: [ConversationSearchResult<MessageSortKey>],
-    ) {
-        self.searchText = searchText
-        self.contactThreadResults = contactThreadResults
-        self.groupThreadResults = groupThreadResults
-        self.contactResults = contactResults
-        self.messageResults = messageResults
-    }
-
-    public class var empty: HomeScreenSearchResultSet {
-        return HomeScreenSearchResultSet(searchText: "", contactThreadResults: [], groupThreadResults: [], contactResults: [], messageResults: [])
+    public static var empty: HomeScreenSearchResultSet {
+        HomeScreenSearchResultSet(
+            searchText: "",
+            contactThreadResults: [],
+            groupThreadResults: [],
+            contactResults: [],
+            messageResults: [],
+        )
     }
 
     public var isEmpty: Bool {
-        return contactThreadResults.isEmpty && groupThreadResults.isEmpty && contactResults.isEmpty && messageResults.isEmpty
+        contactThreadResults.isEmpty &&
+            groupThreadResults.isEmpty &&
+            contactResults.isEmpty &&
+            messageResults.isEmpty
     }
 }
 
 // MARK: -
 
-public class GroupSearchResult: Comparable {
-
+public struct GroupSearchResult: Comparable {
     public let threadViewModel: ThreadViewModel
     public let matchedMembersSnippet: String?
 
     private let sortKey: ConversationSortKey
 
-    class func withMatchedMembersSnippet(
+    static func withMatchedMembersSnippet(
         groupThread: TSGroupThread,
         threadViewModel: ThreadViewModel,
         sortKey: ConversationSortKey,
@@ -204,16 +174,12 @@ public class GroupSearchResult: Comparable {
         self.matchedMembersSnippet = matchedMembersSnippet
     }
 
-    // MARK: Comparable
-
     public static func <(lhs: GroupSearchResult, rhs: GroupSearchResult) -> Bool {
-        return lhs.sortKey < rhs.sortKey
+        lhs.sortKey < rhs.sortKey
     }
 
-    // MARK: Equatable
-
     public static func ==(lhs: GroupSearchResult, rhs: GroupSearchResult) -> Bool {
-        return lhs.threadViewModel.threadRecord.uniqueId == rhs.threadViewModel.threadRecord.uniqueId
+        lhs.threadViewModel.threadRecord.uniqueId == rhs.threadViewModel.threadRecord.uniqueId
     }
 }
 
@@ -226,7 +192,7 @@ public struct RecipientSearchResultSet {
     public let storyResults: [StorySearchResult]
 
     public var groupThreads: [TSGroupThread] {
-        return groupResults.compactMap { $0.threadViewModel.threadRecord as? TSGroupThread }
+        groupResults.compactMap { $0.threadViewModel.threadRecord as? TSGroupThread }
     }
 
     public var storyThreads: [TSThread] { storyResults.map(\.thread) }
@@ -234,56 +200,40 @@ public struct RecipientSearchResultSet {
 
 // MARK: -
 
-public class MessageSearchResult: NSObject, Comparable {
-
+public struct MessageSearchResult: Comparable {
     public let messageId: String
     public let sortId: UInt64
 
-    init(messageId: String, sortId: UInt64) {
-        self.messageId = messageId
-        self.sortId = sortId
-    }
-
-    // MARK: - Comparable
-
     public static func <(lhs: MessageSearchResult, rhs: MessageSearchResult) -> Bool {
-        return lhs.sortId < rhs.sortId
+        lhs.sortId < rhs.sortId
     }
 }
 
 // MARK: -
 
-public class ConversationScreenSearchResultSet: NSObject {
-
+public class ConversationScreenSearchResultSet: CustomStringConvertible {
     public let searchText: String
-
     public let messages: [MessageSearchResult]
 
     public lazy var messageSortIds: [UInt64] = {
-        return messages.map { $0.sortId }
+        messages.map { $0.sortId }
     }()
 
-    // MARK: Static members
-
-    public static let empty: ConversationScreenSearchResultSet = ConversationScreenSearchResultSet(searchText: "", messages: [])
-
-    // MARK: Init
+    public static let empty = ConversationScreenSearchResultSet(searchText: "", messages: [])
 
     public init(searchText: String, messages: [MessageSearchResult]) {
         self.searchText = searchText
         self.messages = messages
     }
 
-    // MARK: - CustomDebugStringConvertible
-
-    override public var debugDescription: String {
-        return "ConversationScreenSearchResultSet(searchText: \(searchText), messages: [\(messages.count) matches])"
+    public var description: String {
+        "ConversationScreenSearchResultSet(searchText: \(searchText), messages: [\(messages.count) matches])"
     }
 }
 
 // MARK: -
 
-public class FullTextSearcher: NSObject {
+public class FullTextSearcher {
 
     public static let kDefaultMaxResults: Int = 500
 

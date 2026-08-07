@@ -402,9 +402,6 @@ public class AudioPlayer: NSObject {
 
         delegate?.setAudioProgress(self.currentTime, duration: self.duration, playbackRate: playbackRate)
     }
-}
-
-extension AudioPlayer {
 
     @objc
     private func audioPlayerDidFinishPlaying() {

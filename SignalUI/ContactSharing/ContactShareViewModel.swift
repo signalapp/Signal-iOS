@@ -6,7 +6,7 @@
 import Contacts
 public import SignalServiceKit
 
-public class ContactShareViewModel: NSObject {
+public class ContactShareViewModel: Equatable {
 
     public let dbRecord: OWSContact
 
@@ -21,15 +21,15 @@ public class ContactShareViewModel: NSObject {
     private var cachedAvatarImage: UIImage?
 
     public var avatarImage: UIImage? {
-        if self.cachedAvatarImage != nil {
-            return self.cachedAvatarImage
+        if let cachedAvatarImage {
+            return cachedAvatarImage
         }
 
-        guard let avatarImageData = self.avatarImageData else {
+        guard let avatarImageData else {
             return nil
         }
 
-        self.cachedAvatarImage = UIImage(data: avatarImageData)
+        cachedAvatarImage = UIImage(data: avatarImageData)
         return cachedAvatarImage
     }
 
@@ -97,6 +97,10 @@ public class ContactShareViewModel: NSObject {
             diameterPoints: UInt(diameter),
             transaction: transaction,
         )
+    }
+
+    public static func ==(lhs: ContactShareViewModel, rhs: ContactShareViewModel) -> Bool {
+        lhs.dbRecord.isEqual(rhs.dbRecord)
     }
 
     // MARK: Delegated -> dbRecord

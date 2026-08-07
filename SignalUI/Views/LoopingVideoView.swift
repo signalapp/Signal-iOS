@@ -8,7 +8,7 @@ public import SignalServiceKit
 
 /// Model object for a looping video asset
 /// Any LoopingVideoViews playing this instance will all be kept in sync
-public class LoopingVideo: NSObject {
+public class LoopingVideo {
     fileprivate var asset: AVAsset
 
     public convenience init(_ attachment: PreviewableAttachment) {
@@ -28,7 +28,6 @@ public class LoopingVideo: NSObject {
 
     public init(asset: AVAsset) {
         self.asset = asset
-        super.init()
     }
 }
 
