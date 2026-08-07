@@ -590,7 +590,7 @@ class ImageEditorCropViewController: OWSViewController {
                 scaling: clampedScaling,
                 isFlipped: gestureStartTransform.isFlipped,
             )
-            applyTransformWithoutAnimation(newTransform.normalize(srcImageSizePixels: model.srcImageSizePixels))
+            applyTransformWithoutAnimation(newTransform.normalized(srcImageSizePixels: model.srcImageSizePixels))
             updateResetButtonVisibility(animated: true)
 
         default:
@@ -812,7 +812,7 @@ class ImageEditorCropViewController: OWSViewController {
             scaling: scaling,
             isFlipped: transform.isFlipped,
         )
-        applyTransformWithAnimation(newTransform.normalize(srcImageSizePixels: model.srcImageSizePixels))
+        applyTransformWithAnimation(newTransform.normalized(srcImageSizePixels: model.srcImageSizePixels))
     }
 
     private func handleNormalPanGesture(_ gestureRecognizer: ImageEditorPanGestureRecognizer) {
@@ -843,7 +843,7 @@ class ImageEditorCropViewController: OWSViewController {
             isFlipped: gestureStartTransform.isFlipped,
         )
 
-        applyTransformWithoutAnimation(newTransform.normalize(srcImageSizePixels: model.srcImageSizePixels))
+        applyTransformWithoutAnimation(newTransform.normalized(srcImageSizePixels: model.srcImageSizePixels))
         updateResetButtonVisibility(animated: true)
     }
 
@@ -1028,7 +1028,7 @@ class ImageEditorCropViewController: OWSViewController {
             scaling: transform.scaling,
             isFlipped: transform.isFlipped,
         )
-        applyTransformHidingCropFrame(newTransform.normalize(srcImageSizePixels: model.srcImageSizePixels))
+        applyTransformHidingCropFrame(newTransform.normalized(srcImageSizePixels: model.srcImageSizePixels))
     }
 
     private func didTapFlipImage() {
@@ -1039,7 +1039,7 @@ class ImageEditorCropViewController: OWSViewController {
             scaling: transform.scaling,
             isFlipped: !transform.isFlipped,
         )
-        applyTransformHidingCropFrame(newTransform.normalize(srcImageSizePixels: model.srcImageSizePixels))
+        applyTransformHidingCropFrame(newTransform.normalized(srcImageSizePixels: model.srcImageSizePixels))
     }
 
     private func didTapReset() {
@@ -1080,7 +1080,7 @@ class ImageEditorCropViewController: OWSViewController {
             scaling: transform.scaling,
             isFlipped: transform.isFlipped,
         )
-        applyTransformWithoutAnimation(newTransform.normalize(srcImageSizePixels: model.srcImageSizePixels))
+        applyTransformWithoutAnimation(newTransform.normalized(srcImageSizePixels: model.srcImageSizePixels))
         updateResetButtonVisibility(animated: true)
     }
 
