@@ -11,7 +11,7 @@ import SignalServiceKit
 // are immutable, these operations simply take a
 // snapshot of the current contents which can be used
 // (multiple times) to preserve/restore editor state.
-private class ImageEditorOperation: NSObject {
+private struct ImageEditorOperation {
 
     let operationId: String
 
@@ -40,8 +40,8 @@ protocol ImageEditorModelObserver: AnyObject {
 
 // MARK: -
 
-// Should be @MainActor.
-class ImageEditorModel: NSObject {
+@MainActor
+class ImageEditorModel {
 
     let srcImage: NormalizedImage
     let srcImageSizePixels: CGSize
@@ -76,17 +76,14 @@ class ImageEditorModel: NSObject {
 
         self.contents = ImageEditorContents()
         self.transform = ImageEditorTransform.defaultTransform(srcImageSizePixels: srcImageSizePixels)
-
-        super.init()
     }
 
-    @MainActor
     func renderOutput() -> UIImage? {
-        return ImageEditorCanvasView.renderForOutput(model: self, transform: currentTransform())
+        ImageEditorCanvasView.renderForOutput(model: self, transform: currentTransform())
     }
 
     func currentTransform() -> ImageEditorTransform {
-        return transform
+        transform
     }
 
     var isDirty: Bool {
@@ -109,26 +106,23 @@ class ImageEditorModel: NSObject {
     }
 
     func has(itemForId itemId: String) -> Bool {
-        return item(forId: itemId) != nil
+        item(forId: itemId) != nil
     }
 
     func item(forId itemId: String) -> ImageEditorItem? {
-        return contents.item(forId: itemId)
+        contents.item(forId: itemId)
     }
 
     var canUndo: Bool {
-        return !undoStack.isEmpty
+        !undoStack.isEmpty
     }
 
     var canRedo: Bool {
-        return !redoStack.isEmpty
+        !redoStack.isEmpty
     }
 
     var currentUndoOperationId: String? {
-        guard let operation = undoStack.last else {
-            return nil
-        }
-        return operation.operationId
+        undoStack.last?.operationId
     }
 
     // MARK: - Observers
@@ -176,11 +170,11 @@ class ImageEditorModel: NSObject {
         let redoOperation = ImageEditorOperation(contents: contents)
         redoStack.append(redoOperation)
 
-        let oldContents = self.contents
-        self.contents = undoOperation.contents
+        let oldContents = contents
+        contents = undoOperation.contents
 
         // We could diff here and yield a more narrow change event.
-        fireModelDidChange(before: oldContents, after: self.contents)
+        fireModelDidChange(before: oldContents, after: contents)
     }
 
     func redo() {
@@ -192,11 +186,11 @@ class ImageEditorModel: NSObject {
         let undoOperation = ImageEditorOperation(contents: contents)
         undoStack.append(undoOperation)
 
-        let oldContents = self.contents
-        self.contents = redoOperation.contents
+        let oldContents = contents
+        contents = redoOperation.contents
 
         // We could diff here and yield a more narrow change event.
-        fireModelDidChange(before: oldContents, after: self.contents)
+        fireModelDidChange(before: oldContents, after: contents)
     }
 
     func append(item: ImageEditorItem) {
@@ -239,7 +233,7 @@ class ImageEditorModel: NSObject {
         // The contents haven't changed, but this event prods the
         // observers to reload everything, which is necessary if
         // the transform changes.
-        fireModelDidChange(before: self.contents, after: self.contents)
+        fireModelDidChange(before: contents, after: contents)
     }
 
     // MARK: - Temp Files
@@ -283,7 +277,7 @@ class ImageEditorModel: NSObject {
             redoStack.removeAll()
         }
 
-        let oldContents = self.contents
+        let oldContents = contents
         let newContents = action(oldContents)
         contents = newContents
 
@@ -292,7 +286,7 @@ class ImageEditorModel: NSObject {
         } else {
             fireModelDidChange(
                 before: oldContents,
-                after: self.contents,
+                after: contents,
             )
         }
     }

@@ -755,13 +755,14 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         attachmentApprovalItem: AttachmentApprovalItem,
         imageEditorModel: ImageEditorModel,
     ) async throws -> PreviewableAttachment {
-        assert(imageEditorModel.isDirty)
+        let isDirty = await imageEditorModel.isDirty
+        assert(isDirty)
 
         guard let dstImage = await imageEditorModel.renderOutput() else {
             throw OWSAssertionError("Could not render for output.")
         }
 
-        let oldImage = imageEditorModel.srcImage
+        let oldImage = await imageEditorModel.srcImage
         let newImage = try NormalizedImage.forImage(
             dstImage,
             sourceFilename: oldImage.dataSource.sourceFilename,
@@ -1182,7 +1183,7 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
 
 // MARK: -
 
-extension AttachmentApprovalItem: GalleryRailItem {
+extension AttachmentApprovalItem: @MainActor GalleryRailItem {
 
     public func buildRailItemView() -> UIView {
         let imageView = UIImageView()
@@ -1198,7 +1199,7 @@ extension AttachmentApprovalItem: GalleryRailItem {
 
 // MARK: -
 
-extension AttachmentApprovalItemCollection: GalleryRailItemProvider {
+extension AttachmentApprovalItemCollection: @MainActor GalleryRailItemProvider {
 
     var railItems: [GalleryRailItem] { attachmentApprovalItems }
 }

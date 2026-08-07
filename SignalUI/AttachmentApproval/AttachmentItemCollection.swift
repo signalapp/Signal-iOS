@@ -6,6 +6,7 @@
 import Foundation
 import SignalServiceKit
 
+@MainActor
 public class AttachmentApprovalItem {
 
     enum AttachmentApprovalItemError: Error {
@@ -81,6 +82,7 @@ public class AttachmentApprovalItem {
 
 // MARK: -
 
+@MainActor
 class AttachmentApprovalItemCollection {
     private(set) var attachmentApprovalItems: [AttachmentApprovalItem]
     let isAddMoreVisible: () -> Bool

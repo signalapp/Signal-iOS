@@ -45,6 +45,7 @@ class ImageEditorTest: SignalBaseTest {
         return try! NormalizedImage.forImage(image)
     }
 
+    @MainActor
     func testImageEditor() {
         let image = writeDummyImage()
 
