@@ -30,6 +30,7 @@ open class ActionSheetController: OWSViewController {
         case attributedText(NSAttributedString)
     }
 
+    private let backgroundView = ActionSheetController.createBackgroundView()
     private let contentView = UIView()
     private let stackView = UIStackView()
     private let scrollView = UIScrollView()
@@ -186,7 +187,6 @@ open class ActionSheetController: OWSViewController {
 
     private var widthLimitConstraint: NSLayoutConstraint?
     private var pinWidthConstraints: [NSLayoutConstraint]?
-    private var backgroundView: UIView?
 
     let maxPreferredWidth: CGFloat = 414
     /// Add some wiggle room to the max width so the rounded corners don't look
@@ -198,8 +198,11 @@ open class ActionSheetController: OWSViewController {
 
         // Depending on the number of actions, the sheet may need
         // to scroll to allow access to all options.
-        view.addSubview(scrollView)
-        scrollView.clipsToBounds = false
+        view.addSubview(backgroundView)
+        backgroundView.clipsToBounds = true
+
+        backgroundView.contentView.addSubview(scrollView)
+        scrollView.autoPinEdgesToSuperviewEdges()
         scrollView.showsVerticalScrollIndicator = false
 
         let insetFromScreenEdge: CGFloat = if #available(iOS 26, *) {
@@ -208,45 +211,31 @@ open class ActionSheetController: OWSViewController {
             0
         }
 
-        widthLimitConstraint = scrollView.autoSetDimension(.width, toSize: maxPreferredWidth)
+        widthLimitConstraint = backgroundView.autoSetDimension(.width, toSize: maxPreferredWidth)
         widthLimitConstraint?.isActive = false
 
-        scrollView.autoPinEdge(toSuperviewEdge: .bottom, withInset: insetFromScreenEdge)
-        pinWidthConstraints = scrollView.autoPinWidthToSuperview(withMargin: insetFromScreenEdge)
-        scrollView.autoHCenterInSuperview()
-
-        scrollView.autoMatch(.height, to: .height, of: view, withOffset: 0, relation: .lessThanOrEqual)
+        backgroundView.autoPinEdge(toSuperviewEdge: .bottom, withInset: insetFromScreenEdge)
+        pinWidthConstraints = backgroundView.autoPinWidthToSuperview(withMargin: insetFromScreenEdge)
+        backgroundView.autoHCenterInSuperview()
 
         let topMargin: CGFloat = 18
+        backgroundView.topAnchor.constraint(
+            greaterThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor,
+            constant: topMargin,
+        ).isActive = true
 
         scrollView.addSubview(contentView)
         contentView.autoPinWidthToSuperview()
-        contentView.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
+        contentView.autoPinEdge(toSuperviewEdge: .top)
         contentView.autoPinEdge(toSuperviewEdge: .bottom)
         contentView.autoMatch(.width, to: .width, of: scrollView)
 
         // If possible, the scrollview should be as tall as the content (no scrolling)
         // but if it doesn't fit on screen, it's okay to be greater than the scroll view.
-        contentView.autoMatch(.height, to: .height, of: scrollView, withOffset: -topMargin, relation: .greaterThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            contentView.autoMatch(.height, to: .height, of: scrollView, withOffset: -topMargin)
-        }
-
-        // The backdrop view needs to extend from the top of the scroll view content to the bottom of the scroll view
-        // If the backdrop was not pinned to the scroll view frame, we'd see empty space in the safe area as we bounce
-        //
-        // The backdrop has to be a subview of the scrollview's content because constraints that bridge from the inside
-        // to outside of the scroll view cause the content to be pinned. Views outside the scrollview will not follow
-        // the content offset.
-        //
-        // This means that the backdrop view will extend outside of the bounds of the content view as the user
-        // scrolls the content out of the safe area
-        let backgroundView = createBackgroundView()
-        self.backgroundView = backgroundView
-        contentView.addSubview(backgroundView)
-        backgroundView.autoPinWidthToSuperview()
-        backgroundView.autoPinEdge(.top, to: .top, of: contentView)
-        scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: backgroundView.bottomAnchor).isActive = true
+        contentView.autoMatch(.height, to: .height, of: scrollView, withOffset: 0, relation: .greaterThanOrEqual)
+        let contentHeightConstraint = contentView.heightAnchor.constraint(equalTo: scrollView.frameLayoutGuide.heightAnchor)
+        contentHeightConstraint.priority = .defaultLow
+        contentHeightConstraint.isActive = true
 
         contentView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
@@ -256,18 +245,12 @@ open class ActionSheetController: OWSViewController {
         stackView.layoutMargins = .init(margin: 16)
         stackView.insetsLayoutMarginsFromSafeArea = false
 
-        // We can't mask the content view because the backdrop intentionally extends outside of the content
-        // view's bounds. But its two subviews are pinned at same top edge. We can just apply corner
-        // radii to each layer individually to get a similar effect.
         if #available(iOS 26, *) {
-            // Background container sets corner radius itself
+            // updateWidthConstraints sets corner radius
         } else {
             let cornerRadius: CGFloat = 24
-            [backgroundView, stackView].forEach { subview in
-                subview.layer.cornerRadius = cornerRadius
-                subview.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-                subview.layer.masksToBounds = true
-            }
+            backgroundView.layer.cornerRadius = cornerRadius
+            backgroundView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         }
 
         // Support tapping the backdrop to cancel the action sheet.
@@ -275,7 +258,7 @@ open class ActionSheetController: OWSViewController {
         view.addGestureRecognizer(tapGestureRecognizer)
     }
 
-    private func createBackgroundView() -> UIView {
+    private static func createBackgroundView() -> UIVisualEffectView {
         if #available(iOS 26, *) {
             let glassEffect = UIGlassEffect(style: .regular)
             glassEffect.tintColor = UIColor.Signal.background.withAlphaComponent(2 / 3)
@@ -291,7 +274,7 @@ open class ActionSheetController: OWSViewController {
             pinWidthConstraints?.forEach { $0.isActive = false }
             widthLimitConstraint?.isActive = true
             if #available(iOS 26.0, *) {
-                backgroundView?.cornerConfiguration = .corners(radius: .fixed(24))
+                backgroundView.cornerConfiguration = .corners(radius: .fixed(24))
             }
         } else {
             widthLimitConstraint?.isActive = false
@@ -302,7 +285,7 @@ open class ActionSheetController: OWSViewController {
                 } else {
                     20
                 }
-                backgroundView?.cornerConfiguration = .uniformEdges(
+                backgroundView.cornerConfiguration = .uniformEdges(
                     topRadius: .fixed(topRadius),
                     bottomRadius: .containerConcentric(minimum: 20),
                 )
