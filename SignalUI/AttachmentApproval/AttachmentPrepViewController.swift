@@ -68,7 +68,9 @@ public class AttachmentPrepViewController: OWSViewController, UIScrollViewDelega
 
     func prepareContentView() { }
 
-    func prepareToMoveOffscreen() { }
+    func prepareToMoveOffscreen() {
+        updateScrollViewTransform(keyboardHeight: 0)
+    }
 
     private var isMediaToolViewControllerPresented = false
 
@@ -160,7 +162,7 @@ public class AttachmentPrepViewController: OWSViewController, UIScrollViewDelega
     }
 
     private func configureScrollViewContentSizeAndZoom() {
-        guard let scrollView else { return }
+        guard let scrollView, scrollView.transform == .identity else { return }
 
         // This defines scroll edges for zoomed in content.
         // Additional safe area insets would be set by AttachmentApprovalViewController
@@ -217,7 +219,7 @@ public class AttachmentPrepViewController: OWSViewController, UIScrollViewDelega
     }
 
     private func centerContent() {
-        guard let scrollView else { return }
+        guard let scrollView, scrollView.transform == .identity else { return }
 
         // Content smaller than these bounds would be centered within this area.
         let scrollViewBounds = scrollView.bounds.inset(by: scrollView.safeAreaInsets)
@@ -236,6 +238,20 @@ public class AttachmentPrepViewController: OWSViewController, UIScrollViewDelega
             y: scrollView.contentSize.height / 2 + centerOffsetY,
         )
     }
+
+    func updateScrollViewTransform(keyboardHeight: CGFloat) {
+        let viewToScale = scrollView ?? contentView
+
+        guard keyboardHeight > 0 else {
+            viewToScale.transform = .identity
+            return
+        }
+
+        let adjustedHeightChange = max(0, keyboardHeight - view.safeAreaInsets.bottom)
+        viewToScale.transform = .translate(.init(x: 0, y: -adjustedHeightChange / 2))
+    }
+
+    // MARK: Tools
 
     private func _presentMediaTool(viewController: UIViewController) {
         if let presentedViewController {

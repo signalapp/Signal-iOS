@@ -130,7 +130,7 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
 
     private var outputImageQuality: ImageQuality {
         didSet {
-            updateBottomToolView(animated: false)
+            updateBottomToolView()
         }
     }
 
@@ -191,7 +191,11 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
             isAddMoreVisible: isAddMoreVisibleBlock,
         )
 
-        observerToken = NotificationCenter.default.addObserver(forName: .OWSApplicationDidBecomeActive, object: nil, queue: .main) { [weak self] _ in
+        observerToken = NotificationCenter.default.addObserver(
+            forName: .OWSApplicationDidBecomeActive,
+            object: nil,
+            queue: .main,
+        ) { [weak self] _ in
             guard let self else { return }
             self.updateContents(animated: false)
         }
@@ -401,45 +405,47 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
         let topBarContentHeight = max(0, topBar.frame.maxY - view.safeAreaInsets.top)
         pageViewController.additionalSafeAreaInsets.top = topBarContentHeight
 
-        let bottomToolbarContentHeight = max(0, bottomToolView.frame.height - view.safeAreaInsets.bottom)
+        let bottomToolbarContentHeight = max(0, bottomToolView.currentHeight - view.safeAreaInsets.bottom)
         pageViewController.additionalSafeAreaInsets.bottom = bottomToolbarContentHeight
     }
 
     private func updateContents(animated: Bool) {
-        updateBottomToolView(animated: animated)
-        updateMediaRail(animated: animated)
+        guard animated else {
+            updateBottomToolView()
+            updateMediaRail()
+            return
+        }
+        let animator = AttachmentApprovalToolbar.defaultAnimator()
+        updateBottomToolView(animator: animator)
+        animator.addAnimations {
+            self.updateMediaRail(animated: false)
+        }
+        animator.startAnimation()
     }
 
     private func updateControlsVisibility(animated: Bool, completion: ((Bool) -> Void)? = nil) {
         let alpha: CGFloat = shouldHideControls ? 0 : 1
-        if animated {
-            UIView.animate(
-                withDuration: 0.15,
-                animations: {
-                    self.topBar.alpha = alpha
-                    self.bottomToolView.alpha = alpha
-                },
-                completion: completion,
-            )
-        } else {
+
+        guard animated else {
             topBar.alpha = alpha
             bottomToolView.alpha = alpha
             if let completion {
                 completion(true)
             }
+            return
         }
-    }
 
-    private func updateSupplementaryToolbarView(using viewController: AttachmentPrepViewController, animated: Bool) {
-        if animated {
-            UIView.animate(withDuration: 0.25) {
-                self.bottomToolView.set(supplementaryView: viewController.toolbarSupplementaryView)
-                self.bottomToolView.setNeedsLayout()
-                self.bottomToolView.layoutIfNeeded()
-            }
-        } else {
-            bottomToolView.set(supplementaryView: viewController.toolbarSupplementaryView)
+        let animator = AttachmentApprovalToolbar.defaultAnimator()
+        animator.addAnimations {
+            self.topBar.alpha = alpha
+            self.bottomToolView.alpha = alpha
         }
+        if let completion {
+            animator.addCompletion { _ in
+                completion(true)
+            }
+        }
+        animator.startAnimation()
     }
 
     func updateMediaRail(animated: Bool = false) {
@@ -465,6 +471,16 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
     }
 
     private func updateBottomToolView(animated: Bool) {
+        guard animated else {
+            updateBottomToolView()
+            return
+        }
+        let animator = UIViewPropertyAnimator(duration: 0.15, springDamping: 1, springResponse: 0.15)
+        updateBottomToolView(animator: animator)
+        animator.startAnimation()
+    }
+
+    private func updateBottomToolView(animator: UIViewPropertyAnimator? = nil) {
         guard let currentPageViewController else { return }
 
         let isScreenNotFinal = options.contains(.isNotFinalScreen)
@@ -481,7 +497,8 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
         bottomToolView.update(
             using: currentPageViewController.attachmentApprovalItem,
             configuration: configuration,
-            animated: animated,
+            supplementaryToolbarView: currentPageViewController.toolbarSupplementaryView,
+            animator: animator,
         )
         // UIMenu needs to be re-created because it reflects current setting.
         bottomToolView.buttonMediaQuality.menu = mediaQualitySelectionMenu()
@@ -555,9 +572,6 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
         }
 
         updateContents(animated: true)
-        if let currentPageViewController {
-            updateSupplementaryToolbarView(using: currentPageViewController, animated: true)
-        }
     }
 
     // MARK: - UIPageViewControllerDataSource
@@ -654,7 +668,6 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
         // This does make animations smoother.
         DispatchQueue.main.async {
             self.updateContents(animated: animated)
-            self.updateSupplementaryToolbarView(using: page, animated: animated)
         }
     }
 
@@ -1023,31 +1036,46 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
             return
         }
 
-        let keyboardHeight: CGFloat = switch notification.name {
-        case UIResponder.keyboardDidHideNotification, UIResponder.keyboardWillHideNotification:
-            0
-        default: endFrame.height
-        }
+        let keyboardFrame = view.convert(endFrame, from: nil)
+        let viewFrame = view.bounds
 
-        guard bottomToolView.keyboardHeight != keyboardHeight else { return }
+        let keyboardHeight: CGFloat
+        if keyboardFrame.minY >= viewFrame.maxY {
+            // Offscreen
+            keyboardHeight = 0
+        } else if keyboardFrame.maxY < viewFrame.maxY {
+            // Floating
+            keyboardHeight = 0
+        } else {
+            keyboardHeight = keyboardFrame.height
+        }
 
         if
             let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
             let rawAnimationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int,
             let animationCurve = UIView.AnimationCurve(rawValue: rawAnimationCurve)
         {
-            UIView.animate(
-                withDuration: animationDuration,
-                delay: 0,
-                options: animationCurve.asAnimationOptions,
-                animations: {
-                    self.bottomToolView.keyboardHeight = keyboardHeight
-                    self.view.layoutIfNeeded()
-                },
+            let animator = UIViewPropertyAnimator(
+                duration: animationDuration,
+                curve: animationCurve,
             )
+            // This would position caption input field above the on-screen keyboard
+            // and hide controls other than caption input field.
+            bottomToolView.setKeyboardHeight(keyboardHeight, using: animator)
+            // This would shift the scroll view up and apply scale down animation when keyboard is up.
+            animator.addAnimations {
+                self.updateScrollViewTransform(keyboardHeight: keyboardHeight)
+                self.view.layoutIfNeeded()
+            }
+            animator.startAnimation()
         } else {
-            bottomToolView.keyboardHeight = keyboardHeight
+            bottomToolView.setKeyboardHeight(keyboardHeight)
+            updateScrollViewTransform(keyboardHeight: keyboardHeight)
         }
+    }
+
+    private func updateScrollViewTransform(keyboardHeight: CGFloat) {
+        currentPageViewController?.updateScrollViewTransform(keyboardHeight: keyboardHeight)
     }
 
     // MARK: - Media Quality Selection UI

@@ -33,13 +33,13 @@ class MediaCaptionToolbar: UIView, UITextViewDelegate, BodyRangesTextViewDelegat
 
     private var isViewOnceOn: Bool = false
 
-    func setIsViewOnce(enabled: Bool, on: Bool, animated: Bool) {
+    func setIsViewOnce(enabled: Bool, on: Bool, using animator: UIViewPropertyAnimator? = nil) {
         guard isViewOnceEnabled != enabled || isViewOnceOn != on else { return }
 
         isViewOnceEnabled = enabled
         isViewOnceOn = on
 
-        updateContent(animated: animated)
+        updateContent(using: animator)
     }
 
     var isEditingText: Bool {
@@ -56,7 +56,7 @@ class MediaCaptionToolbar: UIView, UITextViewDelegate, BodyRangesTextViewDelegat
 
     func setMessageBody(_ messageBody: MessageBody?, txProvider: EditableMessageBodyTextStorage.ReadTxProvider) {
         textView.setMessageBody(messageBody, txProvider: txProvider)
-        updateAppearance(animated: false)
+        updateAppearance()
     }
 
     // MARK: - Initializers
@@ -183,31 +183,52 @@ class MediaCaptionToolbar: UIView, UITextViewDelegate, BodyRangesTextViewDelegat
     private var textViewMinimumHeightConstraint: NSLayoutConstraint!
 
     private func updateContent(animated: Bool) {
-        updateAppearance(animated: animated)
-        updateHeight(animated: animated)
+        guard animated else {
+            updateContent()
+            return
+        }
+        let animator = UIViewPropertyAnimator(
+            duration: 0.25, // ConversationInputToolbar.heightChangeAnimationDuration
+            springDamping: 1,
+            springResponse: 0.25,
+        )
+        updateContent(using: animator)
+        animator.startAnimation()
     }
 
-    private func updateAppearance(animated: Bool) {
-        viewOnceTextLabel.setIsHidden(!isViewOnceOn, animated: animated)
-        viewOnceButton.isHidden = !isViewOnceEnabled
-        viewOnceButton.configuration?.image = isViewOnceOn
+    private func updateContent(using animator: UIViewPropertyAnimator? = nil) {
+        updateAppearance(using: animator)
+        updateHeight(using: animator)
+    }
+
+    private func updateAppearance(using animator: UIViewPropertyAnimator? = nil) {
+        viewOnceTextLabel.setIsHidden(!isViewOnceOn, using: animator)
+        viewOnceButton.setIsHidden(!isViewOnceEnabled, using: animator)
+        let viewOnceButtonImage = isViewOnceOn
             ? UIImage(imageLiteralResourceName: "view_once")
             : UIImage(imageLiteralResourceName: "viewonce-slash")
+        if let animator {
+            animator.addAnimations {
+                self.viewOnceButton.configuration?.image = viewOnceButtonImage
+            }
+        } else {
+            viewOnceButton.configuration?.image = viewOnceButtonImage
+        }
 
         if isViewOnceOn, isEditingText {
             _ = textView.resignFirstResponder()
         }
 
         let hasText = !textView.isEmpty
-        textView.setIsHidden(isViewOnceOn, animated: animated)
-        placeholderTextView.setIsHidden(hasText || isViewOnceOn, animated: animated)
+        textView.setIsHidden(isViewOnceOn, using: animator)
+        placeholderTextView.setIsHidden(hasText || isViewOnceOn, using: animator)
 
         let isEditingText = isEditingText
-        doneButton.setIsHidden(!isEditingText, animated: animated)
-        proceedButton.setIsHidden(isEditingText, animated: animated)
+        doneButton.setIsHidden(!isEditingText, using: animator)
+        proceedButton.setIsHidden(isEditingText, using: animator)
     }
 
-    private func updateHeight(animated: Bool) {
+    private func updateHeight(using animator: UIViewPropertyAnimator?) {
         guard let textViewHeightConstraint, let textViewMinimumHeightConstraint else {
             owsFailDebug("Missing constraints.")
             return
@@ -231,13 +252,8 @@ class MediaCaptionToolbar: UIView, UITextViewDelegate, BodyRangesTextViewDelegat
             return
         }
 
-        if animated {
+        if let animator {
             isAnimatingHeightChange = true
-            let animator = UIViewPropertyAnimator(
-                duration: 0.25, // ConversationInputToolbar.heightChangeAnimationDuration
-                springDamping: 1,
-                springResponse: 0.25,
-            )
             animator.addAnimations {
                 textViewHeightConstraint.constant = newHeight
                 textViewHeightConstraint.isActive = isEditing
@@ -248,8 +264,6 @@ class MediaCaptionToolbar: UIView, UITextViewDelegate, BodyRangesTextViewDelegat
             animator.addCompletion { _ in
                 self.isAnimatingHeightChange = false
             }
-            animator.startAnimation()
-
         } else {
             textViewHeightConstraint.constant = newHeight
             textViewHeightConstraint.isActive = isEditing

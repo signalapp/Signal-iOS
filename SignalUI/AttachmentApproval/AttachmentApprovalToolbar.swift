@@ -32,15 +32,37 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
     private var contentLayoutGuideLeading: NSLayoutConstraint?
     private var contentLayoutGuideTrailing: NSLayoutConstraint?
     private var contentLayoutGuideBottom: NSLayoutConstraint?
+    private var contentLayoutGuideWithKeyboard: NSLayoutConstraint?
+
+    @available(iOS, deprecated: 26)
+    private var blurBackgroundTopInEditingMode: NSLayoutConstraint?
 
     /**
      View is designed to be pinned to the bottom of the screen. Whenever keyboard appears the VC should
      assign an appropriate value to this property, possible within an animation block.
      */
-    var keyboardHeight: CGFloat = 0 {
-        didSet {
-            updateContentLayoutGuideConstraints()
+    private var _keyboardHeight: CGFloat = 0
+
+    var keyboardHeight: CGFloat {
+        get { _keyboardHeight }
+        set { setKeyboardHeight(newValue, animated: false) }
+    }
+
+    func setKeyboardHeight(_ keyboardHeight: CGFloat, animated: Bool) {
+        guard animated else {
+            setKeyboardHeight(keyboardHeight)
+            return
         }
+
+        let animator = Self.defaultAnimator()
+        setKeyboardHeight(keyboardHeight, using: animator)
+        animator.startAnimation()
+    }
+
+    func setKeyboardHeight(_ keyboardHeight: CGFloat, using animator: UIViewPropertyAnimator? = nil) {
+        _keyboardHeight = keyboardHeight
+        updateContentLayoutGuideConstraints()
+        updateContents(using: animator)
     }
 
     weak var captionToolbarDelegate: MediaCaptionToolbarDelegate?
@@ -57,13 +79,13 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
 
     // Middle row: tool bar with buttons.
     private let mediaToolbar = MediaToolbar()
+
     // Bottom row: caption input field with the Send button.
     lazy var mediaCaptionToolbar: MediaCaptionToolbar = {
         let toolbar = MediaCaptionToolbar()
         toolbar.setIsViewOnce(
             enabled: configuration.canToggleViewOnce,
             on: configuration.isViewOnceOn,
-            animated: false,
         )
         toolbar.delegate = self
         if #unavailable(iOS 26) {
@@ -89,13 +111,21 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
     }()
 
     private func updateContentLayoutGuideConstraints() {
-        guard let contentLayoutGuideBottom else { return }
+        // `contentLayoutGuideBottom` is always active, but has lower priotiry than
+        // `contentLayoutGuideWithKeyboard` which is only active when on-screen keyboard is up.
+        guard let contentLayoutGuideBottom, let contentLayoutGuideWithKeyboard else { return }
+
+        guard keyboardHeight == 0 else {
+            // MediaCaptionToolbar has a bottom margin that will give us correct vertical spacing to the keyboard.
+            contentLayoutGuideWithKeyboard.constant = keyboardHeight
+            contentLayoutGuideWithKeyboard.isActive = true
+            return
+        }
+
+        contentLayoutGuideWithKeyboard.isActive = false
 
         let bottomInset: CGFloat
-        if keyboardHeight > 0 {
-            // MediaCaptionToolbar has a bottom margin that will give us correct vertical spacing to the keyboard.
-            bottomInset = keyboardHeight
-        } else if #available(iOS 26, *) {
+        if #available(iOS 26, *) {
             // Media caption text field has a glass background. Ensure proper padding around that.
 
             if safeAreaInsets.bottom > 0 {
@@ -119,11 +149,7 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
             // Horizontal margins remain standard.
             bottomInset = safeAreaInsets.bottom
         }
-        contentLayoutGuideBottom.constant = -bottomInset
-    }
-
-    var isEditingCaptionText: Bool {
-        return mediaCaptionToolbar.isEditingText
+        contentLayoutGuideBottom.constant = bottomInset
     }
 
     private var currentAttachmentItem: AttachmentApprovalItem?
@@ -157,7 +183,11 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
             trailing = contentLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor)
         }
 
-        contentLayoutGuideBottom = contentLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor)
+        contentLayoutGuideBottom = bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor)
+        contentLayoutGuideBottom?.priority = .required - 10
+
+        // Higher priority than `contentLayoutGuideBottom` but only active when keyboard is up.
+        contentLayoutGuideWithKeyboard = bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor)
 
         // View controller will use this layout guide to position UI elements above the keyboard.
         contentLayoutGuide.identifier = "AttachmentApprovalToolbar.contentLayoutGuide"
@@ -176,12 +206,22 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
             blurBackgroundView.translatesAutoresizingMaskIntoConstraints = false
             blurBackgroundView.contentView.addSubview(stackView)
             addSubview(blurBackgroundView)
+
+            // This will pull down the background to be aligned with the caption input field.
+            blurBackgroundTopInEditingMode = blurBackgroundView.topAnchor.constraint(
+                equalTo: mediaCaptionToolbar.topAnchor,
+                constant: -8,
+            )
+            // Priority lower than `blurBackgroundTopInEditingMode`.
+            let blurBackgroundTopPermanent = blurBackgroundView.topAnchor.constraint(equalTo: topAnchor)
+            blurBackgroundTopPermanent.priority = .required - 10
             NSLayoutConstraint.activate([
-                blurBackgroundView.topAnchor.constraint(equalTo: topAnchor),
+                blurBackgroundTopPermanent,
                 blurBackgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
                 blurBackgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
                 blurBackgroundView.bottomAnchor.constraint(equalTo: bottomAnchor),
             ])
+
         } else {
             addSubview(stackView)
         }
@@ -205,7 +245,16 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
 
     private var supplementaryViewContainer: UIView?
 
-    func set(supplementaryView: UIView?) {
+    private func set(supplementaryView: UIView?) {
+        if
+            let supplementaryView,
+            let existingView = supplementaryViewContainer?.subviews.first,
+            existingView === supplementaryView
+        {
+            Logger.debug("SKIPPING SUPPLEMENTARY VIEW UPDATE")
+            return
+        }
+
         if let supplementaryViewContainer {
             stackView.removeArrangedSubview(supplementaryViewContainer)
             supplementaryViewContainer.removeFromSuperview()
@@ -229,18 +278,54 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
         self.supplementaryViewContainer = containerView
     }
 
-    private func updateContents(animated: Bool) {
+    class func defaultAnimator() -> UIViewPropertyAnimator {
+        UIViewPropertyAnimator(duration: 0.15, springDamping: 1, springResponse: 0.15)
+    }
+
+    var currentHeight: CGFloat {
+        guard let contentLayoutGuideBottom else { return frame.height }
+
+        // Always return toolbar height as if keyboard wasn't up.
+        return contentLayoutGuide.layoutFrame.minY + stackView.frame.height + contentLayoutGuideBottom.constant
+    }
+
+    private func updateContents(using animator: UIViewPropertyAnimator? = nil) {
+        // When on-screen keyboard is up we make everything except for `mediaCaptionToolbar` invisible.
+        // But we do so adjusting `alpha` and not `isHidden` to preserve dimensions of the `AttachmentApprovalToolbar`
+        // and with it - content insets in the media preview view.
+        let nonCaptionFieldElementAlpha: CGFloat = mediaCaptionToolbar.isEditingText ? 0 : 1
+
+        // On iOS 15-18 pull down background to align with the top of the caption input field.
+        blurBackgroundTopInEditingMode?.isActive = mediaCaptionToolbar.isEditingText
+
         // Show/hide Gallery Rail.
-        let hideMediaStrip = configuration.isMediaStripVisible == false || isEditingCaptionText
-        galleryRailView.setIsHidden(hideMediaStrip, animated: animated)
+        let hideMediaStrip = configuration.isMediaStripVisible == false
+        galleryRailView.setIsHidden(hideMediaStrip, using: animator)
+        if hideMediaStrip == false {
+            if let animator {
+                animator.addAnimations {
+                    self.galleryRailView.alpha = nonCaptionFieldElementAlpha
+                }
+            } else {
+                galleryRailView.alpha = nonCaptionFieldElementAlpha
+            }
+        }
 
         // Video timeline view is also hidden when editing caption.
-        supplementaryViewContainer?.isHiddenInStackView = isEditingCaptionText
+        if let supplementaryViewContainer {
+            if let animator {
+                animator.addAnimations {
+                    supplementaryViewContainer.alpha = nonCaptionFieldElementAlpha
+                }
+            } else {
+                supplementaryViewContainer.alpha = nonCaptionFieldElementAlpha
+            }
+        }
 
         // Update controls in media toolbar.
         mediaToolbar.setIsMediaQualityHigh(
             enabled: configuration.isMediaHighQualityEnabled,
-            animated: animated,
+            using: animator,
         )
         let availableButtons: MediaToolbar.AvailableButtons = {
             guard let currentAttachmentItem else {
@@ -266,13 +351,18 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
             }
             return buttons
         }()
-        mediaToolbar.set(availableButtons: availableButtons, animated: animated)
-
-        // Visibility of bottom buttons only changes when user starts/finishes composing text message.
-        // In that case `updateContents(animated:)` is called from within an animation block
-        // and since `mediaToolbar` is in a stack view it is necessary to modify `isHiddenInStackView`
-        // to get a nice animation.
-        mediaToolbar.isHiddenInStackView = isEditingCaptionText || availableButtons.isEmpty
+        mediaToolbar.set(availableButtons: availableButtons, using: animator)
+        let hideMediaToolbar = availableButtons.isEmpty
+        mediaToolbar.setIsHidden(availableButtons.isEmpty, using: animator)
+        if hideMediaToolbar == false {
+            if let animator {
+                animator.addAnimations {
+                    self.mediaToolbar.alpha = nonCaptionFieldElementAlpha
+                }
+            } else {
+                mediaToolbar.alpha = nonCaptionFieldElementAlpha
+            }
+        }
 
         // Update caption input field.
         mediaCaptionToolbar.setProceedButtonImage(
@@ -281,13 +371,18 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
         mediaCaptionToolbar.setIsViewOnce(
             enabled: configuration.canToggleViewOnce,
             on: configuration.isViewOnceOn,
-            animated: animated,
+            using: animator,
         )
 
         showViewOnceTooltipIfNecessary()
     }
 
-    func update(using attachmentItem: AttachmentApprovalItem, configuration: Configuration, animated: Bool) {
+    func update(
+        using attachmentItem: AttachmentApprovalItem,
+        configuration: Configuration,
+        supplementaryToolbarView: UIView?,
+        animator: UIViewPropertyAnimator?,
+    ) {
         // De-bounce
         if attachmentItem.isIdenticalTo(currentAttachmentItem as AttachmentApprovalItem?), self.configuration == configuration {
             return
@@ -296,7 +391,16 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
         self.currentAttachmentItem = attachmentItem
         self.configuration = configuration
 
-        updateContents(animated: animated)
+        guard let animator else {
+            set(supplementaryView: supplementaryToolbarView)
+            updateContents()
+            return
+        }
+
+        animator.addAnimations {
+            self.set(supplementaryView: supplementaryToolbarView)
+        }
+        updateContents(using: animator)
     }
 
     func finishTextEditing() {
@@ -314,12 +418,10 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
     }
 
     func mediaCaptionToolbarDidBeginEditing(_ mediaCaptionToolbar: MediaCaptionToolbar) {
-        updateContents(animated: true)
         captionToolbarDelegate?.mediaCaptionToolbarDidBeginEditing(mediaCaptionToolbar)
     }
 
     func mediaCaptionToolbarDidEndEditing(_ mediaCaptionToolbar: MediaCaptionToolbar) {
-        updateContents(animated: true)
         captionToolbarDelegate?.mediaCaptionToolbarDidEndEditing(mediaCaptionToolbar)
     }
 
@@ -463,12 +565,12 @@ private class MediaToolbar: UIView {
         static let all: AvailableButtons = [.pen, .crop, .mediaQuality, .save, .addMedia]
     }
 
-    func set(availableButtons: AvailableButtons, animated: Bool) {
-        penToolButton.setIsHidden(!availableButtons.contains(.pen), animated: animated)
-        cropToolButton.setIsHidden(!availableButtons.contains(.crop), animated: animated)
-        mediaQualityButton.setIsHidden(!availableButtons.contains(.mediaQuality), animated: animated)
-        saveMediaButton.setIsHidden(!availableButtons.contains(.save), animated: animated)
-        addMediaButton.setIsHidden(!availableButtons.contains(.addMedia), animated: animated)
+    func set(availableButtons: AvailableButtons, using animator: UIViewPropertyAnimator? = nil) {
+        penToolButton.setIsHidden(!availableButtons.contains(.pen), using: animator)
+        cropToolButton.setIsHidden(!availableButtons.contains(.crop), using: animator)
+        mediaQualityButton.setIsHidden(!availableButtons.contains(.mediaQuality), using: animator)
+        saveMediaButton.setIsHidden(!availableButtons.contains(.save), using: animator)
+        addMediaButton.setIsHidden(!availableButtons.contains(.addMedia), using: animator)
     }
 
     override init(frame: CGRect) {
@@ -567,8 +669,16 @@ private class MediaToolbar: UIView {
     private static let iconMediaQualityHigh = UIImage(imageLiteralResourceName: "hd")
     private static let iconMediaQualityStandard = UIImage(imageLiteralResourceName: "hd-slash")
 
-    fileprivate func setIsMediaQualityHigh(enabled: Bool, animated: Bool) {
+    fileprivate func setIsMediaQualityHigh(enabled: Bool, using animator: UIViewPropertyAnimator? = nil) {
         let image = enabled ? MediaToolbar.iconMediaQualityHigh : MediaToolbar.iconMediaQualityStandard
-        mediaQualityButton.setImage(image, animated: animated)
+
+        guard let animator else {
+            mediaQualityButton.configuration?.image = image
+            return
+        }
+
+        animator.addAnimations {
+            self.mediaQualityButton.configuration?.image = image
+        }
     }
 }

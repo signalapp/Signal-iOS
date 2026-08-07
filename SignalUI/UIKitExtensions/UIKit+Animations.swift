@@ -138,6 +138,32 @@ public extension UIView {
             },
         )
     }
+
+    func setIsHidden(_ isHidden: Bool, using animator: UIViewPropertyAnimator?) {
+        guard self.isHidden != isHidden else {
+            return
+        }
+        guard let animator else {
+            self.isHidden = isHidden
+            return
+        }
+
+        let initialAlpha = alpha
+        if !isHidden, initialAlpha > 0 {
+            UIView.performWithoutAnimation {
+                self.alpha = 0
+                self.isHidden = false
+            }
+        }
+        animator.addAnimations {
+            self.alpha = isHidden ? 0 : initialAlpha
+        }
+        animator.addCompletion { position in
+            guard position == .end else { return }
+            self.isHidden = isHidden
+            self.alpha = initialAlpha
+        }
+    }
 }
 
 public extension UIView.AnimationCurve {
