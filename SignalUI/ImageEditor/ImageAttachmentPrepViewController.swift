@@ -68,6 +68,14 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController, ImageEdit
         }
 
         let cropTool = ImageEditorCropViewController(model: model, srcImage: srcImage, previewImage: previewImage)
+        // Same insets that we use to determine max content size for the scroll view
+        // in `AttachmentPrepViewController.configureScrollViewContentSizeAndZoom`.
+        cropTool.initialContentInsets = .init(
+            top: view.safeAreaInsets.top + Self.contentInsets.top,
+            leading: view.safeAreaInsets.leading + Self.contentInsets.leading,
+            bottom: view.safeAreaInsets.bottom + Self.contentInsets.bottom,
+            trailing: view.safeAreaInsets.trailing + Self.contentInsets.trailing,
+        )
         presentMediaTool(viewController: cropTool)
     }
 

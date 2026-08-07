@@ -144,6 +144,11 @@ public class AttachmentPrepViewController: OWSViewController, UIScrollViewDelega
 
     // MARK: Layout
 
+    static let contentInsets = UIEdgeInsets(
+        hMargin: OWSTableViewController2.defaultHOuterMargin,
+        vMargin: 16, // top and bottom bars each have additional 8dp of padding
+    )
+
     private var needsInitialZoom = true
 
     private var scrollView: UIScrollView?
@@ -172,10 +177,7 @@ public class AttachmentPrepViewController: OWSViewController, UIScrollViewDelega
 
         // This is the area for the content at default, zoomed out state.
         // There are standard margins on vertical sides and 24 dp padding above and below.
-        let maxDefaultContentSize = scrollViewBounds.inset(by: UIEdgeInsets(
-            hMargin: OWSTableViewController2.defaultHOuterMargin,
-            vMargin: 16, // top and bottom bars each have additional 8dp of padding
-        )).size
+        let maxDefaultContentSize = scrollViewBounds.inset(by: Self.contentInsets).size
 
         // Get intrinsic content size and scale it down to fit the screen.
         // That scaled down content size will be scroll view's content size at minimum zoom - 1.

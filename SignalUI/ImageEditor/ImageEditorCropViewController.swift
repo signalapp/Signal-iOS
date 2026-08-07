@@ -36,7 +36,6 @@ class ImageEditorCropViewController: OWSViewController {
     // `clipView` also serves as the reference view for gesture recognizers.
     private let clipView: UIView = {
         let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
         view.clipsToBounds = true
         view.isOpaque = false
         return view
@@ -63,33 +62,38 @@ class ImageEditorCropViewController: OWSViewController {
     // during present / dismiss animations.
     private var contentLayoutGuideConstraints = [NSLayoutConstraint]()
 
+    // Presenting view controller will set those before presenting.
+    // The intent is to position image in the same position and with the same size
+    // as in "review" screen (AttachmentPrepViewController).
+    var initialContentInsets: UIEdgeInsets = .zero
+
     // Full-screen view that serves purely as indication of current crop rectangle.
     // This view displays crop handles and grid and also dims cropped content.
-    private let cropView = CropView(frame: UIScreen.main.bounds)
+    private lazy var cropView = CropView(frame: view.bounds)
     // These insets control position of the visible crop frame within `clipView` via a set of four layout constraints below.
     // Insets are non-zero only temporarily:
     // • when user is resizing crop rectangle using crop handles.
     // • when animating change to a predefined aspect ratio.
     private var cropViewFrameInsets = UIEdgeInsets.zero {
         didSet {
-            cropViewFrameLeading.constant = cropViewFrameInsets.leading
+            cropViewFrameLeft.constant = cropViewFrameInsets.left
             cropViewFrameTop.constant = cropViewFrameInsets.top
-            cropViewFrameTrailing.constant = -cropViewFrameInsets.trailing
+            cropViewFrameRight.constant = -cropViewFrameInsets.right
             cropViewFrameBottom.constant = -cropViewFrameInsets.bottom
         }
     }
 
-    private lazy var cropViewFrameLeading = cropView.cropFrameLayoutGuide.leadingAnchor.constraint(
-        equalTo: clipView.leadingAnchor,
-        constant: cropViewFrameInsets.leading,
+    private lazy var cropViewFrameLeft = cropView.cropFrameLayoutGuide.leftAnchor.constraint(
+        equalTo: clipView.leftAnchor,
+        constant: cropViewFrameInsets.left,
     )
     private lazy var cropViewFrameTop = cropView.cropFrameLayoutGuide.topAnchor.constraint(
         equalTo: clipView.topAnchor,
         constant: cropViewFrameInsets.top,
     )
-    private lazy var cropViewFrameTrailing = cropView.cropFrameLayoutGuide.trailingAnchor.constraint(
-        equalTo: clipView.trailingAnchor,
-        constant: -cropViewFrameInsets.trailing,
+    private lazy var cropViewFrameRight = cropView.cropFrameLayoutGuide.rightAnchor.constraint(
+        equalTo: clipView.rightAnchor,
+        constant: -cropViewFrameInsets.right,
     )
     private lazy var cropViewFrameBottom = cropView.cropFrameLayoutGuide.bottomAnchor.constraint(
         equalTo: clipView.bottomAnchor,
@@ -157,6 +161,7 @@ class ImageEditorCropViewController: OWSViewController {
 
         // MARK: - Clip view & content.
 
+        clipView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(clipView)
         updateClipViewAspectRatio()
 
@@ -168,7 +173,7 @@ class ImageEditorCropViewController: OWSViewController {
         // content layout guide's frame (just like the clip view).
         // Everything user does to an image is applied as `UIView.transform` in `updateImageViewTransform`.
         let imageAspectRatio = previewImage.size.width / previewImage.size.height
-        view.addConstraints([
+        NSLayoutConstraint.activate([
             imageView.centerXAnchor.constraint(equalTo: clipView.centerXAnchor),
             imageView.centerYAnchor.constraint(equalTo: clipView.centerYAnchor),
             imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: imageAspectRatio),
@@ -176,38 +181,53 @@ class ImageEditorCropViewController: OWSViewController {
 
         // MARK: - Crop frame
 
+        cropView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(cropView)
-        cropView.autoPinEdgesToSuperviewEdges()
+        NSLayoutConstraint.activate([
+            cropView.topAnchor.constraint(equalTo: view.topAnchor),
+            cropView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            cropView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            cropView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
 
         // Visible crop frame is constrained to clipView using auto layout.
-        view.addConstraints([cropViewFrameLeading, cropViewFrameTop, cropViewFrameTrailing, cropViewFrameBottom])
+        NSLayoutConstraint.activate([cropViewFrameLeft, cropViewFrameTop, cropViewFrameRight, cropViewFrameBottom])
 
         // Footer
+        footerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(footerView)
-        footerView.autoPinWidthToSuperview()
-        footerView.autoPinEdge(toSuperviewEdge: .bottom)
+        NSLayoutConstraint.activate([
+            footerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            footerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            footerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
 
         // MARK: - Layout guides for clip view
 
         initialStateContentLayoutGuide.identifier = "Content - Initial State"
         view.addLayoutGuide(initialStateContentLayoutGuide)
-        let topConstraint: NSLayoutConstraint = {
-            if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
-                return initialStateContentLayoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
-            } else {
-                return initialStateContentLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor)
-            }
-        }()
-        view.addConstraints([
-            topConstraint,
-            initialStateContentLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            initialStateContentLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            initialStateContentLayoutGuide.bottomAnchor.constraint(equalTo: toolbar.topAnchor),
+        NSLayoutConstraint.activate([
+            initialStateContentLayoutGuide.topAnchor.constraint(
+                equalTo: view.topAnchor,
+                constant: initialContentInsets.top,
+            ),
+            initialStateContentLayoutGuide.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor,
+                constant: initialContentInsets.leading,
+            ),
+            initialStateContentLayoutGuide.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor,
+                constant: -initialContentInsets.trailing,
+            ),
+            initialStateContentLayoutGuide.bottomAnchor.constraint(
+                equalTo: view.bottomAnchor,
+                constant: -initialContentInsets.bottom,
+            ),
         ])
 
         finalStateContentLayoutGuide.identifier = "Content - Final State"
         view.addLayoutGuide(finalStateContentLayoutGuide)
-        view.addConstraints([
+        NSLayoutConstraint.activate([
             finalStateContentLayoutGuide.centerYAnchor.constraint(equalTo: initialStateContentLayoutGuide.centerYAnchor),
             finalStateContentLayoutGuide.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             finalStateContentLayoutGuide.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
@@ -218,7 +238,7 @@ class ImageEditorCropViewController: OWSViewController {
         resetButton.translatesAutoresizingMaskIntoConstraints = false
         let mediaTopBar = MediaTopBar()
         mediaTopBar.addSubview(resetButton)
-        mediaTopBar.addConstraints([
+        NSLayoutConstraint.activate([
             resetButton.topAnchor.constraint(equalTo: mediaTopBar.controlsLayoutGuide.topAnchor),
             resetButton.trailingAnchor.constraint(equalTo: mediaTopBar.controlsLayoutGuide.trailingAnchor),
             resetButton.bottomAnchor.constraint(equalTo: mediaTopBar.controlsLayoutGuide.bottomAnchor),
@@ -279,7 +299,8 @@ class ImageEditorCropViewController: OWSViewController {
     }
 
     override var prefersStatusBarHidden: Bool {
-        !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !DependenciesBridge.shared.currentCallProvider.hasCurrentCall
+        guard DependenciesBridge.shared.currentCallProvider.hasCurrentCall == false else { return false }
+        return (UIDevice.current.isIPad || UIDevice.current.hasIPhoneXNotch) == false
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -301,7 +322,7 @@ class ImageEditorCropViewController: OWSViewController {
     }
 
     private func constrainContent(to layoutGuide: UILayoutGuide) {
-        view.removeConstraints(contentLayoutGuideConstraints)
+        NSLayoutConstraint.deactivate(contentLayoutGuideConstraints)
 
         var constraints = [NSLayoutConstraint]()
 
@@ -314,7 +335,7 @@ class ImageEditorCropViewController: OWSViewController {
         constraints.append(clipView.heightAnchor.constraint(lessThanOrEqualTo: layoutGuide.heightAnchor))
 
         // Constrain width and height to take as much space as possible.
-        constraints.append(contentsOf: { () -> [NSLayoutConstraint] in
+        constraints.append(contentsOf: {
             let c1 = clipView.widthAnchor.constraint(equalTo: layoutGuide.widthAnchor)
             c1.priority = .defaultHigh
             let c2 = clipView.heightAnchor.constraint(equalTo: layoutGuide.heightAnchor)
@@ -328,7 +349,7 @@ class ImageEditorCropViewController: OWSViewController {
         constraints.append(imageView.widthAnchor.constraint(lessThanOrEqualTo: layoutGuide.widthAnchor))
         constraints.append(imageView.heightAnchor.constraint(lessThanOrEqualTo: layoutGuide.heightAnchor))
 
-        view.addConstraints(constraints)
+        NSLayoutConstraint.activate(constraints)
         contentLayoutGuideConstraints = constraints
     }
 
@@ -338,12 +359,14 @@ class ImageEditorCropViewController: OWSViewController {
         //
         // Constraint needs to be re-created because NSLayoutConstraint.multiplier is read-only.
         if let clipViewAspectRatioConstraint {
-            view.removeConstraint(clipViewAspectRatioConstraint)
+            NSLayoutConstraint.deactivate([clipViewAspectRatioConstraint])
         }
         let aspectRatio = transform.outputSizePixels
-
-        let constraint = clipView.widthAnchor.constraint(equalTo: clipView.heightAnchor, multiplier: aspectRatio.width / aspectRatio.height)
-        view.addConstraint(constraint)
+        let constraint = clipView.widthAnchor.constraint(
+            equalTo: clipView.heightAnchor,
+            multiplier: aspectRatio.width / aspectRatio.height,
+        )
+        NSLayoutConstraint.activate([constraint])
         clipViewAspectRatioConstraint = constraint
     }
 
@@ -396,8 +419,7 @@ class ImageEditorCropViewController: OWSViewController {
         let viewSize = clipView.bounds.size
         let imageSize = imageView.bounds.size
 
-        guard viewSize.width > 0, viewSize.height > 0 else { return }
-        guard imageSize.width > 0, imageSize.height > 0 else { return }
+        guard viewSize.isNonEmpty, imageSize.isNonEmpty else { return }
 
         // Re-use this method that calculates bounding box rect for image with transform applied to it.
         // We only need size of the result returned by this method.
@@ -418,12 +440,12 @@ class ImageEditorCropViewController: OWSViewController {
     // MARK: - Crop Frame
 
     private func setCropFrameInsets(fromClipViewRect rect: CGRect) {
-        var insets = UIEdgeInsets.zero
-        insets.left = rect.minX
-        insets.top = rect.minY
-        insets.right = clipView.bounds.maxX - rect.maxX
-        insets.bottom = clipView.bounds.maxY - rect.maxY
-        cropViewFrameInsets = insets
+        cropViewFrameInsets = UIEdgeInsets(
+            top: rect.minY,
+            left: rect.minX,
+            bottom: clipView.bounds.maxY - rect.maxY,
+            right: clipView.bounds.maxX - rect.maxX,
+        )
     }
 
     private func resetCropFrameInsets() {
