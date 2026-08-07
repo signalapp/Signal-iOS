@@ -52,7 +52,7 @@ public class MessageSenderImpl: MessageSender, DeviceMessageBuilder {
             guard let session = try sessionStore.loadSession(forServiceId: serviceId, deviceId: deviceId, tx: tx) else {
                 return nil
             }
-            guard session.hasCurrentState(requirePqRatio: RemoteConfig.current.requirePqRatio, now: Date()) else {
+            guard session.hasCurrentState else {
                 return nil
             }
             return session

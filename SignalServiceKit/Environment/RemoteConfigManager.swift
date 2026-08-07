@@ -193,10 +193,6 @@ public class RemoteConfig {
         interval(.replaceableInteractionExpiration, defaultInterval: .hour)
     }
 
-    public var requirePqRatio: Double {
-        getDoubleValue(forFlag: .requirePqRatio, defaultValue: 0.0)
-    }
-
     public var messageSendLogEntryLifetime: TimeInterval {
         interval(.messageSendLogEntryLifetime, defaultInterval: 2 * .week)
     }
@@ -723,7 +719,6 @@ private enum ValueFlag: String, FlagType {
     case postRegistrationWaitingPeriodSeconds = "global.changeNumber.postRegistrationWaitingPeriodSeconds"
     case reactiveProfileKeyAttemptInterval = "ios.reactiveProfileKeyAttemptInterval"
     case replaceableInteractionExpiration = "ios.replaceableInteractionExpiration"
-    case requirePqRatio = "ios.requirePqRatio"
     case ringrtcDredDuration = "ios.ringrtcDredDuration"
     case ringrtcVp9DeviceModelDecodeDenylist = "ios.ringrtcVp9DeviceModelDecodeDenylist"
     case ringrtcVp9DeviceModelDenylist = "ios.ringrtcVp9DeviceModelDenylist"
@@ -770,7 +765,6 @@ private enum ValueFlag: String, FlagType {
         case .postRegistrationWaitingPeriodSeconds: true
         case .reactiveProfileKeyAttemptInterval: true
         case .replaceableInteractionExpiration: false
-        case .requirePqRatio: true
         case .ringrtcDredDuration: true
         case .ringrtcVp9DeviceModelDecodeDenylist: true
         case .ringrtcVp9DeviceModelDenylist: true
