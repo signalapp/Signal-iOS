@@ -60,6 +60,7 @@ class VideoAttachmentPrepViewController: AttachmentPrepViewController, VideoEdit
     }
 
     override func prepareContentView() {
+        editorView.hasRoundedCorners = true
         editorView.configureSubviews()
         generateThumbnailsAsync()
     }

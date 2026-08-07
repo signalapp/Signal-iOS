@@ -35,11 +35,7 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
     lazy var galleryRailView: GalleryRailView = {
         let galleryRailView = GalleryRailView()
         galleryRailView.itemSize = 44
-        if #available(iOS 26, *) {
-            // Increase spacing above `mediaToolbar` from default `8`.
-            // Pre-iOS 26 keeps default `8` as padding above the blurred background.
-            galleryRailView.layoutMargins.bottom = 16
-        } else {
+        if #unavailable(iOS 26) {
             galleryRailView.scrollFocusMode = .keepWithinBounds
         }
         return galleryRailView
@@ -56,24 +52,25 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
             animated: false,
         )
         toolbar.delegate = self
+        if #unavailable(iOS 26) {
+            // We want top margin at only 8 dp (it comes from AttachmentApprovalToolbar)
+            // when keyboard is up and this MediaCaptionToolbar is the only visible control.
+            toolbar.directionalLayoutMargins.top = 0
+        }
         return toolbar
     }()
 
-    private lazy var opaqueContentView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [mediaToolbar, mediaCaptionToolbar])
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [galleryRailView, mediaToolbar, mediaCaptionToolbar])
         stackView.axis = .vertical
         // Both `mediaToolbar` and `mediaCaptionToolbar` have 8 dp of vertical margins in them.
         // iOS 26 needs more space - 24dp - between rows.
-        stackView.spacing = if #available(iOS 26, *) { 8 } else { 0 }
-        return stackView
-    }()
-
-    private lazy var containerStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [opaqueContentView])
-        stackView.axis = .vertical
-        // Each row of controls has 8dp vertical margins.
-        // iOS 26 needs more space - 24dp - between rows.
-        stackView.spacing = if #available(iOS 26, *) { 8 } else { 0 }
+        if #available(iOS 26, *) {
+            stackView.spacing = 8
+        } else {
+            // Compensate for lack of top margin in `mediaCaptionToolbar`.
+            stackView.setCustomSpacing(8, after: mediaToolbar)
+        }
         return stackView
     }()
 
@@ -89,52 +86,41 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
         backgroundColor = .clear
         tintColor = .Signal.label
         preservesSuperviewLayoutMargins = true
+        if #available(iOS 26, *) {
+            directionalLayoutMargins.top = 0
+        }
 
         // View controller will use this layout guide to position UI elements above the keyboard.
         addLayoutGuide(contentLayoutGuide)
         NSLayoutConstraint.activate([
-            contentLayoutGuide.topAnchor.constraint(equalTo: topAnchor),
+            contentLayoutGuide.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
             contentLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
             contentLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
             contentLayoutGuide.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor),
         ])
 
-        // Thumbnail strip is positioned above the protection background (pre-iOS 26), directly over media.
-        addSubview(galleryRailView)
-        galleryRailView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            galleryRailView.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
-            galleryRailView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
-            galleryRailView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
-        ])
-
         // Pre-iOS 26 has blur background underneath caption input field and buttons.
-        containerStackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.translatesAutoresizingMaskIntoConstraints = false
         if #unavailable(iOS 26) {
             let blurBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
             blurBackgroundView.translatesAutoresizingMaskIntoConstraints = false
-            blurBackgroundView.contentView.addSubview(containerStackView)
+            blurBackgroundView.contentView.addSubview(stackView)
             addSubview(blurBackgroundView)
             NSLayoutConstraint.activate([
-                blurBackgroundView.topAnchor.constraint(equalTo: galleryRailView.bottomAnchor),
+                blurBackgroundView.topAnchor.constraint(equalTo: topAnchor),
                 blurBackgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
                 blurBackgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
                 blurBackgroundView.bottomAnchor.constraint(equalTo: bottomAnchor),
-
-                containerStackView.topAnchor.constraint(equalTo: blurBackgroundView.topAnchor),
-                containerStackView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
-                containerStackView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
-                containerStackView.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
             ])
         } else {
-            addSubview(containerStackView)
-            NSLayoutConstraint.activate([
-                containerStackView.topAnchor.constraint(equalTo: galleryRailView.bottomAnchor),
-                containerStackView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
-                containerStackView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
-                containerStackView.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
-            ])
+            addSubview(stackView)
         }
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+        ])
     }
 
     required init?(coder: NSCoder) {
@@ -145,8 +131,8 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
 
     func set(supplementaryView: UIView?) {
         if let supplementaryViewContainer {
+            stackView.removeArrangedSubview(supplementaryViewContainer)
             supplementaryViewContainer.removeFromSuperview()
-            containerStackView.removeArrangedSubview(supplementaryViewContainer)
             self.supplementaryViewContainer = nil
         }
         guard let supplementaryView else {
@@ -154,29 +140,28 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
         }
 
         let containerView = UIView()
+        containerView.directionalLayoutMargins = .init(hMargin: 0, vMargin: 8)
         supplementaryView.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(supplementaryView)
-        let topMargin: CGFloat = if #available(iOS 26, *) { 0 } else { 16 }
-        let bottomMargin: CGFloat = if #available(iOS 26, *) { 8 } else { 0 }
         NSLayoutConstraint.activate([
-            supplementaryView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: topMargin),
-            supplementaryView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            supplementaryView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            supplementaryView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -bottomMargin),
+            supplementaryView.topAnchor.constraint(equalTo: containerView.layoutMarginsGuide.topAnchor),
+            supplementaryView.leadingAnchor.constraint(equalTo: containerView.layoutMarginsGuide.leadingAnchor),
+            supplementaryView.trailingAnchor.constraint(equalTo: containerView.layoutMarginsGuide.trailingAnchor),
+            supplementaryView.bottomAnchor.constraint(equalTo: containerView.layoutMarginsGuide.bottomAnchor),
         ])
-        containerStackView.insertArrangedSubview(containerView, at: 0)
+        stackView.insertArrangedSubview(containerView, at: 0)
         self.supplementaryViewContainer = containerView
     }
 
-    var opaqueAreaHeight: CGFloat { opaqueContentView.height }
-
     private func updateContents(animated: Bool) {
         // Show/hide Gallery Rail.
-        let isGalleryRailViewVisible = configuration.isMediaStripVisible && !isEditingCaptionText
-        galleryRailView.setIsHidden(!isGalleryRailViewVisible, animated: animated)
+        let hideMediaStrip = configuration.isMediaStripVisible == false || isEditingCaptionText
+        galleryRailView.setIsHidden(hideMediaStrip, animated: animated)
 
+        // Video timeline view is also hidden when editing caption.
         supplementaryViewContainer?.isHiddenInStackView = isEditingCaptionText
 
+        // Update controls in media toolbar.
         mediaToolbar.setIsMediaQualityHigh(
             enabled: configuration.isMediaHighQualityEnabled,
             animated: animated,
@@ -213,6 +198,7 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
         // to get a nice animation.
         mediaToolbar.isHiddenInStackView = isEditingCaptionText || availableButtons.isEmpty
 
+        // Update caption input field.
         mediaCaptionToolbar.setProceedButtonImage(
             UIImage(imageLiteralResourceName: configuration.proceedButtonIcon.rawValue),
         )
@@ -225,13 +211,13 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
         showViewOnceTooltipIfNecessary()
     }
 
-    func update(currentAttachmentItem: AttachmentApprovalItem, configuration: Configuration, animated: Bool) {
+    func update(using attachmentItem: AttachmentApprovalItem, configuration: Configuration, animated: Bool) {
         // De-bounce
-        if currentAttachmentItem.isIdenticalTo(self.currentAttachmentItem as AttachmentApprovalItem?), self.configuration == configuration {
+        if attachmentItem.isIdenticalTo(currentAttachmentItem as AttachmentApprovalItem?), self.configuration == configuration {
             return
         }
 
-        self.currentAttachmentItem = currentAttachmentItem
+        self.currentAttachmentItem = attachmentItem
         self.configuration = configuration
 
         updateContents(animated: animated)
@@ -414,10 +400,6 @@ private class MediaToolbar: UIView {
         super.init(frame: frame)
 
         directionalLayoutMargins = .init(hMargin: 0, vMargin: 8)
-        if #unavailable(iOS 26) {
-            // More space between buttons and the top edge of the blurred background.
-            directionalLayoutMargins.top = 16
-        }
 
         let stackView = UIStackView(arrangedSubviews: [
             cropToolButton,

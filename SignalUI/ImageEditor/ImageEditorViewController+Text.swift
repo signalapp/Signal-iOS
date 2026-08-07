@@ -342,6 +342,8 @@ extension ImageEditorViewController {
 
     // MARK: - ImageEditorViewDelegate
 
+    func imageEditorViewModelDidChange(_ imageEditorView: ImageEditorView) { }
+
     func imageEditorView(_ imageEditorView: ImageEditorView, didRequestAddTextItem textItem: ImageEditorTextItem) {
         // No adding text via tap on image in this view controller.
         // Instead, tap on empty space deselects any selected text object

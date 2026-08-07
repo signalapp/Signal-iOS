@@ -55,7 +55,6 @@ class EditorTextLayer: CATextLayer {
         self.name = itemId
     }
 
-    @available(*, unavailable, message: "use other init() instead.")
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -107,9 +106,9 @@ private class TextFrameLayer: CAShapeLayer {
         commonInit()
     }
 
-    @available(*, unavailable, message: "use other init() instead.")
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
+        commonInit()
     }
 
     override var bounds: CGRect {
@@ -166,7 +165,7 @@ private class TextFrameLayer: CAShapeLayer {
 // MARK: - ImageEditorCanvasView
 
 // A view for previewing an image editor model.
-class ImageEditorCanvasView: UIView {
+class ImageEditorCanvasView: UIView, ImageEditorModelObserver {
 
     private let model: ImageEditorModel
 
@@ -204,7 +203,7 @@ class ImageEditorCanvasView: UIView {
     /// Selection frame is rendered above all content.
     private static let selectionFrameLayerZ: CGFloat = +4
     /// Trash is rendered above all content.
-    static let trashLazerZ: CGFloat = +5
+    static let trashLayerZ: CGFloat = +5
     /// We leave space for 10k items/layers of each type.
     private static let zPositionSpacing: CGFloat = 0.0001
 
@@ -214,28 +213,32 @@ class ImageEditorCanvasView: UIView {
 
         super.init(frame: .zero)
 
+        contentMode = .scaleAspectFit
+
         model.add(observer: self)
 
         prepareBlurredImage()
     }
 
-    @available(*, unavailable, message: "use other init() instead.")
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override var contentMode: UIView.ContentMode {
+        didSet {
+            updateLayout()
+        }
+    }
+
     // MARK: - Views
 
-    // contentView is used to host the layers used to render the content.
-    //
-    // The transform for the content is applied to it.
-    let contentView = OWSLayerView()
+    /// Hosts the layers used to render the content. The transform for the content is applied to this view.
+    let imageLayerView = OWSLayerView()
 
-    // clipView is used to clip the content.  It reflects the actual
-    // visible bounds of the "canvas" content.
-    private let clipView = OWSLayerView()
+    /// Used to clip the content. It reflects the actual visible bounds of the "canvas" content.
+    private let clipView = UIView()
 
-    private var contentViewConstraints = [NSLayoutConstraint]()
+    private var contentViewConstraints: [NSLayoutConstraint]?
 
     private var imageLayer = CALayer()
 
@@ -253,34 +256,33 @@ class ImageEditorCanvasView: UIView {
     }
 
     func configureSubviews() {
-        self.backgroundColor = .clear
-        self.isOpaque = false
+        backgroundColor = .clear
+        isOpaque = false
 
         clipView.clipsToBounds = true
         clipView.isOpaque = false
-        clipView.layoutCallback = { [weak self] _ in
-            guard let strongSelf = self else {
-                return
-            }
-            strongSelf.updateLayout()
-        }
+        clipView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(clipView)
+        // Constraints added in `updateLayout()`.
 
         if let srcImage = loadSrcImage() {
             imageLayer.contents = srcImage.cgImage
             imageLayer.contentsScale = srcImage.scale
         }
-
-        contentView.isOpaque = false
-        contentView.layer.addSublayer(imageLayer)
-        contentView.layoutCallback = { [weak self] _ in
-            guard let strongSelf = self else {
-                return
-            }
-            strongSelf.updateAllContent()
+        imageLayerView.isOpaque = false
+        imageLayerView.layer.addSublayer(imageLayer)
+        imageLayerView.layoutCallback = { [weak self] _ in
+            guard let self else { return }
+            self.updateAllContent()
         }
-        clipView.addSubview(contentView)
-        contentView.autoPinEdgesToSuperviewEdges()
+        imageLayerView.translatesAutoresizingMaskIntoConstraints = false
+        clipView.addSubview(imageLayerView)
+        NSLayoutConstraint.activate([
+            imageLayerView.topAnchor.constraint(equalTo: clipView.topAnchor),
+            imageLayerView.leadingAnchor.constraint(equalTo: clipView.leadingAnchor),
+            imageLayerView.trailingAnchor.constraint(equalTo: clipView.trailingAnchor),
+            imageLayerView.bottomAnchor.constraint(equalTo: clipView.bottomAnchor),
+        ])
 
         updateLayout()
     }
@@ -290,47 +292,58 @@ class ImageEditorCanvasView: UIView {
     }
 
     private func updateLayout() {
-        NSLayoutConstraint.deactivate(contentViewConstraints)
-        contentViewConstraints = ImageEditorCanvasView.updateContentLayout(
-            transform: model.currentTransform(),
-            contentView: clipView,
-        )
-    }
+        // Skip update during init.
+        guard clipView.superview != nil else { return }
 
-    class func updateContentLayout(
-        transform: ImageEditorTransform,
-        contentView: UIView,
-    ) -> [NSLayoutConstraint] {
-        guard let superview = contentView.superview else {
-            owsFailDebug("Content view has no superview.")
-            return []
+        if let contentViewConstraints {
+            NSLayoutConstraint.deactivate(contentViewConstraints)
+            self.contentViewConstraints = nil
         }
 
+        let transform = model.currentTransform()
         let aspectRatio = transform.outputSizePixels
 
-        // This emulates the behavior of contentMode = .scaleAspectFit using iOS auto layout constraints.
-        var constraints = [NSLayoutConstraint]()
-        NSLayoutConstraint.autoSetPriority(.defaultHigh + 100) {
-            constraints.append(contentView.autoAlignAxis(.vertical, toSameAxisOf: superview))
-            constraints.append(contentView.autoAlignAxis(.horizontal, toSameAxisOf: superview))
-        }
-        constraints.append(contentView.autoPinEdge(.top, to: .top, of: superview, withOffset: 0, relation: .greaterThanOrEqual))
-        constraints.append(contentView.autoPinEdge(.bottom, to: .bottom, of: superview, withOffset: 0, relation: .lessThanOrEqual))
-        constraints.append(contentView.autoPin(toAspectRatio: aspectRatio.width / aspectRatio.height))
-        constraints.append(contentView.autoMatch(.width, to: .width, of: superview, withMultiplier: 1.0, relation: .lessThanOrEqual))
-        constraints.append(contentView.autoMatch(.height, to: .height, of: superview, withMultiplier: 1.0, relation: .lessThanOrEqual))
-        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            constraints.append(contentView.autoMatch(.width, to: .width, of: superview, withMultiplier: 1.0, relation: .equal))
-            constraints.append(contentView.autoMatch(.height, to: .height, of: superview, withMultiplier: 1.0, relation: .equal))
-        }
+        // Always centered in the superview.
+        var constraints = [
+            clipView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            clipView.centerXAnchor.constraint(equalTo: centerXAnchor),
+        ]
 
-        let superviewSize = superview.frame.size
-        let maxSuperviewDimension = max(superviewSize.width, superviewSize.height)
-        let outputSizePoints = CGSize(square: maxSuperviewDimension)
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            constraints.append(contentsOf: contentView.autoSetDimensions(to: outputSizePoints))
+        // We only need two modes: `scaleAspectFit` and `scaleToFill`.
+        let sizingConstraints: [NSLayoutConstraint] = switch contentMode {
+        case .scaleAspectFit:
+            [
+                // `clipView` doesn't exceed superview's bounds while keeping set aspect ratio.
+                clipView.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor),
+                clipView.heightAnchor.constraint(lessThanOrEqualTo: heightAnchor),
+                clipView.widthAnchor.constraint(
+                    equalTo: clipView.heightAnchor,
+                    multiplier: aspectRatio.width / aspectRatio.height,
+                ),
+            ]
+        case .scaleToFill:
+            [
+                // `clipView` is always resized to fill superview's bounds.
+                clipView.widthAnchor.constraint(equalTo: widthAnchor),
+                clipView.heightAnchor.constraint(equalTo: heightAnchor),
+            ]
+        default:
+            owsFail("Invalid content mode")
         }
-        return constraints
+        constraints += sizingConstraints
+
+        // Intrinsic content size.
+        constraints += {
+            let c = [
+                clipView.widthAnchor.constraint(equalToConstant: aspectRatio.width),
+                clipView.heightAnchor.constraint(equalToConstant: aspectRatio.height),
+            ]
+            c.forEach { $0.priority = .defaultLow }
+            return c
+        }()
+
+        NSLayoutConstraint.activate(constraints)
+        contentViewConstraints = constraints
     }
 
     private func loadSrcImage() -> UIImage? {
@@ -418,7 +431,7 @@ class ImageEditorCanvasView: UIView {
 
         let selectedTextFrameLayer = selectedTextFrameLayer ?? TextFrameLayer()
         if selectedTextFrameLayer.superlayer == nil {
-            contentView.layer.addSublayer(selectedTextFrameLayer)
+            imageLayerView.layer.addSublayer(selectedTextFrameLayer)
             selectedTextFrameLayer.zPosition = ImageEditorCanvasView.selectionFrameLayerZ
             self.selectedTextFrameLayer = selectedTextFrameLayer
         }
@@ -468,11 +481,11 @@ class ImageEditorCanvasView: UIView {
         }
 
         if tooltipView.superview == nil {
-            contentView.addSubview(tooltipView)
+            imageLayerView.addSubview(tooltipView)
             tooltipView.layer.zPosition = ImageEditorCanvasView.selectionFrameLayerZ
         }
 
-        if self.tooltipView.layer.opacity < 1 {
+        if tooltipView.layer.opacity < 1 {
             // Fade in the tooltip if it wasn't already showing
             UIView.animate(withDuration: 0.2) {
                 self.tooltipView.layer.opacity = 1
@@ -514,13 +527,8 @@ class ImageEditorCanvasView: UIView {
 
         let viewSize = clipView.bounds.size
         let transform = model.currentTransform()
-        if
-            viewSize.width > 0,
-            viewSize.height > 0
-        {
-
+        if viewSize.isNonEmpty {
             applyTransform()
-
             updateImageLayer()
 
             model.items.forEach { item in
@@ -539,12 +547,11 @@ class ImageEditorCanvasView: UIView {
                 if item.itemId == hiddenItemId {
                     layer.isHidden = true
                 }
-                contentView.layer.addSublayer(layer)
+                imageLayerView.layer.addSublayer(layer)
                 contentLayerMap[item.itemId] = layer
             }
         }
 
-        updateLayout()
         updateSelectedTransformableItemFrame()
 
         // Force layout now.
@@ -571,13 +578,8 @@ class ImageEditorCanvasView: UIView {
 
         let viewSize = clipView.bounds.size
         let transform = model.currentTransform()
-        if
-            viewSize.width > 0,
-            viewSize.height > 0
-        {
-
+        if viewSize.isNonEmpty {
             applyTransform()
-
             updateImageLayer()
 
             // Create layers for inserted and updated items.
@@ -603,7 +605,7 @@ class ImageEditorCanvasView: UIView {
                 if item.itemId == hiddenItemId {
                     layer.isHidden = true
                 }
-                contentView.layer.addSublayer(layer)
+                imageLayerView.layer.addSublayer(layer)
                 contentLayerMap[item.itemId] = layer
             }
         }
@@ -615,7 +617,7 @@ class ImageEditorCanvasView: UIView {
 
     private func applyTransform() {
         let viewSize = clipView.bounds.size
-        contentView.layer.setAffineTransform(model.currentTransform().affineTransform(viewSize: viewSize))
+        imageLayerView.layer.setAffineTransform(model.currentTransform().affineTransform(viewSize: viewSize))
     }
 
     private func updateImageLayer() {
@@ -1409,7 +1411,7 @@ class ImageEditorCanvasView: UIView {
     // MARK: -
 
     func transformableLayer(forLocation point: CGPoint) -> CALayer? {
-        guard let sublayers = contentView.layer.sublayers else {
+        guard let sublayers = imageLayerView.layer.sublayers else {
             return nil
         }
 
@@ -1455,14 +1457,12 @@ class ImageEditorCanvasView: UIView {
         let locationImageUnit = locationInContent.toUnitCoordinates(viewBounds: imageFrame, shouldClamp: false)
         return locationImageUnit
     }
-}
 
-// MARK: -
-
-extension ImageEditorCanvasView: ImageEditorModelObserver {
+    // MARK: - ImageEditorModelObserver
 
     func imageEditorModelDidChange(before: ImageEditorContents, after: ImageEditorContents) {
         updateAllContent()
+        updateLayout()
     }
 
     func imageEditorModelDidChange(changedItemIds: [String]) {

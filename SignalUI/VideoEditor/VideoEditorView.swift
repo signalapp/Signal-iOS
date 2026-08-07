@@ -16,7 +16,7 @@ protocol VideoEditorViewControllerProviding: AnyObject {
     func viewController(forVideoEditorView videoEditorView: VideoEditorView) -> UIViewController
 }
 
-class VideoEditorView: UIView, VideoPlaybackState, VideoPlayerViewDelegate {
+class VideoEditorView: UIView, AttachmentPrepContentView, VideoPlaybackState, VideoPlayerViewDelegate {
 
     weak var delegate: VideoEditorViewDelegate?
     weak var dataSource: VideoEditorDataSource?
@@ -66,6 +66,7 @@ class VideoEditorView: UIView, VideoPlaybackState, VideoPlayerViewDelegate {
         super.init(frame: .zero)
 
         backgroundColor = .Signal.mediaBackground
+        clipsToBounds = true
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -75,7 +76,8 @@ class VideoEditorView: UIView, VideoPlaybackState, VideoPlayerViewDelegate {
     // MARK: - Views
 
     func configureSubviews() {
-        let aspectRatio: CGFloat = model.displaySize.width / model.displaySize.height
+        let displaySize = model.displaySize
+        let aspectRatio = displaySize.width / displaySize.height
         playerView.setContentHuggingLow()
         playerView.setCompressionResistanceLow()
         playerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapPlayerView(_:))))
@@ -90,16 +92,24 @@ class VideoEditorView: UIView, VideoPlaybackState, VideoPlayerViewDelegate {
             playerView.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor),
             playerView.heightAnchor.constraint(lessThanOrEqualTo: heightAnchor),
         ])
-        NSLayoutConstraint.activate(
-            {
-                let constraints = [
-                    playerView.widthAnchor.constraint(equalTo: widthAnchor),
-                    playerView.heightAnchor.constraint(equalTo: heightAnchor),
-                ]
-                constraints.forEach { $0.priority = .defaultHigh }
-                return constraints
-            }(),
-        )
+        // Hug `playerView` as much as possible.
+        NSLayoutConstraint.activate({
+            let constraints = [
+                playerView.widthAnchor.constraint(equalTo: widthAnchor),
+                playerView.heightAnchor.constraint(equalTo: heightAnchor),
+            ]
+            constraints.forEach { $0.priority = .defaultHigh }
+            return constraints
+        }())
+        // Preferred size.
+        NSLayoutConstraint.activate({
+            let constraints = [
+                playerView.widthAnchor.constraint(equalToConstant: displaySize.width),
+                playerView.heightAnchor.constraint(equalToConstant: displaySize.height),
+            ]
+            constraints.forEach { $0.priority = .defaultLow }
+            return constraints
+        }())
 
         playButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(playButton)
@@ -128,6 +138,38 @@ class VideoEditorView: UIView, VideoPlaybackState, VideoPlayerViewDelegate {
         } else {
             playVideo()
         }
+    }
+
+    // MARK: - Corner Radius
+
+    private static let defaultCornerRadius: CGFloat = if #available(iOS 26, *) { 26 } else { 18 }
+
+    private var _hasRoundedCorners: Bool = false
+
+    var hasRoundedCorners: Bool {
+        get { _hasRoundedCorners }
+        set { setHasRoundedCorners(newValue, animationDuration: 0) }
+    }
+
+    func setHasRoundedCorners(_ hasRoundedCorners: Bool, animationDuration: TimeInterval) {
+        guard _hasRoundedCorners != hasRoundedCorners else { return }
+
+        _hasRoundedCorners = hasRoundedCorners
+        setCornerRadius(
+            hasRoundedCorners ? Self.defaultCornerRadius : 0,
+            animationDuration: animationDuration,
+        )
+    }
+
+    private func setCornerRadius(_ cornerRadius: CGFloat, animationDuration: TimeInterval = 0) {
+        if animationDuration > 0 {
+            let animation = CABasicAnimation(keyPath: #keyPath(CALayer.cornerRadius))
+            animation.fromValue = layer.cornerRadius
+            animation.toValue = cornerRadius
+            animation.duration = animationDuration
+            layer.add(animation, forKey: "cornerRadius")
+        }
+        layer.cornerRadius = cornerRadius
     }
 
     // MARK: - Video

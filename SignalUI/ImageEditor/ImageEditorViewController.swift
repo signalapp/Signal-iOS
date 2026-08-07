@@ -611,7 +611,7 @@ class ImageEditorViewController: OWSViewController, UIGestureRecognizerDelegate,
 
     private func transitionUI(toState state: UIState, animated: Bool, completion: ((Bool) -> Void)? = nil) {
         setControls(hidden: state == .initial, animated: animated, slideButtonsInOut: true, completion: completion)
-        imageEditorView.setHasRoundCorners(state == .initial, animationDuration: animated ? 0.15 : 0)
+        imageEditorView.setHasRoundedCorners(state == .initial, animationDuration: animated ? 0.15 : 0)
     }
 
     // MARK: - Actions

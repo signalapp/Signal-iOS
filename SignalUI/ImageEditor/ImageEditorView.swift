@@ -7,6 +7,8 @@ import SignalServiceKit
 
 protocol ImageEditorViewDelegate: AnyObject {
 
+    func imageEditorViewModelDidChange(_ imageEditorView: ImageEditorView)
+
     func imageEditorView(_ imageEditorView: ImageEditorView, didRequestAddTextItem textItem: ImageEditorTextItem)
 
     func imageEditorView(_ imageEditorView: ImageEditorView, didTapTextItem textItem: ImageEditorTextItem)
@@ -22,7 +24,7 @@ protocol ImageEditorViewDelegate: AnyObject {
 
 // A view for editing outgoing image attachments.
 // It can also be used to render the final output.
-class ImageEditorView: UIView {
+class ImageEditorView: UIView, AttachmentPrepContentView, UIGestureRecognizerDelegate, ImageEditorModelObserver {
 
     weak var delegate: ImageEditorViewDelegate?
 
@@ -30,22 +32,33 @@ class ImageEditorView: UIView {
 
     let canvasView: ImageEditorCanvasView
 
-    private let trashViewSize: CGFloat = 42
-    private lazy var trashView: UIView = {
-        let backgroundView = UIView()
-        backgroundView.layoutMargins = .init(margin: 9)
+    private static let trashViewSize: CGFloat = 42
 
-        let image = UIImage(named: "trash")
+    private lazy var trashView: UIView = {
+        let image = UIImage(imageLiteralResourceName: "trash")
+
+        let backgroundView = UIView()
+        backgroundView.clipsToBounds = true
+        backgroundView.backgroundColor = .ows_blackAlpha40
+        if #available(iOS 26, *) {
+            backgroundView.cornerConfiguration = .capsule()
+        } else {
+            backgroundView.layer.cornerRadius = Self.trashViewSize / 2
+        }
+        backgroundView.isUserInteractionEnabled = false
+
         let imageView = UIImageView(image: image)
         imageView.tintColor = .white
-        imageView.contentMode = .scaleAspectFill
-        imageView.isUserInteractionEnabled = false
-
-        backgroundView.layer.cornerRadius = trashViewSize / 2
-        backgroundView.backgroundColor = .ows_blackAlpha40
-        backgroundView.isUserInteractionEnabled = false
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         backgroundView.addSubview(imageView)
-        imageView.autoPinEdgesToSuperviewMargins()
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: backgroundView.topAnchor, constant: 9),
+            imageView.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor),
+
+            imageView.leadingAnchor.constraint(equalTo: backgroundView.leadingAnchor, constant: 9),
+            imageView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor),
+        ])
 
         return backgroundView
     }()
@@ -76,9 +89,14 @@ class ImageEditorView: UIView {
         model.add(observer: self)
     }
 
-    @available(*, unavailable, message: "use other init() instead.")
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    // Allows us to set `contentMode` on ImageEditorCanvasView from outside.
+    override var contentMode: UIView.ContentMode {
+        get { canvasView.contentMode }
+        set { canvasView.contentMode = newValue }
     }
 
     // MARK: - Views
@@ -100,24 +118,29 @@ class ImageEditorView: UIView {
 
     func configureSubviews() {
         canvasView.configureSubviews()
+        canvasView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(canvasView)
-        canvasView.autoPinEdgesToSuperviewEdges()
-
-        canvasView.contentView.addSubview(trashView)
+        NSLayoutConstraint.activate([
+            canvasView.topAnchor.constraint(equalTo: topAnchor),
+            canvasView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            canvasView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            canvasView.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
 
         // Center trash view instead of aligning the bottom so that it
         // resizes from the center when hovering over it.
         // 20 spacing to bottom + half the height for the center point.
-        let distanceFromCenterToBottom = 20 + trashViewSize / 2
-        trashView.centerYAnchor.constraint(
-            equalTo: canvasView.contentView.bottomAnchor,
-            constant: -distanceFromCenterToBottom,
-        )
-        .isActive = true
-
-        trashView.autoHCenterInSuperview()
-        trashView.autoSetDimensions(to: .square(trashViewSize))
-        trashView.layer.zPosition = ImageEditorCanvasView.trashLazerZ
+        trashView.translatesAutoresizingMaskIntoConstraints = false
+        canvasView.imageLayerView.addSubview(trashView)
+        let distanceFromCenterToBottom = 20 + Self.trashViewSize / 2
+        NSLayoutConstraint.activate([
+            trashView.centerXAnchor.constraint(equalTo: canvasView.centerXAnchor),
+            trashView.centerYAnchor.constraint(
+                equalTo: canvasView.bottomAnchor,
+                constant: -distanceFromCenterToBottom,
+            ),
+        ])
+        trashView.layer.zPosition = ImageEditorCanvasView.trashLayerZ
         isTrashShowing = false
 
         addGestureRecognizer(moveTextGestureRecognizer)
@@ -555,25 +578,29 @@ class ImageEditorView: UIView {
             movingItem = nil
         }
     }
-}
 
-// MARK: - Corner Radius
+    // MARK: - Corner Radius
 
-extension ImageEditorView {
+    static let defaultCornerRadius: CGFloat = if #available(iOS 26, *) { 26 } else { 18 }
 
-    static let defaultCornerRadius: CGFloat = 18
+    private var _hasRoundedCorners: Bool = false
 
-    func setHasRoundCorners(_ roundCorners: Bool, animationDuration: TimeInterval = 0) {
+    var hasRoundedCorners: Bool {
+        get { _hasRoundedCorners }
+        set { setHasRoundedCorners(newValue, animationDuration: 0) }
+    }
+
+    func setHasRoundedCorners(_ hasRoundedCorners: Bool, animationDuration: TimeInterval) {
+        guard _hasRoundedCorners != hasRoundedCorners else { return }
+
+        _hasRoundedCorners = hasRoundedCorners
         canvasView.setCornerRadius(
-            roundCorners ? ImageEditorView.defaultCornerRadius : 0,
+            hasRoundedCorners ? ImageEditorView.defaultCornerRadius : 0,
             animationDuration: animationDuration,
         )
     }
-}
 
-// MARK: -
-
-extension ImageEditorView: UIGestureRecognizerDelegate {
+    // MARK: - UIGestureRecognizerDelegate
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard moveTextGestureRecognizer == gestureRecognizer else {
@@ -585,15 +612,12 @@ extension ImageEditorView: UIGestureRecognizerDelegate {
         let isInTextArea = self.transformableLayer(forLocation: location) != nil
         return isInTextArea
     }
-}
 
-// MARK: -
-
-extension ImageEditorView: ImageEditorModelObserver {
+    // MARK: - ImageEditorModelObserver
 
     func imageEditorModelDidChange(before: ImageEditorContents, after: ImageEditorContents) {
+        delegate?.imageEditorViewModelDidChange(self)
     }
 
-    func imageEditorModelDidChange(changedItemIds: [String]) {
-    }
+    func imageEditorModelDidChange(changedItemIds: [String]) { }
 }

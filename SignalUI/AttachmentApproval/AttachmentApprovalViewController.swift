@@ -87,7 +87,7 @@ public struct AttachmentApprovalViewControllerOptions: OptionSet {
 
 // MARK: -
 
-public final class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource,
+public final class AttachmentApprovalViewController: OWSViewController, UIPageViewControllerDataSource,
     UIPageViewControllerDelegate, OWSNavigationChildController, GalleryRailViewDelegate, ApprovalRailCellViewDelegate,
     AttachmentPrepViewControllerDelegate, MediaCaptionToolbarDelegate, BodyRangesTextViewDelegate
 {
@@ -141,7 +141,6 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
 
     // MARK: - Initializers
 
-    @available(*, unavailable, message: "use attachment: constructor instead.")
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -149,6 +148,8 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
     private var observerToken: NSObjectProtocol?
 
     private var observingKeyboardNotifications = false
+
+    @available(iOS, deprecated: 16)
     private var keyboardHeight: CGFloat = 0 {
         didSet {
             guard let iOS15BottomToolviewVerticalPositionConstraint else { return }
@@ -184,8 +185,7 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         self.attachmentLimits = attachmentLimits
         self.receivedOptions = options
 
-        let pageOptions: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: 20]
-        super.init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: pageOptions)
+        super.init()
 
         if Theme.forceDarkThemeForMedia {
             overrideUserInterfaceStyle = .dark
@@ -194,17 +194,10 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         let isAddMoreVisibleBlock = { [weak self] in
             return self?.isAddMoreVisible ?? false
         }
-        self.attachmentApprovalItemCollection = AttachmentApprovalItemCollection(
+        attachmentApprovalItemCollection = AttachmentApprovalItemCollection(
             attachmentApprovalItems: attachmentApprovalItems,
             isAddMoreVisible: isAddMoreVisibleBlock,
         )
-        self.dataSource = self
-        self.delegate = self
-
-        // Bottom Bar
-        self.galleryRailView.delegate = self
-        self.bottomToolView.captionToolbarDelegate = self
-        self.mediaCaptionToolbar.textViewDelegate = self
 
         observerToken = NotificationCenter.default.addObserver(forName: .OWSApplicationDidBecomeActive, object: nil, queue: .main) { [weak self] _ in
             guard let self else { return }
@@ -251,6 +244,12 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
 
     // MARK: - Subviews
 
+    private let pageViewController = UIPageViewController(
+        transitionStyle: .scroll,
+        navigationOrientation: .horizontal,
+        options: [.interPageSpacing: 20],
+    )
+
     var galleryRailView: GalleryRailView {
         return bottomToolView.galleryRailView
     }
@@ -264,6 +263,7 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
     private let bottomToolView = AttachmentApprovalToolbar()
 
     // Manually adjust position of the bottom toolbar on iOS 15 because `keyboardLayoutGuide` is buggy.
+    @available(iOS, deprecated: 16)
     private var iOS15BottomToolviewVerticalPositionConstraint: NSLayoutConstraint?
 
     lazy var contentDimmerView: UIView = {
@@ -293,14 +293,31 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         definesPresentationContext = true
         view.backgroundColor = .Signal.mediaBackground
 
-        // avoid an unpleasant "bounce" which doesn't make sense in the context of a single item.
-        pagerScrollView?.isScrollEnabled = attachmentApprovalItems.count > 1
+        // UIPageViewController is added as a child because I needed to set
+        // additional safe area insets (heights of top and bottom controls) on pages only,
+        // leaving parent view unaffected and keeping toolbars with the default safe area insets.
+        pageViewController.dataSource = self
+        pageViewController.delegate = self
+        pageViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        addChild(pageViewController)
+        view.addSubview(pageViewController.view)
+        pageViewController.didMove(toParent: self)
+        NSLayoutConstraint.activate([
+            pageViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            pageViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            pageViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            pageViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+
+        // Do not allow scrolling when there's just one item.
+        if let pagingScrollView = pageViewController.view.subviews.compactMap({ $0 as? UIScrollView }).first {
+            pagingScrollView.isScrollEnabled = attachmentApprovalItems.count > 1
+        }
 
         guard let firstItem = attachmentApprovalItems.first else {
             owsFailDebug("firstItem was unexpectedly nil")
             return
         }
-
         setCurrentItem(firstItem, direction: .forward, animated: false)
 
         // Top Bar
@@ -319,6 +336,9 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         topBar.install(in: view)
 
         // Bottom Bar
+        galleryRailView.delegate = self
+        bottomToolView.captionToolbarDelegate = self
+        mediaCaptionToolbar.textViewDelegate = self
         bottomToolView.buttonProceed.addAction(
             UIAction { [weak self] _ in self?.didTapProceed() },
             for: .primaryActionTriggered,
@@ -344,9 +364,8 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
             UIAction { [weak self] _ in self?.didToggleViewOnce() },
             for: .primaryActionTriggered,
         )
-
-        view.addSubview(bottomToolView)
         bottomToolView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bottomToolView)
         NSLayoutConstraint.activate([
             bottomToolView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomToolView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -381,10 +400,6 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         topBar.update(withRecipientNames: approvalDataSource?.attachmentApprovalRecipientNames ?? [])
 
         updateContents(animated: false)
-
-        if let currentPageViewController {
-            updateContentLayoutMargins(for: currentPageViewController)
-        }
     }
 
     override public func viewWillDisappear(_ animated: Bool) {
@@ -400,45 +415,31 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         if let iOS15BottomToolviewVerticalPositionConstraint {
             iOS15BottomToolviewVerticalPositionConstraint.constant = -max(view.safeAreaInsets.bottom, keyboardHeight)
         }
-        if let currentPageViewController {
-            updateContentLayoutMargins(for: currentPageViewController)
-        }
+    }
+
+    override public func viewLayoutMarginsDidChange() {
+        super.viewLayoutMarginsDidChange()
+
+        updatePageViewContollerSafeAreaInsets()
+    }
+
+    override public func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        updatePageViewContollerSafeAreaInsets()
     }
 
     // MARK: - UI Updates
 
-    private func updateContentLayoutMargins(for viewController: AttachmentPrepViewController) {
-        // The goal of all this layout logic is to lay out content in Review screen
-        // the same way it will be laid out in Edit mode (drawing etc) so that activating editing tools
-        // does not create any changes to media's size and position.
-        // However AttachmentPrepViewController's view is always full screen and is managed by UIPageViewController,
-        // which makes it not possible to constrain any of its subviews to the bottom toolbar.
-        // The solution is to allow to set layout margins in AttachmentPrepViewController's view externally.
+    private func updatePageViewContollerSafeAreaInsets() {
+        // Both heights need to exclude current view's safe area insets because
+        // pageViewController would already have those.
 
-        var contentLayoutMargins: UIEdgeInsets = .zero
-        // On devices with a screen notch at the top content is constrained to safe area inset so that status bar is visible.
-        // On older devices content is pinned to the top of the screen and status bar is hidden to allow for more screen room.
-        if prefersStatusBarHidden == false {
-            contentLayoutMargins.top = view.safeAreaInsets.top
-        }
+        let topBarContentHeight = max(0, topBar.frame.maxY - view.safeAreaInsets.top)
+        pageViewController.additionalSafeAreaInsets.top = topBarContentHeight
 
-        if let mediaEditingToolbarHeight = viewController.mediaEditingToolbarHeight {
-            // For images there is an "edit" mode and it is necessary to keep image center the same
-            // when switching to/from "edit" mode. Therefore image is laid out using bottom inset from "edit" mode screen.
-            contentLayoutMargins.bottom = mediaEditingToolbarHeight
-        } else {
-            // bottomToolView contains UIStackView that doesn't always have a final frame at this point.
-            bottomToolView.layoutIfNeeded()
-            contentLayoutMargins.bottom = bottomToolView.opaqueAreaHeight
-
-            // For videos there's thumbnail timeline bar embedded into the `bottomToolView`
-            if let supplementaryView = viewController.toolbarSupplementaryView {
-                contentLayoutMargins.bottom += supplementaryView.height
-            }
-        }
-        contentLayoutMargins.bottom += view.safeAreaInsets.bottom
-
-        viewController.contentLayoutMargins = contentLayoutMargins
+        let bottomToolbarContentHeight = max(0, bottomToolView.frame.height - view.safeAreaInsets.bottom)
+        pageViewController.additionalSafeAreaInsets.bottom = bottomToolbarContentHeight
     }
 
     private func updateContents(animated: Bool) {
@@ -515,7 +516,7 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
             proceedButtonIcon: isScreenNotFinal ? .next : .send,
         )
         bottomToolView.update(
-            currentAttachmentItem: currentPageViewController.attachmentApprovalItem,
+            using: currentPageViewController.attachmentApprovalItem,
             configuration: configuration,
             animated: animated,
         )
@@ -560,15 +561,6 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         }
     }
 
-    lazy var pagerScrollView: UIScrollView? = {
-        // This is kind of a hack. Since we don't have first class access to the superview's `scrollView`
-        // we traverse the view hierarchy until we find it.
-        let pagerScrollView = view.subviews.first { $0 is UIScrollView } as? UIScrollView
-        assert(pagerScrollView != nil)
-
-        return pagerScrollView
-    }()
-
     // MARK: - UIPageViewControllerDelegate
 
     public func pageViewController(
@@ -579,15 +571,6 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
 
         // Pause video playback for current page
         currentPageViewController?.prepareToMoveOffscreen()
-
-        // Update layout margins for view controllers to become visible.
-        pendingViewControllers.forEach { viewController in
-            guard let pendingPage = viewController as? AttachmentPrepViewController else {
-                owsFailDebug("unexpected viewController: \(viewController)")
-                return
-            }
-            updateContentLayoutMargins(for: pendingPage)
-        }
     }
 
     public func pageViewController(
@@ -651,14 +634,7 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
     }
 
     public var currentPageViewController: AttachmentPrepViewController? {
-        return pageViewControllers.first
-    }
-
-    public var pageViewControllers: [AttachmentPrepViewController] {
-        guard let viewControllers = super.viewControllers else {
-            return []
-        }
-        return viewControllers.compactMap { $0 as? AttachmentPrepViewController }
+        return pageViewController.viewControllers?.first as? AttachmentPrepViewController
     }
 
     var currentItem: AttachmentApprovalItem? {
@@ -699,13 +675,16 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
 
         let previousPage = currentPageViewController
 
-        // Pause video playback for current page
-        currentPageViewController?.prepareToMoveOffscreen()
+        // Pause video playback for current page.
+        previousPage?.prepareToMoveOffscreen()
 
         page.loadViewIfNeeded()
-        updateContentLayoutMargins(for: page)
 
-        setViewControllers([page], direction: direction, animated: animated) { _ in
+        pageViewController.setViewControllers(
+            [page],
+            direction: direction,
+            animated: animated,
+        ) { _ in
             previousPage?.zoomOut(animated: false)
         }
 
@@ -1032,8 +1011,9 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
 
     func mediaCaptionToolBarDidChangeHeight(_ mediaCaptionToolbar: MediaCaptionToolbar) { }
 
+    @available(iOS, deprecated: 16)
     private func startObservingKeyboardNotifications() {
-        guard !observingKeyboardNotifications else { return }
+        guard #unavailable(iOS 16), observingKeyboardNotifications == false else { return }
 
         NotificationCenter.default.addObserver(
             self,
@@ -1062,6 +1042,7 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
         observingKeyboardNotifications = true
     }
 
+    @available(iOS, deprecated: 16)
     private func stopObservingKeyboardNotifications() {
         guard observingKeyboardNotifications else { return }
 
@@ -1075,37 +1056,16 @@ public final class AttachmentApprovalViewController: UIPageViewController, UIPag
     @objc
     private func handleKeyboardNotification(_ notification: Notification) {
         guard
-            let currentPageViewController,
             let userInfo = notification.userInfo,
-            let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
-
-        var keyboardHeight = endFrame.height
-
-        switch notification.name {
-        case UIResponder.keyboardDidHideNotification, UIResponder.keyboardWillHideNotification:
-            keyboardHeight = 0
-
-        default: break
+            let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
+        else {
+            return
         }
 
-        guard self.keyboardHeight != keyboardHeight else { return }
-        self.keyboardHeight = keyboardHeight
-
-        if
-            let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
-            let rawAnimationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int,
-            let animationCurve = UIView.AnimationCurve(rawValue: rawAnimationCurve)
-        {
-            UIView.animate(
-                withDuration: animationDuration,
-                delay: 0,
-                options: animationCurve.asAnimationOptions,
-                animations: {
-                    currentPageViewController.keyboardHeight = keyboardHeight
-                },
-            )
-        } else {
-            currentPageViewController.keyboardHeight = keyboardHeight
+        keyboardHeight = switch notification.name {
+        case UIResponder.keyboardDidHideNotification, UIResponder.keyboardWillHideNotification:
+            0
+        default: endFrame.height
         }
     }
 

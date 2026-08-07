@@ -28,7 +28,8 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController, ImageEdit
     }
 
     override func prepareContentView() {
-        editorView.setHasRoundCorners(true)
+        editorView.hasRoundedCorners = true
+        editorView.contentMode = .scaleToFill
         editorView.textInteractionModes = [.tap, .move]
         editorView.configureSubviews()
     }
@@ -42,23 +43,6 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController, ImageEdit
             return true
         }
         return super.canSaveMedia
-    }
-
-    /**
-     * Bottom toolbar in edit mode is always the same height and can be cached.
-     */
-    private static let editModeToolbarHeight: CGFloat = {
-        let toolbar = ImageEditorToolbar(tools: [])
-        let size = toolbar.systemLayoutSizeFitting(
-            CGSize(width: UIView.noIntrinsicMetric, height: .greatestFiniteMagnitude),
-            withHorizontalFittingPriority: .fittingSizeLevel,
-            verticalFittingPriority: .fittingSizeLevel,
-        )
-        return size.height
-    }()
-
-    override var mediaEditingToolbarHeight: CGFloat? {
-        ImageAttachmentPrepViewController.editModeToolbarHeight
     }
 
     // MARK: - Tools
@@ -93,6 +77,12 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController, ImageEdit
         let textEditor = ImageEditorViewController(model: model, stickerSheetDelegate: stickerSheetDelegate)
         textEditor.selectTextItem(textItem, isNewItem: isNewItem, startEditing: editText)
         presentMediaTool(viewController: textEditor)
+    }
+
+    func imageEditorViewModelDidChange(_ imageEditorView: ImageEditorView) {
+        // Updated model might have different image size / aspect ratio
+        // and we need to re-configure scrolling.
+        view.setNeedsLayout()
     }
 
     func imageEditorView(_: ImageEditorView, didRequestAddTextItem textItem: ImageEditorTextItem) {
