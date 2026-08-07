@@ -203,7 +203,7 @@ extension ImageEditorViewController {
         )
         // 12 is the sum of horizontal insets around textView as set in `initializeTextUIIfNecessary`.
         let unitWidth = (textViewWrapperView.width - 12) / imageFrame.width
-        textItem = textItem.copy(unitWidth: unitWidth)
+        textItem = textItem.with(unitWidth: unitWidth)
 
         // Ensure continuity of the new text item's location with its apparent location in this text editor.
         if currentTextItem.isNewItem {
@@ -214,16 +214,16 @@ extension ImageEditorViewController {
                 model: model,
                 transform: model.currentTransform(),
             )
-            textItem = textItem.copy(unitCenter: textCenterImageUnit)
+            textItem = textItem.with(unitCenter: textCenterImageUnit)
         }
 
         // Update font size.
         if let textViewFont = textView.font {
-            textItem = textItem.copy(fontSize: textViewFont.pointSize)
+            textItem = textItem.with(fontSize: textViewFont.pointSize)
         }
 
         // Update text and decoration style.
-        textItem = textItem.copy(
+        textItem = textItem.with(
             textStyle: textViewAccessoryToolbar.textStyle,
             decorationStyle: textViewAccessoryToolbar.decorationStyle,
         )
@@ -237,7 +237,7 @@ extension ImageEditorViewController {
         }
 
         // Update text.
-        textItem = textItem.copy(withText: text, color: textViewAccessoryToolbar.currentColorPickerValue)
+        textItem = textItem.with(text: text, color: textViewAccessoryToolbar.currentColorPickerValue)
 
         guard currentTextItem.textItem != textItem else {
             // No changes were made.  Cancel to avoid dirtying the undo stack.
@@ -354,9 +354,7 @@ extension ImageEditorViewController {
         beginTextEditing()
     }
 
-    func imageEditorView(_ imageEditorView: ImageEditorView, didMoveTextItem textItem: ImageEditorTextItem) {
-
-    }
+    func imageEditorView(_ imageEditorView: ImageEditorView, didMoveTextItem textItem: ImageEditorTextItem) { }
 
     func imageEditorViewDidUpdateSelection(_ imageEditorView: ImageEditorView) {
         switch imageEditorView.selectedTransformableItemID {

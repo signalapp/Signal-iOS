@@ -220,7 +220,7 @@ class ImageEditorView: UIView {
             let selectedTextItemId = selectedTransformableItemID,
             let textItem = model.item(forId: selectedTextItemId) as? ImageEditorTextItem
         {
-            let newTextItem = textItem.copy(color: color)
+            let newTextItem = textItem.with(color: color)
             model.replace(item: newTextItem)
         }
     }
@@ -337,11 +337,11 @@ class ImageEditorView: UIView {
             switch storySticker {
             case .clockDigital(let clockStyle):
                 let newSticker = clockStyle.stickerWithNextStyle()
-                let newStickerItem = stickerItem.copy(sticker: newSticker)
+                let newStickerItem = stickerItem.with(sticker: newSticker)
                 model.replace(item: newStickerItem)
             case .clockAnalog(let clockStyle):
                 let newSticker = clockStyle.stickerWithNextStyle()
-                let newStickerItem = stickerItem.copy(sticker: newSticker)
+                let newStickerItem = stickerItem.with(sticker: newSticker)
                 model.replace(item: newStickerItem)
             }
             ImpactHapticFeedback.impactOccurred(style: .medium)
@@ -412,10 +412,9 @@ class ImageEditorView: UIView {
 
             let newRotationRadians = item.rotationRadians + gestureRecognizer.pinchStateLast.angleRadians - gestureRecognizer.pinchStateStart.angleRadians
 
-            let newItem = item.copy(unitCenter: unitCenter).copy(
-                scaling: newScaling,
-                rotationRadians: newRotationRadians,
-            )
+            let newItem = item
+                .with(unitCenter: unitCenter)
+                .with(scaling: newScaling, rotationRadians: newRotationRadians)
 
             if pinchHasChanged {
                 model.replace(item: newItem, suppressUndo: true)
@@ -521,7 +520,7 @@ class ImageEditorView: UIView {
             )
             let gestureDeltaImageUnit = gestureNowImageUnit.minus(gestureStartImageUnit)
             let unitCenter = CGPoint.clamp01(movingTextStartUnitCenter.plus(gestureDeltaImageUnit))
-            let newItem = item.copy(unitCenter: unitCenter)
+            let newItem = item.with(unitCenter: unitCenter)
 
             if movingTextHasMoved {
                 model.replace(item: newItem, suppressUndo: true)

@@ -37,32 +37,20 @@ typealias ImageEditorSample = CGPoint
 
 // MARK: -
 
-// Instances of ImageEditorItem should be treated
-// as immutable, once configured.
-
-class ImageEditorItem: NSObject {
+class ImageEditorItem {
 
     let itemId: String
 
     let itemType: ImageEditorItemType
 
-    init(itemType: ImageEditorItemType) {
-        self.itemId = UUID().uuidString
-        self.itemType = itemType
-
-        super.init()
-    }
-
-    init(itemId: String, itemType: ImageEditorItemType) {
+    init(itemId: String = UUID().uuidString, itemType: ImageEditorItemType) {
         self.itemId = itemId
         self.itemType = itemType
-
-        super.init()
     }
 
     // The scale with which to render this item's content
     // when rendering the "output" image for sending.
-    func outputScale() -> CGFloat {
-        return 1.0
+    var outputScale: CGFloat {
+        1
     }
 }

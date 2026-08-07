@@ -52,7 +52,7 @@ final class ImageEditorStickerItem: ImageEditorItem, ImageEditorTransformable {
         super.init(itemId: itemId, itemType: .sticker)
     }
 
-    func copy(unitCenter: ImageEditorSample) -> ImageEditorStickerItem {
+    func with(unitCenter: ImageEditorSample) -> ImageEditorStickerItem {
         ImageEditorStickerItem(
             itemId: self.itemId,
             sticker: self.sticker,
@@ -64,7 +64,7 @@ final class ImageEditorStickerItem: ImageEditorItem, ImageEditorTransformable {
         )
     }
 
-    func copy(scaling: CGFloat, rotationRadians: CGFloat) -> ImageEditorStickerItem {
+    func with(scaling: CGFloat, rotationRadians: CGFloat) -> ImageEditorStickerItem {
         ImageEditorStickerItem(
             itemId: self.itemId,
             sticker: self.sticker,
@@ -76,7 +76,7 @@ final class ImageEditorStickerItem: ImageEditorItem, ImageEditorTransformable {
         )
     }
 
-    func copy(sticker: EditorSticker) -> ImageEditorStickerItem {
+    func with(sticker: EditorSticker) -> ImageEditorStickerItem {
         ImageEditorStickerItem(
             itemId: self.itemId,
             sticker: sticker,
@@ -88,7 +88,7 @@ final class ImageEditorStickerItem: ImageEditorItem, ImageEditorTransformable {
         )
     }
 
-    override func outputScale() -> CGFloat {
-        return scaling
+    override var outputScale: CGFloat {
+        scaling
     }
 }

@@ -1387,7 +1387,7 @@ class ImageEditorCanvasView: UIView {
                 owsFailDebug("Couldn't create layer for item.")
                 return nil
             }
-            layer.contentsScale = dstScale * transform.scaling * item.outputScale()
+            layer.contentsScale = dstScale * transform.scaling * item.outputScale
             return layer
         }
         // UIView.renderAsImage() doesn't honor zPosition of layers,
