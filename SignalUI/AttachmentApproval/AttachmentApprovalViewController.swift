@@ -149,14 +149,6 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
 
     private var observingKeyboardNotifications = false
 
-    @available(iOS, deprecated: 16)
-    private var keyboardHeight: CGFloat = 0 {
-        didSet {
-            guard let iOS15BottomToolviewVerticalPositionConstraint else { return }
-            iOS15BottomToolviewVerticalPositionConstraint.constant = -max(view.safeAreaInsets.bottom, keyboardHeight)
-        }
-    }
-
     public let attachmentLimits: OutgoingAttachmentLimits
 
     public static func loadWithSneakyTransaction(
@@ -261,10 +253,6 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
     private lazy var topBar = AttachmentApprovalTopBar(options: options)
 
     private let bottomToolView = AttachmentApprovalToolbar()
-
-    // Manually adjust position of the bottom toolbar on iOS 15 because `keyboardLayoutGuide` is buggy.
-    @available(iOS, deprecated: 16)
-    private var iOS15BottomToolviewVerticalPositionConstraint: NSLayoutConstraint?
 
     lazy var contentDimmerView: UIView = {
         let dimmerView = UIView()
@@ -372,23 +360,6 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
             bottomToolView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
 
-        // `bottomToolView` is pinned to the bottom of the screen.
-        // However, it's content is re-positioned so that it clears the keyboard.
-        if #unavailable(iOS 16) {
-            let constraint = bottomToolView.contentLayoutGuide.bottomAnchor.constraint(
-                equalTo: view.bottomAnchor,
-                constant: -view.safeAreaInsets.bottom,
-            )
-            constraint.isActive = true
-            iOS15BottomToolviewVerticalPositionConstraint = constraint
-        } else {
-            NSLayoutConstraint.activate([
-                bottomToolView.contentLayoutGuide.bottomAnchor.constraint(
-                    equalTo: view.keyboardLayoutGuide.topAnchor,
-                ),
-            ])
-        }
-
         OWSTableViewController2.removeBackButtonText(viewController: self)
     }
 
@@ -407,14 +378,6 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
 
         currentPageViewController?.prepareToMoveOffscreen()
         stopObservingKeyboardNotifications()
-    }
-
-    override public func viewSafeAreaInsetsDidChange() {
-        super.viewSafeAreaInsetsDidChange()
-
-        if let iOS15BottomToolviewVerticalPositionConstraint {
-            iOS15BottomToolviewVerticalPositionConstraint.constant = -max(view.safeAreaInsets.bottom, keyboardHeight)
-        }
     }
 
     override public func viewLayoutMarginsDidChange() {
@@ -1011,9 +974,8 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
 
     func mediaCaptionToolBarDidChangeHeight(_ mediaCaptionToolbar: MediaCaptionToolbar) { }
 
-    @available(iOS, deprecated: 16)
     private func startObservingKeyboardNotifications() {
-        guard #unavailable(iOS 16), observingKeyboardNotifications == false else { return }
+        guard observingKeyboardNotifications == false else { return }
 
         NotificationCenter.default.addObserver(
             self,
@@ -1042,7 +1004,6 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
         observingKeyboardNotifications = true
     }
 
-    @available(iOS, deprecated: 16)
     private func stopObservingKeyboardNotifications() {
         guard observingKeyboardNotifications else { return }
 
@@ -1062,10 +1023,30 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
             return
         }
 
-        keyboardHeight = switch notification.name {
+        let keyboardHeight: CGFloat = switch notification.name {
         case UIResponder.keyboardDidHideNotification, UIResponder.keyboardWillHideNotification:
             0
         default: endFrame.height
+        }
+
+        guard bottomToolView.keyboardHeight != keyboardHeight else { return }
+
+        if
+            let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
+            let rawAnimationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int,
+            let animationCurve = UIView.AnimationCurve(rawValue: rawAnimationCurve)
+        {
+            UIView.animate(
+                withDuration: animationDuration,
+                delay: 0,
+                options: animationCurve.asAnimationOptions,
+                animations: {
+                    self.bottomToolView.keyboardHeight = keyboardHeight
+                    self.view.layoutIfNeeded()
+                },
+            )
+        } else {
+            bottomToolView.keyboardHeight = keyboardHeight
         }
     }
 

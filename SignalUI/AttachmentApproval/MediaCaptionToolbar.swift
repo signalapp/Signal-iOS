@@ -67,7 +67,7 @@ class MediaCaptionToolbar: UIView, UITextViewDelegate, BodyRangesTextViewDelegat
         // Specifying autoresizing mask and an intrinsic content size allows proper
         // sizing when used as an input accessory view.
         autoresizingMask = .flexibleHeight
-        directionalLayoutMargins = .init(hMargin: 0, vMargin: 8)
+        directionalLayoutMargins = .init(hMargin: 0, vMargin: LayoutMetrics.verticalPadding)
         semanticContentAttribute = .forceLeftToRight
 
         // Either Done or Proceed button is visible at a time.
@@ -103,7 +103,10 @@ class MediaCaptionToolbar: UIView, UITextViewDelegate, BodyRangesTextViewDelegat
             contentStack.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
             contentStack.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
             contentStack.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
-            contentStack.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+            // This view (MediaCaptionToolbar) might dip into the bottom safe area,
+            // increasing bottom layout margin. We want a stable 8 dp padding at all times
+            // and therefore constrain to view's edge.
+            contentStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -LayoutMetrics.verticalPadding),
         ])
 
         updateContent(animated: false)
@@ -168,7 +171,11 @@ class MediaCaptionToolbar: UIView, UITextViewDelegate, BodyRangesTextViewDelegat
             // Otherwise we risk obscuring too much of the content.
             UIDevice.current.orientation.isPortrait ? 160 : 100
         }
+
+        static let verticalPadding: CGFloat = 8
     }
+
+    static var verticalPadding: CGFloat { LayoutMetrics.verticalPadding }
 
     // Active when editing text: support for multi-line text field.
     private var textViewHeightConstraint: NSLayoutConstraint!

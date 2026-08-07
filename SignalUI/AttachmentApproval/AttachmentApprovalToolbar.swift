@@ -29,6 +29,20 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
 
     let contentLayoutGuide = UILayoutGuide()
 
+    private var contentLayoutGuideLeading: NSLayoutConstraint?
+    private var contentLayoutGuideTrailing: NSLayoutConstraint?
+    private var contentLayoutGuideBottom: NSLayoutConstraint?
+
+    /**
+     View is designed to be pinned to the bottom of the screen. Whenever keyboard appears the VC should
+     assign an appropriate value to this property, possible within an animation block.
+     */
+    var keyboardHeight: CGFloat = 0 {
+        didSet {
+            updateContentLayoutGuideConstraints()
+        }
+    }
+
     weak var captionToolbarDelegate: MediaCaptionToolbarDelegate?
 
     // Top row: previews of media items. Only shown when there are multiple.
@@ -69,10 +83,44 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
             stackView.spacing = 8
         } else {
             // Compensate for lack of top margin in `mediaCaptionToolbar`.
-            stackView.setCustomSpacing(8, after: mediaToolbar)
+            stackView.setCustomSpacing(MediaCaptionToolbar.verticalPadding, after: mediaToolbar)
         }
         return stackView
     }()
+
+    private func updateContentLayoutGuideConstraints() {
+        guard let contentLayoutGuideBottom else { return }
+
+        let bottomInset: CGFloat
+        if keyboardHeight > 0 {
+            // MediaCaptionToolbar has a bottom margin that will give us correct vertical spacing to the keyboard.
+            bottomInset = keyboardHeight
+        } else if #available(iOS 26, *) {
+            // Media caption text field has a glass background. Ensure proper padding around that.
+
+            if safeAreaInsets.bottom > 0 {
+                // On devices without a home button we want 28 dp padding around
+                // left, right and bottom edges of text field's glass pill.
+                let horizontalInset: CGFloat = 28
+                contentLayoutGuideLeading?.constant = horizontalInset
+                contentLayoutGuideTrailing?.constant = -horizontalInset
+
+                // MediaCaptionToolbar has an extra 8 dp bottom margin that needs to be subtracted
+                // to get proper spacing to glass pill.
+                bottomInset = horizontalInset - MediaCaptionToolbar.verticalPadding
+            } else {
+                // 24 dp spacing between glass pill's bottom edge and screen's bottom edge.
+                // Side margins remain standard.
+                bottomInset = 24
+            }
+        } else {
+            // Pre-iOS 26 devices.
+            // Simply pin to the screen's safe area's bottom edge.
+            // Horizontal margins remain standard.
+            bottomInset = safeAreaInsets.bottom
+        }
+        contentLayoutGuideBottom.constant = -bottomInset
+    }
 
     var isEditingCaptionText: Bool {
         return mediaCaptionToolbar.isEditingText
@@ -85,18 +133,40 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
 
         backgroundColor = .clear
         tintColor = .Signal.label
-        preservesSuperviewLayoutMargins = true
+
+        let leading: NSLayoutConstraint
+        let trailing: NSLayoutConstraint
         if #available(iOS 26, *) {
-            directionalLayoutMargins.top = 0
+            // We need adjustable horizontal margins on some iOS 26 devices.
+            // Therefore, constrain to safe area edges and don't use layoutMargins at all.
+            let defaultMargin = OWSTableViewController2.defaultHOuterMargin
+            leading = contentLayoutGuide.leadingAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.leadingAnchor,
+                constant: defaultMargin,
+            )
+            trailing = contentLayoutGuide.trailingAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.trailingAnchor,
+                constant: -defaultMargin,
+            )
+
+            contentLayoutGuideLeading = leading
+            contentLayoutGuideTrailing = trailing
+        } else {
+            preservesSuperviewLayoutMargins = true
+            leading = contentLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor)
+            trailing = contentLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor)
         }
 
+        contentLayoutGuideBottom = contentLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor)
+
         // View controller will use this layout guide to position UI elements above the keyboard.
+        contentLayoutGuide.identifier = "AttachmentApprovalToolbar.contentLayoutGuide"
         addLayoutGuide(contentLayoutGuide)
         NSLayoutConstraint.activate([
-            contentLayoutGuide.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
-            contentLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-            contentLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
-            contentLayoutGuide.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor),
+            contentLayoutGuide.topAnchor.constraint(equalTo: topAnchor, constant: 8),
+            leading,
+            trailing,
+            contentLayoutGuideBottom!,
         ])
 
         // Pre-iOS 26 has blur background underneath caption input field and buttons.
@@ -121,6 +191,12 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
             stackView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
             stackView.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
         ])
+    }
+
+    override func safeAreaInsetsDidChange() {
+        super.safeAreaInsetsDidChange()
+
+        updateContentLayoutGuideConstraints()
     }
 
     required init?(coder: NSCoder) {
@@ -253,7 +329,6 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
 
     func mediaCaptionToolBarDidChangeHeight(_ mediaCaptionToolbar: MediaCaptionToolbar) {
         setNeedsLayout()
-        layoutIfNeeded()
     }
 
     // MARK: - View Once Tooltip
