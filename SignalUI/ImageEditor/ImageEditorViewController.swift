@@ -19,6 +19,19 @@ class ImageEditorViewController: OWSViewController, UIGestureRecognizerDelegate,
     // users from undoing it.
     private let firstUndoOperationId: String?
 
+    private let initialStateContentLayoutGuide = UILayoutGuide()
+    private let finalStateContentLayoutGuide = UILayoutGuide()
+
+    // Presenting view controller will set those before presenting.
+    // The intent is to position image in the same position and with the same size
+    // as in "review" screen (AttachmentPrepViewController).
+    var initialContentInsets: UIEdgeInsets = .zero
+
+    // Constraints between `imageEditorView` and one of the layout guides from above.
+    // These constraints are updated when UI is switched from `initial` to `final` and vice versa
+    // during present / dismiss animations.
+    private var contentLayoutGuideConstraints = [NSLayoutConstraint]()
+
     let imageEditorView: ImageEditorView
 
     let topBar = ImageEditorTopBar()
@@ -332,16 +345,41 @@ class ImageEditorViewController: OWSViewController, UIGestureRecognizerDelegate,
         // Bottom toolbar
         bottomBar.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bottomBar)
-
         NSLayoutConstraint.activate([
-            imageEditorView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            imageEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            imageEditorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-
-            bottomBar.topAnchor.constraint(equalTo: imageEditorView.bottomAnchor),
             bottomBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomBar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+
+        // Layout guides for `initial` and `final` UI layouts.
+        initialStateContentLayoutGuide.identifier = "Content - Initial State"
+        view.addLayoutGuide(initialStateContentLayoutGuide)
+        NSLayoutConstraint.activate([
+            initialStateContentLayoutGuide.topAnchor.constraint(
+                equalTo: view.topAnchor,
+                constant: initialContentInsets.top,
+            ),
+            initialStateContentLayoutGuide.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor,
+                constant: initialContentInsets.leading,
+            ),
+            initialStateContentLayoutGuide.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor,
+                constant: -initialContentInsets.trailing,
+            ),
+            initialStateContentLayoutGuide.bottomAnchor.constraint(
+                equalTo: view.bottomAnchor,
+                constant: -initialContentInsets.bottom,
+            ),
+        ])
+
+        finalStateContentLayoutGuide.identifier = "Content - Final State"
+        view.addLayoutGuide(finalStateContentLayoutGuide)
+        NSLayoutConstraint.activate([
+            finalStateContentLayoutGuide.centerYAnchor.constraint(equalTo: initialStateContentLayoutGuide.centerYAnchor),
+            finalStateContentLayoutGuide.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            finalStateContentLayoutGuide.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            finalStateContentLayoutGuide.bottomAnchor.constraint(equalTo: bottomBar.topAnchor),
         ])
 
         // Stroke width slider
@@ -390,14 +428,7 @@ class ImageEditorViewController: OWSViewController, UIGestureRecognizerDelegate,
         )
 
         updateUIForCurrentMode()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        UIView.performWithoutAnimation {
-            transitionUI(toState: .initial, animated: false)
-        }
+        transitionUI(toState: .initial, animated: false)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -470,24 +501,35 @@ class ImageEditorViewController: OWSViewController, UIGestureRecognizerDelegate,
         setControls(hidden: shouldHideControls, animated: true, slideButtonsInOut: false)
     }
 
-    private func setControls(hidden: Bool, animated: Bool, slideButtonsInOut: Bool, completion: ((Bool) -> Void)? = nil) {
-        if animated {
-            UIView.animate(
-                withDuration: 0.15,
-                animations: {
-                    self.setControls(hidden: hidden, slideButtonsInOut: slideButtonsInOut)
+    private func setControls(hidden: Bool, animated: Bool, slideButtonsInOut: Bool) {
+        guard animated else {
+            setControls(hidden: hidden, animator: nil, slideButtonsInOut: slideButtonsInOut)
+            return
+        }
 
-                    // Animate layout changes made within bottomBar.setControls(hidden:).
-                    if slideButtonsInOut {
-                        self.bottomBar.setNeedsDisplay()
-                        self.bottomBar.layoutIfNeeded()
-                    }
-                },
-                completion: completion,
-            )
-        } else {
+        let animator = AttachmentApprovalToolbar.defaultAnimator()
+        setControls(hidden: hidden, animator: animator, slideButtonsInOut: slideButtonsInOut)
+        animator.startAnimation()
+    }
+
+    private func setControls(
+        hidden: Bool,
+        animator: UIViewPropertyAnimator?,
+        slideButtonsInOut: Bool,
+    ) {
+        guard let animator else {
             setControls(hidden: hidden, slideButtonsInOut: slideButtonsInOut)
-            completion?(true)
+            return
+        }
+
+        animator.addAnimations {
+            self.setControls(hidden: hidden, slideButtonsInOut: slideButtonsInOut)
+
+            // Animate layout changes made within bottomBar.setControls(hidden:).
+            if slideButtonsInOut {
+                self.bottomBar.setNeedsDisplay()
+                self.bottomBar.layoutIfNeeded()
+            }
         }
     }
 
@@ -610,8 +652,49 @@ class ImageEditorViewController: OWSViewController, UIGestureRecognizerDelegate,
     }
 
     private func transitionUI(toState state: UIState, animated: Bool, completion: ((Bool) -> Void)? = nil) {
-        setControls(hidden: state == .initial, animated: animated, slideButtonsInOut: true, completion: completion)
-        imageEditorView.setHasRoundedCorners(state == .initial, animationDuration: animated ? 0.15 : 0)
+        let layoutGuide: UILayoutGuide = {
+            switch state {
+            case .initial: initialStateContentLayoutGuide
+            case .final: finalStateContentLayoutGuide
+            }
+        }()
+
+        guard animated else {
+            constrainImageEditorView(to: layoutGuide)
+            setControls(hidden: state == .initial, animator: nil, slideButtonsInOut: true)
+            imageEditorView.setHasRoundedCorners(state == .initial, animationDuration: 0)
+            completion?(true)
+            return
+        }
+
+        let animator = AttachmentApprovalToolbar.defaultAnimator()
+        setControls(hidden: state == .initial, animator: animator, slideButtonsInOut: true)
+        animator.addAnimations {
+            self.constrainImageEditorView(to: layoutGuide)
+        }
+        if let completion {
+            animator.addCompletion { position in
+                completion(position == .end)
+            }
+        }
+        animator.startAnimation()
+
+        imageEditorView.setHasRoundedCorners(state == .initial, animationDuration: animator.duration)
+    }
+
+    private func constrainImageEditorView(to layoutGuide: UILayoutGuide) {
+        NSLayoutConstraint.deactivate(contentLayoutGuideConstraints)
+
+        // ImageEditorView simply occupies all space because it has `scaleAspectFit` content mode in this VC.
+        let constraints = [
+            imageEditorView.topAnchor.constraint(equalTo: layoutGuide.topAnchor),
+            imageEditorView.leadingAnchor.constraint(equalTo: layoutGuide.leadingAnchor),
+            imageEditorView.trailingAnchor.constraint(equalTo: layoutGuide.trailingAnchor),
+            imageEditorView.bottomAnchor.constraint(equalTo: layoutGuide.bottomAnchor),
+        ]
+        NSLayoutConstraint.activate(constraints)
+
+        contentLayoutGuideConstraints = constraints
     }
 
     // MARK: - Actions

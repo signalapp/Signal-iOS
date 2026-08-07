@@ -47,8 +47,20 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController, ImageEdit
 
     // MARK: - Tools
 
+    // Same insets that we use to determine max content size for the scroll view
+    // in `AttachmentPrepViewController.configureScrollViewContentSizeAndZoom`.
+    private func initialContentInsetsForToolViewController() -> UIEdgeInsets {
+        UIEdgeInsets(
+            top: view.safeAreaInsets.top + Self.contentInsets.top,
+            leading: view.safeAreaInsets.leading + Self.contentInsets.leading,
+            bottom: view.safeAreaInsets.bottom + Self.contentInsets.bottom,
+            trailing: view.safeAreaInsets.trailing + Self.contentInsets.trailing,
+        )
+    }
+
     override func activatePenTool() {
         let viewController = ImageEditorViewController(model: model, stickerSheetDelegate: stickerSheetDelegate)
+        viewController.initialContentInsets = initialContentInsetsForToolViewController()
         presentMediaTool(viewController: viewController)
     }
 
@@ -68,14 +80,7 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController, ImageEdit
         }
 
         let cropTool = ImageEditorCropViewController(model: model, srcImage: srcImage, previewImage: previewImage)
-        // Same insets that we use to determine max content size for the scroll view
-        // in `AttachmentPrepViewController.configureScrollViewContentSizeAndZoom`.
-        cropTool.initialContentInsets = .init(
-            top: view.safeAreaInsets.top + Self.contentInsets.top,
-            leading: view.safeAreaInsets.leading + Self.contentInsets.leading,
-            bottom: view.safeAreaInsets.bottom + Self.contentInsets.bottom,
-            trailing: view.safeAreaInsets.trailing + Self.contentInsets.trailing,
-        )
+        cropTool.initialContentInsets = initialContentInsetsForToolViewController()
         presentMediaTool(viewController: cropTool)
     }
 
@@ -84,6 +89,7 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController, ImageEdit
     private func openTextTool(with textItem: ImageEditorTextItem, isNewItem: Bool, editText: Bool) {
         let textEditor = ImageEditorViewController(model: model, stickerSheetDelegate: stickerSheetDelegate)
         textEditor.selectTextItem(textItem, isNewItem: isNewItem, startEditing: editText)
+        textEditor.initialContentInsets = initialContentInsetsForToolViewController()
         presentMediaTool(viewController: textEditor)
     }
 
