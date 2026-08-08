@@ -57,6 +57,28 @@ extension ConversationViewController {
         }
     }
 
+    func pauseRecordingVoiceMessage() {
+        AssertIsOnMainThread()
+
+        guard let inProgressVoiceMessage = viewState.inProgressVoiceMessage else { return }
+        inProgressVoiceMessage.pauseRecording()
+        ImpactHapticFeedback.impactOccurred(style: .light)
+    }
+
+    func resumeRecordingVoiceMessage() {
+        AssertIsOnMainThread()
+
+        guard let inProgressVoiceMessage = viewState.inProgressVoiceMessage else { return }
+        do {
+            try inProgressVoiceMessage.resumeRecording()
+        } catch {
+            owsFailDebug("Failed to resume recording voice message: \(error)")
+            cancelRecordingVoiceMessage()
+            return
+        }
+        ImpactHapticFeedback.impactOccurred(style: .light)
+    }
+
     func cancelRecordingVoiceMessage() {
         AssertIsOnMainThread()
 

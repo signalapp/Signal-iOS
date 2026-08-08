@@ -41,6 +41,10 @@ protocol ConversationInputToolbarDelegate: AnyObject {
 
     func voiceMemoGestureWasInterrupted()
 
+    func voiceMemoGestureDidPause()
+
+    func voiceMemoGestureDidResume()
+
     func sendVoiceMemoDraft(_ draft: VoiceMessageInterruptedDraft)
 
     // MARK: Attachments
@@ -943,7 +947,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         if isShowingVoiceMemoUI {
             let showSendButton: Bool = {
                 switch voiceMemoRecordingState {
-                case .recordingLocked, .draft:
+                case .recordingLocked, .recordingPaused, .draft:
                     true
                 default:
                     false
@@ -2490,6 +2494,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         case idle
         case recordingHeld
         case recordingLocked
+        case recordingPaused
         case draft
     }
 
@@ -2513,6 +2518,9 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     private var voiceMemoStartTime: Date?
     private var voiceMemoUpdateTimer: Timer?
     private var voiceMemoTooltipView: UIView?
+    private var voiceMemoPauseResumeButton: UIButton?
+    private var voiceMemoPauseBeginTime: Date?
+    private var voiceMemoPausedDuration: TimeInterval = 0
     private lazy var voiceMemoDurationLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
@@ -2765,6 +2773,9 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         voiceMemoRecordingState = .idle
         voiceMemoDraft = nil
+        voiceMemoPauseResumeButton = nil
+        voiceMemoPauseBeginTime = nil
+        voiceMemoPausedDuration = 0
 
         voiceMemoUpdateTimer?.invalidate()
         voiceMemoUpdateTimer = nil
@@ -2810,11 +2821,50 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         cancelButton.configuration?.title = CommonStrings.cancelButton
         cancelButton.configuration?.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
         cancelButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "cancelButton")
+
+        let pauseButton = UIButton(configuration: .borderless())
+        pauseButton.alpha = 0
+        pauseButton.configuration?.baseForegroundColor = Style.primaryTextColor
+        pauseButton.configuration?.contentInsets = .init(margin: 8)
+        pauseButton.configuration?.title = OWSLocalizedString(
+            "VOICE_MESSAGE_PAUSE_BUTTON",
+            comment: "Button to pause an in-progress voice message recording.",
+        )
+        pauseButton.configuration?.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
+        pauseButton.accessibilityLabel = OWSLocalizedString(
+            "VOICE_MESSAGE_PAUSE_BUTTON_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for the button which pauses voice message recording.",
+        )
+        pauseButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "pauseButton")
+        pauseButton.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            switch self.voiceMemoRecordingState {
+            case .recordingLocked:
+                self.voiceMemoRecordingState = .recordingPaused
+                self.pauseVoiceMemoTimer()
+                self.updateVoiceMemoPauseResumeButton()
+                self.inputToolbarDelegate?.voiceMemoGestureDidPause()
+            case .recordingPaused:
+                self.voiceMemoRecordingState = .recordingLocked
+                self.resumeVoiceMemoTimer()
+                self.updateVoiceMemoPauseResumeButton()
+                self.inputToolbarDelegate?.voiceMemoGestureDidResume()
+            default:
+                break
+            }
+        }, for: .primaryActionTriggered)
+        voiceMemoPauseResumeButton = pauseButton
+
         voiceMemoContentView.addSubview(cancelButton)
+        voiceMemoContentView.addSubview(pauseButton)
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        pauseButton.translatesAutoresizingMaskIntoConstraints = false
         voiceMemoContentView.addConstraints([
             cancelButton.centerYAnchor.constraint(equalTo: voiceMemoContentView.centerYAnchor),
             cancelButton.trailingAnchor.constraint(equalTo: voiceMemoContentView.trailingAnchor, constant: -16),
+
+            pauseButton.centerYAnchor.constraint(equalTo: voiceMemoContentView.centerYAnchor),
+            pauseButton.trailingAnchor.constraint(equalTo: cancelButton.leadingAnchor),
         ])
 
         voiceMemoCancelLabel.removeFromSuperview()
@@ -2832,6 +2882,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 self.voiceMemoLockView.transform = .scale(scale)
 
                 cancelButton.alpha = 1
+                pauseButton.alpha = 1
             },
             completion: { _ in
                 self.voiceMemoRedRecordingCircle.removeFromSuperview()
@@ -2840,6 +2891,57 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 UIAccessibility.post(notification: .layoutChanged, argument: nil)
             },
         )
+    }
+
+    private func pauseVoiceMemoTimer() {
+        AssertIsOnMainThread()
+
+        voiceMemoPauseBeginTime = Date()
+        voiceMemoUpdateTimer?.invalidate()
+        voiceMemoUpdateTimer = nil
+    }
+
+    private func resumeVoiceMemoTimer() {
+        AssertIsOnMainThread()
+
+        if let pauseBegin = voiceMemoPauseBeginTime {
+            voiceMemoPausedDuration += Date().timeIntervalSince(pauseBegin)
+            voiceMemoPauseBeginTime = nil
+        }
+
+        voiceMemoUpdateTimer?.invalidate()
+        voiceMemoUpdateTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
+            guard let self else {
+                timer.invalidate()
+                return
+            }
+            self.updateVoiceMemoDurationLabel()
+        }
+    }
+
+    private func updateVoiceMemoPauseResumeButton() {
+        AssertIsOnMainThread()
+
+        guard let pauseButton = voiceMemoPauseResumeButton else { return }
+        let isPaused = voiceMemoRecordingState == .recordingPaused
+        pauseButton.configuration?.title = isPaused
+            ? OWSLocalizedString(
+                "VOICE_MESSAGE_RESUME_BUTTON",
+                comment: "Button to resume a paused voice message recording.",
+            )
+            : OWSLocalizedString(
+                "VOICE_MESSAGE_PAUSE_BUTTON",
+                comment: "Button to pause an in-progress voice message recording.",
+            )
+        pauseButton.accessibilityLabel = isPaused
+            ? OWSLocalizedString(
+                "VOICE_MESSAGE_RESUME_BUTTON_ACCESSIBILITY_LABEL",
+                comment: "Accessibility label for the button which resumes voice message recording.",
+            )
+            : OWSLocalizedString(
+                "VOICE_MESSAGE_PAUSE_BUTTON_ACCESSIBILITY_LABEL",
+                comment: "Accessibility label for the button which pauses voice message recording.",
+            )
     }
 
     private func setVoiceMemoUICancelAlpha(_ cancelAlpha: CGFloat) {
@@ -2862,8 +2964,8 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             return
         }
 
-        let durationSeconds = abs(voiceMemoStartTime.timeIntervalSinceNow)
-        voiceMemoDurationLabel.text = OWSFormat.formatDurationSeconds(Int(round(durationSeconds)))
+        let elapsed = abs(voiceMemoStartTime.timeIntervalSinceNow) - voiceMemoPausedDuration
+        voiceMemoDurationLabel.text = OWSFormat.formatDurationSeconds(Int(round(max(0, elapsed))))
     }
 
     func showVoiceMemoTooltip() {
@@ -2918,7 +3020,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 owsFailDebug("while recording held, shouldn't be possible to restart gesture.")
                 inputToolbarDelegate?.voiceMemoGestureDidCancel()
 
-            case .recordingLocked, .draft:
+            case .recordingLocked, .recordingPaused, .draft:
                 owsFailDebug("once locked, shouldn't be possible to interact with gesture.")
                 inputToolbarDelegate?.voiceMemoGestureDidCancel()
             }
@@ -2958,7 +3060,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                     inputToolbarDelegate?.voiceMemoGestureDidLock()
                     setVoiceMemoUICancelAlpha(0)
 
-                case .recordingLocked, .draft:
+                case .recordingLocked, .recordingPaused, .draft:
                     // already locked
                     break
 
@@ -3001,7 +3103,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 voiceMemoRecordingState = .idle
                 inputToolbarDelegate?.voiceMemoGestureDidComplete()
 
-            case .recordingLocked, .draft:
+            case .recordingLocked, .recordingPaused, .draft:
                 // Continue recording.
                 break
             }

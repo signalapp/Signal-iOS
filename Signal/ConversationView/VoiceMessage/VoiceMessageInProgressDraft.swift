@@ -47,6 +47,8 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
 
     var isRecording: Bool { audioRecorder?.isRecording ?? false }
 
+    private(set) var isPaused: Bool = false
+
     func startRecording() throws {
         AssertIsOnMainThread()
 
@@ -89,6 +91,41 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
         }
     }
 
+    func pauseRecording() {
+        AssertIsOnMainThread()
+
+        guard isRecording else {
+            owsFailDebug("Attempted to pause when not recording")
+            return
+        }
+
+        isPaused = true
+        audioRecorder?.pause()
+
+        MainActor.assumeIsolated {
+            sleepManager.removeBlock(blockObject: sleepBlockObject)
+        }
+    }
+
+    func resumeRecording() throws {
+        AssertIsOnMainThread()
+
+        guard isPaused, let audioRecorder else {
+            owsFailDebug("Attempted to resume when not paused or recorder is missing")
+            return
+        }
+
+        isPaused = false
+
+        MainActor.assumeIsolated {
+            sleepManager.addBlock(blockObject: sleepBlockObject)
+        }
+
+        guard audioRecorder.record() else {
+            throw OWSAssertionError("audioRecorder couldn't resume recording.")
+        }
+    }
+
     func stopRecording() {
         AssertIsOnMainThread()
 
@@ -98,6 +135,7 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
 
         guard let audioRecorder else { return }
         self.audioRecorder = nil
+        isPaused = false
 
         self.duration = audioRecorder.currentTime
 
@@ -118,6 +156,7 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
 
         guard let audioRecorder else { return }
         self.audioRecorder = nil
+        isPaused = false
 
         self.duration = audioRecorder.currentTime
 
