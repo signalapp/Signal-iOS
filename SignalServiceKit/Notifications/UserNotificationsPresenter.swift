@@ -329,7 +329,7 @@ public class UserNotificationPresenter {
     }
 
     public func clearNotificationsForAppActivate() {
-        Logger.info("Clearing notifications for app activate.")
+        Logger.info("Clearing pending notifications for app activate.")
 
         Task {
             let shouldRemoveNotificationRequestPredicate: (UNNotificationRequest) -> Bool = { request in
@@ -348,12 +348,12 @@ public class UserNotificationPresenter {
                 .filter { shouldRemoveNotificationRequestPredicate($0) }
                 .map(\.identifier)
 
-            let deliveredNotificationIDsToRemove = await Self.notificationCenter.deliveredNotifications()
-                .filter { shouldRemoveNotificationRequestPredicate($0.request) }
-                .map(\.request.identifier)
+            // Do not remove delivered notifications on app activate.
+            // Delivered notifications should remain visible in Notification Center
+            // until the related conversation is actually opened/read and canceled
+            // through the normal thread/message-specific cancellation paths.
 
             Self.notificationCenter.removePendingNotificationRequests(withIdentifiers: pendingNotificationIDsToRemove)
-            Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: deliveredNotificationIDsToRemove)
         }
     }
 
