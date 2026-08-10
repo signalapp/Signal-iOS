@@ -291,6 +291,7 @@ public class CVLoader: NSObject {
         threadAssociatedData: ThreadAssociatedData,
         containerView: UIView,
         spoilerState: SpoilerRenderState,
+        timestampMode: CVComponentFooter.TimestampMode = .original,
         transaction: DBReadTransaction,
     ) -> CVRenderItem? {
         let chatColor = DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
@@ -318,6 +319,7 @@ public class CVLoader: NSObject {
             coreState: coreState,
             spoilerState: spoilerState,
             groupNameColors: groupNameColors,
+            timestampMode: timestampMode,
             transaction: transaction,
         )
     }
@@ -329,6 +331,7 @@ public class CVLoader: NSObject {
         conversationStyle: ConversationStyle,
         spoilerState: SpoilerRenderState,
         groupNameColors: GroupNameColors,
+        timestampMode: CVComponentFooter.TimestampMode = .original,
         transaction: DBReadTransaction,
     ) -> CVRenderItem? {
         let coreState = CVCoreState(
@@ -342,6 +345,7 @@ public class CVLoader: NSObject {
             coreState: coreState,
             spoilerState: spoilerState,
             groupNameColors: groupNameColors,
+            timestampMode: timestampMode,
             transaction: transaction,
         )
     }
@@ -353,6 +357,7 @@ public class CVLoader: NSObject {
         coreState: CVCoreState,
         spoilerState: SpoilerRenderState,
         groupNameColors: GroupNameColors,
+        timestampMode: CVComponentFooter.TimestampMode,
         transaction: DBReadTransaction,
     ) -> CVRenderItem? {
         AssertIsOnMainThread()
@@ -388,6 +393,7 @@ public class CVLoader: NSObject {
                 threadViewModel: threadViewModel,
                 itemBuildingContext: itemBuildingContext,
                 groupNameColors: groupNameColors,
+                timestampMode: timestampMode,
                 transaction: transaction,
             )
         else {

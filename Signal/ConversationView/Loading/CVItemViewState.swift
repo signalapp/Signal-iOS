@@ -171,6 +171,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                 viewStateSnapshot: viewStateSnapshot,
                 groupNameColors: groupNameColors,
                 displayNameCache: displayNameCache,
+                timestampMode: .original,
                 transaction: transaction,
             )
         }
@@ -187,6 +188,7 @@ struct CVItemModelBuilder: CVItemBuilding {
         threadViewModel: ThreadViewModel,
         itemBuildingContext: CVItemBuildingContext,
         groupNameColors: GroupNameColors,
+        timestampMode: CVComponentFooter.TimestampMode,
         transaction: DBReadTransaction,
     ) -> CVItemModel? {
         AssertIsOnMainThread()
@@ -217,6 +219,7 @@ struct CVItemModelBuilder: CVItemBuilding {
             viewStateSnapshot: viewStateSnapshot,
             groupNameColors: groupNameColors,
             displayNameCache: displayNameCache,
+            timestampMode: timestampMode,
             transaction: transaction,
         )
 
@@ -232,6 +235,7 @@ struct CVItemModelBuilder: CVItemBuilding {
         viewStateSnapshot: CVViewStateSnapshot,
         groupNameColors: GroupNameColors,
         displayNameCache: DisplayNameCache,
+        timestampMode: CVComponentFooter.TimestampMode,
         transaction: DBReadTransaction,
     ) {
         let itemViewState = item.itemViewState
@@ -279,6 +283,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                 tapForMoreState: tapForMoreState,
                 isPinnedMessage: isPinnedMessage,
                 adminDeleteRecipientStates: adminDeleteRecipientAddressStates,
+                timestampMode: timestampMode,
                 transaction: transaction,
             )
         }

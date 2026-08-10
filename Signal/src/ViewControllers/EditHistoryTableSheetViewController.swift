@@ -262,6 +262,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
                 conversationStyle: conversationStyle,
                 spoilerState: self.spoilerState,
                 groupNameColors: groupNameColors,
+                timestampMode: .mostRecentEdit,
                 transaction: tx,
             )
         {

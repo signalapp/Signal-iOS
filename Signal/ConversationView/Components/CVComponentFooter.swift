@@ -10,6 +10,11 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .footer }
 
+    public enum TimestampMode {
+        case original
+        case mostRecentEdit
+    }
+
     struct StatusIndicator: Equatable {
         let imageName: String
         let isAnimated: Bool
@@ -282,6 +287,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
     public static func timestampText(
         forInteraction interaction: TSInteraction,
+        originalTimestamp: UInt64? = nil,
         shouldUseLongFormat: Bool,
         hasBodyAttachments: Bool,
         adminDeleteRecipientStates: AdminDeleteManager.RecipientAddressStates?,
@@ -320,7 +326,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             }
         } else {
             return DateUtil.formatMessageTimestampForCVC(
-                interaction.timestamp,
+                originalTimestamp ?? interaction.timestamp,
                 shouldUseLongFormat: shouldUseLongFormat,
             )
         }
@@ -468,12 +474,51 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         tapForMoreState: TapForMoreState,
         isPinnedMessage: Bool,
         adminDeleteRecipientStates: AdminDeleteManager.RecipientAddressStates?,
-        transaction: DBReadTransaction,
+        timestampMode: TimestampMode,
+        transaction tx: DBReadTransaction,
     ) -> State {
+        var expiration: State.Expiration?
+        var isEdited: Bool = false
+        var originalTimestamp: UInt64?
+        if let message = interaction as? TSMessage {
+            if message.hasPerConversationExpiration {
+                expiration = State.Expiration(
+                    expirationTimestamp: message.expiresAt,
+                    expiresInSeconds: message.expiresInSeconds,
+                )
+            }
 
-        let hasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(transaction: transaction) ?? false
+            if !message.wasRemotelyDeleted {
+                switch message.editState {
+                case .latestRevisionRead, .latestRevisionUnread:
+                    isEdited = true
+                case .none, .pastRevision:
+                    isEdited = false
+                }
+            }
+
+            if isEdited {
+                switch timestampMode {
+                case .original:
+                    let editMessageStore = DependenciesBridge.shared.editMessageStore
+                    if
+                        let originalMessage = editMessageStore.findEditHistory(
+                            forMostRecentRevision: message,
+                            tx: tx,
+                        ).lazy.compactMap(\.message).last
+                    {
+                        originalTimestamp = originalMessage.timestamp
+                    }
+                case .mostRecentEdit:
+                    break
+                }
+            }
+        }
+
+        let hasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(transaction: tx) ?? false
         let timestampText = Self.timestampText(
             forInteraction: interaction,
+            originalTimestamp: originalTimestamp,
             shouldUseLongFormat: false,
             hasBodyAttachments: hasBodyAttachments,
             adminDeleteRecipientStates: adminDeleteRecipientStates,
@@ -484,7 +529,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         if let outgoingMessage = interaction as? TSOutgoingMessage {
             let (messageStatus, label) = MessageRecipientStatusUtils.receiptStatusAndMessage(
                 outgoingMessage: outgoingMessage,
-                transaction: transaction,
+                transaction: tx,
             )
             accessibilityLabel = label
 
@@ -541,32 +586,12 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             }
         }
 
-        var expiration: State.Expiration?
-        var displayEditedLabel: Bool = false
-        if let message = interaction as? TSMessage {
-            if message.hasPerConversationExpiration {
-                expiration = State.Expiration(
-                    expirationTimestamp: message.expiresAt,
-                    expiresInSeconds: message.expiresInSeconds,
-                )
-            }
-
-            if !message.wasRemotelyDeleted {
-                switch message.editState {
-                case .latestRevisionRead, .latestRevisionUnread:
-                    displayEditedLabel = true
-                case .none, .pastRevision:
-                    displayEditedLabel = false
-                }
-            }
-        }
-
         return State(
             timestampText: timestampText,
             statusIndicator: statusIndicator,
             accessibilityLabel: accessibilityLabel,
             tapForMoreState: tapForMoreState,
-            displayEditedLabel: displayEditedLabel,
+            displayEditedLabel: isEdited,
             isPinnedMessage: isPinnedMessage,
             adminDeleteRecipientAddressStates: adminDeleteRecipientStates,
             expiration: expiration,
