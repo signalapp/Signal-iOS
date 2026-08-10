@@ -1717,6 +1717,8 @@ extension AppSetup.GlobalsContinuation {
             storageServiceManager: storageServiceManager,
         )
 
+        let backupExportLock = BackupExportLock()
+
         let backupExportJobRunner = BackupExportJobRunnerImpl(
             backupExportJob: BackupExportJob(
                 accountKeyStore: accountKeyStore,
@@ -1734,6 +1736,7 @@ extension AppSetup.GlobalsContinuation {
             ),
             backupExportJobStore: backupExportJobStore,
             db: db,
+            backupExportLock: backupExportLock,
         )
 
         let backupFailureStateManager = BackupFailureStateManager(
@@ -1744,6 +1747,23 @@ extension AppSetup.GlobalsContinuation {
 
         let remoteReleaseNotesService = RemoteReleaseNotesService(signalService: signalService)
 
+        let localFileBackupExportJobStore = LocalFileBackupExportJobStore()
+
+        let localFileBackupExportJobRunner = LocalFileBackupExportJobRunnerImpl(
+            localFileBackupExportJob: LocalFileBackupExportJob(
+                accountKeyStore: accountKeyStore,
+                backupArchiveManager: backupArchiveManager,
+                db: db,
+                tsAccountManager: tsAccountManager,
+                localFileBackupManager: localFileBackupManager,
+                securityScopedBookmarkAccess: SecurityScopedBookmarkAccessImpl(),
+                localFileBackupExportJobStore: localFileBackupExportJobStore,
+                localFileBackupStore: localFileBackupStore,
+            ),
+            localFileBackupExportJobStore: localFileBackupExportJobStore,
+            db: db,
+            backupExportLock: backupExportLock,
+        )
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
             accountEntropyPoolManager: accountEntropyPoolManager,
@@ -1835,6 +1855,7 @@ extension AppSetup.GlobalsContinuation {
             linkPreviewManager: linkPreviewManager,
             linkPreviewSettingStore: linkPreviewSettingStore,
             linkPreviewSettingManager: linkPreviewSettingManager,
+            localFileBackupExportJobRunner: localFileBackupExportJobRunner,
             accountKeyStore: accountKeyStore,
             localFileBackupManager: localFileBackupManager,
             localProfileChecker: localProfileChecker,

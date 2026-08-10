@@ -339,6 +339,7 @@ public class AppEnvironment: NSObject {
             let accountEntropyPoolManager = DependenciesBridge.shared.accountEntropyPoolManager
             let attachmentBackfillManager = DependenciesBridge.shared.attachmentBackfillManager
             let backupExportJobRunner = DependenciesBridge.shared.backupExportJobRunner
+            let localFileBackupExportJobRunner = DependenciesBridge.shared.localFileBackupExportJobRunner
             let backupIdService = DependenciesBridge.shared.backupIdService
             let callRecordStore = DependenciesBridge.shared.callRecordStore
             let callRecordQuerier = DependenciesBridge.shared.callRecordQuerier
@@ -383,8 +384,11 @@ public class AppEnvironment: NSObject {
                     }
                 }
 
-                // If we had an interrupted BackupExportJob, resume it.
+                // If we had an interrupted BackupExportJob or LocalFileBackupExportJob, resume it.
+                // If both need resumption, BackupExportJob will take precedence and LocalFileBackupExportJob
+                // will resume on next app setup.
                 backupExportJobRunner.resumeIfNecessary()
+                _ = localFileBackupExportJobRunner.resumeIfNecessary()
 
                 Task {
                     await accountEntropyPoolManager.generateIfMissing()

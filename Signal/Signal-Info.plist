@@ -4,6 +4,7 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
+		<string>LocalFileBackupBGProcessingTaskRunner</string>
 		<string>AttachmentValidationBackfillMigrator</string>
 		<string>BackupBGProcessingTaskRunner</string>
 		<string>MessageFetchBGRefreshTask</string>

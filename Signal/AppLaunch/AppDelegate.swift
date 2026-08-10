@@ -292,6 +292,16 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         )
         backupRunner.registerBGProcessingTask(appReadiness: appReadiness)
 
+        let localFileBackupRunner = LocalFileBackupBGProcessingTaskRunner(
+            backgroundMessageFetcherFactory: { DependenciesBridge.shared.backgroundMessageFetcherFactory },
+            localFileBackupStore: LocalFileBackupStore(),
+            dateProvider: { Date() },
+            db: databaseStorage,
+            exportJobRunner: { DependenciesBridge.shared.localFileBackupExportJobRunner },
+            tsAccountManager: { DependenciesBridge.shared.tsAccountManager },
+        )
+        localFileBackupRunner.registerBGProcessingTask(appReadiness: appReadiness)
+
         let databaseMigratorRunner = LazyDatabaseMigratorRunner(
             databaseStorage: databaseStorage,
             modelReadCaches: { SSKEnvironment.shared.modelReadCachesRef },
@@ -304,6 +314,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 await attachmentValidationRunner.scheduleBGProcessingTaskIfNeeded()
                 await backupRunner.scheduleBGProcessingTaskIfNeeded()
                 await databaseMigratorRunner.scheduleBGProcessingTaskIfNeeded()
+                await localFileBackupRunner.scheduleBGProcessingTaskIfNeeded()
 
 #if targetEnvironment(simulator)
                 // The simulator won't run BGProcessingTasks, but we still want to run

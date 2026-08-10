@@ -34,6 +34,10 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         static func backupDirectory(date: Date) -> String {
             return "signal-backups-\(dateFormatter.string(from: date))"
         }
+
+        static func rootDirectoryInFileLocation(_ fileURL: URL) -> URL {
+            return fileURL.appendingPathComponent(rootDirectory.rawValue)
+        }
     }
 
     struct AttachmentWithMetadata {
@@ -235,6 +239,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
         let attachmentBatchSize = 50
         while true {
+            try Task.checkCancellation()
             let (attachmentsWithMetadata, localFileExports) = db.read { tx in
                 failIfThrows {
                     let localFileExports = localFileBackupStore.exportRecords(batchSize: attachmentBatchSize, tx: tx)
@@ -440,12 +445,12 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         backupTempFileURL: URL,
         messageRootBackupKey: MessageRootBackupKey,
         localBackupURL: URL,
-    ) async throws -> (URL, String) {
+    ) async throws -> String {
         let metadataProtoData = try buildMetadataProto(messageRootBackupKey: messageRootBackupKey).serializedData()
 
         try makeInitialDirectoryStructureIfNeeded(at: localBackupURL)
 
-        let backupsRootDirectory = localBackupURL.appendingPathComponent(LocalFileBackupManager.FileStructure.rootDirectory.rawValue)
+        let backupsRootDirectory = FileStructure.rootDirectoryInFileLocation(localBackupURL)
 
         let fileCoordinator = NSFileCoordinator()
         let currentBackupDirectoryName = FileStructure.backupDirectory(date: dateProvider())
@@ -466,7 +471,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
             try metadataProtoData.write(to: metadataFileURL)
         })
 
-        return (backupsRootDirectory, currentBackupDirectoryName)
+        return currentBackupDirectoryName
     }
 
     private func makeInitialDirectoryStructureIfNeeded(at url: URL) throws {

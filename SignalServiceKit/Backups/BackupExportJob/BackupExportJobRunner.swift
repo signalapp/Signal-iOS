@@ -70,16 +70,19 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
     private let backupExportJobStore: BackupExportJobStore
     private let db: DB
 
+    private let backupExportLock: BackupExportLock
     private let state: AtomicValue<State>
 
     init(
         backupExportJob: BackupExportJob,
         backupExportJobStore: BackupExportJobStore,
         db: DB,
+        backupExportLock: BackupExportLock,
     ) {
         self.backupExportJob = backupExportJob
         self.backupExportJobStore = backupExportJobStore
         self.db = db
+        self.backupExportLock = backupExportLock
 
         self.state = AtomicValue(State(), lock: .init())
     }
@@ -177,31 +180,41 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
         mode: BackupExportJobMode,
         resumptionPoint: BackupExportJobStore.ResumptionPoint?,
     ) -> Task<Void, Error> {
-        return state.update { [self] _state in
-            if let currentExportJobTask = _state.currentExportJobTask {
-                return currentExportJobTask
+        let claim = backupExportLock.tryClaim(asHolder: .remote, start: {
+
+            return state.update { [self] _state in
+                if let currentExportJobTask = _state.currentExportJobTask {
+                    return currentExportJobTask
+                }
+
+                let newExportJobTask = Task { () async throws -> Void in
+                    let result = await Result(catching: {
+                        let progressSink = OWSSequentialProgress<BackupExportJobStage>
+                            .createSink { [weak self] exportJobProgress in
+                                self?.exportJobDidUpdateProgress(exportJobProgress)
+                            }
+
+                        try await backupExportJob.run(
+                            mode: mode,
+                            resumptionPoint: resumptionPoint,
+                            progress: progressSink,
+                        )
+                    })
+
+                    backupExportLock.release(holder: .remote)
+                    exportJobDidComplete(result: result)
+                    try result.get()
+                }
+
+                _state.currentExportJobTask = newExportJobTask
+                return newExportJobTask
             }
-
-            let newExportJobTask = Task { () async throws -> Void in
-                let result = await Result(catching: {
-                    let progressSink = OWSSequentialProgress<BackupExportJobStage>
-                        .createSink { [weak self] exportJobProgress in
-                            self?.exportJobDidUpdateProgress(exportJobProgress)
-                        }
-
-                    try await backupExportJob.run(
-                        mode: mode,
-                        resumptionPoint: resumptionPoint,
-                        progress: progressSink,
-                    )
-                })
-
-                exportJobDidComplete(result: result)
-                try result.get()
-            }
-
-            _state.currentExportJobTask = newExportJobTask
-            return newExportJobTask
+        })
+        switch claim {
+        case .claimed(let task), .alreadyHeld(let task):
+            return task
+        case .blockedBy:
+            return Task { throw BackupExportLockError.localBackupInProgress }
         }
     }
 

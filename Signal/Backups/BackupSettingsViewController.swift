@@ -1027,9 +1027,15 @@ class BackupSettingsViewController:
     // MARK: -
 
     fileprivate func performManualBackup() {
-        // We observe BackupExportJobRunner updates, so we can ignore the
-        // returned task.
-        _ = backupExportJobRunner.startIfNecessary(mode: .manual)
+        let task = backupExportJobRunner.startIfNecessary(mode: .manual)
+        Task { @MainActor [weak self] in
+            do {
+                try await task.value
+            } catch BackupExportLockError.localBackupInProgress {
+                // TODO: [KC] figure out what we want to do here.
+                self?.presentToast(text: "Unable to perform remote backup because a local backup is in progress. Try again later.")
+            }
+        }
     }
 
     fileprivate func cancelManualBackup() {

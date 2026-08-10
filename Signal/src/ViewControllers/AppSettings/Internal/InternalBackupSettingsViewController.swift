@@ -93,48 +93,6 @@ class InternalBackupSettingsViewController: OWSTableViewController2 {
                 Attachment.offloadingThresholdOverride = !Attachment.offloadingThresholdOverride
             },
         ))
-
-        if BuildFlags.LocalFileBackups.archive {
-            section.add(.actionItem(withText: "Choose local file backup destination") {
-                DependenciesBridge.shared.localFileBackupManager.promptUserToChooseFileLocation(fromViewController: self, completion: nil)
-            })
-
-            section.add(.actionItem(withText: "Save Local File Backup") {
-                let localFileBackupExportJob = LocalFileBackupExportJob(
-                    accountKeyStore: DependenciesBridge.shared.accountKeyStore,
-                    backupArchiveManager: DependenciesBridge.shared.backupArchiveManager,
-                    db: DependenciesBridge.shared.db,
-                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                    localFileBackupManager: DependenciesBridge.shared.localFileBackupManager,
-                    securityScopedBookmarkAccess: SecurityScopedBookmarkAccessImpl(),
-                )
-
-                let localFileBackupManager = DependenciesBridge.shared.localFileBackupManager
-
-                Task {
-                    do {
-                        try await localFileBackupExportJob.run(mode: .manual)
-                    } catch LocalFileBackupError.unableToAccessLocalFile(let reason) {
-                        switch reason {
-                        case .stale, .missing:
-                            self.presentToast(text: "Unable to restore local file backup attachments (\(reason))")
-                            Logger.error("Unable to restore local file backup attachments (\(reason))")
-                            await db.awaitableWrite { tx in
-                                // Prompt the user to pick a new backup location.
-                                localFileBackupManager.setChooseNewLocalBackupLocation(tx: tx)
-                            }
-                        case .noAccess:
-                            self.presentToast(text: "Unable to restore local file backup attachments (no access)")
-                            Logger.error("Unable to restore local file backup attachments (no access)")
-                        }
-                    } catch {
-                        self.presentToast(text: "Other error while archiving local file backup: \(error)")
-                        Logger.error("Other error while archiving local file backup: \(error)")
-                    }
-                }
-            })
-        }
-
         contents.add(section)
 
         self.contents = contents

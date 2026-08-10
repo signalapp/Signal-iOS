@@ -8,17 +8,20 @@ import SignalUI
 import UIKit
 
 class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
+    private let localFileBackupExportJobRunner: LocalFileBackupExportJobRunner
     private let localFileBackupStore: LocalFileBackupStore
     private let db: DB
     private let accountKeyStore: AccountKeyStore
     private let localFileBackupManager: LocalFileBackupManager
 
     init(
+        localFileBackupExportJobRunner: LocalFileBackupExportJobRunner,
         localFileBackupStore: LocalFileBackupStore,
         db: DB,
         accountKeyStore: AccountKeyStore,
         localFileBackupManager: LocalFileBackupManager,
     ) {
+        self.localFileBackupExportJobRunner = localFileBackupExportJobRunner
         self.localFileBackupStore = localFileBackupStore
         self.db = db
         self.accountKeyStore = accountKeyStore
@@ -124,8 +127,17 @@ class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
 
                 return cell
             },
-            actionBlock: {
-                // TODO:
+            actionBlock: { [weak self] in
+                guard let self else { return }
+                let task = localFileBackupExportJobRunner.startIfNecessary(mode: .manual)
+                Task { @MainActor [weak self] in
+                    do {
+                        try await task.value
+                    } catch BackupExportLockError.remoteBackupInProgress {
+                        // TODO: [KC] figure out what we want to do here.
+                        self?.presentToast(text: "Unable to perform local backup because a remote backup is in progress. Try again later.")
+                    }
+                }
             },
         ))
 

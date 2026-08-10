@@ -84,6 +84,13 @@ extension BGProcessingTaskRunner where Self: Sendable {
                         // Apple WWDC talk specifies tasks must be completed even if the expiration
                         // handler is called.
                         bgTask.setTaskCompleted(success: false)
+                    } catch let error as BGProcessingTaskRescheduleOnCatch {
+                        logger.info("Rescheduling due to \(error).")
+                        await self.scheduleBGProcessingTask(startCondition: .asSoonAsPossible)
+
+                        // Apple WWDC talk specifies tasks must be completed even if the expiration
+                        // handler is called.
+                        bgTask.setTaskCompleted(success: false)
                     } catch {
                         logger.warn("Failed with error. \(error)")
                         bgTask.setTaskCompleted(success: false)

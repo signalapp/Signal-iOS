@@ -39,14 +39,6 @@ struct LocalFileBackupManagerTests {
         )
     }
 
-    func insertMockAttachment(_ attachment: Attachment) -> Attachment.IDType {
-        return db.write { tx in
-            var record = Attachment.Record(attachment: attachment)
-            try! record.insert(tx.database)
-            return record.sqliteId!
-        }
-    }
-
     @Test
     func testEnsureMetadataExists() async throws {
         let encryptedSize: UInt32 = 20
@@ -59,7 +51,9 @@ struct LocalFileBackupManagerTests {
             ),
         ).attachment
 
-        let id = insertMockAttachment(mockAttachment)
+        let id = db.write { tx in
+            LocalFileBackupTestSupport.insertMockAttachment(mockAttachment, tx: tx)
+        }
 
         await localFileBackupManager.ensureAttachmentMetadataExists()
 
@@ -91,8 +85,11 @@ struct LocalFileBackupManagerTests {
             ),
         ).attachment
 
-        let id1 = insertMockAttachment(mockAttachment1)
-        let id2 = insertMockAttachment(mockAttachment2)
+        let (id1, id2) = db.write { tx in
+            let id1 = LocalFileBackupTestSupport.insertMockAttachment(mockAttachment1, tx: tx)
+            let id2 = LocalFileBackupTestSupport.insertMockAttachment(mockAttachment2, tx: tx)
+            return (id1, id2)
+        }
 
         let localFileBackupAttachmentCollector = LocalFileBackupAttachmentCollector()
         localFileBackupAttachmentCollector.append(id: id1)
@@ -129,12 +126,13 @@ struct LocalFileBackupManagerTests {
             try? FileManager.default.removeItem(at: backupFile)
         }
 
-        let (backupsRootDirectory, currentBackupDirectoryName) = try await localFileBackupManager.copyBackupToDisk(
+        let currentBackupDirectoryName = try await localFileBackupManager.copyBackupToDisk(
             backupTempFileURL: backupFile,
             messageRootBackupKey: backupKey,
             localBackupURL: localBackupURL,
         )
 
+        let backupsRootDirectory = LocalFileBackupManager.FileStructure.rootDirectoryInFileLocation(localBackupURL)
         let currentBackupPath = backupsRootDirectory.appendingPathComponent(currentBackupDirectoryName)
         let mainFilePath = currentBackupPath.appendingPathComponent("main")
         let metadataFilePath = currentBackupPath.appendingPathComponent("metadata")
@@ -157,43 +155,16 @@ struct LocalFileBackupManagerTests {
         #expect(decryptedBackupId == backupKey.backupId)
     }
 
-    func makeMockAttachmentWithRealFile() throws -> Attachment {
-        let key = AttachmentKey.generate()
-        let plaintextData = Data("test".utf8)
-        let localRelativeFilePath = AttachmentStream.newRelativeFilePath()
-
-        let plaintextURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString)
-        try plaintextData.write(to: plaintextURL)
-        defer { try? FileManager.default.removeItem(at: plaintextURL) }
-
-        let attachmentFileURL = AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: localRelativeFilePath)
-        try FileManager.default.createDirectory(
-            at: attachmentFileURL.deletingLastPathComponent(),
-            withIntermediateDirectories: true,
-        )
-        let encryptionMetadata = try Cryptography.encryptAttachment(
-            at: plaintextURL,
-            output: attachmentFileURL,
-            attachmentKey: key,
-        )
-
-        return AttachmentStream.mock(
-            streamInfo: .mock(
-                encryptionKey: key,
-                encryptedByteCount: UInt32(clamping: encryptionMetadata.encryptedLength),
-                unencryptedByteCount: UInt32(plaintextData.count),
-                localRelativeFilePath: localRelativeFilePath,
-            ),
-        ).attachment
-    }
-
     @Test
     func testCopyAttachmentsToDisk() async throws {
-        let mockAttachment1 = try makeMockAttachmentWithRealFile()
-        let mockAttachment2 = try makeMockAttachmentWithRealFile()
+        let mockAttachment1 = try LocalFileBackupTestSupport.makeMockAttachmentWithRealFile()
+        let mockAttachment2 = try LocalFileBackupTestSupport.makeMockAttachmentWithRealFile()
 
-        let id1 = insertMockAttachment(mockAttachment1)
-        let id2 = insertMockAttachment(mockAttachment2)
+        let (id1, id2) = db.write { tx in
+            let id1 = LocalFileBackupTestSupport.insertMockAttachment(mockAttachment1, tx: tx)
+            let id2 = LocalFileBackupTestSupport.insertMockAttachment(mockAttachment2, tx: tx)
+            return (id1, id2)
+        }
 
         await localFileBackupManager.ensureAttachmentMetadataExists()
 
@@ -414,11 +385,14 @@ struct LocalFileBackupManagerTests {
         // Now write some attachments to disk that are in a backup metadata file.
         // These should not be deleted.
 
-        let mockAttachment1 = try makeMockAttachmentWithRealFile()
-        let mockAttachment2 = try makeMockAttachmentWithRealFile()
+        let mockAttachment1 = try LocalFileBackupTestSupport.makeMockAttachmentWithRealFile()
+        let mockAttachment2 = try LocalFileBackupTestSupport.makeMockAttachmentWithRealFile()
 
-        let id1 = insertMockAttachment(mockAttachment1)
-        let id2 = insertMockAttachment(mockAttachment2)
+        let (id1, id2) = db.write { tx in
+            let id1 = LocalFileBackupTestSupport.insertMockAttachment(mockAttachment1, tx: tx)
+            let id2 = LocalFileBackupTestSupport.insertMockAttachment(mockAttachment2, tx: tx)
+            return (id1, id2)
+        }
 
         await localFileBackupManager.ensureAttachmentMetadataExists()
 
@@ -486,5 +460,43 @@ struct LocalFileBackupManagerTests {
         #expect(filesAfter.count == 2)
         #expect(fileNamesAfter.contains(mediaName1))
         #expect(fileNamesAfter.contains(mediaName2))
+    }
+}
+
+public enum LocalFileBackupTestSupport {
+    static func makeMockAttachmentWithRealFile() throws -> Attachment {
+        let key = AttachmentKey.generate()
+        let plaintextData = Data("test".utf8)
+        let localRelativeFilePath = AttachmentStream.newRelativeFilePath()
+
+        let plaintextURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString)
+        try plaintextData.write(to: plaintextURL)
+        defer { try? FileManager.default.removeItem(at: plaintextURL) }
+
+        let attachmentFileURL = AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: localRelativeFilePath)
+        try FileManager.default.createDirectory(
+            at: attachmentFileURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true,
+        )
+        let encryptionMetadata = try Cryptography.encryptAttachment(
+            at: plaintextURL,
+            output: attachmentFileURL,
+            attachmentKey: key,
+        )
+
+        return AttachmentStream.mock(
+            streamInfo: .mock(
+                encryptionKey: key,
+                encryptedByteCount: UInt32(clamping: encryptionMetadata.encryptedLength),
+                unencryptedByteCount: UInt32(plaintextData.count),
+                localRelativeFilePath: localRelativeFilePath,
+            ),
+        ).attachment
+    }
+
+    static func insertMockAttachment(_ attachment: Attachment, tx: DBWriteTransaction) -> Attachment.IDType {
+        var record = Attachment.Record(attachment: attachment)
+        try! record.insert(tx.database)
+        return record.sqliteId!
     }
 }

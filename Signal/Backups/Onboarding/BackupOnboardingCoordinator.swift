@@ -78,6 +78,7 @@ class BackupOnboardingCoordinator {
                 return BackupSettingsViewController(onAppearAction: onAppearAction)
             case .local:
                 return LocalFileBackupsSettingsViewController(
+                    localFileBackupExportJobRunner: DependenciesBridge.shared.localFileBackupExportJobRunner,
                     localFileBackupStore: localFileBackupStore,
                     db: db,
                     accountKeyStore: accountKeyStore,
@@ -189,6 +190,7 @@ class BackupOnboardingCoordinator {
                             [
                                 onboardingNavController.viewControllers[0],
                                 LocalFileBackupsSettingsViewController(
+                                    localFileBackupExportJobRunner: DependenciesBridge.shared.localFileBackupExportJobRunner,
                                     localFileBackupStore: localFileBackupStore,
                                     db: db,
                                     accountKeyStore: accountKeyStore,

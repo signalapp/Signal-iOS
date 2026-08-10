@@ -31,6 +31,8 @@
 		0441ECBF3007F9CD005673AC /* LocalFileBackupsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441ECBE3007F9C3005673AC /* LocalFileBackupsSettingsViewController.swift */; };
 		0441ECC3300FC1FC005673AC /* LocalFileBackupStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441ECC2300FC1F5005673AC /* LocalFileBackupStore.swift */; };
 		0441ECC73017BF27005673AC /* SecurityScopedBookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441ECC63017BF20005673AC /* SecurityScopedBookmark.swift */; };
+		0441ECC9301BABE8005673AC /* LocalFileBackupExportJobRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441ECC8301BABDF005673AC /* LocalFileBackupExportJobRunner.swift */; };
+		0441ECCB301BAEB7005673AC /* LocalFileBackupExportJobStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441ECCA301BAEAF005673AC /* LocalFileBackupExportJobStore.swift */; };
 		04441DBB2F115CAF0095E1F4 /* chat_item_pin_message_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = 04441D972F115CAF0095E1F4 /* chat_item_pin_message_00.binproto */; };
 		04441DBC2F115CAF0095E1F4 /* chat_item_pin_message_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = 04441D992F115CAF0095E1F4 /* chat_item_pin_message_01.binproto */; };
 		04441DBD2F115CAF0095E1F4 /* chat_item_pin_message_06.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = 04441DA42F115CAF0095E1F4 /* chat_item_pin_message_06.txtproto */; };
@@ -118,6 +120,10 @@
 		04AB61CA2E5E449100405699 /* PollManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AB61C92E5E448A00405699 /* PollManagerTest.swift */; };
 		04AC221D2F86B9F8006CB71A /* NSAttributedStringExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04AC221C2F86B9F2006CB71A /* NSAttributedStringExtensionTests.swift */; };
 		04B28509302398A000BCF018 /* LocalFileBackupSelectHeroSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B285083023989100BCF018 /* LocalFileBackupSelectHeroSheet.swift */; };
+		04B285013021273400BCF018 /* LocalFileBackupBGProcessingTaskRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B285003021272A00BCF018 /* LocalFileBackupBGProcessingTaskRunner.swift */; };
+		04B285033022321200BCF018 /* BackupExportLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B285023022320D00BCF018 /* BackupExportLock.swift */; };
+		04B2850530223EDE00BCF018 /* BGProcessingTaskRescheduleOnCatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B2850430223ED200BCF018 /* BGProcessingTaskRescheduleOnCatch.swift */; };
+		04B285073022409F00BCF018 /* LocalFileBackupExportJobRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B285063022409400BCF018 /* LocalFileBackupExportJobRunnerTests.swift */; };
 		04BBBE902E259A6900E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BBBE8F2E259A5F00E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift */; };
 		04BBBE922E26C92D00E914B1 /* InactivePrimaryDeviceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BBBE912E26C92300E914B1 /* InactivePrimaryDeviceStore.swift */; };
 		04BBBE942E26F00900E914B1 /* InactivePrimaryDeviceStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BBBE932E26F00000E914B1 /* InactivePrimaryDeviceStoreTest.swift */; };
@@ -4238,6 +4244,8 @@
 		0441ECBE3007F9C3005673AC /* LocalFileBackupsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileBackupsSettingsViewController.swift; sourceTree = "<group>"; };
 		0441ECC2300FC1F5005673AC /* LocalFileBackupStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileBackupStore.swift; sourceTree = "<group>"; };
 		0441ECC63017BF20005673AC /* SecurityScopedBookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityScopedBookmark.swift; sourceTree = "<group>"; };
+		0441ECC8301BABDF005673AC /* LocalFileBackupExportJobRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileBackupExportJobRunner.swift; sourceTree = "<group>"; };
+		0441ECCA301BAEAF005673AC /* LocalFileBackupExportJobStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileBackupExportJobStore.swift; sourceTree = "<group>"; };
 		04441D972F115CAF0095E1F4 /* chat_item_pin_message_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_pin_message_00.binproto; sourceTree = "<group>"; };
 		04441D982F115CAF0095E1F4 /* chat_item_pin_message_00.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_pin_message_00.txtproto; sourceTree = "<group>"; };
 		04441D992F115CAF0095E1F4 /* chat_item_pin_message_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_pin_message_01.binproto; sourceTree = "<group>"; };
@@ -4326,6 +4334,10 @@
 		04AB61C92E5E448A00405699 /* PollManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollManagerTest.swift; sourceTree = "<group>"; };
 		04AC221C2F86B9F2006CB71A /* NSAttributedStringExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSAttributedStringExtensionTests.swift; sourceTree = "<group>"; };
 		04B285083023989100BCF018 /* LocalFileBackupSelectHeroSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileBackupSelectHeroSheet.swift; sourceTree = "<group>"; };
+		04B285003021272A00BCF018 /* LocalFileBackupBGProcessingTaskRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileBackupBGProcessingTaskRunner.swift; sourceTree = "<group>"; };
+		04B285023022320D00BCF018 /* BackupExportLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupExportLock.swift; sourceTree = "<group>"; };
+		04B2850430223ED200BCF018 /* BGProcessingTaskRescheduleOnCatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGProcessingTaskRescheduleOnCatch.swift; sourceTree = "<group>"; };
+		04B285063022409400BCF018 /* LocalFileBackupExportJobRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileBackupExportJobRunnerTests.swift; sourceTree = "<group>"; };
 		04B975452E43A4AA00E20364 /* BackupRefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRefreshManager.swift; sourceTree = "<group>"; };
 		04B975472E43BFE000E20364 /* BackupRefreshManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRefreshManagerTest.swift; sourceTree = "<group>"; };
 		04BBBE8F2E259A5F00E914B1 /* InactivePrimaryDeviceReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactivePrimaryDeviceReminderMegaphone.swift; sourceTree = "<group>"; };
@@ -8615,6 +8627,9 @@
 			isa = PBXGroup;
 			children = (
 				0486D49B2FF55F46004FC6E8 /* LocalFileBackupAttachmentCollector.swift */,
+				0486D4992FF54DA4004FC6E8 /* LocalFileBackupExportJob.swift */,
+				0441ECC8301BABDF005673AC /* LocalFileBackupExportJobRunner.swift */,
+				0441ECCA301BAEAF005673AC /* LocalFileBackupExportJobStore.swift */,
 				04538D362FEB14C900F8E084 /* LocalFileBackupManager.swift */,
 				0441ECC2300FC1F5005673AC /* LocalFileBackupStore.swift */,
 			);
@@ -10057,6 +10072,7 @@
 			isa = PBXGroup;
 			children = (
 				50DAF7E22FD87C7000BE7430 /* Attachments */,
+				04B285063022409400BCF018 /* LocalFileBackupExportJobRunnerTests.swift */,
 				047DBEE32FFD4918009F457F /* LocalFileBackupManagerTests.swift */,
 			);
 			path = Backups;
@@ -10486,6 +10502,7 @@
 				D9C96F742E21AA4900CA885A /* BackupCDNCredentialStore.swift */,
 				D9C96F762E21ADBE00CA885A /* BackupCDNMetadata.swift */,
 				D9C96F702E21A6B900CA885A /* BackupCDNReadCredential.swift */,
+				04B285023022320D00BCF018 /* BackupExportLock.swift */,
 				C17586652E2AC520008B3A13 /* BackupKeyMaterial.swift */,
 				D9F3EDA52F453BC900FE9DC5 /* BackupMediaErrorNotificationPresenter.swift */,
 				C14391122BD1C0DF00ED6FCB /* BackupRequestManager.swift */,
@@ -10768,7 +10785,6 @@
 				66A1F4E12E035BFE0095DE4B /* BackupExportJob.swift */,
 				D91FBCF52E2EF4B900D0BCDB /* BackupExportJobRunner.swift */,
 				D940E5C42F3CFFA6008A4120 /* BackupExportJobStore.swift */,
-				0486D4992FF54DA4004FC6E8 /* LocalFileBackupExportJob.swift */,
 			);
 			path = BackupExportJob;
 			sourceTree = "<group>";
@@ -13716,6 +13732,7 @@
 				D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */,
 				D9680CF22DBB0B28005DD5BE /* ChooseBackupPlanViewController.swift */,
 				B99FFDF430003EDC00EC4E45 /* LinkedDeviceBackupSettingsViewController.swift */,
+				04B285003021272A00BCF018 /* LocalFileBackupBGProcessingTaskRunner.swift */,
 				04B285083023989100BCF018 /* LocalFileBackupSelectHeroSheet.swift */,
 				0441ECBE3007F9C3005673AC /* LocalFileBackupsSettingsViewController.swift */,
 			);
@@ -15664,6 +15681,7 @@
 				058B49922C66804B00307D38 /* AVAssetExportSession+Async.swift */,
 				F9C5CB64289453B200548EEE /* Batching.swift */,
 				F9C5CB40289453B200548EEE /* Bench.swift */,
+				04B2850430223ED200BCF018 /* BGProcessingTaskRescheduleOnCatch.swift */,
 				E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */,
 				88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */,
 				76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */,
@@ -18738,6 +18756,7 @@
 				507B69122C5044F800F1C6D7 /* LinkPreviewGroupLink.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				4C25768A23AD510800E0398D /* LoadMoreMessagesView.swift in Sources */,
+				04B285013021273400BCF018 /* LocalFileBackupBGProcessingTaskRunner.swift in Sources */,
 				0441ECB73007D0B8005673AC /* LocalFileBackupOnboardingIntroViewController.swift in Sources */,
 				0441ECBD3007F113005673AC /* LocalFileBackupSelectFolderHeroSheetViewController.swift in Sources */,
 				04B28509302398A000BCF018 /* LocalFileBackupSelectHeroSheet.swift in Sources */,
@@ -19327,6 +19346,7 @@
 				66A1F4E22E035C020095DE4B /* BackupExportJob.swift in Sources */,
 				D91FBCF62E2EF4C100D0BCDB /* BackupExportJobRunner.swift in Sources */,
 				D940E5C52F3CFFA9008A4120 /* BackupExportJobStore.swift in Sources */,
+				04B285033022321200BCF018 /* BackupExportLock.swift in Sources */,
 				C1D51D8A2E746FB300685A0C /* BackupFailureStateManager.swift in Sources */,
 				D923DF9C2DC135D200CDAFC3 /* BackupIdService.swift in Sources */,
 				C17586662E2AC52D008B3A13 /* BackupKeyMaterial.swift in Sources */,
@@ -19358,6 +19378,7 @@
 				6600F369298DA57200B1EDB7 /* BaseOWSURLSessionMock.swift in Sources */,
 				F9C5CE36289453B400548EEE /* Batching.swift in Sources */,
 				F9C5CE12289453B400548EEE /* Bench.swift in Sources */,
+				04B2850530223EDE00BCF018 /* BGProcessingTaskRescheduleOnCatch.swift in Sources */,
 				50AABEE82CDD9A440077E306 /* BlockedGroupStore.swift in Sources */,
 				50F039C42C6D239500162B99 /* BlockedRecipientStore.swift in Sources */,
 				044EA2272FC87611005B5A3E /* BlockedReleaseNotesStore.swift in Sources */,
@@ -19665,6 +19686,8 @@
 				F9C5CDE7289453B400548EEE /* Locale+SSK.swift in Sources */,
 				0486D49C2FF55F50004FC6E8 /* LocalFileBackupAttachmentCollector.swift in Sources */,
 				0486D49A2FF54DAB004FC6E8 /* LocalFileBackupExportJob.swift in Sources */,
+				0441ECC9301BABE8005673AC /* LocalFileBackupExportJobRunner.swift in Sources */,
+				0441ECCB301BAEB7005673AC /* LocalFileBackupExportJobStore.swift in Sources */,
 				04538D372FEB14CF00F8E084 /* LocalFileBackupManager.swift in Sources */,
 				0441ECC3300FC1FC005673AC /* LocalFileBackupStore.swift in Sources */,
 				5033D46729D76BD0007FEADA /* LocalIdentifiers.swift in Sources */,
@@ -20479,6 +20502,7 @@
 				507AA5FD2FDDC4BA0067C25E /* KeyValueStoreRenamerTest.swift in Sources */,
 				C167F1E52A7162D700D4A9AF /* KyberPreKeyStoreImplTest.swift in Sources */,
 				50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */,
+				04B285073022409F00BCF018 /* LocalFileBackupExportJobRunnerTests.swift in Sources */,
 				047DBEE42FFD491E009F457F /* LocalFileBackupManagerTests.swift in Sources */,
 				D938307C2A704338006CDCDE /* LocalUsernameManagerTests.swift in Sources */,
 				F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */,
