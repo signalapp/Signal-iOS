@@ -120,28 +120,34 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 return cell
             },
             actionBlock: { [weak self] in
-                let vc = DisappearingMessagesTimerSettingsViewController(
+                guard let self else { return }
+
+                DisappearingMessagesTimerSettingsViewController.present(
+                    fromViewController: self,
                     initialConfiguration: disappearingMessagesConfiguration,
                     settingsMode: .universal,
-                ) { configuration in
-                    if self != nil {
-                        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                            var configuration = configuration
-                            if configuration.id == nil {
-                                failIfThrows {
-                                    try configuration.insert(transaction.database)
-                                }
-                            } else {
-                                failIfThrows {
-                                    try configuration.update(transaction.database)
-                                }
+                ) { [weak self] configuration in
+                    guard let self else { return }
+
+                    let db = DependenciesBridge.shared.db
+                    let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
+
+                    db.write { transaction in
+                        var configuration = configuration
+                        if configuration.id == nil {
+                            failIfThrows {
+                                try configuration.insert(transaction.database)
+                            }
+                        } else {
+                            failIfThrows {
+                                try configuration.update(transaction.database)
                             }
                         }
-                        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
                     }
-                    self?.updateTableContents()
+                    storageServiceManager.recordPendingLocalAccountUpdates()
+
+                    self.updateTableContents()
                 }
-                self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             },
         ))
         contents.add(disappearingMessagesSection)

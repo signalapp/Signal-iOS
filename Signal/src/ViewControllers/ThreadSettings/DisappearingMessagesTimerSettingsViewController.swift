@@ -7,7 +7,10 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-class DisappearingMessagesTimerSettingsViewController: HostingController<DisappearingMessagesTimerSettingsView> {
+class DisappearingMessagesTimerSettingsViewController:
+    HostingController<DisappearingMessagesTimerSettingsView>,
+    DisappearingMessagesTimerSettingsViewModel.ActionsDelegate
+{
     enum SettingsMode {
         case chat(thread: TSThread)
         case newGroup
@@ -25,7 +28,31 @@ class DisappearingMessagesTimerSettingsViewController: HostingController<Disappe
         self?.completeAndDismiss()
     }
 
-    init(
+    static func present(
+        fromViewController: UIViewController,
+        initialConfiguration: DisappearingMessagesConfigurationRecord,
+        settingsMode: SettingsMode,
+        completion: @escaping (DisappearingMessagesConfigurationRecord) -> Void,
+    ) {
+        guard initialConfiguration.timerVersion < .max else {
+            Logger.warn("Cannot change DM timer: version is at max!")
+            ActionSheetDisplayableError.genericError
+                .showSheet(from: fromViewController)
+            return
+        }
+
+        let timerSettingsViewController = DisappearingMessagesTimerSettingsViewController(
+            initialConfiguration: initialConfiguration,
+            settingsMode: settingsMode,
+            completion: completion,
+        )
+        fromViewController.presentFormSheet(
+            OWSNavigationController(rootViewController: timerSettingsViewController),
+            animated: true,
+        )
+    }
+
+    private init(
         initialConfiguration: DisappearingMessagesConfigurationRecord,
         settingsMode: SettingsMode,
         completion: @escaping (DisappearingMessagesConfigurationRecord) -> Void,
@@ -141,11 +168,9 @@ class DisappearingMessagesTimerSettingsViewController: HostingController<Disappe
             throw OWSAssertionError("Unexpected thread type in disappearing message update! \(type(of: thread))")
         }
     }
-}
 
-// MARK: - DisappearingMessagesTimerSettingsViewModel.ActionsDelegate
+    // MARK: - DisappearingMessagesTimerSettingsViewModel.ActionsDelegate
 
-extension DisappearingMessagesTimerSettingsViewController: DisappearingMessagesTimerSettingsViewModel.ActionsDelegate {
     fileprivate func updateForSelection(_ durationSeconds: UInt32) {
         selectedConfiguration = initialConfiguration
         selectedConfiguration.isEnabled = durationSeconds != 0

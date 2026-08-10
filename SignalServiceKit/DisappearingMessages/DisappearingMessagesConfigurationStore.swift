@@ -158,7 +158,7 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
         case .thread(let thread): "\(type(of: thread))"
         case .universal: "universal"
         }
-        Logger.info("Setting \(scopeDescription) DM timer.")
+        Logger.info("Setting \(scopeDescription) DM timer, version \(configuration.timerVersion)")
 
         if configuration.id == nil {
             failIfThrows {

@@ -693,15 +693,17 @@ extension ConversationSettingsViewController {
                 return cell
             },
             actionBlock: { [weak self] in
-                let vc = DisappearingMessagesTimerSettingsViewController(
+                guard let self else { return }
+
+                DisappearingMessagesTimerSettingsViewController.present(
+                    fromViewController: self,
                     initialConfiguration: disappearingMessagesConfiguration,
                     settingsMode: .chat(thread: thread),
-                ) { configuration in
+                ) { [weak self] configuration in
                     self?.disappearingMessagesConfiguration = configuration
                     self?.updateTableContents()
                     NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
                 }
-                self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             },
         ))
     }

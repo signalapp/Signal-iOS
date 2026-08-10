@@ -166,14 +166,16 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
             },
             actionBlock: { [weak self] in
                 guard let self else { return }
-                let vc = DisappearingMessagesTimerSettingsViewController(
+
+                DisappearingMessagesTimerSettingsViewController.present(
+                    fromViewController: self,
                     initialConfiguration: self.disappearingMessagesConfiguration,
                     settingsMode: .newGroup,
-                ) { configuration in
+                ) { [weak self] configuration in
+                    guard let self else { return }
                     self.disappearingMessagesConfiguration = configuration
                     self.updateTableContents()
                 }
-                self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             },
         ))
         contents.add(disappearingMessagesSection)
