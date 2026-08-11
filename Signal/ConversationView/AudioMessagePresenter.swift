@@ -167,9 +167,8 @@ class AudioMessagePresenter: AudioPresenter {
     }
 
     func audioWaveform(attachmentStream: AttachmentStream) -> Task<AudioWaveform, Error> {
-        DependenciesBridge.shared.audioWaveformManager.audioWaveform(
+        DependenciesBridge.shared.audioWaveformManager.cachedAudioWaveform(
             attachmentStream: attachmentStream,
-            highPriority: false,
         )
     }
 }

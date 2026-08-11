@@ -1225,7 +1225,6 @@
 		6698FC1A2980AB45004EFC30 /* DependenciesBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC192980AB45004EFC30 /* DependenciesBridge.swift */; };
 		669941A12CC976B500DC99A1 /* LinkAndSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669941A02CC976B000DC99A1 /* LinkAndSyncManager.swift */; };
 		669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669947B92A20129000E4DC0C /* SVR2Shims.swift */; };
-		669A2FCC2BD9D32400166DB6 /* AudioWaveformManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669A2FCB2BD9D32400166DB6 /* AudioWaveformManager.swift */; };
 		669A2FCE2BD9D48800166DB6 /* AudioWaveform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669A2FCD2BD9D48800166DB6 /* AudioWaveform.swift */; };
 		669A2FD02BDB068200166DB6 /* AudioWaveformManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669A2FCF2BDB068200166DB6 /* AudioWaveformManagerMock.swift */; };
 		669C4AAE2B7D4F7F001EF103 /* DatabaseChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669C4AAD2B7D4F7F001EF103 /* DatabaseChanges.swift */; };
@@ -5565,7 +5564,6 @@
 		6698FC192980AB45004EFC30 /* DependenciesBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependenciesBridge.swift; sourceTree = "<group>"; };
 		669941A02CC976B000DC99A1 /* LinkAndSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkAndSyncManager.swift; sourceTree = "<group>"; };
 		669947B92A20129000E4DC0C /* SVR2Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2Shims.swift; sourceTree = "<group>"; };
-		669A2FCB2BD9D32400166DB6 /* AudioWaveformManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformManager.swift; sourceTree = "<group>"; };
 		669A2FCD2BD9D48800166DB6 /* AudioWaveform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveform.swift; sourceTree = "<group>"; };
 		669A2FCF2BDB068200166DB6 /* AudioWaveformManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformManagerMock.swift; sourceTree = "<group>"; };
 		669C4AAD2B7D4F7F001EF103 /* DatabaseChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseChanges.swift; sourceTree = "<group>"; };
@@ -10729,7 +10727,6 @@
 			isa = PBXGroup;
 			children = (
 				669A2FCD2BD9D48800166DB6 /* AudioWaveform.swift */,
-				669A2FCB2BD9D32400166DB6 /* AudioWaveformManager.swift */,
 				F9C5CB62289453B200548EEE /* AudioWaveformManagerImpl.swift */,
 				669A2FCF2BDB068200166DB6 /* AudioWaveformManagerMock.swift */,
 				50BDC3672C88B7FA002294D0 /* AudioWaveformSampler.swift */,
@@ -19244,7 +19241,6 @@
 				66B78E082BE5AAFC0022580E /* AttachmentViewOnceManagerImpl.swift in Sources */,
 				66B78E112BE5AB360022580E /* AttachmentViewOnceManagerMock.swift in Sources */,
 				669A2FCE2BD9D48800166DB6 /* AudioWaveform.swift in Sources */,
-				669A2FCC2BD9D32400166DB6 /* AudioWaveformManager.swift in Sources */,
 				F9C5CE34289453B400548EEE /* AudioWaveformManagerImpl.swift in Sources */,
 				669A2FD02BDB068200166DB6 /* AudioWaveformManagerMock.swift in Sources */,
 				50BDC3682C88B7FA002294D0 /* AudioWaveformSampler.swift in Sources */,

@@ -162,26 +162,22 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             output: tmpFileUrl,
         )
 
-        func makeInputType(plaintextLength: UInt64) -> InputType {
-            return InputType.encryptedFile(
-                tmpFileUrl,
-                inputAttachmentKey: innerDecryptionMetadata.key,
-                plaintextLength: UInt32(plaintextLength),
-                integrityCheck: innerDecryptionMetadata.integrityCheck,
-            )
-        }
-
-        var decryptedLength = 0 as UInt64
+        var decryptedLength = 0 as UInt32
         var sha256 = SHA256()
         try Cryptography.decryptFile(
             at: tmpFileUrl,
             metadata: innerDecryptionMetadata,
             output: { data in
-                decryptedLength += UInt64(data.count)
+                decryptedLength += UInt32(data.count)
                 sha256.update(data: data)
             },
         )
-        let inputType = makeInputType(plaintextLength: decryptedLength)
+        let inputType = InputType.encryptedFile(
+            tmpFileUrl,
+            inputAttachmentKey: innerDecryptionMetadata.key,
+            plaintextLength: decryptedLength,
+            integrityCheck: innerDecryptionMetadata.integrityCheck,
+        )
         let primaryFilePlaintextHash = Data(sha256.finalize())
 
         return try await validateContentsAndPrepareAttachmentFiles(input: Input(
@@ -702,14 +698,14 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 isAvailableWhileDeviceLocked: true,
             )
             try data.write(to: fileUrl)
-            waveform = try audioWaveformManager.audioWaveformSync(forAudioPath: fileUrl.path)
+            waveform = try audioWaveformManager.computeAudioWaveform(audioFilePath: fileUrl.path)
 
         case .unencryptedFile(let fileUrl):
-            waveform = try audioWaveformManager.audioWaveformSync(forAudioPath: fileUrl.path)
+            waveform = try audioWaveformManager.computeAudioWaveform(audioFilePath: fileUrl.path)
 
         case let .encryptedFile(fileUrl, attachmentKey, plaintextLength, _):
-            waveform = try audioWaveformManager.audioWaveformSync(
-                forEncryptedAudioFileAtPath: fileUrl.path,
+            waveform = try audioWaveformManager.computeAudioWaveform(
+                encryptedAudioFilePath: fileUrl.path,
                 attachmentKey: attachmentKey,
                 plaintextDataLength: plaintextLength,
                 mimeType: mimeType,

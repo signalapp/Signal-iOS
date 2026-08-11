@@ -11,40 +11,23 @@ public class AudioWaveformManagerMock: AudioWaveformManager {
 
     public init() {}
 
-    public func audioWaveform(attachmentStream: AttachmentStream, highPriority: Bool) -> Task<AudioWaveform, Error> {
+    public func cachedAudioWaveform(attachmentStream: AttachmentStream) -> Task<AudioWaveform, Error> {
         return Task {
             return AudioWaveform(decibelSamples: [])
         }
     }
 
-    public func audioWaveform(forAudioPath audioPath: String, waveformPath: String) -> Task<AudioWaveform, Error> {
+    public func computeAndCacheAudioWaveform(audioPath: String, cacheWaveformToPath waveformPath: String) -> Task<AudioWaveform, any Error> {
         return Task {
             return AudioWaveform(decibelSamples: [])
         }
     }
 
-    public func audioWaveform(
-        forEncryptedAudioFileAtPath filePath: String,
-        attachmentKey: AttachmentKey,
-        plaintextDataLength: UInt32,
-        mimeType: String,
-        outputWaveformPath: String,
-    ) async throws {
-        // Do nothing
-    }
-
-    public func audioWaveformSync(
-        forAudioPath audioPath: String,
-    ) throws -> AudioWaveform {
+    public func computeAudioWaveform(audioFilePath: String) throws -> AudioWaveform {
         return AudioWaveform(decibelSamples: [])
     }
 
-    public func audioWaveformSync(
-        forEncryptedAudioFileAtPath filePath: String,
-        attachmentKey: AttachmentKey,
-        plaintextDataLength: UInt32,
-        mimeType: String,
-    ) throws -> AudioWaveform {
+    public func computeAudioWaveform(encryptedAudioFilePath: String, attachmentKey: AttachmentKey, plaintextDataLength: UInt32, mimeType: String) throws -> AudioWaveform {
         return AudioWaveform(decibelSamples: [])
     }
 }

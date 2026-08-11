@@ -7,21 +7,37 @@ import Accelerate
 import AVFoundation
 import Foundation
 
-public protocol AudioWaveformSamplingObserver: AnyObject {
-    func audioWaveformDidFinishSampling(_ audioWaveform: AudioWaveform)
+public protocol AudioWaveformManager {
+
+    func cachedAudioWaveform(
+        attachmentStream: AttachmentStream,
+    ) -> Task<AudioWaveform, Error>
+
+    func computeAndCacheAudioWaveform(
+        audioPath: String,
+        cacheWaveformToPath waveformPath: String,
+    ) -> Task<AudioWaveform, Error>
+
+    func computeAudioWaveform(
+        audioFilePath: String,
+    ) throws -> AudioWaveform
+
+    func computeAudioWaveform(
+        encryptedAudioFilePath: String,
+        attachmentKey: AttachmentKey,
+        plaintextDataLength: UInt32,
+        mimeType: String,
+    ) throws -> AudioWaveform
 }
 
 // MARK: -
 
-public class AudioWaveformManagerImpl: AudioWaveformManager {
+class AudioWaveformManagerImpl: AudioWaveformManager {
 
-    private typealias AttachmentId = Attachment.IDType
+    init() {}
 
-    public init() {}
-
-    public func audioWaveform(
+    func cachedAudioWaveform(
         attachmentStream: AttachmentStream,
-        highPriority: Bool,
     ) -> Task<AudioWaveform, Error> {
         switch attachmentStream.contentType {
         case .file, .image, .video:
@@ -36,7 +52,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         // so don't try again now.
         guard let audioWaveformRelativeFilePath = attachmentStream.cachedAudioWaveformRelativeFilePath else {
             return Task {
-                throw AudioWaveformError.invalidAudioFile
+                throw OWSAssertionError("invalid audio file")
             }
         }
 
@@ -55,63 +71,41 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         }
     }
 
-    public func audioWaveform(
-        forAudioPath audioPath: String,
-        waveformPath: String,
+    func computeAndCacheAudioWaveform(
+        audioPath: String,
+        cacheWaveformToPath: String,
     ) -> Task<AudioWaveform, Error> {
         return buildAudioWaveForm(
             source: .unencryptedFile(path: audioPath),
-            waveformPath: waveformPath,
+            cacheWaveformToPath: cacheWaveformToPath,
             identifier: .file(UUID()),
             highPriority: false,
         )
     }
 
-    public func audioWaveform(
-        forEncryptedAudioFileAtPath filePath: String,
-        attachmentKey: AttachmentKey,
-        plaintextDataLength: UInt32,
-        mimeType: String,
-        outputWaveformPath: String,
-    ) async throws {
-        let task = buildAudioWaveForm(
-            source: .encryptedFile(
-                path: filePath,
-                attachmentKey: attachmentKey,
-                plaintextDataLength: plaintextDataLength,
-                mimeType: mimeType,
-            ),
-            waveformPath: outputWaveformPath,
-            identifier: .file(UUID()),
-            highPriority: false,
-        )
-        // Don't need the waveform; its written to disk by now.
-        _ = try await task.value
-    }
-
-    public func audioWaveformSync(
-        forAudioPath audioPath: String,
+    func computeAudioWaveform(
+        audioFilePath: String,
     ) throws -> AudioWaveform {
         return try _buildAudioWaveForm(
-            source: .unencryptedFile(path: audioPath),
-            waveformPath: nil,
+            source: .unencryptedFile(path: audioFilePath),
+            cacheWaveformToPath: nil,
         )
     }
 
-    public func audioWaveformSync(
-        forEncryptedAudioFileAtPath filePath: String,
+    func computeAudioWaveform(
+        encryptedAudioFilePath: String,
         attachmentKey: AttachmentKey,
         plaintextDataLength: UInt32,
         mimeType: String,
     ) throws -> AudioWaveform {
         return try _buildAudioWaveForm(
             source: .encryptedFile(
-                path: filePath,
+                path: encryptedAudioFilePath,
                 attachmentKey: attachmentKey,
                 plaintextDataLength: plaintextDataLength,
                 mimeType: mimeType,
             ),
-            waveformPath: nil,
+            cacheWaveformToPath: nil,
         )
     }
 
@@ -144,11 +138,11 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
     private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
     private let highPriorityTaskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
-    private var cache = LRUCache<AttachmentId, Weak<AudioWaveform>>(maxSize: 64)
+    private var cache = LRUCache<Attachment.IDType, Weak<AudioWaveform>>(maxSize: 64)
 
     private func buildAudioWaveForm(
         source: AVAssetSource,
-        waveformPath: String,
+        cacheWaveformToPath: String,
         identifier: WaveformId,
         highPriority: Bool,
     ) -> Task<AudioWaveform, Error> {
@@ -167,7 +161,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
                 }
                 let waveform = try self._buildAudioWaveForm(
                     source: source,
-                    waveformPath: waveformPath,
+                    cacheWaveformToPath: cacheWaveformToPath,
                 )
 
                 identifier.cacheKey.map { self.cache[$0] = Weak(value: waveform) }
@@ -176,12 +170,13 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         }
     }
 
+    /// - Parameter cacheWaveformToPath: if non-nil, writes a waveform file to
+    /// this path.
     private func _buildAudioWaveForm(
         source: AVAssetSource,
-        // If non-nil, writes the waveform to this output file.
-        waveformPath: String?,
+        cacheWaveformToPath: String?,
     ) throws -> AudioWaveform {
-        if let waveformPath {
+        if let waveformPath = cacheWaveformToPath {
             do {
                 let waveformData = try Data(contentsOf: URL(fileURLWithPath: waveformPath))
                 // We have a cached waveform on disk, read it into memory.
@@ -209,17 +204,16 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         }
 
         guard asset.isReadable else {
-            owsFailDebug("unexpectedly encountered unreadable audio file.")
-            throw AudioWaveformError.invalidAudioFile
+            throw OWSAssertionError("unexpectedly encountered unreadable audio file.")
         }
 
         guard CMTimeGetSeconds(asset.duration) <= Self.maximumDuration else {
-            throw AudioWaveformError.audioTooLong
+            throw OWSAssertionError("audio too long for waveform: \(asset.duration)")
         }
 
         let waveform = try sampleWaveform(asset: asset)
 
-        if let waveformPath {
+        if let waveformPath = cacheWaveformToPath {
             do {
                 let parentDirectoryPath = (waveformPath as NSString).deletingLastPathComponent
                 if OWSFileSystem.ensureDirectoryExists(parentDirectoryPath) {
@@ -262,8 +256,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
                         withDestinationPath: audioPath,
                     )
                 } catch {
-                    owsFailDebug("Failed to create voice memo symlink: \(error)")
-                    throw AudioWaveformError.fileIOError
+                    throw OWSAssertionError("Failed to create voice memo symlink: \(error)")
                 }
                 asset = AVURLAsset(url: URL(fileURLWithPath: symlinkPath))
             }
@@ -297,14 +290,12 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         try Task.checkCancellation()
 
         guard let assetReader = try? AVAssetReader(asset: asset) else {
-            owsFailDebug("Unexpectedly failed to initialize asset reader")
-            throw AudioWaveformError.fileIOError
+            throw OWSAssertionError("Unexpectedly failed to initialize asset reader")
         }
 
         // We just draw the waveform based on the first audio track.
         guard let audioTrack = assetReader.asset.tracks.first(where: { $0.mediaType == .audio }) else {
-            owsFailDebug("audio file has no tracks")
-            throw AudioWaveformError.invalidAudioFile
+            throw OWSAssertionError("audio file has no tracks")
         }
 
         let trackOutput = AVAssetReaderTrackOutput(
@@ -348,8 +339,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
             try Task.checkCancellation()
 
             guard let trackOutput = assetReader.outputs.first else {
-                owsFailDebug("track output unexpectedly missing")
-                throw AudioWaveformError.invalidAudioFile
+                throw OWSAssertionError("track output unexpectedly missing")
             }
 
             // Process any newly read data.
@@ -371,8 +361,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
                 dataPointerOut: &dataPointer,
             )
             guard result == kCMBlockBufferNoErr else {
-                owsFailDebug("track data unexpectedly inaccessible")
-                throw AudioWaveformError.invalidAudioFile
+                throw OWSAssertionError("track data unexpectedly inaccessible")
             }
             let bufferPointer = UnsafeBufferPointer(start: dataPointer, count: lengthAtOffset)
             bufferPointer.withMemoryRebound(to: Int16.self) { sampler.update($0) }
