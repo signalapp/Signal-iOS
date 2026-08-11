@@ -223,6 +223,7 @@ public final class KeyTransparencyManager {
             // Require a self-check to succeed before checking others.
             switch selfCheckState {
             case nil:
+                logger.info("Running KT self-check as prerequisite!")
                 try await prepareAndPerformSelfCheck(localIdentifiers: params.localIdentifiers)
             case .succeeded:
                 break
@@ -256,29 +257,30 @@ public final class KeyTransparencyManager {
             },
             operation: { [self] () async throws -> Void in
                 let isEnabled: Bool
-                let localIdentifiers: LocalIdentifiers?
                 let isTimeForSelfCheck: Bool
+                let registeredState: RegisteredState?
                 (
                     isEnabled,
-                    localIdentifiers,
                     isTimeForSelfCheck,
+                    registeredState,
                 ) = db.read { tx in
                     return (
                         keyTransparencyStore.isEnabled(tx: tx),
-                        tsAccountManager.localIdentifiers(tx: tx),
                         keyTransparencyStore.getIsTimeForSelfCheckCronJob(now: dateProvider(), tx: tx),
+                        try? tsAccountManager.registeredState(tx: tx),
                     )
                 }
 
                 guard
                     isEnabled,
-                    let localIdentifiers,
-                    isTimeForSelfCheck
+                    isTimeForSelfCheck,
+                    let registeredState
                 else {
                     return
                 }
 
-                try await prepareAndPerformSelfCheck(localIdentifiers: localIdentifiers)
+                logger.info("Running KT self-check for Cron!")
+                try await prepareAndPerformSelfCheck(localIdentifiers: registeredState.localIdentifiers)
             },
         )
     }
@@ -290,6 +292,7 @@ public final class KeyTransparencyManager {
             throw OWSAssertionError("Missing local identifiers!")
         }
 
+        logger.info("Running KT self-check on-demand!")
         try await prepareAndPerformSelfCheck(localIdentifiers: localIdentifiers)
     }
 
