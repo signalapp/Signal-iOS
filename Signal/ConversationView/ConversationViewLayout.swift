@@ -1106,8 +1106,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
 // MARK: -
 
-// TODO: This might not have to be @objc after the CVC port.
-public class CVScrollContinuityToken: NSObject {
+public struct CVScrollContinuityToken {
     fileprivate let layoutInfo: ConversationViewLayout.LayoutInfo
     fileprivate let contentOffset: CGPoint
     fileprivate let visibleUniqueIds: [String]
