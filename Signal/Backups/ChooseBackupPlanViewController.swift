@@ -234,11 +234,11 @@ struct ChooseBackupPlanView: View {
                     )
                 }
                 .buttonStyle(.plain)
+
+                BackupPlanTermsAndConditionsView()
+                    .padding(.vertical, 16)
             }
             .padding(.horizontal, 16)
-
-            BackupPlanTermsAndConditionsView()
-                .padding(.vertical, 16)
         } pinnedFooter: {
             Button {
                 viewModel.confirmSelection()
