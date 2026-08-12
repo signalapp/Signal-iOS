@@ -199,6 +199,7 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
         let pinnedThreads = pinnedThreadStore.fetchPinnedThreadRecords(tx: tx)
 
         if pinnedThreads.contains(where: { $0.threadId == threadId }) {
+            Logger.info("Skipping already-pinned \(threadId)")
             return
         }
 
@@ -246,7 +247,8 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
     }
 
     private func _pinThread(threadId: PinnedThreadId, updateStorageService: Bool, tx: DBWriteTransaction) {
-        _ = PinnedThreadRecord.insertRecord(threadId: threadId, tx: tx)
+        let pinnedThread = PinnedThreadRecord.insertRecord(threadId: threadId, tx: tx)
+        Logger.info("Pinned \(threadId) with order \(pinnedThread.id)")
         didPinThread(threadId: threadId, updateStorageService: updateStorageService, tx: tx)
     }
 
@@ -281,6 +283,7 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
         failIfThrows {
             try pinnedThread.delete(tx.database)
         }
+        Logger.info("Unpinned \(pinnedThread.threadId) with order \(pinnedThread.id)")
         didUnpinThread(threadId: pinnedThread.threadId, tx: tx)
     }
 
@@ -318,6 +321,7 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
         } else {
             // The one we're merging into needs to be pinned; pin it now.
             let threadId = PinnedThreadId.recipientId(targetRecipientId)
+            Logger.info("Moving pin with order \(pinnedThread.id) to \(threadId)")
             pinnedThread.threadId = threadId
             failIfThrows { try pinnedThread.update(tx.database) }
             didPinThread(threadId: threadId, updateStorageService: updateStorageService, tx: tx)

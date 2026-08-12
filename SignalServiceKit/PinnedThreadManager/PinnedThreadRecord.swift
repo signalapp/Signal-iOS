@@ -6,10 +6,23 @@
 import Foundation
 import GRDB
 
-public enum PinnedThreadId: Equatable {
+public enum PinnedThreadId: Equatable, CustomStringConvertible {
     case groupId(Data)
     case recipientId(SignalRecipient.RowId)
     case releaseNotes
+
+    // MARK: - CustomStringConvertible
+
+    public var description: String {
+        switch self {
+        case .groupId(let groupId):
+            return "groupId(\(groupId.hexadecimalString))"
+        case .recipientId(let recipientId):
+            return "recipientId(\(recipientId))"
+        case .releaseNotes:
+            return "releaseNotes"
+        }
+    }
 }
 
 /// Stores which "threads" should be pinned.
