@@ -1121,7 +1121,7 @@ public final class MessageReceiver {
         let deviceAddress = "\(envelope.sourceAci).\(envelope.sourceDeviceId)"
         let messageDescription: String
         if let groupThread = thread as? TSGroupThread {
-            messageDescription = "Incoming message from \(deviceAddress) in group \(groupThread.groupModel.groupId) w/ts \(envelope.timestamp), serverTimestamp: \(envelope.serverTimestamp)"
+            messageDescription = "Incoming message from \(deviceAddress) in group \(groupThread.groupModel.groupId as Data) w/ts \(envelope.timestamp), serverTimestamp: \(envelope.serverTimestamp)"
         } else {
             messageDescription = "Incoming message from \(deviceAddress) w/ts \(envelope.timestamp), serverTimestamp: \(envelope.serverTimestamp)"
         }
