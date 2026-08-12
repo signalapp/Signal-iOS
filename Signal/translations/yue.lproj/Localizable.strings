@@ -1826,7 +1826,7 @@
 "CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Clear All";
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "全部清除";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "咁做嘅話，所有通話紀錄就會永久刪除。";
@@ -5420,28 +5420,28 @@
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "唔好閂 Signal。";
 
 /* Body for an error sheet shown when the user's folder choice does not contain a backup file. */
-"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "No Signal backup was found in the selected folder. Please try a different folder.";
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "喺揀咗嘅資料夾度搵唔到 Signal 備份。請試下其他資料夾。";
 
 /* Title for an error sheet shown when the user's folder choice does not contain a backup file. */
-"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "No Backup Found";
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "搵唔到備份";
 
 /* Title for a button that lets the user select a new folder. */
-"LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "Try a different folder";
+"LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "試下其他資料夾";
 
 /* Body text for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "After tapping “Continue,” here’s how to access your backup:";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "㩒咗「繼續」之後，下面就係存取備份嘅方法：";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "Select the top-level folder where your backup is stored";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "揀儲存備份嘅頂層資料夾";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "Tap “Open”";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "㩒一下「開啟」";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_3" = "Do not select individual files";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_3" = "唔好揀個別檔案";
 
 /* Title for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Select Your Backup Folder";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "揀你嘅備份資料夾";
 
 /* Button for a sheet asking the user to choose a new local file backup folder */
 "LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "揀資料夾";
@@ -8870,34 +8870,34 @@
 "SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "咁樣做會移除呢部機上面 Signal APP 嘅全部資料。";
 
 /* Text for a toast confirming the user changed their local file backup location. */
-"SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED" = "Backup folder updated";
+"SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED" = "備份資料夾已經更新咗";
 
 /* Title for the 'on-device backups' settings page. */
 "SETTINGS_LOCAL_FILE_BACKUPS" = "裝置上備份";
 
 /* Label for the button that starts a manual on-device backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACK_UP_NOW" = "Back Up Now";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACK_UP_NOW" = "即刻備份";
 
 /* Label for the row that lets the user choose the folder for on-device backups. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_FOLDER" = "Backup Folder";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_FOLDER" = "備份資料夾";
 
 /* Label for the row showing the size of the on-device backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_SIZE" = "Backup Size";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_SIZE" = "備份大小";
 
 /* Description shown at the top of the on-device backups settings page. */
-"SETTINGS_LOCAL_FILE_BACKUPS_HEADER_DESCRIPTION" = "Backups are end-to-end encrypted and stored on your device.";
+"SETTINGS_LOCAL_FILE_BACKUPS_HEADER_DESCRIPTION" = "備份會用端對端加密，然後儲存喺你部機度。";
 
 /* Label for the row showing when the last on-device backup occurred. */
-"SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "Last Backup";
+"SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "上一次備份";
 
 /* Footer text on the on-device backups settings page explaining how to restore a backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "To restore a backup, install a new copy of Signal. Open the app, tap “Restore or Transfer” and select “On-Device Backup”.";
+"SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "要還原一個備份嘅話，請首先重新安裝 Signal。開返個 APP 出嚟，㩒一下「還原或者轉移」然後揀「裝置上備份」。";
 
 /* Label for the button that turns off on-device backups. */
-"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Turn Off Backups";
+"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "閂咗個備份";
 
 /* Label for the row that shows the on-device backup recovery key. */
-"SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "View Recovery Key";
+"SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "睇下個恢復金鑰";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "唔使喇";

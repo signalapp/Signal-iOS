@@ -1826,7 +1826,7 @@
 "CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Clear All";
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "모두 지우기";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "모든 통화 기록을 영구 삭제합니다.";
@@ -2045,7 +2045,7 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "색상 편집";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "배경 화면에 맞게 색상이 자동으로 적용됩니다.";
+"CHAT_COLORS_AUTO_TOOLTIP" = "배경화면에 맞게 색상이 자동으로 적용됩니다.";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "백업을 취소해도 백업은 삭제되지 않으며, 백업 설정에서 언제든지 다시 백업을 시작할 수 있습니다.";
@@ -2213,7 +2213,7 @@
 "COLLAPSE_SET_TIMER_DISABLED" = "꺼짐";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "대화창 색 및 배경 화면";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "대화창 색 및 배경화면";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "클립보드로 비교";
@@ -2990,7 +2990,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "계정 삭제";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "이후 Signal 계정이 삭제되고 애플리케이션이 재설정됩니다. 프로세스가 완료되면 앱이 닫힙니다.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "진행 시 Signal 계정이 삭제되며 앱이 초기화됩니다. 프로세스가 완료되면 앱이 자동으로 종료됩니다.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "정말 계정을 삭제하시겠어요?";
@@ -5420,28 +5420,28 @@
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Signal을 닫지 마세요.";
 
 /* Body for an error sheet shown when the user's folder choice does not contain a backup file. */
-"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "No Signal backup was found in the selected folder. Please try a different folder.";
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "선택한 폴더에서 Signal 백업 파일을 찾을 수 없습니다. 다른 폴더를 선택해 보세요.";
 
 /* Title for an error sheet shown when the user's folder choice does not contain a backup file. */
-"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "No Backup Found";
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "백업을 찾을 수 없음";
 
 /* Title for a button that lets the user select a new folder. */
-"LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "Try a different folder";
+"LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "다른 폴더 선택하기";
 
 /* Body text for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "After tapping “Continue,” here’s how to access your backup:";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "'계속'을 탭한 후 다음 단계를 따라 백업에 액세스하세요.";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "Select the top-level folder where your backup is stored";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "백업이 저장된 가장 상위 폴더를 선택하세요";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "Tap “Open”";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "'열기'를 탭하세요";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_3" = "Do not select individual files";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_3" = "개별 파일을 선택하지 마세요";
 
 /* Title for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Select Your Backup Folder";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "백업 폴더 선택";
 
 /* Button for a sheet asking the user to choose a new local file backup folder */
 "LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "폴더 선택";
@@ -8597,7 +8597,7 @@
 "SET_WALLPAPER_PRESETS" = "프리셋";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "배경 화면 설정";
+"SET_WALLPAPER_TITLE" = "배경화면 설정";
 
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "계정";
@@ -8831,7 +8831,7 @@
 "SETTINGS_INVITE_TITLE" = "친구 초대";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "대화창 색 및 배경 화면";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "대화창 색 및 배경화면";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "메시지 소리";
@@ -8870,34 +8870,34 @@
 "SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "기기에 저장된 Signal 앱의 모든 데이터가 삭제됩니다.";
 
 /* Text for a toast confirming the user changed their local file backup location. */
-"SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED" = "Backup folder updated";
+"SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED" = "백업 폴더 업데이트됨";
 
 /* Title for the 'on-device backups' settings page. */
 "SETTINGS_LOCAL_FILE_BACKUPS" = "기기 내 백업";
 
 /* Label for the button that starts a manual on-device backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACK_UP_NOW" = "Back Up Now";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACK_UP_NOW" = "지금 백업";
 
 /* Label for the row that lets the user choose the folder for on-device backups. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_FOLDER" = "Backup Folder";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_FOLDER" = "백업 폴더";
 
 /* Label for the row showing the size of the on-device backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_SIZE" = "Backup Size";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_SIZE" = "백업 크기";
 
 /* Description shown at the top of the on-device backups settings page. */
-"SETTINGS_LOCAL_FILE_BACKUPS_HEADER_DESCRIPTION" = "Backups are end-to-end encrypted and stored on your device.";
+"SETTINGS_LOCAL_FILE_BACKUPS_HEADER_DESCRIPTION" = "백업은 종단간 암호화로 보호되어 기기에 저장됩니다.";
 
 /* Label for the row showing when the last on-device backup occurred. */
-"SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "Last Backup";
+"SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "마지막 백업";
 
 /* Footer text on the on-device backups settings page explaining how to restore a backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "To restore a backup, install a new copy of Signal. Open the app, tap “Restore or Transfer” and select “On-Device Backup”.";
+"SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "백업을 복원하려면 Signal을 다시 설치해 주세요. 설치한 후에는 앱을 열고 '복원 또는 이전'을 탭한 다음, '기기 내 백업'을 선택해 주세요.";
 
 /* Label for the button that turns off on-device backups. */
-"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Turn Off Backups";
+"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "백업 끄기";
 
 /* Label for the row that shows the on-device backup recovery key. */
-"SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "View Recovery Key";
+"SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "복구 키 보기";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "없음";
@@ -8966,7 +8966,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "자금 추가";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "자금을 추가하려면 나의 지갑 주소로 MobileCoin을 보내세요. MobileCoin을 지원하는 거래소의 계정에서 거래를 시작한 다음 QR 코드를 스캔하거나 지갑 주소를 복사하세요.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "자금을 충전하려면 내 지갑 주소로 MobileCoin을 보내세요. MobileCoin을 지원하는 거래소에서 출금 거래를 시작한 다음, QR 코드를 스캔하거나 지갑 주소를 복사해 주세요.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "지갑 주소 복사됨";
@@ -9053,7 +9053,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "자금 추가";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "MobileCoin을 지원하는 거래소에서 언제든지 MobileCoin을 현금화할 수 있습니다. 해당 거래소에서 계좌로 이체하기만 하면 됩니다.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "MobileCoin을 지원하는 거래소에서 언제든 현금화할 수 있습니다. 해당 거래소에서 본인 계좌로 출금 이체만 진행해 주세요.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "현금화";
@@ -10634,16 +10634,16 @@
 "WALLPAPER_PREVIEW_BLUR_BUTTON" = "사진에 흐림 효과 주기";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "확대하기 위해서는 화면 위에 두 손가락을 모으거나 멀어지게 조작하시고, 조정하기 위해서는 손가락으로 끌어보세요.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "두 손가락으로 확대하고 드래그하여 조절하세요.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "화면을 밀어 더 많은 배경 화면을 미리 확인하세요.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "화면을 밀어 다른 배경화면을 둘러보세요.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "모든 대화에 배경 화면을 설정합니다.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "모든 대화에 배경화면을 설정합니다.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%1$@ 채팅창 배경 화면 설정";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%1$@ 님과의 대화창에 배경화면을 설정합니다.";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "미리보기";
@@ -10655,13 +10655,13 @@
 "WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "이 대화의 대화창 색을 제거할까요?";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "배경 화면 삭제";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "배경화면 지우기";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "이 대화의 배경 화면을 제거할까요?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "이 대화창의 배경화면을 제거할까요?";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "다크 모드 설정 시 배경 화면이 어두워집니다";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "다크 모드 설정 시 배경화면이 어두워집니다";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
 "WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "배경을 삭제할 수 없습니다. 오류가 계속되면 다시 시도하거나 지원팀에 문의하세요.";
@@ -10670,43 +10670,43 @@
 "WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "모든 색상 초기화";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "모든 배경 화면 초기화";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "모든 배경화면 초기화";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "모든 대화창 색을 다시 정의할까요?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "대화창 색 재설정";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "대화창 색 초기화";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "대화창 색 재설정";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "대화창 색 초기화";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "배경 화면 초기화";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "배경화면 초기화";
 
 /* Label for 'reset default chat color' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "기본 색상 초기화";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "대화창 색 재설정";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "대화창 색 초기화";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "기본 배경 화면 초기화";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "기본 배경화면 초기화";
 
 /* Reset wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "배경 화면 초기화";
+"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "배경화면 초기화";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "모든 배경 화면을 덮어쓸까요?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "모든 배경화면을 덮어쓸까요?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "배경 화면 초기화";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "배경화면 초기화";
 
 /* Set chat color action in color and wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "대화창 색";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "배경 화면 설정";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "배경화면 설정";
 
 /* Second person pronoun to represent the local user. */
 "YOU" = "나";

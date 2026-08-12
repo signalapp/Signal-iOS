@@ -1826,7 +1826,7 @@
 "CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Clear All";
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Alle entfernen";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Dies wird den gesamten Anrufverlauf unwiderruflich löschen.";
@@ -5420,28 +5420,28 @@
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Signal bitte nicht schließen.";
 
 /* Body for an error sheet shown when the user's folder choice does not contain a backup file. */
-"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "No Signal backup was found in the selected folder. Please try a different folder.";
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "Im ausgewählten Ordner wurde kein Signal-Backup gefunden. Bitte versuche es mit einem anderen Ordner.";
 
 /* Title for an error sheet shown when the user's folder choice does not contain a backup file. */
-"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "No Backup Found";
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "Kein Backup gefunden";
 
 /* Title for a button that lets the user select a new folder. */
-"LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "Try a different folder";
+"LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "Mit einem anderen Ordner versuchen";
 
 /* Body text for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "After tapping “Continue,” here’s how to access your backup:";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "Nachdem du auf »Weiter« getippt hast, kannst du folgendermaßen auf dein Backup zugreifen:";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "Select the top-level folder where your backup is stored";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "Wähle den Ordner aus, in dem dein Backup gespeichert ist";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "Tap “Open”";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "»Öffnen«";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_3" = "Do not select individual files";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_3" = "Wähle bitte keine einzelnen Dateien aus";
 
 /* Title for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Select Your Backup Folder";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Wähle deinen Backup-Ordner aus";
 
 /* Button for a sheet asking the user to choose a new local file backup folder */
 "LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Ordner wählen";
@@ -8870,34 +8870,34 @@
 "SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "Dadurch werden alle App-Daten von Signal auf diesem Gerät entfernt.";
 
 /* Text for a toast confirming the user changed their local file backup location. */
-"SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED" = "Backup folder updated";
+"SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED" = "Backup-Ordner aktualisiert";
 
 /* Title for the 'on-device backups' settings page. */
 "SETTINGS_LOCAL_FILE_BACKUPS" = "Lokale Backups";
 
 /* Label for the button that starts a manual on-device backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACK_UP_NOW" = "Back Up Now";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACK_UP_NOW" = "Jetzt sichern";
 
 /* Label for the row that lets the user choose the folder for on-device backups. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_FOLDER" = "Backup Folder";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_FOLDER" = "Ordner für Backups";
 
 /* Label for the row showing the size of the on-device backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_SIZE" = "Backup Size";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_SIZE" = "Größe des Backups";
 
 /* Description shown at the top of the on-device backups settings page. */
-"SETTINGS_LOCAL_FILE_BACKUPS_HEADER_DESCRIPTION" = "Backups are end-to-end encrypted and stored on your device.";
+"SETTINGS_LOCAL_FILE_BACKUPS_HEADER_DESCRIPTION" = "Backups sind Ende-zu-Ende-verschlüsselt und auf deinem Gerät gespeichert.";
 
 /* Label for the row showing when the last on-device backup occurred. */
-"SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "Last Backup";
+"SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "Letztes Backup";
 
 /* Footer text on the on-device backups settings page explaining how to restore a backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "To restore a backup, install a new copy of Signal. Open the app, tap “Restore or Transfer” and select “On-Device Backup”.";
+"SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "Um ein lokales Backup wiederherzustellen, installiere einfach eine neue Version von Signal. Öffne die App, tippe auf »Wiederherstellen oder Übertragen« und wähle dann »Lokales Backup«.";
 
 /* Label for the button that turns off on-device backups. */
-"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Turn Off Backups";
+"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Backups ausschalten";
 
 /* Label for the row that shows the on-device backup recovery key. */
-"SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "View Recovery Key";
+"SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "Wiederherstellungsschlüssel anzeigen";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Nie";

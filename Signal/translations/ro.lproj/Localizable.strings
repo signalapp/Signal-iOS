@@ -1826,7 +1826,7 @@
 "CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Clear All";
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Șterge Tot";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Se va șterge definitiv tot istoricul apelurilor.";
@@ -5420,28 +5420,28 @@
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Nu închideți Signal.";
 
 /* Body for an error sheet shown when the user's folder choice does not contain a backup file. */
-"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "No Signal backup was found in the selected folder. Please try a different folder.";
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "Nu a fost găsit niciun backup Signal în folderul selectat. Încearcă un folder diferit.";
 
 /* Title for an error sheet shown when the user's folder choice does not contain a backup file. */
-"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "No Backup Found";
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "Nu s-a găsit backup";
 
 /* Title for a button that lets the user select a new folder. */
-"LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "Try a different folder";
+"LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "Încearcă un folder diferit";
 
 /* Body text for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "After tapping “Continue,” here’s how to access your backup:";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "După ce apeși pe „Continuă”, iată cum poți accesa backup-ul:";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "Select the top-level folder where your backup is stored";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "Selectează folderul de nivel superior în care este stocată copia de rezervă";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "Tap “Open”";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "Atinge „Deschide“";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_3" = "Do not select individual files";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_3" = "Nu selecta fișiere individuale";
 
 /* Title for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Select Your Backup Folder";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Selectează folderul de rezervă";
 
 /* Button for a sheet asking the user to choose a new local file backup folder */
 "LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Alege directorul";
@@ -8870,34 +8870,34 @@
 "SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "Această acțiune va șterge toate datele din aplicația Signal de pe acest dispozitiv.";
 
 /* Text for a toast confirming the user changed their local file backup location. */
-"SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED" = "Backup folder updated";
+"SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED" = "Dosarul de backup actualizat";
 
 /* Title for the 'on-device backups' settings page. */
 "SETTINGS_LOCAL_FILE_BACKUPS" = "Backup-uri pe dispozitiv";
 
 /* Label for the button that starts a manual on-device backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACK_UP_NOW" = "Back Up Now";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACK_UP_NOW" = "Fă un backup acum";
 
 /* Label for the row that lets the user choose the folder for on-device backups. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_FOLDER" = "Backup Folder";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_FOLDER" = "Director backup";
 
 /* Label for the row showing the size of the on-device backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_SIZE" = "Backup Size";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_SIZE" = "Dimensiunea backup-ului";
 
 /* Description shown at the top of the on-device backups settings page. */
-"SETTINGS_LOCAL_FILE_BACKUPS_HEADER_DESCRIPTION" = "Backups are end-to-end encrypted and stored on your device.";
+"SETTINGS_LOCAL_FILE_BACKUPS_HEADER_DESCRIPTION" = "Backup-urile sunt criptate end-to-end și stocate pe dispozitiv.";
 
 /* Label for the row showing when the last on-device backup occurred. */
-"SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "Last Backup";
+"SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "Ultimul backup";
 
 /* Footer text on the on-device backups settings page explaining how to restore a backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "To restore a backup, install a new copy of Signal. Open the app, tap “Restore or Transfer” and select “On-Device Backup”.";
+"SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "Pentru a restaura un backup, instalează o copie nouă a Signal. Deschide aplicația, atinge „Restaurează sau transferă“ și selectează „Backup pe dispozitiv“.";
 
 /* Label for the button that turns off on-device backups. */
-"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Turn Off Backups";
+"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Dezactivează backup-urile";
 
 /* Label for the row that shows the on-device backup recovery key. */
-"SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "View Recovery Key";
+"SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "Vezi codul de recuperare";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Niciodată";
