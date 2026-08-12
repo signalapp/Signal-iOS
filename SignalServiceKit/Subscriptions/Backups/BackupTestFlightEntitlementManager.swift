@@ -227,11 +227,9 @@ private struct AppAttestManager {
         /// Attestation is not supported on this device or app instance.
         case notSupported
 
-        /// iOS failed to generate an assertion using a previously-attested key.
-        ///
-        /// Believed to be an iOS issue, indicating that the previously-attested
-        /// key should be discarded.
-        case failedToGenerateAssertionWithPreviouslyAttestedKey
+        /// A previously-attested key is no longer valid, either according to
+        /// iOS or Signal's servers.
+        case previouslyAttestedKeyNoLongerValid
     }
 
     /// Represents a key, stored on this device in the Secure Enclave, which
@@ -309,8 +307,8 @@ private struct AppAttestManager {
         logger.info("Getting attested key.")
         let attestedKey = try await getOrGenerateAttestedKey()
 
-        logger.info("Generating assertion.")
         do {
+            logger.info("Generating assertion.")
             let requestAssertion = try await generateAssertionForAction(
                 action,
                 attestedKey: attestedKey,
@@ -321,10 +319,10 @@ private struct AppAttestManager {
                 keyId: attestedKey.identifier,
                 requestAssertion: requestAssertion,
             )
-        } catch AppAttestError.failedToGenerateAssertionWithPreviouslyAttestedKey {
-            // If we failed to generate an assertion with a previously-attested
-            // key, throw that key away and try again.
-            logger.warn("Failed to generate assertion with previously-attested key. Wiping key and starting over.")
+        } catch AppAttestError.previouslyAttestedKeyNoLongerValid {
+            // For whatever reason, our previously-attested key is no longer
+            // valid. Throw it away and start over.
+            logger.warn("Previously-attested key is no longer valid. Wiping key and starting over.")
             await wipeAttestedKeyId()
             try await performAttestationAction(action)
         }
@@ -338,17 +336,15 @@ private struct AppAttestManager {
             throw OWSAssertionError("Failed to convert keyId to data performing attestation action!", logger: logger)
         }
 
-        let response = try await networkManager.asyncRequest(.performAttestationAction(
-            keyIdData: keyIdData,
-            assertedRequestData: requestAssertion.requestData,
-            assertion: requestAssertion.assertion,
-        ))
-
-        switch response.responseStatusCode {
-        case 204:
-            break
-        default:
-            throw response.asError()
+        do {
+            _ = try await networkManager.asyncRequest(.performAttestationAction(
+                keyIdData: keyIdData,
+                assertedRequestData: requestAssertion.requestData,
+                assertion: requestAssertion.assertion,
+            ))
+        } catch let error where error.httpStatusCode == 404 {
+            logger.warn("Previously-attested key not found by Signal servers.")
+            throw AppAttestError.previouslyAttestedKeyNoLongerValid
         }
     }
 
@@ -523,7 +519,8 @@ private struct AppAttestManager {
                 /// key invalid, so we should discard it and start over.
                 ///
                 /// For good measure, handle `.invalidKey` too.
-                throw AppAttestError.failedToGenerateAssertionWithPreviouslyAttestedKey
+                logger.warn("Failed to generate assertion with previously-attested key! \(dcError.code)")
+                throw AppAttestError.previouslyAttestedKeyNoLongerValid
             default:
                 throw parseDCError(dcError)
             }
