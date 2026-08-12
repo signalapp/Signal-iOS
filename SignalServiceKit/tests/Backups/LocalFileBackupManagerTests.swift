@@ -234,6 +234,80 @@ struct LocalFileBackupManagerTests {
         #expect(FileManager.default.fileExists(atPath: mediaPath2.path))
     }
 
+    @Test
+    func testWriteQueuedAttachmentsAcrossMultipleBatches() async throws {
+        // Larger than batch count so it spans multiple manifestStream writes.
+        let attachmentCount = await LocalFileBackupManager.attachmentBatchSize + 1
+
+        var mockAttachments: [Attachment] = []
+        for _ in 0..<attachmentCount {
+            mockAttachments.append(try LocalFileBackupTestSupport.makeMockAttachmentWithRealFile())
+        }
+
+        let ids: [Attachment.IDType] = db.write { tx in
+            mockAttachments.map { LocalFileBackupTestSupport.insertMockAttachment($0, tx: tx) }
+        }
+
+        await localFileBackupManager.ensureAttachmentMetadataExists()
+
+        let collector = LocalFileBackupAttachmentCollector()
+        for id in ids {
+            collector.append(id: id)
+        }
+        try await localFileBackupManager.queueLocalBackupAttachmentsForExport(
+            localFileBackupAttachmentCollector: collector,
+        )
+
+        let localBackupURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: localBackupURL, withIntermediateDirectories: true)
+        defer {
+            try? FileManager.default.removeItem(at: localBackupURL)
+        }
+
+        let currentBackupDirectoryName = LocalFileBackupManager.FileStructure.backupDirectory(date: Date())
+        let currentBackupDir = localBackupURL.appendingPathComponent(currentBackupDirectoryName)
+        try FileManager.default.createDirectory(at: currentBackupDir, withIntermediateDirectories: true)
+
+        let filesDir = localBackupURL.appendingPathComponent("files")
+        try FileManager.default.createDirectory(at: filesDir, withIntermediateDirectories: true)
+
+        try await localFileBackupManager.writeQueuedAttachmentsToDisk(
+            backupsRootDirectory: localBackupURL,
+            currentBackupDirectoryName: currentBackupDirectoryName,
+        )
+
+        // Read the manifest back and count frames.
+        let manifestURL = currentBackupDir.appendingPathComponent("files")
+
+        guard let rawInputStream = InputStream(url: manifestURL) else {
+            Issue.record("Unable to open manifest input stream")
+            return
+        }
+        rawInputStream.open()
+        defer { rawInputStream.close() }
+
+        let inputStream = TransformingInputStream(
+            transforms: [ChunkedInputStreamTransform()],
+            inputStream: rawInputStream,
+        )
+
+        var mediaNamesInManifest: Set<String> = []
+        while inputStream.hasBytesAvailable {
+            let data = try inputStream.read(maxLength: 65_536)
+            if data.isEmpty { break }
+            let frame = try LocalBackupProto_FilesFrame(serializedBytes: data)
+            switch frame.item {
+            case .mediaName(let mediaName):
+                mediaNamesInManifest.insert(mediaName)
+            case nil:
+                throw OWSAssertionError("FAIL unexpected nil frame itme")
+            }
+        }
+
+        #expect(mediaNamesInManifest.count == attachmentCount)
+    }
+
     func writeAttachmentToFilesDir(
         filesDir: URL,
         plaintextData: Data,

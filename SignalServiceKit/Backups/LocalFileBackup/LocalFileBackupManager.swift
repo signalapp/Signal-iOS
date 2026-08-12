@@ -58,6 +58,8 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
     private var folderPickerCompletion: (() -> Void)?
 
+    public static let attachmentBatchSize = 50
+
     init(
         db: DB,
         dateProvider: @escaping DateProvider,
@@ -124,9 +126,8 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
     }
 
     private func fetchImportRecordsAndAssociatedAttachmentRecords() -> [(AttachmentWithMetadata, BackupLocalFileAttachmentImportRecord)] {
-        let attachmentBatchSize = 50
         return db.read { tx in
-            let imports = localFileBackupStore.importRecords(batchSize: attachmentBatchSize, tx: tx)
+            let imports = localFileBackupStore.importRecords(batchSize: Self.attachmentBatchSize, tx: tx)
             let attachments = attachmentStore.fetch(ids: imports.map({ $0.attachmentRowId }), tx: tx)
             let attachmentsByID = Dictionary(uniqueKeysWithValues: attachments.map { ($0.id, $0) })
 
@@ -237,12 +238,11 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
         let existingFiles = try existingFilesInBackupDirectory(backupsRootDirectory: backupsRootDirectory)
 
-        let attachmentBatchSize = 50
         while true {
             try Task.checkCancellation()
             let (attachmentsWithMetadata, localFileExports) = db.read { tx in
                 failIfThrows {
-                    let localFileExports = localFileBackupStore.exportRecords(batchSize: attachmentBatchSize, tx: tx)
+                    let localFileExports = localFileBackupStore.exportRecords(batchSize: Self.attachmentBatchSize, tx: tx)
                     let ids = localFileExports.map({ $0.attachmentRowId })
                     let attachments = attachmentStore.fetch(ids: ids, tx: tx)
                     let attachmentsWithMetadata: [AttachmentWithMetadata] = attachments.compactMap {
@@ -261,7 +261,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                 .appendingPathComponent(currentBackupDirectoryName)
                 .appendingPathComponent(FileStructure.attachmentDirectory.rawValue)
 
-            guard let outputStream = OutputStream(url: attachmentMetadataFile, append: false) else {
+            guard let outputStream = OutputStream(url: attachmentMetadataFile, append: true) else {
                 throw OWSAssertionError("Unable to initalize output stream")
             }
             outputStream.open()
