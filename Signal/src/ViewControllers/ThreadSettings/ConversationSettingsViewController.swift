@@ -937,7 +937,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     func updateRecentAttachments(tx: DBReadTransaction) {
         let recentAttachments = mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, tx: tx)
-        recentMedia = recentAttachments.reduce(into: OrderedDictionary(), { result, attachment in
+        recentMedia = recentAttachments.reduce(into: OrderedDictionary()) { result, attachment in
             let imageView = UIImageView()
             imageView.clipsToBounds = true
             if #available(iOS 26, *) {
@@ -947,13 +947,14 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                 imageView.layer.cornerRadius = 4
             }
             imageView.contentMode = .scaleAspectFill
+            imageView.backgroundColor = .Signal.backdrop
             imageView.image = attachment.getThumbnailImageSync(quality: .small)
 
             result.append(
                 key: attachment.reference.referenceId,
                 value: (attachment, imageView),
             )
-        })
+        }
         shouldRefreshAttachmentsOnReappear = false
     }
 

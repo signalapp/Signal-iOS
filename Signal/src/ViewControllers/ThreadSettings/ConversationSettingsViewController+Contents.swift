@@ -378,24 +378,21 @@ extension ConversationSettingsViewController {
                 let imageWidth = (availableWidth - totalSpacerSize) / CGFloat(self.maximumRecentMedia)
 
                 for (referencedAttachment, imageView) in self.recentMedia.orderedValues {
-                    let button = OWSButton { [weak self] in
-                        self?.showMediaPageView(for: referencedAttachment)
-                    }
+                    let button = UIButton(
+                        configuration: .plain(),
+                        primaryAction: UIAction { [weak self] _ in
+                            self?.showMediaPageView(for: referencedAttachment)
+                        },
+                    )
+                    button.configuration?.cornerStyle = .fixed
+                    button.configuration?.background = {
+                        var background = UIBackgroundConfiguration.clear()
+                        background.customView = imageView
+                        background.cornerRadius = imageView.layer.cornerRadius
+                        return background
+                    }()
                     stackView.addArrangedSubview(button)
                     button.autoSetDimensions(to: CGSize(square: imageWidth))
-
-                    imageView.backgroundColor = .ows_middleGray
-
-                    button.addSubview(imageView)
-                    imageView.autoPinEdgesToSuperviewEdges()
-
-                    let overlayView = UIView()
-                    overlayView.isUserInteractionEnabled = false
-                    overlayView.backgroundColor = .ows_blackAlpha05
-                    overlayView.layer.cornerRadius = imageView.layer.cornerRadius
-                    overlayView.clipsToBounds = true
-                    button.addSubview(overlayView)
-                    overlayView.autoPinEdgesToSuperviewEdges()
                 }
 
                 if self.recentMedia.count < self.maximumRecentMedia {
