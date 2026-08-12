@@ -68,15 +68,18 @@ class CallHeader: UIView {
 
         // Group members button
 
-        let topRightButton = OWSButton(
-            imageName: "info",
-            tintColor: .ows_white,
-            dimsWhenHighlighted: true,
-        ) { [weak delegate] in
-            delegate?.didTapMembersButton()
+        var buttonConfig = UIButton.Configuration.plain()
+        buttonConfig.image = UIImage(resource: .info)
+        buttonConfig.baseForegroundColor = .white
+        let topRightButton = UIButton(
+            configuration: buttonConfig,
+            primaryAction: UIAction { [weak delegate] _ in
+                delegate?.didTapMembersButton()
+            },
+        )
+        if #unavailable(iOS 26) {
+            addShadow(to: topRightButton)
         }
-
-        addShadow(to: topRightButton)
 
         addSubview(topRightButton)
         topRightButton.autoPinTrailingToSuperviewMargin(withInset: 8)

@@ -148,13 +148,16 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
 
         vStack.addArrangedSubview(avatarView)
 
-        let nameButton = OWSButton { [weak self] in
-            self?.didTapName()
-        }
-        nameButton.dimsWhenHighlighted = true
-        nameButton.titleLabel?.numberOfLines = 0
-        nameButton.titleLabel?.textAlignment = .center
-        nameButton.setAttributedTitle(contactTitle, for: .normal)
+        var nameButtonConfig = UIButton.Configuration.plain()
+        nameButtonConfig.titleAlignment = .center
+        nameButtonConfig.titleLineBreakMode = .byWordWrapping
+        nameButtonConfig.attributedTitle = AttributedString(contactTitle)
+        let nameButton = UIButton(
+            configuration: nameButtonConfig,
+            primaryAction: UIAction { [weak self] _ in
+                self?.didTapName()
+            },
+        )
         vStack.addArrangedSubview(nameButton)
 
         let mutualGroupsLabel = UILabel()

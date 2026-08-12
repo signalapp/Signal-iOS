@@ -40,21 +40,28 @@ class RaisedHandsToast: UIView {
     private let iconLabelContainer = UIView()
     private let labelContainer = UIView()
     private let label = UILabel()
-    private lazy var viewButton = OWSButton(
-        title: CommonStrings.viewButton,
-        tintColor: .ows_white,
-        dimsWhenHighlighted: true,
-    ) { [weak self] in
-        self?.delegate?.didTapViewRaisedHands()
+
+    private static func buttonConfig(title: String) -> UIButton.Configuration {
+        var config = UIButton.Configuration.plain()
+        config.baseForegroundColor = .white
+        config.title = title
+        config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeSubheadline.bold())
+        return config
     }
 
-    private lazy var lowerHandButton = OWSButton(
-        title: CallStrings.lowerHandButton,
-        tintColor: .ows_white,
-        dimsWhenHighlighted: true,
-    ) { [weak self] in
-        self?.call.ringRtcCall.raiseHand(raise: false)
-    }
+    private lazy var viewButton = UIButton(
+        configuration: RaisedHandsToast.buttonConfig(title: CommonStrings.viewButton),
+        primaryAction: UIAction { [weak self] _ in
+            self?.delegate?.didTapViewRaisedHands()
+        },
+    )
+
+    private lazy var lowerHandButton = UIButton(
+        configuration: RaisedHandsToast.buttonConfig(title: CallStrings.lowerHandButton),
+        primaryAction: UIAction { [weak self] _ in
+            self?.call.ringRtcCall.raiseHand(raise: false)
+        },
+    )
 
     private var isCollapsed = false
     private var isSuggestingLowerHand = false
@@ -124,7 +131,7 @@ class RaisedHandsToast: UIView {
         labelContainer.autoVCenterInSuperview()
         labelContainer.autoPinEdge(.leading, to: .trailing, of: raisedHandIcon, withOffset: 12)
 
-        for button in [self.viewButton, self.lowerHandButton] {
+        for button in [viewButton, lowerHandButton] {
             outerHStack.addArrangedSubview(button)
             button.setContentCompressionResistancePriority(.required, for: .horizontal)
             button.setContentHuggingHorizontalHigh()
@@ -132,13 +139,12 @@ class RaisedHandsToast: UIView {
             // far as the superview's margins, so if we had
             // isLayoutMarginsRelativeArrangement on outerHStack, the button wouldn't
             // slide all the way off, so instead set margins on the button itself.
-            button.ows_contentEdgeInsets = .init(
+            button.configuration?.contentInsets = .init(
                 top: 8,
                 leading: 8,
                 bottom: 8,
                 trailing: Constants.hMarginExpanded,
             )
-            button.titleLabel?.font = .dynamicTypeSubheadline.bold()
         }
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(toggleExpanded))

@@ -16,7 +16,9 @@ protocol CallDrawerDelegate: AnyObject {
 
 // MARK: - GroupCallSheet
 
-class CallDrawerSheet: InteractiveSheetViewController, UITableViewDelegate, CallMemberCellDelegate, CallDrawerSheetDataSourceObserver, EmojiPickerSheetPresenter, CallControlsHeightObserver {
+class CallDrawerSheet: InteractiveSheetViewController, UITableViewDelegate, CallMemberCellDelegate,
+    CallDrawerSheetDataSourceObserver, EmojiPickerSheetPresenter, CallControlsHeightObserver
+{
     private let callControls: CallControls
 
     // MARK: Properties
@@ -1237,34 +1239,43 @@ private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
 
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let hStack = UIStackView()
-        self.contentView.addSubview(hStack)
-        hStack.autoPinWidthToSuperviewMargins()
-        hStack.autoPinHeightToSuperview(withMargin: 7)
+        var infoButtonConfig = UIButton.Configuration.plain()
+        infoButtonConfig.image = UIImage(resource: .info)
+        infoButtonConfig.baseForegroundColor = .white
+        let infoButton = UIButton(
+            configuration: infoButtonConfig,
+            primaryAction: UIAction { [weak self] _ in
+                guard let parentVC = self?.parentViewController else { return }
+
+                let actionSheet = ActionSheetController(
+                    message: OWSLocalizedString(
+                        "GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET",
+                        comment: "Message on an action sheet when tapping an info button next to unknown members in the group call member list.",
+                    ),
+                )
+                actionSheet.overrideUserInterfaceStyle = .dark
+                actionSheet.addAction(.acknowledge)
+                parentVC.presentActionSheet(actionSheet)
+            },
+        )
+
+        let hStack = UIStackView(arrangedSubviews: [avatarContainer, bodyLabel, infoButton])
         hStack.axis = .horizontal
         hStack.spacing = 12
+        hStack.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(hStack)
 
-        hStack.addArrangedSubview(avatarContainer)
-        avatarContainer.autoSetDimensions(to: .square(CGFloat(Constants.singleAvatarSize)))
+        avatarContainer.translatesAutoresizingMaskIntoConstraints = false
 
-        hStack.addArrangedSubview(bodyLabel)
+        NSLayoutConstraint.activate([
+            avatarContainer.widthAnchor.constraint(equalTo: avatarContainer.heightAnchor),
+            avatarContainer.widthAnchor.constraint(equalToConstant: CGFloat(Constants.singleAvatarSize)),
 
-        let infoButton = OWSButton(
-            imageName: "info",
-            tintColor: .white,
-            dimsWhenHighlighted: true,
-        ) { [weak self] in
-            let actionSheet = ActionSheetController(
-                message: OWSLocalizedString(
-                    "GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET",
-                    comment: "Message on an action sheet when tapping an info button next to unknown members in the group call member list.",
-                ),
-            )
-            actionSheet.overrideUserInterfaceStyle = .dark
-            actionSheet.addAction(.acknowledge)
-            self?.parentViewController?.presentActionSheet(actionSheet)
-        }
-        hStack.addArrangedSubview(infoButton)
+            hStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 7),
+            hStack.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+            hStack.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+            hStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -7),
+        ])
     }
 
     required init?(coder: NSCoder) {

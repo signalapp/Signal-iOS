@@ -163,13 +163,17 @@ extension NewCallViewController: RecipientPickerDelegate, UsernameLinkScanDelega
             // This doesn't actually need to be hooked up to any action
             // since tapping the row already starts a voice call.
             let voiceCallImageView = UIImageView(image: Theme.iconImage(.buttonVoiceCall))
-            let videoCallButton = OWSButton(
-                imageName: Theme.iconName(.buttonVideoCall),
-                tintColor: nil,
-            ) { [weak self] in
-                let thread = TSContactThread.getOrCreateThread(contactAddress: address)
-                self?.startIndividualCall(thread: thread, withVideo: true)
-            }
+
+            var videoCallButtonConfig = UIButton.Configuration.plain()
+            videoCallButtonConfig.image = Theme.iconImage(.buttonVideoCall)
+            videoCallButtonConfig.contentInsets = .zero
+            let videoCallButton = UIButton(
+                configuration: videoCallButtonConfig,
+                primaryAction: UIAction { [weak self] _ in
+                    let thread = TSContactThread.getOrCreateThread(contactAddress: address)
+                    self?.startIndividualCall(thread: thread, withVideo: true)
+                },
+            )
             stackView.addArrangedSubviews([
                 voiceCallImageView,
                 videoCallButton,
