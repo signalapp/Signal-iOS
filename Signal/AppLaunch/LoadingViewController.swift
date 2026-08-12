@@ -17,7 +17,7 @@ class LoadingViewController: UIViewController {
     private var progressView = UIProgressView()
     private lazy var percentCompleteLabel = UILabel()
     private lazy var unitCountLabel = UILabel()
-    private lazy var cancelButton = OWSButton()
+    private lazy var cancelButton = UIButton(configuration: .plain())
     private let labelStack = UIStackView()
     private var topLabelTimer: Timer?
     private var bottomLabelTimer: Timer?
@@ -27,7 +27,7 @@ class LoadingViewController: UIViewController {
         self.view = UIView()
         view.backgroundColor = Theme.launchScreenBackgroundColor
 
-        self.logoView = UIImageView(image: #imageLiteral(resourceName: "signal-logo-128-launch-screen"))
+        self.logoView = UIImageView(image: UIImage(imageLiteralResourceName: "signal-logo-128-launch-screen"))
         view.addSubview(logoView)
 
         logoView.autoCenterInSuperview()
@@ -78,15 +78,18 @@ class LoadingViewController: UIViewController {
 
         cancelButton.isHiddenInStackView = true
         cancelButton.isEnabled = false
-        cancelButton.titleLabel?.font = .dynamicTypeBody.monospaced()
-        cancelButton.backgroundColor = .clear
-        cancelButton.setTitle(CommonStrings.cancelButton, for: .normal)
-        cancelButton.setTitleColor(.Signal.ultramarine, for: .normal)
+        cancelButton.configuration?.title = CommonStrings.cancelButton
+        cancelButton.configuration?.attributedTitle?.font = .dynamicTypeBody.monospaced()
+        cancelButton.configuration?.attributedTitle?.foregroundColor = .Signal.ultramarine
         labelStack.addArrangedSubview(cancelButton)
-        cancelButton.block = { [weak self] in
-            self?.cancellableTask?.cancel()
-            self?.setCancellableTask(nil)
-        }
+        cancelButton.addAction(
+            UIAction { [weak self] _ in
+                guard let self else { return }
+                self.cancellableTask?.cancel()
+                self.setCancellableTask(nil)
+            },
+            for: .primaryActionTriggered,
+        )
 
         labelStack.axis = .vertical
         labelStack.alignment = .center
