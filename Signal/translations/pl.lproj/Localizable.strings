@@ -1052,7 +1052,7 @@
 "BACKUP_SETTINGS_LANDING_OTHER_WAYS_HEADER" = "Inne metody tworzenia kopii zapasowych";
 
 /* Subtitle on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Twórz kopie zapasowe wiadomości, aby ich nie stracić, nawet gdy zmienisz telefon lub zainstalujesz ponownie aplikację Signal.";
+"BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Twórz kopie zapasowe wiadomości, aby ich nie stracić, nawet gdy zmienisz telefon lub ponownie zainstalujesz aplikację Signal.";
 
 /* Button to begin setting up Signal Secure Backups on the Backups settings landing page. */
 "BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Ustaw";
@@ -1826,7 +1826,7 @@
 "CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Clear All";
+"CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Wyczyść wszystko";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Cała historia połączeń zostanie trwale usunięta.";
@@ -5420,34 +5420,34 @@
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Nie wyłączaj aplikacji.";
 
 /* Body for an error sheet shown when the user's folder choice does not contain a backup file. */
-"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "No Signal backup was found in the selected folder. Please try a different folder.";
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "W wybranym folderze nie znaleziono kopii zapasowej aplikacji Signal. Wybierz inny folder.";
 
 /* Title for an error sheet shown when the user's folder choice does not contain a backup file. */
-"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "No Backup Found";
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "Nie znaleziono kopii zapasowej";
 
 /* Title for a button that lets the user select a new folder. */
-"LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "Try a different folder";
+"LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "Wybierz inny folder";
 
 /* Body text for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "After tapping “Continue,” here’s how to access your backup:";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "Aby wskazać kopię zapasową, naciśnij przycisk „Kontynuuj”, a następnie:";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "Select the top-level folder where your backup is stored";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "Wybierz folder główny, w którym masz zapisaną kopię zapasową";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "Tap “Open”";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "Wybierz opcję „Otwórz”";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_3" = "Do not select individual files";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_3" = "Nie zaznaczaj poszczególnych plików";
 
 /* Title for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Select Your Backup Folder";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Wybierz folder z kopią zapasową";
 
 /* Button for a sheet asking the user to choose a new local file backup folder */
 "LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Wybierz folder";
 
 /* Message for a sheet asking the user to choose a new local file backup folder. */
-"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Nie udało się utworzyć lokalnej kopii zapasowej. Możliwą przyczyną jest przeniesienie lub usunięcie folderu kopii zapasowej. Wskaż folder w pamięci urządzenia, w którym zostanie zapisana kopia zapasowa.";
+"LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_MESSAGE" = "Nie udało się utworzyć lokalnej kopii zapasowej. Może tak się zdarzyć, jeśli folder kopii zapasowej został przeniesiony lub usunięty. Wskaż folder w pamięci urządzenia, w którym chcesz zapisać kopię zapasową.";
 
 /* Title for a sheet asking the user to choose a new local file backup folder. */
 "LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_TITLE" = "Nie udało się utworzyć kopii zapasowej";
@@ -5462,7 +5462,7 @@
 "LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Możliwość wyłączenia w dowolnej chwili";
 
 /* Subtitle for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Utwórz kopię zapasową wiadomości w folderze na tym urządzeniu Twoja kopia zapasowa jest szyfrowana metodą end-to-end. Aby ją przywrócić, wystarczy przenieść folder kopii zapasowej na nowe urządzenie.";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Utwórz kopię zapasową wiadomości w folderze na tym urządzeniu Kopia zapasowa jest szyfrowana metodą end-to-end. Aby ją przywrócić, wystarczy przenieść folder kopii zapasowej na nowe urządzenie.";
 
 /* Title for a view introducing local file backups during the onboarding flow. */
 "LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "Lokalne kopie zapasowe";
@@ -6287,7 +6287,7 @@
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Prośba o kontakt";
 
 /* Body for a notification shown when Signal can't fetch messages because the device is low on storage space. */
-"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "Możesz mieć nowe wiadomości, ale na urządzeniu nie ma wystarczającej ilości miejsca, aby uruchomić aplikację Signal. Dotknij, aby dowiedzieć się więcej.";
+"NOTIFICATION_BODY_LOW_STORAGE_SPACE" = "Być może masz nowe wiadomości, ale działanie aplikacji Signal jest ograniczone z powodu niewystarczającej ilości miejsca na urządzeniu. Dotknij, aby dowiedzieć się więcej.";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Możliwe, że podczas gdy %1$@ uruchamiał się ponownie, przyszły do Ciebie wiadomości.";
@@ -7708,6 +7708,9 @@
 /* Label for a button to lower your raised hand in a call. */
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "Opuść";
 
+/* A message appearing on the call view's raised hands toast suggesting the local user lower their hand because they have been speaking with it raised. */
+"RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "Lower your hand?";
+
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ podnosi rękę";
 
@@ -8870,34 +8873,34 @@
 "SETTINGS_LINKED_DEVICE_DELETE_DATA_FOOTER" = "Spowoduje to usunięcie wszystkich danych aplikacji Signal z tego urządzenia.";
 
 /* Text for a toast confirming the user changed their local file backup location. */
-"SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED" = "Backup folder updated";
+"SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED" = "Folder kopii zapasowej zaktualizowany";
 
 /* Title for the 'on-device backups' settings page. */
 "SETTINGS_LOCAL_FILE_BACKUPS" = "Lokalne kopie zapasowe";
 
 /* Label for the button that starts a manual on-device backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACK_UP_NOW" = "Back Up Now";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACK_UP_NOW" = "Utwórz kopię teraz";
 
 /* Label for the row that lets the user choose the folder for on-device backups. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_FOLDER" = "Backup Folder";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_FOLDER" = "Folder kopii zapasowej";
 
 /* Label for the row showing the size of the on-device backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_SIZE" = "Backup Size";
+"SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_SIZE" = "Rozmiar kopii zapasowej";
 
 /* Description shown at the top of the on-device backups settings page. */
-"SETTINGS_LOCAL_FILE_BACKUPS_HEADER_DESCRIPTION" = "Backups are end-to-end encrypted and stored on your device.";
+"SETTINGS_LOCAL_FILE_BACKUPS_HEADER_DESCRIPTION" = "Kopie zapasowe są szyfrowane metodą end-to-end i przechowywane na Twoim urządzeniu.";
 
 /* Label for the row showing when the last on-device backup occurred. */
-"SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "Last Backup";
+"SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "Ostatnia kopia zapasowa";
 
 /* Footer text on the on-device backups settings page explaining how to restore a backup. */
-"SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "To restore a backup, install a new copy of Signal. Open the app, tap “Restore or Transfer” and select “On-Device Backup”.";
+"SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "Aby przywrócić kopię zapasową, zainstaluj Signal ponownie. Otwórz aplikację i wybierz opcję „Przywróć lub przenieś”, a następnie „Lokalna kopia zapasowa”.";
 
 /* Label for the button that turns off on-device backups. */
-"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Turn Off Backups";
+"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Wyłącz tworzenie kopii zapasowych";
 
 /* Label for the row that shows the on-device backup recovery key. */
-"SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "View Recovery Key";
+"SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "Wyświetl kod odzyskiwania";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Nigdy";
@@ -9626,7 +9629,7 @@
 "SHARE_EXTENSION_LOADING" = "Wczytywanie…";
 
 /* Message for an error shown when the user tries to share to Signal but the device is too low on storage space. */
-"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "Nie możesz udostępnić zawartości w aplikacji Signal, ponieważ na urządzeniu jest za mało wolnego miejsca. Zwolnij miejsce w ustawieniach pamięci urządzenia i spróbuj ponownie.";
+"SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE" = "Nie możesz udostępnić tych treści w aplikacji Signal, ponieważ na urządzeniu jest za mało miejsca. Zwolnij miejsce w ustawieniach pamięci urządzenia i spróbuj ponownie.";
 
 /* Title for an error shown when the user tries to share to Signal but the device is too low on storage space. */
 "SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE" = "Za mało miejsca na urządzeniu";
@@ -9881,7 +9884,7 @@
 "STORIES_TITLE" = "Relacje";
 
 /* Context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION" = "Pokaż relacje";
+"STORIES_UNHIDE_STORY_ACTION" = "Pokazuj relacje";
 
 /* Short context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION_SHORT" = "Pokaż";
@@ -10323,6 +10326,9 @@
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Nie masz tej osoby w kontaktach. Czy chcesz ją zablokować?";
+
+/* Title shown for a group when it's name isn't known. Visible for blocked groups whose name isn't known. */
+"UNKNOWN_GROUP" = "Unknown Group";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Z jednego z Twoich urządzeń wysłano wiadomość, która nie może zostać przetworzona lub wyświetlona, ponieważ wykorzystuje nową funkcję Signal.";
