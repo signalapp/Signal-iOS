@@ -9,7 +9,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-final class CallLinkViewController: OWSTableViewController2 {
+final class CallLinkViewController: OWSTableViewController2, DatabaseChangeDelegate, SendMessageDelegate {
     override var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
     override var navbarBackgroundColorOverride: UIColor? { tableBackgroundColor }
 
@@ -327,9 +327,9 @@ final class CallLinkViewController: OWSTableViewController2 {
         // Retain the flow until it is complete.
         self.sendMessageFlow = sendMessageFlow
     }
-}
 
-extension CallLinkViewController: DatabaseChangeDelegate {
+    // MARK: - DatabaseChangeDelegate
+
     private func loadStateAndReloadViewIfNeeded(callLinkRowId: Int64) {
         let didChangeVisibleProperty: Bool
         let oldState = self.callLinkState
@@ -364,9 +364,9 @@ extension CallLinkViewController: DatabaseChangeDelegate {
 
     func databaseChangesDidReset() {
     }
-}
 
-extension CallLinkViewController: SendMessageDelegate {
+    // MARK: - SendMessageDelegate
+
     func sendMessageFlowDidComplete(threads: [TSThread]) {
         AssertIsOnMainThread()
 
@@ -400,92 +400,53 @@ private class CallLinkCardView: UIView {
     private lazy var iconView: UIImageView = {
         let image = CommonCallLinksUI.callLinkIcon(rootKey: callLink.rootKey)
         let imageView = UIImageView(image: image)
-        imageView.autoSetDimensions(to: CGSize(
-            width: Constants.circleViewDimension,
-            height: Constants.circleViewDimension,
-        ))
+        imageView.autoSetDimensions(to: .square(CommonCallLinksUI.Constants.circleViewDimension))
         return imageView
     }()
 
     private lazy var textStack: UIStackView = {
-        let stackView = UIStackView()
-
         let nameLabel = UILabel()
         nameLabel.text = callName
         nameLabel.lineBreakMode = .byWordWrapping
         nameLabel.numberOfLines = 0
-        nameLabel.textColor = Theme.primaryTextColor
+        nameLabel.textColor = .Signal.label
         nameLabel.font = .dynamicTypeHeadline
 
         let linkLabel = UILabel()
         linkLabel.text = callLink.url().absoluteString
         linkLabel.lineBreakMode = .byTruncatingTail
         linkLabel.numberOfLines = 2
-
         linkLabel.textColor = .Signal.secondaryLabel
         linkLabel.font = .dynamicTypeSubheadline
 
+        let stackView = UIStackView()
         stackView.addArrangedSubviews([nameLabel, linkLabel])
         stackView.axis = .vertical
-        stackView.spacing = Constants.textStackSpacing
+        stackView.spacing = 2
         stackView.alignment = .leading
-
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
 
-    private let joinButton: UIButton
+    private lazy var joinButton: UIButton = {
+        // When we're in dark theme, we actually want the color corresponding
+        // with the _high contrast_ dark theme, due to the background color
+        // of the button. Design requested this exception.
+        let darkThemeTraits = UITraitCollection(traitsFrom: [
+            UITraitCollection(userInterfaceStyle: .dark),
+            UITraitCollection(accessibilityContrast: .high),
+        ])
+        let darkThemeColor = UIColor.Signal.ultramarine.resolvedColor(with: darkThemeTraits)
+        let lightThemeColor = UIColor.Signal.ultramarine.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
 
-    private class JoinButton: UIButton {
-        init(joinAction: @escaping () -> Void) {
-            super.init(frame: .zero)
-
-            let view = UIView()
-            view.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray05
-            view.isUserInteractionEnabled = false
-            view.layer.cornerRadius = bounds.size.height / 2
-
-            let label = UILabel()
-            label.setCompressionResistanceHigh()
-            label.text = CallStrings.joinCallPillButtonTitle
-            label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
-            label.textColor = Theme.joinButtonTextColor
-            view.isUserInteractionEnabled = false
-
-            self.clipsToBounds = true
-            self.addAction(UIAction(handler: { _ in joinAction() }), for: .touchUpInside)
-
-            view.addSubview(label)
-            label.autoPinEdge(.top, to: .top, of: view, withOffset: Constants.vMargin)
-            label.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: -Constants.vMargin)
-            label.autoPinEdge(.leading, to: .leading, of: view, withOffset: Constants.hMargin)
-            label.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: -Constants.hMargin)
-
-            self.addSubview(view)
-            view.autoPinEdgesToSuperviewEdges()
-
-            self.accessibilityLabel = CallStrings.joinCallPillButtonTitle
-        }
-
-        override var bounds: CGRect {
-            didSet {
-                updateRadius()
-            }
-        }
-
-        private func updateRadius() {
-            layer.cornerRadius = bounds.size.height / 2
-        }
-
-        private enum Constants {
-            static let vMargin: CGFloat = 4
-            static let hMargin: CGFloat = 12
-        }
-
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-    }
+        var buttonConfiguration = UIButton.Configuration.filled()
+        buttonConfiguration.baseForegroundColor = UIColor(light: lightThemeColor, dark: darkThemeColor)
+        buttonConfiguration.baseBackgroundColor = UIColor(light: .ows_gray05, dark: .ows_gray65)
+        buttonConfiguration.title = CallStrings.joinCallPillButtonTitle
+        buttonConfiguration.attributedTitle?.font = .dynamicTypeSubheadlineClamped.semibold()
+        buttonConfiguration.cornerStyle = .capsule
+        buttonConfiguration.contentInsets = .init(hMargin: 12, vMargin: 4)
+        return UIButton(configuration: buttonConfiguration)
+    }()
 
     private let callLink: CallLink
     private let callName: String
@@ -497,46 +458,33 @@ private class CallLinkCardView: UIView {
     ) {
         self.callLink = callLink
         self.callName = callName
-        self.joinButton = JoinButton(joinAction: joinAction)
 
         super.init(frame: .zero)
+
+        joinButton.setCompressionResistanceHorizontalHigh()
+        joinButton.addAction(
+            UIAction { _ in joinAction() },
+            for: .primaryActionTriggered,
+        )
 
         let stackView = UIStackView()
         stackView.addArrangedSubviews([iconView, textStack, joinButton])
         stackView.axis = .horizontal
         stackView.distribution = .fillProportionally
         stackView.alignment = .center
-        stackView.spacing = Constants.spacingIconToText
-        stackView.setCustomSpacing(Constants.spacingTextToButton, after: textStack)
-
-        self.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewEdges()
+        stackView.spacing = 12
+        stackView.setCustomSpacing(16, after: textStack)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(stackView)
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    private enum Constants {
-        static let spacingTextToButton: CGFloat = 16
-        static let spacingIconToText: CGFloat = 12
-        static let textStackSpacing: CGFloat = 2
-
-        static let circleViewDimension: CGFloat = CommonCallLinksUI.Constants.circleViewDimension
-    }
-}
-
-private extension Theme {
-    class var joinButtonTextColor: UIColor {
-        // When we're in dark theme, we actually want the color corresponding
-        // with the _high contrast_ dark theme, due to the background color
-        // of the button. Design requested this exception.
-        let darkThemeTraits = UITraitCollection(traitsFrom: [
-            UITraitCollection(userInterfaceStyle: .dark),
-            UITraitCollection(accessibilityContrast: .high),
-        ])
-        let darkThemeColor = UIColor.Signal.ultramarine.resolvedColor(with: darkThemeTraits)
-        let lightThemeColor = UIColor.Signal.ultramarine.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-        return isDarkThemeEnabled ? darkThemeColor : lightThemeColor
     }
 }
