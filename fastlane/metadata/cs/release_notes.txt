@@ -1,1 +1,1 @@
-• Jako propojená zařízení byly dříve podporovány pouze iPady a notebooky, nyní však můžete účet Signal propojit s dalším telefonem iPhone, posílat a přijímat zprávy i z něj a mít vše synchronizované se svým hlavním telefonem.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

@@ -1,1 +1,1 @@
-• Ahora puedes vincular otro iPhone a tu cuenta de Signal para chatear y mantener tu cuenta sincronizada con tu teléfono principal. Antes solo podías vincular iPads o dispositivos de escritorio, pero con esta actualización declaramos la igualdad tecnológica. ¡Se acabó tener un teléfono favorito!
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

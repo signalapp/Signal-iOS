@@ -1,1 +1,1 @@
-• V minulosti boli ako prepojené zariadenia podporované iba iPady a notebooky, odteraz však môžete k svojmu účtu Signal pripojiť aj ďalší iPhone, aby ste mohli odosielať a prijímať správy a synchronizovať sa s hlavným telefónom.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

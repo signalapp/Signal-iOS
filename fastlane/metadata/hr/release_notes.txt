@@ -1,1 +1,1 @@
-• Prije su samo iPad-ovi i prijenosna računala bili podržani kao povezani uređaji, a sada možete povezati i drugi iPhone sa svojim Signal računom kako biste slali i primali poruke te ostali sinkronizirani s glavnim uređajem.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

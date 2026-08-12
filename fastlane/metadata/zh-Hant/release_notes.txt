@@ -1,1 +1,1 @@
-• 現在你可以將另一部 iPhone 連結至 Signal 帳戶來收發訊息，並與你的主要手機保持同步。以往只支援將 iPad 和手提電腦作為已連結裝置，但在此次更新後，兩個口袋的手機就不再需要互相羨慕了。
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

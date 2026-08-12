@@ -1,1 +1,1 @@
-• आता तुम्ही संदेश पाठवण्यासाठी व मिळवण्यासाठी तुमच्या Signal खात्याला आणखी एक iPhone लिंक करू शकता, आणि तुमच्या मुख्य फोनशी सिंकमध्ये राहू शकता. याआधी फक्त iPads आणि लॅपटॉप्सच लिंंक केलेल्या डिव्हायसेस स्वरूपात समर्थित होते, पण या अद्यतनानंतर एका खिशाला दुसऱ्याचा हेवा वाटायला नको.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

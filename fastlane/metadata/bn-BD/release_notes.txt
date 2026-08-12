@@ -1,1 +1,1 @@
-• এখন আপনি মেসেজ পাঠানো ও পাওয়ার জন্য এবং আপনার প্রধান ফোনের সাথে সিংক থাকার জন্য আপনার Signal অ্যাকাউন্টে আরেকটি iPhone লিংক করতে পারবেন। আগে শুধুমাত্র iPad এবং ল্যাপটপ লিংককৃত ডিভাইস হিসেবে সমর্থিত ছিলো, কিন্তু এই আপডেটের পর একটি পকেটকে আর অন্যটির জন্য চিন্তা করতে হবে না।
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

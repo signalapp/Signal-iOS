@@ -1,1 +1,1 @@
-• בעבר, רק מכשירי iPad ומחשבים ניידים נתמכו כמכשירים מקושרים, אבל עכשיו אפשר לקשר גם iPhone אחר לחשבון Signal שלך כדי לשלוח ולקבל הודעות ולשמור על סנכרון עם הטלפון הראשי שלך.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

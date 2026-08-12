@@ -1,1 +1,1 @@
-• گزشتہ طور پر صرف iPads اور لیپ ٹاپس لنک کردہ ڈیوائسز کے طور پر معاونت یافتہ تھیں، لیکن اب آپ ایک اور iPhone اپنے Signal کے اکاؤنٹ کے ساتھ بھی منسلک کر سکتے ہیں تاکہ میسجز بھیج سکیں اور وصول کر سکیں اور اپنے مرکزی فون کے ساتھ سنک کرتے رہیں، لیکن اس اپ ڈیٹ کے بعد ایک پاکٹ کو دوسرے سے حسد کرنے کی ضرورت نہیں ہو گی۔
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

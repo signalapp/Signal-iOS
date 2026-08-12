@@ -1,1 +1,1 @@
-• Agora você pode vincular outro iPhone à sua conta do Signal para enviar e receber mensagens e manter tudo sincronizado com o seu telefone principal. Antes, apenas iPads e notebooks podiam ser usados como dispositivos vinculados. 
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

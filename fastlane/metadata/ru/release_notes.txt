@@ -1,1 +1,1 @@
-• Теперь вы можете привязать к своей учётной записи Signal ещё один iPhone, чтобы обмениваться сообщениями и поддерживать синхронизацию с основным телефоном. Раньше в качестве связанных устройств поддерживались только iPad и ноутбуки, однако после этого обновления один карман больше не будет завидовать другому.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

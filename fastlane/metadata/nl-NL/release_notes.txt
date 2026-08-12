@@ -1,1 +1,1 @@
-• Je kunt nu een andere iPhone koppelen aan je Signal-account om berichten te verzenden en ontvangen en deze gesynchroniseerd te houden met je primaire telefoon. Voorheen waren alleen iPads en laptops toegestaan als gekoppelde apparaten, maar vanaf deze update hoeft je ene broekzak niet meer jaloers te zijn op je andere.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

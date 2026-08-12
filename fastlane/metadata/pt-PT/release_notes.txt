@@ -1,1 +1,1 @@
-• Antes só iPads e portáteis eram suportados como dispositivos vinculados, mas agora também pode vincular o seu iPhone à sua conta do Signal para enviar e receber convites e sincronizar-se com o seu telemóvel principal.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

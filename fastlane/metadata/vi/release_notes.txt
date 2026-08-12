@@ -1,1 +1,1 @@
-• Trước đây chỉ có iPad và máy tính được hỗ trợ làm thiết bị liên kết, nhưng giờ đây bạn cũng có thể liên kết iPhone khác với tài khoản Signal của mình để gửi và nhận tin nhắn cũng như đồng bộ hóa với điện thoại chính.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

@@ -1,1 +1,1 @@
-• Eskiden bağlı cihazlar olarak yalnızca iPad'ler ve dizüstü bilgisayarlar destekleniyordu. Ama artık mesaj gönderip almak ve ana telefonunla senkronize kalmak için Signal hesabına başka bir iPhone'u da bağlayabilirsin.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

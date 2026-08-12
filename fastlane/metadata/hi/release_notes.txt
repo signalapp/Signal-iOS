@@ -1,1 +1,1 @@
-• मैसेज भेजने और पाने के लिए और अपने प्राइमरी फ़ोन से सिंक रहने के लिए, अब आपके पास अपने Signal अकाउंट से एक और iPhone लिंक करने का विकल्प मौजूद है। पहले प्राइमरी फ़ोन से सिर्फ़ iPad और लैपटॉप ही लिंक किए जा सकते थे, लेकिन इस अपडेट के बाद एक साथ दो स्मार्टफ़ोन इस्तेमाल किए जा सकते हैं।
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

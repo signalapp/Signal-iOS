@@ -1,1 +1,1 @@
-• પહેલાં ફક્ત iPad અને લેપટોપ જ લિંક કરેલા ડિવાઇસ તરીકે સપોર્ટ કરતા હતા, પરંતુ હવે તમે મેસેજ મોકલવા અને પ્રાપ્ત કરવા અને તમારા મુખ્ય ફોન સાથે સિંકમાં રહેવા માટે તમારા Signal એકાઉન્ટ સાથે બીજા iPhoneને પણ લિંક કરી શકો છો.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

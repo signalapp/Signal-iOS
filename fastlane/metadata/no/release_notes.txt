@@ -1,1 +1,1 @@
-• Frem til nå har det kun vært mulig å koble til iPader og bærbare PC-er, men nå kan du også koble til andre iPhoner til Signal-kontoen din for å sende og motta meldinger.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

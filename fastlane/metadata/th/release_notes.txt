@@ -1,1 +1,1 @@
-• รับส่งข้อความอย่างไร้ข้อจำกัดยิ่งกว่าเดิม เพราะเราพัฒนาให้คุณสามารถใช้ iPhone อีกเครื่องเป็นอุปกรณ์ที่เชื่อมโยงกับบัญชี Signal บนโทรศัพท์เครื่องหลักได้แล้ว (จากเดิมที่เคยรองรับเฉพาะการเชื่อมโยงกับ iPad และแล็ปท็อป)
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

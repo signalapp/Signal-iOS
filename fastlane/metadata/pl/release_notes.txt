@@ -1,1 +1,1 @@
-• Od teraz możesz połączyć z kontem Signal drugiego iPhone’a. Aplikacje w obu telefonach będą w pełni zsynchronizowane, łącznie z historią czatów. Dotąd z głównym urządzeniem można było połączyć tylko iPady i laptopy. Po tej aktualizacji żaden z telefonów w Twoich kieszeniach nie musi już zazdrościć drugiemu.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

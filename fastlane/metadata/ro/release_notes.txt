@@ -1,1 +1,1 @@
-• Acum poți asocia un alt iPhone la contul tău Signal pentru a trimite și primi mesaje și pentru a rămâne sincronizat cu telefonul principal. Anterior, doar iPad-urile și laptopurile erau acceptate ca dispozitive conectate, dar, după această actualizare, unul dintre ele nu mai are de ce să fie gelos pe celălalt.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

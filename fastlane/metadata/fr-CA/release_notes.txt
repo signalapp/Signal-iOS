@@ -1,1 +1,1 @@
-• Vous pouvez désormais associer un autre iPhone à votre compte Signal. Tous vos messages seront alors synchronisés sur votre téléphone principal. Jusqu'ici, seuls les iPad et les ordinateurs portables pouvaient être associés. Avec cette mise à jour, il n'y aura plus de jaloux.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

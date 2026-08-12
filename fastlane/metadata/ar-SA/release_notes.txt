@@ -1,1 +1,1 @@
-• يمكنك الآن ربط جهاز آيفون آخر بحساب سيجنال الخاص بك لإرسال وتلقي الرسائل والبقاء في تزامن مع هاتفك الأساسي. في السابق، كان دعم الأجهزة المُرتبِطة يقتصر على أجهزة الآيباد وأجهزة الكمبيوتر المحمولة، لكن بعد هذا التحديث أصبح بإمكانك أيضًا ربط هاتف آخر بحسابك.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

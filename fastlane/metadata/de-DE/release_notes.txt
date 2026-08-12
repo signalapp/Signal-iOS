@@ -1,1 +1,1 @@
-• Jetzt kannst du ein weiteres iPhone mit deinem Signal-Konto koppeln, um Nachrichten zu senden und zu empfangen – natürlich immer schön synchron mit deinem Haupt-iPhone. Bisher wurden als gekoppelte Geräte nur iPads und Laptops unterstützt, aber nach diesem Update braucht kein Gerät mehr neidisch auf das andere zu sein.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

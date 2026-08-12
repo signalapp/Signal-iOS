@@ -1,1 +1,1 @@
-• Ora puoi collegare un altro iPhone al tuo account Signal per inviare e ricevere messaggi e mantenerlo sincronizzato con il tuo telefono principale. Prima di questo aggiornamento, solo gli iPad e i computer erano supportati come dispositivi collegati. Da ora, invece, "aggiungi un posto a tavolo che c'è un iPhone in più"… non faceva così?
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

@@ -1,1 +1,1 @@
-• Korábban csak az iPadek és laptopok voltak támogatottak kapcsolt eszközként, de most egy másik iPhone-t is összekapcsolhatsz a Signal-fiókoddal, hogy üzeneteket küldhess és fogadhass, és szinkronban maradhass a fő telefonoddal.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

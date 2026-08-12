@@ -1,1 +1,1 @@
-• Тепер ви можете зв'язати ще один iPhone зі своїм акаунтом Signal, щоб надсилати й отримувати повідомлення та синхронізувати його з основним телефоном. Раніше зв'язувати можна було лише iPad і комп’ютери, але після цього оновлення одному смартфону більше не доведеться заздрити іншому.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

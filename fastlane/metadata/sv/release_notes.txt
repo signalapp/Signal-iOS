@@ -1,1 +1,1 @@
-• Tidigare stöddes endast iPads och laptops som länkade enheter, men nu kan du även länka en annan iPhone till ditt Signal-konto för att skicka och ta emot meddelanden och hålla den synkroniserad med din huvudtelefon.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

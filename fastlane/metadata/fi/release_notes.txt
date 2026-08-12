@@ -1,1 +1,1 @@
-• Signal-tiliin voi nyt yhdistää toisen iPhonen. Sitä voi käyttää viestien lähettämiseen ja vastaanottamiseen, ja se synkronoidaan ensisijaiseen puhelimeesi. Aiemmin yhdistetyksi laitteeksi pystyi lisäämään vain iPadin tai kannettavan tietokoneen, mutta muutoksen jälkeen puhelimet ovat samalla viivalla.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

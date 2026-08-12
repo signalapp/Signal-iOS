@@ -1,1 +1,1 @@
-• Sebelumnya, hanya iPad dan laptop yang bisa digunakan sebagai perangkat terhubung. Kini, Anda juga bisa menghubungkan iPhone lain ke akun Signal untuk mengirim dan menerima pesan, dengan sinkronisasi ke ponsel utama Anda.
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.

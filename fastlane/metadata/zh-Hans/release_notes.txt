@@ -1,1 +1,1 @@
-• 以前只有 iPad 和笔记本电脑可以作为已链接设备，但现在您也可以将另一部手机链接到您的 Signal 账户，以收发消息并与主手机保持同步。
+• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.
