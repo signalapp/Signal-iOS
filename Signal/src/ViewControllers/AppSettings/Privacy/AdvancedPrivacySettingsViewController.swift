@@ -99,8 +99,9 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             ),
             isOn: { SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionActive },
             isEnabled: { isCensorshipCircumventionSwitchEnabled || DebugFlags.exposeCensorshipCircumvention },
-            target: self,
-            selector: #selector(didToggleEnableCensorshipCircumventionSwitch),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleEnableCensorshipCircumvention(uiSwitch)
+            },
         ))
 
         if SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionManuallyActivated {
@@ -151,8 +152,9 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 comment: "Table cell label",
             ),
             isOn: { SSKEnvironment.shared.preferencesRef.doCallsHideIPAddress },
-            target: self,
-            selector: #selector(didToggleCallsHideIPAddressSwitch),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleCallsHideIPAddress(uiSwitch)
+            },
         ))
         contents.add(relayCallsSection)
 
@@ -239,7 +241,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 cellSwitch.addAction(
                     UIAction { [weak self] action in
                         guard let self, let uiSwitch = action.sender as? UISwitch else { return }
-                        self.didToggleUDShowIndicatorsSwitch(isOn: uiSwitch.isOn)
+                        self.didToggleUDShowIndicators(uiSwitch)
                     },
                     for: .valueChanged,
                 )
@@ -259,8 +261,9 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                     comment: "switch label",
                 ),
                 isOn: { SSKEnvironment.shared.udManagerRef.shouldAllowUnrestrictedAccessLocal() },
-                target: self,
-                selector: #selector(didToggleUDUnrestrictedAccessSwitch),
+                actionBlock: { [weak self] uiSwitch in
+                    self?.didToggleUDUnrestrictedAccess(uiSwitch)
+                },
             ))
             sealedSenderSection.footerAttributedTitle = NSAttributedString.composed(of: [
                 OWSLocalizedString(
@@ -286,8 +289,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    @objc
-    private func didToggleEnableCensorshipCircumventionSwitch(_ sender: UISwitch) {
+    private func didToggleEnableCensorshipCircumvention(_ sender: UISwitch) {
         SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionManuallyDisabled = !sender.isOn
         SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionManuallyActivated = sender.isOn
         updateTableContents()
@@ -309,17 +311,15 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         }
     }
 
-    @objc
-    private func didToggleCallsHideIPAddressSwitch(_ sender: UISwitch) {
+    private func didToggleCallsHideIPAddress(_ sender: UISwitch) {
         SSKEnvironment.shared.preferencesRef.setDoCallsHideIPAddress(sender.isOn)
     }
 
-    private func didToggleUDShowIndicatorsSwitch(isOn: Bool) {
-        SSKEnvironment.shared.preferencesRef.setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage(isOn)
+    private func didToggleUDShowIndicators(_ sender: UISwitch) {
+        SSKEnvironment.shared.preferencesRef.setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage(sender.isOn)
     }
 
-    @objc
-    private func didToggleUDUnrestrictedAccessSwitch(_ sender: UISwitch) {
+    private func didToggleUDUnrestrictedAccess(_ sender: UISwitch) {
         SSKEnvironment.shared.udManagerRef.setShouldAllowUnrestrictedAccessLocal(sender.isOn)
     }
 }

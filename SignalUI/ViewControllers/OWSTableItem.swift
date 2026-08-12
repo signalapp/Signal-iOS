@@ -210,35 +210,8 @@ public class OWSTableItem {
 
     public static func `switch`(
         withText text: String,
-        accessibilityIdentifier: String? = nil,
-        textColor: UIColor? = nil,
-        isOn: @escaping (() -> Bool),
-        isEnabled: @escaping (() -> Bool) = { true },
-        target: AnyObject,
-        selector: Selector,
-    ) -> OWSTableItem {
-        return OWSTableItem(customCellBlock: { [weak target] in
-            let cell = OWSTableItem.buildCell(
-                itemName: text,
-                textColor: textColor,
-                accessibilityIdentifier: accessibilityIdentifier,
-            )
-
-            let cellSwitch = UISwitch()
-            cellSwitch.isOn = isOn()
-            cellSwitch.isEnabled = isEnabled()
-            cellSwitch.accessibilityIdentifier = accessibilityIdentifier
-            cellSwitch.addTarget(target, action: selector, for: .valueChanged)
-
-            cell.accessoryView = cellSwitch
-            cell.selectionStyle = .none
-            return cell
-        })
-    }
-
-    public static func `switch`(
-        withText text: String,
         subtitle: String? = nil,
+        textColor: UIColor? = nil,
         accessibilityIdentifier: String? = nil,
         isOn: @escaping (() -> Bool),
         isEnabled: @escaping (() -> Bool) = { true },
@@ -248,6 +221,7 @@ public class OWSTableItem {
             let cell = OWSTableItem.buildCell(
                 itemName: text,
                 subtitle: subtitle,
+                textColor: textColor,
                 accessibilityIdentifier: accessibilityIdentifier,
             )
 
@@ -255,8 +229,10 @@ public class OWSTableItem {
             cellSwitch.isOn = isOn()
             cellSwitch.isEnabled = isEnabled()
             cellSwitch.accessibilityIdentifier = accessibilityIdentifier
-            cellSwitch.addAction(UIAction(handler: { [unowned cellSwitch] _ in actionBlock(cellSwitch) }), for: .valueChanged)
-
+            cellSwitch.addAction(
+                UIAction { [unowned cellSwitch] _ in actionBlock(cellSwitch) },
+                for: .valueChanged,
+            )
             cell.accessoryView = cellSwitch
             cell.selectionStyle = .none
             return cell

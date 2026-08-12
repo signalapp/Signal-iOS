@@ -114,8 +114,9 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
         repliesSection.add(.switch(
             withText: StoryStrings.repliesAndReactionsToggle,
             isOn: { [allowsReplies] in allowsReplies },
-            target: self,
-            selector: #selector(didToggleReplies),
+            actionBlock: { [weak self] _ in
+                self?.didToggleReplies()
+            },
         ))
 
         let viewerAddresses = SSKEnvironment.shared.databaseStorageRef.read { transaction in
@@ -200,7 +201,6 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
         }
     }
 
-    @objc
     private func didToggleReplies() {
         allowsReplies = !allowsReplies
     }

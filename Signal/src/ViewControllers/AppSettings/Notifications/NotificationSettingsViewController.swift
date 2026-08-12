@@ -46,8 +46,9 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 comment: "Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground.",
             ),
             isOn: { SSKEnvironment.shared.preferencesRef.soundInForeground },
-            target: self,
-            selector: #selector(didToggleSoundNotificationsSwitch),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleSoundNotifications(uiSwitch)
+            },
         ))
         let messageSentSoundEnabled = SSKEnvironment.shared.preferencesRef.soundInForeground
         soundsSection.add(.switch(
@@ -58,8 +59,9 @@ class NotificationSettingsViewController: OWSTableViewController2 {
             textColor: messageSentSoundEnabled ? nil : Theme.secondaryTextAndIconColor,
             isOn: { messageSentSoundEnabled && SSKEnvironment.shared.preferencesRef.isMessageSentSoundEnabled },
             isEnabled: { messageSentSoundEnabled },
-            target: self,
-            selector: #selector(didToggleMessageSentSoundSwitch),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleMessageSentSound(uiSwitch)
+            },
         ))
         contents.add(soundsSection)
 
@@ -97,8 +99,9 @@ class NotificationSettingsViewController: OWSTableViewController2 {
             isOn: {
                 SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.includeMutedThreadsInBadgeCount(transaction: $0) }
             },
-            target: self,
-            selector: #selector(didToggleIncludesMutedConversationsInBadgeCountSwitch),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleIncludesMutedConversationsInBadgeCount(uiSwitch)
+            },
         ))
         contents.add(badgeCountSection)
 
@@ -115,8 +118,9 @@ class NotificationSettingsViewController: OWSTableViewController2 {
             isOn: {
                 SSKEnvironment.shared.databaseStorageRef.read { SSKEnvironment.shared.preferencesRef.shouldNotifyOfNewAccounts(transaction: $0) }
             },
-            target: self,
-            selector: #selector(didToggleshouldNotifyOfNewAccountsSwitch),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleshouldNotifyOfNewAccounts(uiSwitch)
+            },
         ))
         contents.add(notifyWhenSection)
 
@@ -132,26 +136,22 @@ class NotificationSettingsViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    @objc
-    private func didToggleSoundNotificationsSwitch(_ sender: UISwitch) {
+    private func didToggleSoundNotifications(_ sender: UISwitch) {
         SSKEnvironment.shared.preferencesRef.setSoundInForeground(sender.isOn)
         // Reload table, since the value of this setting affects others (i.e., message sent sound).
         updateTableContents()
     }
 
-    @objc
-    private func didToggleMessageSentSoundSwitch(_ sender: UISwitch) {
+    private func didToggleMessageSentSound(_ sender: UISwitch) {
         SSKEnvironment.shared.preferencesRef.setIsMessageSentSoundEnabled(sender.isOn)
     }
 
-    @objc
-    private func didToggleIncludesMutedConversationsInBadgeCountSwitch(_ sender: UISwitch) {
+    private func didToggleIncludesMutedConversationsInBadgeCount(_ sender: UISwitch) {
         SSKEnvironment.shared.databaseStorageRef.write { tx in SSKPreferences.setIncludeMutedThreadsInBadgeCount(sender.isOn, transaction: tx) }
         AppEnvironment.shared.badgeManager.invalidateBadgeValue()
     }
 
-    @objc
-    private func didToggleshouldNotifyOfNewAccountsSwitch(_ sender: UISwitch) {
+    private func didToggleshouldNotifyOfNewAccounts(_ sender: UISwitch) {
         let currentValue = SSKEnvironment.shared.databaseStorageRef.read { SSKEnvironment.shared.preferencesRef.shouldNotifyOfNewAccounts(transaction: $0) }
         guard currentValue != sender.isOn else { return }
         SSKEnvironment.shared.databaseStorageRef.write { SSKEnvironment.shared.preferencesRef.setShouldNotifyOfNewAccounts(sender.isOn, transaction: $0) }

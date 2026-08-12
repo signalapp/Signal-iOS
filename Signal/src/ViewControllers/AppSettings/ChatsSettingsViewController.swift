@@ -41,8 +41,9 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             isOn: {
                 SSKEnvironment.shared.databaseStorageRef.read { DependenciesBridge.shared.linkPreviewSettingStore.areLinkPreviewsEnabled(tx: $0) }
             },
-            target: self,
-            selector: #selector(didToggleLinkPreviewsEnabled),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleLinkPreviewsEnabled(uiSwitch)
+            },
         ))
         contents.add(linkPreviewSection)
 
@@ -60,8 +61,9 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             isOn: {
                 SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.areIntentDonationsEnabled(transaction: $0) }
             },
-            target: self,
-            selector: #selector(didToggleSharingSuggestionsEnabled),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleSharingSuggestionsEnabled(uiSwitch)
+            },
         ))
         contents.add(sharingSuggestionsSection)
 
@@ -78,8 +80,9 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             isOn: {
                 SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.preferContactAvatars(transaction: $0) }
             },
-            target: self,
-            selector: #selector(didToggleAvatarPreference),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleAvatarPreference(uiSwitch)
+            },
         ))
         contents.add(contactSection)
 
@@ -89,8 +92,9 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             isOn: {
                 SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
             },
-            target: self,
-            selector: #selector(didToggleShouldKeepMutedChatsArchivedSwitch),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleShouldKeepMutedChatsArchivedSwitch(uiSwitch)
+            },
         ))
         keepMutedChatsArchived.footerTitle = OWSLocalizedString(
             "SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION",
@@ -112,7 +116,6 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    @objc
     private func didToggleLinkPreviewsEnabled(_ sender: UISwitch) {
         Logger.info("toggled to: \(sender.isOn)")
         let db = DependenciesBridge.shared.db
@@ -122,7 +125,6 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    @objc
     private func didToggleSharingSuggestionsEnabled(_ sender: UISwitch) {
         Logger.info("toggled to: \(sender.isOn)")
 
@@ -148,7 +150,6 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    @objc
     private func didToggleAvatarPreference(_ sender: UISwitch) {
         Logger.info("toggled to: \(sender.isOn)")
         let currentValue = SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.preferContactAvatars(transaction: $0) }
@@ -157,7 +158,6 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         SSKEnvironment.shared.databaseStorageRef.write { SSKPreferences.setPreferContactAvatars(sender.isOn, transaction: $0) }
     }
 
-    @objc
     private func didToggleShouldKeepMutedChatsArchivedSwitch(_ sender: UISwitch) {
         Logger.info("toggled to \(sender.isOn)")
         let currentValue = SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }

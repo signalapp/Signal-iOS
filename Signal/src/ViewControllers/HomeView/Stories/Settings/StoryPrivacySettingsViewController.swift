@@ -125,8 +125,9 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         viewReceiptsSection.add(.switch(
             withText: OWSLocalizedString("STORIES_SETTINGS_VIEW_RECEIPTS", comment: "Title for the 'view receipts' setting in stories settings"),
             isOn: { StoryManager.areViewReceiptsEnabled },
-            target: self,
-            selector: #selector(didToggleViewReceipts),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleViewReceipts(uiSwitch)
+            },
         ))
         contents.add(viewReceiptsSection)
 
@@ -233,7 +234,6 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         }
     }
 
-    @objc
     private func didToggleViewReceipts(_ sender: UISwitch) {
         SSKEnvironment.shared.databaseStorageRef.write {
             StoryManager.setAreViewReceiptsEnabled(sender.isOn, transaction: $0)

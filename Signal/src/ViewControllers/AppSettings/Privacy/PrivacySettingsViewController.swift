@@ -80,8 +80,9 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 let databaseStorage = SSKEnvironment.shared.databaseStorageRef
                 return databaseStorage.read(block: OWSReceiptManager.areReadReceiptsEnabled(transaction:))
             },
-            target: self,
-            selector: #selector(didToggleReadReceiptsSwitch),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleReadReceipts(uiSwitch)
+            },
         ))
         messagingSection.add(.switch(
             withText: OWSLocalizedString(
@@ -89,8 +90,9 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 comment: "Label for the 'typing indicators' setting.",
             ),
             isOn: { SSKEnvironment.shared.typingIndicatorsRef.areTypingIndicatorsEnabled() },
-            target: self,
-            selector: #selector(didToggleTypingIndicatorsSwitch),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleTypingIndicators(uiSwitch)
+            },
         ))
         contents.add(messagingSection)
 
@@ -171,8 +173,9 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         appSecuritySection.add(.switch(
             withText: OWSLocalizedString("SETTINGS_SCREEN_SECURITY", comment: ""),
             isOn: { SSKEnvironment.shared.preferencesRef.isScreenSecurityEnabled },
-            target: self,
-            selector: #selector(didToggleScreenSecuritySwitch),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleScreenSecurity(uiSwitch)
+            },
         ))
         appSecuritySection.add(.switch(
             withText: OWSLocalizedString(
@@ -180,8 +183,9 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 comment: "Label for the 'enable screen lock' switch of the privacy settings.",
             ),
             isOn: { ScreenLock.shared.isScreenLockEnabled() },
-            target: self,
-            selector: #selector(didToggleScreenLockSwitch),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleScreenLock(uiSwitch)
+            },
         ))
         if ScreenLock.shared.isScreenLockEnabled() {
             appSecuritySection.add(.disclosureItem(
@@ -220,8 +224,9 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 comment: "Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase.",
             ),
             isOn: { SSKEnvironment.shared.owsPaymentsLockRef.isPaymentsLockEnabled() },
-            target: self,
-            selector: #selector(didTogglePaymentsLockSwitch),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didTogglePaymentsLock(uiSwitch)
+            },
         ))
         contents.add(paymentsSection)
 
@@ -240,12 +245,13 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 comment: "Short table cell label",
             ),
             isOn: {
-                return SSKEnvironment.shared.databaseStorageRef.read { tx in
+                SSKEnvironment.shared.databaseStorageRef.read { tx in
                     SSKEnvironment.shared.preferencesRef.isSystemCallLogEnabledOrDefault(tx: tx)
                 }
             },
-            target: self,
-            selector: #selector(didToggleEnableSystemCallLogSwitch),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleEnableSystemCallLog(uiSwitch)
+            },
         ))
         contents.add(callsSection)
 
@@ -269,29 +275,24 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    @objc
-    private func didToggleReadReceiptsSwitch(_ sender: UISwitch) {
+    private func didToggleReadReceipts(_ sender: UISwitch) {
         SSKEnvironment.shared.receiptManagerRef.setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration(sender.isOn)
     }
 
-    @objc
-    private func didToggleTypingIndicatorsSwitch(_ sender: UISwitch) {
+    private func didToggleTypingIndicators(_ sender: UISwitch) {
         SSKEnvironment.shared.typingIndicatorsRef.setTypingIndicatorsEnabledAndSendSyncMessage(value: sender.isOn)
     }
 
-    @objc
-    private func didToggleScreenSecuritySwitch(_ sender: UISwitch) {
+    private func didToggleScreenSecurity(_ sender: UISwitch) {
         SSKEnvironment.shared.preferencesRef.setIsScreenSecurityEnabled(sender.isOn)
     }
 
-    @objc
-    private func didToggleScreenLockSwitch(_ sender: UISwitch) {
+    private func didToggleScreenLock(_ sender: UISwitch) {
         ScreenLock.shared.setIsScreenLockEnabled(sender.isOn)
         updateTableContents()
     }
 
-    @objc
-    private func didTogglePaymentsLockSwitch(_ sender: UISwitch) {
+    private func didTogglePaymentsLock(_ sender: UISwitch) {
         // Require unlock to disable payments lock
         if SSKEnvironment.shared.owsPaymentsLockRef.isPaymentsLockEnabled() {
             SSKEnvironment.shared.owsPaymentsLockRef.tryToUnlock { [weak self] outcome in
@@ -345,8 +346,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         return DateUtil.formatDuration(seconds: UInt32(value), useShortFormat: useShortFormat)
     }
 
-    @objc
-    private func didToggleEnableSystemCallLogSwitch(_ sender: UISwitch) {
+    private func didToggleEnableSystemCallLog(_ sender: UISwitch) {
         let callService = AppEnvironment.shared.callService!
         let db = DependenciesBridge.shared.db
         let preferences = SSKEnvironment.shared.preferencesRef

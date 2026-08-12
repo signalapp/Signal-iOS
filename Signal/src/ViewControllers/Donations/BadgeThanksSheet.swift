@@ -374,8 +374,9 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         section.add(.switch(
             withText: switchText,
             isOn: { self.shouldMakeVisibleAndPrimary },
-            target: self,
-            selector: #selector(didToggleDisplayOnProfile),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleDisplayOnProfile(uiSwitch)
+            },
         ))
         if showFooter {
             section.footerTitle = OWSLocalizedString(
@@ -386,7 +387,6 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         return section
     }
 
-    @objc
     private func didToggleDisplayOnProfile(_ sender: UISwitch) {
         shouldMakeVisibleAndPrimary = sender.isOn
     }

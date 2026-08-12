@@ -182,8 +182,9 @@ final class BadgeConfigurationViewController: OWSTableViewController2, BadgeColl
                             comment: "Title for switch to enable sharing of badges publicly",
                         ),
                         isOn: { [weak self] in self?.displayBadgeOnProfile ?? false },
-                        target: self,
-                        selector: #selector(didTogglePublicDisplaySetting(_:)),
+                        actionBlock: { [weak self] uiSwitch in
+                            self?.didTogglePublicDisplaySetting(uiSwitch)
+                        },
                     ),
 
                     .item(
@@ -208,7 +209,6 @@ final class BadgeConfigurationViewController: OWSTableViewController2, BadgeColl
         )
     }
 
-    @objc
     private func didTogglePublicDisplaySetting(_ sender: UISwitch) {
         displayBadgeOnProfile = sender.isOn
     }

@@ -175,8 +175,9 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
         repliesSection.add(.switch(
             withText: StoryStrings.repliesAndReactionsToggle,
             isOn: { [thread] in thread.allowsReplies },
-            target: self,
-            selector: #selector(didToggleReplies(_:)),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleReplies(uiSwitch)
+            },
         ))
 
         let deleteSection = OWSTableSection()
@@ -337,7 +338,6 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
     }
 
-    @objc
     private func didToggleReplies(_ toggle: UISwitch) {
         guard thread.allowsReplies != toggle.isOn else { return }
         SSKEnvironment.shared.databaseStorageRef.write { transaction in

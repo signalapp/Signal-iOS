@@ -237,15 +237,15 @@ private class MyStorySettingsDataSource: NSObject {
             repliesSection.add(.switch(
                 withText: StoryStrings.repliesAndReactionsToggle,
                 isOn: { myStoryThread.allowsReplies },
-                target: self,
-                selector: #selector(didToggleReplies(_:)),
+                actionBlock: { [weak self] uiSwitch in
+                    self?.didToggleReplies(uiSwitch)
+                },
             ))
         }
 
         return contents
     }
 
-    @objc
     private func didToggleReplies(_ toggle: UISwitch) {
         let myStoryThread: TSPrivateStoryThread = SSKEnvironment.shared.databaseStorageRef.read { TSPrivateStoryThread.getMyStory(transaction: $0)! }
         guard myStoryThread.allowsReplies != toggle.isOn else { return }

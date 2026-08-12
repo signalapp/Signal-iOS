@@ -94,8 +94,9 @@ class ProxySettingsViewController: OWSTableViewController2 {
             isOn: { [weak self] in
                 self?.useProxy ?? false
             },
-            target: self,
-            selector: #selector(didToggleUseProxy),
+            actionBlock: { [weak self] uiSwitch in
+                self?.didToggleUseProxy(uiSwitch)
+            },
         ))
         contents.add(useProxySection)
 
@@ -147,7 +148,6 @@ class ProxySettingsViewController: OWSTableViewController2 {
         contents.add(shareSection)
     }
 
-    @objc
     private func didToggleUseProxy(_ sender: UISwitch) {
         useProxy = sender.isOn
         updateTableContents()

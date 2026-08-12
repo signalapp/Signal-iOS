@@ -7,6 +7,12 @@ import AVFoundation
 import SignalServiceKit
 import SignalUI
 
+public enum InMemorySettings {
+    static var spinningCheckmarks = false
+    static var spinningConversationTitle = false
+    static var forceCallQualitySurvey = false
+}
+
 class InternalSettingsViewController: OWSTableViewController2 {
 
     enum Mode: Equatable {
@@ -202,8 +208,9 @@ class InternalSettingsViewController: OWSTableViewController2 {
         otherSection.add(.switch(
             withText: "Spinning checkmarks",
             isOn: { InMemorySettings.spinningCheckmarks },
-            target: self,
-            selector: #selector(spinCheckmarks(_:)),
+            actionBlock: { [weak self] uiSwitch in
+                self?.spinCheckmarks(uiSwitch)
+            },
         ))
         otherSection.add(.switch(
             withText: "Spinning conversation title",
@@ -223,8 +230,9 @@ class InternalSettingsViewController: OWSTableViewController2 {
             otherSection.add(.switch(
                 withText: "Disable Content Tracking in Chat Header",
                 isOn: { self.isChatHeaderContentTrackingDisabled },
-                target: self,
-                selector: #selector(toggleChatHeaderContentTrackingDisabled(sender:)),
+                actionBlock: { [weak self] uiSwitch in
+                    self?.toggleChatHeaderContentTrackingDisabled(uiSwitch)
+                },
             ))
         }
         contents.add(otherSection)
@@ -247,46 +255,26 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         self.contents = contents
     }
-}
-
-// MARK: -
-
-public enum InMemorySettings {
-    static var spinningCheckmarks = false
-    static var spinningConversationTitle = false
-    static var forceCallQualitySurvey = false
-}
-
-private extension InternalSettingsViewController {
 
     var isChatHeaderContentTrackingDisabled: Bool {
         CurrentAppContext().appUserDefaults().bool(forKey: "DisableChatHeaderContentTracking")
     }
 
-    @objc
-    func toggleChatHeaderContentTrackingDisabled(sender: Any) {
-        guard let toggleSwitch = sender as? UISwitch else { return }
-        let isDisabled = toggleSwitch.isOn
-        CurrentAppContext().appUserDefaults().set(isDisabled, forKey: "DisableChatHeaderContentTracking")
+    func toggleChatHeaderContentTrackingDisabled(_ sender: UISwitch) {
+        CurrentAppContext().appUserDefaults().set(sender.isOn, forKey: "DisableChatHeaderContentTracking")
     }
-}
 
-private extension InternalSettingsViewController {
-
-    @objc
-    func spinCheckmarks(_ sender: Any) {
+    func spinCheckmarks(_ view: UISwitch) {
         let wasSpinning = InMemorySettings.spinningCheckmarks
-        if let view = sender as? UIView {
-            if wasSpinning {
-                view.layer.removeAnimation(forKey: "spin")
-            } else {
-                let animation = CABasicAnimation(keyPath: "transform.rotation.z")
-                animation.toValue = NSNumber(value: Double.pi * 2)
-                animation.duration = TimeInterval.second
-                animation.isCumulative = true
-                animation.repeatCount = .greatestFiniteMagnitude
-                view.layer.add(animation, forKey: "spin")
-            }
+        if wasSpinning {
+            view.layer.removeAnimation(forKey: "spin")
+        } else {
+            let animation = CABasicAnimation(keyPath: "transform.rotation.z")
+            animation.toValue = NSNumber(value: Double.pi * 2)
+            animation.duration = TimeInterval.second
+            animation.isCumulative = true
+            animation.repeatCount = .greatestFiniteMagnitude
+            view.layer.add(animation, forKey: "spin")
         }
         InMemorySettings.spinningCheckmarks = !wasSpinning
     }

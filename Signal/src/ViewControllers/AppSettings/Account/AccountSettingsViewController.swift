@@ -85,8 +85,9 @@ class AccountSettingsViewController: OWSTableViewController2 {
                         comment: "Label for the 'pin reminder' switch of the privacy settings.",
                     ),
                     isOn: { SSKEnvironment.shared.ows2FAManagerRef.areRemindersEnabled },
-                    target: self,
-                    selector: #selector(arePINRemindersEnabledDidChange),
+                    actionBlock: { [weak self] uiSwitch in
+                        self?.didTogglePINRemindersEnabled(uiSwitch)
+                    },
                 ))
             }
 
@@ -104,8 +105,9 @@ class AccountSettingsViewController: OWSTableViewController2 {
                     comment: "Label for the 'enable registration lock' switch of the privacy settings.",
                 ),
                 isOn: { SSKEnvironment.shared.ows2FAManagerRef.isRegistrationLockV2Enabled },
-                target: self,
-                selector: #selector(isRegistrationLockV2EnabledDidChange),
+                actionBlock: { [weak self] uiSwitch in
+                    self?.didToggleRegistrationLockV2Enabled(uiSwitch)
+                },
             ))
 
             contents.add(regLockSection)
@@ -404,8 +406,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
     // MARK: - PINs
 
-    @objc
-    private func arePINRemindersEnabledDidChange(_ sender: UISwitch) {
+    private func didTogglePINRemindersEnabled(_ sender: UISwitch) {
         if sender.isOn {
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 SSKEnvironment.shared.ows2FAManagerRef.setAreRemindersEnabled(true, transaction: transaction)
@@ -440,8 +441,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    @objc
-    private func isRegistrationLockV2EnabledDidChange(_ sender: UISwitch) {
+    private func didToggleRegistrationLockV2Enabled(_ sender: UISwitch) {
         let shouldBeEnabled = sender.isOn
 
         guard shouldBeEnabled != SSKEnvironment.shared.ows2FAManagerRef.isRegistrationLockV2Enabled else { return }

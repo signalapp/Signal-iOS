@@ -172,8 +172,9 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                     ) != nil
                 }
             },
-            target: self,
-            selector: #selector(updateWallpaperDimming),
+            actionBlock: { [weak self] uiSwitch in
+                self?.updateWallpaperDimming(uiSwitch)
+            },
         ))
 
         if nil != thread {
@@ -205,7 +206,6 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    @objc
     func updateWallpaperDimming(_ sender: UISwitch) {
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx in
             let wallpaperStore = DependenciesBridge.shared.wallpaperStore

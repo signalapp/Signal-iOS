@@ -64,8 +64,9 @@ public class GroupLinkViewController: OWSTableViewController2 {
                         return false
                     }
                 },
-                target: self,
-                selector: #selector(didToggleGroupLinkEnabled(_:)),
+                actionBlock: { [weak self] uiSwitch in
+                    self?.didToggleGroupLinkEnabled(uiSwitch)
+                },
             ))
 
             if case .enabled(let inviteLink, requireAdminApproval: _) = inviteLinkConfiguration {
@@ -144,8 +145,9 @@ public class GroupLinkViewController: OWSTableViewController2 {
                         comment: "Label for the 'approve new members' switch in the 'group link' view.",
                     ),
                     isOn: { requireAdminApproval },
-                    target: self,
-                    selector: #selector(didToggleApproveNewMembers(_:)),
+                    actionBlock: { [weak self] uiSwitch in
+                        self?.didToggleApproveNewMembers(uiSwitch)
+                    },
                 ))
 
                 contents.add(section)
@@ -196,7 +198,6 @@ public class GroupLinkViewController: OWSTableViewController2 {
         presentToast(text: message)
     }
 
-    @objc
     private func didToggleGroupLinkEnabled(_ sender: UISwitch) {
         guard canEditGroupLink else {
             presentAdminOnlyWarningToast()
@@ -209,7 +210,6 @@ public class GroupLinkViewController: OWSTableViewController2 {
         updateLinkMode(linkMode: isGroupInviteLinkEnabled ? .enabled(requireAdminApproval: false) : .disabled)
     }
 
-    @objc
     private func didToggleApproveNewMembers(_ sender: UISwitch) {
         guard canEditGroupLink else {
             presentAdminOnlyWarningToast()
