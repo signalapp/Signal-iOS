@@ -8,6 +8,11 @@
 /// be called. url.stopAccessingSecurityScopedResource() must be called once access is complete to avoid
 /// leaking kernel resources.
 
+public enum SecurityScopedBookmarkType {
+    case archive
+    case restore
+}
+
 public struct SecurityScopedBookmark: Codable {
     public let rawValue: Data
 }

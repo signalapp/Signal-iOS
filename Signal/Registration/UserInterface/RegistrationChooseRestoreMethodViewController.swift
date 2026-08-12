@@ -335,14 +335,14 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController, UIDocume
     private func didSelectRestoreFromLocalBackup() {
         let heroSheet = LocalFileBackupSelectHeroSheet(onChooseBackup: { [weak self] in
             guard let self else { return }
-            promptUserToChooseFileLocation(fromViewController: self)
+            promptUserToChooseFileLocationForRestoring(fromViewController: self)
         })
         present(heroSheet, animated: true)
     }
 
     // MARK: - Choosing backup location
 
-    func promptUserToChooseFileLocation(fromViewController: UIViewController) {
+    func promptUserToChooseFileLocationForRestoring(fromViewController: UIViewController) {
         let pickerController = UIDocumentPickerViewController(
             forOpeningContentTypes: [.folder],
             asCopy: false,
@@ -408,7 +408,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController, UIDocume
         defer { securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: signalBackupsURL) }
 
         do {
-            try localFileBackupManager.saveSecurityScopedBookmark(url: signalBackupsURL)
+            try localFileBackupManager.saveSecurityScopedBookmark(url: signalBackupsURL, type: .restore)
             presenter?.didChooseRestoreMethod(method: .local(fileUrl: signalBackupsURL))
         } catch {
             // TODO: [KC] show error screen.
@@ -433,7 +433,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController, UIDocume
                 comment: "Title for a button that lets the user select a new folder.",
             ),
             handler: { [self] _ in
-                promptUserToChooseFileLocation(fromViewController: self)
+                promptUserToChooseFileLocationForRestoring(fromViewController: self)
             },
         ))
         actionSheet.addAction(.cancel)

@@ -101,7 +101,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
     func restoreLocalFileBackupAttachments() async throws {
         let resolvedURL: URL?
         do {
-            resolvedURL = try getSavedSecurityScopedBookmark()
+            resolvedURL = try getSavedSecurityScopedBookmark(type: .restore)
         } catch {
             throw LocalFileBackupError.unableToAccessLocalFile(.noAccess)
         }
@@ -580,7 +580,9 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
     // MARK: - Choosing backup location
 
-    public func promptUserToChooseFileLocation(fromViewController: UIViewController, completion: (() -> Void)?) {
+    /// This should only be used when choosing a file location for archiving a local file backup.
+    /// When the file is chosen, it will be stored with an archive-specific DB key.
+    public func promptUserToChooseFileLocationForArchiving(fromViewController: UIViewController, completion: (() -> Void)?) {
         let pickerController = UIDocumentPickerViewController(
             forOpeningContentTypes: [.folder],
             asCopy: false,
@@ -591,8 +593,17 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         fromViewController.present(pickerController, animated: true)
     }
 
-    public func getSavedSecurityScopedBookmark() throws -> URL? {
-        guard let bookmarkData = db.read(block: { tx in localFileBackupStore.fetchBookmarkData(tx: tx) }) else {
+    public func getSavedSecurityScopedBookmark(type: SecurityScopedBookmarkType) throws -> URL? {
+        let bookmarkData = db.read { tx in
+            switch type {
+            case .archive:
+                return localFileBackupStore.fetchArchiveBookmarkData(tx: tx)
+            case .restore:
+                return localFileBackupStore.fetchRestoreBookmarkData(tx: tx)
+            }
+        }
+
+        guard let bookmarkData else {
             return nil
         }
 
@@ -613,10 +624,15 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         return resolvedURL
     }
 
-    public func saveSecurityScopedBookmark(url: URL) throws {
+    public func saveSecurityScopedBookmark(url: URL, type: SecurityScopedBookmarkType) throws {
         let bookmarkData = try securityScopedBookmarkAccess.bookmarkDataForURL(url)
         db.write { tx in
-            localFileBackupStore.storeBookmarkData(bookmarkData: bookmarkData, tx: tx)
+            switch type {
+            case .archive:
+                localFileBackupStore.storeArchiveBookmarkData(bookmarkData: bookmarkData, tx: tx)
+            case .restore:
+                localFileBackupStore.storeRestoreBookmarkData(bookmarkData: bookmarkData, tx: tx)
+            }
         }
     }
 
@@ -632,7 +648,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         defer { securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: url) }
 
         do {
-            try saveSecurityScopedBookmark(url: url)
+            try saveSecurityScopedBookmark(url: url, type: .archive)
         } catch {
             // TODO: [KC] show error screen.
             logger.error("Failed to save bookmark: \(error)")

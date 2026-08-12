@@ -648,7 +648,7 @@ class ChatListFYISheetCoordinator {
         logger.warn("Showing ChooseNewLocalBackupLocation FYI sheet.")
 
         let warningSheet = ChooseNewLocalBackupLocationHeroSheet(onChooseNewFileLocation: { [self] in
-            localFileBackupManager.promptUserToChooseFileLocation(fromViewController: chatListViewController, completion: nil)
+            localFileBackupManager.promptUserToChooseFileLocationForArchiving(fromViewController: chatListViewController, completion: nil)
         })
 
         chatListViewController.present(warningSheet, animated: true) { [self] in

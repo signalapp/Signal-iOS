@@ -118,7 +118,7 @@ class BackupOnboardingCoordinator {
                     fromViewController.present(
                         LocalFileBackupSelectFolderHeroSheetViewController(
                             onContinue: { [self] in
-                                localFileBackupManager.promptUserToChooseFileLocation(fromViewController: fromViewController, completion: { [self] in
+                                localFileBackupManager.promptUserToChooseFileLocationForArchiving(fromViewController: fromViewController, completion: { [self] in
                                     showRecoveryKeyIntro()
                                 })
                             },

@@ -12,7 +12,8 @@ extension NSNotification.Name {
 
 public struct LocalFileBackupStore {
     private enum StoreKeys {
-        static let bookmarkDataKey = "bookmarkData"
+        static let archiveBookmarkDataKey = "archiveBookmarkData"
+        static let restoreBookmarkDataKey = "restoreBookmarkData"
         static let lastEnumeratedAttachmentIdKey = "lastEnumeratedAttachmentId"
         static let shouldPromptUserToEnableLocalBackupsKey = "shouldPromptUserToEnableLocalBackups"
         static let shouldPromptUserToChooseNewLocationKey = "shouldPromptUserToChooseNewLocation"
@@ -110,15 +111,26 @@ public struct LocalFileBackupStore {
         kvStore.writeValue(attachmentId, forKey: StoreKeys.lastEnumeratedAttachmentIdKey, tx: tx)
     }
 
-    func fetchBookmarkData(tx: DBReadTransaction) -> SecurityScopedBookmark? {
-        guard let data = kvStore.fetchValue(Data.self, forKey: StoreKeys.bookmarkDataKey, tx: tx) else {
+    func fetchArchiveBookmarkData(tx: DBReadTransaction) -> SecurityScopedBookmark? {
+        guard let data = kvStore.fetchValue(Data.self, forKey: StoreKeys.archiveBookmarkDataKey, tx: tx) else {
             return nil
         }
         return SecurityScopedBookmark(rawValue: data)
     }
 
-    func storeBookmarkData(bookmarkData: SecurityScopedBookmark, tx: DBWriteTransaction) {
-        kvStore.writeValue(bookmarkData.rawValue, forKey: StoreKeys.bookmarkDataKey, tx: tx)
+    func storeArchiveBookmarkData(bookmarkData: SecurityScopedBookmark, tx: DBWriteTransaction) {
+        kvStore.writeValue(bookmarkData.rawValue, forKey: StoreKeys.archiveBookmarkDataKey, tx: tx)
+    }
+
+    func fetchRestoreBookmarkData(tx: DBReadTransaction) -> SecurityScopedBookmark? {
+        guard let data = kvStore.fetchValue(Data.self, forKey: StoreKeys.restoreBookmarkDataKey, tx: tx) else {
+            return nil
+        }
+        return SecurityScopedBookmark(rawValue: data)
+    }
+
+    func storeRestoreBookmarkData(bookmarkData: SecurityScopedBookmark, tx: DBWriteTransaction) {
+        kvStore.writeValue(bookmarkData.rawValue, forKey: StoreKeys.restoreBookmarkDataKey, tx: tx)
     }
 
     // MARK: - Prompt user to enable local backups, e.g. after restoring

@@ -21,7 +21,7 @@ struct LocalFileBackupExportJobRunnerTests {
 
         let localFileBackupStore = LocalFileBackupStore()
         db.write { tx in
-            localFileBackupStore.storeBookmarkData(bookmarkData: SecurityScopedBookmark(rawValue: Data()), tx: tx)
+            localFileBackupStore.storeArchiveBookmarkData(bookmarkData: SecurityScopedBookmark(rawValue: Data()), tx: tx)
         }
 
         backupsURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString)

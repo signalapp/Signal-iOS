@@ -186,7 +186,7 @@ class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
             ))
         }
 
-        if let localFileBackupLocation = try? localFileBackupManager.getSavedSecurityScopedBookmark()?.lastPathComponent {
+        if let localFileBackupLocation = try? localFileBackupManager.getSavedSecurityScopedBookmark(type: .archive)?.lastPathComponent {
             section.add(.disclosureItem(
                 withText: OWSLocalizedString(
                     "SETTINGS_LOCAL_FILE_BACKUPS_BACKUP_FOLDER",
@@ -196,7 +196,7 @@ class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
                 actionBlock: { [weak self] in
                     guard let self else { return }
 
-                    localFileBackupManager.promptUserToChooseFileLocation(fromViewController: self, completion: {
+                    localFileBackupManager.promptUserToChooseFileLocationForArchiving(fromViewController: self, completion: {
                         self.presentToast(
                             text: OWSLocalizedString(
                                 "SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED",

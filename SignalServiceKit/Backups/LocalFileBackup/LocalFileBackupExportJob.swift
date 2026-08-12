@@ -87,7 +87,7 @@ class LocalFileBackupExportJob {
 
         logger.info("Starting. Resumption point: \(resumptionPoint as Optional)")
 
-        guard let resolvedURL = try await localFileBackupManager.getSavedSecurityScopedBookmark() else {
+        guard let resolvedURL = try await localFileBackupManager.getSavedSecurityScopedBookmark(type: .archive) else {
             throw OWSAssertionError("No local file backup location bookmark data stored")
         }
 
