@@ -102,6 +102,7 @@ public class OWSTableItem {
         icon: ThemeIcon? = nil,
         tintColor: UIColor? = nil,
         withText: String,
+        subtitle: String? = nil,
         maxNameLines: Int? = nil,
         accessoryText: String? = nil,
         addBetaLabel: Bool = false,
@@ -112,6 +113,7 @@ public class OWSTableItem {
             icon: icon,
             tintColor: tintColor,
             name: withText,
+            subtitle: subtitle,
             maxNameLines: maxNameLines,
             textColor: textColor,
             accessoryText: accessoryText,
@@ -500,6 +502,7 @@ public extension OWSTableItem {
             subtitleLabel.font = .dynamicTypeFootnoteClamped
 
             let labels = UIStackView(arrangedSubviews: [nameLabel, subtitleLabel])
+            labels.spacing = 2
             labels.axis = .vertical
             subviews.append(labels)
         }

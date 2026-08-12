@@ -166,116 +166,126 @@ public enum DebugFlags {
 
     public static let extraDebugLogs = build <= .internal
 
-    public static let messageSendsFail = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Message Sends Fail"),
-        details: LocalizationNotNeeded("All outgoing message sends will fail."),
+    public static let callingBitRate = TestableFlag<Int>(
+        10,
+        title: LocalizationNotNeeded("Bitrate"),
+        details: LocalizationNotNeeded("The bitrate to use for new calls."),
     )
 
-    public static let callingUseTestSFU = TestableFlag(
+    public static let callingUseTestSFU = TestableFlag<Bool>(
         false,
-        title: LocalizationNotNeeded("Calling: Use Test SFU"),
+        title: LocalizationNotNeeded("Use Test SFU"),
         details: LocalizationNotNeeded("Group calls will connect to sfu.test.voip.signal.org."),
     )
 
-    public static let callingNeverRelay = TestableFlag(
+    public static let callingNeverRelay = TestableFlag<Bool>(
         false,
-        title: LocalizationNotNeeded("Calling: Never use relay"),
+        title: LocalizationNotNeeded("Never use relay"),
         details: LocalizationNotNeeded("1:1 calls will not connect to a TURN server (remote party may still use TURN)."),
     )
 
-    public static let callingForceVp9Off = TestableFlag(
+    public static let callingForceVp9Off = TestableFlag<Bool>(
         false,
-        title: LocalizationNotNeeded("Calling: Never use VP9"),
+        title: LocalizationNotNeeded("Never use VP9"),
         details: LocalizationNotNeeded("1:1 calls will never use VP9 (overrides remote config)."),
     )
 
-    public static let callingForceVp9On = TestableFlag(
+    public static let callingForceVp9On = TestableFlag<Bool>(
         false,
-        title: LocalizationNotNeeded("Calling: Always offer VP9"),
+        title: LocalizationNotNeeded("Always offer VP9"),
         details: LocalizationNotNeeded("1:1 calls will always offer VP9 (overrides remote config and \"Never use VP9\")."),
     )
 
-    public static let delayedMessageResend = TestableFlag(
+    public static let delayedMessageResend = TestableFlag<Bool>(
         false,
         title: LocalizationNotNeeded("Delayed message resend"),
         details: LocalizationNotNeeded("Waits 10s before responding to a resend request."),
     )
 
-    public static let fastPlaceholderExpiration = TestableFlag(
+    public static let fastPlaceholderExpiration = TestableFlag<Bool>(
         false,
         title: LocalizationNotNeeded("Early placeholder expiration"),
         details: LocalizationNotNeeded("Shortens the valid window for message resend+recovery."),
-        toggleHandler: { _ in
+        onSet: { _ in
             DependenciesBridge.shared.decryptionPlaceholderExpirationJob.restart()
         },
     )
 
-    public static func allTestableFlags() -> [TestableFlag] {
-        return [
-            callingUseTestSFU,
-            callingNeverRelay,
-            callingForceVp9Off,
-            callingForceVp9On,
-            delayedMessageResend,
-            fastPlaceholderExpiration,
-            messageSendsFail,
-        ]
-    }
+    public static let messageSendsFail = TestableFlag<Bool>(
+        false,
+        title: LocalizationNotNeeded("Message Sends Fail"),
+        details: LocalizationNotNeeded("All outgoing message sends will fail."),
+    )
+
+    public static let callingTestableFlags: [AnyTestableFlag] = [
+        callingBitRate,
+        callingUseTestSFU,
+        callingNeverRelay,
+        callingForceVp9Off,
+        callingForceVp9On,
+    ]
+
+    public static let messagingTestableFlags: [AnyTestableFlag] = [
+        delayedMessageResend,
+        fastPlaceholderExpiration,
+        messageSendsFail,
+    ]
 }
 
 // MARK: -
 
-public class TestableFlag {
-    private let defaultValue: Bool
-    private let flag: AtomicBool
+extension Notification.Name {
+    public static let resetAllTestableFlags = Notification.Name("ResetAllTestableFlags")
+}
+
+public protocol AnyTestableFlag {
+    var details: String { get }
+}
+
+public class TestableFlag<Value>: AnyTestableFlag {
     public let title: String
     public let details: String
-    public let toggleHandler: ((Bool) -> Void)?
+
+    private let defaultValue: Value
+    private let flag: AtomicValue<Value>
+    private let onSet: (Value) -> Void
 
     fileprivate init(
-        _ defaultValue: Bool,
+        _ defaultValue: Value,
         title: String,
         details: String,
-        toggleHandler: ((Bool) -> Void)? = nil,
+        onSet: @escaping (Value) -> Void = { _ in },
     ) {
         self.defaultValue = defaultValue
         self.title = title
         self.details = details
-        self.flag = AtomicBool(defaultValue, lock: .sharedGlobal)
-        self.toggleHandler = toggleHandler
+        self.flag = AtomicValue(defaultValue, lock: .init())
+        self.onSet = onSet
 
         // Normally we'd store the observer here and remove it in deinit.
         // But TestableFlags are always static; they don't *get* deinitialized except in testing.
         NotificationCenter.default.addObserver(
-            forName: Self.ResetAllTestableFlagsNotification,
+            forName: .resetAllTestableFlags,
             object: nil,
             queue: nil,
         ) { [weak self] _ in
             guard let self else { return }
-            self.set(self.defaultValue)
+            set(defaultValue)
         }
     }
 
-    public func get() -> Bool {
+    public func get() -> Value {
         guard build <= .internal else {
             return defaultValue
         }
+
         return flag.get()
     }
 
-    public func set(_ value: Bool) {
-        flag.set(value)
-
-        toggleHandler?(value)
+    public func set(_ value: Value) {
+        flag.update {
+            $0 = value
+            onSet(value)
+        }
     }
-
-    @objc
-    private func switchDidChange(_ sender: UISwitch) {
-        set(sender.isOn)
-    }
-
-    public var switchSelector: Selector { #selector(switchDidChange(_:)) }
-
-    public static let ResetAllTestableFlagsNotification = NSNotification.Name("ResetAllTestableFlags")
 }
