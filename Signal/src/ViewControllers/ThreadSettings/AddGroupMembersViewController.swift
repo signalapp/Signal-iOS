@@ -51,17 +51,13 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
                     "EDIT_GROUP_UPDATE_BUTTON",
                     comment: "The title for the 'update group' button.",
                 ),
-                style: .plain,
-                target: self,
-                action: #selector(updateGroupPressed),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "update"),
+                primaryAction: UIAction { [weak self] _ in self?.updateGroupPressed() },
             )
         } else {
             navigationItem.rightBarButtonItem = nil
         }
     }
 
-    @objc
     private func updateGroupPressed() {
         showConfirmationAlert()
     }

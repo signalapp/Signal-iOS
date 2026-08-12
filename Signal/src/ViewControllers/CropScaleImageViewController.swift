@@ -473,7 +473,7 @@ class CropScaleImageViewController: OWSViewController {
 
         let cancelButton = createButton(
             title: CommonStrings.cancelButton,
-            action: #selector(cancelPressed),
+            action: UIAction { [weak self] _ in self?.cancelPressed() },
         )
         buttonRow.addSubview(cancelButton)
         cancelButton.autoPinEdge(toSuperviewEdge: .top)
@@ -482,7 +482,7 @@ class CropScaleImageViewController: OWSViewController {
 
         let doneButton = createButton(
             title: CommonStrings.doneButton,
-            action: #selector(donePressed),
+            action: UIAction { [weak self] _ in self?.donePressed() },
         )
         buttonRow.addSubview(doneButton)
         doneButton.autoPinEdge(toSuperviewEdge: .top)
@@ -490,7 +490,7 @@ class CropScaleImageViewController: OWSViewController {
         doneButton.autoPinEdge(toSuperviewEdge: .right)
     }
 
-    private func createButton(title: String, action: Selector) -> UIButton {
+    private func createButton(title: String, action: UIAction) -> UIButton {
         let buttonFont = UIFont.semiboldFont(ofSize: .scaleFromIPhone5To7Plus(18, 22))
         let buttonWidth = CGFloat.scaleFromIPhone5To7Plus(110, 140)
         let buttonHeight = CGFloat.scaleFromIPhone5To7Plus(35, 45)
@@ -499,7 +499,7 @@ class CropScaleImageViewController: OWSViewController {
         button.setTitle(title, for: .normal)
         button.setTitleColor(UIColor.white, for: .normal)
         button.titleLabel!.font = buttonFont
-        button.addTarget(self, action: action, for: .touchUpInside)
+        button.addAction(action, for: .primaryActionTriggered)
         button.autoSetDimension(.width, toSize: buttonWidth)
         button.autoSetDimension(.height, toSize: buttonHeight)
         return button
@@ -507,13 +507,11 @@ class CropScaleImageViewController: OWSViewController {
 
     // MARK: - Event Handlers
 
-    @objc
-    private func cancelPressed(sender: UIButton) {
+    private func cancelPressed() {
         dismiss(animated: true, completion: nil)
     }
 
-    @objc
-    private func donePressed(sender: UIButton) {
+    private func donePressed() {
         let successCompletion = self.successCompletion
         dismiss(animated: true, completion: {
             guard let dstImage = self.generateDstImage() else {

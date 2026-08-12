@@ -38,9 +38,7 @@ class LinkDeviceViewController: OWSViewController {
 #if TESTABLE_BUILD
         navigationItem.rightBarButtonItem = .init(
             title: LocalizationNotNeeded("ENTER"),
-            style: .plain,
-            target: self,
-            action: #selector(manuallyEnterLinkURL),
+            primaryAction: UIAction { [weak self] _ in self?.manuallyEnterLinkURL() },
         )
 #endif
 
@@ -238,7 +236,6 @@ class LinkDeviceViewController: OWSViewController {
     }
 
 #if TESTABLE_BUILD
-    @objc
     private func manuallyEnterLinkURL() {
         let alertController = UIAlertController(
             title: LocalizationNotNeeded("Manually enter linking code."),

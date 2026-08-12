@@ -652,13 +652,9 @@ private class SafetyNumberCell: ContactTableViewCell {
 
     override open class var reuseIdentifier: String { "SafetyNumberCell" }
 
-    let button = UIButton()
+    let button: UIButton
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        selectionStyle = .none
-
         var config = UIButton.Configuration.gray()
         config.cornerStyle = .capsule
         config.baseBackgroundColor = UIColor.Signal.secondaryFill
@@ -668,8 +664,19 @@ private class SafetyNumberCell: ContactTableViewCell {
             comment: "View safety number action for the 'safety number confirmation' view",
         )
         config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeSubheadline.semibold())
-        button.configuration = config
-        button.addTarget(self, action: #selector(performButtonActon), for: .touchUpInside)
+        button = UIButton(configuration: config)
+
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        selectionStyle = .none
+
+        button.addAction(
+            UIAction { [weak self] _ in
+                guard let buttonAction = self?.buttonAction else { return }
+                buttonAction()
+            },
+            for: .primaryActionTriggered,
+        )
     }
 
     required init(coder: NSCoder) {
@@ -726,11 +733,6 @@ private class SafetyNumberCell: ContactTableViewCell {
     }
 
     private var buttonAction: (() -> Void)?
-
-    @objc
-    private func performButtonActon() {
-        buttonAction?()
-    }
 }
 
 private extension NSAttributedString {

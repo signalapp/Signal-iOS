@@ -100,8 +100,14 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         bottomContentMarginConstraint?.priority = .defaultLow
         bottomContentMarginConstraint?.isActive = true
 
-        textField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
-        doneButton.addTarget(self, action: #selector(doneButtonPressed), for: .touchUpInside)
+        textField.addAction(
+            UIAction { [weak self] _ in self?.textDidChange() },
+            for: .editingChanged,
+        )
+        doneButton.addAction(
+            UIAction { [weak self] _ in self?.doneButtonPressed() },
+            for: .primaryActionTriggered,
+        )
 
         if let initialLinkPreview = linkPreviewFetchState.linkPreviewDraftIfLoaded {
             textField.text = initialLinkPreview.urlString
@@ -149,7 +155,6 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         }
     }
 
-    @objc
     private func textDidChange() {
         let text = textField.text ?? ""
         linkPreviewFetchState.update(
@@ -158,7 +163,6 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         )
     }
 
-    @objc
     private func doneButtonPressed() {
         guard case .draft(let linkPreview) = linkPreviewPanel.state else { return }
         delegate?.linkPreviewAttachmentViewController(self, didFinishWith: linkPreview)

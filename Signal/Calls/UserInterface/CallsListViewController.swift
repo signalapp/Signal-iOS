@@ -235,9 +235,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     private lazy var toolbarDeleteButton = UIBarButtonItem(
         title: CommonStrings.deleteButton,
-        style: .plain,
-        target: self,
-        action: #selector(deleteSelectedCalls),
+        primaryAction: UIAction { [weak self] _ in self?.deleteSelectedCalls() },
     )
 
     private func showToolbar() {
@@ -287,7 +285,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         deleteAllCallsButton.isEnabled = !hasSelectedEntries
     }
 
-    @objc
     private func deleteSelectedCalls() {
         guard let selectedRows = tableView.indexPathsForSelectedRows else {
             return
@@ -322,9 +319,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func newCallButton() -> UIBarButtonItem {
         let barButtonItem = UIBarButtonItem(
             image: Theme.iconImage(.buttonNewCall),
-            style: .plain,
-            target: self,
-            action: #selector(newCall),
+            primaryAction: UIAction { [weak self] _ in self?.newCall() },
         )
         barButtonItem.accessibilityLabel = OWSLocalizedString(
             "NEW_CALL_LABEL",
@@ -337,7 +332,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         return barButtonItem
     }
 
-    @objc
     private func newCall() {
         let viewController = NewCallViewController()
         viewController.delegate = self
@@ -384,12 +378,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     private lazy var deleteAllCallsButton = UIBarButtonItem(
         title: Strings.deleteAllCallsButtonTitle,
-        style: .plain,
-        target: self,
-        action: #selector(promptAboutDeletingAllCalls),
+        primaryAction: UIAction { [weak self] _ in self?.promptAboutDeletingAllCalls() },
     )
 
-    @objc
     private func promptAboutDeletingAllCalls() {
         OWSActionSheets.showConfirmationAlert(
             title: Strings.deleteAllCallsPromptTitle,
@@ -462,7 +453,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             Strings.filterPickerOptionMissed,
         ])
         segmentedControl.selectedSegmentIndex = 0
-        segmentedControl.addTarget(self, action: #selector(filterChangedFromPrimary), for: .valueChanged)
+        segmentedControl.addAction(
+            UIAction { [weak self] _ in self?.filterChangedFromPrimary() },
+            for: .valueChanged,
+        )
         return segmentedControl
     }()
 
@@ -475,7 +469,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             Strings.filterPickerOptionMissed,
         ])
         segmentedControl.selectedSegmentIndex = 0
-        segmentedControl.addTarget(self, action: #selector(filterChangedFromSidebar), for: .valueChanged)
+        segmentedControl.addAction(
+            UIAction { [weak self] _ in self?.filterChangedFromSidebar() },
+            for: .valueChanged,
+        )
         return segmentedControl
     }()
 
@@ -501,13 +498,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         searchController.searchResultsUpdater = self
     }
 
-    @objc
     private func filterChangedFromPrimary() {
         sidebarFilterPicker.selectedSegmentIndex = filterPicker.selectedSegmentIndex
         filterChanged()
     }
 
-    @objc
     private func filterChangedFromSidebar() {
         filterPicker.selectedSegmentIndex = sidebarFilterPicker.selectedSegmentIndex
         filterChanged()

@@ -59,14 +59,19 @@ open class OWSFlatButton: UIView {
         createContent()
     }
 
-    @available(*, unavailable, message: "use other constructor instead.")
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     private func createContent() {
         self.addSubview(button)
-        button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
+        button.addAction(
+            UIAction { [weak self] _ in
+                guard let pressedBlock = self?.pressedBlock else { return }
+                pressedBlock()
+            },
+            for: .primaryActionTriggered,
+        )
         button.autoPinEdgesToSuperviewEdges()
     }
 
@@ -77,8 +82,7 @@ open class OWSFlatButton: UIView {
         backgroundColor: UIColor,
         width: CGFloat,
         height: CGFloat,
-        target: Any,
-        selector: Selector,
+        primaryAction: UIAction,
     ) -> OWSFlatButton {
         let button = OWSFlatButton()
         button.setTitle(
@@ -89,7 +93,7 @@ open class OWSFlatButton: UIView {
         button.setBackgroundColors(upColor: backgroundColor)
         button.useDefaultCornerRadius()
         button.setSize(width: width, height: height)
-        button.addTarget(target: target, selector: selector)
+        button.addAction(primaryAction)
         return button
     }
 
@@ -99,8 +103,7 @@ open class OWSFlatButton: UIView {
         backgroundColor: UIColor,
         width: CGFloat,
         height: CGFloat,
-        target: Any,
-        selector: Selector,
+        primaryAction: UIAction,
     ) -> OWSFlatButton {
         return OWSFlatButton.button(
             title: title,
@@ -109,8 +112,7 @@ open class OWSFlatButton: UIView {
             backgroundColor: backgroundColor,
             width: width,
             height: height,
-            target: target,
-            selector: selector,
+            primaryAction: primaryAction,
         )
     }
 
@@ -119,16 +121,14 @@ open class OWSFlatButton: UIView {
         font: UIFont,
         titleColor: UIColor,
         backgroundColor: UIColor,
-        target: Any,
-        selector: Selector,
+        primaryAction: UIAction,
     ) -> OWSFlatButton {
         return OWSFlatButton.button(
             title: title,
             font: font,
             titleColor: titleColor,
             backgroundColor: backgroundColor,
-            target: target,
-            selector: selector,
+            primaryAction: primaryAction,
             cornerRadius: CornerStyle.inset,
         )
     }
@@ -157,25 +157,11 @@ open class OWSFlatButton: UIView {
         font: UIFont,
         titleColor: UIColor,
         backgroundColor: UIColor,
-        target: Any,
-        selector: Selector,
+        primaryAction: UIAction,
         cornerRadius: CGFloat = CornerStyle.default,
     ) -> OWSFlatButton {
         let button = button(title: title, font: font, titleColor: titleColor, backgroundColor: backgroundColor, cornerRadius: cornerRadius)
-        button.addTarget(target: target, selector: selector)
-        return button
-    }
-
-    public class func button(
-        title: String,
-        font: UIFont,
-        titleColor: UIColor,
-        backgroundColor: UIColor,
-        action: UIAction,
-        cornerRadius: CGFloat = CornerStyle.default,
-    ) -> OWSFlatButton {
-        let button = button(title: title, font: font, titleColor: titleColor, backgroundColor: backgroundColor, cornerRadius: cornerRadius)
-        button.addAction(action)
+        button.addAction(primaryAction)
         return button
     }
 
@@ -244,25 +230,13 @@ open class OWSFlatButton: UIView {
         button.isEnabled = isEnabled
     }
 
-    public func addTarget(
-        target: Any,
-        selector: Selector,
-    ) {
-        button.addTarget(target, action: selector, for: .touchUpInside)
-    }
-
     public func addAction(_ action: UIAction) {
-        button.addAction(action, for: .touchUpInside)
+        button.addAction(action, for: .primaryActionTriggered)
     }
 
     public func setPressedBlock(_ pressedBlock: @escaping () -> Void) {
         guard self.pressedBlock == nil else { return }
         self.pressedBlock = pressedBlock
-    }
-
-    @objc
-    private func buttonPressed() {
-        pressedBlock?()
     }
 
     public func enableMultilineLabel() {

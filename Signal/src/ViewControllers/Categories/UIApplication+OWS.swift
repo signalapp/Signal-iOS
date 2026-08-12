@@ -14,7 +14,6 @@ extension UIApplication {
         return window.findFrontmostViewController(ignoringAlerts: true)
     }
 
-    @objc
     var frontmostViewController: UIViewController? {
         guard let window = CurrentAppContext().mainWindow else {
             return nil

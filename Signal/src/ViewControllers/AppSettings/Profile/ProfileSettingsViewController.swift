@@ -278,7 +278,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    @objc
     func presentAvatarSettingsView() {
         let currentAvatarImage: UIImage? = {
             guard let avatarData = profileValues.avatarData.currentValue else { return nil }
@@ -804,8 +803,10 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         changeButton.autoPinWidthToSuperviewMargins(relation: .lessThanOrEqual)
         changeButton.autoCenterInSuperview()
         changeButton.setContentHuggingHigh()
-
-        changeButton.addTarget(self, action: #selector(presentAvatarSettingsView), for: .touchUpInside)
+        changeButton.addAction(
+            UIAction { [weak self] _ in self?.presentAvatarSettingsView() },
+            for: .primaryActionTriggered,
+        )
         return cell
     }
 

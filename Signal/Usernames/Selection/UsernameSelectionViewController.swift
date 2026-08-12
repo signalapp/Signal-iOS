@@ -213,12 +213,13 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
     /// such as the current discriminator.
     private lazy var usernameTextFieldWrapper: UsernameTextFieldWrapper = {
         let wrapper = UsernameTextFieldWrapper(username: existingUsername)
-
         wrapper.translatesAutoresizingMaskIntoConstraints = false
         wrapper.textField.discriminatorView.delegate = self
         wrapper.textField.delegate = self
-        wrapper.textField.addTarget(self, action: #selector(usernameTextFieldContentsDidChange), for: .editingChanged)
-
+        wrapper.textField.addAction(
+            UIAction { [weak self] _ in self?.usernameTextFieldContentsDidChange() },
+            for: .editingChanged,
+        )
         return wrapper
     }()
 
@@ -766,10 +767,10 @@ private extension UsernameSelectionViewController {
 // MARK: - Text field events
 
 private extension UsernameSelectionViewController {
+
     /// Called when the contents of the username text field have changed, and
     /// sets local state as appropriate. If the username is believed to be
     /// valid, kicks off a reservation attempt.
-    @objc
     private func usernameTextFieldContentsDidChange() {
         AssertIsOnMainThread()
 

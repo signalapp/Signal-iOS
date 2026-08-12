@@ -353,7 +353,6 @@ public extension ConversationViewController {
         }
     }
 
-    @objc
     func previewSetup() {
         isInPreviewPlatter = true
         actionOnOpen = .none

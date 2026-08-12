@@ -118,13 +118,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
     // MARK: - Events
 
-    @objc
-    private func didDonateModeChange() {
-        let rawValue = donateModePickerView.selectedSegmentIndex
-        guard let newValue = DonateMode(rawValue: rawValue) else {
-            owsFail("[Donations] Unexpected donate mode")
-        }
-        state = state.selectDonateMode(newValue)
+    private func didChangeDonateMode(_ newMode: DonateMode) {
+        state = state.selectDonateMode(newMode)
     }
 
     private func addAnimationView(anchor: UIView, name: String) {
@@ -1036,7 +1031,16 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             at: DonateMode.monthly.rawValue,
             animated: false,
         )
-        picker.addTarget(self, action: #selector(didDonateModeChange), for: .valueChanged)
+        picker.addAction(
+            UIAction { [weak self] action in
+                guard let self, let segmentedControl = action.sender as? UISegmentedControl else { return }
+                guard let donateMode = DonateMode(rawValue: segmentedControl.selectedSegmentIndex) else {
+                    owsFail("[Donations] Unexpected donate mode")
+                }
+                self.didChangeDonateMode(donateMode)
+            },
+            for: .valueChanged,
+        )
         return picker
     }()
 

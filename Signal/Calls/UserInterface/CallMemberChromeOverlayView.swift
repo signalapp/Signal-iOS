@@ -282,13 +282,15 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         )
         button.autoMatch(.width, to: .height, of: button)
         button.accessibilityLabel = flipCameraButtonAccessibilityLabel
-        button.addTarget(self, action: #selector(didPressFlipCamera), for: .touchUpInside)
+        button.addAction(
+            UIAction { [weak self] _ in self?.didPressFlipCamera() },
+            for: .primaryActionTriggered,
+        )
         flipCameraCircleView.backgroundColor = .ows_blackAlpha70
         button.isHidden = true
         return button
     }()
 
-    @objc
     private func didPressFlipCamera() {
         guard let call else { return }
         if let isUsingFrontCamera = call.videoCaptureController.isUsingFrontCamera {

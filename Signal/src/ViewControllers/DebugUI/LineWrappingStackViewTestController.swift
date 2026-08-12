@@ -168,11 +168,13 @@ public class LineWrappingStackViewTestController: UIViewController {
         slider.minimumValue = 1
         slider.maximumValue = 5
         slider.value = 1
-        slider.addTarget(self, action: #selector(didChangeNumLabels), for: .valueChanged)
+        slider.addAction(
+            UIAction { [weak self] _ in self?.didChangeNumLabels() },
+            for: .valueChanged,
+        )
         return slider
     }()
 
-    @objc
     private func didChangeNumLabels() {
         numLabels = Int(round(numLabelsSlider.value))
         render()
@@ -183,11 +185,13 @@ public class LineWrappingStackViewTestController: UIViewController {
         slider.minimumValue = 0
         slider.maximumValue = 5
         slider.value = 1
-        slider.addTarget(self, action: #selector(didChangeNumLines), for: .valueChanged)
+        slider.addAction(
+            UIAction { [weak self] _ in self?.didChangeNumLines() },
+            for: .valueChanged,
+        )
         return slider
     }()
 
-    @objc
     private func didChangeNumLines() {
         numLines = Int(round(numLinesSlider.value))
         render()
@@ -198,11 +202,13 @@ public class LineWrappingStackViewTestController: UIViewController {
         slider.minimumValue = 1
         slider.maximumValue = Float(Self.loremIpsum.count)
         slider.value = 10
-        slider.addTarget(self, action: #selector(didChangeNumCharacters), for: .valueChanged)
+        slider.addAction(
+            UIAction { [weak self] _ in self?.didChangeNumCharacters() },
+            for: .valueChanged,
+        )
         return slider
     }()
 
-    @objc
     private func didChangeNumCharacters() {
         numCharacters = Int(round(numCharactersSlider.value))
         render()
@@ -213,11 +219,13 @@ public class LineWrappingStackViewTestController: UIViewController {
         slider.minimumValue = 0
         slider.maximumValue = Float(view.bounds.width - 24)
         slider.value = Float(view.bounds.width - 24)
-        slider.addTarget(self, action: #selector(didChangeLabelWidthConstraint), for: .valueChanged)
+        slider.addAction(
+            UIAction { [weak self] _ in self?.didChangeLabelWidthConstraint() },
+            for: .valueChanged,
+        )
         return slider
     }()
 
-    @objc
     private func didChangeLabelWidthConstraint() {
         labelWidthConstraint = CGFloat(labelWidthConstraintSlider.value)
         render()
@@ -226,11 +234,13 @@ public class LineWrappingStackViewTestController: UIViewController {
     private lazy var showLeadingIconSwitch: UISwitch = {
         let switchView = UISwitch()
         switchView.isOn = false
-        switchView.addTarget(self, action: #selector(didChangeLeadingIconHidden), for: .valueChanged)
+        switchView.addAction(
+            UIAction { [weak self] _ in self?.didChangeLeadingIconHidden() },
+            for: .valueChanged,
+        )
         return switchView
     }()
 
-    @objc
     private func didChangeLeadingIconHidden() {
         leadingIcon.isHidden = !showLeadingIconSwitch.isOn
         render()
@@ -239,11 +249,13 @@ public class LineWrappingStackViewTestController: UIViewController {
     private lazy var showTrailingIconSwitch: UISwitch = {
         let switchView = UISwitch()
         switchView.isOn = false
-        switchView.addTarget(self, action: #selector(didChangeTrailingIconHidden), for: .valueChanged)
+        switchView.addAction(
+            UIAction { [weak self] _ in self?.didChangeTrailingIconHidden() },
+            for: .valueChanged,
+        )
         return switchView
     }()
 
-    @objc
     private func didChangeTrailingIconHidden() {
         trailingIcon.isHidden = !showTrailingIconSwitch.isOn
         render()
@@ -252,11 +264,13 @@ public class LineWrappingStackViewTestController: UIViewController {
     private lazy var overflowLeadingIconSwitch: UISwitch = {
         let switchView = UISwitch()
         switchView.isOn = true
-        switchView.addTarget(self, action: #selector(didChangeLeadingIconOverflow), for: .valueChanged)
+        switchView.addAction(
+            UIAction { [weak self] _ in self?.didChangeLeadingIconOverflow() },
+            for: .valueChanged,
+        )
         return switchView
     }()
 
-    @objc
     private func didChangeLeadingIconOverflow() {
         if overflowLeadingIconSwitch.isOn {
             outerStackView.removeArrangedSubview(leadingIcon)
@@ -271,11 +285,13 @@ public class LineWrappingStackViewTestController: UIViewController {
     private lazy var overflowTrailingIconSwitch: UISwitch = {
         let switchView = UISwitch()
         switchView.isOn = true
-        switchView.addTarget(self, action: #selector(didChangeTrailingIconOverflow), for: .valueChanged)
+        switchView.addAction(
+            UIAction { [weak self] _ in self?.didChangeTrailingIconOverflow() },
+            for: .valueChanged,
+        )
         return switchView
     }()
 
-    @objc
     private func didChangeTrailingIconOverflow() {
         if overflowTrailingIconSwitch.isOn {
             outerStackView.removeArrangedSubview(trailingIcon)

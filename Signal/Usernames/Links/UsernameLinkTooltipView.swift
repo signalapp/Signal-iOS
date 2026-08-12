@@ -47,12 +47,13 @@ class UsernameLinkTooltipView: TooltipView {
 
     private lazy var xIconButton: UIButton = {
         let button = UIButton()
-
         button.setImage(Theme.iconImage(.buttonX), for: .normal)
         button.tintColor = .ows_gray45
         button.autoSetDimensions(to: .square(20))
-        button.addTarget(self, action: #selector(xButtonTapped), for: .touchDown)
-
+        button.addAction(
+            UIAction { [weak self] _ in self?.xButtonTapped() },
+            for: .primaryActionTriggered,
+        )
         return button
     }()
 
@@ -211,7 +212,6 @@ class UsernameLinkTooltipView: TooltipView {
 
     // MARK: - Events
 
-    @objc
     private func xButtonTapped() {
         onDismiss()
     }

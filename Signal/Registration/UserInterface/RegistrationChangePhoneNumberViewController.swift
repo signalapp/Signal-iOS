@@ -301,9 +301,10 @@ private class ChangePhoneNumberValueViews: NSObject {
         super.init()
 
         nationalNumberTextField.delegate = self
-        nationalNumberTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        nationalNumberTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidBegin)
-        nationalNumberTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidEnd)
+        let textFieldAction = UIAction { [weak self] _ in self?.textFieldDidChange() }
+        nationalNumberTextField.addAction(textFieldAction, for: .editingChanged)
+        nationalNumberTextField.addAction(textFieldAction, for: .editingDidBegin)
+        nationalNumberTextField.addAction(textFieldAction, for: .editingDidEnd)
 
         nationalNumber = phoneNumber?.nationalNumber ?? ""
     }
@@ -425,13 +426,12 @@ extension ChangePhoneNumberValueViews: UITextFieldDelegate {
             plusPrefixedCallingCode: plusPrefixedCallingCode,
         )
 
-        textFieldDidChange(textField)
+        textFieldDidChange()
 
         return result
     }
 
-    @objc
-    private func textFieldDidChange(_ textField: UITextField) {
+    private func textFieldDidChange() {
         applyPhoneNumberFormatting()
         delegate?.valueDidChange(valueViews: self)
     }

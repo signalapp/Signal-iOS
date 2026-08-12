@@ -141,26 +141,25 @@ class GroupAttributesViewController: OWSTableViewController2 {
 
     fileprivate func updateNavbar() {
         if helper.hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: CommonStrings.setButton,
-                style: .done,
-                target: self,
-                action: #selector(setButtonPressed),
-                accessibilityIdentifier: "set_button",
-            )
+            navigationItem.rightBarButtonItem = {
+                let button = UIBarButtonItem(
+                    title: CommonStrings.setButton,
+                    primaryAction: UIAction { [weak self] _ in self?.setButtonPressed() },
+                )
+                button.style = if #available(iOS 26, *) { .prominent } else { .done }
+                return button
+            }()
         } else {
             navigationItem.rightBarButtonItem = nil
         }
     }
 
-    @objc
     private func setButtonPressed() {
         updateGroupThreadAndDismiss()
     }
 
     // MARK: - Events
 
-    @objc
     private func didTapAvatarView() {
         helper.didTapAvatarView()
     }

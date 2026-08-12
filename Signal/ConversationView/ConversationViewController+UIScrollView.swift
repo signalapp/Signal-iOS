@@ -288,7 +288,10 @@ extension ConversationViewController {
     public func createConversationScrollButtons() {
         AssertIsOnMainThread()
 
-        scrollDownButton.addTarget(self, action: #selector(scrollDownButtonTapped), for: .touchUpInside)
+        scrollDownButton.addAction(
+            UIAction { [weak self] _ in self?.scrollDownButtonTapped() },
+            for: .primaryActionTriggered,
+        )
         scrollDownButton.isHidden = true
         scrollDownButton.alpha = 0
         view.addSubview(scrollDownButton)
@@ -297,7 +300,10 @@ extension ConversationViewController {
         scrollDownButton.autoPinEdge(.bottom, to: .top, of: bottomBarContainer, withOffset: -24)
         scrollDownButton.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 15)
 
-        scrollToNextMentionButton.addTarget(self, action: #selector(scrollToNextMentionButtonTapped), for: .touchUpInside)
+        scrollToNextMentionButton.addAction(
+            UIAction { [weak self] _ in self?.scrollToNextMentionButtonTapped() },
+            for: .primaryActionTriggered,
+        )
         scrollToNextMentionButton.isHidden = true
         scrollToNextMentionButton.alpha = 0
         view.addSubview(scrollToNextMentionButton)

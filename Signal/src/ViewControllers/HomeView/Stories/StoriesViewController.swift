@@ -264,14 +264,16 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
             },
         )
 
-        let cameraButton = UIBarButtonItem(image: Theme.iconImage(.buttonCamera), style: .plain, target: self, action: #selector(showCameraView))
+        let cameraButton = UIBarButtonItem(
+            image: Theme.iconImage(.buttonCamera),
+            primaryAction: UIAction { [weak self] _ in self?.showCameraView() },
+        )
         cameraButton.accessibilityLabel = OWSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")
         cameraButton.accessibilityHint = OWSLocalizedString("CAMERA_BUTTON_HINT", comment: "Accessibility hint describing what you can do with the camera button")
 
         navigationItem.rightBarButtonItems = [cameraButton]
     }
 
-    @objc
     private func showCameraView() {
         AssertIsOnMainThread()
 

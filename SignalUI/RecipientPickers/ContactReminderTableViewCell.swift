@@ -51,7 +51,10 @@ class ContactReminderTableViewCell: UITableViewCell {
         )
         button.setTitleColor(textColor, for: .normal)
         button.titleLabel!.font = .dynamicTypeSubheadline.semibold()
-        button.addTarget(self, action: #selector(didTapLearnMore), for: .touchUpInside)
+        button.addAction(
+            UIAction { [weak self] _ in self?.didTapLearnMore() },
+            for: .primaryActionTriggered,
+        )
         button.ows_contentEdgeInsets = UIEdgeInsets(top: 6, left: 0, bottom: 3, right: 0)
         button.setCompressionResistanceHigh()
         return button
@@ -67,7 +70,10 @@ class ContactReminderTableViewCell: UITableViewCell {
     private lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTemplateImageName("x-20", tintColor: textColor)
-        button.addTarget(self, action: #selector(didTapDismiss), for: .touchUpInside)
+        button.addAction(
+            UIAction { [weak self] _ in self?.didTapDismiss() },
+            for: .primaryActionTriggered,
+        )
         button.setCompressionResistanceHigh()
         return button
     }()
@@ -88,12 +94,10 @@ class ContactReminderTableViewCell: UITableViewCell {
         return stackView
     }()
 
-    @objc
     private func didTapLearnMore() {
         learnMoreAction()
     }
 
-    @objc
     private func didTapDismiss() {
         dismissAction()
     }

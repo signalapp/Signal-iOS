@@ -212,7 +212,13 @@ class ImageEditorViewController: OWSViewController, UIGestureRecognizerDelegate,
         slider.minimumValue = 0.2
         slider.maximumValue = 2
         slider.value = 1
-        slider.addTarget(self, action: #selector(handleSliderTouchEvents(slider:)), for: .allTouchEvents)
+        slider.addAction(
+            UIAction { [weak self] action in
+                guard let self, let slider = action.sender as? UISlider else { return }
+                self.handleSliderTouchEvents(slider)
+            },
+            for: .allTouchEvents,
+        )
         slider.addAction(
             UIAction { [weak self] action in
                 guard let self, let slider = action.sender as? UISlider else { return }

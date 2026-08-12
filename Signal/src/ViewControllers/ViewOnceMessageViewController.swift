@@ -305,7 +305,6 @@ class ViewOnceMessageViewController: OWSViewController {
         dismissIfRemoved()
     }
 
-    @objc
     private func dismissButtonPressed() {
         dismiss(animated: true)
     }

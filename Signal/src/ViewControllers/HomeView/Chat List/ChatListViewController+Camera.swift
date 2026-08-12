@@ -8,7 +8,6 @@ import SignalUI
 
 extension ChatListViewController: CameraFirstCaptureDelegate {
 
-    @objc
     func showCameraView() {
         presentCameraView()
     }

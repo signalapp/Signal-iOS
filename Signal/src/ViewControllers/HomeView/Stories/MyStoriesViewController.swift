@@ -65,11 +65,9 @@ class MyStoriesViewController: OWSViewController, FailedStorySendDisplayControll
 
         reloadStories()
 
-        navigationItem.rightBarButtonItem = .init(
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: OWSLocalizedString("STORY_PRIVACY_SETTINGS", comment: "Button to access the story privacy settings menu"),
-            style: .plain,
-            target: self,
-            action: #selector(showPrivacySettings),
+            primaryAction: UIAction { [weak self] _ in self?.showPrivacySettings() },
         )
     }
 
@@ -78,7 +76,6 @@ class MyStoriesViewController: OWSViewController, FailedStorySendDisplayControll
         updateTableViewPaddingIfNeeded()
     }
 
-    @objc
     private func showPrivacySettings() {
         let vc = StoryPrivacySettingsViewController()
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)

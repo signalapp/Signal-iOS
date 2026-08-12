@@ -33,11 +33,9 @@ public class NewGroupMembersViewController: BaseGroupMemberViewController {
         )
         let rightBarButtonItem = UIBarButtonItem(
             title: buttonTitle,
-            style: .plain,
-            target: self,
-            action: #selector(nextButtonPressed),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "next"),
+            primaryAction: UIAction { [weak self] _ in self?.nextButtonPressed() },
         )
+        rightBarButtonItem.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "next")
         rightBarButtonItem.imageInsets = UIEdgeInsets(top: 0, left: -1, bottom: 0, right: 10)
         rightBarButtonItem.accessibilityLabel
             = OWSLocalizedString("FINISH_GROUP_CREATION_LABEL", comment: "Accessibility label for finishing new group")
@@ -50,9 +48,6 @@ public class NewGroupMembersViewController: BaseGroupMemberViewController {
         }
     }
 
-    // MARK: - Actions
-
-    @objc
     private func nextButtonPressed() {
         AssertIsOnMainThread()
 

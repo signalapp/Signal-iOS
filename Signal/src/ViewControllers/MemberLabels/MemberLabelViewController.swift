@@ -66,7 +66,10 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
 
         view.backgroundColor = UIColor.Signal.groupedBackground
         addNavigationTitleView(groupName: groupModel.groupNameOrDefault)
-        navigationItem.rightBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            systemItem: .done,
+            primaryAction: UIAction { [weak self] _ in self?.didTapDone() },
+        )
 
         navigationItem.leftBarButtonItem = .cancelButton(
             dismissingFrom: self,
@@ -207,14 +210,23 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         }
         addEmojiButton.setContentHuggingPriority(.required, for: .horizontal)
         addEmojiButton.setContentCompressionResistancePriority(.required, for: .horizontal)
-        addEmojiButton.addTarget(self, action: #selector(didTapEmojiPicker), for: .touchUpInside)
+        addEmojiButton.addAction(
+            UIAction { [weak self] _ in self?.didTapEmojiPicker() },
+            for: .primaryActionTriggered,
+        )
 
         textField.placeholder = OWSLocalizedString(
             "MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT",
             comment: "Placeholder text in text field where user can edit their member label.",
         )
         textField.font = .dynamicTypeBodyClamped
-        textField.addTarget(self, action: #selector(textDidChange(_:)), for: .editingChanged)
+        textField.addAction(
+            UIAction { [weak self] action in
+                guard let self, let textField = action.sender as? UITextField else { return }
+                self.textDidChange(textField)
+            },
+            for: .editingChanged,
+        )
         textField.delegate = self
 
         characterCountLabel.isHidden = true
@@ -229,7 +241,10 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
 
         clearButton.setImage(UIImage(named: "x-circle-fill-compact"), for: .normal)
         clearButton.tintColor = UIColor.Signal.tertiaryLabel
-        clearButton.addTarget(self, action: #selector(clearButtonTapped), for: .touchUpInside)
+        clearButton.addAction(
+            UIAction { [weak self] _ in self?.clearButtonTapped() },
+            for: .primaryActionTriggered,
+        )
         clearButton.autoSetDimensions(to: .square(16))
         if initialMemberLabel == nil, initialEmoji == nil {
             clearButton.isHidden = true
@@ -348,7 +363,6 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         return previewContainer
     }
 
-    @objc
     private func clearButtonTapped() {
         textField.text = ""
         updatedMemberLabel = nil
@@ -361,7 +375,6 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         reloadDoneButtonStatus()
     }
 
-    @objc
     private func didTapDone() {
         Logger.info("")
         var memberLabel: MemberLabel?
@@ -375,7 +388,6 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         })
     }
 
-    @objc
     private func didTapEmojiPicker() {
         let picker = EmojiPickerSheet(message: nil, allowReactionConfiguration: false) { [weak self] emoji in
             guard let emojiString = emoji?.rawValue else {
@@ -438,7 +450,6 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         navigationItem.rightBarButtonItem?.isEnabled = true
     }
 
-    @objc
     func textDidChange(_ textField: UITextField) {
         let filteredText = textField.text?.filterStringForDisplay()
         let collapsedFilteredText = filteredText?.replacingOccurrences(

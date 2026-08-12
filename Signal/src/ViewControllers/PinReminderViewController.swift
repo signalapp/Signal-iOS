@@ -269,7 +269,10 @@ public class PinReminderViewController: OWSViewController {
         ])
 
         // Every time the text changes, try and verify the pin
-        pinTextField.addTarget(self, action: #selector(verifySilently), for: .editingChanged)
+        pinTextField.addAction(
+            UIAction { [weak self] _ in self?.verifySilently() },
+            for: .editingChanged,
+        )
 
         updateValidationWarnings()
     }
@@ -371,7 +374,6 @@ public class PinReminderViewController: OWSViewController {
         verifyAndDismissOnSuccess(pinTextField.text)
     }
 
-    @objc
     private func verifySilently() {
         verifyAndDismissOnSuccess(pinTextField.text, silent: true)
     }

@@ -23,7 +23,6 @@ private final class OnDismissHandler: SheetDismissalDelegate {
     }
 }
 
-@objc
 open class ActionSheetController: OWSViewController {
     private enum Message {
         case text(String)
@@ -155,7 +154,6 @@ open class ActionSheetController: OWSViewController {
         return actions.first(where: { $0.style == .cancel })
     }
 
-    @objc
     public func addAction(_ action: ActionSheetAction) {
         if action.style == .cancel, firstCancelAction != nil {
             owsFailDebug("Only one cancel button permitted per action sheet.")
@@ -461,16 +459,17 @@ public class ActionSheetAction: NSObject {
             config.contentInsets = .init(margin: 14)
             self.configuration = config
 
-            addTarget(self, action: #selector(didTouchUpInside), for: .touchUpInside)
+            addAction(
+                UIAction { [weak self] _ in
+                    guard let buttonAction = self?.releaseAction else { return }
+                    buttonAction()
+                },
+                for: .primaryActionTriggered,
+            )
         }
 
         required init?(coder aDecoder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
-        }
-
-        @objc
-        private func didTouchUpInside() {
-            releaseAction?()
         }
     }
 }

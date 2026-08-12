@@ -150,7 +150,10 @@ class GroupAttributesEditorHelper: NSObject {
         nameTextField.backgroundColor = .clear
         nameTextField.textColor = Theme.primaryTextColor
         nameTextField.delegate = self
-        nameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        nameTextField.addAction(
+            UIAction { [weak self] _ in self?.textFieldDidChange() },
+            for: .editingChanged,
+        )
         nameTextField.placeholder = OWSLocalizedString(
             "GROUP_NAME_PLACEHOLDER",
             comment: "Placeholder text for 'group name' field.",
@@ -257,8 +260,7 @@ class GroupAttributesEditorHelper: NSObject {
 
     // MARK: - Events
 
-    @objc
-    private func textFieldDidChange(_ textField: UITextField) {
+    private func textFieldDidChange() {
         delegate?.groupAttributesEditorContentsDidChange()
     }
 
@@ -369,7 +371,7 @@ extension GroupAttributesEditorHelper: UITextFieldDelegate {
             replacementString.glyphCount > GroupManager.maxGroupNameGlyphCount,
             textField.text?.isEmpty == false
         {
-            textFieldDidChange(textField)
+            textFieldDidChange()
         }
 
         return isValidChange

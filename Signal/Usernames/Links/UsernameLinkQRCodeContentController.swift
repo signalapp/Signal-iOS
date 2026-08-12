@@ -37,7 +37,10 @@ class UsernameLinkQRCodeContentController: OWSViewController, OWSNavigationChild
 
         control.setWidth(100, forSegmentAt: 0)
         control.setWidth(100, forSegmentAt: 1)
-        control.addTarget(self, action: #selector(configureForSelected), for: .valueChanged)
+        control.addAction(
+            UIAction { [weak self] _ in self?.configureForSelected() },
+            for: .valueChanged,
+        )
 
         return control
     }()
@@ -110,7 +113,6 @@ class UsernameLinkQRCodeContentController: OWSViewController, OWSNavigationChild
 
     // MARK: Events
 
-    @objc
     private func configureForSelected() {
         guard let selectedMode = Mode(rawValue: contentSegmentedControl.selectedSegmentIndex) else {
             owsFail("Unexpected selected segment. How did this happen?")

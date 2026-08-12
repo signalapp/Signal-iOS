@@ -51,7 +51,6 @@ public class GroupLinkViewController: OWSTableViewController2 {
         do {
             let section = OWSTableSection()
 
-            let switchAction = #selector(didToggleGroupLinkEnabled(_:))
             section.add(.switch(
                 withText: OWSLocalizedString(
                     "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH",
@@ -66,7 +65,7 @@ public class GroupLinkViewController: OWSTableViewController2 {
                     }
                 },
                 target: self,
-                selector: switchAction,
+                selector: #selector(didToggleGroupLinkEnabled(_:)),
             ))
 
             if case .enabled(let inviteLink, requireAdminApproval: _) = inviteLinkConfiguration {

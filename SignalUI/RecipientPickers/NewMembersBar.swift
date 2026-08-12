@@ -194,7 +194,10 @@ private class NewMemberCell: UICollectionViewCell {
         let removeButton = UIButton()
         removeButton.setImage(UIImage(named: "x-compact"), for: .normal)
         removeButton.tintColor = .Signal.label
-        removeButton.addTarget(self, action: #selector(removeButtonWasPressed), for: .touchUpInside)
+        removeButton.addAction(
+            UIAction { [weak self] _ in self?.removeButtonWasPressed() },
+            for: .primaryActionTriggered,
+        )
 
         contentView.addSubview(avatarView)
         avatarView.autoPinEdge(toSuperviewEdge: .leading)
@@ -245,7 +248,6 @@ private class NewMemberCell: UICollectionViewCell {
         delegate = nil
     }
 
-    @objc
     private func removeButtonWasPressed() {
         guard let recipient = member?.recipient else {
             owsFailDebug("Missing recipient.")

@@ -126,8 +126,14 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         ],
     )
 
-    private lazy var audioAnswerIncomingButton = createButton(iconName: "phone-fill-28", action: #selector(didPressAnswerCall))
-    private lazy var audioDeclineIncomingButton = createButton(iconName: "phone-down-fill-28", action: #selector(didPressDeclineCall))
+    private lazy var audioAnswerIncomingButton = createButton(
+        iconName: "phone-fill-28",
+        action: UIAction { [weak self] _ in self?.didPressAnswerCall(audioOnly: false) },
+    )
+    private lazy var audioDeclineIncomingButton = createButton(
+        iconName: "phone-down-fill-28",
+        action: UIAction { [weak self] _ in self?.didPressDeclineCall() },
+    )
 
     // MARK: - Incoming Video Call Controls
 
@@ -148,9 +154,18 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         ],
     )
 
-    private lazy var videoAnswerIncomingButton = createButton(iconName: "video-fill-28", action: #selector(didPressAnswerCall))
-    private lazy var videoAnswerIncomingAudioOnlyButton = createButton(iconName: "video-slash-fill-28", action: #selector(didPressAnswerCall))
-    private lazy var videoDeclineIncomingButton = createButton(iconName: "phone-down-fill-28", action: #selector(didPressDeclineCall))
+    private lazy var videoAnswerIncomingButton = createButton(
+        iconName: "video-fill-28",
+        action: UIAction { [weak self] _ in self?.didPressAnswerCall(audioOnly: false) },
+    )
+    private lazy var videoAnswerIncomingAudioOnlyButton = createButton(
+        iconName: "video-slash-fill-28",
+        action: UIAction { [weak self] _ in self?.didPressAnswerCall(audioOnly: true) },
+    )
+    private lazy var videoDeclineIncomingButton = createButton(
+        iconName: "phone-down-fill-28",
+        action: UIAction { [weak self] _ in self?.didPressDeclineCall() },
+    )
 
     // MARK: - Video Views
 
@@ -377,7 +392,10 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         backButton.setImage(UIImage(imageLiteralResourceName: "NavBarBack"), for: .normal)
         backButton.tintColor = Theme.darkThemeNavbarIconColor
         backButton.autoSetDimensions(to: CGSize(square: 40))
-        backButton.addTarget(self, action: #selector(didTapLeaveCall(sender:)), for: .touchUpInside)
+        backButton.addAction(
+            UIAction { [weak self] _ in self?.didTapLeaveCall() },
+            for: .primaryActionTriggered,
+        )
         topGradientView.addSubview(backButton)
 
         // marquee config
@@ -500,9 +518,9 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         videoDeclineIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoDeclineIncomingButton")
     }
 
-    private func createButton(iconName: String, action: Selector) -> CallButton {
+    private func createButton(iconName: String, action: UIAction) -> CallButton {
         let button = CallButton(iconName: iconName)
-        button.addTarget(self, action: action, for: .touchUpInside)
+        button.addAction(action, for: .primaryActionTriggered)
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalLow()
         return button
@@ -1049,11 +1067,10 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
     }
 
-    @objc
-    private func didPressAnswerCall(sender: UIButton) {
+    private func didPressAnswerCall(audioOnly: Bool) {
         Logger.info("")
 
-        if sender == videoAnswerIncomingAudioOnlyButton {
+        if audioOnly {
             // Answer without video, set state before answering.
             callService.callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: false)
         }
@@ -1069,8 +1086,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     /**
      * Denies an incoming not-yet-connected call, Do not confuse with `didPressHangup`.
      */
-    @objc
-    private func didPressDeclineCall(sender: UIButton) {
+    private func didPressDeclineCall() {
         Logger.info("")
 
         callService.callUIAdapter.localHangupCall(call)
@@ -1078,8 +1094,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         dismissIfPossible(shouldDelay: false)
     }
 
-    @objc
-    private func didTapLeaveCall(sender: UIButton) {
+    private func didTapLeaveCall() {
         _minimize()
     }
 

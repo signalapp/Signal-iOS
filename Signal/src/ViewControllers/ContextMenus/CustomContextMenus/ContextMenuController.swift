@@ -423,7 +423,10 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
 
         dismissButton.isAccessibilityElement = true
         dismissButton.accessibilityLabel = OWSLocalizedString("DISMISS_CONTEXT_MENU", comment: "Dismiss context menu accessibility label")
-        dismissButton.addTarget(self, action: #selector(dismissButtonTapped(sender:)), for: .touchUpInside)
+        dismissButton.addAction(
+            UIAction { [weak self] _ in self?.dismissButtonTapped() },
+            for: .primaryActionTriggered,
+        )
         contextMenuView.blurView = blurView
         contextMenuView.dismissButton = dismissButton
         contextMenuView.previewView = contextMenuPreview.previewView
@@ -449,8 +452,7 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
         }
     }
 
-    @objc
-    private func dismissButtonTapped(sender: UIButton) {
+    private func dismissButtonTapped() {
         delegate?.contextMenuControllerRequestsDismissal(self)
     }
 

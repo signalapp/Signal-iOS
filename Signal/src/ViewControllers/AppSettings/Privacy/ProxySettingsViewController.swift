@@ -61,7 +61,10 @@ class ProxySettingsViewController: OWSTableViewController2 {
         textField.textContentType = .URL
         textField.keyboardType = .URL
         textField.delegate = self
-        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        textField.addAction(
+            UIAction { [weak self] _ in self?.textFieldDidChange() },
+            for: .editingChanged,
+        )
 
         return textField
     }()
@@ -151,7 +154,6 @@ class ProxySettingsViewController: OWSTableViewController2 {
         updateNavigationBar()
     }
 
-    @objc
     private func textFieldDidChange() {
         updateNavigationBar()
     }

@@ -11,7 +11,6 @@ import Foundation
 import SignalServiceKit
 public import SignalUI
 
-@objc
 public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .paymentAttachment }

@@ -28,8 +28,10 @@ class LocalFileBackupOnboardingIntroViewController: OWSViewController {
         contentStack.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(contentStack)
 
-        let continueButton = UIButton(configuration: .largePrimary(title: CommonStrings.continueButton))
-        continueButton.addTarget(self, action: #selector(didTapContinue), for: .touchUpInside)
+        let continueButton = UIButton(
+            configuration: .largePrimary(title: CommonStrings.continueButton),
+            primaryAction: UIAction { [weak self] _ in self?.didTapContinue() },
+        )
 
         let footerStack = UIStackView.verticalButtonStack(buttons: [continueButton])
         footerStack.translatesAutoresizingMaskIntoConstraints = false
@@ -150,9 +152,6 @@ class LocalFileBackupOnboardingIntroViewController: OWSViewController {
         return row
     }
 
-    // MARK: - Actions
-
-    @objc
     private func didTapContinue() {
         onContinue(self)
     }

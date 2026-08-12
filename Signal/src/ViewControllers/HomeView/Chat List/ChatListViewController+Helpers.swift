@@ -145,10 +145,7 @@ public extension ChatListViewController {
         if offerMultiSelectMode {
             chatList.navigationItem.rightBarButtonItem = UIBarButtonItem(
                 title: CommonStrings.selectButton,
-                style: .plain,
-                target: chatList,
-                action: #selector(chatList.switchMultiSelectState),
-                accessibilityIdentifier: "select",
+                primaryAction: UIAction { [unowned chatList] _ in chatList.switchMultiSelectState() },
             )
         }
         show(chatList, sender: self)

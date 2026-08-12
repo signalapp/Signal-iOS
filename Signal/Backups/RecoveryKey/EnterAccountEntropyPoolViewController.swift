@@ -55,12 +55,14 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
         screenLockUI.sensitiveContentDidLoad(inViewController: self)
 
         view.backgroundColor = colorConfig.background
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: CommonStrings.nextButton,
-            style: .done,
-            target: self,
-            action: #selector(didTapNext),
-        )
+        navigationItem.rightBarButtonItem = {
+            let button = UIBarButtonItem(
+                title: CommonStrings.nextButton,
+                primaryAction: UIAction { [weak self] _ in self?.didTapNext() },
+            )
+            button.style = if #available(iOS 26, *) { .prominent } else { .done }
+            return button
+        }()
 
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
@@ -193,7 +195,6 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
         }
     }
 
-    @objc
     private func didTapNext() {
         switch validateAEPText() {
         case .notFullyEntered, .malformedAEP, .wellFormedButMismatched:

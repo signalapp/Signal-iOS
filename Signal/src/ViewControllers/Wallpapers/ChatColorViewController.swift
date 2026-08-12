@@ -662,7 +662,6 @@ private class ChatColorTooltip: TooltipView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc
     class func present(
         fromView: UIView,
         widthReferenceView: UIView,

@@ -229,7 +229,10 @@ private extension UsernameLinkQRCodeColorPickerViewController {
             autoPinToSquareAspectRatio()
             autoSetDimension(.width, toSize: size)
 
-            addTarget(self, action: #selector(didTap), for: .touchUpInside)
+            addAction(
+                UIAction { [weak self] _ in self?.didTap() },
+                for: .primaryActionTriggered,
+            )
         }
 
         required init?(coder: NSCoder) { owsFail("Not implemented!") }
@@ -257,7 +260,6 @@ private extension UsernameLinkQRCodeColorPickerViewController {
             setImage(image, for: .normal)
         }
 
-        @objc
         private func didTap() {
             onTap()
         }

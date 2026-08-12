@@ -71,7 +71,10 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         }
 
         segmentedControl.selectedSegmentIndex = 0
-        segmentedControl.addTarget(self, action: #selector(segmentedControlDidChange), for: .valueChanged)
+        segmentedControl.addAction(
+            UIAction { [weak self] _ in self?.segmentedControlDidChange() },
+            for: .valueChanged,
+        )
     }
 
     private func updateSegmentedControl() {
@@ -111,8 +114,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         return title
     }
 
-    @objc
-    private func segmentedControlDidChange(_ sender: UISwitch) {
+    private func segmentedControlDidChange() {
         updateTableContents()
     }
 

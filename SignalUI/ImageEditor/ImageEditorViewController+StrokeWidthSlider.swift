@@ -78,8 +78,7 @@ extension ImageEditorViewController {
         }
     }
 
-    @objc
-    func handleSliderTouchEvents(slider: UISlider) {
+    func handleSliderTouchEvents(_ slider: UISlider) {
         guard slider.isTracking != strokeWidthSliderRevealed else { return }
 
         setStrokeWidthSlider(revealed: slider.isTracking)

@@ -7,7 +7,6 @@ import SignalRingRTC
 import SignalServiceKit
 import SignalUI
 
-@objc
 protocol CallControlsDelegate: AnyObject {
     func didPressRing()
     func didPressJoin()
@@ -742,12 +741,10 @@ extension CallControlsViewModel {
         }
     }
 
-    @objc
     func didPressJoin() {
         delegate?.didPressJoin()
     }
 
-    @objc
     func didPressMore() {
         delegate?.didPressMore()
     }

@@ -71,7 +71,6 @@ class SetWallpaperViewController: OWSTableViewController2 {
         tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .none)
     }
 
-    @objc
     private func updateTableContents() {
         let contents = OWSTableContents()
 

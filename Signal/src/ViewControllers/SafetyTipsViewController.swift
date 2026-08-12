@@ -413,7 +413,10 @@ public class MoreSafetyTipsViewController: InteractiveSheetViewController, UIScr
         let pageControl = UIPageControl()
         pageControl.numberOfPages = MoreSafetyTips.allCases.count
         pageControl.currentPage = 0
-        pageControl.addTarget(self, action: #selector(self.changePage), for: .valueChanged)
+        pageControl.addAction(
+            UIAction { [weak self] _ in self?.changePage() },
+            for: .valueChanged,
+        )
         return pageControl
     }()
 
@@ -426,8 +429,10 @@ public class MoreSafetyTipsViewController: InteractiveSheetViewController, UIScr
         config.cornerStyle = .capsule
         previousButton.accessibilityLabel = CommonStrings.backButton
         previousButton.configuration = config
-        previousButton.addTarget(self, action: #selector(didTapPrevious), for: .touchUpInside)
-
+        previousButton.addAction(
+            UIAction { [weak self] _ in self?.didTapPrevious() },
+            for: .primaryActionTriggered,
+        )
         return previousButton
 
     }()
@@ -441,8 +446,10 @@ public class MoreSafetyTipsViewController: InteractiveSheetViewController, UIScr
         config.cornerStyle = .capsule
         nextButton.configuration = config
         nextButton.accessibilityLabel = CommonStrings.nextButton
-        nextButton.addTarget(self, action: #selector(didTapNext), for: .touchUpInside)
-
+        nextButton.addAction(
+            UIAction { [weak self] _ in self?.didTapNext() },
+            for: .primaryActionTriggered,
+        )
         return nextButton
     }()
 
@@ -522,7 +529,6 @@ public class MoreSafetyTipsViewController: InteractiveSheetViewController, UIScr
 
     // MARK: - Actions
 
-    @objc
     private func changePage() {
         let x = CGFloat(pageControl.currentPage) * tipScrollView.frame.size.width
         tipScrollView.setContentOffset(CGPoint(x: x, y: 0), animated: true)
@@ -534,13 +540,11 @@ public class MoreSafetyTipsViewController: InteractiveSheetViewController, UIScr
         }
     }
 
-    @objc
     private func didTapPrevious() {
         pageControl.currentPage = max(pageControl.currentPage - 1, 0)
         changePage()
     }
 
-    @objc
     private func didTapNext() {
         pageControl.currentPage = min(pageControl.currentPage + 1, pageControl.numberOfPages)
         changePage()

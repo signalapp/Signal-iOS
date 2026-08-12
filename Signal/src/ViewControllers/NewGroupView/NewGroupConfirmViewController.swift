@@ -56,16 +56,17 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
             comment: "The title for the 'name new group' view.",
         )
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: OWSLocalizedString(
-                "NEW_GROUP_CREATE_BUTTON",
-                comment: "The title for the 'create group' button.",
-            ),
-            style: .plain,
-            target: self,
-            action: #selector(createNewGroup),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "create"),
-        )
+        navigationItem.rightBarButtonItem = {
+            let button = UIBarButtonItem(
+                title: OWSLocalizedString(
+                    "NEW_GROUP_CREATE_BUTTON",
+                    comment: "The title for the 'create group' button.",
+                ),
+                primaryAction: UIAction { [weak self] _ in self?.createNewGroup() },
+            )
+            button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "create")
+            return button
+        }()
 
         // First section.
 
@@ -210,7 +211,6 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
 
     // MARK: - Actions
 
-    @objc
     private func createNewGroup() {
         AssertIsOnMainThread()
 

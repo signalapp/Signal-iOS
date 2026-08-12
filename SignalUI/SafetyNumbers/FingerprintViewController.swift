@@ -366,7 +366,10 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
                 UIImage(named: "share"),
                 tintColor: .white,
             )
-            button.addTarget(self, action: #selector(didTapShare), for: .touchUpInside)
+            button.addAction(
+                UIAction { [weak self] _ in self?.didTapShare() },
+                for: .primaryActionTriggered,
+            )
             button.accessibilityLabel = CommonStrings.shareButton
             return button
         }()
@@ -458,7 +461,6 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             controller?.didTapToScan()
         }
 
-        @objc
         func didTapShare() {
             controller?.shareFingerprint(from: shareButton)
         }

@@ -101,7 +101,6 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         }
     }
 
-    @objc
     public func didReceiveVanillaPreAuthChallengeToken(_ challenge: String) {
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
             AssertIsOnMainThread()
@@ -111,7 +110,6 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     }
 
     // Vanilla push token is obtained from the system via AppDelegate
-    @objc
     public func didReceiveVanillaPushToken(_ tokenData: Data) {
         guard let vanillaTokenFuture = self.vanillaTokenFuture else {
             Logger.warn("System volunteered a push token even though we didn't request one. Syncing.")
@@ -130,7 +128,6 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     }
 
     // Vanilla push token is obtained from the system via AppDelegate
-    @objc
     public func didFailToReceiveVanillaPushToken(error: Error) {
         guard let vanillaTokenFuture = self.vanillaTokenFuture else {
             owsFailDebug("promise completion in \(#function) unexpectedly nil")

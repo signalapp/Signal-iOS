@@ -435,7 +435,6 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
         )
     }
 
-    @objc
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         presentSupportCompletion?()
         presentSupportCompletion = nil

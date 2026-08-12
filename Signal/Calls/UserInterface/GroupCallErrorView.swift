@@ -65,7 +65,10 @@ class GroupCallErrorView: UIView {
         button.titleLabel?.font = UIFont.dynamicTypeSubheadline.semibold()
         button.setTitle(buttonLabel, for: .normal)
 
-        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
+        button.addAction(
+            UIAction { [weak self] _ in self?.didTapButton() },
+            for: .primaryActionTriggered,
+        )
         return button
     }()
 
@@ -149,7 +152,6 @@ class GroupCallErrorView: UIView {
         self.forceCompactAppearance = isCallMinimized
     }
 
-    @objc
     private func didTapButton() {
         userTapAction?(self)
     }

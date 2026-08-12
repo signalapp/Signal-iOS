@@ -43,34 +43,14 @@ open class OWSTextField: UITextField {
         self.clearButtonMode = clearButtonMode
         self.delegate = delegate
         if let editingChanged {
-            self.editingChangedAction = editingChanged
-            self.addTarget(self, action: #selector(self.editingChanged), for: .editingChanged)
+            self.addAction(UIAction { _ in editingChanged() }, for: .editingChanged)
         }
         if let returnPressed {
-            self.returnPressedAction = returnPressed
-            self.addTarget(self, action: #selector(self.returnPressed), for: .editingDidEndOnExit)
+            self.addAction(UIAction { _ in returnPressed() }, for: .editingDidEndOnExit)
         }
     }
 
     private func applyTheme() {
         keyboardAppearance = Theme.keyboardAppearance
-    }
-
-    // MARK: Editing changed
-
-    private var editingChangedAction: (() -> Void)?
-
-    @objc
-    private func editingChanged() {
-        self.editingChangedAction?()
-    }
-
-    // MARK: Return pressed
-
-    private var returnPressedAction: (() -> Void)?
-
-    @objc
-    private func returnPressed() {
-        self.returnPressedAction?()
     }
 }

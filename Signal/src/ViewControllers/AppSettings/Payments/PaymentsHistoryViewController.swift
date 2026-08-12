@@ -38,9 +38,18 @@ class PaymentsHistoryViewController: OWSTableViewController2, PaymentsHistoryDat
             animated: false,
         )
         control.selectedSegmentIndex = recordType.rawValue
-        control.addTarget(
-            self,
-            action: #selector(modeControlDidChange),
+        control.addAction(
+            UIAction { [weak self] action in
+                guard let self, let segmentedControl = action.sender as? UISegmentedControl else { return }
+                guard
+                    let recordType = PaymentsHistoryDataSource.RecordType(rawValue: segmentedControl.selectedSegmentIndex)
+                else {
+                    owsFailDebug("Couldn't update recordType.")
+                    return
+                }
+                self.modeControlDidChange(recordType: recordType)
+            }
+            ,
             for: .valueChanged,
         )
         return control
@@ -116,12 +125,7 @@ class PaymentsHistoryViewController: OWSTableViewController2, PaymentsHistoryDat
         navigationController?.pushViewController(view, animated: true)
     }
 
-    @objc
-    private func modeControlDidChange(_ sender: UISegmentedControl) {
-        guard let recordType = PaymentsHistoryDataSource.RecordType(rawValue: sender.selectedSegmentIndex) else {
-            owsFailDebug("Couldn't update recordType.")
-            return
-        }
+    private func modeControlDidChange(recordType: PaymentsHistoryDataSource.RecordType) {
         self.recordType = recordType
     }
 

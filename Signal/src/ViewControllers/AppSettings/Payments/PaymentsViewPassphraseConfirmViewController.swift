@@ -198,7 +198,10 @@ class PaymentsViewPassphraseConfirmViewController: OWSViewController, UITextFiel
         textField.smartDashesType = .no
         textField.returnKeyType = .done
         textField.accessibilityIdentifier = "payments.passphrase.confirm.\(wordIndex)"
-        textField.addTarget(self, action: #selector(textfieldDidChange), for: .editingChanged)
+        textField.addAction(
+            UIAction { [weak self] _ in self?.textFieldDidChange() },
+            for: .editingChanged,
+        )
 
         let placeholderFormat = OWSLocalizedString(
             "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT",
@@ -277,8 +280,7 @@ class PaymentsViewPassphraseConfirmViewController: OWSViewController, UITextFiel
         navigationController?.popViewController(animated: true)
     }
 
-    @objc
-    private func textfieldDidChange() {
+    private func textFieldDidChange() {
         updateCorrectness()
     }
 

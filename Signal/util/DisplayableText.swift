@@ -49,7 +49,6 @@ public class DisplayableText: NSObject {
         return fullContent.naturalAlignment
     }
 
-    @objc
     public var displayTextNaturalAlignment: NSTextAlignment {
         return truncatedContent?.naturalAlignment ?? fullContent.naturalAlignment
     }

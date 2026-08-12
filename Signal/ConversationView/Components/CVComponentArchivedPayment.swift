@@ -7,7 +7,6 @@ import Foundation
 import SignalServiceKit
 public import SignalUI
 
-@objc
 public class CVComponentArchivedPayment: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .archivedPaymentAttachment }

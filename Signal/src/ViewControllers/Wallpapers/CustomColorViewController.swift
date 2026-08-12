@@ -159,9 +159,11 @@ class CustomColorViewController: OWSTableViewController2 {
         case .gradientColor1, .gradientColor2:
             modeControl.selectedSegmentIndex = EditMode.gradientColor1.rawValue
         }
-        modeControl.addTarget(
-            self,
-            action: #selector(modeControlDidChange),
+        modeControl.addAction(
+            UIAction { [weak self] action in
+                guard let self, let segmentedControl = action.sender as? UISegmentedControl else { return }
+                self.modeControlDidChange(segmentedControl)
+            },
             for: .valueChanged,
         )
     }
@@ -384,7 +386,6 @@ class CustomColorViewController: OWSTableViewController2 {
 
     // MARK: - Events
 
-    @objc
     private func modeControlDidChange(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case EditMode.solidColor.rawValue:

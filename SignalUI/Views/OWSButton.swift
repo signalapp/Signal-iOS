@@ -24,7 +24,7 @@ open class OWSButton: UIButton {
         super.init(frame: .zero)
 
         self.block = block
-        addTarget(self, action: #selector(didTap), for: .touchUpInside)
+        addAction(UIAction { [weak self] _ in self?.block() }, for: .primaryActionTriggered)
     }
 
     public init(
@@ -37,7 +37,7 @@ open class OWSButton: UIButton {
         super.init(frame: .zero)
 
         self.block = block
-        addTarget(self, action: #selector(didTap), for: .touchUpInside)
+        addAction(UIAction { [weak self] _ in self?.block() }, for: .primaryActionTriggered)
         setTitle(title, for: .normal)
 
         if let tintColor {
@@ -55,7 +55,7 @@ open class OWSButton: UIButton {
         super.init(frame: .zero)
 
         self.block = block
-        addTarget(self, action: #selector(didTap), for: .touchUpInside)
+        addAction(UIAction { [weak self] _ in self?.block() }, for: .primaryActionTriggered)
 
         setImage(imageName: imageName)
         self.tintColor = tintColor
@@ -92,11 +92,6 @@ open class OWSButton: UIButton {
     }
 
     // MARK: -
-
-    @objc
-    func didTap() {
-        block()
-    }
 
     private func updateAlpha() {
         let isDimmed = (dimsWhenHighlighted && isHighlighted)

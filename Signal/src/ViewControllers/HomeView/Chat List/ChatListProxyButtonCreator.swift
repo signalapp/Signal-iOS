@@ -73,14 +73,11 @@ final class ChatListProxyButtonCreator: NSObject {
         }
         let button = UIBarButtonItem(
             image: proxyStatusImage,
-            style: .plain,
-            target: self,
-            action: #selector(didTapButton),
+            primaryAction: UIAction { [weak self] _ in self?.didTapButton() },
         )
         button.tintColor = tintColor
         return button
     }
 
-    @objc
     private func didTapButton() { delegate?.didTapButton(self) }
 }

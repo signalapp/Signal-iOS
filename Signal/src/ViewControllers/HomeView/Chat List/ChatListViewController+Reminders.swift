@@ -134,7 +134,6 @@ public class CLVReminderViews {
         ])
     }
 
-    @objc
     private func didTapDeregisteredView() {
         AssertIsOnMainThread()
 
@@ -148,7 +147,6 @@ public class CLVReminderViews {
         )
     }
 
-    @objc
     private func didTapUsernameCorruptedReminderView() {
         guard let chatListViewController else {
             return
@@ -169,7 +167,6 @@ public class CLVReminderViews {
         .present(fromViewController: chatListViewController)
     }
 
-    @objc
     private func didTapUsernameLinkCorruptedReminderView() {
         guard let chatListViewController else {
             return

@@ -2358,7 +2358,10 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         button.ows_contentEdgeInsets = UIEdgeInsets(margin: 8)
         button.layoutMargins = UIEdgeInsets(margin: 2)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(didTapDeleteLinkPreviewButton), for: .touchUpInside)
+        button.addAction(
+            UIAction { [weak self] _ in self?.didTapDeleteLinkPreviewButton() },
+            for: .primaryActionTriggered,
+        )
         return button
     }()
 
@@ -2379,7 +2382,6 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         updateVisibilityOfComponents(animated: true)
     }
 
-    @objc
     private func didTapDeleteLinkPreviewButton() {
         linkPreviewDraft = nil
     }

@@ -25,7 +25,10 @@ class SendPaymentMemoViewController: OWSViewController, UITextFieldDelegate {
             comment: "Placeholder for the new payment or payment request message.",
         )
         textField.delegate = self
-        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        textField.addAction(
+            UIAction { [weak self] _ in self?.textFieldDidChange() },
+            for: .editingChanged,
+        )
         return textField
     }()
 
@@ -138,8 +141,7 @@ class SendPaymentMemoViewController: OWSViewController, UITextFieldDelegate {
         navigationController?.popViewController(animated: true)
     }
 
-    @objc
-    private func textFieldDidChange(_ textField: UITextField) {
+    private func textFieldDidChange() {
         updateMemoCharacterCount()
     }
 

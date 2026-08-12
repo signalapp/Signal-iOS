@@ -780,11 +780,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         let compose = UIBarButtonItem(
             image: Theme.iconImage(.buttonCompose),
-            style: .plain,
-            target: self,
-            action: #selector(showNewConversationView),
-            accessibilityIdentifier: "ChatListViewController.compose",
+            primaryAction: UIAction { [weak self] _ in self?.showNewConversationView() },
         )
+        compose.accessibilityIdentifier = "ChatListViewController.compose"
         compose.accessibilityLabel = NSLocalizedString("COMPOSE_BUTTON_LABEL", comment: "Accessibility label from compose button.")
         compose.accessibilityHint = NSLocalizedString(
             "COMPOSE_BUTTON_HINT",
@@ -794,11 +792,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         let camera = UIBarButtonItem(
             image: Theme.iconImage(.buttonCamera),
-            style: .plain,
-            target: self,
-            action: #selector(showCameraView),
-            accessibilityIdentifier: "ChatListViewController.camera",
+            primaryAction: UIAction { [weak self] _ in self?.showCameraView() },
         )
+        camera.accessibilityIdentifier = "ChatListViewController.camera"
         camera.accessibilityLabel = NSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")
         camera.accessibilityHint = NSLocalizedString(
             "CAMERA_BUTTON_HINT",
@@ -813,7 +809,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         navigationItem.rightBarButtonItems = rightBarButtonItems
     }
 
-    @objc
     func showNewConversationView() {
         AssertIsOnMainThread()
 

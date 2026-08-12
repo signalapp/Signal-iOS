@@ -73,13 +73,15 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
 
         navigationItem.setHidesBackButton(true, animated: false)
         if !(presenter?.presentedAsModal ?? true) {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: CommonStrings.nextButton,
-                style: .done,
-                target: self,
-                action: #selector(didTapSave),
-                accessibilityIdentifier: "registration.phoneNumberDiscoverability.nextButton",
-            )
+            navigationItem.rightBarButtonItem = {
+                let button = UIBarButtonItem(
+                    title: CommonStrings.nextButton,
+                    primaryAction: UIAction { [weak self] _ in self?.didTapSave() },
+                )
+                button.style = if #available(iOS 26, *) { .prominent } else { .done }
+                button.accessibilityIdentifier = "registration.phoneNumberDiscoverability.nextButton"
+                return button
+            }()
         }
 
         let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
@@ -109,9 +111,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
         if presenter?.presentedAsModal ?? false {
             let continueButton = UIButton(
                 configuration: .largePrimary(title: CommonStrings.continueButton),
-                primaryAction: UIAction { [weak self] _ in
-                    self?.didTapSave()
-                },
+                primaryAction: UIAction { [weak self] _ in self?.didTapSave() },
             )
             continueButton.accessibilityIdentifier = "registration.phoneNumberDiscoverability.saveButton"
 
@@ -129,9 +129,6 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
         selectionDescriptionLabel.text = phoneNumberDiscoverability.descriptionForDiscoverability
     }
 
-    // MARK: Events
-
-    @objc
     private func didTapSave() {
         presenter?.setPhoneNumberDiscoverability(phoneNumberDiscoverability)
     }

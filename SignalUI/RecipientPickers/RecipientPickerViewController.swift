@@ -90,7 +90,13 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         // Pull to Refresh
         let refreshControl = UIRefreshControl()
         refreshControl.tintColor = .gray
-        refreshControl.addTarget(self, action: #selector(pullToRefreshPerformed), for: .valueChanged)
+        refreshControl.addAction(
+            UIAction { [weak self] action in
+                guard let self, let refreshControl = action.sender as? UIRefreshControl else { return }
+                self.pullToRefreshPerformed(refreshControl)
+            },
+            for: .valueChanged,
+        )
         tableView.refreshControl = refreshControl
 
         updateTableContents()
@@ -441,7 +447,6 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
     // MARK: -
 
-    @objc
     private func pullToRefreshPerformed(_ refreshControl: UIRefreshControl) {
         AssertIsOnMainThread()
         Logger.info("Beginning refreshing")
@@ -580,13 +585,13 @@ extension RecipientPickerViewController {
 
         func addButton(
             title: String,
-            selector: Selector,
+            action: UIAction,
             accessibilityIdentifierName: String,
             icon: ThemeIcon,
             innerIconSize: CGFloat,
         ) {
             let button = UIButton(type: .custom)
-            button.addTarget(self, action: selector, for: .touchUpInside)
+            button.addAction(action, for: .primaryActionTriggered)
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(
                 in: self,
                 name: accessibilityIdentifierName,
@@ -622,7 +627,7 @@ extension RecipientPickerViewController {
                     "NEW_GROUP_BUTTON",
                     comment: "Label for the 'create new group' button.",
                 ),
-                selector: #selector(newGroupButtonPressed),
+                action: UIAction { [weak self] _ in self?.newGroupButtonPressed() },
                 accessibilityIdentifierName: "newGroupButton",
                 icon: .composeNewGroupLarge,
                 innerIconSize: 35,
@@ -635,7 +640,7 @@ extension RecipientPickerViewController {
                     "NO_CONTACTS_SEARCH_BY_USERNAME",
                     comment: "Label for a button that lets users search for contacts by username",
                 ),
-                selector: #selector(hideBackgroundView),
+                action: UIAction { [weak self] _ in self?.hideBackgroundView() },
                 accessibilityIdentifierName: "searchByPhoneNumberButton",
                 icon: .composeFindByUsernameLarge,
                 innerIconSize: 40,
@@ -646,7 +651,7 @@ extension RecipientPickerViewController {
                     "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
                     comment: "Label for a button that lets users search for contacts by phone number",
                 ),
-                selector: #selector(hideBackgroundView),
+                action: UIAction { [weak self] _ in self?.hideBackgroundView() },
                 accessibilityIdentifierName: "searchByPhoneNumberButton",
                 icon: .composeFindByPhoneNumberLarge,
                 innerIconSize: 42,
@@ -659,7 +664,7 @@ extension RecipientPickerViewController {
                     "INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                     comment: "Label for the cell that presents the 'invite contacts' workflow.",
                 ),
-                selector: #selector(presentInviteFlow),
+                action: UIAction { [weak self] _ in self?.presentInviteFlow() },
                 accessibilityIdentifierName: "inviteContactsButton",
                 icon: .composeInviteLarge,
                 innerIconSize: 38,
@@ -873,18 +878,15 @@ extension RecipientPickerViewController {
         })
     }
 
-    @objc
     private func newGroupButtonPressed() {
         delegate?.recipientPickerNewGroupButtonWasPressed()
     }
 
-    @objc
     private func hideBackgroundView() {
         SSKEnvironment.shared.preferencesRef.setHasDeclinedNoContactsView(true)
         showContactAppropriateViews()
     }
 
-    @objc
     private func presentInviteFlow() {
         let inviteFlow = InviteFlow(presentingViewController: self)
         inviteFlow.present(isAnimated: true, completion: nil)

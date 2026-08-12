@@ -46,11 +46,13 @@ class SupplementalCallControlsForFullscreenLocalMember: UIView {
         )
         button.autoMatch(.width, to: .height, of: button)
         button.accessibilityLabel = flipCameraButtonAccessibilityLabel
-        button.addTarget(self, action: #selector(didPressFlipCamera), for: .touchUpInside)
+        button.addAction(
+            UIAction { [weak self] _ in self?.didPressFlipCamera() },
+            for: .primaryActionTriggered,
+        )
         return button
     }()
 
-    @objc
     private func didPressFlipCamera() {
         if let isUsingFrontCamera = call.videoCaptureController.isUsingFrontCamera {
             callService.updateCameraSource(call: call, isUsingFrontCamera: !isUsingFrontCamera)

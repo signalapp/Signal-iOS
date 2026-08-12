@@ -434,21 +434,23 @@ class MediaPageViewController: UIPageViewController {
 
     // MARK: Bar Buttons
 
-    private lazy var barButtonShareMedia = UIBarButtonItem(
-        image: Theme.iconImage(.buttonShare),
-        landscapeImagePhone: UIImage(imageLiteralResourceName: "share-20"),
-        style: .plain,
-        target: self,
-        action: #selector(didPressShare),
-    )
+    private lazy var barButtonShareMedia: UIBarButtonItem = {
+        let button = UIBarButtonItem(
+            image: Theme.iconImage(.buttonShare),
+            primaryAction: UIAction { [weak self] _ in self?.didPressShare() },
+        )
+        button.landscapeImagePhone = UIImage(imageLiteralResourceName: "share-20")
+        return button
+    }()
 
-    private lazy var barButtonForwardMedia = UIBarButtonItem(
-        image: Theme.iconImage(.buttonForward),
-        landscapeImagePhone: UIImage(imageLiteralResourceName: "forward-20"),
-        style: .plain,
-        target: self,
-        action: #selector(didPressForward),
-    )
+    private lazy var barButtonForwardMedia: UIBarButtonItem = {
+        let button = UIBarButtonItem(
+            image: Theme.iconImage(.buttonForward),
+            primaryAction: UIAction { [weak self] _ in self?.didPressForward() },
+        )
+        button.landscapeImagePhone = UIImage(imageLiteralResourceName: "forward-20")
+        return button
+    }()
 
     // MARK: Helpers
 
@@ -466,14 +468,12 @@ class MediaPageViewController: UIPageViewController {
 
     // MARK: Actions
 
-    @objc
     private func didTapBackButton(_ sender: Any) {
         Logger.debug("")
         dismissSelf(animated: true)
     }
 
-    @objc
-    private func didPressShare(_ sender: Any) {
+    private func didPressShare() {
         shareCurrentMedia(fromNavigationBar: true)
     }
 
@@ -481,8 +481,7 @@ class MediaPageViewController: UIPageViewController {
     /// item.
     ///
     /// Skips any media that we do not have downloaded.
-    @objc
-    private func didPressForward(_ sender: Any) {
+    private func didPressForward() {
         forwardCurrentMedia()
     }
 

@@ -364,9 +364,7 @@ class BadgeIssueSheet: OWSTableSheetViewController {
 
             let actionButton = UIButton(
                 configuration: .largePrimary(title: self.state.actionButton.text),
-                primaryAction: UIAction { _ in
-                    self.didTapAction()
-                },
+                primaryAction: UIAction { _ in self.didTapAction() },
             )
 
             var buttons = [actionButton]
@@ -374,9 +372,7 @@ class BadgeIssueSheet: OWSTableSheetViewController {
             if self.state.actionButton.hasNotNow {
                 let notNowButton = UIButton(
                     configuration: .largeSecondary(title: CommonStrings.notNowButton),
-                    primaryAction: UIAction { _ in
-                        self.didDismiss()
-                    },
+                    primaryAction: UIAction { _ in self.dismiss() },
                 )
                 buttons.append(notNowButton)
             }
@@ -393,18 +389,16 @@ class BadgeIssueSheet: OWSTableSheetViewController {
     }
 
     override func willDismissInteractively() {
-        didDismiss()
+        dismiss()
         super.willDismissInteractively()
     }
 
-    @objc
     private func didTapAction() {
-        didDismiss()
+        dismiss()
         delegate?.badgeIssueSheetActionTapped(state.actionButton.action)
     }
 
-    @objc
-    private func didDismiss() {
+    private func dismiss() {
         dismiss(animated: true, completion: nil)
     }
 }

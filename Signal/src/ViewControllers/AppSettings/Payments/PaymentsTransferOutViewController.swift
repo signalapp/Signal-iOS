@@ -19,7 +19,10 @@ class PaymentsTransferOutViewController: OWSTableViewController2, UITextFieldDel
         textField.tintColor = .Signal.label
         textField.font = .dynamicTypeBodyClamped
         textField.accessibilityIdentifier = "payments.transfer.out.addressTextfield"
-        textField.addTarget(self, action: #selector(addressDidChange), for: .editingChanged)
+        textField.addAction(
+            UIAction { [weak self] _ in self?.addressDidChange() },
+            for: .editingChanged,
+        )
         textField.placeholder = OWSLocalizedString(
             "SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER",
             comment: "Placeholder text for the address text field in the 'transfer currency out' settings view.",
@@ -189,7 +192,6 @@ class PaymentsTransferOutViewController: OWSTableViewController2, UITextFieldDel
         return nil
     }
 
-    @objc
     private func addressDidChange() {
         updateNavbar()
     }

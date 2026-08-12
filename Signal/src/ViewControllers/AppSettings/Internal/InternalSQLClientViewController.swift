@@ -38,7 +38,7 @@ class InternalSQLClientViewController: UIViewController {
         button.setTitle("Run Query", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 20)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(runQuery), for: .touchUpInside)
+        button.addAction(UIAction { [weak self] _ in self?.runQuery() }, for: .primaryActionTriggered)
         return button
     }()
 
@@ -47,7 +47,7 @@ class InternalSQLClientViewController: UIViewController {
         button.setTitle("Copy Output", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 20)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(copyOutput), for: .touchUpInside)
+        button.addAction(UIAction { [weak self] _ in self?.copyOutput() }, for: .primaryActionTriggered)
         return button
     }()
 
@@ -91,7 +91,6 @@ class InternalSQLClientViewController: UIViewController {
         queryTextField.resignFirstResponder()
     }
 
-    @objc
     private func runQuery() {
         queryTextField.resignFirstResponder()
 
@@ -129,7 +128,6 @@ class InternalSQLClientViewController: UIViewController {
         outputTextView.text = output
     }
 
-    @objc
     private func copyOutput() {
         queryTextField.resignFirstResponder()
         guard let output = outputTextView.text, !output.isEmpty else {

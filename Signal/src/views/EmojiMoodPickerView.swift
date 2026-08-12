@@ -42,7 +42,13 @@ class EmojiMoodPickerView: UIView {
 
         let orderedButtons = Mood.allCases.compactMap { moodButtons[$0] }
         for button in orderedButtons {
-            button.addTarget(self, action: #selector(buttonWasTapped(_:)), for: .touchUpInside)
+            button.addAction(
+                UIAction { [weak self] action in
+                    guard let self, let button = action.sender as? UIButton else { return }
+                    self.buttonWasTapped(button)
+                },
+                for: .primaryActionTriggered,
+            )
             buttonStack.addArrangedSubview(button)
         }
 
@@ -78,7 +84,6 @@ class EmojiMoodPickerView: UIView {
 
     // MARK: - Button responder
 
-    @objc
     private func buttonWasTapped(_ button: UIButton) {
         // When this action is invoked, our selection state hasn't been updated yet
         // If we were not selected, we're being selected

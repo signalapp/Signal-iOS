@@ -40,11 +40,13 @@ private class ContactNameFieldView: UIView {
         textField.text = value
         addSubview(textField)
         textField.autoPinEdgesToSuperviewEdges()
-        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        textField.addAction(
+            UIAction { [weak self] _ in self?.textFieldDidChange() },
+            for: .editingChanged,
+        )
     }
 
-    @objc
-    private func textFieldDidChange(sender: UITextField) {
+    private func textFieldDidChange() {
         delegate?.nameFieldDidChange()
     }
 

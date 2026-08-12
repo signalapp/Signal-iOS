@@ -147,7 +147,10 @@ class CallControlsOverflowView: UIView {
             buttonStack.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             buttonStack.bottomAnchor.constraint(equalTo: self.bottomAnchor),
         ])
-        buttonStack.raiseHandButton.addTarget(self, action: #selector(CallControlsOverflowView.didTapRaiseHandButton), for: .touchUpInside)
+        buttonStack.raiseHandButton.addAction(
+            UIAction { [weak self] _ in self?.didTapRaiseHandButton() },
+            for: .primaryActionTriggered,
+        )
     }
 
     // MARK: - Constants
@@ -318,7 +321,7 @@ protocol RaiseHandSender {
 extension SignalRingRTC.GroupCall: RaiseHandSender {}
 
 extension CallControlsOverflowView {
-    @objc
+
     private func didTapRaiseHandButton() {
         self.callControlsOverflowPresenter?.didTapRaiseOrLowerHand()
         self.raiseHandSender.raiseHand(raise: !self.isLocalHandRaised)

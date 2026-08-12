@@ -151,7 +151,10 @@ class RegistrationPinViewController: OWSViewController {
             tintColor: Theme.accentBlueColor,
         )
         result.autoSetDimensions(to: CGSize(square: 40))
-        result.addTarget(self, action: #selector(didTapBack), for: .touchUpInside)
+        result.addAction(
+            UIAction { [weak self] _ in self?.didTapBack() },
+            for: .primaryActionTriggered,
+        )
         return result
     }()
 
@@ -311,13 +314,15 @@ class RegistrationPinViewController: OWSViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.background
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: CommonStrings.nextButton,
-            style: .done,
-            target: self,
-            action: #selector(didTapNext),
-            accessibilityIdentifier: "registration.pin.nextButton",
-        )
+        navigationItem.rightBarButtonItem = {
+            let button = UIBarButtonItem(
+                title: CommonStrings.nextButton,
+                primaryAction: UIAction { [weak self] _ in self?.didTapNext() },
+            )
+            button.style = if #available(iOS 26, *) { .prominent } else { .done }
+            button.accessibilityIdentifier = "registration.pin.nextButton"
+            return button
+        }()
 
         stackView = addStaticContentStackView(
             arrangedSubviews: [titleLabel, explanationView, pinTextField],
@@ -326,7 +331,10 @@ class RegistrationPinViewController: OWSViewController {
         )
         stackView.setCustomSpacing(24, after: explanationView)
 
-        pinTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        pinTextField.addAction(
+            UIAction { [weak self] _ in self?.textFieldDidChange() },
+            for: .editingChanged,
+        )
 
         configureUI()
     }
@@ -709,14 +717,12 @@ class RegistrationPinViewController: OWSViewController {
 
     // MARK: Events
 
-    @objc
     private func didTapBack() {
         Logger.info("")
 
         presenter?.cancelPinConfirmation()
     }
 
-    @objc
     private func didTapNext() {
         Logger.info("")
 
@@ -846,8 +852,7 @@ class RegistrationPinViewController: OWSViewController {
         presentActionSheet(actionSheet)
     }
 
-    @objc
-    private func textFieldDidChange(_ textField: UITextField) {
+    private func textFieldDidChange() {
         configureUI()
     }
 }

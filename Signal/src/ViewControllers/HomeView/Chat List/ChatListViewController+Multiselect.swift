@@ -114,8 +114,7 @@ extension ChatListViewController {
         updateCaptions()
     }
 
-    @objc
-    func switchMultiSelectState(_ sender: UIBarButtonItem) {
+    func switchMultiSelectState() {
         AssertIsOnMainThread()
 
         if viewState.multiSelectState.isActive {
@@ -148,9 +147,7 @@ extension ChatListViewController {
 
         let archiveBtn = UIBarButtonItem(
             title: viewState.chatListMode == .archive ? CommonStrings.unarchiveAction : CommonStrings.archiveAction,
-            style: .plain,
-            target: self,
-            action: #selector(performArchive),
+            primaryAction: UIAction { [weak self] _ in self?.performArchive() },
         )
         if #available(iOS 26, *) {
             archiveBtn.image = UIImage(resource: .archive)
@@ -159,7 +156,10 @@ extension ChatListViewController {
 
         let readButton: UIBarButtonItem
         if hasSelectedEntries {
-            readButton = UIBarButtonItem(title: CommonStrings.readAction, style: .plain, target: self, action: #selector(performRead))
+            readButton = UIBarButtonItem(
+                title: CommonStrings.readAction,
+                primaryAction: UIAction { [weak self] _ in self?.performRead() },
+            )
             readButton.isEnabled = false
             for path in tableView.indexPathsForSelectedRows ?? [] {
                 if let thread = tableDataSource.threadViewModel(forIndexPath: path), thread.hasUnreadMessages {
@@ -179,16 +179,17 @@ extension ChatListViewController {
                     "HOME_VIEW_TOOLBAR_READ_ALL",
                     comment: "Title 'Read All' button in the toolbar of the ChatList if multi-section is active.",
                 ),
-                style: .plain,
-                target: self,
-                action: #selector(performReadAll),
+                primaryAction: UIAction { [weak self] _ in self?.performReadAll() },
             )
             readButton.isEnabled = false
             readButton.isEnabled = readButton.isEnabled || hasUnreadEntry(threadUniqueIds: renderState.pinnedThreadUniqueIds)
             readButton.isEnabled = readButton.isEnabled || hasUnreadEntry(threadUniqueIds: renderState.unpinnedThreadUniqueIds)
         }
 
-        let deleteBtn = UIBarButtonItem(title: CommonStrings.deleteButton, style: .plain, target: self, action: #selector(performDelete))
+        let deleteBtn = UIBarButtonItem(
+            title: CommonStrings.deleteButton,
+            primaryAction: UIAction { [weak self] _ in self?.performDelete() },
+        )
         if #available(iOS 26, *) {
             deleteBtn.image = UIImage(resource: .trash)
         }
@@ -261,7 +262,6 @@ extension ChatListViewController {
     // MARK: toolbar button actions
 
     /// Archives or unarchives the selected threads
-    @objc
     func performArchive() {
         performOn(indexPaths: tableView.indexPathsForSelectedRows ?? []) { threadViewModels in
             for threadViewModel in threadViewModels {
@@ -271,7 +271,6 @@ extension ChatListViewController {
         done()
     }
 
-    @objc
     func performRead() {
         performOn(indexPaths: tableView.indexPathsForSelectedRows ?? []) { threadViewModels in
             for threadViewModel in threadViewModels {
@@ -281,7 +280,6 @@ extension ChatListViewController {
         done()
     }
 
-    @objc
     func performReadAll() {
         let threadUniqueIds = renderState.pinnedThreadUniqueIds + renderState.unpinnedThreadUniqueIds
         let threadViewModels = threadUniqueIds.compactMap { threadUniqueId in
@@ -297,7 +295,6 @@ extension ChatListViewController {
         done()
     }
 
-    @objc
     func performDelete() {
         AssertIsOnMainThread()
 

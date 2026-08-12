@@ -34,7 +34,6 @@ extension ConversationViewController {
         return false
     }
 
-    @objc
     public func dismissMessageContextMenu(animated: Bool) {
         if let collectionViewActiveContextMenuInteraction = self.collectionViewActiveContextMenuInteraction {
             collectionViewActiveContextMenuInteraction.dismissMenu(animated: animated, completion: { })

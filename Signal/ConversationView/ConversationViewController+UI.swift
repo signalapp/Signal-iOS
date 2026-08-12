@@ -122,10 +122,9 @@ extension ConversationViewController {
 
                     if conversationViewModel.groupCallInProgress {
                         let pill = JoinGroupCallPill()
-                        pill.addTarget(
-                            self,
-                            action: #selector(showGroupLobbyOrActiveCall),
-                            for: .touchUpInside,
+                        pill.addAction(
+                            UIAction { [weak self] _ in self?.showGroupLobbyOrActiveCall() },
+                            for: .primaryActionTriggered,
                         )
                         let returnString = OWSLocalizedString(
                             "RETURN_CALL_PILL_BUTTON",
@@ -140,8 +139,7 @@ extension ConversationViewController {
                         }
                     } else {
                         videoCallButton.image = Theme.iconImage(.buttonVideoCall)
-                        videoCallButton.target = self
-                        videoCallButton.action = #selector(showGroupLobbyOrActiveCall)
+                        videoCallButton.primaryAction = UIAction { [weak self] _ in self?.showGroupLobbyOrActiveCall() }
                     }
 
                     videoCallButton.isEnabled = (
@@ -157,9 +155,7 @@ extension ConversationViewController {
                 } else {
                     let audioCallButton = UIBarButtonItem(
                         image: Theme.iconImage(.buttonVoiceCall),
-                        style: .plain,
-                        target: self,
-                        action: #selector(startIndividualAudioCall),
+                        primaryAction: UIAction { [weak self] _ in self?.startIndividualAudioCall() },
                     )
                     audioCallButton.isEnabled = AppEnvironment.shared.callService.callServiceState.currentCall == nil
                     audioCallButton.accessibilityLabel = OWSLocalizedString(
@@ -170,9 +166,7 @@ extension ConversationViewController {
 
                     let videoCallButton = UIBarButtonItem(
                         image: Theme.iconImage(.buttonVideoCall),
-                        style: .plain,
-                        target: self,
-                        action: #selector(startIndividualVideoCall),
+                        primaryAction: UIAction { [weak self] _ in self?.startIndividualVideoCall() },
                     )
                     videoCallButton.isEnabled = AppEnvironment.shared.callService.callServiceState.currentCall == nil
                     videoCallButton.accessibilityLabel = OWSLocalizedString(

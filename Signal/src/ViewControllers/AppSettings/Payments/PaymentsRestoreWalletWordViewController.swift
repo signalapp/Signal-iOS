@@ -26,7 +26,10 @@ class PaymentsRestoreWalletWordViewController: OWSViewController, UITextFieldDel
         textField.smartDashesType = .no
         textField.returnKeyType = .done
         textField.delegate = self
-        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        textField.addAction(
+            UIAction { [weak self] _ in self?.textFieldDidChange() },
+            for: .editingChanged,
+        )
         return textField
     }()
 
@@ -192,7 +195,6 @@ class PaymentsRestoreWalletWordViewController: OWSViewController, UITextFieldDel
         }
     }
 
-    @objc
     private func textFieldDidChange() {
         // Clear any warning.
         warningLabel.alpha = 0

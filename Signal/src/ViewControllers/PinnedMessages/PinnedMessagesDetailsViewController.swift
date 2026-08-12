@@ -177,9 +177,10 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         goToMessageButton.translatesAutoresizingMaskIntoConstraints = false
         goToMessageButton.layer.cornerRadius = 18
         goToMessageButton.clipsToBounds = true
-
-        goToMessageButton.tag = reversedIndex
-        goToMessageButton.addTarget(self, action: #selector(goToMessage), for: .touchUpInside)
+        goToMessageButton.addAction(
+            UIAction { [weak self] _ in self?.goToMessage(reversedIndex) },
+            for: .primaryActionTriggered,
+        )
 
         let cellView = CVCellView()
         cellView.configure(renderItem: renderItem, componentDelegate: self)
@@ -284,15 +285,14 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
 
     // MARK: - Interactions
 
-    @objc
-    private func goToMessage(sender: UIButton) {
+    private func goToMessage(_ messageIndex: Int) {
         // We index in reverse order because of how UIKit lays out the pinned messages (top to bottom)
         // versus how we store them for displaying in the CVC banner view (most -> least recent)
         let reversedArray = pinnedMessages.reversed().map { $0 }
-        guard reversedArray.indices.contains(sender.tag) else {
+        guard reversedArray.indices.contains(messageIndex) else {
             return
         }
-        let message = reversedArray[sender.tag]
+        let message = reversedArray[messageIndex]
         delegate?.goToMessage(message: message)
         dismiss(animated: true)
     }

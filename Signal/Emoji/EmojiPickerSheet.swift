@@ -26,11 +26,12 @@ class EmojiPickerSheet: OWSViewController {
 
     lazy var configureButton: UIButton = {
         let button = UIButton()
-
         button.setImage(Theme.iconImage(.emojiSettings), for: .normal)
         button.tintColor = UIColor.Signal.label
-
-        button.addTarget(self, action: #selector(didSelectConfigureButton), for: .touchUpInside)
+        button.addAction(
+            UIAction { [weak self] _ in self?.didSelectConfigureButton() },
+            for: .primaryActionTriggered,
+        )
         return button
     }()
 
@@ -131,8 +132,7 @@ class EmojiPickerSheet: OWSViewController {
         collectionView.scrollIndicatorInsets = contentInset
     }
 
-    @objc
-    private func didSelectConfigureButton(sender: UIButton) {
+    private func didSelectConfigureButton() {
         let configVC = EmojiReactionPickerConfigViewController(
             reactionPickerConfigurationListener: self.reactionPickerConfigurationListener,
         )

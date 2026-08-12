@@ -70,8 +70,10 @@ public class LocationPicker: UIViewController {
         currentLocationButton.autoSetDimensions(to: CGSize(square: 48))
         currentLocationButton.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 15)
         currentLocationButton.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 15)
-
-        currentLocationButton.addTarget(self, action: #selector(didPressCurrentLocation), for: .touchUpInside)
+        currentLocationButton.addAction(
+            UIAction { [weak self] _ in self?.didPressCurrentLocation() },
+            for: .primaryActionTriggered,
+        )
     }
 
     override open func viewDidLoad() {
@@ -115,7 +117,6 @@ public class LocationPicker: UIViewController {
         navigationController?.navigationBar.isTranslucent = true
     }
 
-    @objc
     private func didPressCurrentLocation() {
         showCurrentLocation()
     }

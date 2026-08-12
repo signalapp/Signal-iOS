@@ -129,9 +129,7 @@ class RegistrationProfileViewController: OWSViewController {
 
         let button = UIButton(
             configuration: buttonConfiguration!,
-            primaryAction: UIAction { [weak self] _ in
-                self?.didTapAvatar()
-            },
+            primaryAction: UIAction { [weak self] _ in self?.didTapAvatar() },
         )
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addConstraints([
@@ -161,7 +159,10 @@ class RegistrationProfileViewController: OWSViewController {
         result.textContentType = textContentType
         result.accessibilityIdentifier = "registration.profile.\(accessibilityIdentifierSuffix)"
         result.delegate = self
-        result.addTarget(self, action: #selector(didTextFieldChange), for: .editingChanged)
+        result.addAction(
+            UIAction { [weak self] _ in self?.didTextFieldChange() },
+            for: .editingChanged,
+        )
         result.autoSetDimension(.height, toSize: 50, relation: .greaterThanOrEqual)
         return result
     }
@@ -259,13 +260,15 @@ class RegistrationProfileViewController: OWSViewController {
 
         view.backgroundColor = .Signal.background
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: CommonStrings.nextButton,
-            style: .done,
-            target: self,
-            action: #selector(didTapNext),
-            accessibilityIdentifier: "registration.profile.nextButton",
-        )
+        navigationItem.rightBarButtonItem = {
+            let button = UIBarButtonItem(
+                title: CommonStrings.nextButton,
+                primaryAction: UIAction { [weak self] _ in self?.didTapNext() },
+            )
+            button.style = if #available(iOS 26, *) { .prominent } else { .done }
+            button.accessibilityIdentifier = "registration.profile.nextButton"
+            return button
+        }()
 
         let avatarContainerView = UIView.container()
         avatarContainerView.addSubview(avatarView)
@@ -327,7 +330,6 @@ class RegistrationProfileViewController: OWSViewController {
 
     // MARK: Events
 
-    @objc
     private func didTextFieldChange() {
         updateUI()
     }
@@ -350,7 +352,6 @@ class RegistrationProfileViewController: OWSViewController {
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
     }
 
-    @objc
     private func didTapNext() {
         Logger.info("")
         goToNextStepIfPossible()

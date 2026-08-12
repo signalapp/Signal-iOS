@@ -149,9 +149,7 @@ class MediaGalleryAccessoriesHelper {
 
     private lazy var selectButton = UIBarButtonItem(
         title: CommonStrings.selectButton,
-        style: .plain,
-        target: self,
-        action: #selector(didTapSelect),
+        primaryAction: UIAction { [weak self] _ in self?.didTapSelect() },
     )
 
     var isInBatchSelectMode = false {
@@ -211,8 +209,7 @@ class MediaGalleryAccessoriesHelper {
         viewController.navigationItem.hidesBackButton = isInBatchSelectMode
     }
 
-    @objc
-    private func didTapSelect(_ sender: Any) {
+    private func didTapSelect() {
         isInBatchSelectMode = true
     }
 

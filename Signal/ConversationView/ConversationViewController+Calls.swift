@@ -38,7 +38,6 @@ public extension ConversationViewController {
         )
     }
 
-    @objc
     func showGroupLobbyOrActiveCall() {
         guard let groupId = try? (thread as? TSGroupThread)?.groupIdentifier else {
             owsFailDebug("Tried to present group call for non-group thread.")
@@ -51,12 +50,10 @@ public extension ConversationViewController {
         ).startCall(from: self)
     }
 
-    @objc
     func startIndividualAudioCall() {
         startIndividualCall(withVideo: false)
     }
 
-    @objc
     func startIndividualVideoCall() {
         startIndividualCall(withVideo: true)
     }

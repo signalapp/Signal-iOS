@@ -170,13 +170,15 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
         view.backgroundColor = .Signal.background
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: CommonStrings.nextButton,
-            style: .done,
-            target: self,
-            action: #selector(didTapNext),
-            accessibilityIdentifier: "registration.phonenumber.nextButton",
-        )
+        navigationItem.rightBarButtonItem = {
+            let button = UIBarButtonItem(
+                title: CommonStrings.nextButton,
+                primaryAction: UIAction { [weak self] _ in self?.didTapNext() },
+            )
+            button.style = if #available(iOS 26, *) { .prominent } else { .done }
+            button.accessibilityIdentifier = "registration.phonenumber.nextButton"
+            return button
+        }()
 
         let stackView = addStaticContentStackView(
             arrangedSubviews: [
@@ -357,7 +359,6 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
     // MARK: Events
 
-    @objc
     private func didTapNext() {
         goToNextStep()
     }

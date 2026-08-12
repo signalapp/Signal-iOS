@@ -453,7 +453,6 @@ extension ConversationViewController {
         viewState.scrollActionForSizeTransition = nil
     }
 
-    @objc
     func scrollDownButtonTapped() {
         AssertIsOnMainThread()
 
@@ -496,7 +495,6 @@ extension ConversationViewController {
         initialScrollState = nil
     }
 
-    @objc
     func scrollToNextMentionButtonTapped() {
         if let nextMessageId = conversationViewModel.unreadMentionMessageIds.first {
             ensureInteractionLoadedThenScrollToInteraction(

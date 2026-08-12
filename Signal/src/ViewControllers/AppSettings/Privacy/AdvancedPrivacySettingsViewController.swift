@@ -236,7 +236,13 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
 
                 let cellSwitch = UISwitch()
                 cellSwitch.isOn = SSKEnvironment.shared.preferencesRef.shouldShowUnidentifiedDeliveryIndicators
-                cellSwitch.addTarget(self, action: #selector(self.didToggleUDShowIndicatorsSwitch), for: .valueChanged)
+                cellSwitch.addAction(
+                    UIAction { [weak self] action in
+                        guard let self, let uiSwitch = action.sender as? UISwitch else { return }
+                        self.didToggleUDShowIndicatorsSwitch(isOn: uiSwitch.isOn)
+                    },
+                    for: .valueChanged,
+                )
                 cell.accessoryView = cellSwitch
 
                 return cell
@@ -308,9 +314,8 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         SSKEnvironment.shared.preferencesRef.setDoCallsHideIPAddress(sender.isOn)
     }
 
-    @objc
-    private func didToggleUDShowIndicatorsSwitch(_ sender: UISwitch) {
-        SSKEnvironment.shared.preferencesRef.setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage(sender.isOn)
+    private func didToggleUDShowIndicatorsSwitch(isOn: Bool) {
+        SSKEnvironment.shared.preferencesRef.setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage(isOn)
     }
 
     @objc

@@ -53,7 +53,10 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
         )
         textField.returnKeyType = .done
         textField.delegate = self
-        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        textField.addAction(
+            UIAction { [weak self] _ in self?.textFieldDidChange() },
+            for: .editingChanged,
+        )
 
         return textField
     }()
@@ -125,8 +128,7 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    @objc
-    private func textFieldDidChange(_ textField: UITextField) {
+    private func textFieldDidChange() {
         updateNavigationBar()
     }
 

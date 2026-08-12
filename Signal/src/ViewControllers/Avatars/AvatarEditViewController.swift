@@ -164,19 +164,25 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
 
         control.selectedSegmentIndex = Segments.color.rawValue
 
-        control.addTarget(
-            self,
-            action: #selector(segmentedControlDidChange),
+        control.addAction(
+            UIAction { [weak self] action in
+                guard
+                    let self,
+                    let segmentedControl = action.sender as? UISegmentedControl,
+                    let segment = Segments(rawValue: segmentedControl.selectedSegmentIndex)
+                else {
+                    return
+                }
+                self.segmentedControlDidChange(segment: segment)
+            },
             for: .valueChanged,
         )
 
         return control
     }()
 
-    @objc
-    private func segmentedControlDidChange() {
-        guard let selectedSegment = Segments(rawValue: segmentedControl.selectedSegmentIndex) else { return }
-        switch selectedSegment {
+    private func segmentedControlDidChange(segment: Segments) {
+        switch segment {
         case .color:
             headerTextField.resignFirstResponder()
             updateFooterViewState()
@@ -200,7 +206,10 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
         textField.adjustsFontSizeToFitWidth = true
         textField.textAlignment = .center
         textField.delegate = self
-        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        textField.addAction(
+            UIAction { [weak self] _ in self?.textFieldDidChange() },
+            for: .editingChanged,
+        )
         textField.returnKeyType = .done
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
@@ -407,7 +416,6 @@ extension AvatarEditViewController: UITextFieldDelegate {
         return false
     }
 
-    @objc
     func textFieldDidChange() {
         guard case .text = model.type else { return }
         model.type = .text(headerTextField.text ?? "")

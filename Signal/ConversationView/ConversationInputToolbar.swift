@@ -458,7 +458,10 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             comment: "Accessibility hint describing what you can do with the attachment button",
         )
         button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "attachmentButton")
-        button.addTarget(self, action: #selector(addOrCancelButtonPressed), for: .touchUpInside)
+        button.addAction(
+            UIAction { [weak self] _ in self?.addOrCancelButtonPressed() },
+            for: .primaryActionTriggered,
+        )
         return button
     }()
 
@@ -3240,7 +3243,6 @@ extension ConversationInputToolbar {
         inputToolbarDelegate.cameraButtonPressed()
     }
 
-    @objc
     private func addOrCancelButtonPressed() {
         ImpactHapticFeedback.impactOccurred(style: .light)
         if isEditingMessage {
