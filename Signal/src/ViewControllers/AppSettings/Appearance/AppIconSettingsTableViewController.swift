@@ -147,26 +147,35 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
 
     private class IconButton: UIView {
         private let icon: AppIcon?
-        private let iconSize: CGFloat
-        private let button: UIView
-        private let selectedOutlineView: UIView
+        private let button: UIButton
 
         init(icon: AppIcon, iconSize: CGFloat, action: @escaping () -> Void) {
             self.icon = icon
-            self.iconSize = iconSize
-            self.button = Self.makeButton(for: icon, iconSize: iconSize, action: action)
-            self.selectedOutlineView = UIView.container()
+
+            var buttonConfig = UIButton.Configuration.plain()
+            buttonConfig.contentInsets = .zero
+            // This image fully defines intrinsic content size of IconButton (via constraints).
+            buttonConfig.image = UIImage(resource: icon.previewImageResource).resized(maxDimensionPoints: iconSize)
+            button = UIButton(
+                configuration: buttonConfig,
+                primaryAction: UIAction { _ in action() },
+            )
+
             super.init(frame: .zero)
 
-            self.addSubview(selectedOutlineView)
-            selectedOutlineView.autoPinEdgesToSuperviewEdges()
-            selectedOutlineView.layer.cornerRadius = iconSize * 0.24 * (4 / 3)
-            selectedOutlineView.layer.cornerCurve = .continuous
+            layer.cornerRadius = iconSize * 0.24 * (4 / 3)
+            layer.cornerCurve = .continuous
             let borderColor: UIColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_black
-            selectedOutlineView.layer.borderColor = borderColor.cgColor
+            layer.borderColor = borderColor.cgColor
 
-            selectedOutlineView.addSubview(button)
-            button.autoPinEdgesToSuperviewEdges()
+            button.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(button)
+            NSLayoutConstraint.activate([
+                button.topAnchor.constraint(equalTo: topAnchor),
+                button.leadingAnchor.constraint(equalTo: leadingAnchor),
+                button.trailingAnchor.constraint(equalTo: trailingAnchor),
+                button.bottomAnchor.constraint(equalTo: bottomAnchor),
+            ])
 
             updateSelectedState()
         }
@@ -178,19 +187,11 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
         func updateSelectedState() {
             if UIApplication.shared.currentAppIcon == icon {
                 button.transform = .scale(0.8)
-                selectedOutlineView.layer.borderWidth = 3
+                layer.borderWidth = 3
             } else {
                 button.transform = .identity
-                selectedOutlineView.layer.borderWidth = 0
+                layer.borderWidth = 0
             }
-        }
-
-        private static func makeButton(for icon: AppIcon, iconSize: CGFloat, action: @escaping () -> Void) -> UIView {
-            let image = UIImage(resource: icon.previewImageResource)
-            let button = OWSButton(block: action)
-            button.setImage(image, for: .normal)
-            button.autoSetDimensions(to: .square(iconSize))
-            return button
         }
     }
 }
