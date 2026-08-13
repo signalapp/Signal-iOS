@@ -103,6 +103,9 @@ public enum TimeGatedBatch {
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
         delayTwixtTx: TimeInterval = 0,
         errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
         buildTxContext: (DBWriteTransaction) -> TxContext,
         processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> ProcessBatchResult<DoneResult>,
         concludeTx: (DBWriteTransaction, TxContext) -> Void,
@@ -112,6 +115,9 @@ public enum TimeGatedBatch {
             yieldTxAfter: maximumDuration,
             delayTwixtTx: delayTwixtTx,
             errorTxCompletion: errorTxCompletion,
+            file: file,
+            function: function,
+            line: line,
             buildTxContext: buildTxContext,
             processBatch: processBatch,
             concludeTx: concludeTx,
@@ -126,6 +132,9 @@ public enum TimeGatedBatch {
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
         delayTwixtTx: TimeInterval = 0,
         errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
         processBatch: (DBWriteTransaction) throws(E) -> ProcessBatchResult<DoneResult>,
     ) async throws(E) -> DoneResult {
         return try await _processAll(
@@ -133,6 +142,9 @@ public enum TimeGatedBatch {
             yieldTxAfter: maximumDuration,
             delayTwixtTx: delayTwixtTx,
             errorTxCompletion: errorTxCompletion,
+            file: file,
+            function: function,
+            line: line,
             buildTxContext: { _ in DummyTxContext() },
             processBatch: { tx, _ throws(E) in try processBatch(tx) },
             concludeTx: { _, _ in },
@@ -145,6 +157,9 @@ public enum TimeGatedBatch {
         yieldTxAfter maximumDuration: TimeInterval,
         delayTwixtTx: TimeInterval,
         errorTxCompletion: GRDB.Database.TransactionCompletion,
+        file: String,
+        function: String,
+        line: Int,
         buildTxContext: (DBWriteTransaction) -> TxContext,
         processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> ProcessBatchResult<DoneResult>,
         concludeTx: (DBWriteTransaction, TxContext) -> Void,
@@ -162,9 +177,19 @@ public enum TimeGatedBatch {
 
             let batchResult = switch errorTxCompletion {
             case .commit:
-                try await db.awaitableWrite(block: txBlock)
+                try await db.awaitableWrite(
+                    file: file,
+                    function: function,
+                    line: line,
+                    block: txBlock,
+                )
             case .rollback:
-                try await db.awaitableWriteWithRollbackIfThrows(block: txBlock)
+                try await db.awaitableWriteWithRollbackIfThrows(
+                    file: file,
+                    function: function,
+                    line: line,
+                    block: txBlock,
+                )
             }
 
             switch batchResult {
