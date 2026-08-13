@@ -27,6 +27,9 @@ class OutgoingDeviceTransferTask {
     private var messagesReceiverTask: Task<Void, Never>?
     private var transferFinishedContinuation: CheckedContinuation<Void, Error>?
 
+    private let waitTask = AtomicValue<Task<Void, Error>?>(nil, lock: .init())
+    private let sendTask = AtomicValue<Task<Void, Error>?>(nil, lock: .init())
+
     init(
         db: DB,
         deviceSleepManager: DeviceSleepManager?,
@@ -45,12 +48,29 @@ class OutgoingDeviceTransferTask {
     func connectToNewDevice(deviceTransferUrl: URL) async throws {
         stop(error: nil)
         deviceSleepManager?.addBlock(blockObject: sleepBlockObject)
-        self.session = try await newDeviceServiceBrowser.connect(deviceTransferUrl: deviceTransferUrl)
+        if let task = waitTask.get() {
+            try await task.value
+        } else {
+            let task = waitTask.update {
+                let task = Task {
+                    self.session = try await newDeviceServiceBrowser.connect(deviceTransferUrl: deviceTransferUrl)
+                }
+                $0 = task
+                return task
+            }
+            try await task.value
+            _ = waitTask.swap(nil)
+        }
     }
 
-    private var sendTask: Task<Void, Error>?
     @MainActor
     func transferAccountToNewDevice(initializeProgressBlock: ((Progress) -> Void)? = nil) async throws {
+        if let task = sendTask.get() {
+            // Another task has already started the transfer, wait for it to complete
+            try await task.value
+            return
+        }
+
         guard let session else {
             throw OWSAssertionError("Not connected")
         }
@@ -121,17 +141,26 @@ class OutgoingDeviceTransferTask {
         // Only send the files if we haven't yet sent the manifest.
         guard !transferredFileIds.get().contains(DeviceTransfer.Constants.manifestIdentifier) else { return }
 
-        sendTask = Task {
-            do {
-                try await sendManifest(manifest: manifest, session: session)
-                try await sendAllFiles(manifest: manifest, session: session)
-            } catch where error is CancellationError {
-                throw error
-            } catch {
-                self.failTransfer(.assertion, "Failed to send manifest to new device \(error)")
+        let task = sendTask.update {
+            let task = Task {
+                do {
+                    try await sendManifest(manifest: manifest, session: session)
+                    try await sendAllFiles(manifest: manifest, session: session)
+                } catch where error is CancellationError {
+                    throw error
+                } catch {
+                    if Task.isCancelled {
+                        throw CancellationError()
+                    }
+                    self.failTransfer(.assertion, "Failed to send manifest to new device \(error)")
+                }
+                Logger.debug("finished transfer task")
             }
+            $0 = task
+            return task
         }
-        try await sendTask?.value
+        try await task.value
+        _ = sendTask.swap(nil)
 
         // wait for message back from caller
         try await withCheckedThrowingContinuation { continuation in
@@ -281,7 +310,8 @@ class OutgoingDeviceTransferTask {
     }
 
     private func stopTransfer(error: Error? = nil, notifyRegState: Bool = true) {
-        sendTask?.cancel()
+        waitTask.swap(nil)?.cancel()
+        sendTask.swap(nil)?.cancel()
         newDeviceServiceBrowser.stop(error: error)
         throughputMonitor?.stop()
         deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
