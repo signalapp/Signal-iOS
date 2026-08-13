@@ -173,12 +173,26 @@ public struct TSRequest: CustomDebugStringConvertible {
 
     public enum RedactionStrategy {
         case none
-        case redactURL(replacement: String = "[REDACTED]")
+        /// Redacts the given sensitive values wherever they appear in the URL
+        /// when logging, leaving the rest of the URL intact.
+        case redactURL(sensitiveValues: [String])
     }
+
+    private static let redactionReplacement = "[REDACTED]"
 
     private var redactionStrategy = RedactionStrategy.none
 
     public mutating func applyRedactionStrategy(_ strategy: RedactionStrategy) {
+        switch strategy {
+        case .none:
+            break
+        case .redactURL(let sensitiveValues):
+            owsAssertDebug(
+                sensitiveValues.allSatisfy { !$0.isEmpty && self.url.relativeString.contains($0) },
+                "Sensitive value missing from URL!",
+                logger: self.logger,
+            )
+        }
         self.redactionStrategy = strategy
     }
 
@@ -187,8 +201,14 @@ public struct TSRequest: CustomDebugStringConvertible {
         switch redactionStrategy {
         case .none:
             result += " \(self.url.relativeString)"
-        case .redactURL(let replacement):
-            result += " \(replacement)"
+        case .redactURL(let sensitiveValues):
+            let redactedURL = sensitiveValues.reduce(self.url.relativeString) { partialResult, sensitiveValue in
+                return partialResult.replacingOccurrences(
+                    of: sensitiveValue,
+                    with: Self.redactionReplacement,
+                )
+            }
+            result += " \(redactedURL)"
         }
         if !self.headers.headers.isEmpty {
             let formattedHeaderFields = self.headers.headers.keys.sorted().joined(separator: "; ")

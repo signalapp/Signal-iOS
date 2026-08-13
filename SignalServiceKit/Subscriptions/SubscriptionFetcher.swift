@@ -57,7 +57,7 @@ private extension TSRequest {
             parameters: nil,
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURL())
+        result.applyRedactionStrategy(.redactURL(sensitiveValues: [subscriberID.asBase64Url]))
         return result
     }
 }

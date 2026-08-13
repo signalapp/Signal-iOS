@@ -612,13 +612,14 @@ private extension TSRequest {
         assertedRequestData: Data,
         assertion: Data,
     ) -> TSRequest {
-        let urlPath = "v1/devicecheck/assert"
+        let keyId = keyIdData.asBase64Url
+        let assertedRequest = assertedRequestData.asBase64Url
         var request = TSRequest(
-            url: URL(string: "\(urlPath)?keyId=\(keyIdData.asBase64Url)&request=\(assertedRequestData.asBase64Url)")!,
+            url: URL(string: "v1/devicecheck/assert?keyId=\(keyId)&request=\(assertedRequest)")!,
             method: "POST",
             body: .data(assertion),
         )
-        request.applyRedactionStrategy(.redactURL(replacement: "\(urlPath)?[REDACTED]"))
+        request.applyRedactionStrategy(.redactURL(sensitiveValues: [keyId, assertedRequest]))
         request.headers["Content-Type"] = "application/octet-stream"
         return request
     }
@@ -635,13 +636,13 @@ private extension TSRequest {
         keyIdData: Data,
         keyAttestation: Data,
     ) -> TSRequest {
-        let urlPath = "v1/devicecheck/attest"
+        let keyId = keyIdData.asBase64Url
         var request = TSRequest(
-            url: URL(string: "\(urlPath)?keyId=\(keyIdData.asBase64Url)")!,
+            url: URL(string: "v1/devicecheck/attest?keyId=\(keyId)")!,
             method: "PUT",
             body: .data(keyAttestation),
         )
-        request.applyRedactionStrategy(.redactURL(replacement: "\(urlPath)?[REDACTED]"))
+        request.applyRedactionStrategy(.redactURL(sensitiveValues: [keyId]))
         request.headers["Content-Type"] = "application/octet-stream"
         return request
     }

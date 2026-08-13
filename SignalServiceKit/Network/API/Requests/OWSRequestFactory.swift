@@ -176,7 +176,7 @@ public enum OWSRequestFactory {
             result.headers["Donation-Permit"] = donationPermit.serializedPermit.base64EncodedString()
         }
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURL())
+        result.applyRedactionStrategy(.redactURL(sensitiveValues: [subscriberID.asBase64Url]))
         return result
     }
 
@@ -187,7 +187,7 @@ public enum OWSRequestFactory {
             parameters: nil,
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURL())
+        result.applyRedactionStrategy(.redactURL(sensitiveValues: [subscriberID.asBase64Url]))
         return result
     }
 
@@ -202,7 +202,10 @@ public enum OWSRequestFactory {
             parameters: nil,
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURL())
+        result.applyRedactionStrategy(.redactURL(sensitiveValues: [
+            subscriberId.asBase64Url,
+            paymentMethodId,
+        ]))
         return result
     }
 
@@ -216,7 +219,10 @@ public enum OWSRequestFactory {
             parameters: nil,
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURL())
+        result.applyRedactionStrategy(.redactURL(sensitiveValues: [
+            subscriberId.asBase64Url,
+            setupIntentId,
+        ]))
         return result
     }
 
@@ -231,7 +237,7 @@ public enum OWSRequestFactory {
         )
         result.headers["Donation-Permit"] = donationPermit.serializedPermit.base64EncodedString()
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURL())
+        result.applyRedactionStrategy(.redactURL(sensitiveValues: [subscriberID.asBase64Url]))
         return result
     }
 
@@ -249,7 +255,7 @@ public enum OWSRequestFactory {
             ],
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURL())
+        result.applyRedactionStrategy(.redactURL(sensitiveValues: [subscriberID.asBase64Url]))
         return result
     }
 
@@ -265,7 +271,10 @@ public enum OWSRequestFactory {
             parameters: nil,
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURL())
+        result.applyRedactionStrategy(.redactURL(sensitiveValues: [
+            subscriberID.asBase64Url,
+            idempotencyKey,
+        ]))
         return result
     }
 
@@ -281,7 +290,7 @@ public enum OWSRequestFactory {
             ],
         )
         result.auth = .anonymous
-        result.applyRedactionStrategy(.redactURL())
+        result.applyRedactionStrategy(.redactURL(sensitiveValues: [subscriberID.asBase64Url]))
         return result
     }
 

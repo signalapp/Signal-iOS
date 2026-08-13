@@ -822,6 +822,7 @@
 		5090B1A12F8D7239003F029D /* GroupMembershipTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5090B1A02F8D7239003F029D /* GroupMembershipTest.swift */; };
 		50925DEA2DA86E3A00DAB484 /* GroupMessageProcessorJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50925DE92DA86E3A00DAB484 /* GroupMessageProcessorJob.swift */; };
 		50925DEC2DA87AEF00DAB484 /* GroupMessageProcessorJobTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50925DEB2DA87AEF00DAB484 /* GroupMessageProcessorJobTest.swift */; };
+		5093A1B12F0B1C0100A03829 /* TSRequestTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5093A1B02F0B1C0100A03829 /* TSRequestTest.swift */; };
 		5094D5052EE3A6780041F402 /* AttachmentLimits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5094D5042EE3A6780041F402 /* AttachmentLimits.swift */; };
 		509527FA2E26F02B00A03829 /* ConnectionLockTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509527F92E26F02B00A03829 /* ConnectionLockTest.swift */; };
 		509A8DC22E25817E0024BF14 /* ConnectionLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509A8DC12E25817E0024BF14 /* ConnectionLock.swift */; };
@@ -5159,6 +5160,7 @@
 		5090B1A22F8DA0B6003F029D /* SpamReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReport.swift; sourceTree = "<group>"; };
 		50925DE92DA86E3A00DAB484 /* GroupMessageProcessorJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMessageProcessorJob.swift; sourceTree = "<group>"; };
 		50925DEB2DA87AEF00DAB484 /* GroupMessageProcessorJobTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMessageProcessorJobTest.swift; sourceTree = "<group>"; };
+		5093A1B02F0B1C0100A03829 /* TSRequestTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequestTest.swift; sourceTree = "<group>"; };
 		5094D5042EE3A6780041F402 /* AttachmentLimits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentLimits.swift; sourceTree = "<group>"; };
 		509527F92E26F02B00A03829 /* ConnectionLockTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionLockTest.swift; sourceTree = "<group>"; };
 		5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSyncAttachmentBuilder.swift; sourceTree = "<group>"; };
@@ -14512,6 +14514,7 @@
 				F94261D1289B1B5400460798 /* OWSURLBuilderUtilTest.swift */,
 				6600F350298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift */,
 				F9B93CDB28E1FE3500B3F8A0 /* SignalProxyTest.swift */,
+				5093A1B02F0B1C0100A03829 /* TSRequestTest.swift */,
 			);
 			name = Network;
 			path = SignalServiceKit/tests/Network;
@@ -20637,6 +20640,7 @@
 				F942628A289B1B5600460798 /* TSMessageTest.swift in Sources */,
 				D9495A702C76965600843BC1 /* TSOutgoingMessageRecipientStateTest.swift in Sources */,
 				F9426289289B1B5600460798 /* TSOutgoingMessageTest.swift in Sources */,
+				5093A1B12F0B1C0100A03829 /* TSRequestTest.swift in Sources */,
 				F942628F289B1B5600460798 /* TypingIndicatorMessageTest.swift in Sources */,
 				726C94252D6F48DA00ABF9B9 /* UncooperativeTimeoutTest.swift in Sources */,
 				F9426255289B1B5500460798 /* UnfairLockTest.swift in Sources */,

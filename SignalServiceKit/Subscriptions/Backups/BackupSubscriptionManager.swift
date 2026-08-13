@@ -1029,7 +1029,10 @@ private extension TSRequest {
             parameters: nil,
         )
         request.auth = .anonymous
-        request.applyRedactionStrategy(.redactURL())
+        request.applyRedactionStrategy(.redactURL(sensitiveValues: [
+            subscriberId.asBase64Url,
+            "\(originalTransactionId)",
+        ]))
         return request
     }
 }

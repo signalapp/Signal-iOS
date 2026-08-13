@@ -733,7 +733,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 method: "GET",
                 parameters: nil,
             )
-            request.applyRedactionStrategy(.redactURL())
+            request.applyRedactionStrategy(.redactURL(sensitiveValues: [tokenId.id]))
             // The timeout is server side; apply wiggle room for our local clock.
             request.timeoutInterval = 10 + TimeInterval(Constants.longPollRequestTimeoutSeconds)
             return request
@@ -756,7 +756,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             waitForDeviceToLinkResponse: WaitForDeviceToLinkResponse,
             result: ExportAndUploadBackupResult,
         ) -> TSRequest {
-            var request = TSRequest(
+            let request = TSRequest(
                 url: URL(string: "v1/devices/transfer_archive")!,
                 method: "PUT",
                 parameters: [
@@ -777,7 +777,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                     }(),
                 ],
             )
-            request.applyRedactionStrategy(.redactURL())
             return request
         }
 
@@ -807,7 +806,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 parameters: nil,
             )
             request.auth = .identified(auth)
-            request.applyRedactionStrategy(.redactURL())
             // The timeout is server side; apply wiggle room for our local clock.
             request.timeoutInterval = 10 + TimeInterval(Constants.longPollRequestTimeoutSeconds)
             return request

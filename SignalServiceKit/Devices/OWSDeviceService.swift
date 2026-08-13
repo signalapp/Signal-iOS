@@ -297,14 +297,12 @@ extension TSRequest {
             name: "deviceId",
             value: "\(device.deviceId)",
         )]
-        var request = TSRequest(
+        return TSRequest(
             url: urlComponents.url!,
             method: "PUT",
             parameters: [
                 "deviceName": encryptedName,
             ],
         )
-        request.applyRedactionStrategy(.redactURL())
-        return request
     }
 }
