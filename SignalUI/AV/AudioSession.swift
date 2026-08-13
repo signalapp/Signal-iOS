@@ -113,6 +113,14 @@ public class AudioSession: NSObject {
         defer { unfairLock.unlock() }
 
         if
+            audioActivity.behavior == .recordAudio,
+            aggregateBehaviors.contains(.call)
+        {
+            Logger.warn("Can't start recording while a call audio activity is active.")
+            return false
+        }
+
+        if
             audioActivity.requiresRecordingPermissions,
             avAudioSession.recordPermission != .granted
         {
@@ -159,6 +167,11 @@ public class AudioSession: NSObject {
     }
 
     private func reconcileAudioCategory() throws {
+
+        // Pre-emptively call this before checking the behaviors. This helps clean
+        // any bad/stale audo state that may have linger from errors (e.g. CallKit failures)
+        cullStaleAudioActivities()
+
         if aggregateBehaviors.contains(.audioMessagePlayback) {
             SSKEnvironment.shared.proximityMonitoringManagerRef.add(lifetime: self)
         } else {
@@ -224,12 +237,7 @@ public class AudioSession: NSObject {
         }
     }
 
-    private func ensureAudioSessionActivationState(remainingRetries: UInt = 3) {
-        guard remainingRetries > 0 else {
-            owsFailDebug("ensureAudioSessionActivationState has no remaining retries")
-            return
-        }
-
+    private func cullStaleAudioActivities() {
         // Cull any stale activities
         currentActivities = currentActivities.compactMap { oldActivity in
             guard oldActivity.value != nil else {
@@ -243,6 +251,15 @@ public class AudioSession: NSObject {
             // return any still-active activities
             return oldActivity
         }
+    }
+
+    private func ensureAudioSessionActivationState(remainingRetries: UInt = 3) {
+        guard remainingRetries > 0 else {
+            owsFailDebug("ensureAudioSessionActivationState has no remaining retries")
+            return
+        }
+
+        cullStaleAudioActivities()
 
         guard currentActivities.isEmpty else {
             return

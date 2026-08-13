@@ -140,14 +140,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
     // MARK: CallUIAdaptee
 
     @MainActor
-    func startOutgoingCall(call: SignalCall) {
+    func startOutgoingCall(call: SignalCall, completion: @escaping (Error?) -> Void) {
         Logger.info("")
 
         // Add the new outgoing call to the app's list of calls.
         // So we can find it in the provider delegate callbacks.
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
             self.callManager.addCall(call)
-            self.callManager.startOutgoingCall(call)
+            self.callManager.startOutgoingCall(call, completion: completion)
         }
     }
 
@@ -195,7 +195,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
     }
 
     @MainActor
-    func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void) {
+    func reportIncomingCall(call: SignalCall, completion: @escaping (Error?) -> Void) {
         Logger.info("")
 
         // Construct a CXCallUpdate describing the incoming call, including the caller.
@@ -245,11 +245,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
     }
 
     @MainActor
-    func answerCall(_ call: SignalCall) {
+    func answerCall(_ call: SignalCall, completion: @escaping (Error?) -> Void) {
         Logger.info("")
 
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
-            self.callManager.answer(call: call)
+            self.callManager.answer(call: call, completion: completion)
         }
     }
 
@@ -278,7 +278,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
         }
     }
 
-    func localHangupCall(_ call: SignalCall) {
+    func localHangupCall(_ call: SignalCall, completion: @escaping (Error?) -> Void) {
         AssertIsOnMainThread()
         Logger.info("")
 
@@ -288,7 +288,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
         }
 
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
-            self.callManager.localHangup(call: call)
+            self.callManager.localHangup(call: call, completion: completion)
         }
     }
 

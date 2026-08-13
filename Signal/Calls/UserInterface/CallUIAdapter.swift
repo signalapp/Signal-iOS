@@ -16,20 +16,20 @@ protocol CallUIAdaptee: AnyObject {
     init(showNamesOnCallScreen: Bool, useSystemCallLog: Bool)
 
     @MainActor
-    func startOutgoingCall(call: SignalCall)
+    func startOutgoingCall(call: SignalCall, completion: @escaping (Error?) -> Void)
 
     // TODO: It might be nice to prevent call links from being passed here at compile time.
     @MainActor
-    func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void)
+    func reportIncomingCall(call: SignalCall, completion: @escaping (Error?) -> Void)
 
     @MainActor
-    func answerCall(_ call: SignalCall)
+    func answerCall(_ call: SignalCall, completion: @escaping (Error?) -> Void)
 
     @MainActor
     func recipientAcceptedCall(_ call: CallMode)
 
     @MainActor
-    func localHangupCall(_ call: SignalCall)
+    func localHangupCall(_ call: SignalCall, completion: @escaping (Error?) -> Void)
 
     @MainActor
     func remoteDidHangupCall(_ call: SignalCall)
@@ -100,7 +100,7 @@ public class CallUIAdapter: NSObject {
         // make sure we don't terminate audio session during call
         _ = SUIEnvironment.shared.audioSessionRef.startAudioActivity(call.commonState.audioActivity)
 
-        adaptee.reportIncomingCall(call) { error in
+        adaptee.reportIncomingCall(call: call) { error in
             AssertIsOnMainThread()
 
             guard var error else {
@@ -119,7 +119,11 @@ public class CallUIAdapter: NSObject {
                 break
             }
 
-            self.callService.handleFailedCall(failedCall: call, error: error)
+            self.callService.handleFailedCall(
+                failedCall: call,
+                resetUI: true,
+                error: error,
+            )
         }
     }
 
@@ -150,12 +154,26 @@ public class CallUIAdapter: NSObject {
         // make sure we don't terminate audio session during call
         _ = SUIEnvironment.shared.audioSessionRef.startAudioActivity(call.commonState.audioActivity)
 
-        adaptee.startOutgoingCall(call: call)
+        adaptee.startOutgoingCall(call: call) { error in
+            guard let error else { return }
+            self.callService.handleFailedCall(
+                failedCall: call,
+                resetUI: true,
+                error: error,
+            )
+        }
     }
 
     @MainActor
     func answerCall(_ call: SignalCall) {
-        adaptee.answerCall(call)
+        adaptee.answerCall(call) { error in
+            guard let error else { return }
+            self.callService.handleFailedCall(
+                failedCall: call,
+                resetUI: true,
+                error: error,
+            )
+        }
     }
 
     @MainActor
@@ -211,7 +229,14 @@ public class CallUIAdapter: NSObject {
 
     @MainActor
     func localHangupCall(_ call: SignalCall) {
-        adaptee.localHangupCall(call)
+        adaptee.localHangupCall(call) { error in
+            guard let error else { return }
+            self.callService.handleFailedCall(
+                failedCall: call,
+                resetUI: true,
+                error: error,
+            )
+        }
     }
 
     @MainActor

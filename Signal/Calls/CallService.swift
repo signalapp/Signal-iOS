@@ -514,13 +514,17 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     // * If we know which call it was, we should update that call's state
     //   to reflect the error.
     // * IFF that call is the current call, we want to terminate it.
-    func handleFailedCall(failedCall: SignalCall, error: Error) {
+    func handleFailedCall(
+        failedCall: SignalCall,
+        resetUI: Bool,
+        error: Error,
+    ) {
         switch failedCall.mode {
         case .individual:
             individualCallService.handleFailedCall(
                 failedCall: failedCall,
                 error: error,
-                shouldResetUI: false,
+                shouldResetUI: resetUI,
                 shouldResetRingRTC: true,
             )
         case .groupThread(let groupCall as GroupCall), .callLink(let groupCall as GroupCall):
@@ -1331,7 +1335,11 @@ extension CallService: CallManagerDelegate {
         callMediaType: CallMediaType,
     ) {
         guard callServiceState.currentCall == nil else {
-            handleFailedCall(failedCall: call, error: OWSGenericError("a current call is already set"))
+            handleFailedCall(
+                failedCall: call,
+                resetUI: false,
+                error: OWSGenericError("a current call is already set"),
+            )
             return
         }
 

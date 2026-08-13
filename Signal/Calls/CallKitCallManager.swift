@@ -19,7 +19,7 @@ import UIKit
  */
 final class CallKitCallManager {
 
-    let callController = CXCallController()
+    let callController = CXCallController(queue: .main)
     let showNamesOnCallScreen: Bool
 
     static let kAnonymousCallHandlePrefix = "Signal:"
@@ -128,7 +128,7 @@ final class CallKitCallManager {
     // MARK: Actions
 
     @MainActor
-    func startOutgoingCall(_ call: SignalCall) {
+    func startOutgoingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void) {
         let handle = createCallHandleWithSneakyTransaction(for: call)
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
 
@@ -146,16 +146,19 @@ final class CallKitCallManager {
         transaction.addAction(startCallAction)
 
         Logger.info("CallKit: request(transaction: CXStartCallAction)")
-        requestTransaction(transaction)
+        requestTransaction(transaction, completion: completion)
     }
 
-    func localHangup(call: SignalCall) {
+    func localHangup(
+        call: SignalCall,
+        completion: @escaping (Error?) -> Void,
+    ) {
         let endCallAction = CXEndCallAction(call: call.localId)
         let transaction = CXTransaction()
         transaction.addAction(endCallAction)
 
         Logger.info("CallKit: request(transaction: CXEndCallAction)")
-        requestTransaction(transaction)
+        requestTransaction(transaction, completion: completion)
     }
 
     func setHeld(call: SignalCall, onHold: Bool) {
@@ -164,7 +167,7 @@ final class CallKitCallManager {
         transaction.addAction(setHeldCallAction)
 
         Logger.info("CallKit: request(transaction: CXSetHeldCallAction)")
-        requestTransaction(transaction)
+        requestTransaction(transaction) { _ in }
     }
 
     func setIsMuted(call: SignalCall, isMuted: Bool) {
@@ -173,25 +176,32 @@ final class CallKitCallManager {
         transaction.addAction(muteCallAction)
 
         Logger.info("CallKit: request(transaction: CXSetMutedCallAction)")
-        requestTransaction(transaction)
+        requestTransaction(transaction) { _ in }
     }
 
-    func answer(call: SignalCall) {
+    func answer(
+        call: SignalCall,
+        completion: @escaping (Error?) -> Void,
+    ) {
         let answerCallAction = CXAnswerCallAction(call: call.localId)
         let transaction = CXTransaction()
         transaction.addAction(answerCallAction)
 
         Logger.info("CallKit: request(transaction: CXAnswerCallAction)")
-        requestTransaction(transaction)
+        requestTransaction(transaction, completion: completion)
     }
 
-    private func requestTransaction(_ transaction: CXTransaction) {
+    private func requestTransaction(
+        _ transaction: CXTransaction,
+        completion: @escaping (Error?) -> Void,
+    ) {
         callController.request(transaction) { error in
             if let error {
                 Logger.error("CallKit: Error requesting transaction: \(error)")
             } else {
                 Logger.debug("CallKit: Requested transaction successfully")
             }
+            completion(error)
         }
     }
 

@@ -15,7 +15,8 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
     required init(showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {
     }
 
-    func startOutgoingCall(call: SignalCall) {
+    @MainActor
+    func startOutgoingCall(call: SignalCall, completion: @escaping (Error?) -> Void) {
         AssertIsOnMainThread()
 
         switch call.mode {
@@ -42,13 +43,13 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
         }
     }
 
-    func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void) {
+    func reportIncomingCall(call: SignalCall, completion: @escaping (Error?) -> Void) {
         AssertIsOnMainThread()
         completion(nil)
     }
 
     @MainActor
-    func answerCall(_ call: SignalCall) {
+    func answerCall(_ call: SignalCall, completion: @escaping (Error?) -> Void) {
         guard call.localId == self.callService.callServiceState.currentCall?.localId else {
             owsFailDebug("localId does not match current call")
             return
@@ -77,7 +78,7 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
     }
 
     @MainActor
-    func localHangupCall(_ call: SignalCall) {
+    func localHangupCall(_ call: SignalCall, completion: @escaping (Error?) -> Void) {
         // If both parties hang up at the same moment, call might already be nil.
         owsPrecondition(self.callService.callServiceState.currentCall == nil || call.localId == self.callService.callServiceState.currentCall?.localId)
         callService.handleLocalHangupCall(call)
