@@ -8,8 +8,6 @@ import SignalServiceKit
 
 enum DeviceRestoreError: Error {
     case invalidRestoreData
-    case restoreCancelled
-    case unknownError
 }
 
 class OutgoingDeviceRestoreViewModel: ObservableObject {

@@ -265,22 +265,20 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                 try await viewModel.startTransfer()
                 await displayTransferComplete(presentingViewController: presentingViewController)
             }
-        } catch let restoreError as DeviceRestoreError {
-            await handleError(restoreError, presentingViewController: presentingViewController)
         } catch {
-            Logger.error("Unexpected device transfer error: \(error)")
+            await handleError(error, presentingViewController: presentingViewController)
         }
     }
 
     @MainActor
-    func handleError(_ error: DeviceRestoreError, presentingViewController: UIViewController?) async {
+    func handleError(_ error: Error, presentingViewController: UIViewController?) async {
         guard let presentingViewController else {
             Logger.warn("Cannot display transfer error")
             return
         }
 
         let (title, body) = switch error {
-        case .invalidRestoreData: (
+        case DeviceRestoreError.invalidRestoreData: (
                 OWSLocalizedString(
                     "OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE",
                     comment: "Title of prompt notifying restore failed.",
@@ -290,7 +288,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                     comment: "Body of prompt notifying restore failed.",
                 ),
             )
-        case .restoreCancelled: (
+        case is CancellationError: (
                 OWSLocalizedString(
                     "OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_TITLE",
                     comment: "Title of prompt notifying restore was cancelled.",
@@ -300,16 +298,19 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                     comment: "Body of prompt notifying restore was cancelled.",
                 ),
             )
-        case .unknownError: (
-                OWSLocalizedString(
-                    "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE",
-                    comment: "Title of prompt notifying restore failed for unknown reasons.",
-                ),
-                OWSLocalizedString(
-                    "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY",
-                    comment: "Body of prompt notifying restore failed for unknown reasons.",
-                ),
-            )
+        default: {
+                Logger.error("Unexpected device transfer error: \(error)")
+                return (
+                    OWSLocalizedString(
+                        "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE",
+                        comment: "Title of prompt notifying restore failed for unknown reasons.",
+                    ),
+                    OWSLocalizedString(
+                        "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY",
+                        comment: "Body of prompt notifying restore failed for unknown reasons.",
+                    ),
+                )
+            }()
         }
 
         let sheet = HeroSheetViewController(
