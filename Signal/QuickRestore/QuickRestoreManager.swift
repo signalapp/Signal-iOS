@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+public import Foundation
 import LibSignalClient
 import SignalServiceKit
 
@@ -161,7 +161,7 @@ public class QuickRestoreManager {
     public enum RestoreMethodType {
         case remoteBackup
         case localBackup
-        case deviceTransfer(String)
+        case deviceTransfer(URL)
         case decline
 
         fileprivate init?(response: Requests.WaitForRestoreMethodChoice.Response) {
@@ -170,8 +170,16 @@ public class QuickRestoreManager {
             case .localBackup: self = .localBackup
             case .remoteBackup: self = .remoteBackup
             case .deviceTransfer:
-                guard let bootstrapData = response.deviceTransferBootstrap else { return nil }
-                self = .deviceTransfer(bootstrapData)
+                guard
+                    let bootstrapData = response.deviceTransferBootstrap,
+                    let stringData = Data(base64EncodedWithoutPadding: bootstrapData),
+                    let urlString = String(data: stringData, encoding: .utf8),
+                    let transferURL = URL(string: urlString)
+                else {
+                    Logger.error("Missing device transfer data")
+                    return nil
+                }
+                self = .deviceTransfer(transferURL)
             }
         }
     }
@@ -285,7 +293,7 @@ public class QuickRestoreManager {
 
         enum ChooseRestoreMethod {
             static func buildRequest(token: RestoreMethodToken, method: RestoreMethodType) -> TSRequest {
-                var deviceTransferBootstrap: String?
+                var deviceTransferBootstrap: URL?
                 let method: RestoreMethod = {
                     switch method {
                     case .decline: return .decline
@@ -303,7 +311,9 @@ public class QuickRestoreManager {
                 // `deviceTransferBootstrap` contains unpadded base64 encoded data that is used by
                 // the other device to initiate device transfer. Note that server enforces a
                 // 4096 bytes limit on this field.
-                deviceTransferBootstrap.map { parameters["deviceTransferBootstrap"] = $0 }
+                deviceTransferBootstrap.map {
+                    parameters["deviceTransferBootstrap"] = $0.absoluteString.data(using: .utf8)!.base64EncodedStringWithoutPadding()
+                }
 
                 let urlComponents = URLComponents(string: "v1/devices/restore_account/\(token)")!
                 var request = TSRequest(

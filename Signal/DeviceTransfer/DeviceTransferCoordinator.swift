@@ -104,10 +104,8 @@ public class DeviceTransferCoordinator: Equatable {
         transferStatusViewModel.state = .starting
 
         let url = try await incomingDeviceTransferTask.start(mode: restoreMode)
-        let transferData = url.absoluteString.data(using: .utf8)!.base64EncodedStringWithoutPadding()
-
         try await quickRestoreManager.reportRestoreMethodChoice(
-            method: .deviceTransfer(transferData),
+            method: .deviceTransfer(url),
             restoreMethodToken: restoreMethodToken,
         )
 

@@ -12,20 +12,6 @@ enum DeviceRestoreError: Error {
 
 class OutgoingDeviceRestoreViewModel: ObservableObject {
 
-    struct RestoreMethodData {
-        struct PeerConnectionData {
-            let deviceTransferUrl: URL
-        }
-
-        let restoreMethod: QuickRestoreManager.RestoreMethodType
-        let peerConnectionData: PeerConnectionData?
-
-        fileprivate init(restoreMethod: QuickRestoreManager.RestoreMethodType, peerConnectionData: PeerConnectionData?) {
-            self.restoreMethod = restoreMethod
-            self.peerConnectionData = peerConnectionData
-        }
-    }
-
     private(set) var transferStatusViewModel = TransferStatusViewModel()
     private let quickRestoreManager: QuickRestoreManager
     private let provisioningURL: DeviceProvisioningURL
@@ -64,7 +50,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
     /// 2. Outgoing device will wait for the restore method choice from the other device.
     /// 3. Confirm the returned choice is 'device transfer' or fail.
     /// 4. Parse out the MPC connection information returned in the restore method choice, and return this connection data
-    func waitForRestoreMethodResponse() async throws(DeviceRestoreError) -> RestoreMethodData {
+    func waitForRestoreMethodResponse() async throws(DeviceRestoreError) -> QuickRestoreManager.RestoreMethodType {
         let restoreMethod: QuickRestoreManager.RestoreMethodType
         do {
             let token = try await quickRestoreManager.register(deviceProvisioningUrl: provisioningURL)
@@ -73,35 +59,19 @@ class OutgoingDeviceRestoreViewModel: ObservableObject {
             Logger.error("Failed to wait for restore method choice: \(error)")
             throw DeviceRestoreError.invalidRestoreData
         }
-
-        guard case let .deviceTransfer(transferData) = restoreMethod else {
-            return RestoreMethodData(restoreMethod: restoreMethod, peerConnectionData: nil)
-        }
-        guard
-            let stringData = Data(base64EncodedWithoutPadding: transferData),
-            let urlString = String(data: stringData, encoding: .utf8),
-            let transferURL = URL(string: urlString)
-        else {
-            Logger.error("Attempting to restore using a method other than device transfer")
-            throw DeviceRestoreError.invalidRestoreData
-        }
-
-        return RestoreMethodData(
-            restoreMethod: restoreMethod,
-            peerConnectionData: RestoreMethodData.PeerConnectionData(deviceTransferUrl: transferURL),
-        )
+        return restoreMethod
     }
 
     /// Take the `PeerConnectionData` returned by `waitForConnectionData` and
     /// begin listening for the connection described in `PeerConnectionData`.
-    func waitForDeviceConnection(peerConnectionData: RestoreMethodData.PeerConnectionData) async throws {
+    func waitForDeviceConnection(transferUrl: URL) async throws {
         // If in any state but .idle, return
         guard case .idle = transferStatusViewModel.state else {
             return
         }
 
         transferStatusViewModel.state = .starting
-        try await outgoingDeviceTransferTask.connectToNewDevice(deviceTransferUrl: peerConnectionData.deviceTransferUrl)
+        try await outgoingDeviceTransferTask.connectToNewDevice(deviceTransferUrl: transferUrl)
     }
 
     /// Once connected to the device described in `PeerConnectionData`

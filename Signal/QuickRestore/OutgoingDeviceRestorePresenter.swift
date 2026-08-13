@@ -242,26 +242,20 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
 
             // Show a sheet while fetching the transfer data
             presentSheet()
-            let restoreMethodData = try await viewModel.waitForRestoreMethodResponse()
+            let restoreMethod = try await viewModel.waitForRestoreMethodResponse()
 
-            switch restoreMethodData.restoreMethod {
+            switch restoreMethod {
             case .remoteBackup, .localBackup:
                 await displayRestoreMessage(isBackup: true, presentingViewController: presentingViewController)
             case .decline:
                 await displayRestoreMessage(isBackup: false, presentingViewController: presentingViewController)
-            case .deviceTransfer:
-                guard let peerConnectionData = restoreMethodData.peerConnectionData else {
-                    Logger.error("Missing transfer connection data")
-                    throw DeviceRestoreError.invalidRestoreData
-                }
-
+            case .deviceTransfer(let transferUrl):
                 // Push the status sheet if this is a transfer
                 await pushProgressViewController(
                     viewModel: viewModel,
                     presentingViewController: presentingViewController,
                 )
-
-                try await viewModel.waitForDeviceConnection(peerConnectionData: peerConnectionData)
+                try await viewModel.waitForDeviceConnection(transferUrl: transferUrl)
                 try await viewModel.startTransfer()
                 await displayTransferComplete(presentingViewController: presentingViewController)
             }
