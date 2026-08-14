@@ -36,7 +36,8 @@ class MyStoryCell: UITableViewCell {
 
     private let failedIconView = UIImageView(image: Theme.iconImage(.error16))
 
-    private let addStoryButton = OWSButton()
+    private static let addStoryButtonActionIdentifier = UIAction.Identifier("MyStoryCell.AddStory")
+    private let addStoryButton = UIButton(configuration: .plain())
     private let plusIcon = PlusIconView()
 
     private let contentHStackView = UIStackView()
@@ -49,7 +50,7 @@ class MyStoryCell: UITableViewCell {
 
         titleLabel.text = OWSLocalizedString("MY_STORIES_TITLE", comment: "Title for the 'My Stories' view")
 
-        titleChevron.image = UIImage(imageLiteralResourceName: "chevron-right-20")
+        titleChevron.image = UIImage(resource: .chevronRight20)
 
         let titleStack = UIStackView(arrangedSubviews: [titleLabel, titleChevron])
         titleStack.axis = .horizontal
@@ -69,14 +70,26 @@ class MyStoryCell: UITableViewCell {
         vStack.axis = .vertical
         vStack.alignment = .leading
 
-        addStoryButton.addSubview(avatarView)
-        avatarView.autoPinEdgesToSuperviewEdges()
+        let addStoryButtonSize = avatarView.intrinsicContentSize
+        let addStoryButtonBackground = UIView.container()
+        avatarView.translatesAutoresizingMaskIntoConstraints = false
+        addStoryButtonBackground.addSubview(avatarView)
+        plusIcon.translatesAutoresizingMaskIntoConstraints = false
+        addStoryButtonBackground.addSubview(plusIcon)
+        NSLayoutConstraint.activate([
+            addStoryButton.widthAnchor.constraint(equalToConstant: addStoryButtonSize.width),
+            addStoryButton.heightAnchor.constraint(equalToConstant: addStoryButtonSize.height),
 
-        plusIcon.isUserInteractionEnabled = false
+            avatarView.topAnchor.constraint(equalTo: addStoryButtonBackground.topAnchor),
+            avatarView.leadingAnchor.constraint(equalTo: addStoryButtonBackground.leadingAnchor),
+            avatarView.trailingAnchor.constraint(equalTo: addStoryButtonBackground.trailingAnchor),
+            avatarView.bottomAnchor.constraint(equalTo: addStoryButtonBackground.bottomAnchor),
 
-        addStoryButton.addSubview(plusIcon)
-        plusIcon.autoPinEdge(toSuperviewEdge: .trailing, withInset: -3)
-        plusIcon.autoPinEdge(toSuperviewEdge: .bottom, withInset: -3)
+            plusIcon.trailingAnchor.constraint(equalTo: addStoryButtonBackground.trailingAnchor, constant: 3),
+            plusIcon.bottomAnchor.constraint(equalTo: addStoryButtonBackground.bottomAnchor, constant: 3),
+        ])
+        addStoryButton.configuration?.background.cornerRadius = 0
+        addStoryButton.configuration?.background.customView = addStoryButtonBackground
 
         contentHStackView.addArrangedSubviews([addStoryButton, vStack, .hStretchingSpacer(), attachmentThumbnail])
         contentHStackView.axis = .horizontal
@@ -125,7 +138,12 @@ class MyStoryCell: UITableViewCell {
 
         titleChevron.isHiddenInStackView = model.messages.isEmpty
 
-        addStoryButton.block = addStoryAction
+        addStoryButton.addAction(
+            UIAction(identifier: Self.addStoryButtonActionIdentifier) { _ in
+                addStoryAction()
+            },
+            for: .primaryActionTriggered,
+        )
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress)
