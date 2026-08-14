@@ -58,29 +58,20 @@ open class CVLabel: UILabel, CVView {
     }
 }
 
-open class CVButton: OWSButton, CVView {
-    override open func updateConstraints() {
-        super.updateConstraints()
-        deactivateAllConstraints()
-    }
+open class CVButton: UIButton, CVView {
 
     public func reset() {
-        self.block = {}
-        self.dimsWhenHighlighted = false
-        self.ows_contentEdgeInsets = .zero
-        [
-            UIControl.State.normal,
-            .highlighted,
-            .disabled,
-            .selected,
-            .focused,
-            .application,
-            .reserved,
-        ].forEach { controlState in
-            self.setAttributedTitle(nil, for: controlState)
-            self.setTitle(nil, for: controlState)
-            self.setImage(nil, for: controlState)
-        }
+        configuration = Self.emptyConfiguration()
+    }
+
+    public static func emptyConfiguration() -> UIButton.Configuration {
+        // `plain` doesn't come with zero content insets and square corners.
+        var buttonConfiguration = UIButton.Configuration.plain()
+        buttonConfiguration.contentInsets = .zero
+        buttonConfiguration.cornerStyle = .fixed
+        buttonConfiguration.background = .clear()
+        buttonConfiguration.background.cornerRadius = 0
+        return buttonConfiguration
     }
 }
 

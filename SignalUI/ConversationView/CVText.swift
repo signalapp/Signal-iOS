@@ -171,31 +171,8 @@ public struct CVLabelConfig {
     }
 
     public func applyForRendering(button: UIButton) {
-        button.titleLabel?.font = self.font
-        button.titleLabel?.numberOfLines = self.numberOfLines
-        button.titleLabel?.lineBreakMode = self.lineBreakMode
-        button.setTitleColor(self.textColor, for: .normal)
-        if let textAlignment {
-            button.titleLabel?.textAlignment = textAlignment
-        } else {
-            button.titleLabel?.textAlignment = .natural
-        }
+        var buttonConfiguration = button.configuration ?? CVButton.emptyConfiguration()
 
-        switch text {
-        case .text(let text):
-            button.setTitle(text, for: .normal)
-        case .attributedText(let attributedText):
-            button.setAttributedTitle(attributedText, for: .normal)
-        case .messageBody(let hydratedMessageBody):
-            let attributedText = hydratedMessageBody.asAttributedStringForDisplay(
-                config: self.displayConfig,
-                isDarkThemeEnabled: Theme.isDarkThemeEnabled,
-            )
-            button.setAttributedTitle(attributedText, for: .normal)
-        }
-    }
-
-    public func applyForRendering(buttonConfiguration: inout UIButton.Configuration) {
         var attributedTitle: AttributedString = switch text {
         case .text(let text):
             AttributedString(text)
@@ -222,9 +199,16 @@ public struct CVLabelConfig {
         case .left: .leading
         case .right: .trailing
         case .center: .center
-        case .natural: .automatic
-        case .justified: .automatic
+        case .natural, .justified: .automatic
         @unknown default: .automatic
+        }
+
+        button.configuration = buttonConfiguration
+
+        // `titleAlignment` isn't always enough with complex attributed text strings,
+        //  so this assignment is still necessary as of iOS 26.5.
+        if let textAlignment {
+            button.titleLabel?.textAlignment = textAlignment
         }
     }
 

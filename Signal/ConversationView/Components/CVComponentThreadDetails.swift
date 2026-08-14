@@ -156,8 +156,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let titleButton = componentView.titleButton
         titleLabelConfig.applyForRendering(button: titleButton)
-        titleButton.accessibilityLabel = titleText
-        self.configureTitleAction(button: titleButton, delegate: componentDelegate)
+        configureTitleAction(button: titleButton, delegate: componentDelegate)
         innerViews.append(titleButton)
 
         let groupInfoWrapper = ManualLayoutViewWithLayer(name: "groupWrapper")
@@ -198,17 +197,17 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
                 var buttonConfiguration = headerButtonConfigurationBase()
                 buttonConfiguration.baseBackgroundColor = .Signal.warningLabel.withAlphaComponent(0.2)
-                buttonConfiguration.contentInsets = notVerifierButtonContentInsets
-
-                let nameNotVerifiedButtonLabelConfig = nameNotVerifiedConfig()
-                nameNotVerifiedButtonLabelConfig.applyForRendering(buttonConfiguration: &buttonConfiguration)
-
+                buttonConfiguration.contentInsets = notVerifiedButtonContentInsets
                 let nameNotVerifiedButton = UIButton(
                     configuration: buttonConfiguration,
                     primaryAction: UIAction { _ in
                         componentDelegate.didTapNameEducation(type: safetySection.threadType)
                     },
                 )
+
+                let nameNotVerifiedButtonLabelConfig = nameNotVerifiedConfig()
+                nameNotVerifiedButtonLabelConfig.applyForRendering(button: nameNotVerifiedButton)
+
                 innerViews.append(nameNotVerifiedButton)
 
                 componentView.profileNamesEducationButton = nameNotVerifiedButton
@@ -237,26 +236,31 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         if let safetySection = threadDetails.safetySection {
             if let detailsText = safetySection.detailsText {
                 let detailsButton = componentView.detailsButton
+                let config = otherDetailsLabelConfig(attributedText: detailsText)
+                config.applyForRendering(button: detailsButton)
+
+                // Tap to see member count
+                detailsButton.removeAction(identifiedBy: Self.detailsButtonActionIdentifier, for: .primaryActionTriggered)
+                if safetySection.threadType == .group {
+                    detailsButton.addAction(
+                        UIAction(identifier: Self.detailsButtonActionIdentifier) { [weak componentDelegate] _ in
+                            componentDelegate?.didTapShowConversationSettings()
+                        },
+                        for: .primaryActionTriggered,
+                    )
+                }
 
                 innerViews.append(UIView.spacer(withHeight: vSpacingSafetySectionDefault))
                 innerViews.append(detailsButton)
-                let config = mutualGroupsLabelConfig(attributedText: detailsText)
-                config.applyForRendering(button: detailsButton)
-                // Tap to see member count
-                if safetySection.threadType == .group {
-                    detailsButton.block = { [weak componentDelegate] in
-                        componentDelegate?.didTapShowConversationSettings()
-                    }
-                }
             }
 
             if let mutualGroupsText = safetySection.mutualGroupsText {
                 let mutualGroupsLabel = componentView.mutualGroupsLabel
-
-                innerViews.append(UIView.spacer(withHeight: vSpacingSafetySectionDefault))
-                let mutualGroupsLabelConfig = mutualGroupsLabelConfig(attributedText: mutualGroupsText)
+                let mutualGroupsLabelConfig = otherDetailsLabelConfig(attributedText: mutualGroupsText)
                 mutualGroupsLabelConfig.applyForRendering(label: mutualGroupsLabel)
                 mutualGroupsLabel.accessibilityLabel = safetySection.mutualGroupsAccessibilityText
+
+                innerViews.append(UIView.spacer(withHeight: vSpacingSafetySectionDefault))
                 innerViews.append(mutualGroupsLabel)
             }
 
@@ -265,16 +269,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 buttonConfiguration.contentInsets = safetyButtonContentInsets
                 buttonConfiguration.baseBackgroundColor =
                     conversationStyle.hasWallpaper ? .Signal.MaterialBase.button : .Signal.secondaryFill
-
-                let safetyTipsButtonLabelConfig = safetyTipsButtonLabelConfig()
-                safetyTipsButtonLabelConfig.applyForRendering(buttonConfiguration: &buttonConfiguration)
-
                 let showTipsButton = UIButton(
                     configuration: buttonConfiguration,
                     primaryAction: UIAction { _ in
                         componentDelegate.didTapSafetyTips()
                     },
                 )
+
+                let safetyTipsButtonLabelConfig = safetyTipsButtonLabelConfig()
+                safetyTipsButtonLabelConfig.applyForRendering(button: showTipsButton)
 
                 innerViews.append(UIView.spacer(withHeight: vSpacingSafetyButton))
                 innerViews.append(showTipsButton)
@@ -373,41 +376,47 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         )
     }
 
-    private func configureTitleAction(
-        button: OWSButton,
-        delegate: CVComponentDelegate?,
-    ) {
+    private static var titleActionIdentifier =
+        UIAction.Identifier("CVComponentThreadDetails.titleAction")
+    private static var detailsButtonActionIdentifier =
+        UIAction.Identifier("CVComponentThreadDetails.detailsButtonAction")
+
+    private func configureTitleAction(button: CVButton, delegate: CVComponentDelegate?) {
         guard
             canTapTitle,
             let contactThread = thread as? TSContactThread
         else {
             button.isEnabled = false
-            button.dimsWhenHighlighted = false
-            button.block = {}
+            button.removeAction(identifiedBy: Self.titleActionIdentifier, for: .primaryActionTriggered)
             return
         }
 
-        button.dimsWhenHighlighted = true
-        button.block = { [weak delegate] in
-            delegate?.didTapContactName(thread: contactThread)
-        }
+        button.addAction(
+            UIAction(
+                identifier: Self.titleActionIdentifier,
+                handler: { [weak delegate] _ in
+                    delegate?.didTapContactName(thread: contactThread)
+                },
+            ),
+            for: .primaryActionTriggered,
+        )
         button.isEnabled = true
     }
 
-    private static var mutualGroupsFont: UIFont { .dynamicTypeSubheadline }
-    private static var mutualGroupsTextColor: UIColor { Theme.primaryTextColor }
+    private static var otherDetailsFont: UIFont { .dynamicTypeSubheadline }
+    private static var otherDetailsTextColor: UIColor { Theme.primaryTextColor }
 
     private static var underlineColor: UIColor { UIColor.Signal.transparentSeparator }
 
-    private func mutualGroupsLabelConfig(attributedText: NSAttributedString) -> CVLabelConfig {
+    private func otherDetailsLabelConfig(attributedText: NSAttributedString) -> CVLabelConfig {
         CVLabelConfig(
             text: .attributedText(attributedText),
             displayConfig: .forUnstyledText(
-                font: Self.mutualGroupsFont,
-                textColor: Self.mutualGroupsTextColor,
+                font: Self.otherDetailsFont,
+                textColor: Self.otherDetailsTextColor,
             ),
-            font: Self.mutualGroupsFont,
-            textColor: Self.mutualGroupsTextColor,
+            font: Self.otherDetailsFont,
+            textColor: Self.otherDetailsTextColor,
             numberOfLines: 0,
             lineBreakMode: .byWordWrapping,
             textAlignment: .center,
@@ -656,7 +665,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     private let vSpacingSafetySectionDefault: CGFloat = 8
 
     private let safetyButtonContentInsets = NSDirectionalEdgeInsets(hMargin: 12, vMargin: 5)
-    private let notVerifierButtonContentInsets = NSDirectionalEdgeInsets(hMargin: 12, vMargin: 2)
+    private let notVerifiedButtonContentInsets = NSDirectionalEdgeInsets(hMargin: 12, vMargin: 2)
     private func headerButtonConfigurationBase() -> UIButton.Configuration {
         var configuration = UIButton.Configuration.filled()
         configuration.cornerStyle = .capsule
@@ -700,7 +709,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         innerSubviewInfos.append(avatarSizeClass.size.asManualSubviewInfo)
         innerSubviewInfos.append(CGSize(square: vSpacingTitle).asManualSubviewInfo)
 
-        let titleSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: maxContentWidth)
+        var titleSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: maxContentWidth)
+        titleSize.width += 8
         innerSubviewInfos.append(titleSize.asManualSubviewInfo)
 
         if let safetySection = threadDetails.safetySection {
@@ -709,14 +719,14 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 let buttonSize = CVText.measureLabel(
                     config: nameNotVerifiedConfig(),
                     maxWidth: maxContentWidth,
-                ) + notVerifierButtonContentInsets.asSize
+                ) + notVerifiedButtonContentInsets.asSize
                 innerSubviewInfos.append(buttonSize.asManualSubviewInfo)
             } else if safetySection.isOfficialChat {
                 innerSubviewInfos.append(CGSize(square: vSpacingNotVerifiedLabel).asManualSubviewInfo)
                 let buttonSize = CVText.measureLabel(
                     config: officialLabelConfig(),
                     maxWidth: maxContentWidth,
-                ) + notVerifierButtonContentInsets.asSize
+                ) + notVerifiedButtonContentInsets.asSize
                 innerSubviewInfos.append(buttonSize.asManualSubviewInfo)
             }
         }
@@ -735,7 +745,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             if let detailsText = safetySection.detailsText {
                 innerSubviewInfos.append(CGSize(square: vSpacingSafetySectionDefault).asManualSubviewInfo)
                 let size = CVText.measureLabel(
-                    config: mutualGroupsLabelConfig(attributedText: detailsText),
+                    config: otherDetailsLabelConfig(attributedText: detailsText),
                     maxWidth: maxContentWidth,
                 )
                 innerSubviewInfos.append(size.asManualSubviewInfo)
@@ -744,7 +754,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             if let mutualGroupsText = safetySection.mutualGroupsText {
                 innerSubviewInfos.append(CGSize(square: vSpacingSafetySectionDefault).asManualSubviewInfo)
                 let groupLabelSize = CVText.measureLabel(
-                    config: mutualGroupsLabelConfig(attributedText: mutualGroupsText),
+                    config: otherDetailsLabelConfig(attributedText: mutualGroupsText),
                     maxWidth: maxContentWidth,
                 )
                 innerSubviewInfos.append(groupLabelSize.asManualSubviewInfo)
@@ -1038,13 +1048,13 @@ extension CVComponentThreadDetails {
         let membersAttributedText = NSAttributedString.composed(of: [
             NSAttributedString.with(
                 image: UIImage(named: "group-resizable")!,
-                font: Self.mutualGroupsFont,
+                font: Self.otherDetailsFont,
             ),
             "  ",
             membersAttributedString,
         ]).styled(
-            with: .font(Self.mutualGroupsFont),
-            .color(Self.mutualGroupsTextColor),
+            with: .font(Self.otherDetailsFont),
+            .color(Self.otherDetailsTextColor),
         )
 
         let shouldShowUnknownThreadWarning = !threadAssociatedData.isGroupNameVerified(groupName: groupThread.groupNameOrDefault)
@@ -1162,7 +1172,7 @@ extension CVComponentThreadDetails {
                 return nil
             }
             return NSAttributedString.composed(of: [
-                NSAttributedString.with(image: Theme.iconImage(.contactInfoPhone), font: Self.mutualGroupsFont),
+                NSAttributedString.with(image: Theme.iconImage(.contactInfoPhone), font: Self.otherDetailsFont),
                 "  ",
                 formattedPhoneNumber,
             ])
@@ -1186,7 +1196,7 @@ extension CVComponentThreadDetails {
             mutualGroupsText: NSAttributedString.composed(of: [
                 NSAttributedString.with(
                     image: UIImage(named: "group-resizable")!,
-                    font: Self.mutualGroupsFont,
+                    font: Self.otherDetailsFont,
                 ),
                 "  ",
                 formattedString,
