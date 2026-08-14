@@ -82,16 +82,18 @@ class CallControls: UIView {
     private lazy var joinButton: UIButton = {
         let height: CGFloat = HeightConstants.joinButtonHeight
 
-        let button = OWSButton()
-        button.setTitleColor(.ows_white, for: .normal)
-        button.setBackgroundImage(UIImage.image(color: .ows_accentGreen), for: .normal)
-        button.titleLabel?.font = UIFont.dynamicTypeHeadlineClamped
-        button.clipsToBounds = true
-        button.layer.cornerRadius = height / 2
-        button.block = { [weak self, unowned button] in
-            self?.viewModel.didPressJoin()
-        }
-        button.ows_contentEdgeInsets = UIEdgeInsets(top: 17, leading: 17, bottom: 17, trailing: 17)
+        var buttonConfiguration = UIButton.Configuration.filled()
+        buttonConfiguration.baseForegroundColor = .white
+        buttonConfiguration.baseBackgroundColor = .Signal.green
+        buttonConfiguration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
+        buttonConfiguration.contentInsets = .init(margin: 17)
+        buttonConfiguration.cornerStyle = .capsule
+        let button = UIButton(
+            configuration: buttonConfiguration,
+            primaryAction: UIAction { [weak self] _ in
+                self?.viewModel.didPressJoin()
+            },
+        )
         button.addSubview(joinButtonActivityIndicator)
         joinButtonActivityIndicator.autoCenterInSuperview()
 
@@ -281,7 +283,7 @@ class CallControls: UIView {
         let button = CallButton(iconName: iconName)
         button.selectedIconName = selectedIconName
         button.accessibilityLabel = accessibilityLabel
-        button.addAction(UIAction(handler: action), for: .touchUpInside)
+        button.addAction(UIAction(handler: action), for: .primaryActionTriggered)
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalLow()
         return button
