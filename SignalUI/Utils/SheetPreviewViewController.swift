@@ -61,12 +61,16 @@ public class SheetPreviewViewController: UIViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        let button = OWSButton(title: "Present sheet") { [unowned self] in
-            self.presentAction.present(from: self, animated: true)
-        }
+        let button = UIButton(
+            configuration: .plain(),
+            primaryAction: UIAction { [unowned self] _ in
+                self.presentAction.present(from: self, animated: true)
+            },
+        )
+        button.tintColor = .Signal.accent
+        button.configuration?.title = "Present Sheet"
         view.addSubview(button)
         button.autoCenterInSuperview()
-        button.setTitleColor(UIColor.Signal.accent, for: .normal)
     }
 
     override public func viewDidAppear(_ animated: Bool) {
