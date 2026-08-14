@@ -195,7 +195,7 @@ class MessageReactionPicker: UIStackView {
                         inPosition: index,
                     )
                 },
-                for: .touchUpInside,
+                for: .primaryActionTriggered,
             )
             buttonForEmoji.append(.emoji(emoji: emoji.rawValue, button: button))
             emojiStackView.addArrangedSubview(button)

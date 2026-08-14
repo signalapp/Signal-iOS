@@ -39,10 +39,8 @@ class AttachmentFormatPickerView: UIView {
             let subview = AttachmentTypeView(attachmentType: attachmentType)
             subview.isVerticallyCompactAppearance = traitCollection.verticalSizeClass == .compact
             subview.button.addAction(
-                UIAction(handler: { [weak self] _ in
-                    self?.didTapAttachmentButton(attachmentType: attachmentType)
-                }),
-                for: .touchUpInside,
+                UIAction { [weak self] _ in self?.didTapAttachmentButton(attachmentType: attachmentType) },
+                for: .primaryActionTriggered,
             )
             return subview
         }

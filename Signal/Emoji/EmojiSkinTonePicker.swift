@@ -104,7 +104,7 @@ class EmojiSkinTonePicker: UIView {
                 $0.frame.insetBy(dx: -3, dy: -80).contains(point)
             })
         {
-            selectedButton.sendActions(for: .touchUpInside)
+            selectedButton.sendActions(for: .primaryActionTriggered)
         } else {
             dismiss()
         }

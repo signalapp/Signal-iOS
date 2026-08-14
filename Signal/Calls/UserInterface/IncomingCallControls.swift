@@ -121,7 +121,7 @@ class IncomingCallControls: UIView {
         action: @escaping () -> Void,
     ) -> CallButton {
         let button = CallButton(iconName: iconName)
-        button.addAction(UIAction(handler: { _ in action() }), for: .touchUpInside)
+        button.addAction(UIAction(handler: { _ in action() }), for: .primaryActionTriggered)
         button.alpha = 0.9
         button.text = label
         button.accessibilityLabel = accessibilityLabel

@@ -128,7 +128,7 @@ class SettingsHeaderButton: UIView {
         if #available(iOS 17.4, *) {
             button.performPrimaryAction()
         } else {
-            button.sendActions(for: .touchUpInside)
+            button.sendActions(for: .primaryActionTriggered)
         }
         return true
     }
