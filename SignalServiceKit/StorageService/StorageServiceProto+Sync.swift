@@ -2038,7 +2038,7 @@ extension StorageServiceAccountRecordUpdater {
                         Logger.warn("skipping pinned group without secret params")
                         continue
                     }
-                    let masterKey = failIfThrows { try secretParams.getPublicParams() }
+                    let masterKey = failIfThrows { try secretParams.getMasterKey() }
                     pinnedConversationBuilder.setIdentifier(.groupMasterKey(masterKey.serialize()))
                 } else {
                     owsAssertDebug(GroupManager.isV1GroupId(_groupId))
