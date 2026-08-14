@@ -474,16 +474,20 @@ struct ConversationHeaderBuilder {
     }
 
     mutating func addCreateGroupDescriptionButton() {
-        let button = OWSButton { [weak delegate] in delegate?.didTapAddGroupDescription() }
-        button.setTitle(OWSLocalizedString(
+        var buttonConfig = UIButton.Configuration.plain()
+        buttonConfig.contentInsets = .zero
+        buttonConfig.background.cornerRadius = 0
+        buttonConfig.title = OWSLocalizedString(
             "GROUP_DESCRIPTION_PLACEHOLDER",
             comment: "Placeholder text for 'group description' field.",
-        ), for: .normal)
-        button.setTitleColor(Theme.secondaryTextAndIconColor, for: .normal)
-        button.titleLabel?.font = .dynamicTypeSubheadlineClamped
-        // For some reason, setting edge insets to 0 uses a default, non-zero inset
-        button.ows_contentEdgeInsets = .init(hMargin: 0, vMargin: .ulpOfOne)
+        )
+        buttonConfig.attributedTitle?.font = .dynamicTypeSubheadlineClamped
+        buttonConfig.baseForegroundColor = .Signal.secondaryLabel
 
+        let button = UIButton(
+            configuration: buttonConfig,
+            primaryAction: UIAction { [weak delegate] _ in delegate?.didTapAddGroupDescription() },
+        )
         subviews.append(button)
         hasSubtitleLabel = true
     }
